@@ -10,12 +10,13 @@ DISCOL Image Annotation Software
 
 - PostgreSQL
 
-And for development:
+And for development/testing:
 
-- PHPUnit
 - Node.js
 - gulp-cli
 - karma
+- PHP cURL extension
+- PhantomJS
 
 ## Installation
 
@@ -27,11 +28,15 @@ And for development:
 
 ## Developing
 
+TODO
+
+`npm install`, Package development.
+
 ## Testing
 
 ### Server
 
-Run `phpunit` in the root of the repo.
+phpunit unit tests, codeception acceptance tests
 
 ### Client
 

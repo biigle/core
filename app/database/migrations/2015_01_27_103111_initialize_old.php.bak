@@ -1,0 +1,295 @@
+<?php
+
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class InitializeOld extends Migration {
+
+	/**
+	 * Run the migrations.
+	 *
+	 * Initializes the database as it was in the "old" version of DIAS.
+	 *
+	 * @return void
+	 */
+	public function up()
+	{
+		// Schema::create('', function(Blueprint $table) {
+			
+		// });
+
+		Schema::create('users', function(Blueprint $table) {
+			$table->increments('id');
+
+			$table->string('firstname', 128);
+			$table->string('lastname', 128);
+
+			// TODO the hash is at a minimum 60 characters long.
+			// is this the maximum, too? saves space. 
+			$table->string('password', 512);
+			// TODO NOT LONGER NEEDED since Laravel uses the stored hash as salt 
+			// as well (more secure since the salt is only present at the 
+			// creation time of the hash)
+			$table->string('salt', 512);
+
+			// TODO $table->rememberToken();
+
+			// TODO replace by `roles` table
+			$table->integer('status');
+
+			// TODO add timestamps() ?
+			// timezone?
+			// rename to login_at?
+			$table->timestamp('last_login');
+
+			// TODO unique?
+			$table->string('email', 256);
+		});
+
+		// TODO drop this table?
+		Schema::create('media_types', function(Blueprint $table) {
+			$table->increments('id');
+			$table->string('name', 512);
+		});
+
+		Schema::create('projects', function(Blueprint $table) {
+			$table->increments('id');
+			// TODO why 530?
+			$table->string('name', 530);
+			$table->text('description');
+
+			// creator
+			$table->integer('user_id');//unsigned
+			// $table->foreign('user_id')
+			//       ->references('id')
+			//       ->on('users');
+
+			// TODO timestamps(), timezone?
+			$table->timestamp('last_modified');
+		});
+
+		// TODO rename to project_user per convention (roles??)
+		Schema::create('users_in_project', function(Blueprint $table) {
+			$table->integer('user_id');//unsigned
+			$table->integer('project_id');//unsigned
+			// TODO unique, key, primary?? not consistent with other pivot tables
+			$table->primary(array('user_id', 'project_id'));
+
+			// TODO make status table? or make project_admin_user table?
+			$table->integer('status');
+		});
+
+		Schema::create('labels', function(Blueprint $table) {
+			$table->increments('id');
+			$table->string('name', 512);
+
+			// TODO set constraint for foreign key and make this field nullable 
+			// instead of using -1
+			$table->integer('parent_id');//unsigned
+			// $table->foreign('parent_id')
+			//       ->references('id')
+			//       ->on('labels');
+
+			$table->integer('aphia_id')->nullable();
+
+			// TODO what is this for???
+			$table->integer('project_id')->nullable();
+		});
+
+		// TODO drop this table
+		Schema::create('labels_in_project', function(Blueprint $table) {
+			$table->integer('label_id');//unsigned
+			// $table->foreign('label_id')
+			//       ->references('id')
+			//       ->on('labels');
+
+			$table->integer('project_id');//unsigned
+			// $table->foreign('project_id')
+			//       ->references('id')
+			//       ->on('projects');
+		});
+
+		Schema::create('attributes', function(Blueprint $table) {
+			// TODO bigInteger?
+			$table->increments('id');
+
+			$table->string('name', 512);
+
+			// TODO what is this for? make a new table attribute_type?
+			$table->integer('type');
+		});
+
+		// TODO split this table to be object specific
+		// TODO rename to attribute_user, attribute_project etc. per convention
+		Schema::create('attributes_in_object', function(Blueprint $table) {
+			$table->integer('attribute_id');//unsigned
+			// TODO ondelete cascade?
+			// $table->foreign('attribute_id')
+			//       ->references('id')
+			//       ->on('attributes');
+
+			// TODO can't be constrained! will be, when this table is object 
+			// specific
+			$table->integer('object_id');//unsigned
+
+			// TODO no longer needed when attributes_in_object gets splitted
+			// for each object that can get an attribute
+			// there is a consistency risk in this attribute, too, since there
+			// cannot be a constraint for table names
+			// an alternative would be an enum!
+			$table->string('object_type', 64);
+
+			$table->integer('value_int')->nullable();
+			// TODO rename to value_double
+			$table->double('value_float')->nullable();
+			$table->string('value_string', 512)->nullable();
+		});
+
+		Schema::create('transects', function(Blueprint $table) {
+			$table->increments('id');
+
+			$table->string('name', 512);
+
+			// TODO drop this column? constrain to media_types? ondelete restrict?
+			$table->integer('media_type_id');//unsigned
+
+			// TODO unsigned, nullable?
+			// TODO rename to user_id per convention
+			$table->integer('owner_id');//unsigned
+			// TODO NOT ondelete cascade? restrict?
+			// $table->foreign('owner_id')
+			//       ->references('id')
+			//       ->on('users');
+
+			// TODO with timezone??
+			// TODO use timestamps() ?
+			$table->timestamp('last_modified');
+
+			// TODO not null?
+			// TODO obsolete if always in data/transects/{id} ?
+			$table->string('image_path', 512)->nullable();
+			$table->string('url', 256)->nullable();
+		});
+
+		// TODO rename to project_transect per convention
+		Schema::create('transects_in_project', function(Blueprint $table) {
+			// TODO cascade?
+			$table->integer('transect_id');//unsigned
+			// TODO restrict?
+			$table->integer('project_id');//unsigned
+			// TODO unique and key??
+			$table->unique(array('transect_id', 'project_id'));
+		});
+
+		Schema::create('images', function(Blueprint $table) {
+			$table->increments('id');
+
+			$table->string('filename', 512);
+
+			// TODO unsigned
+			$table->integer('transect_id');
+			// TODO ondelete cascade
+			// $table->foreign('transect_id')
+			//       ->references('id')
+			//       ->on('transects');
+
+			// TODO not null?
+			// TODO is this needed anyway? we have the id.
+			$table->string('hash', 32)->default('')->nullable();
+		});
+
+		Schema::create('annotations', function(Blueprint $table) {
+			$table->increments('id');
+
+			// TODO unsigned
+			$table->integer('image_id');
+			// TODO ondelete cascade
+			// $table->foreign('image_id')
+			//       ->references('id')
+			//       ->on('images');
+
+			// TODO additional shape table
+			$table->integer('shape');
+
+			// TODO with timezone??
+			// TODO use timestamps() ?
+			$table->timestamp('created');
+		});
+
+		/*
+		 * The points at (x, y) positions of an annotation.
+		 */
+		Schema::create('annotation_points', function(Blueprint $table) {
+
+			// the annotation, the point belongs to
+			// TODO unsigned
+			$table->integer('annotation_id');
+			// TODO ondelete cascade
+			// $table->foreign('annotation_id')
+			//       ->references('id')
+			//       ->on('annotations');
+			// the index of the point in the annotation
+			// important to know how to draw e.g. a polygon
+			// TODO unsigned
+			$table->integer('point_index');
+
+			// TODO unique and key??
+			$table->unique(array('annotation_id', 'point_index'));
+
+			// x position of the point
+			// TODO unsigned
+			$table->integer('x');
+			// y position of the point
+			// TODO unsigned
+			$table->integer('y');
+		});
+
+		// TODO rename to annotation_label per convention
+		Schema::create('labels_in_annotation', function(Blueprint $table) {
+
+			//TODO cascade?
+			$table->integer('annotation_id');//unsigned
+			// $table->foreign('annotation_id')
+			//       ->references('id')
+			//       ->on('annotations');
+
+			// TODO restrict?
+			$table->integer('label_id');//unsigned
+			// $table->foreign('label_id')
+			//       ->references('id')
+			//       ->on('labels');
+
+			$table->integer('user_id');//unsigned
+			// $table->foreign('user_id')
+			//       ->references('id')
+			//       ->on('users');
+
+			// TODO use double??
+			$table->integer('confidence');
+		});
+	}
+
+	/**
+	 * Reverse the migrations.
+	 *
+	 * @return void
+	 */
+	public function down()
+	{
+		Schema::drop('labels_in_annotation');
+		Schema::drop('annotation_points');
+		Schema::drop('annotations');
+		Schema::drop('images');
+		Schema::drop('transects_in_project');
+		Schema::drop('transects');
+		Schema::drop('attributes_in_object');
+		Schema::drop('attributes');
+		Schema::drop('labels_in_project');
+		Schema::drop('labels');
+		Schema::drop('users_in_project');
+		Schema::drop('projects');
+		Schema::drop('media_types');
+		Schema::drop('users');
+	}
+
+}

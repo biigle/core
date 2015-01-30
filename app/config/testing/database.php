@@ -23,7 +23,7 @@ return array(
 		'pgsql' => array(
 			'driver'   => 'pgsql',
 			'host'     => 'localhost',
-			'database' => 'dias-local',
+			'database' => 'dias-test',
 			'username' => $_ENV['DB_USERNAME'],
 			'password' => $_ENV['DB_PASSWORD'],
 			'charset'  => 'utf8',

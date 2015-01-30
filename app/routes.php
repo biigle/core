@@ -11,4 +11,24 @@
 |
 */
 
-Route::get('/', 'HomeController@showWelcome');
+Route::get('/', function() {
+	return Redirect::to('login');
+});
+
+Route::get('login', array(
+	'uses' => 'HomeController@showLogin'
+));
+
+Route::post('login', array(
+	'uses' => 'HomeController@doLogin'
+));
+
+Route::get('dashboard', array(
+	'before' => 'auth',
+	'uses'   => 'DashboardController@showDashboard'
+));
+
+Route::post('logout', array(
+	'before' => 'auth',
+	'uses'   => 'HomeController@doLogout'
+));
