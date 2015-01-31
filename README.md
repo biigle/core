@@ -36,7 +36,7 @@ TODO
 
 ### Server
 
-phpunit unit tests, codeception acceptance tests
+phpunit unit tests, codeception acceptance tests (`phantomjs --webdriver=4444`)
 
 ### Client
 

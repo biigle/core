@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function() {
-	return Redirect::to('login');
+	return Redirect::action('HomeController@showLogin');
 });
 
 Route::get('login', array(
@@ -20,7 +20,8 @@ Route::get('login', array(
 ));
 
 Route::post('login', array(
-	'uses' => 'HomeController@doLogin'
+	'before' => 'csrf',
+	'uses'   => 'HomeController@doLogin'
 ));
 
 Route::get('dashboard', array(

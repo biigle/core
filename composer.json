@@ -8,7 +8,8 @@
 		"laravel/framework": "4.2.*"
 	},
 	"require-dev": {
-		"codeception/codeception": "~2.0"
+		"codeception/codeception": "~2.0",
+		"mockery/mockery": "dev-master@dev"
 	},
 	"autoload": {
 		"classmap": [

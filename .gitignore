@@ -2,6 +2,7 @@
 /vendor
 /bower_components
 /node_modules
+app/tests/_*
 composer.phar
 composer.lock
 .env.*.php
