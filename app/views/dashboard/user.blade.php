@@ -1,18 +1,15 @@
-@extends('layouts.master')
+@extends('layouts.internal')
 
 @section('title')
 	Dashboard
 @stop
 
-@section('content')
-<div class="row">
-	<div class="col-md-4 col-md-offset-4">
-		Hello {{ $user->firstname }}. @{{angular braces}}
-		{{ Form::open(array('action' => 'HomeController@doLogout')) }}
-			<div class="form-group">
-				{{ Form::submit('Logout', array('class' => 'btn btn-default')) }}
-			</div>
-		{{ Form::close() }}
+@section('content-internal')
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-4 col-md-offset-4">
+			@{{angular braces}}
+		</div>
 	</div>
 </div>
 @stop

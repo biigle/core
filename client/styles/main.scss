@@ -1,6 +1,6 @@
+// framework imports
 
-
-// @import "theme";
+@import "bootstrap";
 @import "ui-bootstrap";
 
 .login-form {
@@ -9,3 +9,11 @@
 	justify-content: center;
 	height: 100vh;
 }
+
+.navbar-noradius {
+	border-radius: 0;
+}
+
+// custom imports
+
+@import "logo";
