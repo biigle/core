@@ -1,9 +1,5 @@
 @extends('layouts.internal')
 
-@section('title')
-	Dashboard
-@stop
-
 @section('content-internal')
 <div class="container-fluid">
 	<div class="row">

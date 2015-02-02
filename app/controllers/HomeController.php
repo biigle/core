@@ -21,9 +21,10 @@ class HomeController extends BaseController {
 	{
 		if (Auth::check())
 		{
-			return Redirect::to('dashboard');
+			return Redirect::route('dashboard');
 		}
-		return View::make('home.login');
+		return View::make('home.login')
+			->with('title', 'Login');
 	}
 
 	public function doLogin()
@@ -31,39 +32,43 @@ class HomeController extends BaseController {
 		// validate the info, create rules for the inputs
 		$rules = array(
 			'email'    => 'required|email',
-			'password' => 'required|alphaNum|min:6'
+			'password' => 'required|min:8'
 		);
 
 		// run the validation rules on the inputs from the form
 		$validator = Validator::make(Input::all(), $rules);
 
 		// if the validator fails, redirect back to the form
-		if ($validator->fails()) {
-
-			return Redirect::to('login')
-				->withErrors($validator) // send back all errors to the login form
-				->withInput(Input::except('password')); // send back the input (not the password) so that we can repopulate the form
-
-		} else {
-
+		if ($validator->fails())
+		{
+			return Redirect::route('login')
+				// send back all errors to the login form
+				->withErrors($validator)
+				// send back the input (not the password) so that we can repopulate the form
+				->withInput(Input::except('password'));
+		}
+		else
+		{
 			// create our user data for the authentication
 			$userdata = array(
-				'email'     => Input::get('email'),
-				'password'  => Input::get('password')
+				'email'    => Input::get('email'),
+				'password' => Input::get('password')
 			);
 
 			// attempt to do the login
-			if (Auth::attempt($userdata)) {
-
+			if (Auth::attempt($userdata))
+			{
 				return Redirect::intended('dashboard');
-
-			} else {
-				$errors = new MessageBag(array('auth' => array(Lang::get('auth.failed'))));
+			}
+			else
+			{
+				$errors = new MessageBag(array(
+					'auth' => array(Lang::get('auth.failed'))
+				));
 				// validation not successful, send back to form 
-				return Redirect::to('login')
+				return Redirect::route('login')
 					->withErrors($errors)
 					->withInput(Input::except('password'));
-
 			}
 		}
 	}
@@ -71,6 +76,6 @@ class HomeController extends BaseController {
 	public function doLogout()
 	{
 		Auth::logout();
-		return Redirect::to('/');
+		return Redirect::home();
 	}
 }

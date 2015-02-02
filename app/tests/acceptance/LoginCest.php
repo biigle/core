@@ -20,7 +20,7 @@ class LoginCest
 	/**
 	 * @before loginPage
 	 */
-	public function loginWithourtCredentials(AcceptanceTester $I)
+	public function loginWithoutCredentials(AcceptanceTester $I)
 	{
 		$I->click('Login');
 		$I->see('The email field is required.');

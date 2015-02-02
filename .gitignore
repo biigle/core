@@ -2,7 +2,10 @@
 /vendor
 /bower_components
 /node_modules
-app/tests/_*
+/app/tests/_*
+/data/transects/
+
+*.sublime-*
 composer.phar
 composer.lock
 .env.*.php

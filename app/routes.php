@@ -11,11 +11,16 @@
 |
 */
 
-Route::get('/', function() {
+/*
+| There is no actual home page, so we redirect to the login page.
+*/
+Route::any('/', array('as' => 'home', function()
+{
 	return Redirect::action('HomeController@showLogin');
-});
+}));
 
 Route::get('login', array(
+	'as'   => 'login',
 	'uses' => 'HomeController@showLogin'
 ));
 
@@ -26,6 +31,7 @@ Route::post('login', array(
 
 Route::get('dashboard', array(
 	'before' => 'auth',
+	'as'     => 'dashboard',
 	'uses'   => 'DashboardController@showDashboard'
 ));
 
@@ -33,3 +39,13 @@ Route::post('logout', array(
 	'before' => 'auth',
 	'uses'   => 'HomeController@doLogout'
 ));
+
+Route::group(array('prefix' => 'api/v1', 'before' => 'auth'), function()
+{
+	// example of a hypothetical 'users' resource
+	Route::resource(
+		'users',
+		'UserController',
+		array('only' => array('index'))
+	);
+});

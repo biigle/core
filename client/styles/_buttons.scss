@@ -1,0 +1,3 @@
+.btn-inverse {
+	@include button-variant($navbar-inverse-color, $navbar-inverse-bg, $navbar-inverse-border);
+}

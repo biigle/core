@@ -1,9 +1,5 @@
 @extends('layouts.master')
 
-@section('title')
-	Login
-@stop
-
 @section('content')
 <div class="container">
 	<div class="row login-form">
@@ -15,7 +11,7 @@
 					<div class="input-group-addon">
 						<i class="glyphicon glyphicon-user"></i>
 					</div>
-					{{ Form::email('email', Input::old('email'), array('placeholder' => 'email address', 'class' => 'form-control')) }}
+					{{ Form::email('email', Input::old('email'), array('placeholder' => 'email address', 'class' => 'form-control', 'required' => '')) }}
 				</div>
 				@if($errors->has('email'))
 					<span class="help-block">{{ $errors->first('email') }}</span>
@@ -26,7 +22,7 @@
 					<div class="input-group-addon">
 						<i class="glyphicon glyphicon-lock"></i>
 					</div>
-					{{ Form::password('password', array('class' => 'form-control', 'placeholder' => 'password')) }}
+					{{ Form::password('password', array('class' => 'form-control', 'placeholder' => 'password', 'required' => '')) }}
 				</div>
 				@if($errors->has('password'))
 					<span class="help-block">{{ $errors->first('password') }}</span>
@@ -38,12 +34,15 @@
 			</div>
 			@endif
 			<div class="form-group">
-				{{ Form::submit('Login', array('class' => 'btn btn-success pull-right')) }}
+				{{ Form::submit('Login', array('class' => 'btn btn-success btn-block')) }}
 			</div>
 		{{ Form::close() }}
-		<p class="clearfix">
-		Dias (or Discol Image Annotation Software) is a browser-based software for the most efficient and effective rapid manual annotation of still images. It is under heavy development and focuses generally on underwater images and more specifically on benthic images taken in the manganese nodule fields of the Pacific Ocean.
-		</p>
+		<div data-ng-app="ui.bootstrap">
+			<a class="pull-right" href="#" data-ng-click="isShown = !isShown" data-ng-hide="isShown" title="What is DIAS?"><span class="glyphicon glyphicon-info-sign"></span></a>
+			<p data-ng-cloak="" data-collapse="!isShown" data-ng-click="isShown = !isShown">
+				Dias (or Discol Image Annotation Software) is a browser-based software for the most efficient and effective rapid manual annotation of still images. It is under heavy development and focuses generally on underwater images and more specifically on benthic images taken in the manganese nodule fields of the Pacific Ocean.
+			</p>
+		</div>
 		</div>
 	</div>
 </div>

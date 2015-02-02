@@ -4883,3 +4883,20 @@ button.close {
   color: #777777; }
 .logo.logo-inverse .logo__dias {
   color: #eeeeee; }
+
+.btn-inverse {
+  color: #9d9d9d;
+  background-color: #222;
+  border-color: #090909; }
+  .btn-inverse:hover, .btn-inverse:focus, .btn-inverse.focus, .btn-inverse:active, .btn-inverse.active, .open > .btn-inverse.dropdown-toggle {
+    color: #9d9d9d;
+    background-color: #090909;
+    border-color: black; }
+  .btn-inverse:active, .btn-inverse.active, .open > .btn-inverse.dropdown-toggle {
+    background-image: none; }
+  .btn-inverse.disabled, .btn-inverse.disabled:hover, .btn-inverse.disabled:focus, .btn-inverse.disabled.focus, .btn-inverse.disabled:active, .btn-inverse.disabled.active, .btn-inverse[disabled], .btn-inverse[disabled]:hover, .btn-inverse[disabled]:focus, .btn-inverse[disabled].focus, .btn-inverse[disabled]:active, .btn-inverse[disabled].active, fieldset[disabled] .btn-inverse, fieldset[disabled] .btn-inverse:hover, fieldset[disabled] .btn-inverse:focus, fieldset[disabled] .btn-inverse.focus, fieldset[disabled] .btn-inverse:active, fieldset[disabled] .btn-inverse.active {
+    background-color: #222;
+    border-color: #090909; }
+  .btn-inverse .badge {
+    color: #222;
+    background-color: #9d9d9d; }

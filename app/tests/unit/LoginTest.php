@@ -5,14 +5,16 @@ class LoginTest extends TestCase {
 	public function setUp()
 	{
 		parent::setUp();
-		// $this->mock = Mockery::mock('Eloquent', 'User');
+		Route::enableFilters();
+		Session::start();
+		// $this->mock = Mockery::mock('Auth');
 	}
 
-	public function tearDown()
-	{
-		// Mockery::close();
-		parent::tearDown();
-	}
+	// public function tearDown()
+	// {
+	// 	Mockery::close();
+	// 	parent::tearDown();
+	// }
 	
 	/**
 	* A basic functional test example.
@@ -23,6 +25,8 @@ class LoginTest extends TestCase {
 	{
 		$crawler = $this->client->request('GET', '/');
 		$this->assertRedirectedToAction('HomeController@showLogin');
+		$crawler = $this->client->request('POST', '/');
+		$this->assertRedirectedToAction('HomeController@showLogin');
 	}
 
 	public function testLoginView()
@@ -31,14 +35,43 @@ class LoginTest extends TestCase {
 		$this->assertResponseOk();
 	}
 
-	public function testLoginDbCall()
+	public function testLoginCsrf()
 	{
+		Auth::shouldReceive('attempt')->once()->andReturn(true);
+
+		$this->setExpectedException('Illuminate\Session\TokenMismatchException');
+
+		$crawler = $this->client->request('POST', 'login', array(
+			'email'    => 'joe@user.com',
+			'password' => 'example'
+		));
+
+		$this->assertRedirectedToAction('HomeController@showLogin');
+	}
+
+	public function testLoginFail()
+	{
+		Auth::shouldReceive('attempt')->once()->andReturn(false);
+
 		$crawler = $this->client->request('POST', 'login', array(
 			'_token'   => Session::getToken(),
 			'email'    => 'joe@user.com',
 			'password' => 'example'
 		));
 
-		$this->assertResponseStatus(302);
+		$this->assertRedirectedToAction('HomeController@showLogin');
+	}
+
+	public function testLogin()
+	{
+		Auth::shouldReceive('attempt')->once()->andReturn(true);
+
+		$crawler = $this->client->request('POST', 'login', array(
+			'_token'   => Session::getToken(),
+			'email'    => 'joe@user.com',
+			'password' => 'example'
+		));
+
+		$this->assertRedirectedToAction('DashboardController@showDashboard');
 	}
 }
