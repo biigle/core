@@ -43,6 +43,9 @@ class Initialize extends Migration {
 			$table->increments('id');
 			$table->string('name', 128);
 
+			// each role should be unique
+			$table->unique('name');
+
 			// NO timestamps
 		});
 

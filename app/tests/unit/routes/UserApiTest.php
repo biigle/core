@@ -8,7 +8,7 @@ class UserApiTest extends TestCase {
 		Route::enableFilters();
 		Session::start();
 	}
-	
+
 	/**
 	* A basic functional test example.
 	*

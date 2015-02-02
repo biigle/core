@@ -29,14 +29,9 @@ class HomeController extends BaseController {
 
 	public function doLogin()
 	{
-		// validate the info, create rules for the inputs
-		$rules = array(
-			'email'    => 'required|email',
-			'password' => 'required|min:8'
-		);
 
 		// run the validation rules on the inputs from the form
-		$validator = Validator::make(Input::all(), $rules);
+		$validator = Validator::make(Input::all(), User::$authRules);
 
 		// if the validator fails, redirect back to the form
 		if ($validator->fails())

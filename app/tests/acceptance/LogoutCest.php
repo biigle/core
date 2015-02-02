@@ -14,8 +14,8 @@ class LogoutCest
     protected function login(AcceptanceTester $I)
     {
         $I->amOnPage('/login');
-        $I->fillField('email','test@example.com');
-        $I->fillField('password','example');
+        $I->fillField('email','joe@example.com');
+        $I->fillField('password','joespassword');
         $I->click('Login');
     }
 

@@ -45,8 +45,8 @@ class LoginCest
 	 */
 	public function loginWithCorrectCredentials(AcceptanceTester $I)
 	{
-		$I->fillField('email','test@example.com');
-		$I->fillField('password','example');
+		$I->fillField('email','joe@example.com');
+		$I->fillField('password','joespassword');
 		$I->click('Login');
 		$I->seeInCurrentUrl('/dashboard');
 		$I->see('Joe User');

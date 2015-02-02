@@ -15,7 +15,7 @@ class LoginTest extends TestCase {
 	// 	Mockery::close();
 	// 	parent::tearDown();
 	// }
-	
+
 	/**
 	* A basic functional test example.
 	*
@@ -43,7 +43,7 @@ class LoginTest extends TestCase {
 
 		$crawler = $this->client->request('POST', 'login', array(
 			'email'    => 'joe@user.com',
-			'password' => 'example'
+			'password' => 'example123'
 		));
 
 		$this->assertRedirectedToAction('HomeController@showLogin');
@@ -56,7 +56,7 @@ class LoginTest extends TestCase {
 		$crawler = $this->client->request('POST', 'login', array(
 			'_token'   => Session::getToken(),
 			'email'    => 'joe@user.com',
-			'password' => 'example'
+			'password' => 'example123'
 		));
 
 		$this->assertRedirectedToAction('HomeController@showLogin');
@@ -69,7 +69,7 @@ class LoginTest extends TestCase {
 		$crawler = $this->client->request('POST', 'login', array(
 			'_token'   => Session::getToken(),
 			'email'    => 'joe@user.com',
-			'password' => 'example'
+			'password' => 'example123'
 		));
 
 		$this->assertRedirectedToAction('DashboardController@showDashboard');
