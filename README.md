@@ -7,16 +7,21 @@ DISCOL Image Annotation Software
 - PHP 5.4+
 - PHP mcrypt extension
 - PHP JSON extension
+- PHP PGSQL extension
 
 - PostgreSQL
 
 And for development/testing:
 
+- PHP cURL extension
+- PHP SQLite extension
+
 - Node.js
 - gulp-cli
 - karma
-- PHP cURL extension
+
 - PhantomJS
+- SQLite
 
 ## Installation
 

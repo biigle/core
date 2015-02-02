@@ -2,6 +2,7 @@
 
 return array(
 
+	'default' => 'sqlite',
 	/*
 	|--------------------------------------------------------------------------
 	| Database Connections
@@ -20,15 +21,10 @@ return array(
 
 	'connections' => array(
 
-		'pgsql' => array(
-			'driver'   => 'pgsql',
-			'host'     => 'localhost',
-			'database' => 'dias-test',
-			'username' => $_ENV['DB_USERNAME'],
-			'password' => $_ENV['DB_PASSWORD'],
-			'charset'  => 'utf8',
-			'prefix'   => '',
-			'schema'   => 'public',
+		'sqlite' => array(
+			'driver'   => 'sqlite',
+			'database' => ':memory:',
+			'prefix'   => ''
 		),
 
 	),
