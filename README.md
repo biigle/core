@@ -18,36 +18,43 @@ And for development/testing:
 
 - Node.js
 - gulp-cli
-- karma
-
+- karma/jasmine
 - PhantomJS
+
 - SQLite
 
 ## Installation
 
 1. Clone this repository.
 2. Run `composer install` ([get composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx)).
-4. Configure your database credentials in `.env.local.php` in the repo root. You need to configure your hostname to be recognized as local in `bootstrap/start.php`.
-5. Set up the database with `php artisan migrate`.
+4. Set up your hostname to be recognized as local in `bootstrap/start.php`. Create `.env.local.php` and `.env.testing.php` files from `.example.env.php` and populate `local` with your database credentials.
+5. Set up the database and seed it with `php artisan migrate --seed`.
 6. Run a local development server with `php artisan serve`. Alternatively you could use `php -S localhost:8000 -t public/` to mimic a production server.
 
 ## Developing
 
 TODO
 
-`npm install`, Package development.
+(`npm install`, Package development)
 
 ## Testing
 
-### Server
+You shouldn't need to configure anything in `.env.testing.php` since for acceptance tests your `local` database is used, and for functional/unit tests an SQLite in-memory database is used.
 
-phpunit unit tests, codeception acceptance tests (`phantomjs --webdriver=4444`)
+### Acceptance
 
-### Client
+1. start `phantomjs --webdriver=4444`
+2. start `php -S localhost:8000 -t public/`
+3. start your database (it will be wiped and re-seeded during testing)
+4. run `./test-acceptance.sh`
 
-Run `npm test` in the root of the repo.
+### Unit/Functional
+
+Run `./test-unit.sh`.
 
 ## Deployment
+
+Deployment instructions are not final yet!
 
 See <http://stackoverflow.com/a/23153290/1796523>.
 
