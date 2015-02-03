@@ -44,7 +44,7 @@ class AnnotationPointTest extends TestCase {
 	public function testIndexRequired()
 	{
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		
+
 		$obj = AnnotationPointTest::create();
 		$obj->index = null;
 		$obj->save();
@@ -53,7 +53,7 @@ class AnnotationPointTest extends TestCase {
 	public function testXRequired()
 	{
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		
+
 		$obj = AnnotationPointTest::create();
 		$obj->x = null;
 		$obj->save();
@@ -62,7 +62,7 @@ class AnnotationPointTest extends TestCase {
 	public function testYRequired()
 	{
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		
+
 		$obj = AnnotationPointTest::create();
 		$obj->y = null;
 		$obj->save();
@@ -81,7 +81,7 @@ class AnnotationPointTest extends TestCase {
 	public function testAnnotationIndexUnique()
 	{
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		
+
 		$annotation = AnnotationTest::create();
 		AnnotationPointTest::create($annotation)->save();
 		AnnotationPointTest::create($annotation)->save();

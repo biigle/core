@@ -190,7 +190,7 @@ class Initialize extends Migration {
 			      ->onDelete('cascade');
 
 			// filename must be unique for each transect
-			$table->unique('filename', 'transect_id');
+			$table->unique(array('filename', 'transect_id'));
 
 			// NO timestamps (same as transect)
 		});
@@ -311,7 +311,7 @@ class Initialize extends Migration {
 			$table->double('confidence');
 
 			// each user may set the same label only once for each annotation
-			$table->unique('annotation_id', 'label_id', 'user_id');
+			$table->unique(array('annotation_id', 'label_id', 'user_id'));
 		});
 	}
 

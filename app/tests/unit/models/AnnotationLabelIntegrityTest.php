@@ -59,7 +59,7 @@ class AnnotationLabelIntegrityTest extends TestCase {
 	public function testAnnotationLabelUserUnique()
 	{
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		
+
 		$annotation = AnnotationTest::create();
 		$annotation->save();
 		$label = LabelTest::create();
