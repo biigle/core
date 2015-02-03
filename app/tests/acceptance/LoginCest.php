@@ -31,6 +31,26 @@ class LoginCest
 	/**
 	 * @before loginPage
 	 */
+	public function loginWithoutEmail(AcceptanceTester $I)
+	{
+		$I->click('Login');
+		$I->see('The email field is required.');
+		$I->cantSeeInCurrentUrl('/dashboard');
+	}
+
+	/**
+	 * @before loginPage
+	 */
+	public function loginWithoutPassword(AcceptanceTester $I)
+	{
+		$I->click('Login');
+		$I->see('The password field is required.');
+		$I->cantSeeInCurrentUrl('/dashboard');
+	}
+
+	/**
+	 * @before loginPage
+	 */
 	public function loginWithWrongCredentials(AcceptanceTester $I)
 	{
 		$I->fillField('email','test@test.com');

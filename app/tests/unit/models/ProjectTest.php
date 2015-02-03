@@ -2,9 +2,9 @@
 
 class ProjectTest extends TestCase {
 
-	public static function createProject($name = 'test', $desc = 'test', $user = false)
+	public static function create($name = 'test', $desc = 'test', $user = false)
 	{
-		$user = $user ? $user : UserTest::createUser();
+		$user = $user ? $user : UserTest::create();
 		$user->save();
 		$project = new Project;
 		$project->name = $name;
@@ -13,16 +13,27 @@ class ProjectTest extends TestCase {
 		return $project;
 	}
 
-	public function testProjectCreation()
+	public function testCreation()
 	{
-		$project = ProjectTest::createProject();
+		$project = ProjectTest::create();
 		$this->assertTrue($project->save());
+	}
+
+	public function testAttributes()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$this->assertNotNull($project->name);
+		$this->assertNotNull($project->description);
+		$this->assertNotNull($project->creator_id);
+		$this->assertNotNull($project->created_at);
+		$this->assertNotNull($project->updated_at);
 	}
 
 	public function testNameRequired()
 	{
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		$project = ProjectTest::createProject();
+		$project = ProjectTest::create();
 		$project->name = null;
 		$project->save();
 	}
@@ -30,42 +41,42 @@ class ProjectTest extends TestCase {
 	public function testDescriptionRequired()
 	{
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		$project = ProjectTest::createProject();
+		$project = ProjectTest::create();
 		$project->description = null;
 		$project->save();
 	}
 
 	public function testUserNullable()
 	{
-		$project = ProjectTest::createProject();
+		$project = ProjectTest::create();
 		$project->save();
 		$project->creator()->dissociate();
-		$this->assertEquals(null, $project->user_id);
+		$this->assertEquals(null, $project->creator_id);
 	}
 
 	public function testUserOnDeleteSetNull()
 	{
-		$project = ProjectTest::createProject();
+		$project = ProjectTest::create();
 		$project->save();
 		$project->creator()->delete();
 		// refresh project object
-		$project = Project::find(1);
+		$project = Project::find($project->id);
 		$this->assertEquals(null, $project->creator);
 	}
 
 	public function testCreator()
 	{
-		$project = ProjectTest::createProject();
+		$project = ProjectTest::create();
 		$this->assertEquals(User::find(1)->id, $project->creator->id);
 	}
 
 	public function testAssociateUsers()
 	{
-		$project = ProjectTest::createProject();
+		$project = ProjectTest::create();
 		$project->save();
-		$u1 = UserTest::createUser('a', 'b', 'c', 'a@b.c');
+		$u1 = UserTest::create('a', 'b', 'c', 'a@b.c');
 		$u1->save();
-		$role = RoleTest::createRole();
+		$role = RoleTest::create();
 		$role->save();
 		$project->users()->attach($u1->id, array('role_id' => $role->id));
 
@@ -75,16 +86,16 @@ class ProjectTest extends TestCase {
 
 	public function testUserRoles()
 	{
-		$project = ProjectTest::createProject();
+		$project = ProjectTest::create();
 		$project->save();
-		$admin = UserTest::createUser('a', 'b', 'c', 'a@b.c');
+		$admin = UserTest::create('a', 'b', 'c', 'a@b.c');
 		$admin->save();
-		$member = UserTest::createUser('a', 'b', 'c', 'a@d.c');
+		$member = UserTest::create('a', 'b', 'c', 'a@d.c');
 		$member->save();
-		$role = RoleTest::createRole('admin');
+		$role = RoleTest::create('admin');
 		$role->save();
 		$project->users()->attach($admin->id, array('role_id' => $role->id));
-		$role = RoleTest::createRole('member');
+		$role = RoleTest::create('member');
 		$role->save();
 		$project->users()->attach($member->id, array('role_id' => $role->id));
 
@@ -92,6 +103,20 @@ class ProjectTest extends TestCase {
 		$this->assertEquals($admin->id, $user->id);
 		$user = $project->usersWithRole('member')->first();
 		$this->assertEquals($member->id, $user->id);
+	}
+
+	public function testTransects()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$user = UserTest::create('jane', 'user', 'pw', 'u@b.com');
+		$user->save();
+		$transect = TransectTest::create('test', null, null, $user);
+		$transect->save();
+
+		$project->transects()->attach($transect->id);
+		$this->assertEquals($transect->id, $project->transects()->first()->id);
+		$this->assertEquals(1, $project->transects()->count());
 	}
 
 }

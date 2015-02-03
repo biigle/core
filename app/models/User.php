@@ -28,6 +28,14 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		'password' => 'required|min:8'
 	);
 
+	public static $registerRules = array(
+		'email'                 => 'required|email|unique:users',
+		'password'              => 'required|min:8|confirmed',
+		'password_confirmation' => 'required|min:8',
+		'firstname'             => 'required|alpha',
+		'lastname'              => 'required|alpha'
+	);
+
 	public function projects()
 	{
 		return $this->belongsToMany('Project')
@@ -36,7 +44,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 
 	public function createdProjects()
 	{
-		return $this->hasMany('Project');
+		return $this->hasMany('Project', 'creator_id');
 	}
 
 	public function hasRoleInProject(Role $role, Project $project)

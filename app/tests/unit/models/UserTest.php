@@ -2,7 +2,7 @@
 
 class UserTest extends TestCase {
 
-	public static function createUser($fn = 'joe', $ln = 'user', $pw = 'pw', $mail = 'm@m.mm')
+	public static function create($fn = 'joe', $ln = 'user', $pw = 'pw', $mail = 'm@m.mm')
 	{
 		$user = new User;
 		$user->firstname = $fn;
@@ -12,16 +12,28 @@ class UserTest extends TestCase {
 		return $user;
 	}
 
-	public function testUserCreation()
+	public function testCreation()
 	{
-		$user = UserTest::createUser();
+		$user = UserTest::create();
 		$this->assertTrue($user->save());
+	}
+
+	public function testAttributes()
+	{
+		$user = UserTest::create();
+		$user->save();
+		$this->assertNotNull($user->firstname);
+		$this->assertNotNull($user->lastname);
+		$this->assertNotNull($user->password);
+		$this->assertNotNull($user->email);
+		$this->assertNotNull($user->created_at);
+		$this->assertNotNull($user->updated_at);
 	}
 
 	public function testFirstnameRequired()
 	{
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		$user = UserTest::createUser();
+		$user = UserTest::create();
 		$user->firstname = null;
 		$user->save();
 	}
@@ -29,7 +41,7 @@ class UserTest extends TestCase {
 	public function testLastnameRequired()
 	{
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		$user = UserTest::createUser();
+		$user = UserTest::create();
 		$user->lastname = null;
 		$user->save();
 	}
@@ -37,7 +49,7 @@ class UserTest extends TestCase {
 	public function testPasswordRequired()
 	{
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		$user = UserTest::createUser();
+		$user = UserTest::create();
 		$user->password = null;
 		$user->save();
 	}
@@ -45,7 +57,7 @@ class UserTest extends TestCase {
 	public function testEmailRequired()
 	{
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		$user = UserTest::createUser();
+		$user = UserTest::create();
 		$user->email = null;
 		$user->save();
 	}
@@ -54,19 +66,19 @@ class UserTest extends TestCase {
 	{
 		$this->setExpectedException('Illuminate\Database\QueryException');
 
-		$user = UserTest::createUser();
+		$user = UserTest::create();
 		$user->save();
-		$user = UserTest::createUser('jane', 'users', 'pwd');
+		$user = UserTest::create('jane', 'users', 'pwd');
 		$user->save();
 	}
 
 	public function testProjects()
 	{
-		$project = ProjectTest::createProject();
+		$project = ProjectTest::create();
 		$project->save();
-		$user = UserTest::createUser('a', 'b', 'c', 'a@b.c');
+		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
 		$user->save();
-		$role = RoleTest::createRole();
+		$role = RoleTest::create();
 		$role->save();
 		$project->users()->attach($user->id, array('role_id' => $role->id));
 
@@ -75,11 +87,11 @@ class UserTest extends TestCase {
 
 	public function testCreatedProjects()
 	{
-		$user = UserTest::createUser();
+		$user = UserTest::create();
 		$user->save();
-		$project = ProjectTest::createProject('test', 'test', $user);
+		$project = ProjectTest::create('test', 'test', $user);
 		$project->save();
-		$project2 = ProjectTest::createProject('test2', 'test2', $user);
+		$project2 = ProjectTest::create('test2', 'test2', $user);
 		$project2->save();
 
 		$this->assertEquals($project->id, $user->createdProjects()->first()->id);
@@ -88,13 +100,13 @@ class UserTest extends TestCase {
 
 	public function testHasRoleInProject()
 	{
-		$user = UserTest::createUser('a', 'b', 'c', 'd');
+		$user = UserTest::create('a', 'b', 'c', 'd');
 		$user->save();
-		$project = ProjectTest::createProject();
+		$project = ProjectTest::create();
 		$project->save();
-		$memberRole = RoleTest::createRole('member');
+		$memberRole = RoleTest::create('member');
 		$memberRole->save();
-		$adminRole = RoleTest::createRole('admin');
+		$adminRole = RoleTest::create('admin');
 		$adminRole->save();
 		$project->users()->attach(
 			$user->id,
@@ -107,7 +119,7 @@ class UserTest extends TestCase {
 
 	public function testHiddenAttributes()
 	{
-		$user = UserTest::createUser();
+		$user = UserTest::create();
 		$jsonUser = json_decode((string) $user);
 		$this->assertObjectNotHasAttribute('password', $jsonUser);
 		$this->assertObjectNotHasAttribute('email', $jsonUser);

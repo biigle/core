@@ -25,7 +25,8 @@ class Initialize extends Migration {
 			$table->string('lastname', 128);
 			// hashing uses bcrypt so the password is always 60 chars long
 			$table->string('password', 60);
-			$table->string('email', 256);
+			// users are primarily searched by email, so do index
+			$table->string('email', 256)->index();
 			// token for the "stay logged in" session
 			$table->rememberToken();
 			$table->timestamps();
@@ -58,8 +59,8 @@ class Initialize extends Migration {
 			$table->text('description');
 
 			// creator of the project
-			$table->integer('user_id')->unsigned()->nullable();
-			$table->foreign('user_id')
+			$table->integer('creator_id')->unsigned()->nullable();
+			$table->foreign('creator_id')
 			      ->references('id')
 			      ->on('users')
 			      // if the creator is deleted, the project should still exist
@@ -104,6 +105,9 @@ class Initialize extends Migration {
 			$table->increments('id');
 			$table->string('name', 512);
 
+			// each type should exist only once
+			$table->unique('name');
+
 			// NO timestamps
 		});
 
@@ -132,8 +136,8 @@ class Initialize extends Migration {
 			      ->onDelete('restrict');
 
 			// the creator of the transect
-			$table->integer('user_id')->unsigned()->nullable();
-			$table->foreign('user_id')
+			$table->integer('creator_id')->unsigned()->nullable();
+			$table->foreign('creator_id')
 			      ->references('id')
 			      ->on('users')
 			      // the transect should still exist if the creator was deleted
@@ -163,7 +167,7 @@ class Initialize extends Migration {
 			      // projects with transects shouldn't be deleted
 			      ->onDelete('restrict');
 
-			// each transect may belont to each project only once
+			// each transect may belong to each project only once
 			$table->unique(array('transect_id', 'project_id'));
 		});
 
@@ -177,12 +181,16 @@ class Initialize extends Migration {
 			// have non-standard filenames
 			$table->string('filename', 512);
 
-			$table->integer('transect_id')->unsigned();
+			// images are primarily searched by transect, so do index
+			$table->integer('transect_id')->unsigned()->index();
 			$table->foreign('transect_id')
 			      ->references('id')
 			      ->on('transects')
 			      // delete all images belonging to a deleted transect
 			      ->onDelete('cascade');
+
+			// filename must be unique for each transect
+			$table->unique('filename', 'transect_id');
 
 			// NO timestamps (same as transect)
 		});
@@ -194,12 +202,13 @@ class Initialize extends Migration {
 		*/
 		Schema::create('labels', function(Blueprint $table) {
 			$table->increments('id');
-			$table->string('name', 512);
+			// labels are primarily searched by name, so do index
+			$table->string('name', 512)->index();
 
 			// parent label. if the parent is deleted, ask the user if all
 			// children should be deleted as well
-			$table->integer('label_id')->unsigned()->nullable();
-			$table->foreign('label_id')
+			$table->integer('parent_id')->unsigned()->nullable();
+			$table->foreign('parent_id')
 			      ->references('id')
 			      ->on('labels')
 			      // ask user if all children should be deleted!
@@ -214,7 +223,7 @@ class Initialize extends Migration {
 		/*
 		| An annotation can be of a certain shape, e.g. circle, line, polygon.
 		*/
-		Schema::create('annotation_shapes', function(Blueprint $table) {
+		Schema::create('shapes', function(Blueprint $table) {
 			$table->increments('id');
 			$table->string('name', 256);
 
@@ -229,17 +238,18 @@ class Initialize extends Migration {
 		Schema::create('annotations', function(Blueprint $table) {
 			$table->increments('id');
 
-			$table->integer('image_id')->unsigned();
+			// annotations are primarily searched by image, so do index
+			$table->integer('image_id')->unsigned()->index();
 			$table->foreign('image_id')
 			      ->references('id')
 			      ->on('images')
 			      // delete all annotations of a deleted image
 			      ->onDelete('cascade');
 
-			$table->integer('annotation_shape_id')->unsigned();
-			$table->foreign('annotation_shape_id')
+			$table->integer('shape_id')->unsigned();
+			$table->foreign('shape_id')
 			      ->references('id')
-			      ->on('annotation_shapes')
+			      ->on('shapes')
 			      // don't delete shapes that are used
 			      ->onDelete('restrict');
 
@@ -251,7 +261,8 @@ class Initialize extends Migration {
 		| a line). Each point belongs to a single annotation.
 		*/
 		Schema::create('annotation_points', function(Blueprint $table) {
-			$table->integer('annotation_id')->unsigned();
+			// points are primarily searched by annotation, so do index
+			$table->integer('annotation_id')->unsigned()->index();
 			$table->foreign('annotation_id')
 			      ->references('id')
 			      ->on('annotations')
@@ -260,17 +271,21 @@ class Initialize extends Migration {
 
 			// for e.g. polygons the ordering of the points is essential, so the
 			// polygon can be correctly reconstructed
-			$table->integer('point_index');
-			$table->unique(array('annotation_id', 'point_index'));
+			$table->integer('index');
+
+			// point index must be unique for each annotation
+			$table->primary(array('annotation_id', 'index'));
 
 			$table->integer('x');
 			$table->integer('y');
+
+			// NO timestamps
 		});
 
 		/*
 		| Each annotation may get labels by the users. Each user may set multiple
 		| labels to the same annotation e.g. with different levels of confidence
-		| ('i'm not sure, it is 90% this type or 10% this').
+		| ("i'm not sure, it may be 90% this type or 10% the other").
 		*/
 		Schema::create('annotation_label', function(Blueprint $table) {
 			$table->integer('annotation_id')->unsigned();
@@ -312,7 +327,7 @@ class Initialize extends Migration {
 		Schema::drop('annotation_label');
 		Schema::drop('annotation_points');
 		Schema::drop('annotations');
-		Schema::drop('annotation_shapes');
+		Schema::drop('shapes');
 		Schema::drop('labels');
 		Schema::drop('images');
 		Schema::drop('project_transect');
