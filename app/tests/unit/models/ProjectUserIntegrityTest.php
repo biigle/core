@@ -4,8 +4,6 @@ class ProjectUserIntegrityTest extends TestCase {
 
 	public function testRoleOnDeleteRestrict()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-
 		$project = ProjectTest::create();
 		$project->save();
 		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
@@ -13,7 +11,7 @@ class ProjectUserIntegrityTest extends TestCase {
 		$role = RoleTest::create();
 		$role->save();
 		$project->users()->attach($user->id, array('role_id' => $role->id));
-
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$role->delete();
 	}
 
@@ -49,8 +47,6 @@ class ProjectUserIntegrityTest extends TestCase {
 
 	public function testUserProjectRoleUnique()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-
 		$project = ProjectTest::create();
 		$project->save();
 		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
@@ -58,6 +54,7 @@ class ProjectUserIntegrityTest extends TestCase {
 		$role = RoleTest::create();
 		$role->save();
 		$project->users()->attach($user->id, array('role_id' => $role->id));
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$project->users()->attach($user->id, array('role_id' => $role->id));
 	}
 }

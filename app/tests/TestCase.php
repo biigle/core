@@ -34,7 +34,9 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 	private function prepareForTests()
 	{
 		// activate sqlite foreign key integrity checks on SQLite
-		DB::statement('PRAGMA foreign_keys = ON;');
+		if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+			DB::statement('PRAGMA foreign_keys = ON;');
+		}
 		Artisan::call('migrate');
 	}
 

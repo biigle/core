@@ -4,8 +4,6 @@ class ProjectTransectIntegrityTest extends TestCase {
 
 	public function testProjectOnDeleteRestrict()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-
 		$project = ProjectTest::create();
 		$project->save();
 		$user = UserTest::create('jane', 'user', 'pw', 'u@b.com');
@@ -14,7 +12,7 @@ class ProjectTransectIntegrityTest extends TestCase {
 		$transect->save();
 
 		$project->transects()->attach($transect->id);
-
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$project->delete();
 	}
 
@@ -34,8 +32,6 @@ class ProjectTransectIntegrityTest extends TestCase {
 
 	public function testProjectTransectUnique()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-
 		$project = ProjectTest::create();
 		$project->save();
 		$user = UserTest::create('jane', 'user', 'pw', 'u@b.com');
@@ -44,6 +40,7 @@ class ProjectTransectIntegrityTest extends TestCase {
 		$transect->save();
 
 		$project->transects()->attach($transect->id);
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$project->transects()->attach($transect->id);
 	}
 }

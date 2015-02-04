@@ -32,43 +32,42 @@ class UserTest extends TestCase {
 
 	public function testFirstnameRequired()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
 		$user = UserTest::create();
 		$user->firstname = null;
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$user->save();
 	}
 
 	public function testLastnameRequired()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
 		$user = UserTest::create();
 		$user->lastname = null;
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$user->save();
 	}
 
 	public function testPasswordRequired()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
 		$user = UserTest::create();
 		$user->password = null;
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$user->save();
 	}
 
 	public function testEmailRequired()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
 		$user = UserTest::create();
 		$user->email = null;
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$user->save();
 	}
 
 	public function testEmailUnique()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-
 		$user = UserTest::create();
 		$user->save();
 		$user = UserTest::create('jane', 'users', 'pwd');
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$user->save();
 	}
 
@@ -127,5 +126,25 @@ class UserTest extends TestCase {
 		$this->assertObjectNotHasAttribute('created_at', $jsonUser);
 		$this->assertObjectNotHasAttribute('updated_at', $jsonUser);
 		$this->assertObjectNotHasAttribute('login_at', $jsonUser);
+	}
+
+	public function testAttributeRelation()
+	{
+		$user = UserTest::create();
+		$user->save();
+		$attribute = AttributeTest::create();
+		$attribute->save();
+		$user->attributes()->attach($attribute->id, array(
+			'value_int'    => 123,
+			'value_double' => 0.4,
+			'value_string' => 'test'
+		));
+
+		$this->assertEquals(1, $user->attributes()->count());
+
+		$attribute = $user->attributes()->first();
+		$this->assertEquals(123, $attribute->pivot->value_int);
+		$this->assertEquals(0.4, $attribute->pivot->value_double);
+		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
 }

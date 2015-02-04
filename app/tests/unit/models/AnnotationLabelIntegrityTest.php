@@ -22,8 +22,6 @@ class AnnotationLabelIntegrityTest extends TestCase {
 
 	public function testLabelOnDeleteRestrict()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-
 		$annotation = AnnotationTest::create();
 		$annotation->save();
 		$label = LabelTest::create();
@@ -35,6 +33,7 @@ class AnnotationLabelIntegrityTest extends TestCase {
 			'user_id' => $user->id
 		));
 
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$label->delete();
 	}
 
@@ -58,8 +57,6 @@ class AnnotationLabelIntegrityTest extends TestCase {
 
 	public function testAnnotationLabelUserUnique()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-
 		$annotation = AnnotationTest::create();
 		$annotation->save();
 		$label = LabelTest::create();
@@ -71,6 +68,7 @@ class AnnotationLabelIntegrityTest extends TestCase {
 			'user_id' => $user->id
 		));
 
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$annotation->labels()->attach($label->id, array(
 			'confidence' => 0.1,
 			'user_id' => $user->id

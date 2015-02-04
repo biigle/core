@@ -32,17 +32,17 @@ class ProjectTest extends TestCase {
 
 	public function testNameRequired()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
 		$project = ProjectTest::create();
 		$project->name = null;
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$project->save();
 	}
 
 	public function testDescriptionRequired()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
 		$project = ProjectTest::create();
 		$project->description = null;
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$project->save();
 	}
 
@@ -117,6 +117,26 @@ class ProjectTest extends TestCase {
 		$project->transects()->attach($transect->id);
 		$this->assertEquals($transect->id, $project->transects()->first()->id);
 		$this->assertEquals(1, $project->transects()->count());
+	}
+
+	public function testAttributeRelation()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$attribute = AttributeTest::create();
+		$attribute->save();
+		$project->attributes()->attach($attribute->id, array(
+			'value_int'    => 123,
+			'value_double' => 0.4,
+			'value_string' => 'test'
+		));
+
+		$this->assertEquals(1, $project->attributes()->count());
+
+		$attribute = $project->attributes()->first();
+		$this->assertEquals(123, $attribute->pivot->value_int);
+		$this->assertEquals(0.4, $attribute->pivot->value_double);
+		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-class Image extends Eloquent {
+class Image extends Attributable {
 
 	/**
 	 * Don't maintain timestamps for this model.

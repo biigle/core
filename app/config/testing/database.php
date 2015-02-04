@@ -27,6 +27,17 @@ return array(
 			'prefix'   => ''
 		),
 
+		'pgsql' => array(
+			'driver'   => 'pgsql',
+			'host'     => 'localhost',
+			'database' => $_ENV['DB_NAME'],
+			'username' => $_ENV['DB_USERNAME'],
+			'password' => $_ENV['DB_PASSWORD'],
+			'charset'  => 'utf8',
+			'prefix'   => '',
+			'schema'   => 'public',
+		),
+
 	),
 
 );

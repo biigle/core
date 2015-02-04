@@ -1,6 +1,6 @@
 <?php
 
-class Annotation extends Eloquent {
+class Annotation extends Attributable {
 
 	public function image()
 	{

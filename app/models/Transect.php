@@ -1,6 +1,6 @@
 <?php
 
-class Transect extends Eloquent {
+class Transect extends Attributable {
 
 	public function creator()
 	{

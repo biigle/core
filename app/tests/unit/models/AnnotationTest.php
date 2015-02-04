@@ -40,11 +40,10 @@ class AnnotationTest extends TestCase {
 	}
 
 	public function testShapeOnDeleteRestrict()
-	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-		
+	{		
 		$annotation = AnnotationTest::create();
 		$annotation->save();
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$annotation->shape()->delete();
 	}
 
@@ -78,5 +77,25 @@ class AnnotationTest extends TestCase {
 		$label = $annotation->labels()->first();
 		$this->assertEquals(0.5, $label->pivot->confidence);
 		$this->assertEquals($user->id, $label->pivot->user_id);
+	}
+
+	public function testAttributeRelation()
+	{
+		$annotation = AnnotationTest::create();
+		$annotation->save();
+		$attribute = AttributeTest::create();
+		$attribute->save();
+		$annotation->attributes()->attach($attribute->id, array(
+			'value_int'    => 123,
+			'value_double' => 0.4,
+			'value_string' => 'test'
+		));
+
+		$this->assertEquals(1, $annotation->attributes()->count());
+
+		$attribute = $annotation->attributes()->first();
+		$this->assertEquals(123, $attribute->pivot->value_int);
+		$this->assertEquals(0.4, $attribute->pivot->value_double);
+		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
 }

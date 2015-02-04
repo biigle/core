@@ -36,28 +36,25 @@ class TransectTest extends TestCase {
 
 	public function testNameRequired()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-
 		$obj = TransectTest::create();
 		$obj->name = null;
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$obj->save();
 	}
 
 	public function testMediaTypeRequired()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-
 		$obj = TransectTest::create();
 		$obj->mediaType()->dissociate();
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$obj->save();
 	}
 
 	public function testMediaTypeOnDeleteRestrict()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-
 		$obj = TransectTest::create();
 		$obj->save();
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$obj->mediaType()->delete();
 	}
 
@@ -69,5 +66,25 @@ class TransectTest extends TestCase {
 		// refresh object
 		$obj = Transect::find($obj->id);
 		$this->assertNull($obj->creator_id);
+	}
+
+	public function testAttributeRelation()
+	{
+		$transect = TransectTest::create();
+		$transect->save();
+		$attribute = AttributeTest::create();
+		$attribute->save();
+		$transect->attributes()->attach($attribute->id, array(
+			'value_int'    => 123,
+			'value_double' => 0.4,
+			'value_string' => 'test'
+		));
+
+		$this->assertEquals(1, $transect->attributes()->count());
+
+		$attribute = $transect->attributes()->first();
+		$this->assertEquals(123, $attribute->pivot->value_int);
+		$this->assertEquals(0.4, $attribute->pivot->value_double);
+		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
 }

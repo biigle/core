@@ -24,26 +24,23 @@ class RoleTest extends TestCase {
 
 	public function testNameRequired()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
 		$role = RoleTest::create();
 		$role->name = null;
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$role->save();
 	}
 
 	public function testNameUnique()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
 		$role = RoleTest::create();
 		$role->save();
-
 		$role = RoleTest::create();
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$role->save();
 	}
 
 	public function testOnDeleteRestrict()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-		
 		$project = ProjectTest::create();
 		$project->save();
 		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
@@ -51,7 +48,7 @@ class RoleTest extends TestCase {
 		$role = RoleTest::create();
 		$role->save();
 		$project->users()->attach($user->id, array('role_id' => $role->id));
-
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$role->delete();
 	}
 }

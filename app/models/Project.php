@@ -1,6 +1,6 @@
 <?php
 
-class Project extends Eloquent {
+class Project extends Attributable {
 
 	public function users()
 	{

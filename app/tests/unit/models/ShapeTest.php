@@ -26,10 +26,9 @@ class ShapeTest extends TestCase {
 
 	public function testNameRequired()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-
 		$obj = ShapeTest::create();
 		$obj->name = null;
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$obj->save();
 	}
 }

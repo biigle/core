@@ -26,20 +26,18 @@ class MediaTypeTest extends TestCase {
 
 	public function testNameRequired()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-
 		$obj = MediaTypeTest::create();
 		$obj->name = null;
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$obj->save();
 	}
 
 	public function testNameUnique()
 	{
-		$this->setExpectedException('Illuminate\Database\QueryException');
-
 		$obj = MediaTypeTest::create();
 		$obj->save();
 		$obj = MediaTypeTest::create();
+		$this->setExpectedException('Illuminate\Database\QueryException');
 		$obj->save();
 	}
 }
