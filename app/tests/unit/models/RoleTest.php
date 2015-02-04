@@ -51,4 +51,18 @@ class RoleTest extends TestCase {
 		$this->setExpectedException('Illuminate\Database\QueryException');
 		$role->delete();
 	}
+
+	public function testByName()
+	{
+		$this->assertNull(Role::byName('abc'));
+		RoleTest::create('abc')->save();
+		$this->assertNotNull(Role::byName('abc'));
+	}
+
+	public function testByNameOrNew()
+	{
+		$this->assertEquals(1, Role::byNameOrNew('abc')->id);
+		$this->assertEquals('cds', Role::byNameOrNew('cds')->name);
+		$this->assertEquals(1, Role::byNameOrNew('abc')->id);
+	}
 }

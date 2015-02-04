@@ -34,14 +34,10 @@ class ProjectUserIntegrityTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
-		$user->save();
-		$role = RoleTest::create();
-		$role->save();
-		$project->users()->attach($user->id, array('role_id' => $role->id));
 
+		// the creator automatically was a user
 		$this->assertEquals(1, $project->users()->count());
-		$user->delete();
+		$project->creator->delete();
 		$this->assertEquals(0, $project->users()->count());
 	}
 

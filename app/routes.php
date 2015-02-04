@@ -42,10 +42,9 @@ Route::post('logout', array(
 
 Route::group(array('prefix' => 'api/v1', 'before' => 'auth'), function()
 {
-	// example of a hypothetical 'users' resource
 	Route::resource(
-		'users',
-		'UserController',
-		array('only' => array('index'))
+		'projects',
+		'ProjectController',
+		array('only' => array('index', 'show'))
 	);
 });

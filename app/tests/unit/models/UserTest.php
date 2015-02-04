@@ -105,15 +105,15 @@ class UserTest extends TestCase {
 		$project->save();
 		$memberRole = RoleTest::create('member');
 		$memberRole->save();
-		$adminRole = RoleTest::create('admin');
-		$adminRole->save();
+		$guestRole = RoleTest::create('guest');
+		$guestRole->save();
 		$project->users()->attach(
 			$user->id,
 			array('role_id' => $memberRole->id)
 		);
 
 		$this->assertTrue($user->hasRoleInProject($memberRole, $project));
-		$this->assertFalse($user->hasRoleInProject($adminRole, $project));
+		$this->assertFalse($user->hasRoleInProject($guestRole, $project));
 	}
 
 	public function testHiddenAttributes()

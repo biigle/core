@@ -42,7 +42,8 @@ class Initialize extends Migration {
 		*/
 		Schema::create('roles', function(Blueprint $table) {
 			$table->increments('id');
-			$table->string('name', 128);
+			// roles are primarily searched by name, so do index
+			$table->string('name', 128)->index();
 
 			// each role should be unique
 			$table->unique('name');

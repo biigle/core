@@ -30,6 +30,17 @@ class ProjectTest extends TestCase {
 		$this->assertNotNull($project->updated_at);
 	}
 
+	public function testHiddenAttributes()
+	{
+		$project = ProjectTest::create();
+		$jsonProject = json_decode((string) $project);
+		$this->assertObjectNotHasAttribute('pivot', $jsonProject);
+		$this->assertObjectNotHasAttribute('creator_id', $jsonProject);
+		$this->assertObjectNotHasAttribute('role_id', $jsonProject);
+		$this->assertObjectNotHasAttribute('user_id', $jsonProject);
+		$this->assertObjectNotHasAttribute('project_id', $jsonProject);
+	}
+
 	public function testNameRequired()
 	{
 		$project = ProjectTest::create();
@@ -67,7 +78,11 @@ class ProjectTest extends TestCase {
 	public function testCreator()
 	{
 		$project = ProjectTest::create();
-		$this->assertEquals(User::find(1)->id, $project->creator->id);
+		$project->save();
+		$id = User::find(1)->id;
+		$this->assertEquals($id, $project->creator->id);
+		// creator will be user as well
+		$this->assertEquals($id, $project->users()->first()->id);
 	}
 
 	public function testAssociateUsers()
@@ -80,8 +95,7 @@ class ProjectTest extends TestCase {
 		$role->save();
 		$project->users()->attach($u1->id, array('role_id' => $role->id));
 
-		$user = $project->users()->first();
-		$this->assertEquals($u1->id, $user->id);
+		$this->assertNotNull($project->users()->find($u1->id));
 	}
 
 	public function testUserRoles()
@@ -92,14 +106,14 @@ class ProjectTest extends TestCase {
 		$admin->save();
 		$member = UserTest::create('a', 'b', 'c', 'a@d.c');
 		$member->save();
-		$role = RoleTest::create('admin');
+		$role = RoleTest::create('guest');
 		$role->save();
 		$project->users()->attach($admin->id, array('role_id' => $role->id));
 		$role = RoleTest::create('member');
 		$role->save();
 		$project->users()->attach($member->id, array('role_id' => $role->id));
 
-		$user = $project->usersWithRole('admin')->first();
+		$user = $project->usersWithRole('guest')->first();
 		$this->assertEquals($admin->id, $user->id);
 		$user = $project->usersWithRole('member')->first();
 		$this->assertEquals($member->id, $user->id);

@@ -79,3 +79,9 @@ App::down(function()
 */
 
 require app_path().'/filters.php';
+
+/*
+| Model event handlers
+*/
+
+Project::observe(new ProjectObserver);

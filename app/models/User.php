@@ -50,8 +50,8 @@ class User extends Attributable implements UserInterface, RemindableInterface {
 	public function hasRoleInProject(Role $role, Project $project)
 	{
 		return 1 === $this->projects()
-			->where('id', '=', $project->id)
-			->where('role_id', '=', $role->id)->count();
+			->where('id', $project->id)
+			->where('role_id', $role->id)->count();
 	}
 
 }
