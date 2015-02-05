@@ -4,12 +4,9 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Laravel</title>
+	<title>DIAS - @{{ $title }}</title>
 
-	<link href="/css/app.css" rel="stylesheet">
-
-	<!-- Fonts -->
-	<link href='//fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
+	<link href="/assets/styles/main.css" rel="stylesheet">
 
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -19,44 +16,34 @@
 	<![endif]-->
 </head>
 <body>
-	<nav class="navbar navbar-default">
+@if(Auth::check())
+	<nav class="navbar navbar-inverse navbar-noradius">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-					<span class="sr-only">Toggle Navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="#">Laravel</a>
+				<a class="navbar-brand logo logo-inverse" href="#">
+					<span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup>
+				</a>
 			</div>
-
-			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				<ul class="nav navbar-nav">
-					<li><a href="/">Home</a></li>
-				</ul>
-
-				<ul class="nav navbar-nav navbar-right">
-					@if (Auth::guest())
-						<li><a href="/auth/login">Login</a></li>
-						<li><a href="/auth/register">Register</a></li>
-					@else
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ Auth::user()->name }} <span class="caret"></span></a>
-							<ul class="dropdown-menu" role="menu">
-								<li><a href="/auth/logout">Logout</a></li>
-							</ul>
-						</li>
-					@endif
-				</ul>
-			</div>
+			<ul class="nav navbar-nav navbar-right">
+				<li class="navbar-text">
+					{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}
+				</li>
+				<li>
+					<form class="navbar-form" role="form" method="GET" action="/auth/logout">
+						<input type="hidden" name="_token" value="{{ csrf_token() }}">
+						<div class="form-group">
+							<button type="submit" class="btn btn-inverse" title="{{ trans('form.logout') }}"><i class="glyphicon glyphicon-log-out"></i></button>
+						</div>
+					</form>
+				</li>
+			</ul>
 		</div>
 	</nav>
-
+@endif
 	@yield('content')
 
-	<!-- Scripts -->
-	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
+	<script src="/assets/scripts/angular.min.js"></script>
+	<script src="/assets/scripts/ui-bootstrap-tpls.min.js"></script>
+	<script src="/assets/scripts/dias.min.js"></script>
 </body>
 </html>

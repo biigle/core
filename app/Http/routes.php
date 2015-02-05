@@ -11,9 +11,14 @@
 |
 */
 
-Route::get('/', 'WelcomeController@index');
+Route::get('/home', function() {
+	return redirect()->route('home');
+});
 
-Route::get('home', 'HomeController@index');
+Route::get('/', array(
+	'as' => 'home',
+	'uses' => 'HomeController@index'
+));
 
 Route::controllers([
 	'auth' => 'Auth\AuthController',

@@ -1,5 +1,5 @@
 suites:
     main:
-        namespace: App
-        psr4_prefix: App
+        namespace: Dias
+        psr4_prefix: Dias
         src_path: app

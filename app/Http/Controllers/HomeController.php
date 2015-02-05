@@ -1,4 +1,4 @@
-<?php namespace App\Http\Controllers;
+<?php namespace Dias\Http\Controllers;
 
 class HomeController extends Controller {
 
@@ -30,7 +30,7 @@ class HomeController extends Controller {
 	 */
 	public function index()
 	{
-		return view('home');
+		return view('home', array('title', 'Login'));
 	}
 
 }

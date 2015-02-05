@@ -1,4 +1,4 @@
-<?php namespace App\Events;
+<?php namespace Dias\Events;
 
 abstract class Event {
 

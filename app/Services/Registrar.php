@@ -1,6 +1,6 @@
-<?php namespace App\Services;
+<?php namespace Dias\Services;
 
-use App\User;
+use Dias\User;
 use Validator;
 use Illuminate\Contracts\Auth\Registrar as RegistrarContract;
 

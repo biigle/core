@@ -3,6 +3,16 @@
 class TestCase extends Illuminate\Foundation\Testing\TestCase {
 
 	/**
+	 * Default preparation for each test
+	 *
+	 */
+	public function setUp()
+	{
+		parent::setUp();
+		$this->prepareForTests();
+	}
+
+	/**
 	 * Creates the application.
 	 *
 	 * @return \Illuminate\Foundation\Application
@@ -14,6 +24,21 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 		$app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
 		return $app;
+	}
+
+	/**
+	 * Migrates the database (SQLite in-memory).
+	 * This will cause the tests to run quickly.
+	 *
+	 */
+	private function prepareForTests()
+	{
+		// activate sqlite foreign key integrity checks on SQLite
+		if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+			DB::statement('PRAGMA foreign_keys = ON;');
+		}
+
+		Artisan::call('migrate');
 	}
 
 }

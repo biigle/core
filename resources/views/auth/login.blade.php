@@ -1,61 +1,41 @@
 @extends('app')
 
 @section('content')
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-8 col-md-offset-2">
-			<div class="panel panel-default">
-				<div class="panel-heading">Login</div>
-				<div class="panel-body">
-					@if (count($errors) > 0)
-						<div class="alert alert-danger">
-							<strong>Whoops!</strong> There were some problems with your input.<br><br>
-							<ul>
-								@foreach ($errors->all() as $error)
-									<li>{{ $error }}</li>
-								@endforeach
-							</ul>
+<div class="container">
+	<div class="row login-form">
+		<div class="col-md-4 col-sm-6">
+			<form class="well clearfix" role="form" method="POST" action="/auth/login">
+				<h1 class="logo"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></h1>
+				<div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+					<div class="input-group">
+						<div class="input-group-addon">
+							<i class="glyphicon glyphicon-user"></i>
 						</div>
+						<input type="email" placeholder="{{ trans('form.email') }}" class="form-control" name="email" value="{{ old('email') }}" required>
+					</div>
+					@if($errors->has('email'))
+						<span class="help-block">{{ $errors->first('email') }}</span>
 					@endif
-
-					<form class="form-horizontal" role="form" method="POST" action="/auth/login">
-						<input type="hidden" name="_token" value="{{ csrf_token() }}">
-
-						<div class="form-group">
-							<label class="col-md-4 control-label">E-Mail Address</label>
-							<div class="col-md-6">
-								<input type="email" class="form-control" name="email" value="{{ old('email') }}">
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-md-4 control-label">Password</label>
-							<div class="col-md-6">
-								<input type="password" class="form-control" name="password">
-							</div>
-						</div>
-
-						<div class="form-group">
-							<div class="col-md-6 col-md-offset-4">
-								<div class="checkbox">
-									<label>
-										<input type="checkbox" name="remember"> Remember Me
-									</label>
-								</div>
-							</div>
-						</div>
-
-						<div class="form-group">
-							<div class="col-md-6 col-md-offset-4">
-								<button type="submit" class="btn btn-primary" style="margin-right: 15px;">
-									Login
-								</button>
-
-								<a href="/password/email">Forgot Your Password?</a>
-							</div>
-						</div>
-					</form>
 				</div>
+				<div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
+					<div class="input-group">
+						<div class="input-group-addon">
+							<i class="glyphicon glyphicon-lock"></i>
+						</div>
+						<input type="password" placeholder="{{ trans('form.password') }}" class="form-control" name="password" value="{{ old('password') }}" required>
+					</div>
+					@if($errors->has('password'))
+						<span class="help-block">{{ $errors->first('password') }}</span>
+					@endif
+				</div>
+				<input type="hidden" name="_token" value="{{ csrf_token() }}">
+				<div class="form-group">
+					<button type="submit" class="btn btn-success btn-block">Login</button>
+				</div>
+			</form>
+			<div data-ng-app="ui.bootstrap">
+				<a class="pull-right" href="#" data-ng-click="isShown = !isShown" data-ng-hide="isShown" title="What is DIAS?"><span class="glyphicon glyphicon-info-sign"></span></a>
+				<p data-ng-cloak="" data-collapse="!isShown" data-ng-click="isShown = !isShown">{{ trans('dias.info') }}</p>
 			</div>
 		</div>
 	</div>
