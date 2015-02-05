@@ -4,12 +4,13 @@ class ProjectTest extends TestCase {
 
 	public static function create($name = 'test', $desc = 'test', $user = false)
 	{
-		$user = $user ? $user : UserTest::create();
-		$user->save();
 		$project = new Project;
 		$project->name = $name;
 		$project->description = $desc;
-		$project->creator()->associate($user);
+		if ($user)
+		{
+			$project->creator()->associate($user);
+		}
 		return $project;
 	}
 
@@ -21,7 +22,9 @@ class ProjectTest extends TestCase {
 
 	public function testAttributes()
 	{
-		$project = ProjectTest::create();
+		$creator = UserTest::create();
+		$creator->save();
+		$project = ProjectTest::create('test', 'test', $creator);
 		$project->save();
 		$this->assertNotNull($project->name);
 		$this->assertNotNull($project->description);
@@ -77,25 +80,27 @@ class ProjectTest extends TestCase {
 
 	public function testCreator()
 	{
-		$project = ProjectTest::create();
+		$creator = UserTest::create();
+		$creator->save();
+		$project = ProjectTest::create('test', 'test', $creator);
 		$project->save();
-		$id = User::find(1)->id;
-		$this->assertEquals($id, $project->creator->id);
+
+		$this->assertEquals($creator->id, $project->creator->id);
 		// creator will be user as well
-		$this->assertEquals($id, $project->users()->first()->id);
+		$this->assertEquals($creator->id, $project->users()->first()->id);
 	}
 
 	public function testAssociateUsers()
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$u1 = UserTest::create('a', 'b', 'c', 'a@b.c');
-		$u1->save();
+		$user = UserTest::create();
+		$user->save();
 		$role = RoleTest::create();
 		$role->save();
-		$project->users()->attach($u1->id, array('role_id' => $role->id));
+		$project->users()->attach($user->id, array('role_id' => $role->id));
 
-		$this->assertNotNull($project->users()->find($u1->id));
+		$this->assertNotNull($project->users()->find($user->id));
 	}
 
 	public function testUserRoles()

@@ -9,6 +9,19 @@ class User extends Attributable implements UserInterface, RemindableInterface {
 
 	use UserTrait, RemindableTrait;
 
+	public static $authRules = array(
+		'email'    => 'required|email',
+		'password' => 'required|min:8'
+	);
+
+	public static $registerRules = array(
+		'email'                 => 'required|email|unique:users',
+		'password'              => 'required|min:8|confirmed',
+		'password_confirmation' => 'required|min:8',
+		'firstname'             => 'required|alpha',
+		'lastname'              => 'required|alpha'
+	);
+
 	/**
 	 * The attributes excluded from the model's JSON form.
 	 *
@@ -21,19 +34,6 @@ class User extends Attributable implements UserInterface, RemindableInterface {
 		'created_at',
 		'updated_at',
 		'login_at'
-	);
-
-	public static $authRules = array(
-		'email'    => 'required|email',
-		'password' => 'required|min:8'
-	);
-
-	public static $registerRules = array(
-		'email'                 => 'required|email|unique:users',
-		'password'              => 'required|min:8|confirmed',
-		'password_confirmation' => 'required|min:8',
-		'firstname'             => 'required|alpha',
-		'lastname'              => 'required|alpha'
 	);
 
 	public function projects()

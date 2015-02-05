@@ -15,7 +15,7 @@
 			<li>
 				{{ Form::open(array('action' => 'HomeController@doLogout', 'class' => 'navbar-form')) }}
 				<div class="form-group">
-					{{Form::button('<i class="glyphicon glyphicon-log-out"></i>', array('type' => 'submit', 'class' => 'btn btn-inverse', 'title' => 'Logout'))}}
+					{{Form::button('<i class="glyphicon glyphicon-log-out"></i>', array('type' => 'submit', 'class' => 'btn btn-inverse', 'title' => Lang::get('form.logout')))}}
 				</div>
 				{{ Form::close() }}
 			</li>

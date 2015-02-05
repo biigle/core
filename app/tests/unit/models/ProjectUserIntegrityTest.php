@@ -19,7 +19,7 @@ class ProjectUserIntegrityTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$user = UserTest::create();
 		$user->save();
 		$role = RoleTest::create();
 		$role->save();
@@ -31,13 +31,14 @@ class ProjectUserIntegrityTest extends TestCase {
 	}
 
 	public function testUserOnDeleteCascade()
-	{
-		$project = ProjectTest::create();
+	{	
+		$creator = UserTest::create();
+		$creator->save();
+		$project = ProjectTest::create('test', 'test', $creator);
 		$project->save();
 
-		// the creator automatically was a user
 		$this->assertEquals(1, $project->users()->count());
-		$project->creator->delete();
+		$creator->delete();
 		$this->assertEquals(0, $project->users()->count());
 	}
 
@@ -45,7 +46,7 @@ class ProjectUserIntegrityTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$user = UserTest::create();
 		$user->save();
 		$role = RoleTest::create();
 		$role->save();

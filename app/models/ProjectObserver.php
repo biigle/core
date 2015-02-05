@@ -8,10 +8,13 @@ class ProjectObserver {
 	 */
 	public function created($project)
 	{
-		$project->users()->attach(
-			$project->creator->id,
-			array('role_id' => Role::byNameOrNew('admin')->id)
-		);
+		if ($project->creator)
+		{
+			$project->users()->attach(
+				$project->creator->id,
+				array('role_id' => Role::byNameOrNew('admin')->id)
+			);
+		}
 	}
 
 }

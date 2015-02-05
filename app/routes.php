@@ -43,8 +43,8 @@ Route::post('logout', array(
 Route::group(array('prefix' => 'api/v1', 'before' => 'auth'), function()
 {
 	Route::resource(
-		'projects',
-		'ProjectController',
+		'users.projects',
+		'UserProjectsAPIController',
 		array('only' => array('index', 'show'))
 	);
 });

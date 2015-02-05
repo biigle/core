@@ -11,7 +11,7 @@
 					<div class="input-group-addon">
 						<i class="glyphicon glyphicon-user"></i>
 					</div>
-					{{ Form::email('email', Input::old('email'), array('placeholder' => 'email address', 'class' => 'form-control', 'required' => '')) }}
+					{{ Form::email('email', Input::old('email'), array('placeholder' => Lang::get('form.email'), 'class' => 'form-control', 'required' => '')) }}
 				</div>
 				@if($errors->has('email'))
 					<span class="help-block">{{ $errors->first('email') }}</span>
@@ -22,7 +22,7 @@
 					<div class="input-group-addon">
 						<i class="glyphicon glyphicon-lock"></i>
 					</div>
-					{{ Form::password('password', array('class' => 'form-control', 'placeholder' => 'password', 'required' => '')) }}
+					{{ Form::password('password', array('class' => 'form-control', 'placeholder' => Lang::get('form.password'), 'required' => '')) }}
 				</div>
 				@if($errors->has('password'))
 					<span class="help-block">{{ $errors->first('password') }}</span>
@@ -34,14 +34,12 @@
 			</div>
 			@endif
 			<div class="form-group">
-				{{ Form::submit('Login', array('class' => 'btn btn-success btn-block')) }}
+				{{ Form::submit(Lang::get('form.login'), array('class' => 'btn btn-success btn-block')) }}
 			</div>
 		{{ Form::close() }}
 		<div data-ng-app="ui.bootstrap">
 			<a class="pull-right" href="#" data-ng-click="isShown = !isShown" data-ng-hide="isShown" title="What is DIAS?"><span class="glyphicon glyphicon-info-sign"></span></a>
-			<p data-ng-cloak="" data-collapse="!isShown" data-ng-click="isShown = !isShown">
-				Dias (or Discol Image Annotation Software) is a browser-based software for the most efficient and effective rapid manual annotation of still images. It is under heavy development and focuses generally on underwater images and more specifically on benthic images taken in the manganese nodule fields of the Pacific Ocean.
-			</p>
+			<p data-ng-cloak="" data-collapse="!isShown" data-ng-click="isShown = !isShown">{{ Lang::get('dias.info') }}</p>
 		</div>
 		</div>
 	</div>
