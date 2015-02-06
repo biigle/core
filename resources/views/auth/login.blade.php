@@ -1,5 +1,7 @@
 @extends('app')
 
+@section('title')@parent Login @stop
+
 @section('content')
 <div class="container">
 	<div class="row login-form">

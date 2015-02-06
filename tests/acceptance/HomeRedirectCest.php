@@ -13,11 +13,11 @@ class HomeRedirectCest
 	public function visitTheHomePageWhileLoggedIn(AcceptanceTester $I)
 	{
 		$I->amOnPage('/auth/login');
-		$I->fillField('email','joe@example.com');
+		$I->fillField('email','joe@user.com');
 		$I->fillField('password','joespassword');
 		$I->click('Login');
-		$I->amOnPage('/');
 		$I->canSeeInCurrentUrl('/');
+		$I->amOnPage('/');
 		$I->see('Joe User');
 	}
 }

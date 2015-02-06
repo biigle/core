@@ -11,16 +11,12 @@
 |
 */
 
-Route::get('/home', function() {
-	return redirect()->route('home');
-});
-
 Route::get('/', array(
-	'as' => 'home',
+	'as'   => 'home',
 	'uses' => 'HomeController@index'
 ));
 
 Route::controllers([
 	'auth' => 'Auth\AuthController',
-	'password' => 'Auth\PasswordController',
+	// 'password' => 'Auth\PasswordController',
 ]);

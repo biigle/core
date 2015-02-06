@@ -2,6 +2,6 @@
 
 return array(
 
-	'failed' => 'Invalid username and/or password.'
+	'failed' => 'These credentials do not match our records.'
 
 );

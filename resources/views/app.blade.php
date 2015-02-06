@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>DIAS - @{{ $title }}</title>
+	<title>@section('title')DIAS - @show</title>
 
 	<link href="/assets/styles/main.css" rel="stylesheet">
 
@@ -18,7 +18,7 @@
 <body>
 @if(Auth::check())
 	<nav class="navbar navbar-inverse navbar-noradius">
-		<div class="container-fluid">
+		<div class="container">
 			<div class="navbar-header">
 				<a class="navbar-brand logo logo-inverse" href="#">
 					<span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup>
@@ -44,6 +44,6 @@
 
 	<script src="/assets/scripts/angular.min.js"></script>
 	<script src="/assets/scripts/ui-bootstrap-tpls.min.js"></script>
-	<script src="/assets/scripts/dias.min.js"></script>
+	<script src="/assets/scripts/main.js"></script>
 </body>
 </html>

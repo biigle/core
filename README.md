@@ -35,7 +35,7 @@ And for development/testing:
 
 TODO
 
-(`npm install`, Package development)
+(`npm install`, Package development, `php artisan tinker`)
 
 ## Testing
 
