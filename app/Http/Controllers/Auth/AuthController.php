@@ -4,7 +4,7 @@ use Dias\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\Registrar;
-//use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
 class AuthController extends Controller {
 
@@ -20,21 +20,7 @@ class AuthController extends Controller {
 	*/
 
 	// disable default trait and implement own authentication
-	// use AuthenticatesAndRegistersUsers;
-
-	/**
-	 * The Guard implementation.
-	 *
-	 * @var Guard
-	 */
-	protected $auth;
-
-	/**
-	 * The registrar implementation.
-	 *
-	 * @var Registrar
-	 */
-	protected $registrar;
+	use AuthenticatesAndRegistersUsers;
 
 	/**
 	 * Create a new authentication controller instance.
@@ -51,49 +37,7 @@ class AuthController extends Controller {
 		$this->middleware('guest', ['except' => 'getLogout']);
 
 		// The post register / login redirect path.
-		$this->redirectPath = route('home');
-	}
-
-	/**
-	 * Show the application registration form.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function getRegister()
-	{
-		return view('auth.register');
-	}
-
-	/**
-	 * Handle a registration request for the application.
-	 *
-	 * @param  \Illuminate\Foundation\Http\FormRequest  $request
-	 * @return \Illuminate\Http\Response
-	 */
-	public function postRegister(Request $request)
-	{
-		$validator = $this->registrar->validator($request->all());
-
-		if ($validator->fails())
-		{
-			$this->throwValidationException(
-				$request, $validator
-			);
-		}
-
-		$this->auth->login($this->registrar->create($request->all()));
-
-		return redirect($this->redirectPath);
-	}
-
-	/**
-	 * Show the application login form.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function getLogin()
-	{
-		return view('auth.login');
+		$this->redirectTo = route('home');
 	}
 
 	/**
@@ -110,7 +54,7 @@ class AuthController extends Controller {
 
 		if ($this->auth->attempt($credentials))
 		{
-			return redirect()->intended($this->redirectPath);
+			return redirect()->intended($this->redirectPath());
 		}
 
 		return redirect('/auth/login')

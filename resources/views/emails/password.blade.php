@@ -1,1 +1,1 @@
-Click here to reset your password: {{ url('password/reset/'.$token) }}
+{{ trans('auth.pw_reset_link') }} {{ url('password/reset/'.$token) }}

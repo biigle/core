@@ -1,49 +1,35 @@
 @extends('app')
 
+@section('title')@parent {{ trans('dias.titles.resetpw') }} @endsection
+
 @section('content')
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-8 col-md-offset-2">
-			<div class="panel panel-default">
-				<div class="panel-heading">Reset Password</div>
-				<div class="panel-body">
-					@if (session('status'))
-						<div class="alert alert-success">
-							{{ session('status') }}
-						</div>
-					@endif
-
-					@if (count($errors) > 0)
-						<div class="alert alert-danger">
-							<strong>Whoops!</strong> There were some problems with your input.<br><br>
-							<ul>
-								@foreach ($errors->all() as $error)
-									<li>{{ $error }}</li>
-								@endforeach
-							</ul>
-						</div>
-					@endif
-
-					<form class="form-horizontal" role="form" method="POST" action="/password/email">
-						<input type="hidden" name="_token" value="{{ csrf_token() }}">
-
-						<div class="form-group">
-							<label class="col-md-4 control-label">E-Mail Address</label>
-							<div class="col-md-6">
-								<input type="email" class="form-control" name="email" value="{{ old('email') }}">
-							</div>
-						</div>
-
-						<div class="form-group">
-							<div class="col-md-6 col-md-offset-4">
-								<button type="submit" class="btn btn-primary">
-									Send Password Reset Link
-								</button>
-							</div>
-						</div>
-					</form>
-				</div>
+<div class="container">
+	<div class="row center-form">
+		<div class="col-md-4 col-sm-6">
+			<h1 class="logo  logo--standalone"><a href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></a></h1>
+		@if (session('status'))
+			<div class="alert alert-success">
+				{{ session('status') }}
 			</div>
+		@else
+			<form class="well clearfix" role="form" method="POST" action="/password/email">
+				<div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+					<div class="input-group">
+						<div class="input-group-addon">
+							<i class="glyphicon glyphicon-user"></i>
+						</div>
+						<input type="email" placeholder="{{ trans('form.email') }}" class="form-control" name="email" value="{{ old('email') }}" required>
+					</div>
+					@if($errors->has('email'))
+						<span class="help-block">{{ $errors->first('email') }}</span>
+					@else
+						<span class="help-block">{{ trans('auth.send_reset_link') }}</span>
+					@endif
+				</div>
+				<input type="hidden" name="_token" value="{{ csrf_token() }}">
+				<input type="submit" class="btn btn-warning btn-block" value="{{ trans('form.reset_pw') }}">
+			</form>
+		@endif
 		</div>
 	</div>
 </div>

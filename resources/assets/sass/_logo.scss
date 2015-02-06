@@ -1,4 +1,4 @@
-.login-form .logo {
+.logo--standalone {
 	margin-bottom: 1.5em;
 }
 
@@ -6,6 +6,10 @@
 	font-size: $font-size-large;
 	font-weight: normal;
 	text-align: center;
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
 }
 
 .logo__biigle {

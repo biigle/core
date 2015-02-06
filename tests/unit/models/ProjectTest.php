@@ -75,9 +75,7 @@ class ProjectTest extends TestCase {
 		$project = ProjectTest::create();
 		$project->save();
 		$project->creator()->delete();
-		// refresh project object
-		$project = Project::find($project->id);
-		$this->assertEquals(null, $project->creator);
+		$this->assertEquals(null, $project->fresh()->creator);
 	}
 
 	public function testCreator()

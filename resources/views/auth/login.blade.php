@@ -1,12 +1,12 @@
 @extends('app')
 
-@section('title')@parent Login @endsection
+@section('title')@parent {{ trans('dias.titles.login') }} @endsection
 
 @section('content')
 <div class="container">
-	<div class="row login-form">
+	<div class="row center-form">
 		<div class="col-md-4 col-sm-6">
-			<h1 class="logo"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></h1>
+			<h1 class="logo  logo--standalone"><a href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></a></h1>
 			<form class="well clearfix" role="form" method="POST" action="/auth/login">
 				<div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
 					<div class="input-group">
@@ -34,7 +34,7 @@
 				<input type="submit" class="btn btn-success btn-block" value="{{ trans('form.login') }}">
 			</form>
 			<p class="clearfix">
-				<a href="#" class="">{{ trans('auth.forgotpw') }}</a>
+				<a href="/password/email" class="">{{ trans('auth.forgotpw') }}</a>
 				<a href="/auth/register" class="pull-right">{{ trans('auth.register') }}</a>
 			</p>
 			<div data-ng-app="ui.bootstrap">

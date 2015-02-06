@@ -65,9 +65,7 @@ class TransectTest extends TestCase {
 		$obj = TransectTest::create();
 		$obj->save();
 		$obj->creator()->delete();
-		// refresh object
-		$obj = Transect::find($obj->id);
-		$this->assertNull($obj->creator_id);
+		$this->assertNull($obj->fresh()->creator_id);
 	}
 
 	public function testAttributeRelation()

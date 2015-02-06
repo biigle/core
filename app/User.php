@@ -10,11 +10,20 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 
 	use Authenticatable, CanResetPassword;
 
+	// validation rules for logging in
 	public static $authRules = array(
 		'email'    => 'required|email|max:255',
 		'password' => 'required|min:8'
 	);
 
+	// validation rules for resetting the password
+	public static $resetRules = array(
+		'email'    => 'required|email|max:255',
+		'password' => 'required|confirmed|min:8',
+		'token' => 'required',
+	);
+
+	// validation rules for registering a new user
 	public static $registerRules = array(
 		'email'     => 'required|email|unique:users|max:255',
 		'password'  => 'required|min:8|confirmed',

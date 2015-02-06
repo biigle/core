@@ -4821,7 +4821,7 @@ button.close {
 .nav, .pagination, .carousel, .panel-title a {
   cursor: pointer; }
 
-.login-form {
+.center-form {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
@@ -4836,13 +4836,16 @@ button.close {
 .navbar-noradius {
   border-radius: 0; }
 
-.login-form .logo {
+.logo--standalone {
   margin-bottom: 1.5em; }
 
 .logo {
   font-size: 18px;
   font-weight: normal;
   text-align: center; }
+  .logo a {
+    color: inherit;
+    text-decoration: none; }
 
 .logo__biigle {
   position: relative;

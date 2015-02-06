@@ -55,10 +55,7 @@ class LabelTest extends TestCase {
 		$child->save();
 
 		$parent->delete();
-		// refresh child
-		$child = Label::find($child->id);
-
-		$this->assertNull($child->parent);
+		$this->assertNull($child->fresh()->parent);
 	}
 
 	public function testAttributeRelation()
