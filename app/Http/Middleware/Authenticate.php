@@ -32,6 +32,8 @@ class Authenticate {
 	 */
 	public function handle($request, Closure $next)
 	{
+		// only users are allowed to visit this route. guests are redirected
+		// to login
 		if ($this->auth->guest())
 		{
 			if ($request->ajax())

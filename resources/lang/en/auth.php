@@ -2,6 +2,8 @@
 
 return array(
 
-	'failed' => 'These credentials do not match our records.'
+	'failed'   => 'These credentials do not match our records.',
+	'forgotpw' => 'Forgot password?',
+	'register' => 'Register'
 
 );

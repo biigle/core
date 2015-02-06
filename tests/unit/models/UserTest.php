@@ -9,7 +9,7 @@ class UserTest extends TestCase {
 		$user = new User;
 		$user->firstname = $fn;
 		$user->lastname = $ln;
-		$user->password = Hash::make($pw);
+		$user->password = bcrypt($pw);
 		$user->email = $mail;
 		return $user;
 	}

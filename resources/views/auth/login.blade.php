@@ -1,13 +1,13 @@
 @extends('app')
 
-@section('title')@parent Login @stop
+@section('title')@parent Login @endsection
 
 @section('content')
 <div class="container">
 	<div class="row login-form">
 		<div class="col-md-4 col-sm-6">
+			<h1 class="logo"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></h1>
 			<form class="well clearfix" role="form" method="POST" action="/auth/login">
-				<h1 class="logo"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></h1>
 				<div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
 					<div class="input-group">
 						<div class="input-group-addon">
@@ -31,10 +31,12 @@
 					@endif
 				</div>
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
-				<div class="form-group">
-					<button type="submit" class="btn btn-success btn-block">Login</button>
-				</div>
+				<input type="submit" class="btn btn-success btn-block" value="{{ trans('form.login') }}">
 			</form>
+			<p class="clearfix">
+				<a href="#" class="">{{ trans('auth.forgotpw') }}</a>
+				<a href="/auth/register" class="pull-right">{{ trans('auth.register') }}</a>
+			</p>
 			<div data-ng-app="ui.bootstrap">
 				<a class="pull-right" href="#" data-ng-click="isShown = !isShown" data-ng-hide="isShown" title="What is DIAS?"><span class="glyphicon glyphicon-info-sign"></span></a>
 				<p data-ng-cloak="" data-collapse="!isShown" data-ng-click="isShown = !isShown">{{ trans('dias.info') }}</p>

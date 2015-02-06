@@ -59,10 +59,10 @@ class AuthController extends Controller {
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	// public function getRegister()
-	// {
-	// 	return view('auth.register');
-	// }
+	public function getRegister()
+	{
+		return view('auth.register');
+	}
 
 	/**
 	 * Handle a registration request for the application.
@@ -70,21 +70,21 @@ class AuthController extends Controller {
 	 * @param  \Illuminate\Foundation\Http\FormRequest  $request
 	 * @return \Illuminate\Http\Response
 	 */
-	// public function postRegister(Request $request)
-	// {
-	// 	$validator = $this->registrar->validator($request->all());
+	public function postRegister(Request $request)
+	{
+		$validator = $this->registrar->validator($request->all());
 
-	// 	if ($validator->fails())
-	// 	{
-	// 		$this->throwValidationException(
-	// 			$request, $validator
-	// 		);
-	// 	}
+		if ($validator->fails())
+		{
+			$this->throwValidationException(
+				$request, $validator
+			);
+		}
 
-	// 	$this->auth->login($this->registrar->create($request->all()));
+		$this->auth->login($this->registrar->create($request->all()));
 
-	// 	return redirect($this->redirectPath);
-	// }
+		return redirect($this->redirectPath);
+	}
 
 	/**
 	 * Show the application login form.
@@ -104,14 +104,11 @@ class AuthController extends Controller {
 	 */
 	public function postLogin(Request $request)
 	{
-		$this->validate($request, [
-			'email'    => 'required|email',
-			'password' => 'required|min:8',
-		]);
+		$this->validate($request, \Dias\User::$authRules);
 
 		$credentials = $request->only('email', 'password');
 
-		if ($this->auth->attempt($credentials, $request->has('remember')))
+		if ($this->auth->attempt($credentials))
 		{
 			return redirect()->intended($this->redirectPath);
 		}

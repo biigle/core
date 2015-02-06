@@ -33,6 +33,8 @@ class RedirectIfAuthenticated {
 	 */
 	public function handle($request, Closure $next)
 	{
+		// only guests are allowed to visit this route. users are redirected to
+		// home
 		if ($this->auth->check())
 		{
 			return new RedirectResponse(route('home'));
