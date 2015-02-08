@@ -4836,6 +4836,11 @@ button.close {
 .navbar-noradius {
   border-radius: 0; }
 
+.info-text__sign {
+  position: absolute;
+  right: 14px;
+  top: 20px; }
+
 .logo--standalone {
   margin-bottom: 1.5em; }
 

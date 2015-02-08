@@ -6,7 +6,11 @@
 <div class="container">
 	<div class="row center-form">
 		<div class="col-md-4 col-sm-6">
-			<h1 class="logo  logo--standalone"><a href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></a></h1>
+			<div data-ng-app="ui.bootstrap" class="info-text">
+				<h1 class="logo  logo--standalone"><a href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></a></h1>
+				<a class="info-text__sign" href="" data-ng-click="isShown = !isShown" data-ng-hide="isShown" title="What is DIAS?"><span class="glyphicon glyphicon-info-sign"></span></a>
+				<p data-ng-cloak="" data-collapse="!isShown" data-ng-click="isShown = !isShown">{{ trans('dias.info') }}</p>
+			</div>
 			<form class="well clearfix" role="form" method="POST" action="/auth/login">
 				<div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
 					<div class="input-group">
@@ -37,10 +41,6 @@
 				<a href="/password/email" class="">{{ trans('auth.forgotpw') }}</a>
 				<a href="/auth/register" class="pull-right">{{ trans('auth.register') }}</a>
 			</p>
-			<div data-ng-app="ui.bootstrap">
-				<a class="pull-right" href="#" data-ng-click="isShown = !isShown" data-ng-hide="isShown" title="What is DIAS?"><span class="glyphicon glyphicon-info-sign"></span></a>
-				<p data-ng-cloak="" data-collapse="!isShown" data-ng-click="isShown = !isShown">{{ trans('dias.info') }}</p>
-			</div>
 		</div>
 	</div>
 </div>

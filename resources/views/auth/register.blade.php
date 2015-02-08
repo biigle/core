@@ -72,6 +72,9 @@
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
 				<input type="submit" class="btn btn-success btn-block" value="{{ trans('form.register') }}">
 			</form>
+			<p class="clearfix">
+				<a href="{{ route('home') }}" class="">{{ trans('dias.back') }}</a>
+			</p>
 		</div>
 	</div>
 </div>

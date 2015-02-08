@@ -30,6 +30,9 @@
 				<input type="submit" class="btn btn-warning btn-block" value="{{ trans('form.reset_pw') }}">
 			</form>
 		@endif
+			<p class="clearfix">
+				<a href="{{ route('home') }}" class="">{{ trans('dias.back') }}</a>
+			</p>
 		</div>
 	</div>
 </div>
