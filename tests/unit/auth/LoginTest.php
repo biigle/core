@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 class LoginTest extends TestCase {
 
 	public function setUp()
@@ -60,7 +62,10 @@ class LoginTest extends TestCase {
 
 	public function testLoginSuccess()
 	{
-		UserTest::create('a', 'a', 'example123', 'joe@user.com')->save();
+		$user = UserTest::create('a', 'a', 'example123', 'joe@user.com');
+		$user->save();
+		// login_at attribute should be null after creation
+		$this->assertNull($user->login_at);
 
 		$response = $this->call('POST', '/auth/login', array(
 			'_token'   => Session::getToken(),
@@ -69,5 +74,8 @@ class LoginTest extends TestCase {
 		));
 
 		$this->assertRedirectedTo('/');
+		// login_at attribute should be set after login
+		$this->assertEquals(new Carbon, $user->fresh()->login_at);
+
 	}
 }

@@ -11,8 +11,8 @@ class EventServiceProvider extends ServiceProvider {
 	 * @var array
 	 */
 	protected $listen = [
-		'event.name' => [
-			'EventListener',
+		'Dias\Events\UserLoggedIn' => [
+			'Dias\Handlers\Events\LoginEventHandler@handle',
 		],
 	];
 

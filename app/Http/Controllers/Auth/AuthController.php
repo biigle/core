@@ -1,6 +1,9 @@
 <?php namespace Dias\Http\Controllers\Auth;
 
 use Dias\Http\Controllers\Controller;
+use Dias\User;
+use Dias\Events\UserLoggedIn;
+
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\Registrar;
@@ -48,12 +51,13 @@ class AuthController extends Controller {
 	 */
 	public function postLogin(Request $request)
 	{
-		$this->validate($request, \Dias\User::$authRules);
+		$this->validate($request, User::$authRules);
 
 		$credentials = $request->only('email', 'password');
 
 		if ($this->auth->attempt($credentials))
 		{
+			event(new UserLoggedIn($this->auth->user()));
 			return redirect()->intended($this->redirectPath());
 		}
 
