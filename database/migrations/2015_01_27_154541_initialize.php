@@ -104,7 +104,8 @@ class Initialize extends Migration {
 		*/
 		Schema::create('media_types', function(Blueprint $table) {
 			$table->increments('id');
-			$table->string('name', 512);
+			// media types are primarily searched by name, so do index
+			$table->string('name', 512)->index();
 
 			// each type should exist only once
 			$table->unique('name');
@@ -262,6 +263,8 @@ class Initialize extends Migration {
 		| a line). Each point belongs to a single annotation.
 		*/
 		Schema::create('annotation_points', function(Blueprint $table) {
+			$table->increments('id');
+			
 			// points are primarily searched by annotation, so do index
 			$table->integer('annotation_id')->unsigned()->index();
 			$table->foreign('annotation_id')
@@ -272,10 +275,10 @@ class Initialize extends Migration {
 
 			// for e.g. polygons the ordering of the points is essential, so the
 			// polygon can be correctly reconstructed
-			$table->integer('index');
+			$table->integer('index')->index();
 
 			// point index must be unique for each annotation
-			$table->primary(array('annotation_id', 'index'));
+			$table->unique(array('annotation_id', 'index'));
 
 			$table->integer('x');
 			$table->integer('y');

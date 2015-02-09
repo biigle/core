@@ -46,7 +46,6 @@ class InitializeOld extends Migration {
 			$table->string('email', 256);
 		});
 
-		// TODO drop this table?
 		Schema::create('media_types', function(Blueprint $table) {
 			$table->increments('id');
 			$table->string('name', 512);
