@@ -18,7 +18,7 @@ class AnnotationController extends Controller {
 	 */
 	public function index(Guard $auth)
 	{
-		//
+		return $auth->user()->annotations()->get();
 	}
 
 	/**

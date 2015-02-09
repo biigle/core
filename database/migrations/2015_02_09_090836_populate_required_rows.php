@@ -46,10 +46,11 @@ class PopulateRequiredRows extends Migration {
 	 */
 	public function down()
 	{
-		DB::table('roles')->delete();
-		DB::table('media_types')->delete();
-		DB::table('labels')->delete();
-		DB::table('shapes')->delete();
+		// violates foreign key constraints of a populated database
+		// DB::table('roles')->delete();
+		// DB::table('media_types')->delete();
+		// DB::table('labels')->delete();
+		// DB::table('shapes')->delete();
 	}
 
 }

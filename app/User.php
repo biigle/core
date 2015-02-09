@@ -10,20 +10,26 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 
 	use Authenticatable, CanResetPassword;
 
-	// validation rules for logging in
+	/**
+	 * validation rules for logging in
+	 */
 	public static $authRules = array(
 		'email'    => 'required|email|max:255',
 		'password' => 'required|min:8'
 	);
 
-	// validation rules for resetting the password
+	/**
+	 * validation rules for resetting the password
+	 */
 	public static $resetRules = array(
 		'email'    => 'required|email|max:255',
 		'password' => 'required|confirmed|min:8',
 		'token' => 'required',
 	);
 
-	// validation rules for registering a new user
+	/**
+	 * validation rules for registering a new user
+	 */
 	public static $registerRules = array(
 		'email'     => 'required|email|unique:users|max:255',
 		'password'  => 'required|min:8|confirmed',
@@ -39,11 +45,25 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 	protected $hidden = array(
 		'password',
 		'remember_token',
+		'api_key',
 		'email',
 		'created_at',
 		'updated_at',
 		'login_at'
 	);
+
+	/**
+	 * Generates a random string to use as an API key. The key will be stored in
+	 * the api_key attribute of the user.
+	 * @return string
+	 */
+	public function generateAPIKey()
+	{
+		$key = str_random(32);
+		$this->api_key = $key;
+		$this->save();
+		return $key;
+	}
 
 	public function projects()
 	{
@@ -51,11 +71,20 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 			->withPivot('role_id');
 	}
 
+	/**
+	 * All projects created by this user.
+	 */
 	public function createdProjects()
 	{
 		return $this->hasMany('Dias\Project', 'creator_id');
 	}
 
+	/**
+	 * Determines if this user has the given role in the given project.
+	 * @param Dias\Role $role
+	 * @param Dias\Project $project
+	 * @return boolean
+	 */
 	public function hasRoleInProject(Role $role, Project $project)
 	{
 		return 1 === $this->projects()
@@ -63,12 +92,12 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 			->where('role_id', $role->id)->count();
 	}
 
-	public function generateAPIKey()
+	/**
+	 * All annotations labeled by this user.
+	 */
+	public function annotations()
 	{
-		$key = str_random(32);
-		$this->api_key = $key;
-		$this->save();
-		return $key;
+		return $this->belongsToMany('Dias\Annotation', 'annotation_label');
 	}
 
 }

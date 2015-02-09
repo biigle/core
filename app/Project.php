@@ -31,6 +31,9 @@ class Project extends Attributable {
 		return $this->belongsTo('Dias\User');
 	}
 
+	/**
+	 * All users with the given role in this project.
+	 */
 	public function usersWithRole($roleName)
 	{
 		$role = Role::byName($roleName);

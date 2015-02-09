@@ -2,6 +2,10 @@
 
 class Annotation extends Attributable {
 
+	protected $hidden = array(
+		'pivot'
+	);
+
 	public function image()
 	{
 		return $this->belongsTo('Dias\Image');

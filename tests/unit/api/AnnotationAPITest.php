@@ -36,7 +36,10 @@ class AnnotationAPITest extends TestCase {
 
 		// authentication with session cookie passes
 		$this->be($this->user);
-		$this->call('GET', '/api/v1/annotations/my');
+		$r = $this->call('GET', '/api/v1/annotations/my');
 		$this->assertResponseOk();
+
+		$this->assertContains('"id":"1","image_id":"1"', $r->getContent());
+		$this->assertNotContains('pivot', $r->getContent());
 	}
 }

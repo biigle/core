@@ -121,6 +121,8 @@ class UserTest extends TestCase {
 	public function testHiddenAttributes()
 	{
 		$user = UserTest::create();
+		// API key mustn't show up in the JSON
+		$user->generateAPIKey();
 		$jsonUser = json_decode((string) $user);
 		$this->assertObjectNotHasAttribute('password', $jsonUser);
 		$this->assertObjectNotHasAttribute('email', $jsonUser);
@@ -128,6 +130,7 @@ class UserTest extends TestCase {
 		$this->assertObjectNotHasAttribute('created_at', $jsonUser);
 		$this->assertObjectNotHasAttribute('updated_at', $jsonUser);
 		$this->assertObjectNotHasAttribute('login_at', $jsonUser);
+		$this->assertObjectNotHasAttribute('api_key', $jsonUser);
 	}
 
 	public function testAttributeRelation()
@@ -157,5 +160,24 @@ class UserTest extends TestCase {
 		$this->assertNull($user->api_key);
 		$key = $user->generateAPIKey();
 		$this->assertEquals($key, $user->fresh()->api_key);
+	}
+
+	public function testAnnotations()
+	{
+		// AnnotationTest will create the default test user
+		$user = UserTest::create('a', 'b', 'c', 'd');
+		$user->save();
+		$this->assertEquals(0, $user->annotations()->count());
+
+		$annotation = AnnotationTest::create();
+		$annotation->save();
+		$label = LabelTest::create();
+		$label->save();
+		$annotation->labels()->attach($label->id, array(
+			'confidence' => 0.5,
+			'user_id' => $user->id
+		));
+
+		$this->assertEquals(1, $user->annotations()->count());
 	}
 }
