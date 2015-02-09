@@ -14,13 +14,6 @@ class DatabaseSeeder extends Seeder {
 	{
 		Model::unguard();
 
-		// always required
-		$this->call('RoleTableSeeder');
-		$this->call('MediaTypeTableSeeder');
-		$this->call('ShapeTableSeeder');
-		$this->call('LabelTableSeeder');
-
-		// for testing
 		$this->call('UserTableSeeder');
 		$this->call('TransectTableSeeder');
 

@@ -111,16 +111,16 @@ class ProjectTest extends TestCase {
 		$admin->save();
 		$member = UserTest::create('a', 'b', 'c', 'a@d.c');
 		$member->save();
-		$role = RoleTest::create('guest');
+		$role = RoleTest::create('a');
 		$role->save();
 		$project->users()->attach($admin->id, array('role_id' => $role->id));
-		$role = RoleTest::create('member');
+		$role = RoleTest::create('b');
 		$role->save();
 		$project->users()->attach($member->id, array('role_id' => $role->id));
 
-		$user = $project->usersWithRole('guest')->first();
+		$user = $project->usersWithRole('a')->first();
 		$this->assertEquals($admin->id, $user->id);
-		$user = $project->usersWithRole('member')->first();
+		$user = $project->usersWithRole('b')->first();
 		$this->assertEquals($member->id, $user->id);
 	}
 

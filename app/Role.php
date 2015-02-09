@@ -21,24 +21,6 @@ class Role extends Model {
 		return Role::where('name', $name)->first();
 	}
 
-	/**
-	 * Searches for a role object by the role name and creates a new role
-	 * if it doesn't exist.
-	 *
-	 * @return Role object.
-	 */
-	public static function byNameOrNew($name)
-	{
-		$role = Role::byName($name);
-		if ($role === null)
-		{
-			$role = new Role;
-			$role->name = $name;
-			$role->save();
-		}
-		return $role;
-	}
-
 	public function projectUsers()
 	{
 		return $this->hasMany('Dias\User', 'project_user');

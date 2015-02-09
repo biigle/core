@@ -51,6 +51,13 @@ class Initialize extends Migration {
 			// NO timestamps
 		});
 
+		// seed table with required rows
+		DB::table('roles')->insert(array(
+			array('name' => 'admin'),
+			array('name' => 'editor'),
+			array('name' => 'guest'),
+		));
+
 		/*
 		| Users and transects are grouped into projects.
 		*/
@@ -112,6 +119,12 @@ class Initialize extends Migration {
 
 			// NO timestamps
 		});
+
+		// seed table with required rows
+		DB::table('media_types')->insert(array(
+			array('name' => 'time-series'),
+			array('name' => 'location-series'),
+		));
 
 		/*
 		| A transect is a series of images. Each transect belongs to one or more
@@ -222,6 +235,12 @@ class Initialize extends Migration {
 			// NO timestamps
 		});
 
+		// seed table with required rows
+		DB::table('labels')->insert(array(
+			array('name' => 'Benthic Object', 'parent_id' => null),
+			array('name' => 'Coral', 'parent_id' => 1),
+		));
+
 		/*
 		| An annotation can be of a certain shape, e.g. circle, line, polygon.
 		*/
@@ -231,6 +250,15 @@ class Initialize extends Migration {
 
 			// NO timestamps
 		});
+
+		// seed table with required rows
+		DB::table('shapes')->insert(array(
+			array('name' => 'point'),
+			array('name' => 'line'),
+			array('name' => 'rectangle'),
+			array('name' => 'polygon'),
+			array('name' => 'circle'),
+		));
 
 		/*
 		| Annotations mark regions or distances on an image. These annotations
@@ -264,7 +292,7 @@ class Initialize extends Migration {
 		*/
 		Schema::create('annotation_points', function(Blueprint $table) {
 			$table->increments('id');
-			
+
 			// points are primarily searched by annotation, so do index
 			$table->integer('annotation_id')->unsigned()->index();
 			$table->foreign('annotation_id')

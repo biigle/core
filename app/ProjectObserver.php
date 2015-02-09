@@ -12,7 +12,7 @@ class ProjectObserver {
 		{
 			$project->users()->attach(
 				$project->creator->id,
-				array('role_id' => Role::byNameOrNew('admin')->id)
+				array('role_id' => Role::byName('admin')->id)
 			);
 		}
 	}

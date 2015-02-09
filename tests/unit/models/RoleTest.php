@@ -60,11 +60,4 @@ class RoleTest extends TestCase {
 		RoleTest::create('abc')->save();
 		$this->assertNotNull(Role::byName('abc'));
 	}
-
-	public function testByNameOrNew()
-	{
-		$this->assertEquals(1, Role::byNameOrNew('abc')->id);
-		$this->assertEquals('cds', Role::byNameOrNew('cds')->name);
-		$this->assertEquals(1, Role::byNameOrNew('abc')->id);
-	}
 }
