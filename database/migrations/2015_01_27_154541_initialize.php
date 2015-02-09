@@ -27,6 +27,8 @@ class Initialize extends Migration {
 			$table->string('password', 60);
 			// users are primarily searched by email, so do index
 			$table->string('email', 256)->index();
+
+			$table->string('api_key', 32)->nullable()->index();
 			// token for the "stay logged in" session
 			$table->rememberToken();
 			$table->timestamps();

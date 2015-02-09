@@ -63,4 +63,12 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 			->where('role_id', $role->id)->count();
 	}
 
+	public function generateAPIKey()
+	{
+		$key = str_random(32);
+		$this->api_key = $key;
+		$this->save();
+		return $key;
+	}
+
 }

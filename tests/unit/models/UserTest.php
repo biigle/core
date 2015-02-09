@@ -149,4 +149,13 @@ class UserTest extends TestCase {
 		$this->assertEquals(0.4, $attribute->pivot->value_double);
 		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
+
+	public function testAPIKey()
+	{
+		$user = UserTest::create();
+		$user->save();
+		$this->assertNull($user->api_key);
+		$key = $user->generateAPIKey();
+		$this->assertEquals($key, $user->fresh()->api_key);
+	}
 }

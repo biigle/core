@@ -16,7 +16,15 @@ Route::get('/', array(
 	'uses' => 'HomeController@index'
 ));
 
-Route::controllers([
+Route::controllers(array(
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
-]);
+));
+
+Route::group(array('prefix' => 'api/v1', 'namespace' => 'API'), function()
+{
+	Route::get('annotations/my', 'AnnotationController@index');
+	// Route::resource('annotations', 'AnnotationController', array(
+	// 	'only' => array('store', 'show', 'update', 'destroy')
+	// ));
+});

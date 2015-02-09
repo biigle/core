@@ -25,6 +25,7 @@ class Kernel extends HttpKernel {
 	 */
 	protected $routeMiddleware = [
 		'auth' => 'Dias\Http\Middleware\Authenticate',
+		'auth.api' => 'Dias\Http\Middleware\AuthenticateAPI',
 		'auth.basic' => 'Illuminate\Auth\Middleware\AuthenticateWithBasicAuth',
 		'guest' => 'Dias\Http\Middleware\RedirectIfAuthenticated',
 	];
