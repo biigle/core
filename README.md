@@ -10,6 +10,7 @@ DISCOL Image Annotation Software
 - PHP PGSQL extension
 
 - PostgreSQL
+- Git
 
 And for development/testing:
 
@@ -39,13 +40,13 @@ TODO
 
 ## Testing
 
-You shouldn't need to configure anything in `.env.testing.php` since for acceptance tests your `local` database is used, and for functional/unit tests an SQLite in-memory database is used.
+You shouldn't need to configure your testing environment since for acceptance tests your `local` database is used, and for functional/unit tests an SQLite in-memory database is used.
 
 ### Acceptance
 
 1. start `phantomjs --webdriver=4444`
 2. start `php -S localhost:8000 -t public/`
-3. start your database (it will be wiped and re-seeded during testing)
+3. start your database (it will be wiped and re-seeded during testing!)
 4. run `./test-acceptance.sh`
 
 ### Unit/Functional
