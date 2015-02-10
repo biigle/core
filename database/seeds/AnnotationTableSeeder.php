@@ -21,6 +21,11 @@ class AnnotationTableSeeder extends Seeder {
 		));
 
 		$annotation->labels()->attach(1, array(
+			'confidence' => 0.2,
+			'user_id' => 1
+		));
+
+		$annotation->labels()->attach(1, array(
 			'confidence' => 0.75,
 			'user_id' => 2
 		));

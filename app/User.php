@@ -97,7 +97,8 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 	 */
 	public function annotations()
 	{
-		return $this->belongsToMany('Dias\Annotation', 'annotation_label');
+		return $this->belongsToMany('Dias\Annotation', 'annotation_label')
+			->distinct();
 	}
 
 }

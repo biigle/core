@@ -50,9 +50,9 @@ class AnnotationLabelIntegrityTest extends TestCase {
 			'user_id' => $user->id
 		));
 
-		$this->assertNotNull($annotation->labels()->first()->pivot->user_id);
+		$this->assertNotNull($annotation->labels()->first()->user_id);
 		$user->delete();
-		$this->assertNull($annotation->labels()->first()->pivot->user_id);
+		$this->assertNull($annotation->labels()->first()->user_id);
 	}
 
 	public function testAnnotationLabelUserUnique()

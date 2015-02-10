@@ -24,8 +24,12 @@ class AnnotationAPITest extends TestCase {
 		));
 	}
 
-	public function testProjectsAPIIndex()
+	public function testAnnotationAPIIndex()
 	{
+		// typical index uri should not respond to GET (method not allowed)
+		$this->call('GET', '/api/v1/annotations');
+		$this->assertResponseStatus(405);
+
 		// call without authentication fails
 		$this->call('GET', '/api/v1/annotations/my');
 		$this->assertResponseStatus(401);
@@ -39,7 +43,31 @@ class AnnotationAPITest extends TestCase {
 		$r = $this->call('GET', '/api/v1/annotations/my');
 		$this->assertResponseOk();
 
+		// pivot table data shouldn't be returned
 		$this->assertContains('"id":"1","image_id":"1"', $r->getContent());
+		$this->assertNotContains('pivot', $r->getContent());
+	}
+
+	public function testAnnotationAPIShow()
+	{
+		$this->call('GET', '/api/v1/annotations/1');
+		$this->assertResponseStatus(401);
+		
+		// authentication with API key passes
+		$this->call('GET', '/api/v1/annotations/1', [], [], [], $this->credentials);
+		$this->assertResponseOk();
+
+		// authentication with session cookie passes
+		$this->be($this->user);
+		$r = $this->call('GET', '/api/v1/annotations/1');
+		$this->assertResponseOk();
+
+		// pivot table data shouldn't be returned
+		$this->assertContains('"id":"1","image_id":"1"', $r->getContent());
+		$this->assertContains('labels":[', $r->getContent());
+		$this->assertContains('points":[', $r->getContent());
+		$this->assertContains('confidence', $r->getContent());
+		$this->assertContains('user_id', $r->getContent());
 		$this->assertNotContains('pivot', $r->getContent());
 	}
 }

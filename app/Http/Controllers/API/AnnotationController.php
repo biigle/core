@@ -4,6 +4,8 @@ use Dias\Http\Requests;
 use Dias\Http\Controllers\Controller;
 use Illuminate\Contracts\Auth\Guard;
 
+use Dias\Annotation;
+
 class AnnotationController extends Controller {
 
 	public function __construct()
@@ -14,6 +16,7 @@ class AnnotationController extends Controller {
 	/**
 	 * Display a listing of the resource.
 	 *
+	 * @param Illuminate\Contracts\Auth\Guard $auth
 	 * @return Response
 	 */
 	public function index(Guard $auth)
@@ -35,11 +38,20 @@ class AnnotationController extends Controller {
 	 * Display the specified resource.
 	 *
 	 * @param  int  $id
+	 * @param Illuminate\Contracts\Auth\Guard $auth
 	 * @return Response
 	 */
-	public function show($id)
+	public function show($id, Guard $auth)
 	{
-		//
+		// check if user is allowed to see this
+		if ($auth->user()->annotations()->find($id) !== null)
+		{
+			// do separate query so no user related data is displayed in the json
+			// response
+			return Annotation::with('labels', 'points')->find($id);
+		}
+
+		return response('Unauthorized.', 401);
 	}
 
 	/**

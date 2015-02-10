@@ -9,6 +9,11 @@ class Label extends Attributable {
 	 */
 	public $timestamps = false;
 
+	// hide pivot table in annotation show output
+	protected $hidden = array(
+		'pivot'
+	);
+
 	public function parent()
 	{
 		return $this->belongsTo('Dias\Label');

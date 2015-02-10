@@ -77,8 +77,8 @@ class AnnotationTest extends TestCase {
 		$this->assertEquals(1, $annotation->labels()->count());
 
 		$label = $annotation->labels()->first();
-		$this->assertEquals(0.5, $label->pivot->confidence);
-		$this->assertEquals($user->id, $label->pivot->user_id);
+		$this->assertEquals(0.5, $label->confidence);
+		$this->assertEquals($user->id, $label->user_id);
 	}
 
 	public function testAttributeRelation()
