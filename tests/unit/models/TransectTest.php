@@ -87,4 +87,13 @@ class TransectTest extends TestCase {
 		$this->assertEquals(0.4, $attribute->pivot->value_double);
 		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
+
+	public function testImages()
+	{
+		$transect = TransectTest::create();
+		$transect->save();
+		$image = ImageTest::create('test', $transect);
+		$image->save();
+		$this->assertEquals($image->id, $transect->images()->first()->id);
+	}
 }

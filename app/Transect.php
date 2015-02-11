@@ -11,4 +11,9 @@ class Transect extends Attributable {
 	{
 		return $this->belongsTo('Dias\MediaType');
 	}
+
+	public function images()
+	{
+		return $this->hasMany('Dias\Image');
+	}
 }

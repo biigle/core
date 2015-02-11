@@ -53,12 +53,13 @@ class AnnotationTest extends TestCase {
 	{
 		$annotation = AnnotationTest::create();
 		$annotation->save();
+		$this->assertEquals(0, $annotation->points()->count());
 		$point0 = AnnotationPointTest::create($annotation, 0);
 		$point0->save();
+		$this->assertEquals(1, $annotation->points()->count());
 		$point1 = AnnotationPointTest::create($annotation, 1);
 		$point1->save();
 		$this->assertEquals(2, $annotation->points()->count());
-		$this->assertEquals($point0->index, $annotation->points()->first()->index);
 	}
 
 	public function testLabels()

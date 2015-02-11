@@ -158,4 +158,35 @@ class ProjectTest extends TestCase {
 		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
 
+	public function testUserHasRole()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$user->save();
+		$role = RoleTest::create('a');
+		$role->save();
+
+		$this->assertFalse($project->userHasRole($user, 'a'));
+		
+		$project->users()->attach($user->id, array('role_id' => $role->id));
+
+		$this->assertTrue($project->userHasRole($user, 'a'));
+		$this->assertFalse($project->userHasRole($user, 'b'));
+	}
+
+	public function testHasUser()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$user->save();
+
+		$this->assertFalse($project->hasUser($user));
+		
+		$project->users()->attach($user->id, array('role_id' => 1));
+
+		$this->assertTrue($project->hasUser($user));
+	}
+
 }

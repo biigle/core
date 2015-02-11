@@ -67,8 +67,7 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 
 	public function projects()
 	{
-		return $this->belongsToMany('Dias\Project')
-			->withPivot('role_id');
+		return $this->belongsToMany('Dias\Project');
 	}
 
 	/**
@@ -88,8 +87,9 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 	public function hasRoleInProject(Role $role, Project $project)
 	{
 		return 1 === $this->projects()
-			->where('id', $project->id)
-			->where('role_id', $role->id)->count();
+			->whereId($project->id)
+			->whereRoleId($role->id)
+			->count();
 	}
 
 	/**

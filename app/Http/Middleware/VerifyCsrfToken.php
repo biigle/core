@@ -19,7 +19,7 @@ class VerifyCsrfToken extends BaseVerifier {
 			return parent::handle($request, $next);
 		} catch (TokenMismatchException $e) {
 			// if there is a token mismatch response with 403
-			return response('Forbidden', 403);
+			return response('Forbidden.', 403);
 		}
 	}
 

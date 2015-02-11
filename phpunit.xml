@@ -19,5 +19,11 @@
         <env name="DB_DRIVER" value="sqlite"/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="SESSION_DRIVER" value="array"/>
+        <!-- for testing the real database connection only! -->
+        <!--env name="DB_DRIVER" value="pgsql"/-->
+        <env name="DB_HOST" value="localhost"/>
+        <env name="DB_DATABASE" value="dias-local"/>
+        <env name="DB_USERNAME" value="postgres"/>
+        <env name="DB_PASSWORD" value="postgres"/>
     </php>
 </phpunit>

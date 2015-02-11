@@ -21,7 +21,7 @@ class LabelTest extends TestCase {
 
 	public function testAttributes()
 	{
-		$image = LabelTest::create('test', null, 'test');
+		$image = LabelTest::create('test', null, 0);
 		$image->save();
 		$this->assertNotNull($image->name);
 		$this->assertNotNull($image->aphia_id);

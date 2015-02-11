@@ -18,7 +18,7 @@ class Role extends Model {
 	 */
 	public static function byName($name)
 	{
-		return Role::where('name', $name)->first();
+		return Role::whereName($name)->first();
 	}
 
 }

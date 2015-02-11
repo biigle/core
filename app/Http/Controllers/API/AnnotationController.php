@@ -21,7 +21,7 @@ class AnnotationController extends Controller {
 	 */
 	public function index(Guard $auth)
 	{
-		return $auth->user()->annotations()->get();
+		//
 	}
 
 	/**
@@ -43,15 +43,7 @@ class AnnotationController extends Controller {
 	 */
 	public function show($id, Guard $auth)
 	{
-		// check if user is allowed to see this
-		if ($auth->user()->annotations()->find($id) !== null)
-		{
-			// do separate query so no user related data is displayed in the json
-			// response
-			return Annotation::with('labels', 'points')->find($id);
-		}
-
-		return response('Unauthorized.', 401);
+		//
 	}
 
 	/**

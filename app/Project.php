@@ -9,16 +9,57 @@ class Project extends Attributable {
 	 */
 	protected $hidden = array(
 		'pivot',
-		'creator_id',
-		// these attributes were displayed in a single project as json
-		'role_id',
-		'user_id',
-		'project_id',
 	);
 
 	public function users()
 	{
-		return $this->belongsToMany('Dias\User');
+		return $this->belongsToMany('Dias\User')
+			->withPivot('role_id as role_id');
+	}
+
+	/**
+	 * All users with the given role in this project.
+	 * @param string $roleName
+	 * @return Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function usersWithRole($roleName)
+	{
+		$role = Role::byName($roleName);
+
+		return $this->users()->whereRoleId($role->id);
+	}
+
+	/**
+	 * Checks if the given user has the given role in this project.
+	 * The user doesn't have to exist in this project.
+	 * @param Dias\User $user
+	 * @param string $roleName
+	 * @return boolean
+	 */
+	public function userHasRole($user, $roleName)
+	{
+		$role = Role::byName($roleName);
+		if ($role === null)
+		{
+			return false;
+		}
+
+		$user = $this->users()
+			->whereId($user->id)
+			->whereRoleId($role->id)
+			->first();
+
+		return $user !== null;
+	}
+
+	/**
+	 * Checks if the given user exists in this project.
+	 * @param Dias\User $user
+	 * @return boolean
+	 */
+	public function hasUser($user)
+	{
+		return $this->users()->find($user->id) !== null;
 	}
 
 	/**
@@ -29,16 +70,6 @@ class Project extends Attributable {
 	public function creator()
 	{
 		return $this->belongsTo('Dias\User');
-	}
-
-	/**
-	 * All users with the given role in this project.
-	 */
-	public function usersWithRole($roleName)
-	{
-		$role = Role::byName($roleName);
-
-		return $this->users()->where('role_id', $role->id);
 	}
 
 	public function transects()
