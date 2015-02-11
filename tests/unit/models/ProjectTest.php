@@ -9,7 +9,7 @@ class ProjectTest extends TestCase {
 		$project = new Project;
 		$project->name = $name;
 		$project->description = $desc;
-		$creator = ($user) ? $user : UserTest::create('my', 'cool', 'project', 'creator');
+		$creator = ($user) ? $user : UserTest::create();
 		$creator->save();
 		$project->creator()->associate($creator);
 		return $project;
@@ -87,7 +87,7 @@ class ProjectTest extends TestCase {
 
 	public function testSetCreator()
 	{
-		$user = UserTest::create('x', 'y', 'z', 'w');
+		$user = UserTest::create();
 		$user->save();
 		$project = ProjectTest::create();
 		$project->save();
@@ -117,9 +117,9 @@ class ProjectTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$admin = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$admin = UserTest::create();
 		$admin->save();
-		$member = UserTest::create('a', 'b', 'c', 'a@d.c');
+		$member = UserTest::create();
 		$member->save();
 		$project->users()->attach($admin->id, array('role_id' => 1));
 		$project->users()->attach($member->id, array('role_id' => 2));
@@ -134,9 +134,9 @@ class ProjectTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$admin = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$admin = UserTest::create();
 		$admin->save();
-		$member = UserTest::create('a', 'b', 'c', 'x@y.z');
+		$member = UserTest::create();
 		$member->save();
 		// admin role is inserted by migration
 		$project->users()->attach($admin->id, array('role_id' => 1));
@@ -149,9 +149,9 @@ class ProjectTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$admin = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$admin = UserTest::create();
 		$admin->save();
-		$member = UserTest::create('a', 'b', 'c', 'x@y.z');
+		$member = UserTest::create();
 		$member->save();
 		// admin role is inserted by migration
 		$project->users()->attach($admin->id, array('role_id' => 1));
@@ -164,7 +164,7 @@ class ProjectTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$user = UserTest::create();
 		$user->save();
 
 		$this->assertFalse($project->hasUser($user));
@@ -178,7 +178,7 @@ class ProjectTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$user = UserTest::create();
 		$user->save();
 
 		$this->assertFalse($project->hasUserId($user->id));
@@ -192,7 +192,7 @@ class ProjectTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$user = UserTest::create('jane', 'user', 'pw', 'u@b.com');
+		$user = UserTest::create();
 		$user->save();
 		$transect = TransectTest::create('test', null, null, $user);
 		$transect->save();

@@ -4,13 +4,13 @@ use Dias\User;
 
 class UserTest extends TestCase {
 
-	public static function create($fn = 'joe', $ln = 'user', $pw = 'pw', $mail = 'm@m.mm')
+	public static function create($fn = 'joe', $ln = 'user', $pw = 'pw', $mail = false)
 	{
 		$user = new User;
 		$user->firstname = $fn;
 		$user->lastname = $ln;
 		$user->password = bcrypt($pw);
-		$user->email = $mail;
+		$user->email = ($mail) ? $mail : str_random(10);
 		return $user;
 	}
 
@@ -66,9 +66,9 @@ class UserTest extends TestCase {
 
 	public function testEmailUnique()
 	{
-		$user = UserTest::create();
+		$user = UserTest::create('joe', 'user', 'pw', 'test@test.com');
 		$user->save();
-		$user = UserTest::create('jane', 'users', 'pwd');
+		$user = UserTest::create('joe', 'user', 'pw', 'test@test.com');
 		$this->setExpectedException('Illuminate\Database\QueryException');
 		$user->save();
 	}
@@ -77,7 +77,7 @@ class UserTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$user = UserTest::create();
 		$user->save();
 		$role = RoleTest::create();
 		$role->save();
@@ -101,7 +101,7 @@ class UserTest extends TestCase {
 
 	public function testHasRoleInProject()
 	{
-		$user = UserTest::create('a', 'b', 'c', 'd');
+		$user = UserTest::create();
 		$user->save();
 		$project = ProjectTest::create();
 		$project->save();
@@ -165,7 +165,7 @@ class UserTest extends TestCase {
 	public function testAnnotations()
 	{
 		// AnnotationTest will create the default test user
-		$user = UserTest::create('a', 'b', 'c', 'd');
+		$user = UserTest::create();
 		$user->save();
 		$this->assertEquals(0, $user->annotations()->count());
 

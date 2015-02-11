@@ -43,7 +43,7 @@ class ResetPwEmailTest extends TestCase {
 
 	public function testSubmitSuccess()
 	{
-		UserTest::create('test', 'user', 'pw', 'test@test.com')->save();
+		UserTest::create('joe', 'user', 'pw', 'test@test.com')->save();
 
 		$this->call('GET', '/password/email');
 		$this->call('POST', '/password/email', array(

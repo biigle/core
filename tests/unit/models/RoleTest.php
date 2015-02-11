@@ -45,7 +45,7 @@ class RoleTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$user = UserTest::create();
 		$user->save();
 		$role = RoleTest::create();
 		$role->save();

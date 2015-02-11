@@ -52,7 +52,7 @@ class ProjectUserAPITest extends APITestCase {
 		$this->assertResponseStatus(401);
 
 		// non-admins are not allowed to modify users
-		$user = UserTest::create('d', 'c', 'b', 'a');
+		$user = UserTest::create();
 		$user->save();
 		$this->project->users()->attach($user->id, array('role_id' => 2));
 		$this->be($user);
@@ -112,7 +112,7 @@ class ProjectUserAPITest extends APITestCase {
 		$this->assertResponseStatus(400);
 
 		// non-admins are not allowed to add users
-		$user = UserTest::create('d', 'c', 'b', 'a');
+		$user = UserTest::create();
 		$user->save();
 		$this->project->users()->attach($user->id, array('role_id' => 2));
 		$this->be($user);
@@ -160,7 +160,7 @@ class ProjectUserAPITest extends APITestCase {
 		$this->assertResponseStatus(401);
 
 		// non-admins are not allowed to delete other users
-		$user = UserTest::create('d', 'c', 'b', 'a');
+		$user = UserTest::create();
 		$user->save();
 		$this->project->users()->attach($user->id, array('role_id' => 2));
 		$this->be($user);

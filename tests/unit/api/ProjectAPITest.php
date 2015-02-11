@@ -104,7 +104,7 @@ class ProjectAPITest extends APITestCase {
 		$this->assertNotEquals(5, $this->project->creator_id);
 
 		// non-admins are not allowed to update
-		$user = UserTest::create('d', 'c', 'b', 'a');
+		$user = UserTest::create();
 		$user->save();
 		$this->project->users()->attach($user->id, array('role_id' => 2));
 		$this->be($user);
@@ -176,7 +176,7 @@ class ProjectAPITest extends APITestCase {
 		$this->assertResponseStatus(401);
 
 		// non-admins are not allowed to delete the project
-		$user = UserTest::create('d', 'c', 'b', 'a');
+		$user = UserTest::create();
 		$user->save();
 		$this->project->users()->attach($user->id, array('role_id' => 2));
 		$this->be($user);

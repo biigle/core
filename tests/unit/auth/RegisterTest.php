@@ -63,13 +63,13 @@ class RegisterTest extends TestCase {
 
 	public function testRegisterEmailTaken()
 	{
-		UserTest::create('joe', 'user', 'pw', 'e@ma.il')->save();
+		UserTest::create('joe', 'user', 'pw', 'test@test.com')->save();
 		$this->assertEquals(1, \Dias\User::all()->count());
 
 		$this->call('GET', '/auth/register');
 		$this->call('POST', '/auth/register', array(
 			'_token'    => Session::getToken(),
-			'email'     => 'e@ma.il',
+			'email'     => 'test@test.com',
 			'password'  => 'password',
 			'password_confirmation'  => 'password',
 			'firstname' => 'a',

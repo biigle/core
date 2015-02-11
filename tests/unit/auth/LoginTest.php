@@ -18,7 +18,7 @@ class LoginTest extends TestCase {
 	*/
 	public function testLoginViewRedirect()
 	{
-		$user = UserTest::create('a', 'a', 'example123', 'joe@user.com');
+		$user = UserTest::create('joe', 'user', 'pw', 'test@test.com');
 		$user->save();
 		$this->call('GET', '/');
 		$this->assertRedirectedTo('/auth/login');
@@ -37,10 +37,10 @@ class LoginTest extends TestCase {
 	public function testLoginXSRF()
 	{
 		// user would be able to log in
-		UserTest::create('a', 'a', 'example123', 'joe@user.com')->save();
+		UserTest::create('joe', 'user', 'pw', 'test@test.com');
 
 		$this->call('POST', '/auth/login', array(
-			'email'    => 'joe@user.com',
+			'email'    => 'test@test.com',
 			'password' => 'example123'
 		));
 
@@ -53,7 +53,7 @@ class LoginTest extends TestCase {
 		// user doesn't exist
 		$response = $this->call('POST', '/auth/login', array(
 			'_token'   => Session::getToken(),
-			'email'    => 'joe@user.com',
+			'email'    => 'test@test.com',
 			'password' => 'example123'
 		));
 
@@ -62,20 +62,19 @@ class LoginTest extends TestCase {
 
 	public function testLoginSuccess()
 	{
-		$user = UserTest::create('a', 'a', 'example123', 'joe@user.com');
+		$user = UserTest::create('joe', 'user', 'example123', 'test@test.com');
 		$user->save();
 		// login_at attribute should be null after creation
 		$this->assertNull($user->login_at);
 
 		$response = $this->call('POST', '/auth/login', array(
 			'_token'   => Session::getToken(),
-			'email'    => 'joe@user.com',
+			'email'    => 'test@test.com',
 			'password' => 'example123'
 		));
 
-		$this->assertRedirectedTo('/');
 		// login_at attribute should be set after login
-		$this->assertEquals(new Carbon, $user->fresh()->login_at);
-
+		$this->assertNotNull($user->fresh()->login_at);
+		$this->assertRedirectedTo('/');
 	}
 }

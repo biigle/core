@@ -68,7 +68,7 @@ class AnnotationTest extends TestCase {
 		$annotation->save();
 		$label = LabelTest::create();
 		$label->save();
-		$user = UserTest::create('a', 'b', 'c', 'd');
+		$user = UserTest::create();
 		$user->save();
 		$annotation->labels()->attach($label->id, array(
 			'confidence' => 0.5,

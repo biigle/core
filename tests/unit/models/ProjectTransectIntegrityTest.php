@@ -6,7 +6,7 @@ class ProjectTransectIntegrityTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$user = UserTest::create('jane', 'user', 'pw', 'u@b.com');
+		$user = UserTest::create();
 		$user->save();
 		$transect = TransectTest::create('test', null, null, $user);
 		$transect->save();
@@ -20,7 +20,7 @@ class ProjectTransectIntegrityTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$user = UserTest::create('jane', 'user', 'pw', 'u@b.com');
+		$user = UserTest::create();
 		$user->save();
 		$transect = TransectTest::create('test', null, null, $user);
 		$transect->save();
@@ -34,7 +34,7 @@ class ProjectTransectIntegrityTest extends TestCase {
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$user = UserTest::create('jane', 'user', 'pw', 'u@b.com');
+		$user = UserTest::create();
 		$user->save();
 		$transect = TransectTest::create('test', null, null, $user);
 		$transect->save();

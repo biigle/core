@@ -48,7 +48,7 @@ class ResetPwTest extends TestCase {
 
 	public function testResetSuccess()
 	{
-		$user = UserTest::create('test', 'user', 'pw', 'test@test.com');
+		$user = UserTest::create('joe', 'user', 'pw', 'test@test.com');
 		$user->save();
 		$this->assertFalse(Auth::validate(array(
 			'email' => 'test@test.com',
