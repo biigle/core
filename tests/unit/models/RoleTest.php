@@ -54,10 +54,18 @@ class RoleTest extends TestCase {
 		$role->delete();
 	}
 
-	public function testByName()
+	public function testAdminId()
 	{
-		$this->assertNull(Role::byName('abc'));
-		RoleTest::create('abc')->save();
-		$this->assertNotNull(Role::byName('abc'));
+		$this->assertNotNull(Role::adminId());
+	}
+
+	public function testEditorId()
+	{
+		$this->assertNotNull(Role::editorId());
+	}
+
+	public function testGuestId()
+	{
+		$this->assertNotNull(Role::guestId());
 	}
 }

@@ -49,7 +49,8 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 		'email',
 		'created_at',
 		'updated_at',
-		'login_at'
+		'login_at',
+		'pivot'
 	);
 
 	/**

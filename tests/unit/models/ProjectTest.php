@@ -9,10 +9,9 @@ class ProjectTest extends TestCase {
 		$project = new Project;
 		$project->name = $name;
 		$project->description = $desc;
-		if ($user)
-		{
-			$project->creator()->associate($user);
-		}
+		$creator = ($user) ? $user : UserTest::create('my', 'cool', 'project', 'creator');
+		$creator->save();
+		$project->creator()->associate($creator);
 		return $project;
 	}
 
@@ -40,10 +39,6 @@ class ProjectTest extends TestCase {
 		$project = ProjectTest::create();
 		$jsonProject = json_decode((string) $project);
 		$this->assertObjectNotHasAttribute('pivot', $jsonProject);
-		$this->assertObjectNotHasAttribute('creator_id', $jsonProject);
-		$this->assertObjectNotHasAttribute('role_id', $jsonProject);
-		$this->assertObjectNotHasAttribute('user_id', $jsonProject);
-		$this->assertObjectNotHasAttribute('project_id', $jsonProject);
 	}
 
 	public function testNameRequired()
@@ -62,7 +57,7 @@ class ProjectTest extends TestCase {
 		$project->save();
 	}
 
-	public function testUserNullable()
+	public function testCreatorNullable()
 	{
 		$project = ProjectTest::create();
 		$project->save();
@@ -70,7 +65,7 @@ class ProjectTest extends TestCase {
 		$this->assertEquals(null, $project->creator_id);
 	}
 
-	public function testUserOnDeleteSetNull()
+	public function testCreatorOnDeleteSetNull()
 	{
 		$project = ProjectTest::create();
 		$project->save();
@@ -90,20 +85,35 @@ class ProjectTest extends TestCase {
 		$this->assertEquals($creator->id, $project->users()->first()->id);
 	}
 
-	public function testAssociateUsers()
+	public function testSetCreator()
+	{
+		$user = UserTest::create('x', 'y', 'z', 'w');
+		$user->save();
+		$project = ProjectTest::create();
+		$project->save();
+		// remove real creator to mock a new project
+		$project->creator()->dissociate();
+
+		$this->assertNull($project->creator);
+		$this->assertTrue($project->setCreator($user));
+		// creator con only be set once
+		$this->assertFalse($project->setCreator($user));
+		$project->save();
+		$this->assertEquals($user->id, $project->fresh()->creator->id);
+	}
+
+	public function testUsers()
 	{
 		$project = ProjectTest::create();
 		$project->save();
 		$user = UserTest::create();
 		$user->save();
-		$role = RoleTest::create();
-		$role->save();
-		$project->users()->attach($user->id, array('role_id' => $role->id));
+		$project->users()->attach($user->id, array('role_id' => 1));
 
 		$this->assertNotNull($project->users()->find($user->id));
 	}
 
-	public function testUserRoles()
+	public function testAdmins()
 	{
 		$project = ProjectTest::create();
 		$project->save();
@@ -111,17 +121,71 @@ class ProjectTest extends TestCase {
 		$admin->save();
 		$member = UserTest::create('a', 'b', 'c', 'a@d.c');
 		$member->save();
-		$role = RoleTest::create('a');
-		$role->save();
-		$project->users()->attach($admin->id, array('role_id' => $role->id));
-		$role = RoleTest::create('b');
-		$role->save();
-		$project->users()->attach($member->id, array('role_id' => $role->id));
+		$project->users()->attach($admin->id, array('role_id' => 1));
+		$project->users()->attach($member->id, array('role_id' => 2));
+		// the creator doesn't count
+		$project->creator->delete();
+		
+		$this->assertEquals(2, $project->users()->count());
+		$this->assertEquals(1, $project->admins()->count());
+	}
 
-		$user = $project->usersWithRole('a')->first();
-		$this->assertEquals($admin->id, $user->id);
-		$user = $project->usersWithRole('b')->first();
-		$this->assertEquals($member->id, $user->id);
+	public function testHasAdmin()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$admin = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$admin->save();
+		$member = UserTest::create('a', 'b', 'c', 'x@y.z');
+		$member->save();
+		// admin role is inserted by migration
+		$project->users()->attach($admin->id, array('role_id' => 1));
+		$project->users()->attach($member->id, array('role_id' => 2));
+		$this->assertTrue($project->hasAdmin($admin));
+		$this->assertFalse($project->hasAdmin($member));
+	}
+
+	public function testHasAdminId()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$admin = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$admin->save();
+		$member = UserTest::create('a', 'b', 'c', 'x@y.z');
+		$member->save();
+		// admin role is inserted by migration
+		$project->users()->attach($admin->id, array('role_id' => 1));
+		$project->users()->attach($member->id, array('role_id' => 2));
+		$this->assertTrue($project->hasAdminId($admin->id));
+		$this->assertFalse($project->hasAdminId($member->id));
+	}
+
+	public function testHasUser()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$user->save();
+
+		$this->assertFalse($project->hasUser($user));
+		
+		$project->users()->attach($user->id, array('role_id' => 1));
+
+		$this->assertTrue($project->hasUser($user));
+	}
+
+	public function testHasUserId()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
+		$user->save();
+
+		$this->assertFalse($project->hasUserId($user->id));
+		
+		$project->users()->attach($user->id, array('role_id' => 1));
+
+		$this->assertTrue($project->hasUserId($user->id));
 	}
 
 	public function testTransects()
@@ -156,37 +220,6 @@ class ProjectTest extends TestCase {
 		$this->assertEquals(123, $attribute->pivot->value_int);
 		$this->assertEquals(0.4, $attribute->pivot->value_double);
 		$this->assertEquals('test', $attribute->pivot->value_string);
-	}
-
-	public function testUserHasRole()
-	{
-		$project = ProjectTest::create();
-		$project->save();
-		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
-		$user->save();
-		$role = RoleTest::create('a');
-		$role->save();
-
-		$this->assertFalse($project->userHasRole($user, 'a'));
-		
-		$project->users()->attach($user->id, array('role_id' => $role->id));
-
-		$this->assertTrue($project->userHasRole($user, 'a'));
-		$this->assertFalse($project->userHasRole($user, 'b'));
-	}
-
-	public function testHasUser()
-	{
-		$project = ProjectTest::create();
-		$project->save();
-		$user = UserTest::create('a', 'b', 'c', 'a@b.c');
-		$user->save();
-
-		$this->assertFalse($project->hasUser($user));
-		
-		$project->users()->attach($user->id, array('role_id' => 1));
-
-		$this->assertTrue($project->hasUser($user));
 	}
 
 }

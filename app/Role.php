@@ -1,6 +1,7 @@
 <?php namespace Dias;
 
 use Illuminate\Database\Eloquent\Model;
+use Cache;
 
 class Role extends Model {
 
@@ -12,13 +13,39 @@ class Role extends Model {
 	public $timestamps = false;
 
 	/**
-	 * Searches for a role object by the role name.
-	 *
-	 * @return Dias\Role or null if there is no role with this name.
+	 * Returns the admin role ID.
+	 * @return Dias\Role
 	 */
-	public static function byName($name)
+	public static function adminId()
 	{
-		return Role::whereName($name)->first();
+		return Cache::rememberForever('role-admin', function()
+		{
+			return Role::whereName('admin')->first()->id;
+		});
+	}
+
+	/**
+	 * Returns the editor role ID.
+	 * @return Dias\Role
+	 */
+	public static function editorId()
+	{
+		return Cache::rememberForever('role-editor', function()
+		{
+			return Role::whereName('editor')->first()->id;
+		});
+	}
+
+	/**
+	 * Returns the guest role ID.
+	 * @return Dias\Role
+	 */
+	public static function guestId()
+	{
+		return Cache::rememberForever('role-guest', function()
+		{
+			return Role::whereName('guest')->first()->id;
+		});
 	}
 
 }

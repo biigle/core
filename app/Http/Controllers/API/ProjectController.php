@@ -8,106 +8,109 @@ use Dias\Project;
 
 class ProjectController extends Controller {
 
-	public function __construct()
+	private $auth;
+
+	public function __construct(Guard $auth)
 	{
 		$this->middleware('auth.api');
+		$this->auth = $auth;
 	}
 
 	/**
-	 * Display a listing of the resource.
+	 * Schows all projects the requesting user belongs to.
 	 *
-	 * @param  Illuminate\Contracts\Auth\Guard $auth
 	 * @return Response
 	 */
-	public function index(Guard $auth)
+	public function index()
 	{
-		return $auth->user()->projects;
+		return $this->auth->user()->projects;
 	}
 
 	/**
-	 * Display the specified resource.
+	 * Displays the specified project.
 	 *
 	 * @param  int  $id
-	 * @param  Illuminate\Contracts\Auth\Guard $auth
 	 * @return Response
 	 */
-	public function show($id, Guard $auth)
+	public function show($id)
 	{
 		$project = Project::find($id);
-		if ($project && $project->hasUser($auth->user()))
+		if (!$project || !$project->hasUser($this->auth->user()))
 		{
-			return $project;
+			return response('Unauthorized.', 401);
 		}
 		
-		return response('Unauthorized.', 401);
+		return $project;
 	}
 
 	/**
-	 * Update the specified resource in storage.
+	 * Updates the attributes of the specified project.
 	 *
 	 * @param  int  $id
-	 * @param  Illuminate\Contracts\Auth\Guard $auth
 	 * @param  Illuminate\Http\Request $request
 	 * @return Response
 	 */
-	public function update($id, Guard $auth, Request $request)
+	public function update($id, Request $request)
 	{
 		$project = Project::find($id);
-		if ($project && $project->userHasRole($auth->user(), 'admin'))
+		if (!$project || !$project->hasAdmin($this->auth->user()))
 		{
-			$project->name = $request->input('name', $project->name);
-			$project->description = $request->input('description', $project->description);
-			$project->save();
-
-			return response('Ok.', 200);
+			return response('Unauthorized.', 401);
 		}
 		
-		return response('Unauthorized.', 401);
+		$project->name = $request->input('name', $project->name);
+		$project->description = $request->input('description', $project->description);
+		$project->save();
+
+		return response('Ok.', 200);
 	}
 
 	/**
-	 * Store a newly created resource in storage.
+	 * Creates a new project.
 	 *
 	 * @param  Illuminate\Http\Request $request
-	 * @param  Illuminate\Contracts\Auth\Guard $auth
 	 * @return Response
 	 */
-	public function store(Guard $auth, Request $request)
+	public function store(Request $request)
 	{
-		if ($request->has('name', 'description'))
+		if (!$request->has('name', 'description'))
 		{
-			$project = new Project;
-			$project->name = $request->input('name');
-			$project->description = $request->input('description');
-			$project->creator()->associate($auth->user());
-			$project->save();
-			// makes sure the project was successfully stored
-			// and doesn't contain additional information like the creator object
-			return Project::find($project->id);
+			return response('Bad arguments.', 400);
 		}
-
-		return response('Bad request. No content.', 400);
+		
+		$project = new Project;
+		$project->name = $request->input('name');
+		$project->description = $request->input('description');
+		$project->setCreator($this->auth->user());
+		$project->save();
+		// makes sure the project was successfully stored
+		// and doesn't contain additional information like the creator object
+		return Project::find($project->id);
 	}
 
 	/**
-	 * Remove the specified resource from storage.
+	 * Removes the specified project.
 	 *
 	 * @param  int  $id
-	 * @param  Illuminate\Contracts\Auth\Guard $auth
 	 * @return Response
 	 */
-	public function destroy($id, Guard $auth)
+	public function destroy($id)
 	{
+		// TODO move more logic into the model ( $project->deleteBy() )
+
 		$project = Project::find($id);
 		if (!$project)
 		{
 			return response('Not Found.', 404);
-		} else if ($project->userHasRole($auth->user(), 'admin'))
-		{
-			$project->delete();
-			return response('Deleted.', 200);
 		}
-		return response('Unauthorized.', 401);
+
+		if (!$project->hasAdmin($this->auth->user()))
+		{
+			return response('Unauthorized.', 401);
+		}
+
+		$project->delete();
+		return response('Deleted.', 200);
 	}
 
 }

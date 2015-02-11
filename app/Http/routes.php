@@ -32,4 +32,8 @@ Route::group(array('prefix' => 'api/v1', 'namespace' => 'API'), function()
 	Route::resource('projects', 'ProjectController', array(
 		'only' => array('show', 'update', 'store', 'destroy')
 	));
+
+	Route::resource('projects.users', 'ProjectUserController', array(
+		'only' => array('index', 'update', 'store', 'destroy')
+	));
 });

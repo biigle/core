@@ -17,39 +17,39 @@ class Project extends Attributable {
 			->withPivot('role_id as role_id');
 	}
 
-	/**
-	 * All users with the given role in this project.
-	 * @param string $roleName
-	 * @return Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function usersWithRole($roleName)
+	public function admins()
 	{
-		$role = Role::byName($roleName);
-
-		return $this->users()->whereRoleId($role->id);
+		return $this->users()->whereRoleId(Role::adminId());
 	}
 
 	/**
-	 * Checks if the given user has the given role in this project.
-	 * The user doesn't have to exist in this project.
-	 * @param Dias\User $user
-	 * @param string $roleName
+	 * Checks if the user ID is an admin of this project.
+	 * @param int $id
 	 * @return boolean
 	 */
-	public function userHasRole($user, $roleName)
+	public function hasAdminId($id)
 	{
-		$role = Role::byName($roleName);
-		if ($role === null)
-		{
-			return false;
-		}
+		return $this->admins()->find($id) !== null;
+	}
 
-		$user = $this->users()
-			->whereId($user->id)
-			->whereRoleId($role->id)
-			->first();
+	/**
+	 * Checks if the user is an admin of this project.
+	 * @param Dias\User $user
+	 * @return boolean
+	 */
+	public function hasAdmin($user)
+	{
+		return $this->hasAdminId($user->id);
+	}
 
-		return $user !== null;
+	/**
+	 * Checks if the given user Id exists in this project.
+	 * @param int $id
+	 * @return boolean
+	 */
+	public function hasUserId($id)
+	{
+		return $this->users()->find($id) !== null;
 	}
 
 	/**
@@ -59,7 +59,7 @@ class Project extends Attributable {
 	 */
 	public function hasUser($user)
 	{
-		return $this->users()->find($user->id) !== null;
+		return $this->hasUserId($user->id);
 	}
 
 	/**
@@ -70,6 +70,23 @@ class Project extends Attributable {
 	public function creator()
 	{
 		return $this->belongsTo('Dias\User');
+	}
+
+	/**
+	 * Sets the creator if it isn't already set.
+	 * @param Dias\User $user
+	 * @return boolean
+	 */
+	public function setCreator($user)
+	{
+		// user must exist and creator mustn't
+		if (!$this->creator && $user)
+		{
+			$this->creator()->associate($user);
+			return true;
+		}
+
+		return false;
 	}
 
 	public function transects()
