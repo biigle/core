@@ -50,7 +50,7 @@ class ProjectUserController extends Controller {
 			abort(401);
 		}
 
-		$role = Role::find($request->input('role_id'));
+		$role = Role::find($request->input('project_role_id'));
 
 		if (!$role)
 		{
@@ -77,7 +77,7 @@ class ProjectUserController extends Controller {
 		}
 
 		$user = User::find($request->input('id'));
-		$role = Role::find($request->input('role_id'));
+		$role = Role::find($request->input('project_role_id'));
 
 		if (!$user || !$role)
 		{

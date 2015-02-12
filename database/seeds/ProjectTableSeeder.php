@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Dias\Project;
+use Dias\Role;
 
 class ProjectTableSeeder extends Seeder {
 
@@ -18,7 +19,7 @@ class ProjectTableSeeder extends Seeder {
 		));
 
 		// creator is already user
-		$project->users()->attach(2, array('role_id' => 2));
+		$project->addUserId(2, Role::editorId());
 		$project->transects()->attach(1);
 
 		$project = Project::create(array(

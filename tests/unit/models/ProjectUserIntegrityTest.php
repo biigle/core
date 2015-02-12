@@ -10,7 +10,7 @@ class ProjectUserIntegrityTest extends TestCase {
 		$user->save();
 		$role = RoleTest::create();
 		$role->save();
-		$project->users()->attach($user->id, array('role_id' => $role->id));
+		$project->addUserId($user->id, $role->id);
 		$this->setExpectedException('Illuminate\Database\QueryException');
 		$role->delete();
 	}
@@ -23,7 +23,7 @@ class ProjectUserIntegrityTest extends TestCase {
 		$user->save();
 		$role = RoleTest::create();
 		$role->save();
-		$project->users()->attach($user->id, array('role_id' => $role->id));
+		$project->addUserId($user->id, $role->id);
 
 		$this->assertEquals(1, $user->projects()->count());
 		$project->delete();
@@ -50,8 +50,9 @@ class ProjectUserIntegrityTest extends TestCase {
 		$user->save();
 		$role = RoleTest::create();
 		$role->save();
-		$project->users()->attach($user->id, array('role_id' => $role->id));
+		$project->addUserId($user->id, $role->id);
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		$project->users()->attach($user->id, array('role_id' => $role->id));
+		// attach manually so the error-check in addUserId is circumvented
+		$project->users()->attach($user->id, array('project_role_id' => $role->id));
 	}
 }

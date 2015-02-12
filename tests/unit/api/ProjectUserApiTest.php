@@ -1,6 +1,7 @@
 <?php
 
 use Dias\Project;
+use Dias\Role;
 
 class ProjectUserApiTest extends ApiTestCase {
 
@@ -13,7 +14,7 @@ class ProjectUserApiTest extends ApiTestCase {
 
 		$this->project = ProjectTest::create();
 		$this->project->save();
-		$this->project->users()->attach($this->user->id, array('role_id' => 1));
+		$this->project->addUserId($this->user->id, Role::adminId());
 	}
 
 	public function testIndex()
@@ -54,7 +55,8 @@ class ProjectUserApiTest extends ApiTestCase {
 		// non-admins are not allowed to modify users
 		$user = UserTest::create();
 		$user->save();
-		$this->project->users()->attach($user->id, array('role_id' => 2));
+		$this->project->addUserId($user->id, Role::editorId());
+
 		$this->be($user);
 		$this->call('PUT', '/api/v1/projects/1/users/1', array(
 			'_token' => Session::token()
@@ -80,17 +82,17 @@ class ProjectUserApiTest extends ApiTestCase {
 		// role does not exist
 		$this->call('PUT', '/api/v1/projects/1/users/'.$user->id, array(
 			'_token' => Session::token(),
-			'role_id' => 100
+			'project_role_id' => 100
 		));
 		$this->assertResponseStatus(400);
 
-		$this->assertEquals(2, $this->project->users()->find($user->id)->role_id);
+		$this->assertEquals(2, $this->project->users()->find($user->id)->project_role_id);
 		$this->call('PUT', '/api/v1/projects/1/users/'.$user->id, array(
 			'_token' => Session::token(),
-			'role_id' => 3
+			'project_role_id' => 3
 		));
 		$this->assertResponseOk();
-		$this->assertEquals(3, $this->project->users()->find($user->id)->role_id);
+		$this->assertEquals(3, $this->project->users()->find($user->id)->project_role_id);
 	}
 
 	public function testStore()
@@ -114,7 +116,7 @@ class ProjectUserApiTest extends ApiTestCase {
 		// non-admins are not allowed to add users
 		$user = UserTest::create();
 		$user->save();
-		$this->project->users()->attach($user->id, array('role_id' => 2));
+		$this->project->addUserId($user->id, Role::editorId());
 		$this->be($user);
 		$this->call('POST', '/api/v1/projects/1/users', array(
 			'_token' => Session::token()
@@ -137,12 +139,12 @@ class ProjectUserApiTest extends ApiTestCase {
 		$this->call('POST', '/api/v1/projects/1/users', array(
 			'_token' => Session::token(),
 			'id' => $user->id,
-			'role_id' => 2
+			'project_role_id' => 2
 		));
 		$this->assertResponseOk();
 		$newUser = $this->project->users()->find($user->id);
 		$this->assertEquals($user->id, $newUser->id);
-		$this->assertEquals(2, $newUser->role_id);
+		$this->assertEquals(Role::editorId(), $newUser->project_role_id);
 	}
 
 	public function testDestroy()
@@ -162,7 +164,7 @@ class ProjectUserApiTest extends ApiTestCase {
 		// non-admins are not allowed to delete other users
 		$user = UserTest::create();
 		$user->save();
-		$this->project->users()->attach($user->id, array('role_id' => 2));
+		$this->project->addUserId($user->id, Role::editorId());
 		$this->be($user);
 		$this->call('DELETE', '/api/v1/projects/1/users/'.$this->user->id, array(
 			'_token' => Session::token()
@@ -178,7 +180,7 @@ class ProjectUserApiTest extends ApiTestCase {
 		$this->assertNull($this->project->fresh()->users()->find($user->id));
 
 		Auth::logout();
-		$this->project->users()->attach($user->id, array('role_id' => 2));
+		$this->project->addUserId($user->id, Role::editorId());
 
 		// api key authentication
 		// admins can delete anyone
@@ -189,7 +191,7 @@ class ProjectUserApiTest extends ApiTestCase {
 		$this->assertResponseOk();
 		$this->assertNull($this->project->fresh()->users()->find($user->id));
 
-		$this->project->users()->attach($user->id, array('role_id' => 2));
+		$this->project->addUserId($user->id, Role::editorId());
 		// session cookie authentication
 		$this->be($this->user);
 

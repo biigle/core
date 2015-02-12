@@ -83,7 +83,7 @@ class UserTest extends TestCase {
 		$user->save();
 		$role = RoleTest::create();
 		$role->save();
-		$project->users()->attach($user->id, array('role_id' => $role->id));
+		$project->addUserId($user->id, $role->id);
 
 		$this->assertEquals($user->projects()->first()->id, $project->id);
 	}
@@ -132,12 +132,13 @@ class UserTest extends TestCase {
 		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
 
-	public function testAPIKey()
+	public function testApiKey()
 	{
 		$user = UserTest::create();
 		$user->save();
 		$this->assertNull($user->api_key);
-		$key = $user->generateAPIKey();
+		$key = $user->generateApiKey();
+		$user->save();
 		$this->assertEquals($key, $user->fresh()->api_key);
 	}
 }

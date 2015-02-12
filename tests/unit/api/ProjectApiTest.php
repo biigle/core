@@ -1,6 +1,7 @@
 <?php
 
 use Dias\Project;
+use Dias\Role;
 
 class ProjectApiTest extends ApiTestCase {
 
@@ -13,7 +14,7 @@ class ProjectApiTest extends ApiTestCase {
 
 		$this->project = ProjectTest::create();
 		$this->project->save();
-		$this->project->users()->attach($this->user->id, array('role_id' => 1));
+		$this->project->addUserId($this->user->id, Role::adminId());
 	}
 
 	public function testIndex()
@@ -106,7 +107,8 @@ class ProjectApiTest extends ApiTestCase {
 		// non-admins are not allowed to update
 		$user = UserTest::create();
 		$user->save();
-		$this->project->users()->attach($user->id, array('role_id' => 2));
+		$this->project->addUserId($user->id, Role::editorId());
+
 		$this->be($user);
 		$this->call('PUT', '/api/v1/projects/1', array(
 			'_token' => Session::token()
@@ -177,7 +179,8 @@ class ProjectApiTest extends ApiTestCase {
 		// non-admins are not allowed to delete the project
 		$user = UserTest::create();
 		$user->save();
-		$this->project->users()->attach($user->id, array('role_id' => 2));
+		$this->project->addUserId($user->id, Role::editorId());
+		
 		$this->be($user);
 		$this->call('DELETE', '/api/v1/projects/1', array(
 			'_token' => Session::token()

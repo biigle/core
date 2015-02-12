@@ -16,12 +16,12 @@ class Project extends Attributable {
 	public function users()
 	{
 		return $this->belongsToMany('Dias\User')
-			->withPivot('role_id as role_id');
+			->withPivot('project_role_id as project_role_id');
 	}
 
 	public function admins()
 	{
-		return $this->users()->whereRoleId(Role::adminId());
+		return $this->users()->whereProjectRoleId(Role::adminId());
 	}
 
 	/**
@@ -99,7 +99,7 @@ class Project extends Attributable {
 	public function addUserId($userId, $roleId)
 	{
 		try {
-			$this->users()->attach($userId, array('role_id' => $roleId));
+			$this->users()->attach($userId, array('project_role_id' => $roleId));
 		} catch (QueryException $e) {
 			abort(400, "The user already exists in this project.");
 		}
@@ -122,7 +122,7 @@ class Project extends Attributable {
 		if ($this->removeUserId($userId))
 		{
 			// only re-attach if detach was successful
-			$this->users()->attach($userId, array('role_id' => $roleId));
+			$this->users()->attach($userId, array('project_role_id' => $roleId));
 		}
 		else
 		{

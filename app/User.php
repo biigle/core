@@ -61,11 +61,10 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 	 * the api_key attribute of the user.
 	 * @return string
 	 */
-	public function generateAPIKey()
+	public function generateApiKey()
 	{
 		$key = str_random(32);
 		$this->api_key = $key;
-		$this->save();
 		return $key;
 	}
 

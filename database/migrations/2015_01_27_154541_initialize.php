@@ -80,8 +80,8 @@ class Initialize extends Migration {
 		| in each project.
 		*/
 		Schema::create('project_user', function(Blueprint $table) {
-			$table->integer('role_id')->unsigned();
-			$table->foreign('role_id')
+			$table->integer('project_role_id')->unsigned();
+			$table->foreign('project_role_id')
 			      ->references('id')
 			      ->on('roles')
 			      // dont delete role if it is in use

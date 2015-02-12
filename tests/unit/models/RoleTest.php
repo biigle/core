@@ -49,7 +49,7 @@ class RoleTest extends TestCase {
 		$user->save();
 		$role = RoleTest::create();
 		$role->save();
-		$project->users()->attach($user->id, array('role_id' => $role->id));
+		$project->addUserId($user->id, $role->id);
 		$this->setExpectedException('Illuminate\Database\QueryException');
 		$role->delete();
 	}
