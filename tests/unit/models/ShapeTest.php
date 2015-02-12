@@ -33,4 +33,24 @@ class ShapeTest extends TestCase {
 		$this->setExpectedException('Illuminate\Database\QueryException');
 		$obj->save();
 	}
+
+	public function testPointId()
+	{
+		$this->assertNotNull(Shape::pointId());
+	}
+
+	public function testLineId()
+	{
+		$this->assertNotNull(Shape::lineId());
+	}
+
+	public function testPolygonId()
+	{
+		$this->assertNotNull(Shape::polygonId());
+	}
+
+	public function testCircleId()
+	{
+		$this->assertNotNull(Shape::circleId());
+	}
 }

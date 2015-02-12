@@ -40,4 +40,8 @@ Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api'), function()
 	Route::resource('roles', 'RoleController', array(
 		'only' => array('index', 'show')
 	));
+
+	Route::resource('shapes', 'ShapeController', array(
+		'only' => array('index', 'show')
+	));
 });

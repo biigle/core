@@ -31,7 +31,6 @@ class PopulateRequiredRows extends Migration {
 		DB::table('shapes')->insert(array(
 			array('name' => 'point'),
 			array('name' => 'line'),
-			array('name' => 'rectangle'),
 			array('name' => 'polygon'),
 			array('name' => 'circle'),
 		));
