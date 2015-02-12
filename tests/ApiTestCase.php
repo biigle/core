@@ -1,6 +1,6 @@
 <?php
 
-class APITestCase extends TestCase {
+class ApiTestCase extends TestCase {
 
 	protected $user;
 	protected $credentials;

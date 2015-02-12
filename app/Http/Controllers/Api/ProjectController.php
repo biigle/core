@@ -1,4 +1,4 @@
-<?php namespace Dias\Http\Controllers\API;
+<?php namespace Dias\Http\Controllers\Api;
 
 use Dias\Http\Controllers\Controller;
 use Illuminate\Contracts\Auth\Guard;

@@ -21,7 +21,7 @@ Route::controllers(array(
 	'password' => 'Auth\PasswordController',
 ));
 
-Route::group(array('prefix' => 'api/v1', 'namespace' => 'API'), function()
+Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api'), function()
 {
 	// Route::get('annotations/my', 'AnnotationController@index');
 	// Route::resource('annotations', 'AnnotationController', array(
@@ -35,5 +35,9 @@ Route::group(array('prefix' => 'api/v1', 'namespace' => 'API'), function()
 
 	Route::resource('projects.users', 'ProjectUserController', array(
 		'only' => array('index', 'update', 'store', 'destroy')
+	));
+
+	Route::resource('roles', 'RoleController', array(
+		'only' => array('index', 'show')
 	));
 });

@@ -2,7 +2,7 @@
 
 use Dias\Project;
 
-class ProjectUserAPITest extends APITestCase {
+class ProjectUserApiTest extends ApiTestCase {
 
 	private $project;
 

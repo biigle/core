@@ -23,7 +23,7 @@
 	"autoload-dev": {
 		"classmap": [
 			"tests/TestCase.php",
-			"tests/APITestCase.php"
+			"tests/ApiTestCase.php"
 		]
 	},
 	"scripts": {

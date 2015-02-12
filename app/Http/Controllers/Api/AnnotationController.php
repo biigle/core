@@ -1,4 +1,4 @@
-<?php namespace Dias\Http\Controllers\API;
+<?php namespace Dias\Http\Controllers\Api;
 
 use Dias\Http\Requests;
 use Dias\Http\Controllers\Controller;
