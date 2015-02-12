@@ -27,6 +27,8 @@ class Initialize extends Migration {
 			$table->string('password', 60);
 			// users are primarily searched by email, so do index
 			$table->string('email', 256)->index();
+			// the global user role
+			$table->integer('role_id')->unsigned();
 
 			$table->string('api_key', 32)->nullable()->index();
 			// token for the "stay logged in" session
@@ -34,13 +36,14 @@ class Initialize extends Migration {
 			$table->timestamps();
 			$table->timestamp('login_at')->nullable();
 
-			// email is used for login and thus unique
-			$table->unique('email');
+			// email and key are used for authentication and must be unique
+			$table->unique('email', 'api_key');
 		});
 
 		/*
 		| The roles users can have. For example a user can be 'admin' in one
-		| project and 'guest' un another. Roles are not restricted to projects.
+		| project and 'guest' un another. Roles are not restricted to projects,
+		| so a user can have a 'global' role, too.
 		*/
 		Schema::create('roles', function(Blueprint $table) {
 			$table->increments('id');

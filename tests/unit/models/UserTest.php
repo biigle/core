@@ -1,6 +1,7 @@
 <?php
 
 use Dias\User;
+use Dias\Role;
 
 class UserTest extends TestCase {
 
@@ -28,6 +29,7 @@ class UserTest extends TestCase {
 		$this->assertNotNull($user->lastname);
 		$this->assertNotNull($user->password);
 		$this->assertNotNull($user->email);
+		$this->assertNotNull($user->role_id);
 		$this->assertNotNull($user->created_at);
 		$this->assertNotNull($user->updated_at);
 	}
@@ -86,36 +88,13 @@ class UserTest extends TestCase {
 		$this->assertEquals($user->projects()->first()->id, $project->id);
 	}
 
-	public function testCreatedProjects()
+	public function testRole()
 	{
 		$user = UserTest::create();
 		$user->save();
-		$project = ProjectTest::create('test', 'test', $user);
-		$project->save();
-		$project2 = ProjectTest::create('test2', 'test2', $user);
-		$project2->save();
-
-		$this->assertEquals($project->id, $user->createdProjects()->first()->id);
-		$this->assertEquals(2, $user->createdProjects()->count());
-	}
-
-	public function testHasRoleInProject()
-	{
-		$user = UserTest::create();
-		$user->save();
-		$project = ProjectTest::create();
-		$project->save();
-		$aRole = RoleTest::create('a');
-		$aRole->save();
-		$bRole = RoleTest::create('b');
-		$bRole->save();
-		$project->users()->attach(
-			$user->id,
-			array('role_id' => $aRole->id)
-		);
-
-		$this->assertTrue($user->hasRoleInProject($aRole, $project));
-		$this->assertFalse($user->hasRoleInProject($bRole, $project));
+		$role = $user->role;
+		$this->assertNotNull($role);
+		$this->assertEquals(Role::editorId(), $role->id);
 	}
 
 	public function testHiddenAttributes()
@@ -160,24 +139,5 @@ class UserTest extends TestCase {
 		$this->assertNull($user->api_key);
 		$key = $user->generateAPIKey();
 		$this->assertEquals($key, $user->fresh()->api_key);
-	}
-
-	public function testAnnotations()
-	{
-		// AnnotationTest will create the default test user
-		$user = UserTest::create();
-		$user->save();
-		$this->assertEquals(0, $user->annotations()->count());
-
-		$annotation = AnnotationTest::create();
-		$annotation->save();
-		$label = LabelTest::create();
-		$label->save();
-		$annotation->labels()->attach($label->id, array(
-			'confidence' => 0.5,
-			'user_id' => $user->id
-		));
-
-		$this->assertEquals(1, $user->annotations()->count());
 	}
 }

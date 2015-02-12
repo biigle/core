@@ -12,6 +12,7 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 
 	/**
 	 * validation rules for logging in
+	 * @var array
 	 */
 	public static $authRules = array(
 		'email'    => 'required|email|max:255',
@@ -20,15 +21,17 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 
 	/**
 	 * validation rules for resetting the password
+	 * @var array
 	 */
 	public static $resetRules = array(
 		'email'    => 'required|email|max:255',
 		'password' => 'required|confirmed|min:8',
-		'token' => 'required',
+		'token'    => 'required',
 	);
 
 	/**
 	 * validation rules for registering a new user
+	 * @var array
 	 */
 	public static $registerRules = array(
 		'email'     => 'required|email|unique:users|max:255',
@@ -72,34 +75,12 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 	}
 
 	/**
-	 * All projects created by this user.
+	 * The global role of this user.
+	 * @return Dias\Role
 	 */
-	public function createdProjects()
+	public function role()
 	{
-		return $this->hasMany('Dias\Project', 'creator_id');
-	}
-
-	/**
-	 * Determines if this user has the given role in the given project.
-	 * @param Dias\Role $role
-	 * @param Dias\Project $project
-	 * @return boolean
-	 */
-	public function hasRoleInProject(Role $role, Project $project)
-	{
-		return 1 === $this->projects()
-			->whereId($project->id)
-			->whereRoleId($role->id)
-			->count();
-	}
-
-	/**
-	 * All annotations labeled by this user.
-	 */
-	public function annotations()
-	{
-		return $this->belongsToMany('Dias\Annotation', 'annotation_label')
-			->distinct();
+		return $this->belongsTo('Dias\Role');
 	}
 
 }
