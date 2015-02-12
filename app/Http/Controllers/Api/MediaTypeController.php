@@ -1,9 +1,9 @@
 <?php namespace Dias\Http\Controllers\Api;
 
 use Dias\Http\Controllers\Controller;
-use Dias\Shape;
+use Dias\MediaType;
 
-class ShapeController extends Controller {
+class MediaTypeController extends Controller {
 
 	public function __construct()
 	{
@@ -11,23 +11,23 @@ class ShapeController extends Controller {
 	}
 
 	/**
-	 * Schows all shapes.
+	 * Schows all media types.
 	 *
 	 * @return Response
 	 */
 	public function index()
 	{
-		return Shape::all();
+		return MediaType::all();
 	}
 
 	/**
-	 * Displays the specified shape.
+	 * Displays the specified media type.
 	 *
 	 * @param  int  $id
 	 * @return Response
 	 */
 	public function show($id)
 	{
-		return Shape::find($id);
+		return MediaType::find($id);
 	}
 }

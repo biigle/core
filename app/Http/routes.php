@@ -44,4 +44,8 @@ Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api'), function()
 	Route::resource('shapes', 'ShapeController', array(
 		'only' => array('index', 'show')
 	));
+
+	Route::resource('media-types', 'MediaTypeController', array(
+		'only' => array('index', 'show')
+	));
 });

@@ -14,7 +14,7 @@ class Shape extends Model {
 
 	/**
 	 * Returns the point shape ID.
-	 * @return Dias\Shape
+	 * @return int
 	 */
 	public static function pointId()
 	{
@@ -26,7 +26,7 @@ class Shape extends Model {
 
 	/**
 	 * Returns the line shape ID.
-	 * @return Dias\Shape
+	 * @return int
 	 */
 	public static function lineId()
 	{
@@ -38,7 +38,7 @@ class Shape extends Model {
 
 	/**
 	 * Returns the polygon shape ID.
-	 * @return Dias\Shape
+	 * @return int
 	 */
 	public static function polygonId()
 	{
@@ -50,7 +50,7 @@ class Shape extends Model {
 
 	/**
 	 * Returns the circle shape ID.
-	 * @return Dias\Shape
+	 * @return int
 	 */
 	public static function circleId()
 	{

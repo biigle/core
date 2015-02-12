@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class PopulateRequiredRows extends Migration {
@@ -45,7 +44,7 @@ class PopulateRequiredRows extends Migration {
 	 */
 	public function down()
 	{
-		// violates foreign key constraints of a populated database
+		// violates foreign key constraints of a populated database!
 		// DB::table('roles')->delete();
 		// DB::table('media_types')->delete();
 		// DB::table('labels')->delete();

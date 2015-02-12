@@ -42,4 +42,14 @@ class MediaTypeTest extends TestCase {
 		$this->setExpectedException('Illuminate\Database\QueryException');
 		$obj->save();
 	}
+
+	public function testTimeSeriesId()
+	{
+		$this->assertNotNull(MediaType::timeSeriesId());
+	}
+
+	public function testLocationSeriesId()
+	{
+		$this->assertNotNull(MediaType::locationSeriesId());
+	}
 }

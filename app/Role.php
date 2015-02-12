@@ -14,7 +14,7 @@ class Role extends Model {
 
 	/**
 	 * Returns the admin role ID.
-	 * @return Dias\Role
+	 * @return int
 	 */
 	public static function adminId()
 	{
@@ -26,7 +26,7 @@ class Role extends Model {
 
 	/**
 	 * Returns the editor role ID.
-	 * @return Dias\Role
+	 * @return int
 	 */
 	public static function editorId()
 	{
@@ -38,7 +38,7 @@ class Role extends Model {
 
 	/**
 	 * Returns the guest role ID.
-	 * @return Dias\Role
+	 * @return int
 	 */
 	public static function guestId()
 	{
