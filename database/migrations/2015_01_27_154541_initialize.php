@@ -96,8 +96,9 @@ class Initialize extends Migration {
 			      ->on('projects')
 			      ->onDelete('cascade');
 
-			// users shouldn't have multiple roles in the same project
-			$table->unique(array('role_id', 'user_id', 'project_id'));
+			// users should only have one role per project since roles
+			// are hierarchical
+			$table->unique(array('user_id', 'project_id'));
 		});
 
 		/*

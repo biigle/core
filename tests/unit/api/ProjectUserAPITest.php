@@ -140,7 +140,7 @@ class ProjectUserAPITest extends APITestCase {
 			'role_id' => 2
 		));
 		$this->assertResponseOk();
-		$newUser = $this->project->fresh()->users()->find($user->id);
+		$newUser = $this->project->users()->find($user->id);
 		$this->assertEquals($user->id, $newUser->id);
 		$this->assertEquals(2, $newUser->role_id);
 	}

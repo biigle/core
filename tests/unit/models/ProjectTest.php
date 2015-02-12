@@ -1,6 +1,8 @@
 <?php
 
 use Dias\Project;
+use Dias\Role;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectTest extends TestCase {
 
@@ -108,7 +110,7 @@ class ProjectTest extends TestCase {
 		$project->save();
 		$user = UserTest::create();
 		$user->save();
-		$project->users()->attach($user->id, array('role_id' => 1));
+		$project->users()->attach($user->id, array('role_id' => Role::adminId()));
 
 		$this->assertNotNull($project->users()->find($user->id));
 	}
@@ -121,8 +123,8 @@ class ProjectTest extends TestCase {
 		$admin->save();
 		$member = UserTest::create();
 		$member->save();
-		$project->users()->attach($admin->id, array('role_id' => 1));
-		$project->users()->attach($member->id, array('role_id' => 2));
+		$project->users()->attach($admin->id, array('role_id' => Role::adminId()));
+		$project->users()->attach($member->id, array('role_id' => Role::editorId()));
 		// the creator doesn't count
 		$project->creator->delete();
 		
@@ -139,8 +141,8 @@ class ProjectTest extends TestCase {
 		$member = UserTest::create();
 		$member->save();
 		// admin role is inserted by migration
-		$project->users()->attach($admin->id, array('role_id' => 1));
-		$project->users()->attach($member->id, array('role_id' => 2));
+		$project->users()->attach($admin->id, array('role_id' => Role::adminId()));
+		$project->users()->attach($member->id, array('role_id' => Role::editorId()));
 		$this->assertTrue($project->hasAdmin($admin));
 		$this->assertFalse($project->hasAdmin($member));
 	}
@@ -154,8 +156,8 @@ class ProjectTest extends TestCase {
 		$member = UserTest::create();
 		$member->save();
 		// admin role is inserted by migration
-		$project->users()->attach($admin->id, array('role_id' => 1));
-		$project->users()->attach($member->id, array('role_id' => 2));
+		$project->users()->attach($admin->id, array('role_id' => Role::adminId()));
+		$project->users()->attach($member->id, array('role_id' => Role::editorId()));
 		$this->assertTrue($project->hasAdminId($admin->id));
 		$this->assertFalse($project->hasAdminId($member->id));
 	}
@@ -169,7 +171,7 @@ class ProjectTest extends TestCase {
 
 		$this->assertFalse($project->hasUser($user));
 		
-		$project->users()->attach($user->id, array('role_id' => 1));
+		$project->users()->attach($user->id, array('role_id' => Role::adminId()));
 
 		$this->assertTrue($project->hasUser($user));
 	}
@@ -183,7 +185,7 @@ class ProjectTest extends TestCase {
 
 		$this->assertFalse($project->hasUserId($user->id));
 		
-		$project->users()->attach($user->id, array('role_id' => 1));
+		$project->users()->attach($user->id, array('role_id' => Role::adminId()));
 
 		$this->assertTrue($project->hasUserId($user->id));
 	}
@@ -220,6 +222,67 @@ class ProjectTest extends TestCase {
 		$this->assertEquals(123, $attribute->pivot->value_int);
 		$this->assertEquals(0.4, $attribute->pivot->value_double);
 		$this->assertEquals('test', $attribute->pivot->value_string);
+	}
+
+	public function testAddUserId()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$user = UserTest::create();
+		$user->save();
+		$this->assertNull($project->users()->find($user->id));
+
+		$project->addUserId($user->id, Role::editorId());
+		$user = $project->users()->find($user->id);
+		$this->assertNotNull($user);
+		$this->assertEquals(Role::editorId(), $user->role_id);
+
+		// a user can only be added once regardless the role
+		$this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+		$project->addUserId($user->id, Role::adminId());
+	}
+
+	public function testRemoveUserId()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$admin = UserTest::create();
+		$admin->save();
+		$project->addUserId($admin->id, Role::adminId());
+
+		$this->assertNotNull($project->users()->find($admin->id));
+		$this->assertTrue($project->removeUserId($admin->id));
+		$this->assertNull($project->users()->find($admin->id));
+
+		// the last admin mustn't be removed
+		$this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+		$project->removeUserId($project->creator->id);
+	}
+
+	public function testChangeRole()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$admin = $project->creator;
+		$user = UserTest::create();
+		$user->save();
+
+		try {
+			$project->changeRole($user->id, Role::adminId());
+			// this shouldn't be reached
+			$this->assertTrue(false);
+		} catch (HttpException $e) {
+			$this->assertNotNull($e);
+		}
+
+		$project->addUserId($user->id, Role::adminId());
+		$this->assertEquals(Role::adminId(), $project->users()->find($user->id)->role_id);
+		$project->changeRole($user->id, Role::editorId());
+		$this->assertEquals(Role::editorId(), $project->users()->find($user->id)->role_id);
+
+		// attempt to change the last admin to an editor
+		$this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+		$project->changeRole($admin->id, Role::editorId());
 	}
 
 }

@@ -1,5 +1,7 @@
 <?php namespace Dias;
 
+use Illuminate\Database\QueryException;
+
 class Project extends Attributable {
 
 	/**
@@ -43,7 +45,7 @@ class Project extends Attributable {
 	}
 
 	/**
-	 * Checks if the given user Id exists in this project.
+	 * Checks if the given user ID exists in this project.
 	 * @param int $id
 	 * @return boolean
 	 */
@@ -87,6 +89,62 @@ class Project extends Attributable {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Adds the user with the given role to this project.
+	 * @param int $userId
+	 * @param int $roleId
+	 */
+	public function addUserId($userId, $roleId)
+	{
+		try {
+			$this->users()->attach($userId, array('role_id' => $roleId));
+		} catch (QueryException $e) {
+			abort(400, "The user already exists in this project.");
+		}
+	}
+
+	/**
+	 * Changes the role of an existing user in this project.
+	 * @param int $userId
+	 * @param int $roleId
+	 */
+	public function changeRole($userId, $roleId)
+	{
+		if (!$this->hasUserId($userId))
+		{
+			abort(400, "User doesn't exist in this project.");
+		}
+
+		// removeUserId prevents changing the last remaining admin to anything
+		// else, too!
+		if ($this->removeUserId($userId))
+		{
+			// only re-attach if detach was successful
+			$this->users()->attach($userId, array('role_id' => $roleId));
+		}
+		else
+		{
+			return abort(500, "The user couldn't be modified.");
+		}
+	}
+
+	/**
+	 * Removes the user by ID from this project.
+	 * @param int $userId
+	 * @return boolean
+	 */
+	public function removeUserId($userId)
+	{
+		$admins = $this->admins();
+		// is this an attempt to remove the last remaining admin?
+		if ($admins->count() == 1 && $admins->find($userId))
+		{
+			abort(400, "The last project admin cannot be removed.");
+		}
+		
+		return (boolean) $this->users()->detach($userId);
 	}
 
 	public function transects()

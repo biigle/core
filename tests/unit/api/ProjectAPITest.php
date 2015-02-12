@@ -161,7 +161,6 @@ class ProjectAPITest extends APITestCase {
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
 		$this->assertContains('"name":"other test project"', $r->getContent());
-		$this->assertContains('"creator_id":"1"', $r->getContent());
 		$this->assertNotNull(Project::find(3));
 	}
 

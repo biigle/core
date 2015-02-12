@@ -37,7 +37,7 @@ class ProjectController extends Controller {
 		$project = Project::find($id);
 		if (!$project || !$project->hasUser($this->auth->user()))
 		{
-			return response('Unauthorized.', 401);
+			abort(401);
 		}
 		
 		return $project;
@@ -55,7 +55,7 @@ class ProjectController extends Controller {
 		$project = Project::find($id);
 		if (!$project || !$project->hasAdmin($this->auth->user()))
 		{
-			return response('Unauthorized.', 401);
+			abort(401);
 		}
 		
 		$project->name = $request->input('name', $project->name);
@@ -75,7 +75,7 @@ class ProjectController extends Controller {
 	{
 		if (!$request->has('name', 'description'))
 		{
-			return response('Bad arguments.', 400);
+			abort(400, 'Bad arguments.');
 		}
 		
 		$project = new Project;
@@ -101,12 +101,12 @@ class ProjectController extends Controller {
 		$project = Project::find($id);
 		if (!$project)
 		{
-			return response('Not Found.', 404);
+			abort(404);
 		}
 
 		if (!$project->hasAdmin($this->auth->user()))
 		{
-			return response('Unauthorized.', 401);
+			abort(401);
 		}
 
 		$project->delete();

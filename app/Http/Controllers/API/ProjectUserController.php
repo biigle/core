@@ -29,7 +29,7 @@ class ProjectUserController extends Controller {
 		$project = Project::find($projectId);
 		if (!$project || !$project->hasUser($this->auth->user()))
 		{
-			return response('Unauthorized.', 401);
+			abort(401);
 		}
 		return $project->users()->get();
 	}
@@ -44,41 +44,21 @@ class ProjectUserController extends Controller {
 	 */
 	public function update($projectId, $userId, Request $request)
 	{
-		// TODO move more logic into the model ( $project->updateUserBy() )
-
 		$project = Project::find($projectId);
 		if (!$project || !$project->hasAdmin($this->auth->user()))
 		{
-			return response('Unauthorized.', 401);
-		}
-
-		if (!$request->has('role_id'))
-		{
-			return response("Missing arguments.", 400);
-		}
-
-		if (!$project->hasUserId($userId))
-		{
-			return response("User doesn't exist in this project.", 400);
+			abort(401);
 		}
 
 		$role = Role::find($request->input('role_id'));
 
 		if (!$role)
 		{
-			return response("Role does not exist.", 400);
+			abort(400, "Role does not exist.");
 		}
 
-		if ($project->users()->detach($userId))
-		{
-			// only re-attach if detach was successful
-			$project->users()->attach($userId, array('role_id' => $role->id));
-			return response("Ok.", 200);
-		}
-		else
-		{
-			return response("The user couldn't be modified.", 500);
-		}
+		$project->changeRole($userId, $role->id);
+		return response("Ok.", 200);
 	}
 
 	/**
@@ -90,17 +70,10 @@ class ProjectUserController extends Controller {
 	 */
 	public function store($projectId, Request $request)
 	{
-		// TODO move more logic into the model ( $project->storeUserBy() )
-
 		$project = Project::find($projectId);
 		if (!$project || !$project->hasAdmin($this->auth->user()))
 		{
-			return response('Unauthorized.', 401);
-		}
-
-		if (!$request->has('id', 'role_id'))
-		{
-			return response("Missing arguments.", 400);
+			abort(401);
 		}
 
 		$user = User::find($request->input('id'));
@@ -108,10 +81,11 @@ class ProjectUserController extends Controller {
 
 		if (!$user || !$role)
 		{
-			return response("Bad arguments.", 400);
+			abort(400, "Bad arguments.");
 		}
 
-		$project->users()->attach($user->id, array('role_id' => $role->id));
+		$project->addUserId($user->id, $role->id);
+
 		return response("Ok.", 200);
 	}
 
@@ -124,8 +98,6 @@ class ProjectUserController extends Controller {
 	 */
 	public function destroy($projectId, $userId)
 	{
-		// TODO move more logic into the model ( $project->destroyUserBy() )
-
 		$project = Project::find($projectId);
 		$user = $this->auth->user();
 
@@ -133,18 +105,11 @@ class ProjectUserController extends Controller {
 		// remove themselves
 		if ($project && ($project->hasAdmin($user) || $user->id == $userId))
 		{
-			$admins = $project->admins();
-			// the last remaining admin cannot be deleted
-			if ($admins->count() == 1 && $admins->find($userId))
-			{
-				return response("The last project admin cannot be deleted.", 400);
-			}
-
-			$project->users()->detach($userId);
+			$project->removeUserId($userId);
 			return response("Ok.", 200);
 		}
 		
-		return response('Unauthorized.', 401);
+		return abort(401);
 	}
 
 }
