@@ -17,20 +17,22 @@ class AnnotationController extends Controller {
 	}
 
 	/**
-	 * Display the specified resource.
+	 * Display the annotation if the user has permission.
 	 *
 	 * @param  int  $id
 	 * @return Response
 	 */
 	public function show($id)
 	{
-		$annotation = Annotation::find($id);
+		$annotation = Annotation::with('labels', 'points')->find($id);
 		if (!$annotation)
 		{
 			abort(404);
 		}
 
-		$projectIds = $annotation->projectIds();
+		// call fresh so the transect and image doesn't appear in the output
+		// (they will be fetched for projectIds())
+		$projectIds = $annotation->fresh()->projectIds();
 		if (!$this->auth->user()->canSeeOneOfProjects($projectIds))
 		{
 			abort(401);
@@ -51,14 +53,27 @@ class AnnotationController extends Controller {
 	}
 
 	/**
-	 * Remove the specified resource from storage.
+	 * Remove the annotation if the user has permission.
 	 *
 	 * @param  int  $id
 	 * @return Response
 	 */
 	public function destroy($id)
 	{
-		//
+		$annotation = Annotation::find($id);
+		if (!$annotation)
+		{
+			abort(404);
+		}
+
+		$projectIds = $annotation->projectIds();
+		if (!$this->auth->user()->canEditInOneOfProjects($projectIds))
+		{
+			abort(401);
+		}
+
+		$annotation->delete();
+		return response('Deleted.', 200);
 	}
 
 }

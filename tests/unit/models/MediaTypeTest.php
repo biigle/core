@@ -4,10 +4,10 @@ use Dias\MediaType;
 
 class MediaTypeTest extends TestCase {
 
-	public static function create($name = 'images')
+	public static function create($name = false)
 	{
 		$mediaType = new MediaType;
-		$mediaType->name = $name;
+		$mediaType->name = $name ? $name : str_random(10);
 		return $mediaType;
 	}
 
@@ -36,9 +36,9 @@ class MediaTypeTest extends TestCase {
 
 	public function testNameUnique()
 	{
-		$obj = MediaTypeTest::create();
+		$obj = MediaTypeTest::create('images');
 		$obj->save();
-		$obj = MediaTypeTest::create();
+		$obj = MediaTypeTest::create('images');
 		$this->setExpectedException('Illuminate\Database\QueryException');
 		$obj->save();
 	}

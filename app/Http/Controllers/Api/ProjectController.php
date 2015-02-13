@@ -96,8 +96,6 @@ class ProjectController extends Controller {
 	 */
 	public function destroy($id)
 	{
-		// TODO move more logic into the model ( $project->deleteBy() )
-
 		$project = Project::find($id);
 		if (!$project)
 		{
