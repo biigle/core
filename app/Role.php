@@ -13,14 +13,35 @@ class Role extends Model {
 	public $timestamps = false;
 
 	/**
+	 * Returns the admin role.
+	 * @return Dias\Role
+	 */
+	public static function admin()
+	{
+		return Cache::rememberForever('role-admin', function()
+		{
+			return Role::whereName('admin')->first();
+		});
+	}
+
+	/**
 	 * Returns the admin role ID.
 	 * @return int
 	 */
 	public static function adminId()
 	{
-		return Cache::rememberForever('role-admin', function()
+		return self::admin()->id;
+	}
+
+	/**
+	 * Returns the editor role.
+	 * @return Dias\Role
+	 */
+	public static function editor()
+	{
+		return Cache::rememberForever('role-editor', function()
 		{
-			return Role::whereName('admin')->first()->id;
+			return Role::whereName('editor')->first();
 		});
 	}
 
@@ -30,9 +51,18 @@ class Role extends Model {
 	 */
 	public static function editorId()
 	{
-		return Cache::rememberForever('role-editor', function()
+		return self::editor()->id;
+	}
+
+	/**
+	 * Returns the guest role.
+	 * @return Dias\Role
+	 */
+	public static function guest()
+	{
+		return Cache::rememberForever('role-guest', function()
 		{
-			return Role::whereName('editor')->first()->id;
+			return Role::whereName('guest')->first();
 		});
 	}
 
@@ -42,10 +72,7 @@ class Role extends Model {
 	 */
 	public static function guestId()
 	{
-		return Cache::rememberForever('role-guest', function()
-		{
-			return Role::whereName('guest')->first()->id;
-		});
+		return self::guest()->id;
 	}
 
 }

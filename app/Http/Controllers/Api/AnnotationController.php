@@ -1,49 +1,42 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Requests;
 use Dias\Http\Controllers\Controller;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
 
 use Dias\Annotation;
 
 class AnnotationController extends Controller {
 
-	public function __construct()
+	private $auth;
+
+	public function __construct(Guard $auth)
 	{
 		$this->middleware('auth.api');
-	}
-
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @param Illuminate\Contracts\Auth\Guard $auth
-	 * @return Response
-	 */
-	public function index(Guard $auth)
-	{
-		//
-	}
-
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @return Response
-	 */
-	public function store()
-	{
-		//
+		$this->auth = $auth;
 	}
 
 	/**
 	 * Display the specified resource.
 	 *
 	 * @param  int  $id
-	 * @param Illuminate\Contracts\Auth\Guard $auth
 	 * @return Response
 	 */
-	public function show($id, Guard $auth)
+	public function show($id)
 	{
-		//
+		$annotation = Annotation::find($id);
+		if (!$annotation)
+		{
+			abort(404);
+		}
+
+		$projectIds = $annotation->projectIds();
+		if (!$this->auth->user()->canSeeOneOfProjects($projectIds))
+		{
+			abort(401);
+		}
+
+		return $annotation;
 	}
 
 	/**

@@ -1,8 +1,9 @@
-<?php namespace Dias;
+<?php namespace Dias\Observers;
 
 use Exception;
+use Dias\Role;
 
-class ProjectObserver {
+class Project {
 
 	/**
 	 * A project must not be created without having a creator.

@@ -10,7 +10,7 @@ class ShapeApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		// api key authentication
-		$this->call('GET', '/api/v1/shapes', [], [], [], $this->credentials);
+		$this->call('GET', '/api/v1/shapes', [], [], [], $this->adminCredentials);
 		$this->assertResponseOk();
 
 		// session cookie authentication
@@ -27,7 +27,7 @@ class ShapeApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		// api key authentication
-		$this->call('GET', '/api/v1/shapes/'.Shape::circleId(), [], [], [], $this->credentials);
+		$this->call('GET', '/api/v1/shapes/'.Shape::circleId(), [], [], [], $this->adminCredentials);
 		$this->assertResponseOk();
 
 		// session cookie authentication

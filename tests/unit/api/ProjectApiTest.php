@@ -5,18 +5,6 @@ use Dias\Role;
 
 class ProjectApiTest extends ApiTestCase {
 
-	private $project;
-
-	public function setUp()
-	{
-		parent::setUp();
-		Session::start();
-
-		$this->project = ProjectTest::create();
-		$this->project->save();
-		$this->project->addUserId($this->user->id, Role::adminId());
-	}
-
 	public function testIndex()
 	{
 		$this->call('GET', '/api/v1/projects');
@@ -27,11 +15,11 @@ class ProjectApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 		
 		// api key authentication
-		$this->call('GET', '/api/v1/projects/my', [], [], [], $this->credentials);
+		$this->call('GET', '/api/v1/projects/my', [], [], [], $this->adminCredentials);
 		$this->assertResponseOk();
 
 		// session cookie authentication
-		$this->be($this->user);
+		$this->be($this->admin);
 		$r = $this->call('GET', '/api/v1/projects/my');
 		$this->assertResponseOk();
 
@@ -47,14 +35,14 @@ class ProjectApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 		
 		// api key authentication
-		$this->call('GET', '/api/v1/projects/1', [], [], [], $this->credentials);
+		$this->call('GET', '/api/v1/projects/1', [], [], [], $this->adminCredentials);
 		$this->assertResponseOk();
 
-		$this->call('GET', '/api/v1/projects/2', [], [], [], $this->credentials);
+		$this->call('GET', '/api/v1/projects/2', [], [], [], $this->adminCredentials);
 		$this->assertResponseStatus(401);
 
 		// session cookie authentication
-		$this->be($this->user);
+		$this->be($this->admin);
 		$this->call('GET', '/api/v1/projects/2');
 		$this->assertResponseStatus(401);
 
@@ -81,11 +69,11 @@ class ProjectApiTest extends ApiTestCase {
 		// api key authentication
 		$this->call('PUT', '/api/v1/projects/1', array(
 			'_token' => Session::token()
-		), [], [], $this->credentials);
+		), [], [], $this->adminCredentials);
 		$this->assertResponseOk();
 
 		// session cookie authentication
-		$this->be($this->user);
+		$this->be($this->admin);
 		$this->call('PUT', '/api/v1/projects/2', array(
 			'_token' => Session::token()
 		));
@@ -105,11 +93,7 @@ class ProjectApiTest extends ApiTestCase {
 		$this->assertNotEquals(5, $this->project->creator_id);
 
 		// non-admins are not allowed to update
-		$user = UserTest::create();
-		$user->save();
-		$this->project->addUserId($user->id, Role::editorId());
-
-		$this->be($user);
+		$this->be($this->editor);
 		$this->call('PUT', '/api/v1/projects/1', array(
 			'_token' => Session::token()
 		));
@@ -130,7 +114,7 @@ class ProjectApiTest extends ApiTestCase {
 		// creating an empty project is an error
 		$this->call('POST', '/api/v1/projects', array(
 			'_token' => Session::token()
-		), [], [], $this->credentials);
+		), [], [], $this->adminCredentials);
 		$this->assertResponseStatus(400);
 
 		$this->assertNull(Project::find(2));
@@ -138,16 +122,16 @@ class ProjectApiTest extends ApiTestCase {
 			'_token' => Session::token(),
 			'name' => 'test project',
 			'description' => 'my test project'
-		), [], [], $this->credentials);
+		), [], [], $this->adminCredentials);
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
 		$this->assertContains('"name":"test project"', $r->getContent());
-		$this->assertContains('"creator_id":"1"', $r->getContent());
+		$this->assertContains('"creator_id":"'.$this->admin->id.'"', $r->getContent());
 		$this->assertNotNull(Project::find(2));
 
 		// session cookie authentication
-		$this->be($this->user);
+		$this->be($this->admin);
 		$this->call('POST', '/api/v1/projects', array(
 			'_token' => Session::token()
 		));
@@ -177,11 +161,7 @@ class ProjectApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		// non-admins are not allowed to delete the project
-		$user = UserTest::create();
-		$user->save();
-		$this->project->addUserId($user->id, Role::editorId());
-		
-		$this->be($user);
+		$this->be($this->editor);
 		$this->call('DELETE', '/api/v1/projects/1', array(
 			'_token' => Session::token()
 		));
@@ -192,12 +172,12 @@ class ProjectApiTest extends ApiTestCase {
 		$this->assertNotNull($this->project->fresh());
 		$this->call('DELETE', '/api/v1/projects/1', array(
 			'_token' => Session::token(),
-		), [], [], $this->credentials);
+		), [], [], $this->adminCredentials);
 		$this->assertResponseOk();
 		$this->assertNull($this->project->fresh());
 
 		// already deleted projects can't be re-deleted
-		$this->be($this->user);
+		$this->be($this->admin);
 		$this->call('DELETE', '/api/v1/projects/1', array(
 			'_token' => Session::token()
 		));

@@ -1,6 +1,8 @@
 <?php namespace Dias;
 
-class Image extends Attributable {
+use Dias\Contracts\BelongsToProject;
+
+class Image extends Attributable implements BelongsToProject {
 
 	/**
 	 * Don't maintain timestamps for this model.
@@ -17,5 +19,14 @@ class Image extends Attributable {
 	public function annotations()
 	{
 		return $this->hasMany('Dias\Annotation');
+	}
+
+	/**
+	 * {@inheritdoc}
+	 * @return array
+	 */
+	public function projectIds()
+	{
+		return $this->transect->projectIds();
 	}
 }

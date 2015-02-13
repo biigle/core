@@ -10,7 +10,7 @@ class RoleApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		// api key authentication
-		$this->call('GET', '/api/v1/roles', [], [], [], $this->credentials);
+		$this->call('GET', '/api/v1/roles', [], [], [], $this->userCredentials);
 		$this->assertResponseOk();
 
 		// session cookie authentication
@@ -27,7 +27,7 @@ class RoleApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		// api key authentication
-		$this->call('GET', '/api/v1/roles/'.Role::adminId(), [], [], [], $this->credentials);
+		$this->call('GET', '/api/v1/roles/'.Role::adminId(), [], [], [], $this->userCredentials);
 		$this->assertResponseOk();
 
 		// session cookie authentication

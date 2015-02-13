@@ -96,4 +96,28 @@ class TransectTest extends TestCase {
 		$image->save();
 		$this->assertEquals($image->id, $transect->images()->first()->id);
 	}
+
+	public function testProjects()
+	{
+		$transect = TransectTest::create();
+		$transect->save();
+		$project = ProjectTest::create();
+		$project->save();
+		$this->assertEquals(0, $transect->projects()->count());
+		$project->addTransectId($transect->id);
+		$this->assertEquals(1, $transect->projects()->count());
+	}
+
+	public function testProjectIds()
+	{
+		$transect = TransectTest::create();
+		$transect->save();
+		$project = ProjectTest::create();
+		$project->save();
+		$this->assertEmpty($transect->projectIds());
+		$project->addTransectId($transect->id);
+		$ids = $transect->projectIds();
+		$this->assertNotEmpty($ids);
+		$this->assertEquals($project->id, $ids[0]);
+	}
 }

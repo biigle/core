@@ -23,10 +23,9 @@ Route::controllers(array(
 
 Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api'), function()
 {
-	// Route::get('annotations/my', 'AnnotationController@index');
-	// Route::resource('annotations', 'AnnotationController', array(
-	// 	'only' => array('store', 'show', 'update', 'destroy')
-	// ));
+	Route::resource('annotations', 'AnnotationController', array(
+		'only' => array('show', 'update', 'destroy')
+	));
 
 	Route::get('projects/my', 'ProjectController@index');
 	Route::resource('projects', 'ProjectController', array(

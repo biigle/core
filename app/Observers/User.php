@@ -1,6 +1,8 @@
-<?php namespace Dias;
+<?php namespace Dias\Observers;
 
-class UserObserver {
+use Dias\Role;
+
+class User {
 
 	/**
 	 * A user gets the role 'editor' by default.
@@ -9,7 +11,7 @@ class UserObserver {
 	 */
 	public function creating($user)
 	{
-		$user->role()->associate(Role::find(Role::editorId()));
+		$user->role()->associate(Role::editor());
 		return true;
 	}
 

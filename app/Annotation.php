@@ -1,6 +1,8 @@
 <?php namespace Dias;
 
-class Annotation extends Attributable {
+use Dias\Contracts\BelongsToProject;
+
+class Annotation extends Attributable implements BelongsToProject {
 
 	// don't display info from the pivot table
 	protected $hidden = array(
@@ -28,5 +30,14 @@ class Annotation extends Attributable {
 			// display confidence and user_id directly in the labels object and
 			// not in the pivot table object
 			->withPivot('confidence as confidence', 'user_id as user_id');
+	}
+
+	/**
+	 * {@inheritdoc}
+	 * @return array
+	 */
+	public function projectIds()
+	{
+		return $this->image->projectIds();
 	}
 }

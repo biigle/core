@@ -10,7 +10,7 @@ class MediaTypeApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		// api key authentication
-		$this->call('GET', '/api/v1/media-types', [], [], [], $this->credentials);
+		$this->call('GET', '/api/v1/media-types', [], [], [], $this->adminCredentials);
 		$this->assertResponseOk();
 
 		// session cookie authentication
@@ -27,7 +27,7 @@ class MediaTypeApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		// api key authentication
-		$this->call('GET', '/api/v1/media-types/'.MediaType::timeSeriesId(), [], [], [], $this->credentials);
+		$this->call('GET', '/api/v1/media-types/'.MediaType::timeSeriesId(), [], [], [], $this->adminCredentials);
 		$this->assertResponseOk();
 
 		// session cookie authentication

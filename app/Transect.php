@@ -1,6 +1,8 @@
 <?php namespace Dias;
 
-class Transect extends Attributable {
+use Dias\Contracts\BelongsToProject;
+
+class Transect extends Attributable implements BelongsToProject {
 
 	public function creator()
 	{
@@ -15,5 +17,19 @@ class Transect extends Attributable {
 	public function images()
 	{
 		return $this->hasMany('Dias\Image');
+	}
+
+	public function projects()
+	{
+		return $this->belongsToMany('Dias\Project');
+	}
+
+	/**
+	 * {@inheritdoc}
+	 * @return array
+	 */
+	public function projectIds()
+	{
+		return $this->projects()->lists('id');
 	}
 }

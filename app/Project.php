@@ -24,6 +24,11 @@ class Project extends Attributable {
 		return $this->users()->whereProjectRoleId(Role::adminId());
 	}
 
+	public function editors()
+	{
+		return $this->users()->whereProjectRoleId(Role::editorId());
+	}
+
 	/**
 	 * Checks if the user ID is an admin of this project.
 	 * @param int $id
@@ -42,6 +47,26 @@ class Project extends Attributable {
 	public function hasAdmin($user)
 	{
 		return $this->hasAdminId($user->id);
+	}
+
+	/**
+	 * Checks if the user ID is an editor of this project.
+	 * @param int $id
+	 * @return boolean
+	 */
+	public function hasEditorId($id)
+	{
+		return $this->editors()->find($id) !== null;
+	}
+
+	/**
+	 * Checks if the user is an editor of this project.
+	 * @param Dias\User $user
+	 * @return boolean
+	 */
+	public function hasEditor($user)
+	{
+		return $this->hasEditorId($user->id);
 	}
 
 	/**
@@ -151,4 +176,21 @@ class Project extends Attributable {
 	{
 		return $this->belongsToMany('Dias\Transect');
 	}
+
+	/**
+	 * Adds a transect to this project if it wasn't already.
+	 * @param int $id
+	 */
+	public function addTransectId($id)
+	{
+		try {
+			$this->transects()->attach($id);
+		} catch (QueryException $e) {
+			// transect already exists for this project, so everything is fine
+		}
+	}
+
+	// TODO if this is the last project, the transect belongs to, the whole
+	// transect should be deleted (but with warning!)
+	// public function removeTransectId($id)
 }

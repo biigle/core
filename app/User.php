@@ -82,4 +82,55 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 		return $this->belongsTo('Dias\Role');
 	}
 
+	/**
+	 * Checks if this user has the global admin role.
+	 * @return boolean
+	 */
+	public function isAdmin()
+	{
+		return $this->role->id === Role::adminId();
+	}
+
+	/**
+	 * Checks if this user is a member in one of the supplied projects.
+	 * @param array $ids
+	 * @return boolean
+	 */
+	public function canSeeOneOfProjects($ids)
+	{
+		return $this->projects()->whereIn('id', $ids)->count() > 0;
+	}
+
+	/**
+	 * Checks if this user is an editor or admin in one of the supplied
+	 * projects.
+	 * @param array $ids
+	 * @return boolean
+	 */
+	public function canEditInOneOfProjects($ids)
+	{
+		foreach ($this->projects()->whereIn('id', $ids)->get() as $project) {
+			if ($project->hasEditor($this) || $project->hasAdmin($this))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if this user is an admin in one of the supplied projects.
+	 * @param array $ids
+	 * @return boolean
+	 */
+	public function canAdminOneOfProjects($ids)
+	{
+		foreach ($this->projects()->whereIn('id', $ids)->get() as $project) {
+			if ($project->hasAdmin($this))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 }

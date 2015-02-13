@@ -85,4 +85,19 @@ class ImageTest extends TestCase {
 		$this->assertEquals(0.4, $attribute->pivot->value_double);
 		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
+
+	public function testProjectIds()
+	{
+		$image = ImageTest::create();
+		$image->save();
+		$project = ProjectTest::create();
+		$project->save();
+		$transect = $image->transect;
+
+		$this->assertEmpty($image->projectIds());
+		$project->addTransectId($transect->id);
+		$ids = $image->projectIds();
+		$this->assertNotEmpty($ids);
+		$this->assertEquals($project->id, $ids[0]);
+	}
 }

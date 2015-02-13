@@ -101,4 +101,19 @@ class AnnotationTest extends TestCase {
 		$this->assertEquals(0.4, $attribute->pivot->value_double);
 		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
+
+	public function testProjectIds()
+	{
+		$annotation = AnnotationTest::create();
+		$annotation->save();
+		$project = ProjectTest::create();
+		$project->save();
+		$transect = $annotation->image->transect;
+
+		$this->assertEmpty($annotation->projectIds());
+		$project->addTransectId($transect->id);
+		$ids = $annotation->projectIds();
+		$this->assertNotEmpty($ids);
+		$this->assertEquals($project->id, $ids[0]);
+	}
 }

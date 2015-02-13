@@ -132,6 +132,23 @@ class ProjectTest extends TestCase {
 		$this->assertEquals(1, $project->admins()->count());
 	}
 
+	public function testEditors()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$editor = UserTest::create();
+		$editor->save();
+		$member = UserTest::create();
+		$member->save();
+		$project->addUserId($editor->id, Role::editorId());
+		$project->addUserId($member->id, Role::guestId());
+		// the creator doesn't count
+		$project->creator->delete();
+		
+		$this->assertEquals(2, $project->users()->count());
+		$this->assertEquals(1, $project->editors()->count());
+	}
+
 	public function testHasAdmin()
 	{
 		$project = ProjectTest::create();
@@ -140,7 +157,6 @@ class ProjectTest extends TestCase {
 		$admin->save();
 		$member = UserTest::create();
 		$member->save();
-		// admin role is inserted by migration
 		$project->addUserId($admin->id, Role::adminId());
 		$project->addUserId($member->id, Role::editorId());
 		$this->assertTrue($project->hasAdmin($admin));
@@ -155,11 +171,38 @@ class ProjectTest extends TestCase {
 		$admin->save();
 		$member = UserTest::create();
 		$member->save();
-		// admin role is inserted by migration
 		$project->addUserId($admin->id, Role::adminId());
 		$project->addUserId($member->id, Role::editorId());
 		$this->assertTrue($project->hasAdminId($admin->id));
 		$this->assertFalse($project->hasAdminId($member->id));
+	}
+
+	public function testHasEditor()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$editor = UserTest::create();
+		$editor->save();
+		$member = UserTest::create();
+		$member->save();
+		$project->addUserId($editor->id, Role::editorId());
+		$project->addUserId($member->id, Role::guestId());
+		$this->assertTrue($project->hasEditor($editor));
+		$this->assertFalse($project->hasEditor($member));
+	}
+
+	public function testHasEditorId()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$editor = UserTest::create();
+		$editor->save();
+		$member = UserTest::create();
+		$member->save();
+		$project->addUserId($editor->id, Role::editorId());
+		$project->addUserId($member->id, Role::guestId());
+		$this->assertTrue($project->hasEditorId($editor->id));
+		$this->assertFalse($project->hasEditorId($member->id));
 	}
 
 	public function testHasUser()
@@ -283,6 +326,22 @@ class ProjectTest extends TestCase {
 		// attempt to change the last admin to an editor
 		$this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
 		$project->changeRole($admin->id, Role::editorId());
+	}
+
+	public function testAddTransect()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$transect = TransectTest::create();
+		$transect->save();
+		$this->assertEquals(0, $project->transects()->count());
+		$project->addTransectId($transect->id);
+		$this->assertEquals(1, $project->transects()->count());
+
+		// transect shouldn't be added again but the QueryException shouldn't
+		// be trown up either
+		$project->addTransectId($transect->id);
+		$this->assertEquals(1, $project->transects()->count());
 	}
 
 }

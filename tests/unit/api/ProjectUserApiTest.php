@@ -5,33 +5,21 @@ use Dias\Role;
 
 class ProjectUserApiTest extends ApiTestCase {
 
-	private $project;
-
-	public function setUp()
-	{
-		parent::setUp();
-		Session::start();
-
-		$this->project = ProjectTest::create();
-		$this->project->save();
-		$this->project->addUserId($this->user->id, Role::adminId());
-	}
-
 	public function testIndex()
 	{
 		$this->call('GET', '/api/v1/projects/1/users');
 		$this->assertResponseStatus(401);
 		
 		// api key authentication
-		$this->call('GET', '/api/v1/projects/1/users', [], [], [], $this->credentials);
+		$this->call('GET', '/api/v1/projects/1/users', [], [], [], $this->adminCredentials);
 		$this->assertResponseOk();
 
 		// the user doesn't belong to this project
-		$this->call('GET', '/api/v1/projects/2/users', [], [], [], $this->credentials);
+		$this->call('GET', '/api/v1/projects/2/users', [], [], [], $this->adminCredentials);
 		$this->assertResponseStatus(401);
 
 		// session cookie authentication
-		$this->be($this->user);
+		$this->be($this->admin);
 		$r = $this->call('GET', '/api/v1/projects/1/users');
 		$this->assertResponseOk();
 
@@ -53,11 +41,7 @@ class ProjectUserApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		// non-admins are not allowed to modify users
-		$user = UserTest::create();
-		$user->save();
-		$this->project->addUserId($user->id, Role::editorId());
-
-		$this->be($user);
+		$this->be($this->editor);
 		$this->call('PUT', '/api/v1/projects/1/users/1', array(
 			'_token' => Session::token()
 		));
@@ -68,31 +52,31 @@ class ProjectUserApiTest extends ApiTestCase {
 		// user doesn't exist
 		$this->call('PUT', '/api/v1/projects/1/users/5', array(
 			'_token' => Session::token()
-		), [], [], $this->credentials);
+		), [], [], $this->adminCredentials);
 		$this->assertResponseStatus(400);
 
 		// session cookie authentication
-		$this->be($this->user);
+		$this->be($this->admin);
 		// missing arguments
-		$this->call('PUT', '/api/v1/projects/1/users/'.$user->id, array(
+		$this->call('PUT', '/api/v1/projects/1/users/'.$this->editor->id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(400);
 
 		// role does not exist
-		$this->call('PUT', '/api/v1/projects/1/users/'.$user->id, array(
+		$this->call('PUT', '/api/v1/projects/1/users/'.$this->editor->id, array(
 			'_token' => Session::token(),
 			'project_role_id' => 100
 		));
 		$this->assertResponseStatus(400);
 
-		$this->assertEquals(2, $this->project->users()->find($user->id)->project_role_id);
-		$this->call('PUT', '/api/v1/projects/1/users/'.$user->id, array(
+		$this->assertEquals(2, $this->project->users()->find($this->editor->id)->project_role_id);
+		$this->call('PUT', '/api/v1/projects/1/users/'.$this->editor->id, array(
 			'_token' => Session::token(),
 			'project_role_id' => 3
 		));
 		$this->assertResponseOk();
-		$this->assertEquals(3, $this->project->users()->find($user->id)->project_role_id);
+		$this->assertEquals(3, $this->project->users()->find($this->editor->id)->project_role_id);
 	}
 
 	public function testStore()
@@ -110,40 +94,37 @@ class ProjectUserApiTest extends ApiTestCase {
 		// user doesn't exist
 		$this->call('POST', '/api/v1/projects/1/users', array(
 			'_token' => Session::token()
-		), [], [], $this->credentials);
+		), [], [], $this->adminCredentials);
 		$this->assertResponseStatus(400);
 
 		// non-admins are not allowed to add users
-		$user = UserTest::create();
-		$user->save();
-		$this->project->addUserId($user->id, Role::editorId());
-		$this->be($user);
+		$this->be($this->editor);
 		$this->call('POST', '/api/v1/projects/1/users', array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(401);
 		Auth::logout();
 
-		$this->project->users()->detach($user->id);
-		$this->assertNull($this->project->fresh()->users()->find($user->id));
+		$this->project->users()->detach($this->editor->id);
+		$this->assertNull($this->project->fresh()->users()->find($this->editor->id));
 
 		// session cookie authentication
-		$this->be($this->user);
+		$this->be($this->admin);
 		// missing arguments
 		$this->call('POST', '/api/v1/projects/1/users', array(
 			'_token' => Session::token(),
-			'id' => $user->id
+			'id' => $this->editor->id
 		));
 		$this->assertResponseStatus(400);
 
 		$this->call('POST', '/api/v1/projects/1/users', array(
 			'_token' => Session::token(),
-			'id' => $user->id,
+			'id' => $this->editor->id,
 			'project_role_id' => 2
 		));
 		$this->assertResponseOk();
-		$newUser = $this->project->users()->find($user->id);
-		$this->assertEquals($user->id, $newUser->id);
+		$newUser = $this->project->users()->find($this->editor->id);
+		$this->assertEquals($this->editor->id, $newUser->id);
 		$this->assertEquals(Role::editorId(), $newUser->project_role_id);
 	}
 
@@ -162,41 +143,38 @@ class ProjectUserApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		// non-admins are not allowed to delete other users
-		$user = UserTest::create();
-		$user->save();
-		$this->project->addUserId($user->id, Role::editorId());
-		$this->be($user);
-		$this->call('DELETE', '/api/v1/projects/1/users/'.$this->user->id, array(
+		$this->be($this->editor);
+		$this->call('DELETE', '/api/v1/projects/1/users/'.$this->admin->id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(401);
 
 		// but they can delete themselves
-		$this->assertNotNull($this->project->fresh()->users()->find($user->id));
-		$this->call('DELETE', '/api/v1/projects/1/users/'.$user->id, array(
+		$this->assertNotNull($this->project->fresh()->users()->find($this->editor->id));
+		$this->call('DELETE', '/api/v1/projects/1/users/'.$this->editor->id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseOk();
-		$this->assertNull($this->project->fresh()->users()->find($user->id));
+		$this->assertNull($this->project->fresh()->users()->find($this->editor->id));
 
 		Auth::logout();
-		$this->project->addUserId($user->id, Role::editorId());
+		$this->project->addUserId($this->editor->id, Role::editorId());
 
 		// api key authentication
 		// admins can delete anyone
-		$this->assertNotNull($this->project->fresh()->users()->find($user->id));
-		$this->call('DELETE', '/api/v1/projects/1/users/'.$user->id, array(
+		$this->assertNotNull($this->project->fresh()->users()->find($this->editor->id));
+		$this->call('DELETE', '/api/v1/projects/1/users/'.$this->editor->id, array(
 			'_token' => Session::token(),
-		), [], [], $this->credentials);
+		), [], [], $this->adminCredentials);
 		$this->assertResponseOk();
-		$this->assertNull($this->project->fresh()->users()->find($user->id));
+		$this->assertNull($this->project->fresh()->users()->find($this->editor->id));
 
-		$this->project->addUserId($user->id, Role::editorId());
+		$this->project->addUserId($this->editor->id, Role::editorId());
 		// session cookie authentication
-		$this->be($this->user);
+		$this->be($this->admin);
 
 		// but admins cannot delete themselves if they are the only admin left
-		$this->call('DELETE', '/api/v1/projects/1/users/'.$this->user->id, array(
+		$this->call('DELETE', '/api/v1/projects/1/users/'.$this->admin->id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(400);

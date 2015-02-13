@@ -15,94 +15,101 @@ class UserTest extends TestCase {
 		return $user;
 	}
 
+	private $user;
+
+	public function setUp()
+	{
+		parent::setUp();
+		$this->user = self::create();
+	}
+
 	public function testCreation()
 	{
-		$user = UserTest::create();
-		$this->assertTrue($user->save());
+		$this->assertTrue($this->user->save());
 	}
 
 	public function testAttributes()
 	{
-		$user = UserTest::create();
-		$user->save();
-		$this->assertNotNull($user->firstname);
-		$this->assertNotNull($user->lastname);
-		$this->assertNotNull($user->password);
-		$this->assertNotNull($user->email);
-		$this->assertNotNull($user->role_id);
-		$this->assertNotNull($user->created_at);
-		$this->assertNotNull($user->updated_at);
+		$this->user->save();
+		$this->assertNotNull($this->user->firstname);
+		$this->assertNotNull($this->user->lastname);
+		$this->assertNotNull($this->user->password);
+		$this->assertNotNull($this->user->email);
+		$this->assertNotNull($this->user->role_id);
+		$this->assertNotNull($this->user->created_at);
+		$this->assertNotNull($this->user->updated_at);
 	}
 
 	public function testFirstnameRequired()
 	{
-		$user = UserTest::create();
-		$user->firstname = null;
+		$this->user->firstname = null;
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		$user->save();
+		$this->user->save();
 	}
 
 	public function testLastnameRequired()
 	{
-		$user = UserTest::create();
-		$user->lastname = null;
+		$this->user->lastname = null;
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		$user->save();
+		$this->user->save();
 	}
 
 	public function testPasswordRequired()
 	{
-		$user = UserTest::create();
-		$user->password = null;
+		$this->user->password = null;
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		$user->save();
+		$this->user->save();
 	}
 
 	public function testEmailRequired()
 	{
-		$user = UserTest::create();
-		$user->email = null;
+		$this->user->email = null;
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		$user->save();
+		$this->user->save();
 	}
 
 	public function testEmailUnique()
 	{
-		$user = UserTest::create('joe', 'user', 'pw', 'test@test.com');
-		$user->save();
-		$user = UserTest::create('joe', 'user', 'pw', 'test@test.com');
+		$this->user = UserTest::create('joe', 'user', 'pw', 'test@test.com');
+		$this->user->save();
+		$this->user = UserTest::create('joe', 'user', 'pw', 'test@test.com');
 		$this->setExpectedException('Illuminate\Database\QueryException');
-		$user->save();
+		$this->user->save();
 	}
 
 	public function testProjects()
 	{
 		$project = ProjectTest::create();
 		$project->save();
-		$user = UserTest::create();
-		$user->save();
+		$this->user->save();
 		$role = RoleTest::create();
 		$role->save();
-		$project->addUserId($user->id, $role->id);
+		$project->addUserId($this->user->id, $role->id);
 
-		$this->assertEquals($user->projects()->first()->id, $project->id);
+		$this->assertEquals($this->user->projects()->first()->id, $project->id);
 	}
 
 	public function testRole()
 	{
-		$user = UserTest::create();
-		$user->save();
-		$role = $user->role;
+		$this->user->save();
+		$role = $this->user->role;
 		$this->assertNotNull($role);
 		$this->assertEquals(Role::editorId(), $role->id);
 	}
 
+	public function testIsAdmin()
+	{
+		$this->user->save();
+		$this->assertFalse($this->user->isAdmin());
+		$this->user->role()->associate(Role::admin());
+		$this->assertTrue($this->user->isAdmin());
+	}
+
 	public function testHiddenAttributes()
 	{
-		$user = UserTest::create();
 		// API key mustn't show up in the JSON
-		$user->generateAPIKey();
-		$jsonUser = json_decode((string) $user);
+		$this->user->generateAPIKey();
+		$jsonUser = json_decode((string) $this->user);
 		$this->assertObjectNotHasAttribute('password', $jsonUser);
 		$this->assertObjectNotHasAttribute('email', $jsonUser);
 		$this->assertObjectNotHasAttribute('remember_token', $jsonUser);
@@ -114,19 +121,18 @@ class UserTest extends TestCase {
 
 	public function testAttributeRelation()
 	{
-		$user = UserTest::create();
-		$user->save();
+		$this->user->save();
 		$attribute = AttributeTest::create();
 		$attribute->save();
-		$user->attributes()->attach($attribute->id, array(
+		$this->user->attributes()->attach($attribute->id, array(
 			'value_int'    => 123,
 			'value_double' => 0.4,
 			'value_string' => 'test'
 		));
 
-		$this->assertEquals(1, $user->attributes()->count());
+		$this->assertEquals(1, $this->user->attributes()->count());
 
-		$attribute = $user->attributes()->first();
+		$attribute = $this->user->attributes()->first();
 		$this->assertEquals(123, $attribute->pivot->value_int);
 		$this->assertEquals(0.4, $attribute->pivot->value_double);
 		$this->assertEquals('test', $attribute->pivot->value_string);
@@ -134,11 +140,55 @@ class UserTest extends TestCase {
 
 	public function testApiKey()
 	{
-		$user = UserTest::create();
-		$user->save();
-		$this->assertNull($user->api_key);
-		$key = $user->generateApiKey();
-		$user->save();
-		$this->assertEquals($key, $user->fresh()->api_key);
+		$this->user->save();
+		$this->assertNull($this->user->api_key);
+		$key = $this->user->generateApiKey();
+		$this->user->save();
+		$this->assertEquals($key, $this->user->fresh()->api_key);
+	}
+
+	public function testCanSeeOneOfProjects()
+	{
+		$this->user->save();
+		$project = ProjectTest::create();
+		$project->save();
+		$projectIds = array($project->id);
+		$this->assertFalse($this->user->canSeeOneOfProjects($projectIds));
+		$project->addUserId($this->user->id, Role::guestId());
+		$this->assertTrue($this->user->canSeeOneOfProjects($projectIds));
+		$project->changeRole($this->user->id, Role::editorId());
+		$this->assertTrue($this->user->canSeeOneOfProjects($projectIds));
+		$project->changeRole($this->user->id, Role::adminId());
+		$this->assertTrue($this->user->canSeeOneOfProjects($projectIds));
+	}
+
+	public function testCanEditInOneOfProjects()
+	{
+		$this->user->save();
+		$project = ProjectTest::create();
+		$project->save();
+		$projectIds = array($project->id);
+		$this->assertFalse($this->user->canEditInOneOfProjects($projectIds));
+		$project->addUserId($this->user->id, Role::guestId());
+		$this->assertFalse($this->user->canEditInOneOfProjects($projectIds));
+		$project->changeRole($this->user->id, Role::editorId());
+		$this->assertTrue($this->user->canEditInOneOfProjects($projectIds));
+		$project->changeRole($this->user->id, Role::adminId());
+		$this->assertTrue($this->user->canEditInOneOfProjects($projectIds));
+	}
+
+	public function testCanAdminOneOfProjects()
+	{
+		$this->user->save();
+		$project = ProjectTest::create();
+		$project->save();
+		$projectIds = array($project->id);
+		$this->assertFalse($this->user->canAdminOneOfProjects($projectIds));
+		$project->addUserId($this->user->id, Role::guestId());
+		$this->assertFalse($this->user->canAdminOneOfProjects($projectIds));
+		$project->changeRole($this->user->id, Role::editorId());
+		$this->assertFalse($this->user->canAdminOneOfProjects($projectIds));
+		$project->changeRole($this->user->id, Role::adminId());
+		$this->assertTrue($this->user->canAdminOneOfProjects($projectIds));
 	}
 }

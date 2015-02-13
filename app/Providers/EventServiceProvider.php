@@ -26,8 +26,8 @@ class EventServiceProvider extends ServiceProvider {
 	{
 		parent::boot($events);
 
-		\Dias\Project::observe(new \Dias\ProjectObserver);
-		\Dias\User::observe(new \Dias\UserObserver);
+		\Dias\Project::observe(new \Dias\Observers\Project);
+		\Dias\User::observe(new \Dias\Observers\User);
 	}
 
 }
