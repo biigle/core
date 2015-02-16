@@ -38,6 +38,8 @@ TODO
 
 (`npm install`, Package development, `php artisan tinker`)
 
+Update or generate the API documentation with `./update-doc.sh`.
+
 ## Testing
 
 You shouldn't need to configure your testing environment since for acceptance tests your `local` database is used, and for functional/unit tests an SQLite in-memory database is used.
@@ -47,11 +49,13 @@ You shouldn't need to configure your testing environment since for acceptance te
 1. start `phantomjs --webdriver=4444`
 2. start `php -S localhost:8000 -t public/`
 3. start your database (it will be wiped and re-seeded during testing!)
-4. run `./test-acceptance.sh`
+4. run `php vendor/bin/codecept run`
 
 ### Unit/Functional
 
-Run `./test-unit.sh`.
+Run `phpunit`.
+
+To run all tests, set up PhantomJS and the PHP server and run `./test.sh`.
 
 ## Deployment
 
