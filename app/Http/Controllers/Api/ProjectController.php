@@ -16,7 +16,6 @@ class ProjectController extends Controller {
 
 	public function __construct(Guard $auth)
 	{
-		$this->middleware('auth.api');
 		$this->auth = $auth;
 	}
 

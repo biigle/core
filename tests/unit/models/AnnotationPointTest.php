@@ -83,4 +83,20 @@ class AnnotationPointTest extends TestCase {
 		$this->setExpectedException('Illuminate\Database\QueryException');
 		AnnotationPointTest::create($annotation)->save();
 	}
+
+	public function testProjectIds()
+	{
+		$annotation = AnnotationTest::create();
+		$annotation->save();
+		$point = $annotation->addPoint(10, 10);
+		$project = ProjectTest::create();
+		$project->save();
+		$transect = $annotation->image->transect;
+
+		$this->assertEmpty($point->projectIds());
+		$project->addTransectId($transect->id);
+		$ids = $point->projectIds();
+		$this->assertNotEmpty($ids);
+		$this->assertEquals($project->id, $ids[0]);
+	}
 }

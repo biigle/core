@@ -10,18 +10,18 @@ class AnnotationController extends Controller {
 
 	/**
 	 * The authenticator.
+	 * 
 	 * @var \Illuminate\Contracts\Auth\Guard
 	 */
 	private $auth;
 
 	public function __construct(Guard $auth)
 	{
-		$this->middleware('auth.api');
 		$this->auth = $auth;
 	}
 
 	/**
-	 * Display the annotation if the user has permission.
+	 * Displays the annotation.
 	 *
 	 * @param  int  $id
 	 * @return Response
@@ -46,7 +46,7 @@ class AnnotationController extends Controller {
 	}
 
 	/**
-	 * Remove the annotation if the user has permission.
+	 * Removes the annotation.
 	 *
 	 * @param  int  $id
 	 * @return Response

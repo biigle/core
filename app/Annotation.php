@@ -69,4 +69,23 @@ class Annotation extends Attributable implements BelongsToProject {
 	{
 		return $this->image->projectIds();
 	}
+
+	/**
+	 * Adds a new point to this annotation.
+	 * 
+	 * @param int $x x position of the point
+	 * @param int $y y position of the point
+	 * @return Dias\AnnotationPoint
+	 */
+	public function addPoint($x, $y)
+	{
+		$point = new AnnotationPoint;
+		$point->x = $x;
+		$point->y = $y;
+		$index = $this->points()->max('index');
+		// the new point gets the next higher index
+		$point->index = ($index === null) ? 0 : $index + 1;
+		
+		return $this->points()->save($point);
+	}
 }

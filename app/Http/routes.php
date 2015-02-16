@@ -21,30 +21,39 @@ Route::controllers(array(
 	'password' => 'Auth\PasswordController',
 ));
 
-Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api'), function()
+Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'auth.api'), function($router)
 {
-	Route::resource('annotations', 'AnnotationController', array(
+	$router->resource('annotations', 'AnnotationController', array(
 		'only' => array('show', 'destroy')
 	));
 
-	Route::get('projects/my', 'ProjectController@index');
-	Route::resource('projects', 'ProjectController', array(
+	// annotation points are always created in context of their annotation
+	$router->resource('annotations.points', 'AnnotationPointController', array(
+		'only' => array('store')
+	));
+	// but removed on their own
+	$router->resource('annotation-points', 'AnnotationPointController', array(
+		'only' => array('destroy')
+	));
+
+	$router->get('projects/my', 'ProjectController@index');
+	$router->resource('projects', 'ProjectController', array(
 		'only' => array('show', 'update', 'store', 'destroy')
 	));
 
-	Route::resource('projects.users', 'ProjectUserController', array(
+	$router->resource('projects.users', 'ProjectUserController', array(
 		'only' => array('index', 'update', 'store', 'destroy')
 	));
 
-	Route::resource('roles', 'RoleController', array(
+	$router->resource('roles', 'RoleController', array(
 		'only' => array('index', 'show')
 	));
 
-	Route::resource('shapes', 'ShapeController', array(
+	$router->resource('shapes', 'ShapeController', array(
 		'only' => array('index', 'show')
 	));
 
-	Route::resource('media-types', 'MediaTypeController', array(
+	$router->resource('media-types', 'MediaTypeController', array(
 		'only' => array('index', 'show')
 	));
 });

@@ -281,7 +281,7 @@ class Initialize extends Migration {
 
 			// for e.g. polygons the ordering of the points is essential, so the
 			// polygon can be correctly reconstructed
-			$table->integer('index')->index();
+			$table->integer('index');
 
 			// point index must be unique for each annotation
 			$table->unique(array('annotation_id', 'index'));

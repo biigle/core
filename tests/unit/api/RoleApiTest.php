@@ -10,12 +10,12 @@ class RoleApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		// api key authentication
-		$this->call('GET', '/api/v1/roles', [], [], [], $this->userCredentials);
+		$this->callToken('GET', '/api/v1/roles', $this->user);
 		$this->assertResponseOk();
 
 		// session cookie authentication
 		$this->be($this->user);
-		$r = $this->call('GET', '/api/v1/roles');
+		$r = $this->callAjax('GET', '/api/v1/roles');
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('[', $r->getContent());
 		$this->assertStringEndsWith(']', $r->getContent());
@@ -27,12 +27,12 @@ class RoleApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		// api key authentication
-		$this->call('GET', '/api/v1/roles/'.Role::adminId(), [], [], [], $this->userCredentials);
+		$this->callToken('GET', '/api/v1/roles/'.Role::adminId(), $this->user);
 		$this->assertResponseOk();
 
 		// session cookie authentication
 		$this->be($this->user);
-		$r = $this->call('GET', '/api/v1/roles/'.Role::adminId());
+		$r = $this->callAjax('GET', '/api/v1/roles/'.Role::adminId());
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());

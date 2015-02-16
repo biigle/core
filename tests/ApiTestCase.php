@@ -6,16 +6,11 @@ class ApiTestCase extends TestCase {
 
 	protected $project;
 	protected $admin;
-	protected $adminCredentials;
 	protected $editor;
-	protected $editorCredentials;
 	protected $guest;
-	protected $guestCredentials;
 	protected $user;
-	protected $userCredentials;
 
 	protected $globalAdmin;
-	protected $globalAdminCredentials;
 
 	public function setUp()
 	{
@@ -26,20 +21,15 @@ class ApiTestCase extends TestCase {
 		$this->project->save();
 
 		$this->admin = $this->newProjectUser(Role::adminId());
-		$this->adminCredentials = array('HTTP_Authorization' => 'token '.$this->admin->api_key);
 		$this->editor = $this->newProjectUser(Role::editorId());
-		$this->editorCredentials = array('HTTP_Authorization' => 'token '.$this->editor->api_key);
 		$this->guest = $this->newProjectUser(Role::guestId());
-		$this->guestCredentials = array('HTTP_Authorization' => 'token '.$this->guest->api_key);
 
 		$this->user = $this->newProjectUser(Role::guestId());
 		$this->project->removeUserId($this->user->id);
-		$this->userCredentials = array('HTTP_Authorization' => 'token '.$this->user->api_key);
 
 		$this->globalAdmin = $this->newProjectUser(Role::guestId());
 		$this->project->removeUserId($this->user->id);
 		$this->globalAdmin->role()->associate(Role::admin());
-		$this->globalAdminCredentials = array('HTTP_Authorization' => 'token '.$this->globalAdmin->api_key);
 	}
 
 	private function newProjectUser($roleId)
@@ -49,5 +39,21 @@ class ApiTestCase extends TestCase {
 		$user->save();
 		$this->project->addUserId($user->id, $roleId);
 		return $user;
+	}
+
+	/*
+	 * Simulates an AJAX request.
+	 */
+	protected function callAjax($method, $uri, $params = [])
+	{
+		return $this->call($method, $uri, $params, [], [], array('HTTP_X-Requested-With' => 'XMLHttpRequest'));
+	}
+
+	/*
+	 * Performs a call with API token authorization.
+	 */
+	protected function callToken($method, $uri, $user, $params = [])
+	{
+		return $this->call($method, $uri, $params, [], [], array('HTTP_Authorization' => 'token '.$user->api_key));
 	}
 }

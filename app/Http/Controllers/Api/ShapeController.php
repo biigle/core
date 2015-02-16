@@ -5,11 +5,6 @@ use Dias\Shape;
 
 class ShapeController extends Controller {
 
-	public function __construct()
-	{
-		$this->middleware('auth.api');
-	}
-
 	/**
 	 * Shows all shapes.
 	 *

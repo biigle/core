@@ -5,11 +5,6 @@ use Dias\MediaType;
 
 class MediaTypeController extends Controller {
 
-	public function __construct()
-	{
-		$this->middleware('auth.api');
-	}
-
 	/**
 	 * Shows all media types.
 	 *

@@ -15,6 +15,13 @@ class VerifyCsrfToken extends BaseVerifier {
 	 */
 	public function handle($request, Closure $next)
 	{
+		// don't verify the CRSF token if this is an "external" request with API
+		// key!
+		if (AuthenticateAPI::isApiKeyRequest($request))
+		{
+			return $next($request);
+		}
+
 		try {
 			return parent::handle($request, $next);
 		} catch (TokenMismatchException $e) {

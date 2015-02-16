@@ -116,4 +116,23 @@ class AnnotationTest extends TestCase {
 		$this->assertNotEmpty($ids);
 		$this->assertEquals($project->id, $ids[0]);
 	}
+
+	public function testAddPoint()
+	{
+		$annotation = AnnotationTest::create();
+		$annotation->save();
+
+		$this->assertEquals(0, $annotation->points()->count());
+
+		$point = $annotation->addPoint(10, 10);
+
+		$this->assertEquals($annotation->id, $point->annotation->id);
+		$this->assertEquals(1, $annotation->points()->count());
+		$this->assertEquals(0, $point->index);
+
+		// the next point should get the next highest index
+		$point = $annotation->addPoint(20, 20);
+		$this->assertEquals(2, $annotation->points()->count());
+		$this->assertEquals(1, $point->index);
+	}
 }

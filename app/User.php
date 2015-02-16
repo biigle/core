@@ -47,19 +47,14 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 	);
 
 	/**
-	 * The attributes excluded from the model's JSON form.
+	 * The attributes included in the model's JSON form. All other are hidden.
 	 *
 	 * @var array
 	 */
-	protected $hidden = array(
-		'password',
-		'remember_token',
-		'api_key',
-		'email',
-		'created_at',
-		'updated_at',
-		'login_at',
-		'pivot'
+	protected $visible = array(
+		'firstname',
+		'lastname',
+		'role_id',
 	);
 
 	/**

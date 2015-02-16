@@ -15,6 +15,19 @@ class AuthenticateAPI implements Middleware {
 	protected $auth;
 
 	/**
+	 * Determines if the request contains an API key in its header.
+	 * 
+	 * @param \Illuminate\Http\Request  $request
+	 * @return boolean
+	 */
+	public static function isApiKeyRequest($request)
+	{
+		$key = $request->header('authorization');
+		// key format is 'token abcXYZ'
+		return starts_with($key, 'token ');
+	}
+
+	/**
 	 * Create a new filter instance.
 	 *
 	 * @param  Guard  $auth
@@ -33,15 +46,12 @@ class AuthenticateAPI implements Middleware {
 	 */
 	private function authByKey($request)
 	{
-		$key = $request->header('authorization');
-
-		// key format is 'token abcXYZ'
-		if (!starts_with($key, 'token '))
+		if (!self::isApiKeyRequest($request))
 		{
 			return false;
 		}
 
-		$key = str_replace('token ', '', $key);
+		$key = str_replace('token ', '', $request->header('authorization'));
 		$user = User::whereApiKey($key)->first();
 
 		if (!$user)
@@ -49,7 +59,7 @@ class AuthenticateAPI implements Middleware {
 			return false;
 		}
 		
-		// like a manual auth->onceBasic()
+		// like a manual auth->once()
 		$this->auth->setUser($user);
 		return true;
 	}
@@ -64,8 +74,8 @@ class AuthenticateAPI implements Middleware {
 	public function handle($request, Closure $next)
 	{
 		// request is valid if the user authenticates either with their session
-		// cookie or with their API key
-		if ($this->auth->check() || $this->authByKey($request))
+		// cookie (on AJAX requests) or with their API key
+		if (($request->ajax() && $this->auth->check()) || $this->authByKey($request))
 		{
 			return $next($request);
 		}
