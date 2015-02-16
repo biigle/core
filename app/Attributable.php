@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 abstract class Attributable extends Model {
 
+	/**
+	 * The attributes of this model.
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
 	public function attributes()
 	{
 		return $this->belongsToMany('Dias\Attribute')

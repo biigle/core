@@ -8,6 +8,10 @@ use Dias\Project;
 
 class ProjectController extends Controller {
 
+	/**
+	 * The authenticator.
+	 * @var \Illuminate\Contracts\Auth\Guard
+	 */
 	private $auth;
 
 	public function __construct(Guard $auth)
@@ -17,7 +21,7 @@ class ProjectController extends Controller {
 	}
 
 	/**
-	 * Schows all projects the requesting user belongs to.
+	 * Shows all projects the requesting user belongs to.
 	 *
 	 * @return Response
 	 */

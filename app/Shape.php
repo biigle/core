@@ -3,6 +3,9 @@
 use Illuminate\Database\Eloquent\Model;
 use Cache;
 
+/**
+ * A shape, e.g. `point` or `circle`.
+ */
 class Shape extends Model {
 
 	/**
@@ -13,7 +16,8 @@ class Shape extends Model {
 	public $timestamps = false;
 
 	/**
-	 * Returns the point shape ID.
+	 * The point shape ID.
+	 * 
 	 * @return int
 	 */
 	public static function pointId()
@@ -25,7 +29,8 @@ class Shape extends Model {
 	}
 
 	/**
-	 * Returns the line shape ID.
+	 * The line shape ID.
+	 * 
 	 * @return int
 	 */
 	public static function lineId()
@@ -37,7 +42,8 @@ class Shape extends Model {
 	}
 
 	/**
-	 * Returns the polygon shape ID.
+	 * The polygon shape ID.
+	 * 
 	 * @return int
 	 */
 	public static function polygonId()
@@ -49,7 +55,8 @@ class Shape extends Model {
 	}
 
 	/**
-	 * Returns the circle shape ID.
+	 * The circle shape ID.
+	 * 
 	 * @return int
 	 */
 	public static function circleId()

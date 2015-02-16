@@ -11,7 +11,7 @@ class RoleController extends Controller {
 	}
 
 	/**
-	 * Schows all roles.
+	 * Shows all roles.
 	 *
 	 * @return Response
 	 */

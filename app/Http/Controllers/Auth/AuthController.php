@@ -45,6 +45,7 @@ class AuthController extends Controller {
 
 	/**
 	 * Handle a login request to the application.
+	 * Overwrites the trait to show a custom error response.
 	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return \Illuminate\Http\Response
@@ -70,6 +71,7 @@ class AuthController extends Controller {
 
 	/**
 	 * Log the user out of the application.
+	 * Overwrites the trait to redirect to the `home` route.
 	 *
 	 * @return \Illuminate\Http\Response
 	 */

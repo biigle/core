@@ -3,6 +3,11 @@
 use Illuminate\Database\Eloquent\Model;
 use Cache;
 
+/**
+ * Transects can contain different types of image-series. One type would
+ * be a time-series of a static camera taking photos in regular intervals
+ * for example. Another type coud be images from a moving camera.
+ */
 class MediaType extends Model {
 
 	/**
@@ -13,7 +18,8 @@ class MediaType extends Model {
 	public $timestamps = false;
 
 	/**
-	 * Returns the time series media type ID.
+	 * The time series media type ID.
+	 * 
 	 * @return int
 	 */
 	public static function timeSeriesId()
@@ -25,7 +31,8 @@ class MediaType extends Model {
 	}
 
 	/**
-	 * Returns the location series media type ID.
+	 * The location series media type ID.
+	 * 
 	 * @return int
 	 */
 	public static function locationSeriesId()

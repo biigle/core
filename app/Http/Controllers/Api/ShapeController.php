@@ -11,7 +11,7 @@ class ShapeController extends Controller {
 	}
 
 	/**
-	 * Schows all shapes.
+	 * Shows all shapes.
 	 *
 	 * @return Response
 	 */

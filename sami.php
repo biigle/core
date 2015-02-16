@@ -9,7 +9,7 @@ $iterator = Finder::create()
 	->files()
 	->name('*.php')
 	->exclude('stubs')
-	->in($dir = __DIR__.'/app');
+	->in(__DIR__.'/app');
 
 return new Sami($iterator, array(
 	'title' => 'DIAS API',

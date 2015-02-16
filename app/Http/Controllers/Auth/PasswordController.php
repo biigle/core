@@ -39,7 +39,8 @@ class PasswordController extends Controller {
 	}
 
 	/**
-	 * Overrides the default method.
+	 * Overrides the default method to exclude the password in the error
+	 * response.
 	 *
 	 * @param  Request  $request
 	 * @return Response

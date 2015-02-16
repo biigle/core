@@ -11,7 +11,7 @@ class MediaTypeController extends Controller {
 	}
 
 	/**
-	 * Schows all media types.
+	 * Shows all media types.
 	 *
 	 * @return Response
 	 */

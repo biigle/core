@@ -6,12 +6,16 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
+/**
+ * A user.
+ */
 class User extends Attributable implements AuthenticatableContract, CanResetPasswordContract {
 
 	use Authenticatable, CanResetPassword;
 
 	/**
-	 * validation rules for logging in
+	 * Validation rules for logging in
+	 * 
 	 * @var array
 	 */
 	public static $authRules = array(
@@ -20,7 +24,8 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 	);
 
 	/**
-	 * validation rules for resetting the password
+	 * Validation rules for resetting the password
+	 * 
 	 * @var array
 	 */
 	public static $resetRules = array(
@@ -30,7 +35,8 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 	);
 
 	/**
-	 * validation rules for registering a new user
+	 * Validation rules for registering a new user
+	 * 
 	 * @var array
 	 */
 	public static $registerRules = array(
@@ -58,7 +64,8 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 
 	/**
 	 * Generates a random string to use as an API key. The key will be stored in
-	 * the api_key attribute of the user.
+	 * the `api_key` attribute of the user.
+	 * 
 	 * @return string
 	 */
 	public function generateApiKey()
@@ -68,6 +75,11 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 		return $key;
 	}
 
+	/**
+	 * The projects, this user is a member of.
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
 	public function projects()
 	{
 		return $this->belongsToMany('Dias\Project');
@@ -75,6 +87,7 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 
 	/**
 	 * The global role of this user.
+	 * 
 	 * @return Dias\Role
 	 */
 	public function role()
@@ -84,6 +97,7 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 
 	/**
 	 * Checks if this user has the global admin role.
+	 * 
 	 * @return boolean
 	 */
 	public function isAdmin()
@@ -93,7 +107,8 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 
 	/**
 	 * Checks if this user is a member in one of the supplied projects.
-	 * @param array $ids
+	 * 
+	 * @param array $ids Project IDs
 	 * @return boolean
 	 */
 	public function canSeeOneOfProjects($ids)
@@ -104,7 +119,8 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 	/**
 	 * Checks if this user is an editor or admin in one of the supplied
 	 * projects.
-	 * @param array $ids
+	 * 
+	 * @param array $ids Project IDs
 	 * @return boolean
 	 */
 	public function canEditInOneOfProjects($ids)
@@ -120,7 +136,8 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 
 	/**
 	 * Checks if this user is an admin in one of the supplied projects.
-	 * @param array $ids
+	 * 
+	 * @param array $ids Project IDs
 	 * @return boolean
 	 */
 	public function canAdminOneOfProjects($ids)

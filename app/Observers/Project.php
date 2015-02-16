@@ -24,6 +24,7 @@ class Project {
 	 * When a project is newly created, the creator will automatically
 	 * become an admin of it.
 	 * @param Dias\Project $project
+	 * @return void
 	 */
 	public function created($project)
 	{

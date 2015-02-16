@@ -3,6 +3,10 @@
 use Illuminate\Database\Eloquent\Model;
 use Cache;
 
+/**
+ * A role of a user. Users have one global role and can have many project-
+ * specific roles.
+ */
 class Role extends Model {
 
 	/**
@@ -13,7 +17,8 @@ class Role extends Model {
 	public $timestamps = false;
 
 	/**
-	 * Returns the admin role.
+	 * The admin role.
+	 * 
 	 * @return Dias\Role
 	 */
 	public static function admin()
@@ -25,7 +30,8 @@ class Role extends Model {
 	}
 
 	/**
-	 * Returns the admin role ID.
+	 * The admin role ID.
+	 * 
 	 * @return int
 	 */
 	public static function adminId()
@@ -34,7 +40,8 @@ class Role extends Model {
 	}
 
 	/**
-	 * Returns the editor role.
+	 * The editor role.
+	 * 
 	 * @return Dias\Role
 	 */
 	public static function editor()
@@ -46,7 +53,8 @@ class Role extends Model {
 	}
 
 	/**
-	 * Returns the editor role ID.
+	 * The editor role ID.
+	 * 
 	 * @return int
 	 */
 	public static function editorId()
@@ -55,7 +63,8 @@ class Role extends Model {
 	}
 
 	/**
-	 * Returns the guest role.
+	 * The guest role.
+	 * 
 	 * @return Dias\Role
 	 */
 	public static function guest()
@@ -67,7 +76,8 @@ class Role extends Model {
 	}
 
 	/**
-	 * Returns the guest role ID.
+	 * The guest role ID.
+	 * 
 	 * @return int
 	 */
 	public static function guestId()

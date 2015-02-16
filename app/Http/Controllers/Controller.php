@@ -11,7 +11,7 @@ abstract class Controller extends BaseController {
 
 	/**
 	 * Create the response for when a request fails validation.
-	 * Overwrites the default behavior to except passwords.
+	 * Overrides the default behavior to except passwords in the error response.
 	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @param  array  $errors

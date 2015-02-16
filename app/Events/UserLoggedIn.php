@@ -11,6 +11,10 @@ class UserLoggedIn extends Event {
 
 	use SerializesModels;
 
+	/**
+	 * The user that was logged in.
+	 * @var Dias\User
+	 */
 	public $user;
 
 	/**

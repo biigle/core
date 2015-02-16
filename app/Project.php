@@ -13,17 +13,33 @@ class Project extends Attributable {
 		'pivot',
 	);
 
+	/**
+	 * The members of this project. Every member has a project-specific
+	 * `project_role_id` besides their global user role.
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
 	public function users()
 	{
 		return $this->belongsToMany('Dias\User')
 			->withPivot('project_role_id as project_role_id');
 	}
 
+	/**
+	 * All members of this project with the `admin` role.
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
 	public function admins()
 	{
 		return $this->users()->whereProjectRoleId(Role::adminId());
 	}
 
+	/**
+	 * All members of this project with the `editor` role.
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
 	public function editors()
 	{
 		return $this->users()->whereProjectRoleId(Role::editorId());
@@ -31,6 +47,7 @@ class Project extends Attributable {
 
 	/**
 	 * Checks if the user ID is an admin of this project.
+	 * 
 	 * @param int $id
 	 * @return boolean
 	 */
@@ -41,6 +58,7 @@ class Project extends Attributable {
 
 	/**
 	 * Checks if the user is an admin of this project.
+	 * 
 	 * @param Dias\User $user
 	 * @return boolean
 	 */
@@ -51,6 +69,7 @@ class Project extends Attributable {
 
 	/**
 	 * Checks if the user ID is an editor of this project.
+	 * 
 	 * @param int $id
 	 * @return boolean
 	 */
@@ -61,6 +80,7 @@ class Project extends Attributable {
 
 	/**
 	 * Checks if the user is an editor of this project.
+	 * 
 	 * @param Dias\User $user
 	 * @return boolean
 	 */
@@ -71,6 +91,7 @@ class Project extends Attributable {
 
 	/**
 	 * Checks if the given user ID exists in this project.
+	 * 
 	 * @param int $id
 	 * @return boolean
 	 */
@@ -81,6 +102,7 @@ class Project extends Attributable {
 
 	/**
 	 * Checks if the given user exists in this project.
+	 * 
 	 * @param Dias\User $user
 	 * @return boolean
 	 */
@@ -93,6 +115,8 @@ class Project extends Attributable {
 	 * The user that created this project. On creation this user is
 	 * automatically added to the project's users with the 'admin' role by
 	 * the ProjectObserver.
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
 	public function creator()
 	{
@@ -101,6 +125,7 @@ class Project extends Attributable {
 
 	/**
 	 * Sets the creator if it isn't already set.
+	 * 
 	 * @param Dias\User $user
 	 * @return boolean
 	 */
@@ -118,8 +143,10 @@ class Project extends Attributable {
 
 	/**
 	 * Adds the user with the given role to this project.
+	 * 
 	 * @param int $userId
 	 * @param int $roleId
+	 * @return void
 	 */
 	public function addUserId($userId, $roleId)
 	{
@@ -132,8 +159,10 @@ class Project extends Attributable {
 
 	/**
 	 * Changes the role of an existing user in this project.
+	 * 
 	 * @param int $userId
 	 * @param int $roleId
+	 * @return void
 	 */
 	public function changeRole($userId, $roleId)
 	{
@@ -151,12 +180,13 @@ class Project extends Attributable {
 		}
 		else
 		{
-			return abort(500, "The user couldn't be modified.");
+			abort(500, "The user couldn't be modified.");
 		}
 	}
 
 	/**
 	 * Removes the user by ID from this project.
+	 * 
 	 * @param int $userId
 	 * @return boolean
 	 */
@@ -172,6 +202,11 @@ class Project extends Attributable {
 		return (boolean) $this->users()->detach($userId);
 	}
 
+	/**
+	 * The transects of this project.
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
 	public function transects()
 	{
 		return $this->belongsToMany('Dias\Transect');
@@ -179,7 +214,9 @@ class Project extends Attributable {
 
 	/**
 	 * Adds a transect to this project if it wasn't already.
+	 * 
 	 * @param int $id
+	 * @return void
 	 */
 	public function addTransectId($id)
 	{

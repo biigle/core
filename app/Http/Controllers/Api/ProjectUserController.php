@@ -10,6 +10,10 @@ use Dias\Role;
 
 class ProjectUserController extends Controller {
 
+	/**
+	 * The authenticator.
+	 * @var \Illuminate\Contracts\Auth\Guard
+	 */
 	private $auth;
 
 	public function __construct(Guard $auth)
