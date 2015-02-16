@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldBeQueued;
 class LoginEventHandler {
 	
 	/**
-	 * Handle the event.
+	 * Updates the login_at attribute of the logged in user.
 	 *
 	 * @param  UserLoggedIn  $event
 	 * @return void

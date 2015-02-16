@@ -1,10 +1,12 @@
 <?php namespace Dias\Events;
 
-use Dias\Events\Event;
 use Dias\User;
 
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * This event will be created when a user was logged in.
+ */
 class UserLoggedIn extends Event {
 
 	use SerializesModels;

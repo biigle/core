@@ -42,17 +42,6 @@ class AnnotationController extends Controller {
 	}
 
 	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update($id)
-	{
-		//
-	}
-
-	/**
 	 * Remove the annotation if the user has permission.
 	 *
 	 * @param  int  $id

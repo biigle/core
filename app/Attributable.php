@@ -2,7 +2,10 @@
 
 use Illuminate\Database\Eloquent\Model;
 
-class Attributable extends Model {
+/**
+ * A model that can belong to an attribute.
+ */
+abstract class Attributable extends Model {
 
 	public function attributes()
 	{

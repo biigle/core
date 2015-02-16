@@ -5,7 +5,7 @@ use Dias\Role;
 class User {
 
 	/**
-	 * A user gets the role 'editor' by default.
+	 * A user gets the global role 'editor' by default.
 	 * @param Dias\User $user
 	 * @return boolean
 	 */

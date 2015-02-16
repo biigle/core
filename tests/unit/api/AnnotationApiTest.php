@@ -1,10 +1,8 @@
 <?php
 
-use Dias\Role;
-
 class AnnotationApiTest extends ApiTestCase {
 
-	private $anotation;
+	private $annotation;
 
 	public function setUp()
 	{
@@ -48,11 +46,6 @@ class AnnotationApiTest extends ApiTestCase {
 		$this->be($this->user);
 		$this->call('GET', '/api/v1/annotations/1');
 		$this->assertResponseStatus(401);
-	}
-
-	public function testUpdate()
-	{
-
 	}
 
 	public function testDestroy()

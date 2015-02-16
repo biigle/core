@@ -3,6 +3,8 @@
 /bower_components
 /tests/_*
 /data
+/doc/cache
+/doc/build
 
 .env
 *.sublime-*

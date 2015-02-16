@@ -36,19 +36,20 @@ class AuthenticateAPI implements Middleware {
 		$key = $request->header('authorization');
 
 		// key format is 'token abcXYZ'
-		if (!starts_with($key, 'token'))
+		if (!starts_with($key, 'token '))
 		{
 			return false;
 		}
 
 		$key = str_replace('token ', '', $key);
-		$user = User::where('api_key', $key)->first();
+		$user = User::whereApiKey($key)->first();
 
 		if (!$user)
 		{
 			return false;
 		}
 		
+		// like a manual auth->onceBasic()
 		$this->auth->setUser($user);
 		return true;
 	}
