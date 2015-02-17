@@ -1,25 +1,13 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\Controller;
-use Illuminate\Contracts\Auth\Guard;
+use Dias\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
 use Dias\Project;
 use Dias\User;
 use Dias\Role;
 
-class ProjectUserController extends Controller {
-
-	/**
-	 * The authenticator.
-	 * @var \Illuminate\Contracts\Auth\Guard
-	 */
-	private $auth;
-
-	public function __construct(Guard $auth)
-	{
-		$this->auth = $auth;
-	}
+class ProjectUserController extends ApiController {
 
 	/**
 	 * Displays the users belonging to the specified project.

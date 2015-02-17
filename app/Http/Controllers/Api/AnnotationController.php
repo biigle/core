@@ -1,23 +1,27 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\Controller;
-use Illuminate\Contracts\Auth\Guard;
+use Dias\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 
 use Dias\Annotation;
 
-class AnnotationController extends Controller {
+class AnnotationController extends ApiController {
 
 	/**
-	 * The authenticator.
+	 * Finds the requested annotation or aborts with 404 if it doesn't exist.
 	 * 
-	 * @var \Illuminate\Contracts\Auth\Guard
+	 * @param int $id Annotation ID
+	 * @return Dias\Annotation
 	 */
-	private $auth;
-
-	public function __construct(Guard $auth)
+	public static function findOrAbort($id)
 	{
-		$this->auth = $auth;
+		$annotation = Annotation::find($id);
+		if (!$annotation)
+		{
+			abort(404);
+		}
+
+		return $annotation;
 	}
 
 	/**
@@ -53,11 +57,7 @@ class AnnotationController extends Controller {
 	 */
 	public function destroy($id)
 	{
-		$annotation = Annotation::find($id);
-		if (!$annotation)
-		{
-			abort(404);
-		}
+		$annotation = self::findOrAbort($id);
 
 		$projectIds = $annotation->projectIds();
 		if (!$this->auth->user()->canEditInOneOfProjects($projectIds))

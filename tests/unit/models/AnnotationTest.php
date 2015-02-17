@@ -135,4 +135,27 @@ class AnnotationTest extends TestCase {
 		$this->assertEquals(2, $annotation->points()->count());
 		$this->assertEquals(1, $point->index);
 	}
+
+	public function testAddLabel()
+	{
+		$annotation = AnnotationTest::create();
+		$annotation->save();
+		$user = UserTest::create();
+		$user->save();
+		$labelId = 1;
+		$confidence = 0.1;
+
+		$this->assertEquals(0, $annotation->labels()->count());
+
+		$point = $annotation->addLabel($labelId, $confidence, $user);
+
+		$this->assertEquals(1, $annotation->labels()->count());
+		
+		$label = $annotation->labels()->first();
+
+		$this->assertEquals($labelId, $label->id);
+		$this->assertEquals($confidence, $label->confidence);
+		$this->assertEquals($user->id, $label->user_id);
+
+	}
 }

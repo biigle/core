@@ -55,7 +55,7 @@ You shouldn't need to configure your testing environment since for acceptance te
 
 Run `phpunit`.
 
-To run all tests, set up PhantomJS and the PHP server and run `./test.sh`.
+To run all tests, set up the PHP server and run `./test.sh`.
 
 ## Deployment
 

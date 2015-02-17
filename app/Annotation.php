@@ -1,6 +1,7 @@
 <?php namespace Dias;
 
 use Dias\Contracts\BelongsToProject;
+use Illuminate\Database\QueryException;
 
 /**
  * An annotation is a region of an image that can be labeled by the users.
@@ -87,5 +88,25 @@ class Annotation extends Attributable implements BelongsToProject {
 		$point->index = ($index === null) ? 0 : $index + 1;
 		
 		return $this->points()->save($point);
+	}
+
+	/**
+	 * Adds a new label to this annotation.
+	 * 
+	 * @param int $labelId
+	 * @param float $confindence
+	 * @param Dias\User $user The user attaching tha label
+	 * @return void
+	 */
+	public function addLabel($labelId, $confidence, $user)
+	{
+		try {
+			$this->labels()->attach($labelId, array(
+				'user_id' => $user->id,
+				'confidence' => $confidence
+			));
+		} catch (QueryException $e) {
+			abort(400, 'The user already attached label "'.$labelId.'" to annotation "'.$this->id.'"!');
+		}
 	}
 }

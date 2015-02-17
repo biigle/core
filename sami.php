@@ -12,7 +12,7 @@ $iterator = Finder::create()
 	->in(__DIR__.'/app');
 
 return new Sami($iterator, array(
-	'title' => 'DIAS API',
+	'title' => 'DIAS DOC',
 	'build_dir' => __DIR__.'/doc/build/%version%',
 	'cache_dir' => __DIR__.'/doc/cache/%version%',
 ));
