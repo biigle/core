@@ -11,6 +11,11 @@ abstract class ApiController extends Controller {
 	 */
 	protected $auth;
 
+	/**
+	 * Creates a new ApiController instance.
+	 * 
+	 * @param Guard $auth
+	 */
 	public function __construct(Guard $auth)
 	{
 		$this->auth = $auth;

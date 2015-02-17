@@ -94,7 +94,7 @@ class Annotation extends Attributable implements BelongsToProject {
 	 * Adds a new label to this annotation.
 	 * 
 	 * @param int $labelId
-	 * @param float $confindence
+	 * @param float $confidence
 	 * @param Dias\User $user The user attaching tha label
 	 * @return void
 	 */
