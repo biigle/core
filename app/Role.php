@@ -19,7 +19,7 @@ class Role extends Model {
 	/**
 	 * The admin role.
 	 * 
-	 * @return Dias\Role
+	 * @return Role
 	 */
 	public static function admin()
 	{
@@ -42,7 +42,7 @@ class Role extends Model {
 	/**
 	 * The editor role.
 	 * 
-	 * @return Dias\Role
+	 * @return Role
 	 */
 	public static function editor()
 	{
@@ -65,7 +65,7 @@ class Role extends Model {
 	/**
 	 * The guest role.
 	 * 
-	 * @return Dias\Role
+	 * @return Role
 	 */
 	public static function guest()
 	{

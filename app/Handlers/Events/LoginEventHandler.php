@@ -10,7 +10,7 @@ class LoginEventHandler {
 	/**
 	 * Updates the login_at attribute of the logged in user.
 	 *
-	 * @param  Dias\Events\UserLoggedIn  $event
+	 * @param  UserLoggedIn  $event
 	 * @return void
 	 */
 	public function handle(UserLoggedIn $event)

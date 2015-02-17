@@ -7,7 +7,7 @@ class Project {
 
 	/**
 	 * A project must not be created without having a creator.
-	 * @param Dias\Project $project
+	 * @param \Dias\Project $project
 	 * @return boolean
 	 */
 	public function creating($project)
@@ -23,7 +23,7 @@ class Project {
 	/**
 	 * When a project is newly created, the creator will automatically
 	 * become an admin of it.
-	 * @param Dias\Project $project
+	 * @param \Dias\Project $project
 	 * @return void
 	 */
 	public function created($project)

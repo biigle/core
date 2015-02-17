@@ -8,7 +8,7 @@ class ShapeController extends ApiController {
 	/**
 	 * Shows all shapes.
 	 *
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function index()
 	{
@@ -19,7 +19,7 @@ class ShapeController extends ApiController {
 	 * Displays the specified shape.
 	 *
 	 * @param  int  $id
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function show($id)
 	{

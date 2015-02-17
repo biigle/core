@@ -13,7 +13,7 @@ class ProjectUserController extends ApiController {
 	 * Displays the users belonging to the specified project.
 	 *
 	 * @param int $projectId
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function index($projectId)
 	{
@@ -30,8 +30,8 @@ class ProjectUserController extends ApiController {
 	 *
 	 * @param  int  $projectId
 	 * @param  int  $userId
-	 * @param  Illuminate\Http\Request $request
-	 * @return Response
+	 * @param  Request $request
+	 * @return \Illuminate\Http\Response
 	 */
 	public function update($projectId, $userId, Request $request)
 	{
@@ -56,8 +56,8 @@ class ProjectUserController extends ApiController {
 	 * Adds a new user to the specified project.
 	 *
 	 * @param int $projectId
-	 * @param Illuminate\Http\Request $request
-	 * @return Response
+	 * @param Request $request
+	 * @return \Illuminate\Http\Response
 	 */
 	public function store($projectId, Request $request)
 	{
@@ -85,7 +85,7 @@ class ProjectUserController extends ApiController {
 	 *
 	 * @param  int  $projectId
 	 * @param  int  $userId
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy($projectId, $userId)
 	{

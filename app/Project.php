@@ -59,7 +59,7 @@ class Project extends Attributable {
 	/**
 	 * Checks if the user is an admin of this project.
 	 * 
-	 * @param Dias\User $user
+	 * @param User $user
 	 * @return boolean
 	 */
 	public function hasAdmin($user)
@@ -81,7 +81,7 @@ class Project extends Attributable {
 	/**
 	 * Checks if the user is an editor of this project.
 	 * 
-	 * @param Dias\User $user
+	 * @param User $user
 	 * @return boolean
 	 */
 	public function hasEditor($user)
@@ -103,7 +103,7 @@ class Project extends Attributable {
 	/**
 	 * Checks if the given user exists in this project.
 	 * 
-	 * @param Dias\User $user
+	 * @param User $user
 	 * @return boolean
 	 */
 	public function hasUser($user)
@@ -126,7 +126,7 @@ class Project extends Attributable {
 	/**
 	 * Sets the creator if it isn't already set.
 	 * 
-	 * @param Dias\User $user
+	 * @param User $user
 	 * @return boolean
 	 */
 	public function setCreator($user)

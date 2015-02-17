@@ -10,7 +10,7 @@ class ProjectController extends ApiController {
 	/**
 	 * Shows all projects the requesting user belongs to.
 	 *
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function index()
 	{
@@ -21,7 +21,7 @@ class ProjectController extends ApiController {
 	 * Displays the specified project.
 	 *
 	 * @param  int  $id
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function show($id)
 	{
@@ -38,8 +38,8 @@ class ProjectController extends ApiController {
 	 * Updates the attributes of the specified project.
 	 *
 	 * @param  int  $id
-	 * @param  Illuminate\Http\Request $request
-	 * @return Response
+	 * @param  Request $request
+	 * @return \Illuminate\Http\Response
 	 */
 	public function update($id, Request $request)
 	{
@@ -59,8 +59,8 @@ class ProjectController extends ApiController {
 	/**
 	 * Creates a new project.
 	 *
-	 * @param  Illuminate\Http\Request $request
-	 * @return Response
+	 * @param  Request $request
+	 * @return \Illuminate\Http\Response
 	 */
 	public function store(Request $request)
 	{
@@ -83,7 +83,7 @@ class ProjectController extends ApiController {
 	 * Removes the specified project.
 	 *
 	 * @param  int  $id
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy($id)
 	{

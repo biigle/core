@@ -24,8 +24,8 @@ class PasswordController extends Controller {
 	/**
 	 * Create a new password controller instance.
 	 *
-	 * @param  \Illuminate\Contracts\Auth\Guard  $auth
-	 * @param  \Illuminate\Contracts\Auth\PasswordBroker  $passwords
+	 * @param  Guard  $auth
+	 * @param  PasswordBroker  $passwords
 	 * @return void
 	 */
 	public function __construct(Guard $auth, PasswordBroker $passwords)
@@ -43,7 +43,7 @@ class PasswordController extends Controller {
 	 * response.
 	 *
 	 * @param  Request  $request
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function postReset(Request $request)
 	{

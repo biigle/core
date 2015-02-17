@@ -8,7 +8,7 @@ class RoleController extends ApiController {
 	/**
 	 * Shows all roles.
 	 *
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function index()
 	{
@@ -19,7 +19,7 @@ class RoleController extends ApiController {
 	 * Displays the specified role.
 	 *
 	 * @param  int  $id
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function show($id)
 	{

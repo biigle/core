@@ -13,7 +13,7 @@ class UserLoggedIn extends Event {
 
 	/**
 	 * The user that was logged in.
-	 * @var Dias\User
+	 * @var User
 	 */
 	public $user;
 

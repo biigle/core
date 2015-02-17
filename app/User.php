@@ -83,7 +83,7 @@ class User extends Attributable implements AuthenticatableContract, CanResetPass
 	/**
 	 * The global role of this user.
 	 * 
-	 * @return Dias\Role
+	 * @return Role
 	 */
 	public function role()
 	{

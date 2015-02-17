@@ -11,7 +11,7 @@ class AnnotationController extends ApiController {
 	 * Finds the requested annotation or aborts with 404 if it doesn't exist.
 	 * 
 	 * @param int $id Annotation ID
-	 * @return Dias\Annotation
+	 * @return Annotation
 	 */
 	public static function findOrAbort($id)
 	{
@@ -28,7 +28,7 @@ class AnnotationController extends ApiController {
 	 * Displays the annotation.
 	 *
 	 * @param  int  $id
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function show($id)
 	{
@@ -53,7 +53,7 @@ class AnnotationController extends ApiController {
 	 * Removes the annotation.
 	 *
 	 * @param  int  $id
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy($id)
 	{

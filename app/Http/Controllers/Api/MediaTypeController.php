@@ -8,7 +8,7 @@ class MediaTypeController extends ApiController {
 	/**
 	 * Shows all media types.
 	 *
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function index()
 	{
@@ -19,7 +19,7 @@ class MediaTypeController extends ApiController {
 	 * Displays the specified media type.
 	 *
 	 * @param  int  $id
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function show($id)
 	{

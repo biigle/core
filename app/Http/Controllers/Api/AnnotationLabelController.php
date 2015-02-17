@@ -11,8 +11,8 @@ class AnnotationLabelController extends ApiController {
 	 * Creates a new label for the specifies annotation.
 	 *
 	 * @param int $id Annotation ID
-	 * @param  Illuminate\Http\Request $request
-	 * @return Response
+	 * @param  Request $request
+	 * @return \Illuminate\Http\Response
 	 */
 	public function store($id, Request $request)
 	{
@@ -44,8 +44,8 @@ class AnnotationLabelController extends ApiController {
 	 *
 	 * @param int  $annotationId
 	 * @param int $labelId
-	 * @param Illuminate\Http\Request $request
-	 * @return Response
+	 * @param Request $request
+	 * @return \Illuminate\Http\Response
 	 */
 	public function update($annotationId, $labelId, Request $request)
 	{
@@ -79,8 +79,8 @@ class AnnotationLabelController extends ApiController {
 	 *
 	 * @param int  $annotationId
 	 * @param int $labelId
-	 * @param Illuminate\Http\Request $request
-	 * @return Response
+	 * @param Request $request
+	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy($annotationId, $labelId, Request $request)
 	{

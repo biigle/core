@@ -76,7 +76,7 @@ class Annotation extends Attributable implements BelongsToProject {
 	 * 
 	 * @param int $x x position of the point
 	 * @param int $y y position of the point
-	 * @return Dias\AnnotationPoint
+	 * @return AnnotationPoint
 	 */
 	public function addPoint($x, $y)
 	{
@@ -95,7 +95,7 @@ class Annotation extends Attributable implements BelongsToProject {
 	 * 
 	 * @param int $labelId
 	 * @param float $confidence
-	 * @param Dias\User $user The user attaching tha label
+	 * @param User $user The user attaching tha label
 	 * @return void
 	 */
 	public function addLabel($labelId, $confidence, $user)

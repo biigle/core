@@ -6,7 +6,7 @@ class User {
 
 	/**
 	 * A user gets the global role 'editor' by default.
-	 * @param Dias\User $user
+	 * @param \Dias\User $user
 	 * @return boolean
 	 */
 	public function creating($user)

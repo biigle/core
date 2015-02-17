@@ -28,8 +28,8 @@ class AuthController extends Controller {
 	/**
 	 * Create a new authentication controller instance.
 	 *
-	 * @param  \Illuminate\Contracts\Auth\Guard  $auth
-	 * @param  \Illuminate\Contracts\Auth\Registrar  $registrar
+	 * @param  Guard  $auth
+	 * @param  Registrar  $registrar
 	 * @return void
 	 */
 	public function __construct(Guard $auth, Registrar $registrar)
@@ -47,7 +47,7 @@ class AuthController extends Controller {
 	 * Handle a login request to the application.
 	 * Overwrites the trait to show a custom error response.
 	 *
-	 * @param  \Illuminate\Http\Request  $request
+	 * @param  Request  $request
 	 * @return \Illuminate\Http\Response
 	 */
 	public function postLogin(Request $request)

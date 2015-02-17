@@ -7,7 +7,7 @@ abstract class ApiController extends Controller {
 	/**
 	 * The authenticator.
 	 * 
-	 * @var \Illuminate\Contracts\Auth\Guard
+	 * @var Guard
 	 */
 	protected $auth;
 

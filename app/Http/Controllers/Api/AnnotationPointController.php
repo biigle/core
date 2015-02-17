@@ -12,8 +12,8 @@ class AnnotationPointController extends ApiController {
 	 * Creates a new point for the specifies annotation.
 	 *
 	 * @param int $id Annotation ID
-	 * @param  Illuminate\Http\Request $request
-	 * @return Response
+	 * @param  Request $request
+	 * @return \Illuminate\Http\Response
 	 */
 	public function store($id, Request $request)
 	{
@@ -37,7 +37,7 @@ class AnnotationPointController extends ApiController {
 	 * Removes the specified annotation point.
 	 *
 	 * @param  int  $id
-	 * @return Response
+	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy($id)
 	{
