@@ -97,4 +97,47 @@ class AnnotationLabelApiTest extends ApiTestCase {
 		$this->assertResponseOk();
 		$this->assertEquals(0.1, $this->annotation->labels()->first()->confidence);
 	}
+
+	public function testDestroy()
+	{
+		$this->annotation->addLabel(1, 0.5, $this->editor);
+
+		// token mismatch
+		$this->call('DELETE', '/api/v1/annotations/1/labels/1');
+		$this->assertResponseStatus(403);
+
+		$this->call('DELETE', '/api/v1/annotations/1/labels/1', array(
+			'_token' => Session::token()
+		));
+		$this->assertResponseStatus(401);
+
+		// api key authentication
+		$this->callToken('DELETE', '/api/v1/annotations/1/labels/1', $this->user);
+		$this->assertResponseStatus(401);
+
+		$this->callToken('DELETE', '/api/v1/annotations/1/labels/1', $this->guest);
+		$this->assertResponseStatus(401);
+
+		$this->assertNotNull($this->annotation->labels()->first());
+		$this->callToken('DELETE', '/api/v1/annotations/1/labels/1', $this->editor);
+		$this->assertResponseOk();
+		$this->assertNull($this->annotation->labels()->first());
+
+		$this->annotation->addLabel(1, 0.5, $this->editor);
+		$this->assertNotNull($this->annotation->labels()->first());
+
+		$this->callToken('DELETE', '/api/v1/annotations/1/labels/1', $this->admin);
+		// admin doesn't have the label
+		$this->assertResponseStatus(404);
+
+		// session cookie authentication
+		$this->be($this->admin);
+		// admin can detach labels of other users as well if the ID is provided
+		$this->callAjax('DELETE', '/api/v1/annotations/1/labels/1', array(
+			'_token' => Session::token(),
+			'user_id' => $this->editor->id
+		));
+		$this->assertResponseOk();
+		$this->assertNull($this->annotation->labels()->first());
+	}
 }

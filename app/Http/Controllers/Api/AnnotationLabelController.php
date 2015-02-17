@@ -71,4 +71,40 @@ class AnnotationLabelController extends ApiController {
 			'confidence' => $request->input('confidence', $label->confidence)
 		));
 	}
+
+	/**
+	 * Detaches the specified label of the requesting user from the specified
+	 * annotation. Project admins can detach labels of other users, too, if they
+	 * provide theit `user_id` as an request argument.
+	 *
+	 * @param int  $annotationId
+	 * @param int $labelId
+	 * @param Illuminate\Http\Request $request
+	 * @return Response
+	 */
+	public function destroy($annotationId, $labelId, Request $request)
+	{
+		$annotation = AnnotationController::findOrAbort($annotationId);
+		$user = $this->auth->user();
+
+		$projectIds = $annotation->projectIds();
+		if (!$user->canEditInOneOfProjects($projectIds))
+		{
+			abort(401);
+		}
+
+		$userId = $user->id;
+
+		// a project admin can detach labels of other users as well
+		if ($user->canAdminOneOfProjects($projectIds))
+		{
+			$userId = $request->input('user_id', $userId);
+		}
+
+		// try to detach the label
+		if (!$annotation->removeLabel($labelId, $userId))
+		{
+			abort(404, 'User "'.$user->id.'" doesn\'t have label "'. $labelId.'" attached to annotation "'.$annotationId.'"!');
+		}
+	}
 }

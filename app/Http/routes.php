@@ -37,7 +37,7 @@ Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => '
 	));
 
 	$router->resource('annotations.labels', 'AnnotationLabelController', array(
-		'only' => array('store', 'update')
+		'only' => array('store', 'update', 'destroy')
 	));
 
 	$router->get('projects/my', 'ProjectController@index');

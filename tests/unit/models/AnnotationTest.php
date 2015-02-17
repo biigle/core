@@ -156,6 +156,21 @@ class AnnotationTest extends TestCase {
 		$this->assertEquals($labelId, $label->id);
 		$this->assertEquals($confidence, $label->confidence);
 		$this->assertEquals($user->id, $label->user_id);
+	}
 
+	public function testRemoveLabel()
+	{
+		$annotation = AnnotationTest::create();
+		$annotation->save();
+		$user = UserTest::create();
+		$user->save();
+		$point = $annotation->addLabel(1, 0.5, $user);
+
+		$this->assertNotNull($annotation->labels()->first());
+		$this->assertTrue($annotation->removeLabel(1, $user->id));
+		$this->assertNull($annotation->labels()->first());
+
+		// the label doesn't exist any more for this user and this annotation
+		$this->assertFalse($annotation->removeLabel(1, $user->id));
 	}
 }

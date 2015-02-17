@@ -2797,12 +2797,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfPHP/Sami.git",
-                "reference": "0e70f3316920df58d903de0bf2222e49784c8317"
+                "reference": "83ca39f91f359a4db90a13ddfd55d6be28d11229"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/Sami/zipball/0e70f3316920df58d903de0bf2222e49784c8317",
-                "reference": "0e70f3316920df58d903de0bf2222e49784c8317",
+                "url": "https://api.github.com/repos/FriendsOfPHP/Sami/zipball/83ca39f91f359a4db90a13ddfd55d6be28d11229",
+                "reference": "83ca39f91f359a4db90a13ddfd55d6be28d11229",
                 "shasum": ""
             },
             "require": {
@@ -2847,7 +2847,7 @@
             "keywords": [
                 "phpdoc"
             ],
-            "time": "2014-12-12 14:58:50"
+            "time": "2015-02-17 11:41:56"
         },
         {
             "name": "sebastian/comparator",

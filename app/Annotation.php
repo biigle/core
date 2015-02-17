@@ -109,4 +109,18 @@ class Annotation extends Attributable implements BelongsToProject {
 			abort(400, 'The user already attached label "'.$labelId.'" to annotation "'.$this->id.'"!');
 		}
 	}
+
+	/**
+	 * Detaches the specified label attached by the specified user from this
+	 * annotation.
+	 * 
+	 * @param int $labelId
+	 * @param int $userId
+	 * @return boolean `false` if nothing was detached (the label didn't exist)
+	 */
+	public function removeLabel($labelId, $userId)
+	{
+		// TODO do this using Eloquent somehow?
+		return (boolean) \DB::delete('DELETE FROM annotation_label WHERE annotation_id = ? AND label_id = ? AND user_id = ?', array($this->id, $labelId, $userId));
+	}
 }
