@@ -2,7 +2,7 @@
 
 use Dias\Http\Controllers\Controller;
 use Dias\User;
-use Dias\Events\UserLoggedIn;
+use Dias\Events\UserLoggedInEvent;
 
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
@@ -58,7 +58,7 @@ class AuthController extends Controller {
 
 		if ($this->auth->attempt($credentials))
 		{
-			event(new UserLoggedIn($this->auth->user()));
+			event(new UserLoggedInEvent($this->auth->user()));
 			return redirect()->intended($this->redirectPath());
 		}
 

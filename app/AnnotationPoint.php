@@ -1,13 +1,13 @@
 <?php namespace Dias;
 
 use Illuminate\Database\Eloquent\Model;
-use Dias\Contracts\BelongsToProject;
+use Dias\Contracts\BelongsToProjectContract;
 
 /**
  * Annotations consist of one or many of these annotation points, marking
  * a point or a region on an image.
  */
-class AnnotationPoint extends Model implements BelongsToProject {
+class AnnotationPoint extends Model implements BelongsToProjectContract {
 
 	/**
 	 * Don't maintain timestamps for this model.

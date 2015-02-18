@@ -1,11 +1,11 @@
-<?php namespace Dias;
+<?php namespace Dias\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * A model that can belong to an attribute.
  */
-abstract class Attributable extends Model {
+abstract class ModelWithAttributes extends Model {
 
 	/**
 	 * The attributes of this model.

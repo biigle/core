@@ -3,7 +3,7 @@
 use Exception;
 use Dias\Role;
 
-class Project {
+class ProjectObserver {
 
 	/**
 	 * A project must not be created without having a creator.

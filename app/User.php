@@ -1,15 +1,16 @@
 <?php namespace Dias;
 
 use Illuminate\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
+use Dias\Model\ModelWithAttributes;
+
 /**
  * A user.
  */
-class User extends Attributable implements AuthenticatableContract, CanResetPasswordContract {
+class User extends ModelWithAttributes implements AuthenticatableContract, CanResetPasswordContract {
 
 	use Authenticatable, CanResetPassword;
 

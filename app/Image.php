@@ -1,11 +1,12 @@
 <?php namespace Dias;
 
-use Dias\Contracts\BelongsToProject;
+use Dias\Contracts\BelongsToProjectContract;
+use Dias\Model\ModelWithAttributes;
 
 /**
  * This model stores information on an image file in the file system.
  */
-class Image extends Attributable implements BelongsToProject {
+class Image extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
 	 * Don't maintain timestamps for this model.

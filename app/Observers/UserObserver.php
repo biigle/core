@@ -2,7 +2,7 @@
 
 use Dias\Role;
 
-class User {
+class UserObserver {
 
 	/**
 	 * A user gets the global role 'editor' by default.

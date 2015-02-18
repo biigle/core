@@ -11,7 +11,7 @@ class EventServiceProvider extends ServiceProvider {
 	 * @var array
 	 */
 	protected $listen = [
-		'Dias\Events\UserLoggedIn' => [
+		'Dias\Events\UserLoggedInEvent' => [
 			'Dias\Handlers\Events\LoginEventHandler@handle',
 		],
 	];
@@ -26,8 +26,8 @@ class EventServiceProvider extends ServiceProvider {
 	{
 		parent::boot($events);
 
-		\Dias\Project::observe(new \Dias\Observers\Project);
-		\Dias\User::observe(new \Dias\Observers\User);
+		\Dias\Project::observe(new \Dias\Observers\ProjectObserver);
+		\Dias\User::observe(new \Dias\Observers\UserObserver);
 	}
 
 }

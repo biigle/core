@@ -1,8 +1,9 @@
 <?php namespace Dias;
 
 use Illuminate\Database\QueryException;
+use Dias\Model\ModelWithAttributes;
 
-class Project extends Attributable {
+class Project extends ModelWithAttributes {
 
 	/**
 	 * The attributes excluded from the model's JSON form.

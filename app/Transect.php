@@ -1,12 +1,13 @@
 <?php namespace Dias;
 
-use Dias\Contracts\BelongsToProject;
+use Dias\Contracts\BelongsToProjectContract;
+use Dias\Model\ModelWithAttributes;
 
 /**
  * A transect is a collection of images. Transects belong to one or many
  * projects.
  */
-class Transect extends Attributable implements BelongsToProject {
+class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
 	 * The user that created the transect.

@@ -1,5 +1,7 @@
 <?php namespace Dias;
 
+use Dias\Model\ModelWithAttributes;
+
 /**
  * Annotations on an image can have multiple labels. A label is e.g. the
  * type of the object visible in the region of the annotation. So if
@@ -8,7 +10,7 @@
  * 
  * Labels can be ordered in a tree-like structure.
  */
-class Label extends Attributable {
+class Label extends ModelWithAttributes {
 
 	/**
 	 * Don't maintain timestamps for this model.

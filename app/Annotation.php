@@ -1,13 +1,14 @@
 <?php namespace Dias;
 
-use Dias\Contracts\BelongsToProject;
+use Dias\Contracts\BelongsToProjectContract;
+use Dias\Model\ModelWithAttributes;
 use Illuminate\Database\QueryException;
 
 /**
  * An annotation is a region of an image that can be labeled by the users.
  * It consists of one or many points and has a specific shape.
  */
-class Annotation extends Attributable implements BelongsToProject {
+class Annotation extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
 	 * The attributes excluded from the model's JSON form.

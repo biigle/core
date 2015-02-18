@@ -7,7 +7,7 @@ use Illuminate\Queue\SerializesModels;
 /**
  * This event will be created when a user was logged in.
  */
-class UserLoggedIn extends Event {
+class UserLoggedInEvent extends Event {
 
 	use SerializesModels;
 
