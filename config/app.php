@@ -145,6 +145,11 @@ return [
 		'Dias\Providers\EventServiceProvider',
 		'Dias\Providers\RouteServiceProvider',
 
+		/*
+		 * Additional Service Providers...
+		 */
+		'Intervention\Image\ImageServiceProvider',
+
 	],
 
 	/*
@@ -192,6 +197,8 @@ return [
 		'URL'       => 'Illuminate\Support\Facades\URL',
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
+
+		'InterventionImage' => 'Intervention\Image\Facades\Image',
 
 	],
 

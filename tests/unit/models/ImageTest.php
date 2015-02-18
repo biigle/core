@@ -4,11 +4,11 @@ use Dias\Image;
 
 class ImageTest extends TestCase {
 
-	public static function create($file = 'test', $transect = false)
+	public static function create($file = 'test-image.jpg', $transect = false)
 	{
 		$obj = new Image;
 		$obj->filename = $file;
-		$transect = $transect ? $transect : TransectTest::create();
+		$transect = $transect ? $transect : TransectTest::create('test', base_path().'/tests/files');
 		$transect->save();
 		$obj->transect()->associate($transect);
 		return $obj;
@@ -26,8 +26,20 @@ class ImageTest extends TestCase {
 		$image->save();
 		$this->assertNotNull($image->filename);
 		$this->assertNotNull($image->transect_id);
+		$this->assertNotNull($image->thumbPath);
+		$this->assertNotNull($image->url);
 		$this->assertNull($image->created_at);
 		$this->assertNull($image->updated_at);
+
+		$this->assertNotNull(Image::$thumbPath);
+	}
+
+	public function testHiddenAttributes()
+	{
+		$image = ImageTest::create();
+		$image->save();
+		$json = json_decode((string) $image);
+		$this->assertObjectNotHasAttribute('filename', $json);
 	}
 
 	public function testFilenameRequired()
@@ -99,5 +111,45 @@ class ImageTest extends TestCase {
 		$ids = $image->projectIds();
 		$this->assertNotEmpty($ids);
 		$this->assertEquals($project->id, $ids[0]);
+	}
+
+	public function testGetThumb()
+	{
+		$image = ImageTest::create();
+		$image->save();
+		// remove previously created thumbnail
+		File::delete($image->thumbPath);
+
+		// first try to load, then create
+		InterventionImage::shouldReceive('make')
+			->twice()
+			->withAnyArgs()
+			->passthru();
+
+		$thumb = $image->getThumb();
+		$this->assertNotNull($thumb);
+		$this->assertTrue(File::exists($image->thumbPath));
+
+		// now the thumb already exists, so only one call is required
+		InterventionImage::shouldReceive('make')
+			->once()
+			->with($image->thumbPath)
+			->passthru();
+
+		$thumb = $image->getThumb();
+		$this->assertNotNull($thumb);
+	}
+
+	public function testGetFile()
+	{
+		$image = ImageTest::create();
+		$image->save();
+		InterventionImage::shouldReceive('make')
+			->once()
+			->with($image->url)
+			->passthru();
+
+		$file = $image->getFile();
+		$this->assertNotNull($file);
 	}
 }

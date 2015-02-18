@@ -8,7 +8,9 @@ DISCOL Image Annotation Software
 - PHP mcrypt extension
 - PHP JSON extension
 - PHP PGSQL extension
+- PHP Fileinfo extension
 
+- (PHP) GD Library (>=2.0) 
 - PostgreSQL
 - Git
 

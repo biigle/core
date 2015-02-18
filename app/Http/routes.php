@@ -44,6 +44,12 @@ Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => '
 		'only' => array('index', 'show', 'store', 'destroy')
 	));
 
+	$router->get('images/{id}/thumb', 'ImageController@showThumb');
+	$router->get('images/{id}/file', 'ImageController@showFile');
+	$router->resource('images', 'ImageController', array(
+		'only' => array('show')
+	));
+
 	$router->get('projects/my', 'ProjectController@index');
 	$router->resource('projects', 'ProjectController', array(
 		'only' => array('show', 'update', 'store', 'destroy')
