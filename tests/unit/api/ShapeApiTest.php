@@ -6,8 +6,7 @@ class ShapeApiTest extends ApiTestCase {
 
 	public function testIndex()
 	{
-		$this->call('GET', '/api/v1/shapes');
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('GET', '/api/v1/shapes');
 
 		// api key authentication
 		$this->callToken('GET', '/api/v1/shapes', $this->admin);
@@ -23,8 +22,7 @@ class ShapeApiTest extends ApiTestCase {
 
 	public function testShow()
 	{
-		$this->call('GET', '/api/v1/shapes/'.Shape::circleId());
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::circleId());
 
 		// api key authentication
 		$this->callToken('GET', '/api/v1/shapes/'.Shape::circleId(), $this->admin);

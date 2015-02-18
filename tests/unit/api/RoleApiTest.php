@@ -6,9 +6,8 @@ class RoleApiTest extends ApiTestCase {
 
 	public function testIndex()
 	{
-		$this->call('GET', '/api/v1/roles');
-		$this->assertResponseStatus(401);
-
+		$this->doTestApiRoute('GET', '/api/v1/roles');
+		
 		// api key authentication
 		$this->callToken('GET', '/api/v1/roles', $this->user);
 		$this->assertResponseOk();
@@ -23,8 +22,7 @@ class RoleApiTest extends ApiTestCase {
 
 	public function testShow()
 	{
-		$this->call('GET', '/api/v1/roles/'.Role::adminId());
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('GET', '/api/v1/roles/'.Role::adminId());
 
 		// api key authentication
 		$this->callToken('GET', '/api/v1/roles/'.Role::adminId(), $this->user);

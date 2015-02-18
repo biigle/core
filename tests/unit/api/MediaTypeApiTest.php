@@ -6,7 +6,7 @@ class MediaTypeApiTest extends ApiTestCase {
 
 	public function testIndex()
 	{
-		$this->call('GET', '/api/v1/media-types');
+		$this->doTestApiRoute('GET', '/api/v1/media-types');
 		$this->assertResponseStatus(401);
 
 		// api key authentication
@@ -23,8 +23,7 @@ class MediaTypeApiTest extends ApiTestCase {
 
 	public function testShow()
 	{
-		$this->call('GET', '/api/v1/media-types/'.MediaType::timeSeriesId());
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('GET', '/api/v1/media-types/'.MediaType::timeSeriesId());
 
 		// api key authentication
 		$this->callToken('GET', '/api/v1/media-types/'.MediaType::timeSeriesId(), $this->admin);

@@ -14,14 +14,7 @@ class AnnotationPointApiTest extends ApiTestCase {
 
 	public function testStore()
 	{
-		// token mismatch
-		$this->call('POST', '/api/v1/annotations/1/points');
-		$this->assertResponseStatus(403);
-
-		$this->call('POST', '/api/v1/annotations/1/points', array(
-			'_token' => Session::token()
-		));
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('POST', '/api/v1/annotations/1/points');
 
 		// api key authentication
 		// missing arguments
@@ -65,13 +58,7 @@ class AnnotationPointApiTest extends ApiTestCase {
 
 	public function testDestroy()
 	{
-		$this->call('DELETE', '/api/v1/annotation-points/1');
-		$this->assertResponseStatus(403);
-
-		$this->call('DELETE', '/api/v1/annotation-points/1', array(
-			'_token' => Session::token()
-		));
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('DELETE', '/api/v1/annotation-points/1');
 
 		// api key authentication
 		$this->callToken('DELETE', '/api/v1/annotation-points/1', $this->admin);

@@ -56,4 +56,25 @@ class ApiTestCase extends TestCase {
 	{
 		return $this->call($method, $uri, $params, [], [], array('HTTP_Authorization' => 'token '.$user->api_key));
 	}
+
+	/*
+	 * Tests the existence of an API route.
+	 */
+	protected function doTestApiRoute($method, $uri)
+	{
+		$this->call($method, $uri);
+		if ($method === 'GET')
+		{
+			$this->assertResponseStatus(401);
+		}
+		else
+		{
+			// token mismatch
+			$this->assertResponseStatus(403);
+
+			$this->call($method, $uri, array('_token' => Session::token()));
+			// route exists (otherwise 404)
+			$this->assertResponseStatus(401);
+		}
+	}
 }

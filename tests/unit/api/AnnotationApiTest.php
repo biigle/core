@@ -14,8 +14,7 @@ class AnnotationApiTest extends ApiTestCase {
 
 	public function testShow()
 	{
-		$this->call('GET', '/api/v1/annotations/1');
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('GET', '/api/v1/annotations/1');
 
 		// api key authentication
 		$this->callToken('GET', '/api/v1/annotations/1', $this->admin);
@@ -48,9 +47,7 @@ class AnnotationApiTest extends ApiTestCase {
 
 	public function testDestroy()
 	{
-		// token mismatch
-		$this->call('DELETE', '/api/v1/annotations/1');
-		$this->assertResponseStatus(403);
+		$this->doTestApiRoute('DELETE', '/api/v1/annotations/1');
 
 		$this->callToken('DELETE', '/api/v1/annotations/1', $this->user);
 		$this->assertResponseStatus(401);

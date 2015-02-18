@@ -14,14 +14,7 @@ class AnnotationLabelApiTest extends ApiTestCase {
 
 	public function testStore()
 	{
-		// token mismatch
-		$this->call('POST', '/api/v1/annotations/1/labels');
-		$this->assertResponseStatus(403);
-
-		$this->call('POST', '/api/v1/annotations/1/labels', array(
-			'_token' => Session::token()
-		));
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('POST', '/api/v1/annotations/1/labels');
 
 		// api key authentication
 		// missing arguments
@@ -64,14 +57,7 @@ class AnnotationLabelApiTest extends ApiTestCase {
 	{
 		$this->annotation->addLabel(1, 0.5, $this->editor);
 
-		// token mismatch
-		$this->call('PUT', '/api/v1/annotations/1/labels/1');
-		$this->assertResponseStatus(403);
-
-		$this->call('PUT', '/api/v1/annotations/1/labels/1', array(
-			'_token' => Session::token()
-		));
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('PUT', '/api/v1/annotations/1/labels/1');
 
 		// api key authentication
 		$this->callToken('PUT', '/api/v1/annotations/1/labels/1', $this->user);
@@ -102,14 +88,7 @@ class AnnotationLabelApiTest extends ApiTestCase {
 	{
 		$this->annotation->addLabel(1, 0.5, $this->editor);
 
-		// token mismatch
-		$this->call('DELETE', '/api/v1/annotations/1/labels/1');
-		$this->assertResponseStatus(403);
-
-		$this->call('DELETE', '/api/v1/annotations/1/labels/1', array(
-			'_token' => Session::token()
-		));
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('DELETE', '/api/v1/annotations/1/labels/1');
 
 		// api key authentication
 		$this->callToken('DELETE', '/api/v1/annotations/1/labels/1', $this->user);

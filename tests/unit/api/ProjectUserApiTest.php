@@ -7,8 +7,7 @@ class ProjectUserApiTest extends ApiTestCase {
 
 	public function testIndex()
 	{
-		$this->call('GET', '/api/v1/projects/1/users');
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('GET', '/api/v1/projects/1/users');
 		
 		// api key authentication
 		$this->callToken('GET', '/api/v1/projects/1/users', $this->admin);
@@ -31,9 +30,7 @@ class ProjectUserApiTest extends ApiTestCase {
 
 	public function testUpdate()
 	{
-		// token mismatch
-		$this->call('PUT', '/api/v1/projects/1/users/1');
-		$this->assertResponseStatus(403);
+		$this->doTestApiRoute('PUT', '/api/v1/projects/1/users/1');
 
 		// non-admins are not allowed to modify users
 		$this->callToken('PUT', '/api/v1/projects/1/users/1', $this->user);
@@ -73,9 +70,7 @@ class ProjectUserApiTest extends ApiTestCase {
 
 	public function testStore()
 	{
-		// token mismatch
-		$this->call('POST', '/api/v1/projects/1/users');
-		$this->assertResponseStatus(403);
+		$this->doTestApiRoute('POST', '/api/v1/projects/1/users');
 
 		$this->callToken('POST', '/api/v1/projects/1/users', $this->user);
 		$this->assertResponseStatus(401);
@@ -119,13 +114,7 @@ class ProjectUserApiTest extends ApiTestCase {
 		$this->project->creator->delete();
 
 		// token mismatch
-		$this->call('DELETE', '/api/v1/projects/1/users/1');
-		$this->assertResponseStatus(403);
-
-		$this->call('DELETE', '/api/v1/projects/1/users/1', array(
-			'_token' => Session::token()
-		));
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('DELETE', '/api/v1/projects/1/users/1');
 
 		// non-admins are not allowed to delete other users
 		$this->callToken('DELETE', '/api/v1/projects/1/users/'.$this->admin->id, $this->editor);

@@ -10,9 +10,7 @@ class ProjectApiTest extends ApiTestCase {
 		$this->call('GET', '/api/v1/projects');
 		$this->assertResponseStatus(405);
 
-		// call without authentication fails
-		$this->call('GET', '/api/v1/projects/my');
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('GET', '/api/v1/projects/my');
 		
 		// api key authentication
 		$this->callToken('GET', '/api/v1/projects/my', $this->admin);
@@ -31,8 +29,7 @@ class ProjectApiTest extends ApiTestCase {
 
 	public function testShow()
 	{
-		$this->call('GET', '/api/v1/projects/1');
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('GET', '/api/v1/projects/1');
 		
 		// api key authentication
 		$this->callToken('GET', '/api/v1/projects/1', $this->admin);
@@ -57,14 +54,7 @@ class ProjectApiTest extends ApiTestCase {
 
 	public function testUpdate()
 	{
-		// token mismatch
-		$this->call('PUT', '/api/v1/projects/1');
-		$this->assertResponseStatus(403);
-
-		$this->call('PUT', '/api/v1/projects/1', array(
-			'_token' => Session::token()
-		));
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('PUT', '/api/v1/projects/1');
 
 		// api key authentication
 		$this->callToken('PUT', '/api/v1/projects/1', $this->admin);
@@ -97,13 +87,7 @@ class ProjectApiTest extends ApiTestCase {
 
 	public function testStore()
 	{
-		$this->call('POST', '/api/v1/projects');
-		$this->assertResponseStatus(403);
-
-		$this->call('POST', '/api/v1/projects', array(
-			'_token' => Session::token()
-		));
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('POST', '/api/v1/projects');
 
 		// api key authentication
 		// creating an empty project is an error
@@ -143,13 +127,7 @@ class ProjectApiTest extends ApiTestCase {
 
 	public function testDestroy()
 	{
-		$this->call('DELETE', '/api/v1/projects/1');
-		$this->assertResponseStatus(403);
-
-		$this->call('DELETE', '/api/v1/projects/1', array(
-			'_token' => Session::token()
-		));
-		$this->assertResponseStatus(401);
+		$this->doTestApiRoute('DELETE', '/api/v1/projects/1');
 
 		// non-admins are not allowed to delete the project
 		$this->callToken('DELETE', '/api/v1/projects/1', $this->editor);
