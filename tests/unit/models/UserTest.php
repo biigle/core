@@ -100,9 +100,9 @@ class UserTest extends TestCase {
 	public function testIsAdmin()
 	{
 		$this->user->save();
-		$this->assertFalse($this->user->isAdmin());
+		$this->assertFalse($this->user->isAdmin);
 		$this->user->role()->associate(Role::admin());
-		$this->assertTrue($this->user->isAdmin());
+		$this->assertTrue($this->user->isAdmin);
 	}
 
 	public function testHiddenAttributes()

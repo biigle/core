@@ -35,6 +35,9 @@ class PopulateRequiredRows extends Migration {
 		));
 
 		//TODO attributes?
+		DB::table('attributes')->insert(array(
+			array('name' => 'bad_quality', 'type' => 'boolean'),
+		));
 	}
 
 	/**

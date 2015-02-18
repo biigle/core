@@ -1,7 +1,6 @@
 <?php namespace Dias\Http\Controllers\Api;
 
 use Dias\Http\Controllers\ApiController;
-use Illuminate\Http\Request;
 
 use Dias\Annotation;
 use Dias\AnnotationPoint;
@@ -12,25 +11,20 @@ class AnnotationPointController extends ApiController {
 	 * Creates a new point for the specifies annotation.
 	 *
 	 * @param int $id Annotation ID
-	 * @param  Request $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function store($id, Request $request)
+	public function store($id)
 	{
-		if (!$request->has('x', 'y'))
-		{
-			abort(400, 'Bad arguments.');
-		}
+		$this->requireArguments('x', 'y');
 
-		$annotation = AnnotationController::findOrAbort($id);
+		$annotation = $this->requireNotNull(Annotation::find($id));
 
-		$projectIds = $annotation->projectIds();
-		if (!$this->auth->user()->canEditInOneOfProjects($projectIds))
-		{
-			abort(401);
-		}
+		$this->requireCanEdit($annotation);
 
-		return $annotation->addPoint($request->input('x'), $request->input('y'));
+		return $annotation->addPoint(
+			$this->request->input('x'),
+			$this->request->input('y')
+		);
 	}
 
 	/**
@@ -41,17 +35,9 @@ class AnnotationPointController extends ApiController {
 	 */
 	public function destroy($id)
 	{
-		$point = AnnotationPoint::find($id);
-		if (!$point)
-		{
-			abort(404);
-		}
+		$point = $this->requireNotNull(AnnotationPoint::find($id));
 
-		$projectIds = $point->projectIds();
-		if (!$this->auth->user()->canEditInOneOfProjects($projectIds))
-		{
-			abort(401);
-		}
+		$this->requireCanEdit($point);
 
 		$point->delete();
 		return response('Deleted.', 200);

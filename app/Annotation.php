@@ -2,6 +2,7 @@
 
 use Dias\Contracts\BelongsToProjectContract;
 use Dias\Model\ModelWithAttributes;
+
 use Illuminate\Database\QueryException;
 
 /**

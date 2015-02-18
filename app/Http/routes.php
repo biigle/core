@@ -40,6 +40,10 @@ Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => '
 		'only' => array('store', 'update', 'destroy')
 	));
 
+	$router->resource('attributes', 'AttributeController', array(
+		'only' => array('index', 'show', 'store', 'destroy')
+	));
+
 	$router->get('projects/my', 'ProjectController@index');
 	$router->resource('projects', 'ProjectController', array(
 		'only' => array('show', 'update', 'store', 'destroy')

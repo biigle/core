@@ -92,11 +92,12 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 	}
 
 	/**
-	 * Checks if this user has the global admin role.
+	 * Adds the `isAdmin` attribute to the user which determines if the user
+	 * has the global admin role.
 	 * 
 	 * @return boolean
 	 */
-	public function isAdmin()
+	public function getIsAdminAttribute()
 	{
 		return $this->role->id === Role::adminId();
 	}

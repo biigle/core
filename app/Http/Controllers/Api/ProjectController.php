@@ -1,7 +1,6 @@
 <?php namespace Dias\Http\Controllers\Api;
 
 use Dias\Http\Controllers\ApiController;
-use Illuminate\Http\Request;
 
 use Dias\Project;
 
@@ -38,10 +37,9 @@ class ProjectController extends ApiController {
 	 * Updates the attributes of the specified project.
 	 *
 	 * @param  int  $id
-	 * @param  Request $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function update($id, Request $request)
+	public function update($id)
 	{
 		$project = Project::find($id);
 		if (!$project || !$project->hasAdmin($this->auth->user()))
@@ -49,8 +47,8 @@ class ProjectController extends ApiController {
 			abort(401);
 		}
 		
-		$project->name = $request->input('name', $project->name);
-		$project->description = $request->input('description', $project->description);
+		$project->name = $this->request->input('name', $project->name);
+		$project->description = $this->request->input('description', $project->description);
 		$project->save();
 
 		return response('Ok.', 200);
@@ -59,19 +57,15 @@ class ProjectController extends ApiController {
 	/**
 	 * Creates a new project.
 	 *
-	 * @param  Request $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function store(Request $request)
+	public function store()
 	{
-		if (!$request->has('name', 'description'))
-		{
-			abort(400, 'Bad arguments.');
-		}
-		
+		$this->requireArguments('name', 'description');
+
 		$project = new Project;
-		$project->name = $request->input('name');
-		$project->description = $request->input('description');
+		$project->name = $this->request->input('name');
+		$project->description = $this->request->input('description');
 		$project->setCreator($this->auth->user());
 		$project->save();
 		// makes sure the project was successfully stored
@@ -87,11 +81,8 @@ class ProjectController extends ApiController {
 	 */
 	public function destroy($id)
 	{
-		$project = Project::find($id);
-		if (!$project)
-		{
-			abort(404);
-		}
+
+		$project = $this->requireNotNull(Project::find($id));
 
 		if (!$project->hasAdmin($this->auth->user()))
 		{

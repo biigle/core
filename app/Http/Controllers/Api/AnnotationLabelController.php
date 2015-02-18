@@ -1,7 +1,6 @@
 <?php namespace Dias\Http\Controllers\Api;
 
 use Dias\Http\Controllers\ApiController;
-use Illuminate\Http\Request;
 
 use Dias\Annotation;
 
@@ -11,27 +10,19 @@ class AnnotationLabelController extends ApiController {
 	 * Creates a new label for the specifies annotation.
 	 *
 	 * @param int $id Annotation ID
-	 * @param  Request $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function store($id, Request $request)
+	public function store($id)
 	{
-		if (!$request->has('label_id', 'confidence'))
-		{
-			abort(400, 'Bad arguments.');
-		}
+		$this->requireArguments('label_id', 'confidence');
 
-		$annotation = AnnotationController::findOrAbort($id);
+		$annotation = $this->requireNotNull(Annotation::find($id));
 
-		$projectIds = $annotation->projectIds();
-		if (!$this->auth->user()->canEditInOneOfProjects($projectIds))
-		{
-			abort(401);
-		}
+		$this->requireCanEdit($annotation);
 
 		$annotation->addLabel(
-			$request->input('label_id'),
-			$request->input('confidence'),
+			$this->request->input('label_id'),
+			$this->request->input('confidence'),
 			$this->auth->user()
 		);
 
@@ -44,31 +35,21 @@ class AnnotationLabelController extends ApiController {
 	 *
 	 * @param int  $annotationId
 	 * @param int $labelId
-	 * @param Request $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function update($annotationId, $labelId, Request $request)
+	public function update($annotationId, $labelId)
 	{
-		$annotation = AnnotationController::findOrAbort($annotationId);
+		$annotation = $this->requireNotNull(Annotation::find($annotationId));
 		$user = $this->auth->user();
 
-		$projectIds = $annotation->projectIds();
-		if (!$user->canEditInOneOfProjects($projectIds))
-		{
-			abort(401);
-		}
+		$this->requireCanEdit($annotation);
 
-		$label = $annotation->labels()
-			->whereUserId($user->id)
-			->find($labelId);
-
-		if (!$label)
-		{
-			abort(404);
-		}
+		$label = $this->requireNotNull(
+			$annotation->labels()->whereUserId($user->id)->find($labelId)
+		);
 
 		$annotation->labels()->updateExistingPivot($label->id, array(
-			'confidence' => $request->input('confidence', $label->confidence)
+			'confidence' => $this->request->input('confidence', $label->confidence)
 		));
 	}
 
@@ -79,26 +60,21 @@ class AnnotationLabelController extends ApiController {
 	 *
 	 * @param int  $annotationId
 	 * @param int $labelId
-	 * @param Request $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function destroy($annotationId, $labelId, Request $request)
+	public function destroy($annotationId, $labelId)
 	{
-		$annotation = AnnotationController::findOrAbort($annotationId);
+		$annotation = $this->requireNotNull(Annotation::find($annotationId));
 		$user = $this->auth->user();
 
-		$projectIds = $annotation->projectIds();
-		if (!$user->canEditInOneOfProjects($projectIds))
-		{
-			abort(401);
-		}
+		$this->requireCanEdit($annotation);
 
 		$userId = $user->id;
 
 		// a project admin can detach labels of other users as well
-		if ($user->canAdminOneOfProjects($projectIds))
+		if ($user->canAdminOneOfProjects($annotation->projectIds()))
 		{
-			$userId = $request->input('user_id', $userId);
+			$userId = $this->request->input('user_id', $userId);
 		}
 
 		// try to detach the label

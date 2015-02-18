@@ -30,6 +30,7 @@ class ApiTestCase extends TestCase {
 		$this->globalAdmin = $this->newProjectUser(Role::guestId());
 		$this->project->removeUserId($this->user->id);
 		$this->globalAdmin->role()->associate(Role::admin());
+		$this->globalAdmin->save();
 	}
 
 	private function newProjectUser($roleId)

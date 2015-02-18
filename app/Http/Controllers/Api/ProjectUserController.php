@@ -1,7 +1,6 @@
 <?php namespace Dias\Http\Controllers\Api;
 
 use Dias\Http\Controllers\ApiController;
-use Illuminate\Http\Request;
 
 use Dias\Project;
 use Dias\User;
@@ -30,10 +29,9 @@ class ProjectUserController extends ApiController {
 	 *
 	 * @param  int  $projectId
 	 * @param  int  $userId
-	 * @param  Request $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function update($projectId, $userId, Request $request)
+	public function update($projectId, $userId)
 	{
 		$project = Project::find($projectId);
 		if (!$project || !$project->hasAdmin($this->auth->user()))
@@ -41,7 +39,7 @@ class ProjectUserController extends ApiController {
 			abort(401);
 		}
 
-		$role = Role::find($request->input('project_role_id'));
+		$role = Role::find($this->request->input('project_role_id'));
 
 		if (!$role)
 		{
@@ -56,10 +54,9 @@ class ProjectUserController extends ApiController {
 	 * Adds a new user to the specified project.
 	 *
 	 * @param int $projectId
-	 * @param Request $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function store($projectId, Request $request)
+	public function store($projectId)
 	{
 		$project = Project::find($projectId);
 		if (!$project || !$project->hasAdmin($this->auth->user()))
@@ -67,8 +64,8 @@ class ProjectUserController extends ApiController {
 			abort(401);
 		}
 
-		$user = User::find($request->input('id'));
-		$role = Role::find($request->input('project_role_id'));
+		$user = User::find($this->request->input('id'));
+		$role = Role::find($this->request->input('project_role_id'));
 
 		if (!$user || !$role)
 		{
