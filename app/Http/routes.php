@@ -58,9 +58,21 @@ Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => '
 		'only' => array('index', 'show', 'store', 'update', 'destroy')
 	));
 
+	$router->resource('media-types', 'MediaTypeController', array(
+		'only' => array('index', 'show')
+	));
+
 	$router->get('projects/my', 'ProjectController@index');
 	$router->resource('projects', 'ProjectController', array(
 		'only' => array('show', 'update', 'store', 'destroy')
+	));
+
+	$router->post(
+		'projects/{pid}/transects/{tid}',
+		'ProjectTransectController@attach'
+	);
+	$router->resource('projects.transects', 'ProjectTransectController', array(
+		'only' => array('index', 'store', 'destroy')
 	));
 
 	$router->resource('projects.users', 'ProjectUserController', array(
@@ -72,10 +84,6 @@ Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => '
 	));
 
 	$router->resource('shapes', 'ShapeController', array(
-		'only' => array('index', 'show')
-	));
-
-	$router->resource('media-types', 'MediaTypeController', array(
 		'only' => array('index', 'show')
 	));
 });

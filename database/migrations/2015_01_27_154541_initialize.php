@@ -153,9 +153,9 @@ class Initialize extends Migration {
 
 			$table->timestamps();
 
-			// stores external URL (e.g. http: or file:) if the images of the
-			// transect are not stored in the default path
-			$table->string('url', 256)->nullable();
+			// stores URL (e.g. http:// or file://) where the original image files
+			// are stored
+			$table->string('url', 256);
 		});
 
 		/*
@@ -190,12 +190,13 @@ class Initialize extends Migration {
 			$table->string('filename', 512);
 
 			// images are primarily searched by transect, so do index
-			$table->integer('transect_id')->unsigned()->index();
+			$table->integer('transect_id')->nullable()->unsigned()->index();
 			$table->foreign('transect_id')
 			      ->references('id')
 			      ->on('transects')
-			      // delete all images belonging to a deleted transect
-			      ->onDelete('cascade');
+			      // setting the transect to null will mark the image for
+			      // deletion in the regular housekeeping cron job
+			      ->onDelete('set null');
 
 			// filename must be unique for each transect
 			$table->unique(array('filename', 'transect_id'));

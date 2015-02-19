@@ -72,3 +72,5 @@ Don't forget to set the encryption key! You can generate one with `php artisan k
 Maybe set up the route cache? Cache the environment variables?
 
 **Put all sensitive and secret stuff to `.env.php` in the repo root!** You'll see where the `env()` helper is used in the config files.
+
+Set up the task scheduler by creating a cron job that calls `php artisan schedule:run` in the application root every minute.

@@ -15,7 +15,6 @@ class LabelApiTest extends ApiTestCase {
 		// session cookie authentication
 		$this->be($this->user);
 		$r = $this->callAjax('GET', '/api/v1/labels');
-		// response should not be an empty array
 		$this->assertStringStartsWith('[', $r->getContent());
 		$this->assertStringEndsWith(']', $r->getContent());
 	}

@@ -54,8 +54,16 @@ class ImageTest extends TestCase {
 	{
 		$obj = ImageTest::create();
 		$obj->transect()->dissociate();
-		$this->setExpectedException('Illuminate\Database\QueryException');
+		$this->setExpectedException('Exception');
 		$obj->save();
+	}
+
+	public function testTransectOnDeleteSetNull()
+	{
+		$image = ImageTest::create();
+		$image->save();
+		$image->transect->delete();
+		$this->assertNull($image->fresh()->transect);
 	}
 
 	public function testFilenameTransectUnique()
@@ -113,6 +121,9 @@ class ImageTest extends TestCase {
 		$ids = $image->projectIds();
 		$this->assertNotEmpty($ids);
 		$this->assertEquals($project->id, $ids[0]);
+
+		$image->transect->delete();
+		$this->assertEmpty($image->fresh()->projectIds());
 	}
 
 	public function testGetThumb()
@@ -153,5 +164,18 @@ class ImageTest extends TestCase {
 
 		$file = $image->getFile();
 		$this->assertNotNull($file);
+	}
+
+	public function testRemoveDeletedImages()
+	{
+		$image = ImageTest::create();
+		$image->save();
+		$image->getThumb();
+		$this->assertTrue(File::exists($image->thumbPath));
+		$image->transect->delete();
+		$this->assertTrue(File::exists($image->thumbPath));
+		Artisan::call('remove-deleted-images');
+		$this->assertFalse(File::exists($image->thumbPath));
+		$this->assertNull($image->fresh());
 	}
 }

@@ -243,7 +243,37 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract {
 		}
 	}
 
-	// TODO if this is the last project, the transect belongs to, the whole
-	// transect should be deleted (but with warning!)
-	// public function removeTransectId($id)
+	/**
+	 * Detaches the transect from this project. Fails if this is the last
+	 * project, the transect is attached to, unless force is `true`.
+	 * 
+	 * @param int $id Transect ID
+	 * @param boolean $force Delete the transect completely if this is the last project it belongs to
+	 * @return void
+	 */
+	public function removeTransectId($id, $force = false)
+	{
+		$transect = $this->transects()->find($id);
+		if (!$transect)
+		{
+			// nothing to remove
+			return;
+		}
+
+		// this is the last project the transect belongs to, so it should be
+		// deleted
+		if ($transect->projects()->count() === 1)
+		{
+			// but delete the transect only with force!
+			if (!$force)
+			{
+				abort(400, 'The transect would not belong to any project after detaching. Use the "force" argument to detach and delete it.');
+			}
+
+			$transect->delete();
+		}
+
+		// if the transect still belongs to other projects, just detach it
+		$this->transects()->detach($transect->id);
+	}
 }

@@ -12,7 +12,8 @@ class TransectTableSeeder extends Seeder {
 		Transect::create(array(
 			'name' => 'Test transect',
 			'media_type_id' => 2,
-			'creator_id' => 1
+			'creator_id' => 1,
+			'url' => 'xyz'
 		));
 	}
 

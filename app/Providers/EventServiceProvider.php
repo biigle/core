@@ -28,6 +28,8 @@ class EventServiceProvider extends ServiceProvider {
 
 		\Dias\Project::observe(new \Dias\Observers\ProjectObserver);
 		\Dias\User::observe(new \Dias\Observers\UserObserver);
+		\Dias\Transect::observe(new \Dias\Observers\TransectObserver);
+		\Dias\Image::observe(new \Dias\Observers\ImageObserver);
 	}
 
 }

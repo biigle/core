@@ -11,7 +11,7 @@ class Kernel extends ConsoleKernel {
 	 * @var array
 	 */
 	protected $commands = [
-		'Dias\Console\Commands\Inspire',
+		'Dias\Console\Commands\RemoveDeletedImages',
 	];
 
 	/**
@@ -22,8 +22,8 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected function schedule(Schedule $schedule)
 	{
-		$schedule->command('inspire')
-				 ->hourly();
+		$schedule->command('remove-deleted-images')
+				 ->dailyAt('04:00');
 	}
 
 }

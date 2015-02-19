@@ -2,6 +2,7 @@
 
 use Dias\Contracts\BelongsToProjectContract;
 use Dias\Model\ModelWithAttributes;
+use Dias\Image;
 
 use Cache;
 
@@ -10,6 +11,15 @@ use Cache;
  * projects.
  */
 class Transect extends ModelWithAttributes implements BelongsToProjectContract {
+
+	/**
+	 * The attributes hidden from the model's JSON form.
+	 *
+	 * @var array
+	 */
+	protected $hidden = array(
+		'pivot',
+	);
 
 	/**
 	 * The user that created the transect.
@@ -32,6 +42,33 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 	}
 
 	/**
+	 * Sets the media type of this transect.
+	 * 
+	 * @param Dias\MediaType $mediaType
+	 * @return void
+	 */
+	public function setMediaType($mediaType)
+	{
+		$this->mediaType()->associate($mediaType);
+	}
+
+	/**
+	 * Sets the media type of this transect to the media type with the given ID.
+	 * 
+	 * @param int $id media type ID
+	 * @return void
+	 */
+	public function setMediaTypeId($id)
+	{
+		$type = MediaType::find($id);
+		if (!$type)
+		{
+			abort(400, 'The media type "'.$id.'" does not exist!');
+		}
+		$this->setMediaType($type);
+	}
+
+	/**
 	 * The images belonging to this transect.
 	 * 
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -39,6 +76,22 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 	public function images()
 	{
 		return $this->hasMany('Dias\Image');
+	}
+
+	/**
+	 * Creates the image objects to be associated with this transect.
+	 * 
+	 * @param array $filenames image filenames at the location of the transect URL
+	 * @return void
+	 */
+	public function createImages($filenames)
+	{
+		foreach ($filenames as $filename) {
+			$image = new Image;
+			$image->filename = $filename;
+			$image->transect()->associate($this);
+			$image->save();
+		}
 	}
 
 	/**

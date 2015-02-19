@@ -344,4 +344,33 @@ class ProjectTest extends TestCase {
 		$this->assertEquals(1, $project->transects()->count());
 	}
 
+	public function testRemoveTransect()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$secondProject = ProjectTest::create();
+		$secondProject->save();
+		$transect = TransectTest::create();
+		$transect->save();
+		$project->addTransectId($transect->id);
+		$secondProject->addTransectId($transect->id);
+
+		$this->assertNotEmpty($secondProject->fresh()->transects);
+		$secondProject->removeTransectId($transect->id);
+		$this->assertEmpty($secondProject->fresh()->transects);
+
+		try {
+			// trying to detach a transect belonging to only one project fails
+			// without force
+			$project->removeTransectId($transect->id);
+			$this->assertFalse(true);
+		} catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+			$this->assertNotNull($e);
+		}
+
+		// use the force to detach and delete the transect
+		$project->removeTransectId($transect->id, true);
+		$this->assertNull($transect->fresh());
+	}
+
 }

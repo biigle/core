@@ -4,11 +4,11 @@ use Dias\Transect;
 
 class TransectTest extends TestCase {
 
-	public static function create($name = 't1', $url = null, $mt = false, $u = false)
+	public static function create($name = 't1', $url = false, $mt = false, $u = false)
 	{
 		$obj = new Transect;
 		$obj->name = $name;
-		$obj->url = $url;
+		$obj->url = $url ? $url : str_random(5);
 		$u = $u ? $u : UserTest::create();
 		$u->save();
 		$obj->creator()->associate($u);
@@ -40,6 +40,14 @@ class TransectTest extends TestCase {
 	{
 		$obj = TransectTest::create();
 		$obj->name = null;
+		$this->setExpectedException('Illuminate\Database\QueryException');
+		$obj->save();
+	}
+
+	public function testUrlRequired()
+	{
+		$obj = TransectTest::create();
+		$obj->url = null;
 		$this->setExpectedException('Illuminate\Database\QueryException');
 		$obj->save();
 	}
@@ -121,5 +129,44 @@ class TransectTest extends TestCase {
 		$ids = $transect->projectIds();
 		$this->assertNotEmpty($ids);
 		$this->assertEquals($project->id, $ids[0]);
+	}
+
+	public function testSetMediaType()
+	{
+		$transect = TransectTest::create();
+		$transect->save();
+		$type = MediaTypeTest::create();
+		$type->save();
+
+		$this->assertNotEquals($type->id, $transect->mediaType->id);
+		$transect->setMediaType($type);
+		$this->assertEquals($type->id, $transect->mediaType->id);
+	}
+
+	public function testSetMediaTypeId()
+	{
+		$transect = TransectTest::create();
+		$transect->save();
+		$type = MediaTypeTest::create();
+		$type->save();
+
+		$this->assertNotEquals($type->id, $transect->mediaType->id);
+		$transect->setMediaTypeId($type->id);
+		$this->assertEquals($type->id, $transect->mediaType->id);
+
+		// media type does not exist
+		$this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+		$transect->setMediaTypeId(99999);
+	}
+
+	public function testCreateImages()
+	{
+		$transect = TransectTest::create();
+		$transect->save();
+		$this->assertEmpty($transect->images);
+		$transect->createImages(array("1.jpg"));
+		$transect = $transect->fresh();
+		$this->assertNotEmpty($transect->images);
+		$this->assertEquals('1.jpg', $transect->images()->first()->filename);
 	}
 }

@@ -89,6 +89,13 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract {
 	 */
 	public function projectIds()
 	{
+		// if the image was marked for deletion it doesn't belong to a project
+		// any more. like this nobody is able to see the image, too.
+		if ($this->transect === null)
+		{
+			return array();
+		}
+
 		return $this->transect->projectIds();
 	}
 
