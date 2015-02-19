@@ -35,13 +35,13 @@ class ProjectApiTest extends ApiTestCase {
 		$this->callToken('GET', '/api/v1/projects/1', $this->admin);
 		$this->assertResponseOk();
 
-		$this->callToken('GET', '/api/v1/projects/2', $this->admin);
+		$this->callToken('GET', '/api/v1/projects/1', $this->user);
 		$this->assertResponseStatus(401);
 
 		// session cookie authentication
 		$this->be($this->admin);
 		$this->callAjax('GET', '/api/v1/projects/2');
-		$this->assertResponseStatus(401);
+		$this->assertResponseStatus(404);
 
 		$r = $this->callAjax('GET', '/api/v1/projects/1');
 		$this->assertResponseOk();
@@ -69,7 +69,7 @@ class ProjectApiTest extends ApiTestCase {
 		$this->callAjax('PUT', '/api/v1/projects/2', array(
 			'_token' => Session::token()
 		));
-		$this->assertResponseStatus(401);
+		$this->assertResponseStatus(404);
 
 		$this->callAjax('PUT', '/api/v1/projects/1', array(
 			'_token' => Session::token(),
@@ -105,7 +105,6 @@ class ProjectApiTest extends ApiTestCase {
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
 		$this->assertContains('"name":"test project"', $r->getContent());
-		$this->assertContains('"creator_id":"'.$this->admin->id.'"', $r->getContent());
 		$this->assertNotNull(Project::find(2));
 
 		// session cookie authentication

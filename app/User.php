@@ -53,6 +53,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 	 * @var array
 	 */
 	protected $visible = array(
+		'id',
 		'firstname',
 		'lastname',
 		'role_id',

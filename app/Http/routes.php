@@ -50,6 +50,10 @@ Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => '
 		'only' => array('show')
 	));
 
+	$router->resource('images.annotations', 'ImageAnnotationController', array(
+		'only' => array('index', 'store')
+	));
+
 	$router->get('projects/my', 'ProjectController@index');
 	$router->resource('projects', 'ProjectController', array(
 		'only' => array('show', 'update', 'store', 'destroy')

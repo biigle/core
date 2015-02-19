@@ -116,6 +116,8 @@ class TransectTest extends TestCase {
 		$project->save();
 		$this->assertEmpty($transect->projectIds());
 		$project->addTransectId($transect->id);
+		// clear caching of previous call
+		Cache::flush();
 		$ids = $transect->projectIds();
 		$this->assertNotEmpty($ids);
 		$this->assertEquals($project->id, $ids[0]);

@@ -3,6 +3,8 @@
 use Dias\Contracts\BelongsToProjectContract;
 use Dias\Model\ModelWithAttributes;
 
+use Cache;
+
 /**
  * A transect is a collection of images. Transects belong to one or many
  * projects.
@@ -55,6 +57,13 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 	 */
 	public function projectIds()
 	{
-		return $this->projects()->lists('id');
+		/*
+		 * remember project IDs because e.g. this query would be performed for 
+		 * each and every image request, which would result in dozens of 
+		 * calls per *single* page.
+		 */
+		return Cache::remember('transect-'.$this->id.'pids', 0.5, function() {
+			return $this->projects()->lists('id');
+		});
 	}
 }

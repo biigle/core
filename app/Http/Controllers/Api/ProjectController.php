@@ -24,11 +24,8 @@ class ProjectController extends ApiController {
 	 */
 	public function show($id)
 	{
-		$project = Project::find($id);
-		if (!$project || !$project->hasUser($this->auth->user()))
-		{
-			abort(401);
-		}
+		$project = $this->requireNotNull(Project::find($id));
+		$this->requireCanSee($project);
 		
 		return $project;
 	}
@@ -41,11 +38,8 @@ class ProjectController extends ApiController {
 	 */
 	public function update($id)
 	{
-		$project = Project::find($id);
-		if (!$project || !$project->hasAdmin($this->auth->user()))
-		{
-			abort(401);
-		}
+		$project = $this->requireNotNull(Project::find($id));
+		$this->requireCanAdmin($project);
 		
 		$project->name = $this->request->input('name', $project->name);
 		$project->description = $this->request->input('description', $project->description);
@@ -68,9 +62,7 @@ class ProjectController extends ApiController {
 		$project->description = $this->request->input('description');
 		$project->setCreator($this->auth->user());
 		$project->save();
-		// makes sure the project was successfully stored
-		// and doesn't contain additional information like the creator object
-		return Project::find($project->id);
+		return $project->fresh();
 	}
 
 	/**
@@ -83,11 +75,7 @@ class ProjectController extends ApiController {
 	{
 
 		$project = $this->requireNotNull(Project::find($id));
-
-		if (!$project->hasAdmin($this->auth->user()))
-		{
-			abort(401);
-		}
+		$this->requireCanAdmin($project);
 
 		$project->delete();
 		return response('Deleted.', 200);

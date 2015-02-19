@@ -112,6 +112,8 @@ class AnnotationTest extends TestCase {
 
 		$this->assertEmpty($annotation->projectIds());
 		$project->addTransectId($transect->id);
+		// clear caching of previous call
+		Cache::flush();
 		$ids = $annotation->projectIds();
 		$this->assertNotEmpty($ids);
 		$this->assertEquals($project->id, $ids[0]);

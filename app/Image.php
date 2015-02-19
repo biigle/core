@@ -53,13 +53,13 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract {
 	private function createThumbnail()
 	{
 		return $this->getFile()
-				->resize(180, 180, function ($constraint)
-				{
-					// resize images proportionally
-					$constraint->aspectRatio();
-				})
-				->encode('jpg')
-				->save($this->thumbPath);
+			->resize(180, 180, function ($constraint)
+			{
+				// resize images proportionally
+				$constraint->aspectRatio();
+			})
+			->encode('jpg')
+			->save($this->thumbPath);
 	}
 
 	/**

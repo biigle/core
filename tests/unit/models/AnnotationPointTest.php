@@ -95,6 +95,8 @@ class AnnotationPointTest extends TestCase {
 
 		$this->assertEmpty($point->projectIds());
 		$project->addTransectId($transect->id);
+		// clear caching of previous call
+		Cache::flush();
 		$ids = $point->projectIds();
 		$this->assertNotEmpty($ids);
 		$this->assertEquals($project->id, $ids[0]);

@@ -1,18 +1,33 @@
 <?php namespace Dias;
 
 use Illuminate\Database\QueryException;
-use Dias\Model\ModelWithAttributes;
 
-class Project extends ModelWithAttributes {
+use Dias\Model\ModelWithAttributes;
+use Dias\Contracts\BelongsToProjectContract;
+
+class Project extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
-	 * The attributes excluded from the model's JSON form.
+	 * The attributes hidden from the model's JSON form.
 	 *
 	 * @var array
 	 */
 	protected $hidden = array(
 		'pivot',
 	);
+
+	/**
+	 * {@inheritdoc}
+	 * 
+	 * A project belongs only to itself but the user permissions can be handled
+	 * very consistently if a project implements this method, too.
+	 * 
+	 * @return array
+	 */
+	public function projectIds()
+	{
+		return array($this->id);
+	}
 
 	/**
 	 * The members of this project. Every member has a project-specific

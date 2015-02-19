@@ -108,6 +108,8 @@ class ImageTest extends TestCase {
 
 		$this->assertEmpty($image->projectIds());
 		$project->addTransectId($transect->id);
+		// clear caching of previous call
+		Cache::flush();
 		$ids = $image->projectIds();
 		$this->assertNotEmpty($ids);
 		$this->assertEquals($project->id, $ids[0]);
