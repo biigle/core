@@ -44,8 +44,6 @@ class ProjectController extends ApiController {
 		$project->name = $this->request->input('name', $project->name);
 		$project->description = $this->request->input('description', $project->description);
 		$project->save();
-
-		return response('Ok.', 200);
 	}
 
 	/**

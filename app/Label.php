@@ -38,4 +38,37 @@ class Label extends ModelWithAttributes {
 	{
 		return $this->belongsTo('Dias\Label');
 	}
+
+	/**
+	 * Adds the `hasParent` attribute to the label model which specifies whether
+	 * the label has a parent label.
+	 * 
+	 * @return boolean
+	 */
+	public function getHasParentAttribute()
+	{
+		return $this->parent !== null;
+	}
+
+	/**
+	 * The child labels of this label if they are ordered in a tree-like
+	 * structue.
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function children()
+	{
+		return $this->hasMany('Dias\Label', 'parent_id');
+	}
+
+	/**
+	 * Adds the `hasChildren` attribute to the label model which specifies
+	 * whether the label has any child labels.
+	 * 
+	 * @return boolean
+	 */
+	public function getHasChildrenAttribute()
+	{
+		return $this->children()->first() !== null;
+	}
 }

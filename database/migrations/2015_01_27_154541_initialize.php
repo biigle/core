@@ -219,8 +219,7 @@ class Initialize extends Migration {
 			$table->foreign('parent_id')
 			      ->references('id')
 			      ->on('labels')
-			      // ask user if all children should be deleted!
-			      ->onDelete('set null');
+			      ->onDelete('cascade');
 
 			// id for the World Register of Marine Species (WoRMS)
 			$table->integer('aphia_id')->nullable();

@@ -47,7 +47,7 @@ class LabelTest extends TestCase {
 		$this->assertEquals($parent->id, $child->parent->id);
 	}
 
-	public function testParentOnDeleteSetNull()
+	public function testParentOnDeleteCascade()
 	{
 		$parent = LabelTest::create();
 		$parent->save();
@@ -55,7 +55,7 @@ class LabelTest extends TestCase {
 		$child->save();
 
 		$parent->delete();
-		$this->assertNull($child->fresh()->parent);
+		$this->assertNull($child->fresh());
 	}
 
 	public function testAttributeRelation()
@@ -76,5 +76,41 @@ class LabelTest extends TestCase {
 		$this->assertEquals(123, $attribute->pivot->value_int);
 		$this->assertEquals(0.4, $attribute->pivot->value_double);
 		$this->assertEquals('test', $attribute->pivot->value_string);
+	}
+
+	public function testChildren()
+	{
+		$parent = LabelTest::create();
+		$parent->save();
+		$child = LabelTest::create('child', $parent);
+		$child->save();
+
+		$this->assertEquals($child->id, $parent->children()->first()->id);
+	}
+
+	public function testHasParent()
+	{
+		$parent = LabelTest::create();
+		$parent->save();
+		$child = LabelTest::create();
+		$child->save();
+
+		$this->assertFalse($child->hasParent);
+		$child->parent()->associate($parent);
+		$child->save();
+		$this->assertTrue($child->hasParent);
+	}
+
+	public function testHasChildren()
+	{
+		$parent = LabelTest::create();
+		$parent->save();
+		$child = LabelTest::create();
+		$child->save();
+
+		$this->assertFalse($parent->hasChildren);
+		$child->parent()->associate($parent);
+		$child->save();
+		$this->assertTrue($parent->hasChildren);
 	}
 }
