@@ -14,7 +14,7 @@ class ImageAnnotationApiTest extends ApiTestCase {
 
 	public function testIndex()
 	{
-		$annotation = AnnotationTest::create($$this->image);
+		$annotation = AnnotationTest::create($this->image);
 		$annotation->save();
 
 		$this->doTestApiRoute('GET',
