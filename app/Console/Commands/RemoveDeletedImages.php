@@ -21,12 +21,11 @@ class RemoveDeletedImages extends Command {
 	protected $description = 'Removes all transect images and their associated files that no longer belong to any transect';
 
 	/**
-	 * Removes all images no longer belonging to a transect. These images
-	 * are marked for deletion by having their `transect_id` attribute set to
-	 * `null`.
+	 * Removes all images no longer belonging to a transect.
 	 * 
-	 * Like this the images and all their associated files can be deleted in a
-	 * regular cron job.
+	 * These images are marked for deletion by having their `transect_id` 
+	 * attribute set to `null`. Like this the images and all their associated
+	 * files can be deleted in a regular cron job.
 	 * 
 	 * @return void
 	 */

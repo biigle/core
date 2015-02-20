@@ -1,11 +1,25 @@
 <?php namespace Dias\Http\Controllers\Api;
 
 use Illuminate\Database\QueryException;
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
 
 use Dias\Http\Controllers\ApiController;
 use Dias\Attribute;
 
 class AttributeController extends ApiController {
+
+	/**
+	 * Creates a new AttrbuteController instance.
+	 * 
+	 * @param Guard $auth
+	 * @param Request $request
+	 */
+	public function __construct(Guard $auth, Request $request)
+	{
+		parent::__construct($auth, $request);
+		$this->middleware('admin', ['only' => ['store', 'destroy']]);
+	}
 
 	/**
 	 * Shows a list of all attributes.
@@ -35,7 +49,6 @@ class AttributeController extends ApiController {
 	 */
 	public function store()
 	{
-		$this->requireAdmin();
 		$this->requireArguments('name', 'type');
 
 		$attribute = new Attribute;
@@ -59,8 +72,6 @@ class AttributeController extends ApiController {
 	 */
 	public function destroy($id)
 	{
-		$this->requireAdmin();
-
 		$attribute = $this->requireNotNull(Attribute::find($id));
 
 		try {

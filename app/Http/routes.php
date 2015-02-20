@@ -21,7 +21,11 @@ Route::controllers(array(
 	'password' => 'Auth\PasswordController',
 ));
 
-Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'auth.api'), function($router)
+Route::group(array(
+	'prefix' => 'api/v1',
+	'namespace' => 'Api',
+	'middleware' => 'auth.api'
+	), function($router)
 {
 	$router->resource('annotations', 'AnnotationController', array(
 		'only' => array('show', 'destroy')
@@ -85,5 +89,13 @@ Route::group(array('prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => '
 
 	$router->resource('shapes', 'ShapeController', array(
 		'only' => array('index', 'show')
+	));
+
+	$router->resource('transects', 'TransectController', array(
+		'only' => array('show', 'update')
+	));
+
+	$router->resource('transects.images', 'TransectImageController', array(
+		'only' => array('index')
 	));
 });

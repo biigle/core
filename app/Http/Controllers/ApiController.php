@@ -61,20 +61,7 @@ abstract class ApiController extends Controller {
 
 		return $thing;
 	}
-
-	/**
-	 * Requires the requesting user to be a global admin or aborts with 401.
-	 * 
-	 * @return void
-	 */
-	protected function requireAdmin()
-	{
-		if (!$this->auth->user()->isAdmin)
-		{
-			abort(401);
-		}
-	}
-
+	
 	/**
 	 * Requires the requesting user to be able to see the thing.
 	 * 

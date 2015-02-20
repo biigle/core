@@ -1,9 +1,24 @@
 <?php namespace Dias\Http\Controllers\Api;
 
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
+
 use Dias\Http\Controllers\ApiController;
 use Dias\Label;
 
 class LabelController extends ApiController {
+
+	/**
+	 * Creates a new LabelController instance.
+	 * 
+	 * @param Guard $auth
+	 * @param Request $request
+	 */
+	public function __construct(Guard $auth, Request $request)
+	{
+		parent::__construct($auth, $request);
+		$this->middleware('admin', ['except' => ['index', 'show']]);
+	}
 
 	/**
 	 * Checks if the request contains a parent ID and tries to associate the
@@ -56,7 +71,6 @@ class LabelController extends ApiController {
 	 */
 	public function store()
 	{
-		$this->requireAdmin();
 		$this->requireArguments('name');
 
 		$label = new Label;
@@ -77,7 +91,6 @@ class LabelController extends ApiController {
 	 */
 	public function update($id)
 	{
-		$this->requireAdmin();
 		$label = $this->requireNotNull(Label::find($id));
 		$label->name = $this->request->input('name', $label->name);
 		$label->aphia_id = $this->request->input('aphia_id', $label->aphia_id);
@@ -94,7 +107,6 @@ class LabelController extends ApiController {
 	 */
 	public function destroy($id)
 	{
-		$this->requireAdmin();
 		$label = $this->requireNotNull(Label::find($id));
 
 		if ($label->hasChildren && !$this->request->has('force'))

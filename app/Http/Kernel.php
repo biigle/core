@@ -28,6 +28,7 @@ class Kernel extends HttpKernel {
 		'auth.api' => 'Dias\Http\Middleware\AuthenticateAPI',
 		'auth.basic' => 'Illuminate\Auth\Middleware\AuthenticateWithBasicAuth',
 		'guest' => 'Dias\Http\Middleware\RedirectIfAuthenticated',
+		'admin' => 'Dias\Http\Middleware\RequireAdmin',
 	];
 
 }
