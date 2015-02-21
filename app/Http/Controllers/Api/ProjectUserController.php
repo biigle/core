@@ -1,12 +1,10 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\ApiController;
-
 use Dias\Project;
 use Dias\User;
 use Dias\Role;
 
-class ProjectUserController extends ApiController {
+class ProjectUserController extends Controller {
 
 	/**
 	 * Displays the users belonging to the specified project.

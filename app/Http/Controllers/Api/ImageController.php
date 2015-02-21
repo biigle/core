@@ -1,10 +1,9 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\ApiController;
 use Dias\Image;
 use InterventionImage;
 
-class ImageController extends ApiController {
+class ImageController extends Controller {
 
 	/**
 	 * Shows the specified image.

@@ -1,11 +1,10 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\ApiController;
 use Dias\Image;
 use Dias\Shape;
 use Dias\Annotation;
 
-class ImageAnnotationController extends ApiController {
+class ImageAnnotationController extends Controller {
 
 	/**
 	 * Shows a list of all annotations of the specified image.

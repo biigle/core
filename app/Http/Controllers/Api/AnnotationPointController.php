@@ -1,11 +1,9 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\ApiController;
-
 use Dias\Annotation;
 use Dias\AnnotationPoint;
 
-class AnnotationPointController extends ApiController {
+class AnnotationPointController extends Controller {
 
 	/**
 	 * Creates a new point for the specifies annotation.

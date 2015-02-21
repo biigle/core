@@ -142,10 +142,9 @@ class ProjectTest extends TestCase {
 		$member->save();
 		$project->addUserId($editor->id, Role::editorId());
 		$project->addUserId($member->id, Role::guestId());
-		// the creator doesn't count
-		$project->creator->delete();
 		
-		$this->assertEquals(2, $project->users()->count());
+		// count the project creator, too
+		$this->assertEquals(3, $project->users()->count());
 		$this->assertEquals(1, $project->editors()->count());
 	}
 
@@ -364,7 +363,7 @@ class ProjectTest extends TestCase {
 			// without force
 			$project->removeTransectId($transect->id);
 			$this->assertFalse(true);
-		} catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+		} catch (HttpException $e) {
 			$this->assertNotNull($e);
 		}
 

@@ -1,10 +1,10 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\ApiController;
 use Dias\Project;
 use Dias\Transect;
+use Dias\Exceptions\ProjectIntegrityException;
 
-class ProjectTransectController extends ApiController {
+class ProjectTransectController extends Controller {
 
 	/**
 	 * Shows a list of all transects belonging to the specified project..

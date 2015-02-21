@@ -1,9 +1,8 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\ApiController;
 use Dias\Role;
 
-class RoleController extends ApiController {
+class RoleController extends Controller {
 
 	/**
 	 * Shows all roles.

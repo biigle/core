@@ -4,6 +4,7 @@ use Illuminate\Foundation\Bus\DispatchesCommands;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 abstract class Controller extends BaseController {
 
@@ -26,7 +27,7 @@ abstract class Controller extends BaseController {
 
 		return redirect()
 			->to($this->getRedirectUrl())
-         ->withInput($request->except('password', 'password_confirmation'))
+         ->withInput($request->except('password', 'password_confirmation', 'old_password'))
 			->withErrors($errors);
 	}
 

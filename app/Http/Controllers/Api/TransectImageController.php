@@ -1,9 +1,8 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\ApiController;
 use Dias\Transect;
 
-class TransectImageController extends ApiController {
+class TransectImageController extends Controller {
 
 	/**
 	 * List the image IDs of the specified transect.

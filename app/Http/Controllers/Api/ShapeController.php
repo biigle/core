@@ -1,9 +1,8 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\ApiController;
 use Dias\Shape;
 
-class ShapeController extends ApiController {
+class ShapeController extends Controller {
 
 	/**
 	 * Shows all shapes.

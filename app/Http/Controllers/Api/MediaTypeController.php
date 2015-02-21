@@ -1,9 +1,8 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\ApiController;
 use Dias\MediaType;
 
-class MediaTypeController extends ApiController {
+class MediaTypeController extends Controller {
 
 	/**
 	 * Shows all media types.

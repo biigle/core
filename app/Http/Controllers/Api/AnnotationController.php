@@ -1,9 +1,8 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\ApiController;
 use Dias\Annotation;
 
-class AnnotationController extends ApiController {
+class AnnotationController extends Controller {
 
 	/**
 	 * Displays the annotation.

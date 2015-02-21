@@ -3,10 +3,9 @@
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 
-use Dias\Http\Controllers\ApiController;
 use Dias\Label;
 
-class LabelController extends ApiController {
+class LabelController extends Controller {
 
 	/**
 	 * Creates a new LabelController instance.

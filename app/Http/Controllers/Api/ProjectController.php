@@ -1,10 +1,8 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\ApiController;
-
 use Dias\Project;
 
-class ProjectController extends ApiController {
+class ProjectController extends Controller {
 
 	/**
 	 * Shows all projects the requesting user belongs to.

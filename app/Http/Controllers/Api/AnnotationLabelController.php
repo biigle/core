@@ -1,10 +1,8 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\ApiController;
-
 use Dias\Annotation;
 
-class AnnotationLabelController extends ApiController {
+class AnnotationLabelController extends Controller {
 
 	/**
 	 * Creates a new label for the specifies annotation.

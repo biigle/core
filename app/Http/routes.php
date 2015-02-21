@@ -98,4 +98,11 @@ Route::group(array(
 	$router->resource('transects.images', 'TransectImageController', array(
 		'only' => array('index')
 	));
+
+	$router->get('users/my', 'UserController@showOwn');
+	$router->put('users/my', 'UserController@updateOwn');
+	$router->delete('users/my', 'UserController@destroyOwn');
+	$router->resource('users', 'UserController', array(
+		'only' => array('index', 'show', 'update', 'store', 'destroy')
+	));
 });

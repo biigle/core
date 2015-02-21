@@ -1,5 +1,7 @@
 <?php
 
+use Dias\Role;
+
 class ProjectUserIntegrityTest extends TestCase {
 
 	public function testRoleOnDeleteRestrict()
@@ -32,14 +34,16 @@ class ProjectUserIntegrityTest extends TestCase {
 
 	public function testUserOnDeleteCascade()
 	{	
-		$creator = UserTest::create();
-		$creator->save();
-		$project = ProjectTest::create('test', 'test', $creator);
+		$member = UserTest::create();
+		$member->save();
+		$project = ProjectTest::create();
 		$project->save();
+		$project->addUserId($member->id, Role::guestId());
 
+		// count the project creator, too
+		$this->assertEquals(2, $project->users()->count());
+		$member->delete();
 		$this->assertEquals(1, $project->users()->count());
-		$creator->delete();
-		$this->assertEquals(0, $project->users()->count());
 	}
 
 	public function testUserProjectRoleUnique()

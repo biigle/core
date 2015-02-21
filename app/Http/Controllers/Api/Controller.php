@@ -1,10 +1,12 @@
-<?php namespace Dias\Http\Controllers;
+<?php namespace Dias\Http\Controllers\Api;
 
 use Illuminate\Contracts\Auth\Guard;
-use Dias\Contracts\BelongsToProjectContract as BelongsToProject;
 use Illuminate\Http\Request;
 
-abstract class ApiController extends Controller {
+use Dias\Contracts\BelongsToProjectContract as BelongsToProject;
+use Dias\Http\Controllers\Controller as BaseController;
+
+abstract class Controller extends BaseController {
 
 	/**
 	 * The authenticator.

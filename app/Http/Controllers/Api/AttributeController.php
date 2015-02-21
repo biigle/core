@@ -4,10 +4,9 @@ use Illuminate\Database\QueryException;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 
-use Dias\Http\Controllers\ApiController;
 use Dias\Attribute;
 
-class AttributeController extends ApiController {
+class AttributeController extends Controller {
 
 	/**
 	 * Creates a new AttrbuteController instance.

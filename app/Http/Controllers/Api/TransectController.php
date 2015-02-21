@@ -1,9 +1,8 @@
 <?php namespace Dias\Http\Controllers\Api;
 
-use Dias\Http\Controllers\ApiController;
 use Dias\Transect;
 
-class TransectController extends ApiController {
+class TransectController extends Controller {
 
 	/**
 	 * Displays the specified transect.
