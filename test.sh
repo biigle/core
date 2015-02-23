@@ -18,4 +18,4 @@ kill $phantom_pid
 phpunit
 
 # js unit tests
-#npm test
+npm test

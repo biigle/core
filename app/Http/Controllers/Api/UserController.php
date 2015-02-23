@@ -135,7 +135,7 @@ class UserController extends Controller {
 	/**
 	 * Creates a new user.
 	 *
-	 * @param Registrar $parameter
+	 * @param Registrar $registrar
 	 * @return \Illuminate\Http\Response
 	 */
 	public function store(Registrar $registrar)

@@ -1,0 +1,2 @@
+angular.module('dias', []);
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImpzL21haW4uanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEiLCJmaWxlIjoibWFpbi5qcyIsInNvdXJjZXNDb250ZW50IjpbImFuZ3VsYXIubW9kdWxlKCdkaWFzJywgW10pOyJdLCJzb3VyY2VSb290IjoiL3NvdXJjZS8ifQ==

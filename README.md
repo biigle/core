@@ -21,7 +21,7 @@ And for development/testing:
 
 - Node.js
 - gulp-cli
-- karma/jasmine
+- karma-cli
 - PhantomJS
 
 - SQLite
