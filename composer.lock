@@ -466,16 +466,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.0.5",
+            "version": "v5.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "b1aea041cbc0cd54563e2d3709a54a71eed57653"
+                "reference": "43637b796f1ac0b1a960984231251ff04b438006"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/b1aea041cbc0cd54563e2d3709a54a71eed57653",
-                "reference": "b1aea041cbc0cd54563e2d3709a54a71eed57653",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/43637b796f1ac0b1a960984231251ff04b438006",
+                "reference": "43637b796f1ac0b1a960984231251ff04b438006",
                 "shasum": ""
             },
             "require": {
@@ -587,7 +587,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2015-02-13 19:10:59"
+            "time": "2015-02-20 16:22:21"
         },
         {
             "name": "league/flysystem",
@@ -1786,16 +1786,16 @@
     "packages-dev": [
         {
             "name": "codeception/codeception",
-            "version": "2.0.10.1",
+            "version": "2.0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/Codeception.git",
-                "reference": "e86978809e916ca942698b73a7b997730f500cae"
+                "reference": "9c7f23eff3e607225e9f43277c6d9cdb03d30b84"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/e86978809e916ca942698b73a7b997730f500cae",
-                "reference": "e86978809e916ca942698b73a7b997730f500cae",
+                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/9c7f23eff3e607225e9f43277c6d9cdb03d30b84",
+                "reference": "9c7f23eff3e607225e9f43277c6d9cdb03d30b84",
                 "shasum": ""
             },
             "require": {
@@ -1804,7 +1804,7 @@
                 "facebook/webdriver": "~0.4|~0.5",
                 "guzzlehttp/guzzle": "~4.0|~5.0",
                 "php": ">=5.4.0",
-                "phpunit/phpunit": "4.4.*",
+                "phpunit/phpunit": "~4.5.0",
                 "symfony/browser-kit": "~2.4",
                 "symfony/console": "~2.4",
                 "symfony/css-selector": "~2.4",
@@ -1816,7 +1816,7 @@
             "require-dev": {
                 "codeception/specify": "~0.3",
                 "facebook/php-sdk": "~3.2",
-                "flow/jsonpath": "~0.1",
+                "flow/jsonpath": "~0.2",
                 "monolog/monolog": "~1.8",
                 "pda/pheanstalk": "~2.0",
                 "videlalvaro/php-amqplib": "~2.4"
@@ -1862,7 +1862,7 @@
                 "functional testing",
                 "unit testing"
             ],
-            "time": "2015-02-03 14:54:45"
+            "time": "2015-02-23 23:10:03"
         },
         {
             "name": "doctrine/instantiator",
@@ -2174,12 +2174,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/padraic/mockery.git",
-                "reference": "df892adc6088cc9c70b2bb804a5e154d2856f4f4"
+                "reference": "2448c5b27f40d11db1f7bcee5a1188fef8ae490a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/df892adc6088cc9c70b2bb804a5e154d2856f4f4",
-                "reference": "df892adc6088cc9c70b2bb804a5e154d2856f4f4",
+                "url": "https://api.github.com/repos/padraic/mockery/zipball/2448c5b27f40d11db1f7bcee5a1188fef8ae490a",
+                "reference": "2448c5b27f40d11db1f7bcee5a1188fef8ae490a",
                 "shasum": ""
             },
             "require": {
@@ -2231,7 +2231,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2015-02-18 09:34:00"
+            "time": "2015-02-20 22:10:40"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
@@ -2697,16 +2697,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.4.5",
+            "version": "4.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2e8580deebb7d1ac92ac878595e6bffe01069c2a"
+                "reference": "5b578d3865a9128b9c209b011fda6539ec06e7a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2e8580deebb7d1ac92ac878595e6bffe01069c2a",
-                "reference": "2e8580deebb7d1ac92ac878595e6bffe01069c2a",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/5b578d3865a9128b9c209b011fda6539ec06e7a5",
+                "reference": "5b578d3865a9128b9c209b011fda6539ec06e7a5",
                 "shasum": ""
             },
             "require": {
@@ -2716,17 +2716,17 @@
                 "ext-reflection": "*",
                 "ext-spl": "*",
                 "php": ">=5.3.3",
+                "phpspec/prophecy": "~1.3.1",
                 "phpunit/php-code-coverage": "~2.0",
                 "phpunit/php-file-iterator": "~1.3.2",
                 "phpunit/php-text-template": "~1.2",
                 "phpunit/php-timer": "~1.0.2",
                 "phpunit/phpunit-mock-objects": "~2.3",
-                "sebastian/comparator": "~1.0",
+                "sebastian/comparator": "~1.1",
                 "sebastian/diff": "~1.1",
-                "sebastian/environment": "~1.1",
-                "sebastian/exporter": "~1.1",
+                "sebastian/environment": "~1.2",
+                "sebastian/exporter": "~1.2",
                 "sebastian/global-state": "~1.0",
-                "sebastian/recursion-context": "~1.0",
                 "sebastian/version": "~1.0",
                 "symfony/yaml": "~2.0"
             },
@@ -2739,7 +2739,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.4.x-dev"
+                    "dev-master": "4.5.x-dev"
                 }
             },
             "autoload": {
@@ -2765,7 +2765,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-01-27 16:06:15"
+            "time": "2015-02-05 15:51:19"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

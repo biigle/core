@@ -43,6 +43,7 @@
 	@yield('content')
 
 	<script src="/assets/scripts/angular.min.js"></script>
+	<script src="/assets/scripts/angular-resource.min.js"></script>
 	<script src="/assets/scripts/ui-bootstrap-tpls.min.js"></script>
 	<script src="/assets/scripts/main.js"></script>
 </body>

@@ -14,8 +14,8 @@ $iterator = Finder::create()
 
 $sami = new Sami($iterator, array(
 	'title' => 'DIAS DOC',
-	'build_dir' => __DIR__.'/doc/build/%version%',
-	'cache_dir' => __DIR__.'/doc/cache/%version%',
+	'build_dir' => __DIR__.'/doc/server/build/%version%',
+	'cache_dir' => __DIR__.'/doc/server/cache/%version%',
 ));
 
 // include private and protected properties

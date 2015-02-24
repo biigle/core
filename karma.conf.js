@@ -7,7 +7,9 @@ module.exports = function (config) {
 
 		files: [
 			'public/assets/scripts/angular.min.js',
+			'public/assets/scripts/angular-resource.min.js',
 			'public/assets/scripts/ui-bootstrap-tpls.min.js',
+			'resources/assets/js/main.js',
 			'resources/assets/js/**/*.js',
 			'tests/js/**/*.js',
 		],

@@ -53,11 +53,15 @@ You shouldn't need to configure your testing environment since for acceptance te
 3. start your database (it will be wiped and re-seeded during testing!)
 4. run `php vendor/bin/codecept run`
 
-### Unit/Functional
+### Server Unit/Functional
 
 Run `phpunit`.
 
-To run all tests, set up the PHP server and run `./test.sh`.
+### Client Unit
+
+Run `npm test`.
+
+To run all tests, power up the PHP server and run `./test.sh`.
 
 ## Deployment
 
@@ -74,3 +78,5 @@ Maybe set up the route cache? Cache the environment variables?
 **Put all sensitive and secret stuff to `.env.php` in the repo root!** You'll see where the `env()` helper is used in the config files.
 
 Set up the task scheduler by creating a cron job that calls `php artisan schedule:run` in the application root every minute.
+
+Seed database with non-testing rows (currently testing data is seeded, too).
