@@ -49,11 +49,15 @@ class AnnotationPointApiTest extends ApiTestCase {
 			'x' => 10,
 			'y' => 10,
 		));
+
 		$this->assertResponseOk();
 		$this->assertEquals(3, $this->annotation->points()->count());
 
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
+		// should be the whole annotation object
+		$this->assertContains('points', $r->getContent());
+		$this->assertContains('labels', $r->getContent());
 	}
 
 	public function testDestroy()

@@ -6,7 +6,7 @@ use Dias\AnnotationPoint;
 class AnnotationPointController extends Controller {
 
 	/**
-	 * Creates a new point for the specifies annotation.
+	 * Creates a new point for the specified annotation.
 	 *
 	 * @param int $id Annotation ID
 	 * @return \Illuminate\Http\Response
@@ -19,10 +19,13 @@ class AnnotationPointController extends Controller {
 
 		$this->requireCanEdit($annotation);
 
-		return $annotation->addPoint(
+		$annotation->addPoint(
 			$this->request->input('x'),
 			$this->request->input('y')
 		);
+
+		// get the annotation anew to return with labels and points
+		return Annotation::with('labels', 'points')->find($id);
 	}
 
 	/**
