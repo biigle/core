@@ -6,10 +6,25 @@
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
  * @example
+// retrieving the username
+var user = OwnUser.get({}, function () {
+   console.log(user.firstname);
+});
+
+// changing the username
 var user = OwnUser.get({}, function () {
    user.firstname == 'Joel';
    user.$save();
-})
+});
+// or directly
+OwnUser.save({firstname: 'Joel'});
+
+// deleting the user
+var user = OwnUser.get({}, function () {
+   user.$delete();
+});
+// or directly
+OwnUser.delete();
  * 
  */
 angular.module('dias.core').factory('OwnUser', function ($resource) {

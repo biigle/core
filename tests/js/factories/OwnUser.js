@@ -26,30 +26,25 @@ describe('The OwnUser resource factory', function () {
 
 	it('should show the own user', inject(function (OwnUser) {
 		$httpBackend.expectGET('/api/v1/users/my');
-		var user = OwnUser.get({}, function () {
+		var user = OwnUser.get(function () {
 			expect(user.id).toEqual(1);
 		});
 		$httpBackend.flush();
 	}));
 
 	it('should update the own user', inject(function (OwnUser) {
-		$httpBackend.expectGET('/api/v1/users/my');
-		$httpBackend.expectPUT('/api/v1/users/my');
-		var user = OwnUser.get({}, function () {
-			user.firstname = 'jack';
-			user.$save();
-
+		$httpBackend.expectPUT('/api/v1/users/my', {
+			firstname: 'jack'
+		});
+		var user = OwnUser.save({firstname: 'jack'}, function () {
 			expect(user.firstname).toEqual('jack');
 		});
 		$httpBackend.flush();
 	}));
 
 	it('should destroy the own user', inject(function (OwnUser) {
-		$httpBackend.expectGET('/api/v1/users/my');
 		$httpBackend.expectDELETE('/api/v1/users/my');
-		var user = OwnUser.get({}, function () {
-			user.$delete();
-		});
+		OwnUser.delete();
 		$httpBackend.flush();
 	}));
 
