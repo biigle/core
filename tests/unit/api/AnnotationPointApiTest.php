@@ -94,10 +94,16 @@ class AnnotationPointApiTest extends ApiTestCase {
 		$this->assertNotNull($point->fresh());
 
 		$this->be($this->editor);
-		$this->callAjax('DELETE', '/api/v1/annotations/1/points/'.$id, array(
+		$r = $this->callAjax('DELETE', '/api/v1/annotations/1/points/'.$id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseOk();
 		$this->assertNull($point->fresh());
+
+		$this->assertStringStartsWith('{', $r->getContent());
+		$this->assertStringEndsWith('}', $r->getContent());
+		// should be the whole annotation object
+		$this->assertContains('points":[]', $r->getContent());
+		$this->assertContains('labels', $r->getContent());
 	}
 }

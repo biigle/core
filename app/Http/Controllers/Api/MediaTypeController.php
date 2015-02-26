@@ -18,7 +18,7 @@ class MediaTypeController extends Controller {
 	 * Displays the specified media type.
 	 *
 	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
+	 * @return MediaType
 	 */
 	public function show($id)
 	{

@@ -45,7 +45,7 @@ class UserController extends Controller {
 	 * Shows the specified user.
 	 *
 	 * @param int $id
-	 * @return \Illuminate\Http\Response
+	 * @return User
 	 */
 	public function show($id)
 	{
@@ -55,7 +55,7 @@ class UserController extends Controller {
 	/**
 	 * Shows the requesting user.
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return User
 	 */
 	public function showOwn()
 	{
@@ -136,7 +136,7 @@ class UserController extends Controller {
 	 * Creates a new user.
 	 *
 	 * @param Registrar $registrar
-	 * @return \Illuminate\Http\Response
+	 * @return User
 	 */
 	public function store(Registrar $registrar)
 	{

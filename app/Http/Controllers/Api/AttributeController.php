@@ -34,7 +34,7 @@ class AttributeController extends Controller {
 	 * Shows the specified attribute.
 	 *
 	 * @param int $id attribute id
-	 * @return \Illuminate\Http\Response
+	 * @return Attributr
 	 */
 	public function show($id)
 	{
@@ -44,7 +44,7 @@ class AttributeController extends Controller {
 	/**
 	 * Creates a new attribute.
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return Attribute
 	 */
 	public function store()
 	{

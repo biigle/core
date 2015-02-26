@@ -9,7 +9,7 @@ class ImageController extends Controller {
 	 * Shows the specified image.
 	 *
 	 * @param int $id image id
-	 * @return \Illuminate\Http\Response
+	 * @return Image
 	 */
 	public function show($id)
 	{

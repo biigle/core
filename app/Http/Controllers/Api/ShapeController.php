@@ -18,7 +18,7 @@ class ShapeController extends Controller {
 	 * Displays the specified shape.
 	 *
 	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
+	 * @return Shape
 	 */
 	public function show($id)
 	{

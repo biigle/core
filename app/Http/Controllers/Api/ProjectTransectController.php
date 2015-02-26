@@ -24,7 +24,7 @@ class ProjectTransectController extends Controller {
 	 * Creates a new transect associated to the specified project.
 	 *
 	 * @param int $id Project ID
-	 * @return \Illuminate\Http\Response
+	 * @return Transect
 	 */
 	public function store($id)
 	{

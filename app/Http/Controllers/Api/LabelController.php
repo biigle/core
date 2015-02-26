@@ -56,7 +56,7 @@ class LabelController extends Controller {
 	 * Displays the specified label.
 	 *
 	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
+	 * @return Label
 	 */
 	public function show($id)
 	{
@@ -66,7 +66,7 @@ class LabelController extends Controller {
 	/**
 	 * Creates a new label.
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return Label
 	 */
 	public function store()
 	{

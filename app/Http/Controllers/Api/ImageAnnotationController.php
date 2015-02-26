@@ -24,7 +24,7 @@ class ImageAnnotationController extends Controller {
 	 * Creates a new annotation in the specified image.
 	 *
 	 * @param int $id image ID
-	 * @return \Illuminate\Http\Response
+	 * @return Annotation
 	 */
 	public function store($id)
 	{
