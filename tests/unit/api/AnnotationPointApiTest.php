@@ -62,37 +62,39 @@ class AnnotationPointApiTest extends ApiTestCase {
 
 	public function testDestroy()
 	{
-		$this->doTestApiRoute('DELETE', '/api/v1/annotation-points/1');
+		$this->doTestApiRoute('DELETE', '/api/v1/annotations/1/points/1');
 
 		// api key authentication
-		$this->callToken('DELETE', '/api/v1/annotation-points/1', $this->admin);
+		$this->callToken('DELETE', '/api/v1/annotations/1/points/1', $this->admin);
 		$this->assertResponseStatus(404);
 
 		$point = $this->annotation->addPoint(10, 10);
+		$id = $point->id;
 
-		$this->callToken('DELETE', '/api/v1/annotation-points/'.$point->id, $this->admin);
+		$this->callToken('DELETE', '/api/v1/annotations/1/points/'.$id, $this->admin);
 		$this->assertResponseOk();
 		$this->assertNull($point->fresh());
 
 		$point = $this->annotation->addPoint(10, 10);
-
+		$id = $point->id;
+		
 		// session cookie authentication
 		$this->be($this->user);
-		$this->callAjax('DELETE', '/api/v1/annotation-points/'.$point->id, array(
+		$this->callAjax('DELETE', '/api/v1/annotations/1/points/'.$id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(401);
 		$this->assertNotNull($point->fresh());
 
 		$this->be($this->guest);
-		$this->callAjax('DELETE', '/api/v1/annotation-points/'.$point->id, array(
+		$this->callAjax('DELETE', '/api/v1/annotations/1/points/'.$id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(401);
 		$this->assertNotNull($point->fresh());
 
 		$this->be($this->editor);
-		$this->callAjax('DELETE', '/api/v1/annotation-points/'.$point->id, array(
+		$this->callAjax('DELETE', '/api/v1/annotations/1/points/'.$id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseOk();
