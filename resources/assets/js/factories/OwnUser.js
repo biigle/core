@@ -7,12 +7,12 @@
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
  * @example
 // retrieving the username
-var user = OwnUser.get({}, function () {
+var user = OwnUser.get(function () {
    console.log(user.firstname);
 });
 
 // changing the username
-var user = OwnUser.get({}, function () {
+var user = OwnUser.get(function () {
    user.firstname == 'Joel';
    user.$save();
 });
@@ -20,7 +20,7 @@ var user = OwnUser.get({}, function () {
 OwnUser.save({firstname: 'Joel'});
 
 // deleting the user
-var user = OwnUser.get({}, function () {
+var user = OwnUser.get(function () {
    user.$delete();
 });
 // or directly
