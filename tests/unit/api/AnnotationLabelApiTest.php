@@ -60,10 +60,12 @@ class AnnotationLabelApiTest extends ApiTestCase {
 		$this->assertResponseStatus(201);
 		$this->assertEquals(1, $this->annotation->labels()->count());
 
-		$this->callToken('POST', '/api/v1/annotations/1/labels', $this->admin, array('label_id' => 1, 'confidence' => 0.1)
+		$r = $this->callToken('POST', '/api/v1/annotations/1/labels', $this->admin, array('label_id' => 1, 'confidence' => 0.1)
 		);
 		$this->assertResponseStatus(201);
 		$this->assertEquals(2, $this->annotation->labels()->count());
+		$this->assertStringStartsWith('{', $r->getContent());
+		$this->assertStringEndsWith('}', $r->getContent());
 
 		// session cookie authentication
 		$this->be($this->admin);

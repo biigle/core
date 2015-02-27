@@ -31,13 +31,15 @@ class AnnotationLabelController extends Controller {
 
 		$this->requireCanEdit($annotation);
 
+		$labelId = $this->request->input('label_id');
+
 		$annotation->addLabel(
-			$this->request->input('label_id'),
+			$labelId,
 			$this->request->input('confidence'),
 			$this->auth->user()
 		);
 
-		return response('Created.', 201);
+		return response($annotation->labels()->find($labelId), 201);
 	}
 	
 	/**
