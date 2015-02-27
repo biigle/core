@@ -12,6 +12,28 @@ class AnnotationPointApiTest extends ApiTestCase {
 		$this->project->addTransectId($this->annotation->image->transect->id);
 	}
 
+	public function testIndex()
+	{
+		$point = $this->annotation->addPoint(10, 20);
+		$this->doTestApiRoute('GET', '/api/v1/annotations/1/points');
+
+		// api key authentication
+		$this->callToken('GET', '/api/v1/annotations/1/points', $this->user);
+		$this->assertResponseStatus(401);
+
+		$this->callToken('GET', '/api/v1/annotations/1/points', $this->guest);
+		$this->assertResponseOk();
+
+		$this->be($this->guest);
+		$r = $this->callAjax('GET', '/api/v1/annotations/1/points', array(
+			'_token' => Session::token(),
+		));
+
+		$this->assertResponseOk();
+		$this->assertStringStartsWith('[{', $r->getContent());
+		$this->assertStringEndsWith('}]', $r->getContent());
+	}
+
 	public function testStore()
 	{
 		$this->doTestApiRoute('POST', '/api/v1/annotations/1/points');
@@ -55,9 +77,35 @@ class AnnotationPointApiTest extends ApiTestCase {
 
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
-		// should be the whole annotation object
-		$this->assertContains('points', $r->getContent());
-		$this->assertContains('labels', $r->getContent());
+	}
+
+	public function testUpdate()
+	{
+		$point = $this->annotation->addPoint(10, 20);
+		$id = $point->id;
+		$this->doTestApiRoute('PUT', '/api/v1/annotations/1/points/'.$id);
+
+		// api key authentication
+		$this->callToken('PUT', '/api/v1/annotations/1/points/'.$id, $this->guest);
+		$this->assertResponseStatus(401);
+
+		$this->callToken('PUT', '/api/v1/annotations/1/points/'.$id, $this->editor, array(
+			'x' => 123,
+			'y' => 321,
+		));
+		$this->assertResponseOk();
+		$this->assertEquals(123, $point->fresh()->x);
+		$this->assertEquals(321, $point->fresh()->y);
+
+		$this->be($this->admin);
+		$r = $this->callAjax('PUT', '/api/v1/annotations/1/points/'.$id, array(
+			'_token' => Session::token(),
+			'x' => 1,
+			'y' => 2
+		));
+		$this->assertResponseOk();
+		$this->assertEquals(1, $point->fresh()->x);
+		$this->assertEquals(2, $point->fresh()->y);
 	}
 
 	public function testDestroy()
@@ -94,16 +142,10 @@ class AnnotationPointApiTest extends ApiTestCase {
 		$this->assertNotNull($point->fresh());
 
 		$this->be($this->editor);
-		$r = $this->callAjax('DELETE', '/api/v1/annotations/1/points/'.$id, array(
+		$this->callAjax('DELETE', '/api/v1/annotations/1/points/'.$id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseOk();
 		$this->assertNull($point->fresh());
-
-		$this->assertStringStartsWith('{', $r->getContent());
-		$this->assertStringEndsWith('}', $r->getContent());
-		// should be the whole annotation object
-		$this->assertContains('points":[]', $r->getContent());
-		$this->assertContains('labels', $r->getContent());
 	}
 }

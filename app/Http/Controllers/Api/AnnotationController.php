@@ -5,17 +5,6 @@ use Dias\Annotation;
 class AnnotationController extends Controller {
 
 	/**
-	 * Finds the annotation and eager loads its labels and points.
-	 * 
-	 * @param int $id annotation id
-	 * @return Annotation
-	 */
-	public static function find($id)
-	{
-		return Annotation::with('labels', 'points')->find($id);
-	}
-
-	/**
 	 * Displays the annotation.
 	 *
 	 * @param  int  $id
@@ -23,9 +12,7 @@ class AnnotationController extends Controller {
 	 */
 	public function show($id)
 	{
-		$annotation = $this->requireNotNull(
-			self::find($id)
-		);
+		$annotation = $this->requireNotNull(Annotation::find($id));
 
 		// call fresh so the transect and image doesn't appear in the output
 		// (they will be fetched for projectIds())

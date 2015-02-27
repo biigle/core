@@ -5,10 +5,23 @@ use Dias\Annotation;
 class AnnotationPointController extends Controller {
 
 	/**
+	 * Shows all points of the specified annotation
+	 *
+	 * @param int $id Annotation ID
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index($id)
+	{
+		$annotation = $this->requireNotNull(Annotation::find($id));
+		$this->requireCanSee($annotation);
+		return $annotation->points;
+	}
+
+	/**
 	 * Creates a new point for the specified annotation.
 	 *
 	 * @param int $id Annotation ID
-	 * @return Annotation
+	 * @return \Dias\AnnotationPoint
 	 */
 	public function store($id)
 	{
@@ -18,12 +31,30 @@ class AnnotationPointController extends Controller {
 
 		$this->requireCanEdit($annotation);
 
-		$annotation->addPoint(
+		return $annotation->addPoint(
 			$this->request->input('x'),
 			$this->request->input('y')
 		);
+	}
 
-		return AnnotationController::find($id);
+	/**
+	 * Updates the attributes of the specified point belonging to the specified
+	 * annotation.
+	 *
+	 * @param int  $annotationId
+	 * @param int $pointId
+	 */
+	public function update($annotationId, $pointId)
+	{
+		$annotation = $this->requireNotNull(Annotation::find($annotationId));
+
+		$this->requireCanEdit($annotation);
+
+		$point = $this->requireNotNull($annotation->points()->find($pointId));
+
+		$point->x = $this->request->input('x', $point->x);
+		$point->y = $this->request->input('y', $point->y);
+		$point->save();
 	}
 
 	/**
@@ -31,7 +62,7 @@ class AnnotationPointController extends Controller {
 	 *
 	 * @param  int  $annotationId
 	 * @param int $pointId
-	 * @return Annotation
+	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy($annotationId, $pointId)
 	{
@@ -41,6 +72,6 @@ class AnnotationPointController extends Controller {
 		$point = $this->requireNotNull($annotation->points()->find($pointId));
 
 		$point->delete();
-		return AnnotationController::find($annotationId);
+		return response('Deleted.', 200);
 	}
 }

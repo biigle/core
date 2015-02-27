@@ -24,7 +24,7 @@ class AnnotationLabelController extends Controller {
 			$this->auth->user()
 		);
 
-		return response(AnnotationController::find($id), 201);
+		return response('Created.', 201);
 	}
 	
 	/**
@@ -33,7 +33,6 @@ class AnnotationLabelController extends Controller {
 	 *
 	 * @param int  $annotationId
 	 * @param int $labelId
-	 * @return Annotation
 	 */
 	public function update($annotationId, $labelId)
 	{
@@ -49,8 +48,6 @@ class AnnotationLabelController extends Controller {
 		$annotation->labels()->updateExistingPivot($label->id, array(
 			'confidence' => $this->request->input('confidence', $label->confidence)
 		));
-
-		return AnnotationController::find($annotationId);
 	}
 
 	/**
@@ -60,7 +57,7 @@ class AnnotationLabelController extends Controller {
 	 *
 	 * @param int  $annotationId
 	 * @param int $labelId
-	 * @return Annotation
+	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy($annotationId, $labelId)
 	{
@@ -83,6 +80,6 @@ class AnnotationLabelController extends Controller {
 			abort(404, 'User "'.$user->id.'" doesn\'t have label "'. $labelId.'" attached to annotation "'.$annotationId.'"!');
 		}
 
-		return AnnotationController::find($annotationId);
+		return response('Deleted.', 200);
 	}
 }

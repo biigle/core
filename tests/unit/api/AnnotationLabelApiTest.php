@@ -36,16 +36,10 @@ class AnnotationLabelApiTest extends ApiTestCase {
 		$this->assertResponseStatus(201);
 		$this->assertEquals(1, $this->annotation->labels()->count());
 
-		$r = $this->callToken('POST', '/api/v1/annotations/1/labels', $this->admin, array('label_id' => 1, 'confidence' => 0.1)
+		$this->callToken('POST', '/api/v1/annotations/1/labels', $this->admin, array('label_id' => 1, 'confidence' => 0.1)
 		);
 		$this->assertResponseStatus(201);
 		$this->assertEquals(2, $this->annotation->labels()->count());
-
-		$this->assertStringStartsWith('{', $r->getContent());
-		$this->assertStringEndsWith('}', $r->getContent());
-		// should be the whole annotation object
-		$this->assertContains('points', $r->getContent());
-		$this->assertContains('labels', $r->getContent());
 
 		// session cookie authentication
 		$this->be($this->admin);
@@ -82,18 +76,12 @@ class AnnotationLabelApiTest extends ApiTestCase {
 		// session cookie authentication
 		$this->assertEquals(0.5, $this->annotation->labels()->first()->confidence);
 		$this->be($this->editor);
-		$r = $this->callAjax('PUT', '/api/v1/annotations/1/labels/1', array(
+		$this->callAjax('PUT', '/api/v1/annotations/1/labels/1', array(
 			'_token' => Session::token(),
 			'confidence' => 0.1
 		));
 		$this->assertResponseOk();
 		$this->assertEquals(0.1, $this->annotation->labels()->first()->confidence);
-
-		$this->assertStringStartsWith('{', $r->getContent());
-		$this->assertStringEndsWith('}', $r->getContent());
-		// should be the whole annotation object
-		$this->assertContains('points', $r->getContent());
-		$this->assertContains('labels', $r->getContent());
 	}
 
 	public function testDestroy()
@@ -124,17 +112,11 @@ class AnnotationLabelApiTest extends ApiTestCase {
 		// session cookie authentication
 		$this->be($this->admin);
 		// admin can detach labels of other users as well if the ID is provided
-		$r = $this->callAjax('DELETE', '/api/v1/annotations/1/labels/1', array(
+		$this->callAjax('DELETE', '/api/v1/annotations/1/labels/1', array(
 			'_token' => Session::token(),
 			'user_id' => $this->editor->id
 		));
 		$this->assertResponseOk();
 		$this->assertNull($this->annotation->labels()->first());
-
-		$this->assertStringStartsWith('{', $r->getContent());
-		$this->assertStringEndsWith('}', $r->getContent());
-		// should be the whole annotation object
-		$this->assertContains('points', $r->getContent());
-		$this->assertContains('labels":[]', $r->getContent());
 	}
 }
