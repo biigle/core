@@ -5,6 +5,19 @@ use Dias\Annotation;
 class AnnotationLabelController extends Controller {
 
 	/**
+	 * Shows all labels of the specified annotation
+	 *
+	 * @param int $id Annotation ID
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index($id)
+	{
+		$annotation = $this->requireNotNull(Annotation::find($id));
+		$this->requireCanSee($annotation);
+		return $annotation->labels;
+	}
+
+	/**
 	 * Creates a new label for the specifies annotation.
 	 *
 	 * @param int $id Annotation ID

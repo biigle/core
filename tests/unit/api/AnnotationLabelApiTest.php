@@ -12,6 +12,30 @@ class AnnotationLabelApiTest extends ApiTestCase {
 		$this->project->addTransectId($this->annotation->image->transect->id);
 	}
 
+	public function testIndex()
+	{
+		$label = LabelTest::create();
+		$label->save();
+		$this->annotation->addLabel($label->id, 0.5, $this->editor);
+		$this->doTestApiRoute('GET', '/api/v1/annotations/1/labels');
+
+		// api key authentication
+		$this->callToken('GET', '/api/v1/annotations/1/labels', $this->user);
+		$this->assertResponseStatus(401);
+
+		$this->callToken('GET', '/api/v1/annotations/1/labels', $this->guest);
+		$this->assertResponseOk();
+
+		$this->be($this->guest);
+		$r = $this->callAjax('GET', '/api/v1/annotations/1/labels', array(
+			'_token' => Session::token(),
+		));
+
+		$this->assertResponseOk();
+		$this->assertStringStartsWith('[{', $r->getContent());
+		$this->assertStringEndsWith('}]', $r->getContent());
+	}
+
 	public function testStore()
 	{
 		$this->doTestApiRoute('POST', '/api/v1/annotations/1/labels');
