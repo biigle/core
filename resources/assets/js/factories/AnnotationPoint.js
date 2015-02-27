@@ -34,10 +34,10 @@ angular.module('dias.core').factory('AnnotationPoint', function ($resource) {
 	"use strict";
 
 	return $resource('/api/v1/annotations/:annotation_id/points/:id', {
-		id: '@id',
-		annotation_id: '@annotation_id'
-	}, {
-		add: {method: 'POST'},
-		save: {method: 'PUT'}
+			id: '@id',
+			annotation_id: '@annotation_id'
+		}, {
+			add: {method: 'POST'},
+			save: {method: 'PUT'}
 	});
 });
