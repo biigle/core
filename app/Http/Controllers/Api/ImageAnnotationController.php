@@ -55,7 +55,6 @@ class ImageAnnotationController extends Controller {
 			$annotation->addPoint($point->x, $point->y);
 		}
 
-		// return annotation object with points
-		return Annotation::with('points')->find($annotation->id);
+		return $annotation->fresh();
 	}
 }

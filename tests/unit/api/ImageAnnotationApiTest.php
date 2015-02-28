@@ -98,8 +98,6 @@ class ImageAnnotationApiTest extends ApiTestCase {
 			)
 		);
 		$this->assertResponseOk();
-		// response should contain the points array
-		$this->assertContains('"points":[', $r->getContent());
 
 		$annotation = $this->image->annotations->first();
 		$this->assertNotNull($annotation);
