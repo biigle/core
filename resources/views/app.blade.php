@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>@section('title')DIAS - @show</title>
 
-	<link href="/assets/styles/main.css" rel="stylesheet">
+	<link href="{{ asset('assets/styles/main.css') }}" rel="stylesheet">
 
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -42,9 +42,9 @@
 @endif
 	@yield('content')
 
-	<script src="/assets/scripts/angular.min.js"></script>
-	<script src="/assets/scripts/angular-resource.min.js"></script>
-	<script src="/assets/scripts/ui-bootstrap-tpls.min.js"></script>
-	<script src="/assets/scripts/main.js"></script>
+	<script src="{{ asset('assets/scripts/angular.min.js') }}"></script>
+	<script src="{{ asset('assets/scripts/angular-resource.min.js') }}"></script>
+	<script src="{{ asset('assets/scripts/ui-bootstrap-tpls.min.js') }}"></script>
+	<script src="{{ asset('assets/scripts/main.js') }}"></script>
 </body>
 </html>
