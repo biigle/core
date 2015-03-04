@@ -22,9 +22,8 @@ class AuthenticateAPI implements Middleware {
 	 */
 	public static function isApiKeyRequest($request)
 	{
-		$key = $request->header('authorization');
-		// key format is 'token abcXYZ'
-		return starts_with($key, 'token ');
+		$key = $request->header('x-auth-token');
+		return (boolean) $key;
 	}
 
 	/**
@@ -51,7 +50,7 @@ class AuthenticateAPI implements Middleware {
 			return false;
 		}
 
-		$key = str_replace('token ', '', $request->header('authorization'));
+		$key = $request->header('x-auth-token');
 		$user = User::whereApiKey($key)->first();
 
 		if (!$user)
