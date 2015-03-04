@@ -59,9 +59,13 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
 	public function labels()
 	{
 		return $this->belongsToMany('Dias\Label')
-			// display confidence and user_id directly in the labels object and
+			// display these attributes directly in the labels object and
 			// not in the pivot table object
-			->withPivot('confidence as confidence', 'user_id as user_id');
+			->withPivot(
+				'confidence as confidence',
+				'user_id as user_id',
+				'annotation_id as annotation_id'
+			);
 	}
 
 	/**

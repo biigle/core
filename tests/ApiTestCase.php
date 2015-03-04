@@ -55,7 +55,7 @@ class ApiTestCase extends TestCase {
 	 */
 	protected function callToken($method, $uri, $user, $params = [])
 	{
-		return $this->call($method, $uri, $params, [], [], array('HTTP_Authorization' => 'token '.$user->api_key));
+		return $this->call($method, $uri, $params, [], [], array('HTTP_X-Auth-Token' => $user->api_key));
 	}
 
 	/*

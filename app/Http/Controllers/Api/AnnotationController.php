@@ -8,13 +8,11 @@ class AnnotationController extends Controller {
 	 * Displays the annotation.
 	 *
 	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
+	 * @return Annotation
 	 */
 	public function show($id)
 	{
-		$annotation = $this->requireNotNull(
-			Annotation::with('labels', 'points')->find($id)
-		);
+		$annotation = $this->requireNotNull(Annotation::find($id));
 
 		// call fresh so the transect and image doesn't appear in the output
 		// (they will be fetched for projectIds())

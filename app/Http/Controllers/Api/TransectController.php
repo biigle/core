@@ -8,7 +8,7 @@ class TransectController extends Controller {
 	 * Displays the specified transect.
 	 *
 	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
+	 * @return Transect
 	 */
 	public function show($id)
 	{

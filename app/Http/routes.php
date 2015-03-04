@@ -31,17 +31,12 @@ Route::group(array(
 		'only' => array('show', 'destroy')
 	));
 
-	// annotation points are always created in context of their annotation
 	$router->resource('annotations.points', 'AnnotationPointController', array(
-		'only' => array('store')
-	));
-	// but removed on their own
-	$router->resource('annotation-points', 'AnnotationPointController', array(
-		'only' => array('destroy')
+		'only' => array('index', 'store', 'update', 'destroy')
 	));
 
 	$router->resource('annotations.labels', 'AnnotationLabelController', array(
-		'only' => array('store', 'update', 'destroy')
+		'only' => array('index', 'store', 'update', 'destroy')
 	));
 
 	$router->resource('attributes', 'AttributeController', array(

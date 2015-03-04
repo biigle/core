@@ -24,7 +24,7 @@ class ImageAnnotationController extends Controller {
 	 * Creates a new annotation in the specified image.
 	 *
 	 * @param int $id image ID
-	 * @return \Illuminate\Http\Response
+	 * @return Annotation
 	 */
 	public function store($id)
 	{
@@ -55,7 +55,6 @@ class ImageAnnotationController extends Controller {
 			$annotation->addPoint($point->x, $point->y);
 		}
 
-		// return annotation object with points
-		return Annotation::with('points')->find($annotation->id);
+		return $annotation->fresh();
 	}
 }

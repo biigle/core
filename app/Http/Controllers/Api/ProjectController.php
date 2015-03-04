@@ -18,7 +18,7 @@ class ProjectController extends Controller {
 	 * Displays the specified project.
 	 *
 	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
+	 * @return Project
 	 */
 	public function show($id)
 	{
@@ -47,7 +47,7 @@ class ProjectController extends Controller {
 	/**
 	 * Creates a new project.
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return Project
 	 */
 	public function store()
 	{

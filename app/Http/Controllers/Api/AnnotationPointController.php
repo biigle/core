@@ -1,15 +1,27 @@
 <?php namespace Dias\Http\Controllers\Api;
 
 use Dias\Annotation;
-use Dias\AnnotationPoint;
 
 class AnnotationPointController extends Controller {
 
 	/**
-	 * Creates a new point for the specifies annotation.
+	 * Shows all points of the specified annotation
 	 *
 	 * @param int $id Annotation ID
 	 * @return \Illuminate\Http\Response
+	 */
+	public function index($id)
+	{
+		$annotation = $this->requireNotNull(Annotation::find($id));
+		$this->requireCanSee($annotation);
+		return $annotation->points;
+	}
+
+	/**
+	 * Creates a new point for the specified annotation.
+	 *
+	 * @param int $id Annotation ID
+	 * @return \Dias\AnnotationPoint
 	 */
 	public function store($id)
 	{
@@ -26,16 +38,38 @@ class AnnotationPointController extends Controller {
 	}
 
 	/**
+	 * Updates the attributes of the specified point belonging to the specified
+	 * annotation.
+	 *
+	 * @param int  $annotationId
+	 * @param int $pointId
+	 */
+	public function update($annotationId, $pointId)
+	{
+		$annotation = $this->requireNotNull(Annotation::find($annotationId));
+
+		$this->requireCanEdit($annotation);
+
+		$point = $this->requireNotNull($annotation->points()->find($pointId));
+
+		$point->x = $this->request->input('x', $point->x);
+		$point->y = $this->request->input('y', $point->y);
+		$point->save();
+	}
+
+	/**
 	 * Removes the specified annotation point.
 	 *
-	 * @param  int  $id
+	 * @param  int  $annotationId
+	 * @param int $pointId
 	 * @return \Illuminate\Http\Response
 	 */
-	public function destroy($id)
+	public function destroy($annotationId, $pointId)
 	{
-		$point = $this->requireNotNull(AnnotationPoint::find($id));
+		$annotation = $this->requireNotNull(Annotation::find($annotationId));
+		$this->requireCanEdit($annotation);
 
-		$this->requireCanEdit($point);
+		$point = $this->requireNotNull($annotation->points()->find($pointId));
 
 		$point->delete();
 		return response('Deleted.', 200);

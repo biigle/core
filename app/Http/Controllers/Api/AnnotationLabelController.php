@@ -5,6 +5,19 @@ use Dias\Annotation;
 class AnnotationLabelController extends Controller {
 
 	/**
+	 * Shows all labels of the specified annotation
+	 *
+	 * @param int $id Annotation ID
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index($id)
+	{
+		$annotation = $this->requireNotNull(Annotation::find($id));
+		$this->requireCanSee($annotation);
+		return $annotation->labels;
+	}
+
+	/**
 	 * Creates a new label for the specifies annotation.
 	 *
 	 * @param int $id Annotation ID
@@ -18,13 +31,15 @@ class AnnotationLabelController extends Controller {
 
 		$this->requireCanEdit($annotation);
 
+		$labelId = $this->request->input('label_id');
+
 		$annotation->addLabel(
-			$this->request->input('label_id'),
+			$labelId,
 			$this->request->input('confidence'),
 			$this->auth->user()
 		);
 
-		return response('Created.', 201);
+		return response($annotation->labels()->find($labelId), 201);
 	}
 	
 	/**
@@ -33,7 +48,6 @@ class AnnotationLabelController extends Controller {
 	 *
 	 * @param int  $annotationId
 	 * @param int $labelId
-	 * @return \Illuminate\Http\Response
 	 */
 	public function update($annotationId, $labelId)
 	{
@@ -80,5 +94,7 @@ class AnnotationLabelController extends Controller {
 		{
 			abort(404, 'User "'.$user->id.'" doesn\'t have label "'. $labelId.'" attached to annotation "'.$annotationId.'"!');
 		}
+
+		return response('Deleted.', 200);
 	}
 }
