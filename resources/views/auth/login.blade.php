@@ -11,7 +11,7 @@
 				<a class="info-text__sign" href="" data-ng-click="isShown = !isShown" data-ng-hide="isShown" title="What is DIAS?"><span class="glyphicon glyphicon-info-sign"></span></a>
 				<p data-ng-cloak="" data-collapse="!isShown" data-ng-click="isShown = !isShown">{{ trans('dias.info') }}</p>
 			</div>
-			<form class="well clearfix" role="form" method="POST" action="/auth/login">
+			<form class="well clearfix" role="form" method="POST" action="{{ url('auth/login') }}">
 				<div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
 					<div class="input-group">
 						<div class="input-group-addon">
@@ -38,8 +38,8 @@
 				<input type="submit" class="btn btn-success btn-block" value="{{ trans('form.login') }}">
 			</form>
 			<p class="clearfix">
-				<a href="/password/email" class="">{{ trans('auth.forgotpw') }}</a>
-				<a href="/auth/register" class="pull-right">{{ trans('auth.register') }}</a>
+				<a href="{{ url('password/email') }}" class="">{{ trans('auth.forgotpw') }}</a>
+				<a href="{{ url('auth/register') }}" class="pull-right">{{ trans('auth.register') }}</a>
 			</p>
 		</div>
 	</div>

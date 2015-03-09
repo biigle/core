@@ -7,7 +7,7 @@
 	<div class="row center-form">
 		<div class="col-md-4 col-sm-6">
 			<h1 class="logo  logo--standalone"><a href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></a></h1>
-			<form class="well clearfix" role="form" method="POST" action="/auth/register">
+			<form class="well clearfix" role="form" method="POST" action="{{ url('auth/register') }}">
 				<p class="lead text-center">{{ trans('dias.new_acc') }}</p>
 				<div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
 					<div class="input-group">

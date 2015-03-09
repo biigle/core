@@ -12,7 +12,7 @@
 				{{ session('status') }}
 			</div>
 		@else
-			<form class="well clearfix" role="form" method="POST" action="/password/email">
+			<form class="well clearfix" role="form" method="POST" action="{{ url('password/email') }}">
 				<div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
 					<div class="input-group">
 						<div class="input-group-addon">
