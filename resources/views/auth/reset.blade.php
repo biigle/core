@@ -7,7 +7,7 @@
 	<div class="row center-form">
 		<div class="col-md-4 col-sm-6">
 			<h1 class="logo  logo--standalone"><a href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></a></h1>
-			<form class="well clearfix" role="form" method="POST" action="/password/reset">
+			<form class="well clearfix" role="form" method="POST" action="{{ url('password/reset') }}">
 				<p class="lead text-center">{{ trans('auth.reset_pw') }}</p>
 				<div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
 					<div class="input-group">
