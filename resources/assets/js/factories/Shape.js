@@ -11,7 +11,7 @@ var shapes = Shape.query(function () {
    console.log(shapes); // [{id: 1, name: "point"}, ...]
 });
 
-// get one media type
+// get one shape
 var shape = Shape.get({id: 1}, function () {
    console.log(shape); // {id: 1, name: "point"}
 });

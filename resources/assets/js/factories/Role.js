@@ -11,7 +11,7 @@ var roles = Role.query(function () {
    console.log(roles); // [{id: 1, name: "admin"}, ...]
 });
 
-// get one media type
+// get one role
 var role = Role.get({id: 1}, function () {
    console.log(role); // {id: 1, name: "admin"}
 });
