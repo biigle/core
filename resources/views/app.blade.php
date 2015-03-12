@@ -29,12 +29,7 @@
 					{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}
 				</li>
 				<li>
-					<form class="navbar-form" role="form" method="GET" action="{{ url('auth/logout') }}">
-						<input type="hidden" name="_token" value="{{ csrf_token() }}">
-						<div class="form-group">
-							<button type="submit" class="btn btn-inverse" title="{{ trans('form.logout') }}"><i class="glyphicon glyphicon-log-out"></i></button>
-						</div>
-					</form>
+					<a href="{{ url('auth/logout') }}" class="btn btn-inverse" title="{{ trans('form.logout') }}"><i class="glyphicon glyphicon-log-out"></i></a>
 				</li>
 			</ul>
 		</div>

@@ -18,7 +18,7 @@ class LogoutCest
     public function logoutFromDashboard(AcceptanceTester $I)
     {
         $I->amOnPage('/');
-        $I->click('button[title="Logout"]');
+        $I->click('a[title="Logout"]');
         $I->seeInCurrentUrl('/');
         $I->cantSee('Joe User');
     }
