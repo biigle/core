@@ -27,7 +27,7 @@ class AnnotationLabelApiTest extends ApiTestCase {
 		$this->assertResponseOk();
 
 		$this->be($this->guest);
-		$r = $this->callAjax('GET', '/api/v1/annotations/1/labels', array(
+		$r = $this->call('GET', '/api/v1/annotations/1/labels', array(
 			'_token' => Session::token(),
 		));
 
@@ -69,7 +69,7 @@ class AnnotationLabelApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->admin);
-		$this->callAjax('POST', '/api/v1/annotations/1/labels', array(
+		$this->call('POST', '/api/v1/annotations/1/labels', array(
 			'_token' => Session::token(),
 			'label_id' => 1,
 			'confidence' => 0.1
@@ -102,7 +102,7 @@ class AnnotationLabelApiTest extends ApiTestCase {
 		// session cookie authentication
 		$this->assertEquals(0.5, $this->annotation->labels()->first()->confidence);
 		$this->be($this->editor);
-		$this->callAjax('PUT', '/api/v1/annotations/1/labels/1', array(
+		$this->call('PUT', '/api/v1/annotations/1/labels/1', array(
 			'_token' => Session::token(),
 			'confidence' => 0.1
 		));
@@ -138,7 +138,7 @@ class AnnotationLabelApiTest extends ApiTestCase {
 		// session cookie authentication
 		$this->be($this->admin);
 		// admin can detach labels of other users as well if the ID is provided
-		$this->callAjax('DELETE', '/api/v1/annotations/1/labels/1', array(
+		$this->call('DELETE', '/api/v1/annotations/1/labels/1', array(
 			'_token' => Session::token(),
 			'user_id' => $this->editor->id
 		));

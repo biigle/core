@@ -19,7 +19,7 @@ class ProjectUserApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->admin);
-		$r = $this->callAjax('GET', '/api/v1/projects/1/users');
+		$r = $this->call('GET', '/api/v1/projects/1/users');
 		$this->assertResponseOk();
 
 		$this->assertStringStartsWith('[', $r->getContent());
@@ -47,20 +47,20 @@ class ProjectUserApiTest extends ApiTestCase {
 		// session cookie authentication
 		$this->be($this->admin);
 		// missing arguments
-		$this->callAjax('PUT', '/api/v1/projects/1/users/'.$this->editor->id,
+		$this->call('PUT', '/api/v1/projects/1/users/'.$this->editor->id,
 			array('_token' => Session::token())
 		);
 		$this->assertResponseStatus(400);
 
 		// role does not exist
-		$this->callAjax('PUT', '/api/v1/projects/1/users/'.$this->editor->id,
+		$this->call('PUT', '/api/v1/projects/1/users/'.$this->editor->id,
 			array('_token' => Session::token(), 'project_role_id' => 100)
 		);
 		$this->assertResponseStatus(400);
 
 		$this->assertEquals(2, $this->project->users()->find($this->editor->id)->project_role_id);
 
-		$this->callAjax('PUT', '/api/v1/projects/1/users/'.$this->editor->id,
+		$this->call('PUT', '/api/v1/projects/1/users/'.$this->editor->id,
 			array('_token' => Session::token(), 'project_role_id' => 3)
 		);
 
@@ -90,12 +90,12 @@ class ProjectUserApiTest extends ApiTestCase {
 		// session cookie authentication
 		$this->be($this->admin);
 		// missing arguments
-		$this->callAjax('POST', '/api/v1/projects/1/users/'.$id, array(
+		$this->call('POST', '/api/v1/projects/1/users/'.$id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(400);
 
-		$this->callAjax('POST', '/api/v1/projects/1/users/'.$id, array(
+		$this->call('POST', '/api/v1/projects/1/users/'.$id, array(
 			'_token' => Session::token(),
 			'project_role_id' => 2
 		));
@@ -142,7 +142,7 @@ class ProjectUserApiTest extends ApiTestCase {
 		$this->be($this->admin);
 
 		// but admins cannot delete themselves if they are the only admin left
-		$this->callAjax('DELETE', '/api/v1/projects/1/users/'.$this->admin->id, array(
+		$this->call('DELETE', '/api/v1/projects/1/users/'.$this->admin->id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(400);

@@ -14,7 +14,7 @@ class ShapeApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->user);
-		$r = $this->callAjax('GET', '/api/v1/shapes');
+		$r = $this->call('GET', '/api/v1/shapes');
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('[', $r->getContent());
 		$this->assertStringEndsWith(']', $r->getContent());
@@ -30,7 +30,7 @@ class ShapeApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->user);
-		$r = $this->callAjax('GET', '/api/v1/shapes/'.Shape::circleId());
+		$r = $this->call('GET', '/api/v1/shapes/'.Shape::circleId());
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());

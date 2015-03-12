@@ -27,7 +27,7 @@ class TransectApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->guest);
-		$r = $this->callAjax('GET', '/api/v1/transects/'.$id);
+		$r = $this->call('GET', '/api/v1/transects/'.$id);
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
@@ -48,7 +48,7 @@ class TransectApiTest extends ApiTestCase {
 		// session cookie authentication
 		$this->be($this->admin);
 		$this->assertNotEquals('the new transect', $this->transect->fresh()->name);
-		$this->callAjax('PUT', '/api/v1/transects/'.$id, array(
+		$this->call('PUT', '/api/v1/transects/'.$id, array(
 			'_token' => Session::token(),
 			'name' => 'the new transect'
 		));

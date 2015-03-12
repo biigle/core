@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 class AnnotationApiTest extends ApiTestCase {
 
@@ -32,7 +32,7 @@ class AnnotationApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->admin);
-		$r = $this->callAjax('GET', '/api/v1/annotations/1');
+		$r = $this->call('GET', '/api/v1/annotations/1');
 
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
@@ -79,7 +79,7 @@ class AnnotationApiTest extends ApiTestCase {
 
 		// admin could delete but the annotation was already deleted
 		$this->be($this->admin);
-		$this->callAjax('DELETE', '/api/v1/annotations/2', array(
+		$this->call('DELETE', '/api/v1/annotations/2', array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(404);

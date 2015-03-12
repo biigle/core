@@ -14,7 +14,7 @@ class LabelApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->user);
-		$r = $this->callAjax('GET', '/api/v1/labels');
+		$r = $this->call('GET', '/api/v1/labels');
 		$this->assertStringStartsWith('[', $r->getContent());
 		$this->assertStringEndsWith(']', $r->getContent());
 	}
@@ -34,7 +34,7 @@ class LabelApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->user);
-		$r = $this->callAjax('GET', '/api/v1/labels/'.$label->id);
+		$r = $this->call('GET', '/api/v1/labels/'.$label->id);
 		// response should not be an empty array
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
@@ -56,14 +56,14 @@ class LabelApiTest extends ApiTestCase {
 		// session cookie authentication
 		$this->be($this->globalAdmin);
 		$count = Label::all()->count();
-		$this->callAjax('POST', '/api/v1/labels', array(
+		$this->call('POST', '/api/v1/labels', array(
 			'_token' => Session::token(),
 			'name' => 'Sea Cucumber',
 		));
 		$this->assertResponseOk();
 		$this->assertEquals($count + 1, Label::all()->count());
 
-		$this->callAjax('POST', '/api/v1/labels', array(
+		$this->call('POST', '/api/v1/labels', array(
 			'_token' => Session::token(),
 			'name' => 'Stone',
 			'parent_id' => 99999
@@ -71,7 +71,7 @@ class LabelApiTest extends ApiTestCase {
 		// parent label does not exist
 		$this->assertResponseStatus(400);
 
-		$r = $this->callAjax('POST', '/api/v1/labels', array(
+		$r = $this->call('POST', '/api/v1/labels', array(
 			'_token' => Session::token(),
 			'name' => 'Baby Sea Cucumber',
 			'aphia_id' => 1234,
@@ -114,7 +114,7 @@ class LabelApiTest extends ApiTestCase {
 		$this->assertNull($label->parent);
 		$this->assertNull($label->aphia_id);
 
-		$this->callAjax('PUT', '/api/v1/labels/'.$label->id, array(
+		$this->call('PUT', '/api/v1/labels/'.$label->id, array(
 			'_token' => Session::token(),
 			'name' => 'random name abc',
 			'parent_id' => 1,
@@ -153,13 +153,13 @@ class LabelApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->globalAdmin);
-		$this->callAjax('DELETE', '/api/v1/labels/'.$parent->id, array(
+		$this->call('DELETE', '/api/v1/labels/'.$parent->id, array(
 			'_token' => Session::token()
 		));
 		// deleting a label with children without the 'force' argument fails
 		$this->assertResponseStatus(400);
 
-		$this->callAjax('DELETE', '/api/v1/labels/'.$parent->id, array(
+		$this->call('DELETE', '/api/v1/labels/'.$parent->id, array(
 			'_token' => Session::token(),
 			'force' => 'abcd'
 		));

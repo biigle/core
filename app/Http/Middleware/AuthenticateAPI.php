@@ -73,8 +73,12 @@ class AuthenticateAPI implements Middleware {
 	public function handle($request, Closure $next)
 	{
 		// request is valid if the user authenticates either with their session
-		// cookie (on AJAX requests) or with their API key
-		if (($request->ajax() && $this->auth->check()) || $this->authByKey($request))
+		// cookie or with their API key
+		if ($this->isApiKeyRequest($request) && $this->authByKey($request))
+		{
+			return $next($request);
+		}
+		else if ($this->auth->check())
 		{
 			return $next($request);
 		}

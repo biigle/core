@@ -36,7 +36,7 @@ class ImageAnnotationApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->guest);
-		$r = $this->callAjax('GET',
+		$r = $this->call('GET',
 			'/api/v1/images/'.$this->image->id.'/annotations'
 		);
 		// response should not be an empty array
@@ -67,7 +67,7 @@ class ImageAnnotationApiTest extends ApiTestCase {
 		// session cookie authentication
 		$this->be($this->editor);
 
-		$this->callAjax('POST',
+		$this->call('POST',
 			'/api/v1/images/'.$this->image->id.'/annotations',
 			array(
 				'_token' => Session::token(),
@@ -78,7 +78,7 @@ class ImageAnnotationApiTest extends ApiTestCase {
 		// shape does not exist
 		$this->assertResponseStatus(400);
 
-		$this->callAjax('POST',
+		$this->call('POST',
 			'/api/v1/images/'.$this->image->id.'/annotations',
 			array(
 				'_token' => Session::token(),
@@ -89,7 +89,7 @@ class ImageAnnotationApiTest extends ApiTestCase {
 		// at least one point required
 		$this->assertResponseStatus(400);
 
-		$r = $this->callAjax('POST',
+		$r = $this->call('POST',
 			'/api/v1/images/'.$this->image->id.'/annotations',
 			array(
 				'_token' => Session::token(),

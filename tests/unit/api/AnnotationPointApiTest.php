@@ -25,7 +25,7 @@ class AnnotationPointApiTest extends ApiTestCase {
 		$this->assertResponseOk();
 
 		$this->be($this->guest);
-		$r = $this->callAjax('GET', '/api/v1/annotations/1/points', array(
+		$r = $this->call('GET', '/api/v1/annotations/1/points', array(
 			'_token' => Session::token(),
 		));
 
@@ -66,7 +66,7 @@ class AnnotationPointApiTest extends ApiTestCase {
 		// session cookie authentication
 
 		$this->be($this->admin);
-		$r = $this->callAjax('POST', '/api/v1/annotations/1/points', array(
+		$r = $this->call('POST', '/api/v1/annotations/1/points', array(
 			'_token' => Session::token(),
 			'x' => 10,
 			'y' => 10,
@@ -98,7 +98,7 @@ class AnnotationPointApiTest extends ApiTestCase {
 		$this->assertEquals(321, $point->fresh()->y);
 
 		$this->be($this->admin);
-		$r = $this->callAjax('PUT', '/api/v1/annotations/1/points/'.$id, array(
+		$r = $this->call('PUT', '/api/v1/annotations/1/points/'.$id, array(
 			'_token' => Session::token(),
 			'x' => 1,
 			'y' => 2
@@ -128,21 +128,21 @@ class AnnotationPointApiTest extends ApiTestCase {
 		
 		// session cookie authentication
 		$this->be($this->user);
-		$this->callAjax('DELETE', '/api/v1/annotations/1/points/'.$id, array(
+		$this->call('DELETE', '/api/v1/annotations/1/points/'.$id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(401);
 		$this->assertNotNull($point->fresh());
 
 		$this->be($this->guest);
-		$this->callAjax('DELETE', '/api/v1/annotations/1/points/'.$id, array(
+		$this->call('DELETE', '/api/v1/annotations/1/points/'.$id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(401);
 		$this->assertNotNull($point->fresh());
 
 		$this->be($this->editor);
-		$this->callAjax('DELETE', '/api/v1/annotations/1/points/'.$id, array(
+		$this->call('DELETE', '/api/v1/annotations/1/points/'.$id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseOk();

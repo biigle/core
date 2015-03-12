@@ -14,7 +14,7 @@ class AttributeApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->user);
-		$r = $this->callAjax('GET', '/api/v1/attributes');
+		$r = $this->call('GET', '/api/v1/attributes');
 		$this->assertStringStartsWith('[', $r->getContent());
 		$this->assertStringEndsWith(']', $r->getContent());
 	}
@@ -32,7 +32,7 @@ class AttributeApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->user);
-		$r = $this->callAjax('GET', '/api/v1/attributes/1');
+		$r = $this->call('GET', '/api/v1/attributes/1');
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
 	}
@@ -63,7 +63,7 @@ class AttributeApiTest extends ApiTestCase {
 		// session cookie authentication
 		$this->be($this->globalAdmin);
 		$count = Attribute::all()->count();
-		$r = $this->callAjax('POST', '/api/v1/attributes', array(
+		$r = $this->call('POST', '/api/v1/attributes', array(
 			'_token' => Session::token(),
 			'name' => 'expert',
 			'type' => 'boolean'
@@ -92,7 +92,7 @@ class AttributeApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->globalAdmin);
-		$this->callAjax('DELETE', '/api/v1/attributes/'.$id, array(
+		$this->call('DELETE', '/api/v1/attributes/'.$id, array(
 			'_token' => Session::token()
 		));
 		// the attribute doesn't exist any more
@@ -104,7 +104,7 @@ class AttributeApiTest extends ApiTestCase {
 		$project->save();
 		$project->attributes()->attach($attribute->id);
 
-		$this->callAjax('DELETE', '/api/v1/attributes/'.$attribute->id, array(
+		$this->call('DELETE', '/api/v1/attributes/'.$attribute->id, array(
 			'_token' => Session::token()
 		));
 		// attributes in use may not be deleted
