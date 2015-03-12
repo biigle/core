@@ -14,11 +14,8 @@ class ProjectUserController extends Controller {
 	 */
 	public function index($projectId)
 	{
-		$project = Project::find($projectId);
-		if (!$project || !$project->hasUser($this->auth->user()))
-		{
-			abort(401);
-		}
+		$project = $this->requireNotNull(Project::find($projectId));
+		$this->requireCanSee($project);
 		return $project->users()->get();
 	}
 
@@ -31,11 +28,8 @@ class ProjectUserController extends Controller {
 	 */
 	public function update($projectId, $userId)
 	{
-		$project = Project::find($projectId);
-		if (!$project || !$project->hasAdmin($this->auth->user()))
-		{
-			abort(401);
-		}
+		$project = $this->requireNotNull(Project::find($projectId));
+		$this->requireCanAdmin($project);
 
 		$role = Role::find($this->request->input('project_role_id'));
 
@@ -52,17 +46,15 @@ class ProjectUserController extends Controller {
 	 * Adds a new user to the specified project.
 	 *
 	 * @param int $projectId
+	 * @param int $userId
 	 * @return \Illuminate\Http\Response
 	 */
-	public function store($projectId)
+	public function attach($projectId, $userId)
 	{
-		$project = Project::find($projectId);
-		if (!$project || !$project->hasAdmin($this->auth->user()))
-		{
-			abort(401);
-		}
+		$project = $this->requireNotNull(Project::find($projectId));
+		$this->requireCanAdmin($project);
 
-		$user = User::find($this->request->input('id'));
+		$user = User::find($userId);
 		$role = Role::find($this->request->input('project_role_id'));
 
 		if (!$user || !$role)
@@ -84,12 +76,12 @@ class ProjectUserController extends Controller {
 	 */
 	public function destroy($projectId, $userId)
 	{
-		$project = Project::find($projectId);
+		$project = $this->requireNotNull(Project::find($projectId));
 		$user = $this->auth->user();
 
 		// the user is only allowed to do this if they are admin or want to
 		// remove themselves
-		if ($project && ($project->hasAdmin($user) || $user->id == $userId))
+		if ($project->hasAdmin($user) || $user->id == $userId)
 		{
 			$project->removeUserId($userId);
 			return response("Ok.", 200);

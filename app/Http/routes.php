@@ -74,8 +74,12 @@ Route::group(array(
 		'only' => array('index', 'store', 'destroy')
 	));
 
+	$router->post(
+		'projects/{pid}/users/{uid}',
+		'ProjectUserController@attach'
+	);
 	$router->resource('projects.users', 'ProjectUserController', array(
-		'only' => array('index', 'update', 'store', 'destroy')
+		'only' => array('index', 'update', 'destroy')
 	));
 
 	$router->resource('roles', 'RoleController', array(

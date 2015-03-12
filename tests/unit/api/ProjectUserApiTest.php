@@ -14,7 +14,7 @@ class ProjectUserApiTest extends ApiTestCase {
 		$this->assertResponseOk();
 
 		// the user doesn't belong to this project
-		$this->callToken('GET', '/api/v1/projects/2/users', $this->admin);
+		$this->callToken('GET', '/api/v1/projects/1/users', $this->user);
 		$this->assertResponseStatus(401);
 
 		// session cookie authentication
@@ -68,43 +68,41 @@ class ProjectUserApiTest extends ApiTestCase {
 		$this->assertEquals(3, $this->project->users()->find($this->editor->id)->project_role_id);
 	}
 
-	public function testStore()
+	public function testAttach()
 	{
-		$this->doTestApiRoute('POST', '/api/v1/projects/1/users');
+		$id = $this->user->id;
+		$this->doTestApiRoute('POST', '/api/v1/projects/1/users/'.$id);
 
-		$this->callToken('POST', '/api/v1/projects/1/users', $this->user);
+		$this->callToken('POST', '/api/v1/projects/1/users/'.$id, $this->user);
 		$this->assertResponseStatus(401);
 
 		// api key authentication
-		// user doesn't exist
-		$this->callToken('POST', '/api/v1/projects/1/users', $this->admin);
+		// missing arguments
+		$this->callToken('POST', '/api/v1/projects/1/users/'.$id, $this->admin);
 		$this->assertResponseStatus(400);
 
 		// non-admins are not allowed to add users
-		$this->callToken('POST', '/api/v1/projects/1/users', $this->editor);
+		$this->callToken('POST', '/api/v1/projects/1/users/'.$id, $this->editor);
 		$this->assertResponseStatus(401);
 
-		$this->project->users()->detach($this->editor->id);
-		$this->assertNull($this->project->fresh()->users()->find($this->editor->id));
+		$this->assertNull($this->project->fresh()->users()->find($id));
 
 		// session cookie authentication
 		$this->be($this->admin);
 		// missing arguments
-		$this->callAjax('POST', '/api/v1/projects/1/users', array(
-			'_token' => Session::token(),
-			'id' => $this->editor->id
+		$this->callAjax('POST', '/api/v1/projects/1/users/'.$id, array(
+			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(400);
 
-		$this->callAjax('POST', '/api/v1/projects/1/users', array(
+		$this->callAjax('POST', '/api/v1/projects/1/users/'.$id, array(
 			'_token' => Session::token(),
-			'id' => $this->editor->id,
 			'project_role_id' => 2
 		));
 
 		$this->assertResponseOk();
-		$newUser = $this->project->users()->find($this->editor->id);
-		$this->assertEquals($this->editor->id, $newUser->id);
+		$newUser = $this->project->users()->find($id);
+		$this->assertEquals($id, $newUser->id);
 		$this->assertEquals(Role::editorId(), $newUser->project_role_id);
 	}
 

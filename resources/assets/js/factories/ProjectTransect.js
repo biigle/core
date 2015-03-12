@@ -40,6 +40,11 @@ var transects = ProjectTransect.query({ project_id: 1 }, function () {
 });
 // or directly
 ProjectTransect.detach({project_id: 1}, {id: 1});
+
+// attaching and detaching can be done using a Transect object as well:
+var transect = Transect.get({id: 1}, function () {
+   ProjectTransect.attach({project_id: 2}, transect);
+});
  *
  */
 angular.module('dias.core').factory('ProjectTransect', function ($resource) {
