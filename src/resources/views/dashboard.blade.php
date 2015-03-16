@@ -1,0 +1,1 @@
+This is the projects dashboard mixin.

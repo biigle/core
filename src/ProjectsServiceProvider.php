@@ -21,6 +21,5 @@ class ProjectsServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$app = $this->app;
-		dd($app);
 	}
 }
