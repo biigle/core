@@ -1,5 +1,7 @@
 <?php namespace Dias\Http\Controllers\Views;
 
+use Dias\Services\Modules;
+
 class HomeController extends Controller {
 
 	/**
@@ -7,9 +9,10 @@ class HomeController extends Controller {
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function index()
+	public function index(Modules $modules)
 	{
-		return view('home');
+		return view('home')
+			->withMixins($modules->getMixins('dashboard'));
 	}
 
 }

@@ -1,5 +1,0 @@
-suites:
-    main:
-        namespace: Dias
-        psr4_prefix: Dias
-        src_path: app
