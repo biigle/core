@@ -20,23 +20,23 @@
 	<nav class="navbar navbar-inverse navbar-noradius">
 		<div class="container">
 			<div class="navbar-header">
-				<a class="navbar-brand logo logo-inverse" href="#">
+				<a class="navbar-brand logo logo-inverse" href="{{ route('home') }}">
 					<span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup>
 				</a>
 			</div>
-			<ul class="nav navbar-nav navbar-right">
-				<li class="navbar-text">
+			<div class="navbar-right">
+				<p class="navbar-text">
 					{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}
-				</li>
-				<li>
-					<form class="navbar-form" role="form" method="GET" action="{{ url('auth/logout') }}">
-						<input type="hidden" name="_token" value="{{ csrf_token() }}">
-						<div class="form-group">
-							<button type="submit" class="btn btn-inverse" title="{{ trans('form.logout') }}"><i class="glyphicon glyphicon-log-out"></i></button>
-						</div>
-					</form>
-				</li>
-			</ul>
+				</p>
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="{{ route('settings') }}" title="{{ trans('dias.titles.settings') }}"><i class="glyphicon glyphicon-cog"></i></a>
+					</li>
+					<li>
+						<a href="{{ url('auth/logout') }}" title="{{ trans('dias.titles.logout') }}"><i class="glyphicon glyphicon-log-out"></i></a>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</nav>
 @endif

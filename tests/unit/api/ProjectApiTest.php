@@ -18,7 +18,7 @@ class ProjectApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->admin);
-		$r = $this->callAjax('GET', '/api/v1/projects/my');
+		$r = $this->call('GET', '/api/v1/projects/my');
 		$this->assertResponseOk();
 
 		$this->assertStringStartsWith('[', $r->getContent());
@@ -40,10 +40,10 @@ class ProjectApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->admin);
-		$this->callAjax('GET', '/api/v1/projects/2');
+		$this->call('GET', '/api/v1/projects/2');
 		$this->assertResponseStatus(404);
 
-		$r = $this->callAjax('GET', '/api/v1/projects/1');
+		$r = $this->call('GET', '/api/v1/projects/1');
 		$this->assertResponseOk();
 
 		$this->assertStringStartsWith('{', $r->getContent());
@@ -66,12 +66,12 @@ class ProjectApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->admin);
-		$this->callAjax('PUT', '/api/v1/projects/2', array(
+		$this->call('PUT', '/api/v1/projects/2', array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(404);
 
-		$this->callAjax('PUT', '/api/v1/projects/1', array(
+		$this->call('PUT', '/api/v1/projects/1', array(
 			'_token' => Session::token(),
 			'name' => 'my test',
 			'description' => 'this is my test',
@@ -111,7 +111,7 @@ class ProjectApiTest extends ApiTestCase {
 		$this->be($this->admin);
 		$this->assertNull(Project::find(3));
 
-		$r = $this->callAjax('POST', '/api/v1/projects', array(
+		$r = $this->call('POST', '/api/v1/projects', array(
 			'_token' => Session::token(),
 			'name' => 'other test project',
 			'description' => 'my other test project'
@@ -142,7 +142,7 @@ class ProjectApiTest extends ApiTestCase {
 
 		// already deleted projects can't be re-deleted
 		$this->be($this->admin);
-		$this->callAjax('DELETE', '/api/v1/projects/1', array(
+		$this->call('DELETE', '/api/v1/projects/1', array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(404);

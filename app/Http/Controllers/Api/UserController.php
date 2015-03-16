@@ -76,12 +76,9 @@ class UserController extends Controller {
 		}
 
 		$request = $this->request;
-		$keys = array_keys($request->all());
-
-		// validate only the present parameters
-		$this->validate($request, array_only(User::$registerRules, $keys));
 
 		$user = $this->requireNotNull(User::find($id));
+		$this->validate($request, $user->updateRules());
 
 		if ($request->has('password'))
 		{
@@ -103,12 +100,9 @@ class UserController extends Controller {
 	public function updateOwn()
 	{
 		$request = $this->request;
-		$keys = array_keys($request->all());
-
-		// validate only the present parameters
-		$this->validate($request, array_only(User::$registerRules, $keys));
 
 		$user = $this->auth->user();
+		$this->validate($request, $user->updateRules());
 
 		if ($request->has('password'))
 		{
@@ -130,6 +124,13 @@ class UserController extends Controller {
 		$user->lastname = $request->input('lastname', $user->lastname);
 		$user->email = $request->input('email', $user->email);
 		$user->save();
+
+		if (!$request->ajax())
+		{
+			return redirect()->back()
+				->with('message', 'Saved.')
+				->with('messageType', 'success');
+		}
 	}
 
 	/**

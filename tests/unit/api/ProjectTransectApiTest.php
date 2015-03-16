@@ -30,7 +30,7 @@ class ProjectTransectApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->guest);
-		$r = $this->callAjax('GET', '/api/v1/projects/1/transects');
+		$r = $this->call('GET', '/api/v1/projects/1/transects');
 		$this->assertResponseOk();
 		// response should not be an empty array
 		$this->assertStringStartsWith('[{', $r->getContent());
@@ -52,7 +52,7 @@ class ProjectTransectApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->admin);
-		$this->callAjax('POST', '/api/v1/projects/1/transects', array(
+		$this->call('POST', '/api/v1/projects/1/transects', array(
 			'_token' => Session::token(),
 			'name' => 'my transect no. 1',
 			'url' => 'random',
@@ -62,7 +62,7 @@ class ProjectTransectApiTest extends ApiTestCase {
 		// media type does not exist
 		$this->assertResponseStatus(400);
 
-		$this->callAjax('POST', '/api/v1/projects/1/transects', array(
+		$this->call('POST', '/api/v1/projects/1/transects', array(
 			'_token' => Session::token(),
 			'name' => 'my transect no. 1',
 			'url' => 'random',
@@ -72,7 +72,7 @@ class ProjectTransectApiTest extends ApiTestCase {
 		// images array is empty
 		$this->assertResponseStatus(400);
 
-		$r = $this->callAjax('POST', '/api/v1/projects/1/transects', array(
+		$r = $this->call('POST', '/api/v1/projects/1/transects', array(
 			'_token' => Session::token(),
 			'name' => 'my transect no. 1',
 			'url' => 'random',
@@ -108,7 +108,7 @@ class ProjectTransectApiTest extends ApiTestCase {
 		// session cookie authentication
 		$this->be($this->admin);
 		$this->assertEmpty($secondProject->fresh()->transects);
-		$this->callAjax('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid, array('_token' => Session::token()));
+		$this->call('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid, array('_token' => Session::token()));
 		$this->assertResponseOk();
 		$this->assertNotEmpty($secondProject->fresh()->transects);
 	}
@@ -139,7 +139,7 @@ class ProjectTransectApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->admin);
-		$this->callAjax('DELETE', '/api/v1/projects/1/transects/'.$id, array(
+		$this->call('DELETE', '/api/v1/projects/1/transects/'.$id, array(
 			'_token' => Session::token(),
 			'force' => 'abc'
 		));

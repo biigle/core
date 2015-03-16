@@ -60,6 +60,22 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 	);
 
 	/**
+	 * Returns the validation rules for updating the attributes of this user.
+	 * 
+	 * @return array
+	 */
+	public function updateRules()
+	{
+		return array(
+			// ignore the email of this
+			'email'     => 'email|unique:users,email,'.$this->id.'|max:255',
+			'password'  => 'min:8|confirmed',
+			'firstname' => 'alpha|max:127',
+			'lastname'  => 'alpha|max:127'
+		);
+	}
+
+	/**
 	 * Generates a random string to use as an API key. The key will be stored in
 	 * the `api_key` attribute of the user.
 	 * 

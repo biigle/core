@@ -15,7 +15,7 @@ class MediaTypeApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->user);
-		$r = $this->callAjax('GET', '/api/v1/media-types');
+		$r = $this->call('GET', '/api/v1/media-types');
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('[', $r->getContent());
 		$this->assertStringEndsWith(']', $r->getContent());
@@ -31,7 +31,7 @@ class MediaTypeApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->user);
-		$r = $this->callAjax('GET', '/api/v1/media-types/'.MediaType::timeSeriesId());
+		$r = $this->call('GET', '/api/v1/media-types/'.MediaType::timeSeriesId());
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());

@@ -9,6 +9,7 @@ return array(
 	'pw_reset_subject' => 'Your Password Reset Link',
 	'send_reset_link' => 'Please enter your email address so we can send you a password reset link.',
 	'reset_pw' => 'Reset password',
-	'reset_pw_help' => 'Please enter your email address and your new password.'
+	'reset_pw_help' => 'Please enter your email address and your new password.',
+	'remember_me' => 'Keep me logged in'
 
 );

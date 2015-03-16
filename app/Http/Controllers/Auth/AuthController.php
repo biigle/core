@@ -56,14 +56,14 @@ class AuthController extends Controller {
 
 		$credentials = $request->only('email', 'password');
 
-		if ($this->auth->attempt($credentials))
+		if ($this->auth->attempt($credentials, $request->has('remember')))
 		{
 			event(new UserLoggedInEvent($this->auth->user()));
 			return redirect()->intended($this->redirectPath());
 		}
 
 		return redirect('/auth/login')
-					->withInput($request->only('email'))
+					->withInput($request->only('email', 'remember'))
 					->withErrors([
 						'email' => trans('auth.failed'),
 					]);

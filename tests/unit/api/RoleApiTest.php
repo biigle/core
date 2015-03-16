@@ -14,7 +14,7 @@ class RoleApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->user);
-		$r = $this->callAjax('GET', '/api/v1/roles');
+		$r = $this->call('GET', '/api/v1/roles');
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('[', $r->getContent());
 		$this->assertStringEndsWith(']', $r->getContent());
@@ -30,7 +30,7 @@ class RoleApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->user);
-		$r = $this->callAjax('GET', '/api/v1/roles/'.Role::adminId());
+		$r = $this->call('GET', '/api/v1/roles/'.Role::adminId());
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());

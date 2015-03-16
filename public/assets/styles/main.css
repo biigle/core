@@ -4841,6 +4841,20 @@ button.close {
   right: 14px;
   top: 20px; }
 
+@-webkit-keyframes fade-in {
+  from {
+    opacity: 0; }
+
+  to {
+    opacity: 1; } }
+
+@keyframes fade-in {
+  from {
+    opacity: 0; }
+
+  to {
+    opacity: 1; } }
+
 .logo--standalone {
   margin-bottom: 1.5em; }
 
@@ -4889,3 +4903,14 @@ button.close {
   .btn-inverse .badge {
     color: #222;
     background-color: #9d9d9d; }
+
+.messages.container-fluid {
+  margin: 0 auto;
+  margin-top: -20px;
+  margin-bottom: 20px; }
+
+.messages__message {
+  padding: 15px;
+  text-align: center;
+  -webkit-animation: fade-in 1s;
+          animation: fade-in 1s; }

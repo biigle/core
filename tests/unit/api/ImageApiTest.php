@@ -27,7 +27,7 @@ class ImageApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->guest);
-		$r = $this->callAjax('GET', '/api/v1/images/1');
+		$r = $this->call('GET', '/api/v1/images/1');
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
 		$this->assertNotContains('"transect"', $r->getContent());
@@ -46,7 +46,7 @@ class ImageApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->guest);
-		$r = $this->callAjax('GET', '/api/v1/images/1/thumb');
+		$r = $this->call('GET', '/api/v1/images/1/thumb');
 		$this->assertResponseOk();
 		$this->assertEquals('image/jpeg', $r->headers->get('content-type'));
 	}
@@ -64,7 +64,7 @@ class ImageApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->guest);
-		$r = $this->callAjax('GET', '/api/v1/images/1/file');
+		$r = $this->call('GET', '/api/v1/images/1/file');
 		$this->assertResponseOk();
 		$this->assertEquals('image/jpeg', $r->headers->get('content-type'));
 	}

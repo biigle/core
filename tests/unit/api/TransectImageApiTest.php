@@ -27,7 +27,7 @@ class TransectImageApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->guest);
-		$r = $this->callAjax('GET', '/api/v1/transects/'.$id.'/images');
+		$r = $this->call('GET', '/api/v1/transects/'.$id.'/images');
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('[', $r->getContent());
 		$this->assertStringEndsWith(']', $r->getContent());

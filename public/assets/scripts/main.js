@@ -15,25 +15,282 @@ angular.module('dias.core').config(["$httpProvider", function ($httpProvider) {
  * @ngdoc factory
  * @name Annotation
  * @memberOf dias.core
- * @description Provides the resource for an annotation.
+ * @description Provides the resource for annotations.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
  * @example
-// retrieving the points of an annotation
+// retrieving the shape ID of an annotation
 var annotation = Annotation.get({id: 123}, function () {
-   console.log(annotaion.points);
+   console.log(annotation.shape_id);
 });
 
 // deleting an annotation
 var annotation = Annotation.get({id: 123}, function () {
    annotation.$delete();
 });
+// or directly
+Annotation.delete({id: 123});
  * 
  */
 angular.module('dias.core').factory('Annotation', ["$resource", function ($resource) {
 	"use strict";
 
-	return $resource('/api/v1/annotations/:id', {id: '@id'});
+	return $resource('/api/v1/annotations/:id/', { id: '@id'	});
+}]);
+/**
+ * @ngdoc factory
+ * @name AnnotationLabel
+ * @memberOf dias.core
+ * @description Provides the resource for annotation labels.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get all labels of an annotation and update one of them
+var labels = AnnotationLabel.query({annotation_id: 1}, function () {
+   var label = labels[0];
+   label.confidence = 0.9;
+   label.$save();
+});
+
+// directly update a label
+AnnotationLabel.save({confidence: 0.1, annotation_id: 1, id: 1});
+
+// attach a new label to an annotation
+var label = AnnotationLabel.attach({label_id: 1, confidence: 0.5, annotation_id: 1}, function () {
+   console.log(label); // {id: 1, name: 'my label', user_id: 1, ...}
+});
+
+
+// detach a label
+var labels = AnnotationLabel.query({annotation_id: 1}, function () {
+   var label = labels[0];
+   label.$detach();
+});
+// or directly
+AnnotationLabel.detach({id: 1, annotation_id: 1});
+ * 
+ */
+angular.module('dias.core').factory('AnnotationLabel', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/annotations/:annotation_id/labels/:id', {
+			id: '@id',
+			annotation_id: '@annotation_id'
+		}, {
+			attach: {method: 'POST'},
+			save: {method: 'PUT'},
+			detach: {method: 'DELETE'}
+	});
+}]);
+/**
+ * @ngdoc factory
+ * @name AnnotationPoint
+ * @memberOf dias.core
+ * @description Provides the resource for annotation points.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get all points of an annotation and update one of them
+var points = AnnotationPoint.query({annotation_id: 1}, function () {
+   var point = points[0];
+   point.x = 100;
+   point.$save();
+});
+
+// directly update a point
+AnnotationPoint.save({x: 10, y: 10, annotation_id: 1, id: 1});
+
+// add a new point to an annotation
+var point = AnnotationPoint.add({x: 50, y: 40, annotation_id: 1}, function () {
+   console.log(point); // {x: 50, y: 40, annotation_id: 1, index: 1, id: 1}
+});
+
+// delete a point
+var points = AnnotationPoint.query({annotation_id: 1}, function () {
+   var point = points[0];
+   point.$delete();
+});
+// or directly
+AnnotationPoint.delete({id: 1, annotation_id: 1});
+ * 
+ */
+angular.module('dias.core').factory('AnnotationPoint', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/annotations/:annotation_id/points/:id', {
+			id: '@id',
+			annotation_id: '@annotation_id'
+		}, {
+			add: {method: 'POST'},
+			save: {method: 'PUT'}
+	});
+}]);
+/**
+ * @ngdoc factory
+ * @name Attribute
+ * @memberOf dias.core
+ * @description Provides the resource for attributes.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// list all attributes
+var attributes = Attribute.query(function () {
+   console.log(attributes); // [{id: 1, type: 'boolean', ...}, ...]
+});
+
+// get a specific attribute
+var attribute = Attribute.get({id: 1}, function () {
+   console.log(attribute); // {id: 1, type: 'boolean', ...}
+});
+
+// create a new attribute
+var attribute = Attribute.add({
+      name: 'bad_quality', type: 'boolean'
+   }, function () {
+      console.log(attribute); // {id: 1, name: 'bad_quality', ...}
+});
+
+// delete an attribute
+var attributes = Attribute.query(function () {
+   var attribute = attributes[0];
+   attribute.$delete();
+});
+// or directly
+Attribute.delete({id: 1});
+ *
+ */
+angular.module('dias.core').factory('Attribute', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/attributes/:id', { id: '@id' }, {
+		add: {method: 'POST'}
+	});
+}]);
+/**
+ * @ngdoc factory
+ * @name Image
+ * @memberOf dias.core
+ * @description Provides the resource for images. This resource is only for 
+ * finding out which transect an image belongs to. The image files are
+ * directly called from the API.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get an image
+var image = Image.get({id: 1}, function () {
+   console.log(image); // {id: 1, transect_id: 1}
+});
+ *
+ */
+angular.module('dias.core').factory('Image', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/images/:id');
+}]);
+/**
+ * @ngdoc factory
+ * @name ImageAnnotation
+ * @memberOf dias.core
+ * @description Provides the resource for annotations of an image.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get all annotations of an image
+var annotations = ImageAnnotation.query({image_id: 1}, function () {
+   console.log(annotations); // [{id: 1, shape_id: 1, ...}, ...]
+});
+
+// add a new annotation to an image
+var annotation = ImageAnnotation.add({
+   image_id: 1,
+   shape_id: 1,
+   points: [
+      { x: 10, y: 20 }
+   ]
+});
+ *
+ */
+angular.module('dias.core').factory('ImageAnnotation', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource(
+		'/api/v1/images/:image_id/annotations',
+		{ image_id: '@image_id' },
+		{ add: { method: 'POST' } }
+	);
+}]);
+/**
+ * @ngdoc factory
+ * @name Label
+ * @memberOf dias.core
+ * @description Provides the resource for labels.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get all labels
+var labels = Label.query(function () {
+   console.log(labels); // [{id: 1, name: "Benthic Object", ...}, ...]
+});
+
+// get one label
+var label = Label.get({id: 1}, function () {
+   console.log(label); // {id: 1, name: "Benthic Object", ...}
+});
+
+// create a new label
+var label = Label.add({name: "Trash", parent_id: 1}, function () {
+   console.log(label); // {id: 2, name: "Trash", parent_id: 1, ...}
+});
+
+// update a label
+var label = Label.get({id: 1}, function () {
+   label.name = 'Trash';
+   label.$save();
+});
+// or directly
+Label.save({id: 1, name: 'Trash'});
+
+// delete a label
+var label = Label.get({id: 1}, function () {
+   label.$delete();
+});
+// or directly
+Label.delete({id: 1});
+ *
+ */
+angular.module('dias.core').factory('Label', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/labels/:id', { id: '@id' },
+		{
+			add: {method: 'POST' },
+			save: { method: 'PUT' }
+		}
+	);
+}]);
+/**
+ * @ngdoc factory
+ * @name MediaType
+ * @memberOf dias.core
+ * @description Provides the resource for media types.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get all media types
+var mediaTypes = MediaType.query(function () {
+   console.log(mediaTypes); // [{id: 1, name: "time-series"}, ...]
+});
+
+// get one media type
+var mediaType = MediaType.get({id: 1}, function () {
+   console.log(mediaType); // {id: 1, name: "time-series"}
+});
+ *
+ */
+angular.module('dias.core').factory('MediaType', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/media-types/:id', { id: '@id' });
 }]);
 /**
  * @ngdoc factory
@@ -44,20 +301,24 @@ angular.module('dias.core').factory('Annotation', ["$resource", function ($resou
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
  * @example
 // retrieving the username
-var user = OwnUser.get({}, function () {
+var user = OwnUser.get(function () {
    console.log(user.firstname);
 });
 
 // changing the username
-var user = OwnUser.get({}, function () {
+var user = OwnUser.get(function () {
    user.firstname == 'Joel';
    user.$save();
 });
+// or directly
+OwnUser.save({firstname: 'Joel'});
 
 // deleting the user
-var user = OwnUser.get({}, function () {
+var user = OwnUser.get(function () {
    user.$delete();
 });
+// or directly
+OwnUser.delete();
  * 
  */
 angular.module('dias.core').factory('OwnUser', ["$resource", function ($resource) {
@@ -67,4 +328,313 @@ angular.module('dias.core').factory('OwnUser', ["$resource", function ($resource
 		save: {method: 'PUT'}
 	});
 }]);
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1haW4uanMiLCJmYWN0b3JpZXMvQW5ub3RhdGlvbi5qcyIsImZhY3Rvcmllcy9Pd25Vc2VyLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FDWkE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FDdkJBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0EiLCJmaWxlIjoibWFpbi5qcyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQG5hbWVzcGFjZSBkaWFzLmNvcmVcbiAqIEBkZXNjcmlwdGlvbiBUaGUgRElBUyBjb3JlIEFuZ3VsYXJKUyBtb2R1bGUuXG4gKi9cbmFuZ3VsYXIubW9kdWxlKCdkaWFzLmNvcmUnLCBbJ25nUmVzb3VyY2UnXSk7XG5cbmFuZ3VsYXIubW9kdWxlKCdkaWFzLmNvcmUnKS5jb25maWcoZnVuY3Rpb24gKCRodHRwUHJvdmlkZXIpIHtcblx0XCJ1c2Ugc3RyaWN0XCI7XG5cblx0JGh0dHBQcm92aWRlci5kZWZhdWx0cy5oZWFkZXJzLmNvbW1vbltcIlgtUmVxdWVzdGVkLVdpdGhcIl0gPVxuXHRcdFwiWE1MSHR0cFJlcXVlc3RcIjtcbn0pO1xuIiwiLyoqXG4gKiBAbmdkb2MgZmFjdG9yeVxuICogQG5hbWUgQW5ub3RhdGlvblxuICogQG1lbWJlck9mIGRpYXMuY29yZVxuICogQGRlc2NyaXB0aW9uIFByb3ZpZGVzIHRoZSByZXNvdXJjZSBmb3IgYW4gYW5ub3RhdGlvbi5cbiAqIEByZXF1aXJlcyAkcmVzb3VyY2VcbiAqIEByZXR1cm5zIHtPYmplY3R9IEEgbmV3IFtuZ1Jlc291cmNlXShodHRwczovL2RvY3MuYW5ndWxhcmpzLm9yZy9hcGkvbmdSZXNvdXJjZS9zZXJ2aWNlLyRyZXNvdXJjZSkgb2JqZWN0XG4gKiBAZXhhbXBsZVxuLy8gcmV0cmlldmluZyB0aGUgcG9pbnRzIG9mIGFuIGFubm90YXRpb25cbnZhciBhbm5vdGF0aW9uID0gQW5ub3RhdGlvbi5nZXQoe2lkOiAxMjN9LCBmdW5jdGlvbiAoKSB7XG4gICBjb25zb2xlLmxvZyhhbm5vdGFpb24ucG9pbnRzKTtcbn0pO1xuXG4vLyBkZWxldGluZyBhbiBhbm5vdGF0aW9uXG52YXIgYW5ub3RhdGlvbiA9IEFubm90YXRpb24uZ2V0KHtpZDogMTIzfSwgZnVuY3Rpb24gKCkge1xuICAgYW5ub3RhdGlvbi4kZGVsZXRlKCk7XG59KTtcbiAqIFxuICovXG5hbmd1bGFyLm1vZHVsZSgnZGlhcy5jb3JlJykuZmFjdG9yeSgnQW5ub3RhdGlvbicsIGZ1bmN0aW9uICgkcmVzb3VyY2UpIHtcblx0XCJ1c2Ugc3RyaWN0XCI7XG5cblx0cmV0dXJuICRyZXNvdXJjZSgnL2FwaS92MS9hbm5vdGF0aW9ucy86aWQnLCB7aWQ6ICdAaWQnfSk7XG59KTsiLCIvKipcbiAqIEBuZ2RvYyBmYWN0b3J5XG4gKiBAbmFtZSBPd25Vc2VyXG4gKiBAbWVtYmVyT2YgZGlhcy5jb3JlXG4gKiBAZGVzY3JpcHRpb24gUHJvdmlkZXMgdGhlIHJlc291cmNlIGZvciB0aGUgbG9nZ2VkIGluIHVzZXIuXG4gKiBAcmVxdWlyZXMgJHJlc291cmNlXG4gKiBAcmV0dXJucyB7T2JqZWN0fSBBIG5ldyBbbmdSZXNvdXJjZV0oaHR0cHM6Ly9kb2NzLmFuZ3VsYXJqcy5vcmcvYXBpL25nUmVzb3VyY2Uvc2VydmljZS8kcmVzb3VyY2UpIG9iamVjdFxuICogQGV4YW1wbGVcbi8vIHJldHJpZXZpbmcgdGhlIHVzZXJuYW1lXG52YXIgdXNlciA9IE93blVzZXIuZ2V0KHt9LCBmdW5jdGlvbiAoKSB7XG4gICBjb25zb2xlLmxvZyh1c2VyLmZpcnN0bmFtZSk7XG59KTtcblxuLy8gY2hhbmdpbmcgdGhlIHVzZXJuYW1lXG52YXIgdXNlciA9IE93blVzZXIuZ2V0KHt9LCBmdW5jdGlvbiAoKSB7XG4gICB1c2VyLmZpcnN0bmFtZSA9PSAnSm9lbCc7XG4gICB1c2VyLiRzYXZlKCk7XG59KTtcblxuLy8gZGVsZXRpbmcgdGhlIHVzZXJcbnZhciB1c2VyID0gT3duVXNlci5nZXQoe30sIGZ1bmN0aW9uICgpIHtcbiAgIHVzZXIuJGRlbGV0ZSgpO1xufSk7XG4gKiBcbiAqL1xuYW5ndWxhci5tb2R1bGUoJ2RpYXMuY29yZScpLmZhY3RvcnkoJ093blVzZXInLCBmdW5jdGlvbiAoJHJlc291cmNlKSB7XG5cdFwidXNlIHN0cmljdFwiO1xuXG5cdHJldHVybiAkcmVzb3VyY2UoJy9hcGkvdjEvdXNlcnMvbXknLCB7fSwge1xuXHRcdHNhdmU6IHttZXRob2Q6ICdQVVQnfVxuXHR9KTtcbn0pOyJdLCJzb3VyY2VSb290IjoiL3NvdXJjZS8ifQ==
+/**
+ * @ngdoc factory
+ * @name Project
+ * @memberOf dias.core
+ * @description Provides the resource for projects.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get all projects, the current user belongs to
+var projects = Project.query(function () {
+   console.log(projects); // [{id: 1, name: "Test Project", ...}, ...]
+});
+
+// get one project
+var project = Project.get({id: 1}, function () {
+   console.log(project); // {id: 1, name: "Test Project", ...}
+});
+
+// create a new project
+var project = Project.add({name: "My Project", description: "my project"},
+   function () {
+      console.log(project); // {id: 2, name: "My Project", ...}
+   }
+);
+
+// update a project
+var project = Project.get({id: 1}, function () {
+   project.name = 'New Project';
+   project.$save();
+});
+// or directly
+Project.save({id: 1, name: 'New Project'});
+
+// delete a project
+var project = Project.get({id: 1}, function () {
+   project.$delete();
+});
+// or directly
+Project.delete({id: 1});
+ *
+ */
+angular.module('dias.core').factory('Project', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/projects/:id', { id: '@id' },
+		{
+			// a user can only query their own projects
+			query: { method: 'GET', params: { id: 'my' }, isArray: true },
+			add: { method: 'POST' },
+			save: { method: 'PUT' }
+		}
+	);
+}]);
+/**
+ * @ngdoc factory
+ * @name ProjectTransect
+ * @memberOf dias.core
+ * @description Provides the resource for transects belonging to a project.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get all transects of the project with ID 1
+var transects = ProjectTransect.query({ project_id: 1 }, function () {
+   console.log(transects); // [{id: 1, name: "transect 1", ...}, ...]
+});
+
+// add a new transect to the project with ID 1
+var transect = ProjectTransect.add({project_id: 1},
+   {
+      name: "transect 1",
+      url: "/vol/transects/1",
+      media_type_id: 1,
+      images: ["1.jpg", "2.jpg"]
+   },
+   function () {
+      console.log(transect); // {id: 1, name: "transect 1", ...}
+   }
+);
+
+// attach an existing transect to another project
+var transects = ProjectTransect.query({ project_id: 1 }, function () {
+   var transect = transects[0];
+   // transect is now attached to project 1 *and* 2
+   transect.$attach({project_id: 2});
+});
+// or directly (transect 1 will be attached to project 2)
+ProjectTransect.attach({project_id: 2}, {id: 1});
+
+// detach a transect from the project with ID 1
+var transects = ProjectTransect.query({ project_id: 1 }, function () {
+   var transect = transects[0];
+   transect.$detach({project_id: 1});
+});
+// or directly
+ProjectTransect.detach({project_id: 1}, {id: 1});
+
+// attaching and detaching can be done using a Transect object as well:
+var transect = Transect.get({id: 1}, function () {
+   ProjectTransect.attach({project_id: 2}, transect);
+});
+ *
+ */
+angular.module('dias.core').factory('ProjectTransect', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/projects/:project_id/transects/:id',
+		{ id: '@id' },
+		{
+			add: { method: 'POST' },
+			attach: { method: 'POST' },
+			detach: { method: 'DELETE' }
+		}
+	);
+}]);
+/**
+ * @ngdoc factory
+ * @name ProjectUser
+ * @memberOf dias.core
+ * @description Provides the resource for users belonging to a project.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get all users of the project with ID 1
+var users = ProjectUser.query({ project_id: 1 }, function () {
+   console.log(users); // [{id: 1, firstname: "Jane", ...}, ...]
+});
+
+// update the project role of a user
+ProjectUser.save({project_id: 1}, {id: 1, project_role_id: 1});
+
+// attach a user to another project
+ProjectUser.attach({project_id: 2}, {id: 1, project_role_id: 2});
+
+// detach a user from the project with ID 1
+var users = ProjectUser.query({ project_id: 1 }, function () {
+   var user = users[0];
+   user.$detach({project_id: 1});
+});
+// or directly
+ProjectUser.detach({project_id: 1}, {id: 1});
+ *
+ */
+angular.module('dias.core').factory('ProjectUser', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/projects/:project_id/users/:id',
+		{ id: '@id' },
+		{
+			save: { method: 'PUT' },
+			attach: { method: 'POST' },
+			detach: { method: 'DELETE' }
+		}
+	);
+}]);
+/**
+ * @ngdoc factory
+ * @name Role
+ * @memberOf dias.core
+ * @description Provides the resource for roles.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get all roles
+var roles = Role.query(function () {
+   console.log(roles); // [{id: 1, name: "admin"}, ...]
+});
+
+// get one role
+var role = Role.get({id: 1}, function () {
+   console.log(role); // {id: 1, name: "admin"}
+});
+ *
+ */
+angular.module('dias.core').factory('Role', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/roles/:id', { id: '@id' });
+}]);
+/**
+ * @ngdoc factory
+ * @name Shape
+ * @memberOf dias.core
+ * @description Provides the resource for shapes.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get all shapes
+var shapes = Shape.query(function () {
+   console.log(shapes); // [{id: 1, name: "point"}, ...]
+});
+
+// get one shape
+var shape = Shape.get({id: 1}, function () {
+   console.log(shape); // {id: 1, name: "point"}
+});
+ *
+ */
+angular.module('dias.core').factory('Shape', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/shapes/:id', { id: '@id' });
+}]);
+/**
+ * @ngdoc factory
+ * @name Transect
+ * @memberOf dias.core
+ * @description Provides the resource for transects.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get one transect
+var transect = Transect.get({id: 1}, function () {
+   console.log(transect); // {id: 1, name: "transect 1"}
+});
+
+// update a transect
+var transect = Transect.get({id: 1}, function () {
+   transect.name = "my transect";
+   transect.$save();
+});
+// or directly
+Transect.save({id: 1, name: "my transect"});
+ *
+ */
+angular.module('dias.core').factory('Transect', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/transects/:id',
+		{ id: '@id' },
+		{
+			save: { method: 'PUT' }
+		}
+		);
+}]);
+/**
+ * @ngdoc factory
+ * @name TransectImage
+ * @memberOf dias.core
+ * @description Provides the resource for images of transects.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get the IDs of all images of the transect with ID 1
+var images = TransectImage.query({transect_id: 1}, function () {
+   console.log(images); // [1, 12, 14, ...]
+});
+ *
+ */
+angular.module('dias.core').factory('TransectImage', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/transects/:transect_id/images');
+}]);
+/**
+ * @ngdoc factory
+ * @name User
+ * @memberOf dias.core
+ * @description Provides the resource for users.
+ * @requires $resource
+ * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
+ * @example
+// get a list of all users
+var users = User.query(function () {
+   console.log(users); // [{id: 1, firstname: "Jane", ...}, ...]
+});
+
+// retrieving the username
+var user = User.get({id: 1}, function () {
+   console.log(user.firstname);
+});
+
+// creating a new user
+var user = User.add(
+   {
+      email: 'my@mail.com',
+      password: '123456pw',
+      password_confirmation: '123456pw',
+      firstname: 'jane',
+      lastname: 'user'
+   },
+   function () {
+      console.log(user); // {id: 1, firstname: 'jane', ...}
+   }
+);
+
+// changing the username
+var user = User.get({id: 1}, function () {
+   user.firstname == 'Joel';
+   user.$save();
+});
+// or directly
+User.save({id: 1, firstname: 'Joel'});
+
+// deleting the user
+var user = User.get({id: 1}, function () {
+   user.$delete();
+});
+// or directly
+User.delete({id: 1});
+ * 
+ */
+angular.module('dias.core').factory('User', ["$resource", function ($resource) {
+	"use strict";
+
+	return $resource('/api/v1/users/:id', {id: '@id'}, {
+		save: { method: 'PUT' },
+		add: { method: 'POST' }
+	});
+}]);
+//# sourceMappingURL=main.js.map

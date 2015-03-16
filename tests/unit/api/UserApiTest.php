@@ -16,7 +16,7 @@ class UserApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->globalAdmin);
-		$r = $this->callAjax('GET', '/api/v1/users');
+		$r = $this->call('GET', '/api/v1/users');
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('[', $r->getContent());
 		$this->assertStringEndsWith(']', $r->getContent());
@@ -37,7 +37,7 @@ class UserApiTest extends ApiTestCase {
 		$this->assertResponseOk();
 
 		$this->be($this->globalAdmin);
-		$r = $this->callAjax('GET', '/api/v1/users/'.$this->guest->id);
+		$r = $this->call('GET', '/api/v1/users/'.$this->guest->id);
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
@@ -51,7 +51,7 @@ class UserApiTest extends ApiTestCase {
 		$this->assertResponseOk();
 
 		$this->be($this->globalAdmin);
-		$r = $this->callAjax('GET', '/api/v1/users/my');
+		$r = $this->call('GET', '/api/v1/users/my');
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
@@ -68,19 +68,20 @@ class UserApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		$this->be($this->guest);
-		$this->callAjax('PUT', '/api/v1/users/'.$this->guest->id, array(
+		$this->call('PUT', '/api/v1/users/'.$this->guest->id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(401);
 
 		$this->be($this->globalAdmin);
 
-		$this->callAjax('PUT', '/api/v1/users/'.$this->globalAdmin->id, array(
+		$this->call('PUT', '/api/v1/users/'.$this->globalAdmin->id, array(
 			'_token' => Session::token(),
 		));
 		// the own user cannot be updated via this route
 		$this->assertResponseStatus(400);
 
+		// ajax call to get the correct response status
 		$this->callAjax('PUT', '/api/v1/users/'.$this->guest->id, array(
 			'_token' => Session::token(),
 			'password' => 'hacked!!'
@@ -88,6 +89,7 @@ class UserApiTest extends ApiTestCase {
 		// no password confirmation
 		$this->assertResponseStatus(422);
 
+		// ajax call to get the correct response status
 		$this->callAjax('PUT', '/api/v1/users/'.$this->guest->id, array(
 			'_token' => Session::token(),
 			'email' => 'no-mail'
@@ -95,7 +97,7 @@ class UserApiTest extends ApiTestCase {
 		// invalid email format
 		$this->assertResponseStatus(422);
 
-		$this->callAjax('PUT', '/api/v1/users/'.$this->guest->id, array(
+		$this->call('PUT', '/api/v1/users/'.$this->guest->id, array(
 			'_token' => Session::token(),
 			'password' => 'newpassword',
 			'password_confirmation' => 'newpassword',
@@ -123,6 +125,7 @@ class UserApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		$this->be($this->guest);
+		// ajax call to get the correct response status
 		$this->callAjax('PUT', '/api/v1/users/my', array(
 			'_token' => Session::token(),
 			'password' => 'hacked!!'
@@ -130,6 +133,7 @@ class UserApiTest extends ApiTestCase {
 		// no password confirmation
 		$this->assertResponseStatus(422);
 
+		// ajax call to get the correct response status
 		$this->callAjax('PUT', '/api/v1/users/my', array(
 			'_token' => Session::token(),
 			'email' => 'no-mail'
@@ -145,6 +149,7 @@ class UserApiTest extends ApiTestCase {
 		// no old password provided
 		$this->assertResponseStatus(422);
 
+		// ajax call to get the correct response status
 		$this->callAjax('PUT', '/api/v1/users/my', array(
 			'_token' => Session::token(),
 			'password' => 'newpassword',
@@ -172,12 +177,13 @@ class UserApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		$this->be($this->admin);
-		$this->callAjax('POST', '/api/v1/users', array(
+		$this->call('POST', '/api/v1/users', array(
 			'_token' => Session::token(),
 		));
 		$this->assertResponseStatus(401);
 
 		$this->be($this->globalAdmin);
+		// ajax call to get the correct response status
 		$this->callAjax('POST', '/api/v1/users', array(
 			'_token' => Session::token(),
 			'password' => 'newpassword',
@@ -188,7 +194,7 @@ class UserApiTest extends ApiTestCase {
 		// no password confirmation
 		$this->assertResponseStatus(422);
 
-		$r = $this->callAjax('POST', '/api/v1/users', array(
+		$r = $this->call('POST', '/api/v1/users', array(
 			'_token' => Session::token(),
 			'password' => 'newpassword',
 			'password_confirmation' => 'newpassword',
@@ -216,21 +222,21 @@ class UserApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		$this->be($this->admin);
-		$this->callAjax('DELETE', '/api/v1/users/'.$id, array(
+		$this->call('DELETE', '/api/v1/users/'.$id, array(
 			'_token' => Session::token(),
 		));
 		$this->assertResponseStatus(401);
 
 		$this->be($this->globalAdmin);
 
-		$this->callAjax('DELETE', '/api/v1/users/'.$this->globalAdmin->id, array(
+		$this->call('DELETE', '/api/v1/users/'.$this->globalAdmin->id, array(
 			'_token' => Session::token(),
 		));
 		// the own user cannot be deleted via this route
 		$this->assertResponseStatus(400);
 
 		$this->assertNotNull($this->guest->fresh());
-		$this->callAjax('DELETE', '/api/v1/users/'.$id, array(
+		$this->call('DELETE', '/api/v1/users/'.$id, array(
 			'_token' => Session::token(),
 		));
 		$this->assertResponseOk();
@@ -238,7 +244,7 @@ class UserApiTest extends ApiTestCase {
 
 		// remove creator, so admin is the last remaining admin of the project
 		$this->project->removeUserId($this->project->creator->id);
-		$this->callAjax('DELETE', '/api/v1/users/'.$this->admin->id, array(
+		$this->call('DELETE', '/api/v1/users/'.$this->admin->id, array(
 			'_token' => Session::token(),
 		));
 		// last remaining admin of a project mustn't be deleted
@@ -255,13 +261,14 @@ class UserApiTest extends ApiTestCase {
 
 		$this->be($this->guest);
 		$this->assertNotNull($this->guest->fresh());
+		// ajax call to get the correct response status
 		$this->callAjax('DELETE', '/api/v1/users/my', array(
 			'_token' => Session::token(),
 		));
 		$this->assertResponseOk();
 		$this->assertNull($this->guest->fresh());
 
-		$this->callAjax('DELETE', '/api/v1/users/my', array(
+		$this->call('DELETE', '/api/v1/users/my', array(
 			'_token' => Session::token(),
 		));
 		// deleted user doesn't have permission any more
