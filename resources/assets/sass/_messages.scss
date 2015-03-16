@@ -1,0 +1,11 @@
+.messages.container-fluid {
+	margin: 0 auto;
+	margin-top: -$navbar-margin-bottom;
+	margin-bottom: $navbar-margin-bottom;
+}
+
+.messages__message {
+	padding: 15px;
+	text-align: center;
+	animation: fade-in 1s;
+}
