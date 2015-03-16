@@ -12,8 +12,10 @@ class ModulesTest extends TestCase {
 		$this->assertEmpty($mixins);
 
 		$mixins = $modules->getMixins('dashboard');
-		$this->assertNotEmpty($mixins);
-		$this->assertEquals($mixins[0], 'my_mod::dashboard');
+		$this->assertArrayHasKey('my_mod', $mixins);
+
+		$mixins = $modules->getMixins('dashboard.my_mod');
+		$this->assertNotNull($mixins);
 	}
 
 }
