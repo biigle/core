@@ -149,7 +149,8 @@ class UserApiTest extends ApiTestCase {
 		// no old password provided
 		$this->assertResponseStatus(422);
 
-		$this->call('PUT', '/api/v1/users/my', array(
+		// ajax call to get the correct response status
+		$this->callAjax('PUT', '/api/v1/users/my', array(
 			'_token' => Session::token(),
 			'password' => 'newpassword',
 			'password_confirmation' => 'newpassword',

@@ -8,6 +8,8 @@ return array(
 
 	'titles' => array(
 		'login' => 'Login',
+		'logout' => 'Logout',
+		'settings' => 'Settings',
 		'resetpw' => 'Reset password',
 		'register' => 'Register',
 		'dashboard' => 'Dashboard',

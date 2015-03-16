@@ -11,15 +11,31 @@
 |
 */
 
-Route::get('/', array(
-	'as'   => 'home',
-	'uses' => 'HomeController@index'
-));
+Route::group(array(
+		'namespace' => 'Views',
+		'middleware' => 'auth'
+	), function ($router)
+{
+	$router->get('/', array(
+		'as'   => 'home',
+		'uses' => 'HomeController@index'
+	));
 
-Route::controllers(array(
-	'auth' => 'Auth\AuthController',
-	'password' => 'Auth\PasswordController',
-));
+	$router->get('settings', array(
+		'as' => 'settings',
+		'uses' => 'SettingsController@index'
+	));
+});
+
+Route::group(array(
+		'namespace' => 'Auth'
+	), function ($router)
+{
+	$router->controllers(array(
+		'auth' => 'AuthController',
+		'password' => 'PasswordController',
+	));
+});
 
 Route::group(array(
 	'prefix' => 'api/v1',
