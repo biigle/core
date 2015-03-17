@@ -26,7 +26,7 @@
 			</div>
 			<div class="navbar-right">
 				<p class="navbar-text">
-					{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}
+					{{ Auth::user()->name }}
 				</p>
 				<ul class="nav navbar-nav">
 					<li>

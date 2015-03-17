@@ -47,7 +47,7 @@ class AttributeApiTest extends ApiTestCase {
 
 		// missing arguments
 		$this->callToken('POST', '/api/v1/attributes', $this->globalAdmin);
-		$this->assertResponseStatus(400);
+		$this->assertResponseStatus(422);
 
 		// enum data type is not supported in SQLite
 		if (!(DB::connection() instanceof Illuminate\Database\SQLiteConnection))

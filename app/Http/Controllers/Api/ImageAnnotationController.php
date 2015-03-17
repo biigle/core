@@ -30,7 +30,8 @@ class ImageAnnotationController extends Controller {
 	{
 		$image = $this->requireNotNull(Image::find($id));
 		$this->requireCanEdit($image);
-		$this->requireArguments('shape_id', 'points');
+
+		$this->validate($this->request, Image::$createAnnotationRules);
 
 		$shape = Shape::find($this->request->input('shape_id'));
 

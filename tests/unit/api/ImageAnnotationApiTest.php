@@ -62,12 +62,12 @@ class ImageAnnotationApiTest extends ApiTestCase {
 			$this->editor
 		);
 		// missing arguments
-		$this->assertResponseStatus(400);
+		$this->assertResponseStatus(422);
 
 		// session cookie authentication
 		$this->be($this->editor);
 
-		$this->call('POST',
+		$this->callAjax('POST',
 			'/api/v1/images/'.$this->image->id.'/annotations',
 			array(
 				'_token' => Session::token(),
@@ -76,7 +76,7 @@ class ImageAnnotationApiTest extends ApiTestCase {
 			)
 		);
 		// shape does not exist
-		$this->assertResponseStatus(400);
+		$this->assertResponseStatus(422);
 
 		$this->call('POST',
 			'/api/v1/images/'.$this->image->id.'/annotations',

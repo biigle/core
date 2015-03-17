@@ -43,7 +43,7 @@ class AnnotationLabelApiTest extends ApiTestCase {
 		// api key authentication
 		// missing arguments
 		$this->callToken('POST', '/api/v1/annotations/1/labels', $this->editor);
-		$this->assertResponseStatus(400);
+		$this->assertResponseStatus(422);
 
 		$this->assertEquals(0, $this->annotation->labels()->count());
 

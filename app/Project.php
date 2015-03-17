@@ -8,6 +8,16 @@ use Dias\Contracts\BelongsToProjectContract;
 class Project extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
+	 * Validation rules for creating a new project
+	 * 
+	 * @var array
+	 */
+	public static $createRules = array(
+		'name'        => 'required|max:512',
+		'description' => 'required'
+	);
+
+	/**
 	 * The attributes hidden from the model's JSON form.
 	 *
 	 * @var array
@@ -59,6 +69,16 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract {
 	public function editors()
 	{
 		return $this->users()->whereProjectRoleId(Role::editorId());
+	}
+
+	/**
+	 * All members of this project with the `guest` role.
+	 * 
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 */
+	public function guests()
+	{
+		return $this->users()->whereProjectRoleId(Role::guestId());
 	}
 
 	/**

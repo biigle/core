@@ -18,14 +18,14 @@ class AnnotationLabelController extends Controller {
 	}
 
 	/**
-	 * Creates a new label for the specifies annotation.
+	 * Creates a new label for the specified annotation.
 	 *
 	 * @param int $id Annotation ID
 	 * @return \Illuminate\Http\Response
 	 */
 	public function store($id)
 	{
-		$this->requireArguments('label_id', 'confidence');
+		$this->validate($this->request, Annotation::$attachLabelRules);
 
 		$annotation = $this->requireNotNull(Annotation::find($id));
 
@@ -36,7 +36,7 @@ class AnnotationLabelController extends Controller {
 		$annotation->addLabel(
 			$labelId,
 			$this->request->input('confidence'),
-			$this->auth->user()
+			$this->user
 		);
 
 		return response($annotation->labels()->find($labelId), 201);
@@ -52,7 +52,7 @@ class AnnotationLabelController extends Controller {
 	public function update($annotationId, $labelId)
 	{
 		$annotation = $this->requireNotNull(Annotation::find($annotationId));
-		$user = $this->auth->user();
+		$user = $this->user;
 
 		$this->requireCanEdit($annotation);
 
@@ -77,7 +77,7 @@ class AnnotationLabelController extends Controller {
 	public function destroy($annotationId, $labelId)
 	{
 		$annotation = $this->requireNotNull(Annotation::find($annotationId));
-		$user = $this->auth->user();
+		$user = $this->user;
 
 		$this->requireCanEdit($annotation);
 

@@ -11,7 +11,7 @@ class ProjectController extends Controller {
 	 */
 	public function index()
 	{
-		return $this->auth->user()->projects;
+		return $this->user->projects;
 	}
 
 	/**
@@ -51,14 +51,22 @@ class ProjectController extends Controller {
 	 */
 	public function store()
 	{
-		$this->requireArguments('name', 'description');
+		$this->validate($this->request, Project::$createRules);
 
 		$project = new Project;
 		$project->name = $this->request->input('name');
 		$project->description = $this->request->input('description');
-		$project->setCreator($this->auth->user());
+		$project->setCreator($this->user);
 		$project->save();
-		return $project->fresh();
+
+		if ($this->isAutomatedRequest($this->request))
+		{
+			return $project->fresh();
+		}
+
+		return redirect()->route('home')
+			->with('message', 'Project '.$project->name.' created')
+			->with('messageType', 'success');
 	}
 
 	/**

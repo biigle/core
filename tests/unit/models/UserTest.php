@@ -33,6 +33,7 @@ class UserTest extends TestCase {
 		$this->user->save();
 		$this->assertNotNull($this->user->firstname);
 		$this->assertNotNull($this->user->lastname);
+		$this->assertNotNull($this->user->name);
 		$this->assertNotNull($this->user->password);
 		$this->assertNotNull($this->user->email);
 		$this->assertNotNull($this->user->role_id);

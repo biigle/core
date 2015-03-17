@@ -51,7 +51,7 @@ class LabelApiTest extends ApiTestCase {
 
 		$this->callToken('POST', '/api/v1/labels', $this->globalAdmin);
 		// missing arguments
-		$this->assertResponseStatus(400);
+		$this->assertResponseStatus(422);
 
 		// session cookie authentication
 		$this->be($this->globalAdmin);

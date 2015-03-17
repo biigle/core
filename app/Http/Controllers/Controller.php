@@ -6,9 +6,23 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
+use Dias\Http\Middleware\AuthenticateAPI;
+
 abstract class Controller extends BaseController {
 
 	use DispatchesCommands, ValidatesRequests;
+
+	/**
+	 * Determines if the request was done by an automated script (with API
+	 * token or ajax).
+	 * 
+	 * @param Request $request
+	 * @return boolean
+	 */
+	public function isAutomatedRequest(Request $request)
+	{
+		return $request->ajax() || AuthenticateAPI::isApiKeyRequest($request);
+	}
 
 	/**
 	 * Create the response for when a request fails validation.
@@ -20,7 +34,7 @@ abstract class Controller extends BaseController {
 	 */
 	protected function buildFailedValidationResponse(Request $request, array $errors)
 	{
-		if ($request->ajax())
+		if ($this->isAutomatedRequest($request))
 		{
 			return new JsonResponse($errors, 422);
 		}

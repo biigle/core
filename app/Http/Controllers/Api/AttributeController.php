@@ -48,7 +48,7 @@ class AttributeController extends Controller {
 	 */
 	public function store()
 	{
-		$this->requireArguments('name', 'type');
+		$this->validate($this->request, Attribute::$createRules);
 
 		$attribute = new Attribute;
 		$attribute->name = $this->request->input('name');

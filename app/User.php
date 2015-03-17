@@ -164,4 +164,13 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 		}
 		return false;
 	}
+
+	/**
+	 * Returns the full name of this user.
+	 * @return string
+	 */
+	public function getNameAttribute()
+	{
+		return $this->firstname.' '.$this->lastname;
+	}
 }

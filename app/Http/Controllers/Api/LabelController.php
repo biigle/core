@@ -70,7 +70,7 @@ class LabelController extends Controller {
 	 */
 	public function store()
 	{
-		$this->requireArguments('name');
+		$this->validate($this->request, Label::$createRules);
 
 		$label = new Label;
 		$label->name = $this->request->input('name');

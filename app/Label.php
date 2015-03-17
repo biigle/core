@@ -13,6 +13,15 @@ use Dias\Model\ModelWithAttributes;
 class Label extends ModelWithAttributes {
 
 	/**
+	 * Validation rules for creating a new label
+	 * 
+	 * @var array
+	 */
+	public static $createRules = array(
+		'name' => 'required',
+	);
+
+	/**
 	 * Don't maintain timestamps for this model.
 	 *
 	 * @var boolean

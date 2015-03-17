@@ -77,7 +77,7 @@ class ProjectUserController extends Controller {
 	public function destroy($projectId, $userId)
 	{
 		$project = $this->requireNotNull(Project::find($projectId));
-		$user = $this->auth->user();
+		$user = $this->user;
 
 		// the user is only allowed to do this if they are admin or want to
 		// remove themselves

@@ -92,7 +92,7 @@ class ProjectApiTest extends ApiTestCase {
 		// api key authentication
 		// creating an empty project is an error
 		$this->callToken('POST', '/api/v1/projects', $this->admin);
-		$this->assertResponseStatus(400);
+		$this->assertResponseStatus(422);
 
 		$this->assertNull(Project::find(2));
 
@@ -111,7 +111,7 @@ class ProjectApiTest extends ApiTestCase {
 		$this->be($this->admin);
 		$this->assertNull(Project::find(3));
 
-		$r = $this->call('POST', '/api/v1/projects', array(
+		$r = $this->callAjax('POST', '/api/v1/projects', array(
 			'_token' => Session::token(),
 			'name' => 'other test project',
 			'description' => 'my other test project'

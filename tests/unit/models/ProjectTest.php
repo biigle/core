@@ -148,6 +148,19 @@ class ProjectTest extends TestCase {
 		$this->assertEquals(1, $project->editors()->count());
 	}
 
+	public function testGuests()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$member = UserTest::create();
+		$member->save();
+		$project->addUserId($member->id, Role::guestId());
+		
+		// count the project creator, too
+		$this->assertEquals(2, $project->users()->count());
+		$this->assertEquals(1, $project->guests()->count());
+	}
+
 	public function testHasAdmin()
 	{
 		$project = ProjectTest::create();
