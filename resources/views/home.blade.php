@@ -9,7 +9,7 @@
 		@forelse ($mixins as $module => $nestedMixins)
 			@include($module.'::dashboard', array('mixins' => $nestedMixins))
 		@empty
-			<p class="text-muted">
+			<p class="alert alert-info">
 				You don't have any dashboard modules activated yet.
 			</p>
 		@endforelse
