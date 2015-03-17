@@ -1,10 +1,10 @@
 <?php $user = Auth::user() ?>
-<h2>Projects</h2>
+<h2 class="clearfix">Projects <a href="{{ route('create-project') }}" class="btn btn-success pull-right" title="Create a new project">New Project</a></h2>
 
 @forelse($user->projects as $project)
 	<div class="panel panel-default">
 		<div class="panel-heading">
-			<h3 class="panel-title">{{ $project->name }}</h3>
+			<a href="{{ route('project', $project->id) }}" title="Show {{ $project->name }}"><h3 class="panel-title">{{ $project->name }}</h3></a>
 		</div>
 		<div class="panel-body">
 			@foreach ($mixins as $module => $nestedMixins)
@@ -13,9 +13,7 @@
 		</div>
 	</div>
 @empty
-	<div class="panel panel-default">
-		<p class="text-muted">
-			You do not belong to any projects.
-		</p>
+	<div class="alert alert-info">
+		You do not belong to any projects yet. Try <a href="{{ route('create-project') }}" class="alert-link">creating</a> one.
 	</div>
 @endforelse
