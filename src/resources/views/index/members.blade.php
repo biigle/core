@@ -41,7 +41,7 @@
 				@forelse($project->guests as $user)
 					<tr><td>{{ $user->name }}</td></tr>
 				@empty
-					<tr><td class="text-muted">No guests.</li></td></tr>
+					<tr><td class="text-muted">No guests.</td></tr>
 				@endforelse
 			</tbody>
 		</table>

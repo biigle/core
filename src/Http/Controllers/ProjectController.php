@@ -23,6 +23,8 @@ class ProjectController extends Controller {
 		return view('projects::index')
 			->withProject($project)
 			->withMixins($this->modules->getMixins('projects'))
-			->withUser($this->user);
+			->withUser($this->user)
+			->with('message', session('message'))
+			->with('messageType', session('messageType'));
 	}
 }

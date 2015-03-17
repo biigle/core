@@ -13,7 +13,13 @@ class ProjectsServiceProvider extends ServiceProvider {
 	public function boot(Modules $modules)
 	{
 		$this->loadViewsFrom(__DIR__.'/resources/views', 'projects');
+
+		$this->publishes([
+			__DIR__.'/public/assets' => public_path('vendor/projects'),
+		], 'public');
+
 		include __DIR__.'/Http/routes.php';
+
 		$modules->addMixin('projects', 'dashboard');
 	}
 

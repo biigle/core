@@ -2,15 +2,18 @@
 
 @section('title')@parent {{ $project->name }} @stop
 
+@include('projects::assets')
+
 @section('content')
-<div class="container">
+@include('partials.messages')
+<div class="container" data-ng-app="dias.projects">
 	<h2 class="col-lg-12 clearfix">
 		{{ $project->name }} <small>#{{ $project->id }}</small>
 		@if($project->hasAdmin($user))
 			<form role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id) }}" class="pull-right">
 				<input type="hidden" name="_method" value="delete" />
 				<input type="hidden" name="_token" value="{{ csrf_token() }}">
-				<input type="submit" class="btn btn-danger" value="Delete project">
+				<input data-confirm-click="Do you really want to delete the project?" type="submit" class="btn btn-danger" value="Delete project">
 			</form>
 		@endif
 	</h2>
