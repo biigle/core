@@ -20,6 +20,10 @@ class ApiTestCase extends TestCase {
 		$this->project = ProjectTest::create();
 		$this->project->save();
 
+		$transect = TransectTest::create();
+		$transect->save();
+		$this->project->addTransectId($transect->id);
+
 		$this->admin = $this->newProjectUser(Role::adminId());
 		$this->editor = $this->newProjectUser(Role::editorId());
 		$this->guest = $this->newProjectUser(Role::guestId());

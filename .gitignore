@@ -2,7 +2,6 @@
 /node_modules
 /bower_components
 /tests/_*
-/data
 /doc
 
 .env

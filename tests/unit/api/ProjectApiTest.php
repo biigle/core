@@ -135,8 +135,15 @@ class ProjectApiTest extends ApiTestCase {
 		// do manual logout because the previously logged in editor would persist
 		Auth::logout();
 
+		// project still has a transect belonging only to this project
 		$this->assertNotNull($this->project->fresh());
 		$this->callToken('DELETE', '/api/v1/projects/1', $this->admin);
+		$this->assertResponseStatus(400);
+
+		$this->assertNotNull($this->project->fresh());
+		$this->callToken('DELETE', '/api/v1/projects/1', $this->admin, array(
+			'force' => 'true'
+		));
 		$this->assertResponseOk();
 		$this->assertNull($this->project->fresh());
 
