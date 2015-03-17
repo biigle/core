@@ -7,6 +7,7 @@
 	<title>@section('title')DIAS - @show</title>
 
 	<link href="{{ asset('assets/styles/main.css') }}" rel="stylesheet">
+	@yield('styles')
 
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -46,5 +47,6 @@
 	<script src="{{ asset('assets/scripts/angular-resource.min.js') }}"></script>
 	<script src="{{ asset('assets/scripts/ui-bootstrap-tpls.min.js') }}"></script>
 	<script src="{{ asset('assets/scripts/main.js') }}"></script>
+	@yield('scripts')
 </body>
 </html>
