@@ -10,17 +10,17 @@ class ImageTableSeeder extends Seeder {
 		DB::table('images')->delete();
 
 		Image::create(array(
-			'filename' => '1.jpg',
+			'filename' => 'IMG_3275.JPG',
 			'transect_id' => 1
 		));
 
 		Image::create(array(
-			'filename' => '2.jpg',
+			'filename' => 'IMG_3295.JPG',
 			'transect_id' => 1
 		));
 
 		Image::create(array(
-			'filename' => '3.jpg',
+			'filename' => 'IMG_4005.JPG',
 			'transect_id' => 1
 		));
 	}
