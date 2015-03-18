@@ -10,3 +10,19 @@ angular.module('dias.core').config(function ($httpProvider) {
 	$httpProvider.defaults.headers.common["X-Requested-With"] =
 		"XMLHttpRequest";
 });
+
+/**
+ * @namespace dias.messages
+ * @description The DIAS user feedback messages AngularJS module.
+ */
+angular.module('dias.messages', ['ui.bootstrap']);
+
+// bootstrap the messages module
+angular.element(document).ready(function () {
+	"use strict";
+
+	angular.bootstrap(
+		document.querySelector('[data-ng-controller="MessagesController"]'),
+		['dias.messages']
+	);
+});
