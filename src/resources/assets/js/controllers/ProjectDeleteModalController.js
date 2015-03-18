@@ -24,9 +24,9 @@ angular.module('dias.projects').controller('ProjectDeleteModalController', funct
 			}
 		};
 
-		$scope.delete = function (id) {
-			var data = $scope.force ? {id: id, force: true} : {id: id};
-			Project.delete(data, deleteSuccess, deleteError);
+		$scope.delete = function () {
+			var params = $scope.force ? {force: true} : {};
+			$scope.project.$delete(params, deleteSuccess, deleteError);
 		};
 	}
 );

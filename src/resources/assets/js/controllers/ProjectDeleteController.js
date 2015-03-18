@@ -25,7 +25,8 @@ angular.module('dias.projects').controller('ProjectDeleteController', function (
 			var modalInstance = $modal.open({
 				templateUrl: 'confirmDeleteModal.html',
 				size: 'sm',
-				controller: 'ProjectDeleteModalController'
+				controller: 'ProjectDeleteModalController',
+				scope: $scope
 			});
 
 			modalInstance.result.then(function (result) {
