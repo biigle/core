@@ -111,6 +111,8 @@ class UserTest extends TestCase {
 		// API key mustn't show up in the JSON
 		$this->user->generateAPIKey();
 		$jsonUser = json_decode((string) $this->user);
+		$this->assertObjectNotHasAttribute('firstname', $jsonUser);
+		$this->assertObjectNotHasAttribute('lastname', $jsonUser);
 		$this->assertObjectNotHasAttribute('password', $jsonUser);
 		$this->assertObjectNotHasAttribute('email', $jsonUser);
 		$this->assertObjectNotHasAttribute('remember_token', $jsonUser);

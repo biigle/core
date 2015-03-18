@@ -24,7 +24,8 @@ class ProjectUserApiTest extends ApiTestCase {
 
 		$this->assertStringStartsWith('[', $r->getContent());
 		$this->assertStringEndsWith(']', $r->getContent());
-		$this->assertContains('"firstname":"joe"', $r->getContent());
+		$this->assertContains('"name":"joe user"', $r->getContent());
+		$this->assertContains('project_role_id', $r->getContent());
 		$this->assertNotContains('pivot', $r->getContent());
 	}
 

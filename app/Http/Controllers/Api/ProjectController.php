@@ -39,10 +39,19 @@ class ProjectController extends Controller {
 	{
 		$project = $this->requireNotNull(Project::find($id));
 		$this->requireCanAdmin($project);
+
+		$this->validate($this->request, Project::$updateRules);
 		
 		$project->name = $this->request->input('name', $project->name);
 		$project->description = $this->request->input('description', $project->description);
 		$project->save();
+
+		if (!$this->isAutomatedRequest($this->request))
+		{
+			return redirect()->back()
+				->with('message', 'Saved.')
+				->with('messageType', 'success');
+		}
 	}
 
 	/**

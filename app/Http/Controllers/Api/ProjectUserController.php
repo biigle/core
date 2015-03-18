@@ -16,7 +16,7 @@ class ProjectUserController extends Controller {
 	{
 		$project = $this->requireNotNull(Project::find($projectId));
 		$this->requireCanSee($project);
-		return $project->users()->get();
+		return $project->users;
 	}
 
 	/**

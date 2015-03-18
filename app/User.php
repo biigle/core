@@ -54,9 +54,18 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 	 */
 	protected $visible = array(
 		'id',
-		'firstname',
-		'lastname',
+		'name',
 		'role_id',
+		'project_role_id',
+	);
+
+	/**
+	 * Attribute accessors that should be added to the JSON form.
+	 * 
+	 * @var array
+	 */
+	protected $appends = array(
+		'name'
 	);
 
 	/**

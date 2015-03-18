@@ -18,6 +18,16 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract {
 	);
 
 	/**
+	 * Validation rules for updating a project
+	 * 
+	 * @var array
+	 */
+	public static $updateRules = array(
+		'name'        => 'required|max:512',
+		'description' => 'required'
+	);
+
+	/**
 	 * The attributes hidden from the model's JSON form.
 	 *
 	 * @var array
