@@ -35,18 +35,23 @@ angular.element(document).ready(function () {
  * @example
 
  */
-angular.module('dias.messages').controller('MessagesController', ["$scope", function ($scope) {
+angular.module('dias.messages').controller('MessagesController', ["$scope", "$sce", function ($scope, $sce) {
 		"use strict";
 
+		var maxMessages = 2;
 		$scope.alerts = [];
 
 		// make method accessible by other modules
 		window.$diasPostMessage = function (message, type) {
 			$scope.$apply(function() {
-				$scope.alerts.push({
-					message: message,
+				$scope.alerts.unshift({
+					message: $sce.trustAsHtml(message),
 					type: type || 'info'
 				});
+
+				if ($scope.alerts.length > maxMessages) {
+					$scope.alerts.pop();
+				}
 			});
 		};
 
