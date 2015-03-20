@@ -26,10 +26,10 @@ var users = ProjectUser.query({ project_id: 1 }, function () {
 ProjectUser.detach({project_id: 1}, {id: 1});
  *
  */
-angular.module('dias.core').factory('ProjectUser', function ($resource) {
+angular.module('dias.core').factory('ProjectUser', function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/projects/:project_id/users/:id',
+	return $resource(URL + '/api/v1/projects/:project_id/users/:id',
 		{ id: '@id' },
 		{
 			save: { method: 'PUT' },

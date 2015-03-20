@@ -30,10 +30,10 @@ var points = AnnotationPoint.query({annotation_id: 1}, function () {
 AnnotationPoint.delete({id: 1, annotation_id: 1});
  * 
  */
-angular.module('dias.core').factory('AnnotationPoint', function ($resource) {
+angular.module('dias.core').factory('AnnotationPoint', function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/annotations/:annotation_id/points/:id', {
+	return $resource(URL + '/api/v1/annotations/:annotation_id/points/:id', {
 			id: '@id',
 			annotation_id: '@annotation_id'
 		}, {

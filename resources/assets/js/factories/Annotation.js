@@ -19,8 +19,8 @@ var annotation = Annotation.get({id: 123}, function () {
 Annotation.delete({id: 123});
  * 
  */
-angular.module('dias.core').factory('Annotation', function ($resource) {
+angular.module('dias.core').factory('Annotation', function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/annotations/:id/', { id: '@id'	});
+	return $resource(URL + '/api/v1/annotations/:id/', { id: '@id'	});
 });

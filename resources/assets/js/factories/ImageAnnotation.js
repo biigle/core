@@ -21,11 +21,11 @@ var annotation = ImageAnnotation.add({
 });
  *
  */
-angular.module('dias.core').factory('ImageAnnotation', function ($resource) {
+angular.module('dias.core').factory('ImageAnnotation', function ($resource, URL) {
 	"use strict";
 
 	return $resource(
-		'/api/v1/images/:image_id/annotations',
+		URL + '/api/v1/images/:image_id/annotations',
 		{ image_id: '@image_id' },
 		{ add: { method: 'POST' } }
 	);

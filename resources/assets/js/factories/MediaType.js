@@ -17,8 +17,8 @@ var mediaType = MediaType.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('MediaType', function ($resource) {
+angular.module('dias.core').factory('MediaType', function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/media-types/:id', { id: '@id' });
+	return $resource(URL + '/api/v1/media-types/:id', { id: '@id' });
 });

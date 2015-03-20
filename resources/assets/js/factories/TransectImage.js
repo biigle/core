@@ -12,8 +12,8 @@ var images = TransectImage.query({transect_id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('TransectImage', function ($resource) {
+angular.module('dias.core').factory('TransectImage', function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/transects/:transect_id/images');
+	return $resource(URL + '/api/v1/transects/:transect_id/images');
 });

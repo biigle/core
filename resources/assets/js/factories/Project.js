@@ -39,10 +39,10 @@ var project = Project.get({id: 1}, function () {
 Project.delete({id: 1});
  *
  */
-angular.module('dias.core').factory('Project', function ($resource) {
+angular.module('dias.core').factory('Project', function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/projects/:id', { id: '@id' },
+	return $resource(URL + '/api/v1/projects/:id', { id: '@id' },
 		{
 			// a user can only query their own projects
 			query: { method: 'GET', params: { id: 'my' }, isArray: true },

@@ -14,8 +14,8 @@ var image = Image.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('Image', function ($resource) {
+angular.module('dias.core').factory('Image', function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/images/:id');
+	return $resource(URL + '/api/v1/images/:id');
 });

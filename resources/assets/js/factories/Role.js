@@ -17,8 +17,8 @@ var role = Role.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('Role', function ($resource) {
+angular.module('dias.core').factory('Role', function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/roles/:id', { id: '@id' });
+	return $resource(URL + '/api/v1/roles/:id', { id: '@id' });
 });
