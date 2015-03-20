@@ -1,6 +1,7 @@
 <?php namespace Dias\Http\Controllers\Api;
 
 use Dias\Project;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectController extends Controller {
 
@@ -11,7 +12,7 @@ class ProjectController extends Controller {
 	 */
 	public function index()
 	{
-		return $this->auth->user()->projects;
+		return $this->user->projects;
 	}
 
 	/**
@@ -38,10 +39,19 @@ class ProjectController extends Controller {
 	{
 		$project = $this->requireNotNull(Project::find($id));
 		$this->requireCanAdmin($project);
+
+		$this->validate($this->request, Project::$updateRules);
 		
 		$project->name = $this->request->input('name', $project->name);
 		$project->description = $this->request->input('description', $project->description);
 		$project->save();
+
+		if (!$this->isAutomatedRequest($this->request))
+		{
+			return redirect()->back()
+				->with('message', 'Saved.')
+				->with('messageType', 'success');
+		}
 	}
 
 	/**
@@ -51,14 +61,22 @@ class ProjectController extends Controller {
 	 */
 	public function store()
 	{
-		$this->requireArguments('name', 'description');
+		$this->validate($this->request, Project::$createRules);
 
 		$project = new Project;
 		$project->name = $this->request->input('name');
 		$project->description = $this->request->input('description');
-		$project->setCreator($this->auth->user());
+		$project->setCreator($this->user);
 		$project->save();
-		return $project->fresh();
+
+		if ($this->isAutomatedRequest($this->request))
+		{
+			return $project->fresh();
+		}
+
+		return redirect()->route('home')
+			->with('message', 'Project '.$project->name.' created')
+			->with('messageType', 'success');
 	}
 
 	/**
@@ -73,8 +91,31 @@ class ProjectController extends Controller {
 		$project = $this->requireNotNull(Project::find($id));
 		$this->requireCanAdmin($project);
 
+		try
+		{
+			$project->removeAllTransects($this->request->has('force'));
+		}
+		catch (HttpException $e)
+		{
+			if ($this->isAutomatedRequest($this->request))
+			{
+				abort(400, $e->getMessage());
+			}
+
+			return redirect()->back()
+				->with('message', $e->getMessage())
+				->with('messageType', 'danger');
+		}
 		$project->delete();
-		return response('Deleted.', 200);
+
+		if ($this->isAutomatedRequest($this->request))
+		{
+			return response('Deleted.', 200);
+		}
+
+		return redirect()->route('home')
+			->with('message', 'Project '.$project->name.' deleted')
+			->with('messageType', 'success');
 	}
 
 }

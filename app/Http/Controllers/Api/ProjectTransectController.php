@@ -30,13 +30,13 @@ class ProjectTransectController extends Controller {
 	{
 		$project = $this->requireNotNull(Project::find($id));
 		$this->requireCanAdmin($project);
-		$this->requireArguments('name', 'media_type_id', 'url', 'images');
+		$this->validate($this->request, Transect::$createRules);
 
 		$transect = new Transect;
 		$transect->name = $this->request->input('name');
 		$transect->url = $this->request->input('url');
 		$transect->setMediaTypeId($this->request->input('media_type_id'));
-		$transect->creator()->associate($this->auth->user());
+		$transect->creator()->associate($this->user);
 
 		$images = json_decode($this->request->input('images'));
 

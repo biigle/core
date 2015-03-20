@@ -6,3 +6,14 @@
 		opacity: 1;
 	}
 }
+
+@keyframes scale-up {
+	from {
+		transform-origin: top;
+		transform: scaleY(0);
+	}
+	to {
+		transform-origin: top;
+		transform: scaleY(1);
+	}
+}

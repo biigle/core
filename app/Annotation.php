@@ -12,6 +12,26 @@ use Illuminate\Database\QueryException;
 class Annotation extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
+	 * Validation rules for attaching a label to a annotation
+	 * 
+	 * @var array
+	 */
+	public static $attachLabelRules = array(
+		'label_id'    => 'required|exists:labels,id',
+		'confidence'  => 'required|numeric|between:0,1'
+	);
+
+	/**
+	 * Validation rules for creating a point for an annotation
+	 * 
+	 * @var array
+	 */
+	public static $createPointRules = array(
+		'x'    => 'required|numeric',
+		'y'    => 'required|numeric',
+	);
+
+	/**
 	 * The attributes excluded from the model's JSON form.
 	 *
 	 * @var array

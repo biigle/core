@@ -59,7 +59,7 @@ class UserController extends Controller {
 	 */
 	public function showOwn()
 	{
-		return $this->auth->user();
+		return $this->user;
 	}
 
 	/**
@@ -70,7 +70,7 @@ class UserController extends Controller {
 	 */
 	public function update($id)
 	{
-		if ($id == $this->auth->user()->id)
+		if ($id == $this->user->id)
 		{
 			abort(400, 'The own user cannot be updated using this endpoint.');
 		}
@@ -101,7 +101,7 @@ class UserController extends Controller {
 	{
 		$request = $this->request;
 
-		$user = $this->auth->user();
+		$user = $this->user;
 		$this->validate($request, $user->updateRules());
 
 		if ($request->has('password'))
@@ -125,7 +125,7 @@ class UserController extends Controller {
 		$user->email = $request->input('email', $user->email);
 		$user->save();
 
-		if (!$request->ajax())
+		if (!$this->isAutomatedRequest($request))
 		{
 			return redirect()->back()
 				->with('message', 'Saved.')
@@ -161,7 +161,7 @@ class UserController extends Controller {
 	 */
 	public function destroy($id)
 	{
-		if ($id == $this->auth->user()->id)
+		if ($id == $this->user->id)
 		{
 			abort(400, 'The own user cannot be deleted using this endpoint.');
 		}
@@ -176,10 +176,10 @@ class UserController extends Controller {
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function destroyOwn()
+	public function destroyOwn(Guard $auth)
 	{
-		$user = $this->auth->user();
-		$this->auth->logout();
+		$user = $this->user;
+		$auth->logout();
 		// delete the user AFTER logging them out, otherwise logout would save
 		// them again
 		$user->delete();

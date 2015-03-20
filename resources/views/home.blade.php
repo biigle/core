@@ -4,13 +4,14 @@
 
 @section('content')
 <div class="container">
-	<div class="row">
-		<div class="col-md-10 col-md-offset-1">
-			<h1>Dashboard</h1>
-			<p>
-				You are logged in!
+	<div class="col-lg-12">
+		@forelse ($mixins as $module => $nestedMixins)
+			@include($module.'::dashboard', array('mixins' => $nestedMixins))
+		@empty
+			<p class="alert alert-info">
+				You don't have any dashboard modules activated yet.
 			</p>
-		</div>
+		@endforelse
 	</div>
 </div>
 @endsection

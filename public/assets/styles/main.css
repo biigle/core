@@ -4821,6 +4821,10 @@ button.close {
 .nav, .pagination, .carousel, .panel-title a {
   cursor: pointer; }
 
+.modal-backdrop {
+  bottom: 0;
+  position: fixed; }
+
 .center-form {
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -4854,6 +4858,32 @@ button.close {
 
   to {
     opacity: 1; } }
+
+@-webkit-keyframes scale-up {
+  from {
+    -webkit-transform-origin: top;
+            transform-origin: top;
+    -webkit-transform: scaleY(0);
+            transform: scaleY(0); }
+
+  to {
+    -webkit-transform-origin: top;
+            transform-origin: top;
+    -webkit-transform: scaleY(1);
+            transform: scaleY(1); } }
+
+@keyframes scale-up {
+  from {
+    -webkit-transform-origin: top;
+            transform-origin: top;
+    -webkit-transform: scaleY(0);
+            transform: scaleY(0); }
+
+  to {
+    -webkit-transform-origin: top;
+            transform-origin: top;
+    -webkit-transform: scaleY(1);
+            transform: scaleY(1); } }
 
 .logo--standalone {
   margin-bottom: 1.5em; }
@@ -4910,7 +4940,8 @@ button.close {
   margin-bottom: 20px; }
 
 .messages__message {
-  padding: 15px;
+  border-radius: 0;
   text-align: center;
-  -webkit-animation: fade-in 1s;
-          animation: fade-in 1s; }
+  -webkit-animation: scale-up 0.25s;
+          animation: scale-up 0.25s;
+  margin-bottom: 0; }

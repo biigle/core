@@ -25,7 +25,7 @@ class AnnotationPointController extends Controller {
 	 */
 	public function store($id)
 	{
-		$this->requireArguments('x', 'y');
+		$this->validate($this->request, Annotation::$createPointRules);
 
 		$annotation = $this->requireNotNull(Annotation::find($id));
 

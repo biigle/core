@@ -6,12 +6,13 @@
 	"type": "project",
 	"require": {
 		"laravel/framework": "5.0.*",
-		"intervention/image": "~2.1"
+		"intervention/image": "~2.1",
+		"dias/projects": "dev-master",
+		"dias/transects": "dev-master"
 	},
 	"require-dev": {
 		"codeception/codeception": "~2.0",
 		"phpunit/phpunit": "~4.0",
-		"phpspec/phpspec": "~2.1",
 		"sami/sami": "dev-master",
 		"mockery/mockery": "dev-master"
 	},
@@ -45,5 +46,15 @@
 	},
 	"config": {
 		"preferred-install": "dist"
-	}
+	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "cebitec:/vol/biodtmin/git/dias-projects.git"
+		},
+		{
+			"type": "vcs",
+			"url": "cebitec:/vol/biodtmin/git/dias-transects.git"
+		}
+	]
 }

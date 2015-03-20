@@ -33,6 +33,7 @@ class UserTest extends TestCase {
 		$this->user->save();
 		$this->assertNotNull($this->user->firstname);
 		$this->assertNotNull($this->user->lastname);
+		$this->assertNotNull($this->user->name);
 		$this->assertNotNull($this->user->password);
 		$this->assertNotNull($this->user->email);
 		$this->assertNotNull($this->user->role_id);
@@ -110,6 +111,8 @@ class UserTest extends TestCase {
 		// API key mustn't show up in the JSON
 		$this->user->generateAPIKey();
 		$jsonUser = json_decode((string) $this->user);
+		$this->assertObjectNotHasAttribute('firstname', $jsonUser);
+		$this->assertObjectNotHasAttribute('lastname', $jsonUser);
 		$this->assertObjectNotHasAttribute('password', $jsonUser);
 		$this->assertObjectNotHasAttribute('email', $jsonUser);
 		$this->assertObjectNotHasAttribute('remember_token', $jsonUser);

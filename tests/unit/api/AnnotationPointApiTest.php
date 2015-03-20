@@ -41,7 +41,7 @@ class AnnotationPointApiTest extends ApiTestCase {
 		// api key authentication
 		// missing arguments
 		$this->callToken('POST', '/api/v1/annotations/1/points', $this->admin);
-		$this->assertResponseStatus(400);
+		$this->assertResponseStatus(422);
 
 		$this->assertEquals(0, $this->annotation->points()->count());
 

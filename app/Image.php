@@ -12,6 +12,16 @@ use Intervention\Image\Exception\NotReadableException;
 class Image extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
+	 * Validation rules for creating a new annotation in an image
+	 * 
+	 * @var array
+	 */
+	public static $createAnnotationRules = array(
+		'shape_id' => 'required|exists:shapes,id',
+		'points'   => 'required',
+	);
+
+	/**
 	 * The absolute path to the image thumbnail storage directory.
 	 * 
 	 * @var string

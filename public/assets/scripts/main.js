@@ -12,6 +12,56 @@ angular.module('dias.core').config(["$httpProvider", function ($httpProvider) {
 }]);
 
 /**
+ * @namespace dias.messages
+ * @description The DIAS user feedback messages AngularJS module.
+ */
+angular.module('dias.messages', ['ui.bootstrap']);
+
+// bootstrap the messages module
+angular.element(document).ready(function () {
+	"use strict";
+
+	angular.bootstrap(
+		document.querySelector('[data-ng-controller="MessagesController"]'),
+		['dias.messages']
+	);
+});
+/**
+ * @namespace dias.messages
+ * @ngdoc controller
+ * @name MessagesController
+ * @memberOf dias.messages
+ * @description Handles the live display of user feedback messages vir JS
+ * @example
+
+ */
+angular.module('dias.messages').controller('MessagesController', ["$scope", "$sce", function ($scope, $sce) {
+		"use strict";
+
+		var maxMessages = 2;
+		$scope.alerts = [];
+
+		// make method accessible by other modules
+		window.$diasPostMessage = function (message, type) {
+			$scope.$apply(function() {
+				$scope.alerts.unshift({
+					message: $sce.trustAsHtml(message),
+					type: type || 'info'
+				});
+
+				if ($scope.alerts.length > maxMessages) {
+					$scope.alerts.pop();
+				}
+			});
+		};
+
+		$scope.close = function (index) {
+			$scope.alerts.splice(index, 1);
+		};
+	}]
+);
+
+/**
  * @ngdoc factory
  * @name Annotation
  * @memberOf dias.core

@@ -1,24 +1,28 @@
 <?php namespace Dias\Http\Controllers\Views;
 
-use Dias\Http\Controllers\Controller as BaseController;
-use Illuminate\Contracts\Auth\Guard;
+use Dias\Http\Controllers\AdvancedController;
+use Dias\Services\Modules;
 
-abstract class Controller extends BaseController {
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
+
+abstract class Controller extends AdvancedController {
 
 	/**
-	 * The currently logged in user.
-	 * @var \Dias\User
+	 * Te modules registry object.
+	 * @var Modules
 	 */
-	protected $user;
+	protected $modules;
 
 	/**
 	 * Creates a new ApiController instance.
 	 * 
 	 * @param Guard $auth
 	 */
-	public function __construct(Guard $auth)
+	public function __construct(Guard $auth, Request $request, Modules $modules)
 	{
-		$this->user = $auth->user();
+		parent::__construct($auth, $request);
+		$this->modules = $modules;
 	}
 
 }

@@ -48,11 +48,11 @@ class ProjectTransectApiTest extends ApiTestCase {
 
 		$this->callToken('POST', '/api/v1/projects/1/transects', $this->admin);
 		// mssing arguments
-		$this->assertResponseStatus(400);
+		$this->assertResponseStatus(422);
 
 		// session cookie authentication
 		$this->be($this->admin);
-		$this->call('POST', '/api/v1/projects/1/transects', array(
+		$this->callAjax('POST', '/api/v1/projects/1/transects', array(
 			'_token' => Session::token(),
 			'name' => 'my transect no. 1',
 			'url' => 'random',
@@ -60,7 +60,7 @@ class ProjectTransectApiTest extends ApiTestCase {
 			'images' => '["1.jpg"]'
 		));
 		// media type does not exist
-		$this->assertResponseStatus(400);
+		$this->assertResponseStatus(422);
 
 		$this->call('POST', '/api/v1/projects/1/transects', array(
 			'_token' => Session::token(),

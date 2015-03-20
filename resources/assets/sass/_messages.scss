@@ -5,7 +5,8 @@
 }
 
 .messages__message {
-	padding: 15px;
+	border-radius: 0;
 	text-align: center;
-	animation: fade-in 1s;
+	animation: scale-up 0.25s;
+	margin-bottom: 0;
 }

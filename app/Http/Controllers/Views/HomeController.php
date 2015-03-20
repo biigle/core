@@ -9,7 +9,10 @@ class HomeController extends Controller {
 	 */
 	public function index()
 	{
-		return view('home');
+		return view('home')
+			->withMixins($this->modules->getMixins('dashboard'))
+			->with('message', session('message'))
+			->with('messageType', session('messageType'));
 	}
 
 }

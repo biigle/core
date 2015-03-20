@@ -149,7 +149,8 @@ return [
 		 * Additional Service Providers...
 		 */
 		'Intervention\Image\ImageServiceProvider',
-
+		'Dias\Modules\Projects\ProjectsServiceProvider',
+		'Dias\Modules\Transects\TransectsServiceProvider',
 	],
 
 	/*

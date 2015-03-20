@@ -148,6 +148,19 @@ class ProjectTest extends TestCase {
 		$this->assertEquals(1, $project->editors()->count());
 	}
 
+	public function testGuests()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$member = UserTest::create();
+		$member->save();
+		$project->addUserId($member->id, Role::guestId());
+		
+		// count the project creator, too
+		$this->assertEquals(2, $project->users()->count());
+		$this->assertEquals(1, $project->guests()->count());
+	}
+
 	public function testHasAdmin()
 	{
 		$project = ProjectTest::create();
@@ -369,6 +382,35 @@ class ProjectTest extends TestCase {
 
 		// use the force to detach and delete the transect
 		$project->removeTransectId($transect->id, true);
+		$this->assertNull($transect->fresh());
+	}
+
+	public function testRemoveAllTransects()
+	{
+		$project = ProjectTest::create();
+		$project->save();
+		$secondProject = ProjectTest::create();
+		$secondProject->save();
+		$transect = TransectTest::create();
+		$transect->save();
+		$project->addTransectId($transect->id);
+		$secondProject->addTransectId($transect->id);
+
+		$this->assertNotEmpty($secondProject->fresh()->transects);
+		$secondProject->removeAllTransects();
+		$this->assertEmpty($secondProject->fresh()->transects);
+
+		try {
+			// trying to detach a transect belonging to only one project fails
+			// without force
+			$project->removeAllTransects();
+			$this->assertFalse(true);
+		} catch (HttpException $e) {
+			$this->assertNotNull($e);
+		}
+
+		// use the force to detach and delete the transect
+		$project->removeAllTransects(true);
 		$this->assertNull($transect->fresh());
 	}
 

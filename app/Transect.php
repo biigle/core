@@ -13,6 +13,18 @@ use Cache;
 class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
+	 * Validation rules for creating a new transect
+	 * 
+	 * @var array
+	 */
+	public static $createRules = array(
+		'name'          => 'required|max:512',
+		'media_type_id' => 'required|exists:media_types,id',
+		'url'           => 'required',
+		'images'        => 'required',
+	);
+
+	/**
 	 * The attributes hidden from the model's JSON form.
 	 *
 	 * @var array

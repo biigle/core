@@ -3,7 +3,6 @@
 @section('title')@parent {{ trans('dias.titles.settings') }} @stop
 
 @section('content')
-@include('partials.messages')
 <div class="container">
 	<div class="row">
 		<div class="col-lg-6 col-lg-offset-3">
