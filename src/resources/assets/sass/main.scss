@@ -1,0 +1,23 @@
+@import "bootstrap/variables";
+
+@keyframes flash {
+	from {
+		background-color: $gray-lighter;
+	}
+	to {
+	}
+}
+
+[draggable="true"] {
+	cursor: pointer;
+	animation: flash .5s;
+
+	&:hover:not([class~="bg-danger"]) {
+		background-color: $gray-lighter;
+	}
+
+	&:before {
+		content: "::";
+		padding-right: .5em;
+	}
+}

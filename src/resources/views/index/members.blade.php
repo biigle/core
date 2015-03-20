@@ -1,40 +1,39 @@
-<div class="col-lg-4">
-	<div class="panel panel-default" data-ng-controller="ProjectMembersController">
+<div class="col-sm-6 col-lg-4">
+	<div class="panel panel-default" data-ng-controller="ProjectMembersController" data-ng-class="{'panel-warning': editing}">
 		<div class="panel-heading">
-			<h3 class="panel-title">Members</h3>
+			<h3 class="panel-title">
+				Members
+				@if($isAdmin)
+					<button class="btn btn-default btn-xs pull-right" title="Edit project members" data-ng-click="edit()" data-ng-class="{active: editing}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+				@endif
+			</h3>
 		</div>
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Admins</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr data-ng-repeat="user in users | filter: {project_role_id: roles.admin} as admins"><td data-ng-bind="user.name"></td></tr>
-				<tr data-ng-if="!admins.length"><td class="text-muted">No admins.</li></td></tr>
-			</tbody>
-		</table>
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Editors</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr data-ng-repeat="user in users | filter: {project_role_id: roles.editor} as editors"><td data-ng-bind="user.name"></td></tr>
-				<tr data-ng-if="!editors.length"><td class="text-muted">No editors.</li></td></tr>
-			</tbody>
-		</table>
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Guests</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr data-ng-repeat="user in users | filter: {project_role_id: roles.guest} as guests"><td data-ng-bind="user.name"></td></tr>
-				<tr data-ng-if="!guests.length"><td class="text-muted">No guests.</li></td></tr>
-			</tbody>
-		</table>
+		@foreach (array('admin', 'editor', 'guest') as $role)
+			<table class="table" data-project-member-container="" data-role="{{ $role }}">
+				<thead  data-ng-class="{'bg-info': hovering}">
+					<tr>
+						<th>{{ trans('projects::members.'.$role) }}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="project__user ng-cloak" data-ng-repeat="user in users | filter: {project_role_id: roles.{{ $role }}} as {{ $role }}s" class="clearfix">
+						<td data-project-member="" draggable="@{{editing}}" data-ng-class="{'bg-danger': removing}">
+							<span data-ng-if="!removing">
+								<span data-ng-bind="user.name"></span>
+								@if($isAdmin)
+									<button data-ng-if="editing" type="button" class="close" aria-label="Close" title="Remove this user" data-ng-click="startRemove()"><span aria-hidden="true">&times;</span></button>
+								@endif
+							</span>
+							@if($isAdmin)
+								<span data-ng-if="removing" class="ng-cloak">
+									Are you sure? <span class="pull-right"><button type="button" class="btn btn-danger btn-xs" data-ng-click="remove()">Remove</button> <button type="button" class="btn btn-default btn-xs" data-ng-click="cancelRemove()">Cancel</button></span>
+								</span>
+							@endif
+						</td>
+					</tr>
+					<tr data-ng-if="!{{ $role }}s.length"><td class="text-muted">{{ trans('projects::members.no-'.$role) }}</li></td></tr>
+				</tbody>
+			</table>
+		@endforeach
 	</div>
 </div>

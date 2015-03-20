@@ -1,3 +1,22 @@
+@-webkit-keyframes flash {
+  from {
+    background-color: #eeeeee; }
+ }
+
+@keyframes flash {
+  from {
+    background-color: #eeeeee; }
+ }
+
+[draggable="true"] {
+  cursor: pointer;
+  -webkit-animation: flash .5s;
+          animation: flash .5s; }
+  [draggable="true"]:hover:not([class~="bg-danger"]) {
+    background-color: #eeeeee; }
+  [draggable="true"]:before {
+    content: "::";
+    padding-right: .5em; }
 
 
 /*# sourceMappingURL=main.css.map */
