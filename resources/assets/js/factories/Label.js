@@ -37,10 +37,10 @@ var label = Label.get({id: 1}, function () {
 Label.delete({id: 1});
  *
  */
-angular.module('dias.core').factory('Label', function ($resource) {
+angular.module('dias.core').factory('Label', function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/labels/:id', { id: '@id' },
+	return $resource(URL + '/api/v1/labels/:id', { id: '@id' },
 		{
 			add: {method: 'POST' },
 			save: { method: 'PUT' }

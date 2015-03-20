@@ -31,10 +31,10 @@ var labels = AnnotationLabel.query({annotation_id: 1}, function () {
 AnnotationLabel.detach({id: 1, annotation_id: 1});
  * 
  */
-angular.module('dias.core').factory('AnnotationLabel', function ($resource) {
+angular.module('dias.core').factory('AnnotationLabel', function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/annotations/:annotation_id/labels/:id', {
+	return $resource(URL + '/api/v1/annotations/:annotation_id/labels/:id', {
 			id: '@id',
 			annotation_id: '@annotation_id'
 		}, {

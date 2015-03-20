@@ -27,40 +27,14 @@ angular.element(document).ready(function () {
 	);
 });
 /**
- * @namespace dias.messages
- * @ngdoc controller
- * @name MessagesController
- * @memberOf dias.messages
- * @description Handles the live display of user feedback messages vir JS
- * @example
-
+ * @ngdoc constant
+ * @name URL
+ * @memberOf dias.core
+ * @description The base url of the application.
+ * @returns {String}
+ *
  */
-angular.module('dias.messages').controller('MessagesController', ["$scope", "$sce", function ($scope, $sce) {
-		"use strict";
-
-		var maxMessages = 2;
-		$scope.alerts = [];
-
-		// make method accessible by other modules
-		window.$diasPostMessage = function (message, type) {
-			$scope.$apply(function() {
-				$scope.alerts.unshift({
-					message: $sce.trustAsHtml(message),
-					type: type || 'info'
-				});
-
-				if ($scope.alerts.length > maxMessages) {
-					$scope.alerts.pop();
-				}
-			});
-		};
-
-		$scope.close = function (index) {
-			$scope.alerts.splice(index, 1);
-		};
-	}]
-);
-
+angular.module('dias.core').constant('URL', window.$diasBaseUrl || '');
 /**
  * @ngdoc factory
  * @name Annotation
@@ -82,10 +56,10 @@ var annotation = Annotation.get({id: 123}, function () {
 Annotation.delete({id: 123});
  * 
  */
-angular.module('dias.core').factory('Annotation', ["$resource", function ($resource) {
+angular.module('dias.core').factory('Annotation', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/annotations/:id/', { id: '@id'	});
+	return $resource(URL + '/api/v1/annotations/:id/', { id: '@id'	});
 }]);
 /**
  * @ngdoc factory
@@ -120,10 +94,10 @@ var labels = AnnotationLabel.query({annotation_id: 1}, function () {
 AnnotationLabel.detach({id: 1, annotation_id: 1});
  * 
  */
-angular.module('dias.core').factory('AnnotationLabel', ["$resource", function ($resource) {
+angular.module('dias.core').factory('AnnotationLabel', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/annotations/:annotation_id/labels/:id', {
+	return $resource(URL + '/api/v1/annotations/:annotation_id/labels/:id', {
 			id: '@id',
 			annotation_id: '@annotation_id'
 		}, {
@@ -164,10 +138,10 @@ var points = AnnotationPoint.query({annotation_id: 1}, function () {
 AnnotationPoint.delete({id: 1, annotation_id: 1});
  * 
  */
-angular.module('dias.core').factory('AnnotationPoint', ["$resource", function ($resource) {
+angular.module('dias.core').factory('AnnotationPoint', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/annotations/:annotation_id/points/:id', {
+	return $resource(URL + '/api/v1/annotations/:annotation_id/points/:id', {
 			id: '@id',
 			annotation_id: '@annotation_id'
 		}, {
@@ -209,10 +183,10 @@ var attributes = Attribute.query(function () {
 Attribute.delete({id: 1});
  *
  */
-angular.module('dias.core').factory('Attribute', ["$resource", function ($resource) {
+angular.module('dias.core').factory('Attribute', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/attributes/:id', { id: '@id' }, {
+	return $resource(URL + '/api/v1/attributes/:id', { id: '@id' }, {
 		add: {method: 'POST'}
 	});
 }]);
@@ -232,10 +206,10 @@ var image = Image.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('Image', ["$resource", function ($resource) {
+angular.module('dias.core').factory('Image', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/images/:id');
+	return $resource(URL + '/api/v1/images/:id');
 }]);
 /**
  * @ngdoc factory
@@ -260,11 +234,11 @@ var annotation = ImageAnnotation.add({
 });
  *
  */
-angular.module('dias.core').factory('ImageAnnotation', ["$resource", function ($resource) {
+angular.module('dias.core').factory('ImageAnnotation', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(
-		'/api/v1/images/:image_id/annotations',
+		URL + '/api/v1/images/:image_id/annotations',
 		{ image_id: '@image_id' },
 		{ add: { method: 'POST' } }
 	);
@@ -308,10 +282,10 @@ var label = Label.get({id: 1}, function () {
 Label.delete({id: 1});
  *
  */
-angular.module('dias.core').factory('Label', ["$resource", function ($resource) {
+angular.module('dias.core').factory('Label', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/labels/:id', { id: '@id' },
+	return $resource(URL + '/api/v1/labels/:id', { id: '@id' },
 		{
 			add: {method: 'POST' },
 			save: { method: 'PUT' }
@@ -337,10 +311,10 @@ var mediaType = MediaType.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('MediaType', ["$resource", function ($resource) {
+angular.module('dias.core').factory('MediaType', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/media-types/:id', { id: '@id' });
+	return $resource(URL + '/api/v1/media-types/:id', { id: '@id' });
 }]);
 /**
  * @ngdoc factory
@@ -371,10 +345,10 @@ var user = OwnUser.get(function () {
 OwnUser.delete();
  * 
  */
-angular.module('dias.core').factory('OwnUser', ["$resource", function ($resource) {
+angular.module('dias.core').factory('OwnUser', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/users/my', {}, {
+	return $resource(URL + '/api/v1/users/my', {}, {
 		save: {method: 'PUT'}
 	});
 }]);
@@ -419,10 +393,10 @@ var project = Project.get({id: 1}, function () {
 Project.delete({id: 1});
  *
  */
-angular.module('dias.core').factory('Project', ["$resource", function ($resource) {
+angular.module('dias.core').factory('Project', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/projects/:id', { id: '@id' },
+	return $resource(URL + '/api/v1/projects/:id', { id: '@id' },
 		{
 			// a user can only query their own projects
 			query: { method: 'GET', params: { id: 'my' }, isArray: true },
@@ -480,10 +454,10 @@ var transect = Transect.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('ProjectTransect', ["$resource", function ($resource) {
+angular.module('dias.core').factory('ProjectTransect', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/projects/:project_id/transects/:id',
+	return $resource(URL + '/api/v1/projects/:project_id/transects/:id',
 		{ id: '@id' },
 		{
 			add: { method: 'POST' },
@@ -520,10 +494,10 @@ var users = ProjectUser.query({ project_id: 1 }, function () {
 ProjectUser.detach({project_id: 1}, {id: 1});
  *
  */
-angular.module('dias.core').factory('ProjectUser', ["$resource", function ($resource) {
+angular.module('dias.core').factory('ProjectUser', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/projects/:project_id/users/:id',
+	return $resource(URL + '/api/v1/projects/:project_id/users/:id',
 		{ id: '@id' },
 		{
 			save: { method: 'PUT' },
@@ -551,10 +525,10 @@ var role = Role.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('Role', ["$resource", function ($resource) {
+angular.module('dias.core').factory('Role', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/roles/:id', { id: '@id' });
+	return $resource(URL + '/api/v1/roles/:id', { id: '@id' });
 }]);
 /**
  * @ngdoc factory
@@ -575,10 +549,10 @@ var shape = Shape.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('Shape', ["$resource", function ($resource) {
+angular.module('dias.core').factory('Shape', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/shapes/:id', { id: '@id' });
+	return $resource(URL + '/api/v1/shapes/:id', { id: '@id' });
 }]);
 /**
  * @ngdoc factory
@@ -602,10 +576,10 @@ var transect = Transect.get({id: 1}, function () {
 Transect.save({id: 1, name: "my transect"});
  *
  */
-angular.module('dias.core').factory('Transect', ["$resource", function ($resource) {
+angular.module('dias.core').factory('Transect', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/transects/:id',
+	return $resource(URL + '/api/v1/transects/:id',
 		{ id: '@id' },
 		{
 			save: { method: 'PUT' }
@@ -626,10 +600,10 @@ var images = TransectImage.query({transect_id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('TransectImage', ["$resource", function ($resource) {
+angular.module('dias.core').factory('TransectImage', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/transects/:transect_id/images');
+	return $resource(URL + '/api/v1/transects/:transect_id/images');
 }]);
 /**
  * @ngdoc factory
@@ -679,12 +653,47 @@ var user = User.get({id: 1}, function () {
 User.delete({id: 1});
  * 
  */
-angular.module('dias.core').factory('User', ["$resource", function ($resource) {
+angular.module('dias.core').factory('User', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/users/:id', {id: '@id'}, {
+	return $resource(URL + '/api/v1/users/:id', {id: '@id'}, {
 		save: { method: 'PUT' },
 		add: { method: 'POST' }
 	});
 }]);
+/**
+ * @namespace dias.messages
+ * @ngdoc controller
+ * @name MessagesController
+ * @memberOf dias.messages
+ * @description Handles the live display of user feedback messages vir JS
+ * @example
+
+ */
+angular.module('dias.messages').controller('MessagesController', ["$scope", "$sce", function ($scope, $sce) {
+		"use strict";
+
+		var maxMessages = 2;
+		$scope.alerts = [];
+
+		// make method accessible by other modules
+		window.$diasPostMessage = function (message, type) {
+			$scope.$apply(function() {
+				$scope.alerts.unshift({
+					message: $sce.trustAsHtml(message),
+					type: type || 'info'
+				});
+
+				if ($scope.alerts.length > maxMessages) {
+					$scope.alerts.pop();
+				}
+			});
+		};
+
+		$scope.close = function (index) {
+			$scope.alerts.splice(index, 1);
+		};
+	}]
+);
+
 //# sourceMappingURL=main.js.map

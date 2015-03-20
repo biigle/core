@@ -32,10 +32,10 @@ var attributes = Attribute.query(function () {
 Attribute.delete({id: 1});
  *
  */
-angular.module('dias.core').factory('Attribute', function ($resource) {
+angular.module('dias.core').factory('Attribute', function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/attributes/:id', { id: '@id' }, {
+	return $resource(URL + '/api/v1/attributes/:id', { id: '@id' }, {
 		add: {method: 'POST'}
 	});
 });

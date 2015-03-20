@@ -47,10 +47,10 @@ var transect = Transect.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('ProjectTransect', function ($resource) {
+angular.module('dias.core').factory('ProjectTransect', function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/projects/:project_id/transects/:id',
+	return $resource(URL + '/api/v1/projects/:project_id/transects/:id',
 		{ id: '@id' },
 		{
 			add: { method: 'POST' },

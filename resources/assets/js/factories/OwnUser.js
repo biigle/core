@@ -27,10 +27,10 @@ var user = OwnUser.get(function () {
 OwnUser.delete();
  * 
  */
-angular.module('dias.core').factory('OwnUser', function ($resource) {
+angular.module('dias.core').factory('OwnUser', function ($resource, URL) {
 	"use strict";
 
-	return $resource('/api/v1/users/my', {}, {
+	return $resource(URL + '/api/v1/users/my', {}, {
 		save: {method: 'PUT'}
 	});
 });
