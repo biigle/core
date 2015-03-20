@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9a141e78687857c8716aae1757de9ada",
+    "hash": "034dd4d51c0a6f7c8b6da158c7a4fead",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -123,6 +123,47 @@
             "time": "2015-02-10 06:19:18"
         },
         {
+            "name": "dias/projects",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "cebitec:/vol/biodtmin/git/dias-projects.git",
+                "reference": "98a47022cdf356e8f7806f65ed286ab7b5883695"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Dias\\Modules\\Projects\\": "src"
+                }
+            },
+            "time": "2015-03-16 19:42:34"
+        },
+        {
+            "name": "dias/transects",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "cebitec:/vol/biodtmin/git/dias-transects.git",
+                "reference": "d2cfc56b525ef28457c15678fcae2ea22029062b"
+            },
+            "require": {
+                "dias/projects": "dev-master"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Dias\\Modules\\Transects\\": "src"
+                }
+            },
+            "time": "2015-03-16 19:47:02"
+        },
+        {
             "name": "dnoegel/php-xdg-base-dir",
             "version": "0.1",
             "source": {
@@ -224,16 +265,16 @@
         },
         {
             "name": "intervention/image",
-            "version": "2.1.1",
+            "version": "2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image.git",
-                "reference": "949d4909d24f9656877ac38f8c90aecbf0a65091"
+                "reference": "572806fd083b622dd430d76c34564459596fef2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/image/zipball/949d4909d24f9656877ac38f8c90aecbf0a65091",
-                "reference": "949d4909d24f9656877ac38f8c90aecbf0a65091",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/572806fd083b622dd430d76c34564459596fef2a",
+                "reference": "572806fd083b622dd430d76c34564459596fef2a",
                 "shasum": ""
             },
             "require": {
@@ -276,7 +317,7 @@
                 "thumbnail",
                 "watermark"
             ],
-            "time": "2015-01-29 08:44:26"
+            "time": "2015-03-09 13:03:15"
         },
         {
             "name": "ircmaxell/password-compat",
@@ -408,16 +449,16 @@
         },
         {
             "name": "jeremeamia/SuperClosure",
-            "version": "2.0.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jeremeamia/super_closure.git",
-                "reference": "ac4394c7e21777ac48543190fb0872b2fc7f17af"
+                "reference": "b712f39c671e5ead60c7ebfe662545456aade833"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jeremeamia/super_closure/zipball/ac4394c7e21777ac48543190fb0872b2fc7f17af",
-                "reference": "ac4394c7e21777ac48543190fb0872b2fc7f17af",
+                "url": "https://api.github.com/repos/jeremeamia/super_closure/zipball/b712f39c671e5ead60c7ebfe662545456aade833",
+                "reference": "b712f39c671e5ead60c7ebfe662545456aade833",
                 "shasum": ""
             },
             "require": {
@@ -431,7 +472,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0-dev"
+                    "dev-master": "2.1-dev"
                 }
             },
             "autoload": {
@@ -462,20 +503,20 @@
                 "serialize",
                 "tokenizer"
             ],
-            "time": "2015-01-26 23:07:39"
+            "time": "2015-03-11 20:06:43"
         },
         {
             "name": "laravel/framework",
-            "version": "v5.0.13",
+            "version": "v5.0.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "c263240daa383e6b9bd979600dc61dcb2c436d53"
+                "reference": "861a1e78c84dca82fe4bd85d00349c52304eea77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/c263240daa383e6b9bd979600dc61dcb2c436d53",
-                "reference": "c263240daa383e6b9bd979600dc61dcb2c436d53",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/861a1e78c84dca82fe4bd85d00349c52304eea77",
+                "reference": "861a1e78c84dca82fe4bd85d00349c52304eea77",
                 "shasum": ""
             },
             "require": {
@@ -583,24 +624,25 @@
                 }
             ],
             "description": "The Laravel Framework.",
+            "homepage": "http://laravel.com",
             "keywords": [
                 "framework",
                 "laravel"
             ],
-            "time": "2015-02-27 00:32:38"
+            "time": "2015-03-13 13:27:55"
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "efa1d394bb45b0984a863854c608c607b9c2a9a4"
+                "reference": "51cd7cd7ee0defbaafc6ec0d3620110a5d71e11a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/efa1d394bb45b0984a863854c608c607b9c2a9a4",
-                "reference": "efa1d394bb45b0984a863854c608c607b9c2a9a4",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/51cd7cd7ee0defbaafc6ec0d3620110a5d71e11a",
+                "reference": "51cd7cd7ee0defbaafc6ec0d3620110a5d71e11a",
                 "shasum": ""
             },
             "require": {
@@ -612,21 +654,21 @@
                 "mockery/mockery": "~0.9",
                 "phpspec/phpspec": "~2.0.0",
                 "phpspec/prophecy-phpunit": "~1.0",
-                "phpunit/phpunit": "~4.0",
+                "phpunit/phpunit": "~4.1",
                 "predis/predis": "~1.0",
                 "tedivm/stash": "~0.12.0"
             },
             "suggest": {
                 "ext-fileinfo": "Required for MimeType",
-                "league/flysystem-aws-s3-v2": "Use S3 storage with AWS SDK v2",
-                "league/flysystem-aws-s3-v3": "Use S3 storage with AWS SDK v3",
+                "league/flysystem-aws-s3-v2": "Allows you to use S3 storage with AWS SDK v2",
+                "league/flysystem-aws-s3-v3": "Allows you to use S3 storage with AWS SDK v3",
                 "league/flysystem-azure": "Allows you to use Windows Azure Blob storage",
                 "league/flysystem-cached-adapter": "Flysystem adapter decorator for metadata caching",
                 "league/flysystem-copy": "Allows you to use Copy.com storage",
-                "league/flysystem-dropbox": "Use Dropbox storage",
+                "league/flysystem-dropbox": "Allows you to use Dropbox storage",
                 "league/flysystem-eventable-filesystem": "Allows you to use EventableFilesystem",
                 "league/flysystem-rackspace": "Allows you to use Rackspace Cloud Files",
-                "league/flysystem-sftp": "Allows SFTP server storage via phpseclib",
+                "league/flysystem-sftp": "Allows you to use SFTP server storage via phpseclib",
                 "league/flysystem-webdav": "Allows you to use WebDAV storage",
                 "league/flysystem-ziparchive": "Allows you to use ZipArchive adapter",
                 "predis/predis": "Allows you to use Predis for caching"
@@ -670,20 +712,20 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2015-01-23 09:43:34"
+            "time": "2015-03-10 11:04:14"
         },
         {
             "name": "monolog/monolog",
-            "version": "1.12.0",
+            "version": "1.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "1fbe8c2641f2b163addf49cc5e18f144bec6b19f"
+                "reference": "c31a2c4e8db5da8b46c74cf275d7f109c0f249ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/1fbe8c2641f2b163addf49cc5e18f144bec6b19f",
-                "reference": "1fbe8c2641f2b163addf49cc5e18f144bec6b19f",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/c31a2c4e8db5da8b46c74cf275d7f109c0f249ac",
+                "reference": "c31a2c4e8db5da8b46c74cf275d7f109c0f249ac",
                 "shasum": ""
             },
             "require": {
@@ -700,6 +742,7 @@
                 "phpunit/phpunit": "~4.0",
                 "raven/raven": "~0.5",
                 "ruflin/elastica": "0.90.*",
+                "swiftmailer/swiftmailer": "~5.3",
                 "videlalvaro/php-amqplib": "~2.4"
             },
             "suggest": {
@@ -716,7 +759,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.12.x-dev"
+                    "dev-master": "1.13.x-dev"
                 }
             },
             "autoload": {
@@ -742,7 +785,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2014-12-29 21:29:35"
+            "time": "2015-03-09 09:58:04"
         },
         {
             "name": "mtdowling/cron-expression",
@@ -790,16 +833,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "1.14.0",
+            "version": "1.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "bb87460c995d97fe55b39e65f6ffb7f64b0a941e"
+                "reference": "a1dd1ad9abfc8b3c4d8768068e6c71d293424e86"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/bb87460c995d97fe55b39e65f6ffb7f64b0a941e",
-                "reference": "bb87460c995d97fe55b39e65f6ffb7f64b0a941e",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/a1dd1ad9abfc8b3c4d8768068e6c71d293424e86",
+                "reference": "a1dd1ad9abfc8b3c4d8768068e6c71d293424e86",
                 "shasum": ""
             },
             "require": {
@@ -826,13 +869,13 @@
                 }
             ],
             "description": "A simple API extension for DateTime.",
-            "homepage": "https://github.com/briannesbitt/Carbon",
+            "homepage": "http://carbon.nesbot.com",
             "keywords": [
                 "date",
                 "datetime",
                 "time"
             ],
-            "time": "2015-02-06 05:07:29"
+            "time": "2015-03-08 14:05:44"
         },
         {
             "name": "nikic/php-parser",
@@ -919,16 +962,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.4.1",
+            "version": "v0.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "3787f3436f4fd898e0ac1eb6f5abd2ab6b24085b"
+                "reference": "e50a63b4e4971041fda993b0dd6977fc60bc39d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/3787f3436f4fd898e0ac1eb6f5abd2ab6b24085b",
-                "reference": "3787f3436f4fd898e0ac1eb6f5abd2ab6b24085b",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/e50a63b4e4971041fda993b0dd6977fc60bc39d4",
+                "reference": "e50a63b4e4971041fda993b0dd6977fc60bc39d4",
                 "shasum": ""
             },
             "require": {
@@ -939,10 +982,10 @@
                 "symfony/console": "~2.3.10|~2.4.2|~2.5"
             },
             "require-dev": {
-                "fabpot/php-cs-fixer": "~1.3",
+                "fabpot/php-cs-fixer": "~1.5",
                 "phpunit/phpunit": "~3.7|~4.0",
                 "squizlabs/php_codesniffer": "~2.0",
-                "symfony/finder": "~2.1"
+                "symfony/finder": "~2.1|~3.0"
             },
             "suggest": {
                 "ext-pcntl": "Enabling the PCNTL extension makes PsySH a lot happier :)",
@@ -956,7 +999,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-develop": "0.3.x-dev"
+                    "dev-develop": "0.4.x-dev"
                 }
             },
             "autoload": {
@@ -986,20 +1029,20 @@
                 "interactive",
                 "shell"
             ],
-            "time": "2015-02-25 20:35:54"
+            "time": "2015-03-14 17:29:14"
         },
         {
             "name": "swiftmailer/swiftmailer",
-            "version": "v5.3.1",
+            "version": "v5.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "c5f963e7f9d6f6438fda4f22d5cc2db296ec621a"
+                "reference": "31454f258f10329ae7c48763eb898a75c39e0a9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/c5f963e7f9d6f6438fda4f22d5cc2db296ec621a",
-                "reference": "c5f963e7f9d6f6438fda4f22d5cc2db296ec621a",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/31454f258f10329ae7c48763eb898a75c39e0a9f",
+                "reference": "31454f258f10329ae7c48763eb898a75c39e0a9f",
                 "shasum": ""
             },
             "require": {
@@ -1011,7 +1054,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.3-dev"
+                    "dev-master": "5.4-dev"
                 }
             },
             "autoload": {
@@ -1038,7 +1081,7 @@
                 "mail",
                 "mailer"
             ],
-            "time": "2014-12-05 14:17:14"
+            "time": "2015-03-14 06:06:39"
         },
         {
             "name": "symfony/console",
@@ -2176,12 +2219,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/padraic/mockery.git",
-                "reference": "ef3ca8f5bbfd720e4f970526a1e7493005ebf41f"
+                "reference": "8f49adc0fccd0575e2a156a52046e6c6ed7a5c60"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/ef3ca8f5bbfd720e4f970526a1e7493005ebf41f",
-                "reference": "ef3ca8f5bbfd720e4f970526a1e7493005ebf41f",
+                "url": "https://api.github.com/repos/padraic/mockery/zipball/8f49adc0fccd0575e2a156a52046e6c6ed7a5c60",
+                "reference": "8f49adc0fccd0575e2a156a52046e6c6ed7a5c60",
                 "shasum": ""
             },
             "require": {
@@ -2233,7 +2276,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2015-02-27 21:38:21"
+            "time": "2015-03-13 10:47:42"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
@@ -2283,116 +2326,6 @@
                 }
             ],
             "time": "2015-02-03 12:10:50"
-        },
-        {
-            "name": "phpspec/php-diff",
-            "version": "v1.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpspec/php-diff.git",
-                "reference": "30e103d19519fe678ae64a60d77884ef3d71b28a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/php-diff/zipball/30e103d19519fe678ae64a60d77884ef3d71b28a",
-                "reference": "30e103d19519fe678ae64a60d77884ef3d71b28a",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Diff": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Chris Boulton",
-                    "homepage": "http://github.com/chrisboulton",
-                    "role": "Original developer"
-                }
-            ],
-            "description": "A comprehensive library for generating differences between two hashable objects (strings or arrays).",
-            "time": "2013-11-01 13:02:21"
-        },
-        {
-            "name": "phpspec/phpspec",
-            "version": "2.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpspec/phpspec.git",
-                "reference": "66a1df93099282b1514e9e001fcf6e9393f7783d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/phpspec/zipball/66a1df93099282b1514e9e001fcf6e9393f7783d",
-                "reference": "66a1df93099282b1514e9e001fcf6e9393f7783d",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/instantiator": "~1.0,>=1.0.1",
-                "php": ">=5.3.3",
-                "phpspec/php-diff": "~1.0.0",
-                "phpspec/prophecy": "~1.1",
-                "sebastian/exporter": "~1.0",
-                "symfony/console": "~2.3",
-                "symfony/event-dispatcher": "~2.1",
-                "symfony/finder": "~2.1",
-                "symfony/process": "~2.1",
-                "symfony/yaml": "~2.1"
-            },
-            "require-dev": {
-                "behat/behat": "~3.0,>=3.0.11",
-                "bossa/phpspec2-expect": "~1.0",
-                "symfony/filesystem": "~2.1"
-            },
-            "suggest": {
-                "phpspec/nyan-formatters": "~1.0 – Adds Nyan formatters"
-            },
-            "bin": [
-                "bin/phpspec"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "PhpSpec": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Konstantin Kudryashov",
-                    "email": "ever.zet@gmail.com",
-                    "homepage": "http://everzet.com"
-                },
-                {
-                    "name": "Marcello Duarte",
-                    "homepage": "http://marcelloduarte.net/"
-                }
-            ],
-            "description": "Specification-oriented BDD framework for PHP 5.3+",
-            "homepage": "http://phpspec.net/",
-            "keywords": [
-                "BDD",
-                "SpecBDD",
-                "TDD",
-                "spec",
-                "specification",
-                "testing",
-                "tests"
-            ],
-            "time": "2015-01-09 13:21:45"
         },
         {
             "name": "phpspec/prophecy",
@@ -2920,12 +2853,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfPHP/Sami.git",
-                "reference": "2b3c0a2a0c2b78912e826038bcaae81607f8e24c"
+                "reference": "e9f1b809171d191274005c09690bb099e841ea0e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/Sami/zipball/2b3c0a2a0c2b78912e826038bcaae81607f8e24c",
-                "reference": "2b3c0a2a0c2b78912e826038bcaae81607f8e24c",
+                "url": "https://api.github.com/repos/FriendsOfPHP/Sami/zipball/e9f1b809171d191274005c09690bb099e841ea0e",
+                "reference": "e9f1b809171d191274005c09690bb099e841ea0e",
                 "shasum": ""
             },
             "require": {
@@ -2970,7 +2903,7 @@
             "keywords": [
                 "phpdoc"
             ],
-            "time": "2015-02-21 12:45:36"
+            "time": "2015-03-02 12:22:39"
         },
         {
             "name": "sebastian/comparator",
@@ -3610,6 +3543,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "dias/projects": 20,
+        "dias/transects": 20,
         "sami/sami": 20,
         "mockery/mockery": 20
     },
