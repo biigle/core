@@ -1,11 +1,16 @@
 .messages.container-fluid {
 	margin: 0 auto;
-	margin-top: -$navbar-margin-bottom;
-	margin-bottom: $navbar-margin-bottom;
+	// margin-top: -$navbar-margin-bottom;
+	// margin-bottom: $navbar-margin-bottom;
+	position: fixed;
+	top: 0;
+	z-index: 1000;
+	width: 100%;
 }
 
 .messages__message {
-	border-radius: 0;
+	@extend .col-sm-4;
+	@extend .col-sm-offset-4;
 	text-align: center;
 	animation: scale-up 0.25s;
 	margin-bottom: 0;

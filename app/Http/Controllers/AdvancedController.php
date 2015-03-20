@@ -63,7 +63,7 @@ abstract class AdvancedController extends BaseController {
 	{
 		if (!$this->user->canSeeOneOfProjects($thing->projectIds()))
 		{
-			abort(401);
+			abort(401, 'You are not allowed to see this.');
 		}
 	}
 
@@ -77,7 +77,7 @@ abstract class AdvancedController extends BaseController {
 	{
 		if (!$this->user->canEditInOneOfProjects($thing->projectIds()))
 		{
-			abort(401);
+			abort(401, 'You need editor privileges to perform this operation.');
 		}
 	}
 
@@ -91,7 +91,7 @@ abstract class AdvancedController extends BaseController {
 	{
 		if (!$this->user->canAdminOneOfProjects($thing->projectIds()))
 		{
-			abort(401);
+			abort(401, 'You need admin privileges to perform this operation.');
 		}
 	}
 }

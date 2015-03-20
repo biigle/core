@@ -7,10 +7,9 @@
  * @example
 
  */
-angular.module('dias.messages').controller('MessagesController', function ($scope, $sce) {
+angular.module('dias.messages').controller('MessagesController', function ($scope, $sce, MAX_MSG) {
 		"use strict";
 
-		var maxMessages = 2;
 		$scope.alerts = [];
 
 		// make method accessible by other modules
@@ -21,7 +20,7 @@ angular.module('dias.messages').controller('MessagesController', function ($scop
 					type: type || 'info'
 				});
 
-				if ($scope.alerts.length > maxMessages) {
+				if ($scope.alerts.length > MAX_MSG) {
 					$scope.alerts.pop();
 				}
 			});

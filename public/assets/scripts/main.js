@@ -28,6 +28,15 @@ angular.element(document).ready(function () {
 });
 /**
  * @ngdoc constant
+ * @name MAX_MSG
+ * @memberOf dias.messages
+ * @description The maximum number of info messages to display.
+ * @returns {Integer}
+ *
+ */
+angular.module('dias.messages').constant('MAX_MSG', 1);
+/**
+ * @ngdoc constant
  * @name URL
  * @memberOf dias.core
  * @description The base url of the application.
@@ -44,10 +53,9 @@ angular.module('dias.core').constant('URL', window.$diasBaseUrl || '');
  * @example
 
  */
-angular.module('dias.messages').controller('MessagesController', ["$scope", "$sce", function ($scope, $sce) {
+angular.module('dias.messages').controller('MessagesController', ["$scope", "$sce", "MAX_MSG", function ($scope, $sce, MAX_MSG) {
 		"use strict";
 
-		var maxMessages = 2;
 		$scope.alerts = [];
 
 		// make method accessible by other modules
@@ -58,7 +66,7 @@ angular.module('dias.messages').controller('MessagesController', ["$scope", "$sc
 					type: type || 'info'
 				});
 
-				if ($scope.alerts.length > maxMessages) {
+				if ($scope.alerts.length > MAX_MSG) {
 					$scope.alerts.pop();
 				}
 			});
