@@ -5,7 +5,6 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-
 use Dias\Http\Middleware\AuthenticateAPI;
 
 abstract class Controller extends BaseController {
@@ -19,7 +18,7 @@ abstract class Controller extends BaseController {
 	 * @param Request $request
 	 * @return boolean
 	 */
-	public function isAutomatedRequest(Request $request)
+	public static function isAutomatedRequest(Request $request)
 	{
 		return $request->ajax() || AuthenticateAPI::isApiKeyRequest($request);
 	}
@@ -34,7 +33,7 @@ abstract class Controller extends BaseController {
 	 */
 	protected function buildFailedValidationResponse(Request $request, array $errors)
 	{
-		if ($this->isAutomatedRequest($request))
+		if (static::isAutomatedRequest($request))
 		{
 			return new JsonResponse($errors, 422);
 		}

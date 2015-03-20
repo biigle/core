@@ -36,6 +36,41 @@ angular.element(document).ready(function () {
  */
 angular.module('dias.core').constant('URL', window.$diasBaseUrl || '');
 /**
+ * @namespace dias.messages
+ * @ngdoc controller
+ * @name MessagesController
+ * @memberOf dias.messages
+ * @description Handles the live display of user feedback messages vir JS
+ * @example
+
+ */
+angular.module('dias.messages').controller('MessagesController', ["$scope", "$sce", function ($scope, $sce) {
+		"use strict";
+
+		var maxMessages = 2;
+		$scope.alerts = [];
+
+		// make method accessible by other modules
+		window.$diasPostMessage = function (message, type) {
+			$scope.$apply(function() {
+				$scope.alerts.unshift({
+					message: $sce.trustAsHtml(message),
+					type: type || 'info'
+				});
+
+				if ($scope.alerts.length > maxMessages) {
+					$scope.alerts.pop();
+				}
+			});
+		};
+
+		$scope.close = function (index) {
+			$scope.alerts.splice(index, 1);
+		};
+	}]
+);
+
+/**
  * @ngdoc factory
  * @name Annotation
  * @memberOf dias.core
@@ -661,39 +696,4 @@ angular.module('dias.core').factory('User', ["$resource", "URL", function ($reso
 		add: { method: 'POST' }
 	});
 }]);
-/**
- * @namespace dias.messages
- * @ngdoc controller
- * @name MessagesController
- * @memberOf dias.messages
- * @description Handles the live display of user feedback messages vir JS
- * @example
-
- */
-angular.module('dias.messages').controller('MessagesController', ["$scope", "$sce", function ($scope, $sce) {
-		"use strict";
-
-		var maxMessages = 2;
-		$scope.alerts = [];
-
-		// make method accessible by other modules
-		window.$diasPostMessage = function (message, type) {
-			$scope.$apply(function() {
-				$scope.alerts.unshift({
-					message: $sce.trustAsHtml(message),
-					type: type || 'info'
-				});
-
-				if ($scope.alerts.length > maxMessages) {
-					$scope.alerts.pop();
-				}
-			});
-		};
-
-		$scope.close = function (index) {
-			$scope.alerts.splice(index, 1);
-		};
-	}]
-);
-
 //# sourceMappingURL=main.js.map

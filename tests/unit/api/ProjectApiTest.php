@@ -71,7 +71,7 @@ class ProjectApiTest extends ApiTestCase {
 		));
 		$this->assertResponseStatus(404);
 
-		$this->call('PUT', '/api/v1/projects/1', array(
+		$this->callAjax('PUT', '/api/v1/projects/1', array(
 			'_token' => Session::token(),
 			'name' => 'my test',
 			'description' => 'this is my test',

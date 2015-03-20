@@ -46,7 +46,7 @@ class ProjectController extends Controller {
 		$project->description = $this->request->input('description', $project->description);
 		$project->save();
 
-		if (!$this->isAutomatedRequest($this->request))
+		if (!static::isAutomatedRequest($this->request))
 		{
 			return redirect()->back()
 				->with('message', 'Saved.')
@@ -69,7 +69,7 @@ class ProjectController extends Controller {
 		$project->setCreator($this->user);
 		$project->save();
 
-		if ($this->isAutomatedRequest($this->request))
+		if (static::isAutomatedRequest($this->request))
 		{
 			return $project->fresh();
 		}
@@ -97,7 +97,7 @@ class ProjectController extends Controller {
 		}
 		catch (HttpException $e)
 		{
-			if ($this->isAutomatedRequest($this->request))
+			if (static::isAutomatedRequest($this->request))
 			{
 				abort(400, $e->getMessage());
 			}
@@ -108,7 +108,7 @@ class ProjectController extends Controller {
 		}
 		$project->delete();
 
-		if ($this->isAutomatedRequest($this->request))
+		if (static::isAutomatedRequest($this->request))
 		{
 			return response('Deleted.', 200);
 		}

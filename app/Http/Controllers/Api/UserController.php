@@ -125,7 +125,7 @@ class UserController extends Controller {
 		$user->email = $request->input('email', $user->email);
 		$user->save();
 
-		if (!$this->isAutomatedRequest($request))
+		if (!static::isAutomatedRequest($request))
 		{
 			return redirect()->back()
 				->with('message', 'Saved.')
