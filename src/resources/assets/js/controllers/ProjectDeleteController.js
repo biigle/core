@@ -13,7 +13,7 @@ angular.module('dias.projects').controller('ProjectDeleteController', function (
 		var success = function () {
 			msg.success($attrs.successMsg);
 			$timeout(function () {
-				window.location.href = $attrs.successRedirectUrl;
+				window.location.href = $scope.dashboardUrl;
 			}, 2000);
 		};
 

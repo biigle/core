@@ -5,7 +5,7 @@
  * @memberOf dias.projects
  * @description Handles modification of the members of a project.
  */
-angular.module('dias.projects').controller('ProjectMembersController', function ($scope, Role, ProjectUser, msg) {
+angular.module('dias.projects').controller('ProjectMembersController', function ($scope, Role, ProjectUser, msg, $modal) {
 		"use strict";
 
 		var getUser = function (id) {
@@ -14,6 +14,19 @@ angular.module('dias.projects').controller('ProjectMembersController', function 
 					return $scope.users[i];
 				}
 			}
+		};
+
+		var confirmChangeOwnRole = function (userId, role) {
+			var modalInstance = $modal.open({
+				templateUrl: 'confirmChangeRoleModal.html',
+				size: 'sm'
+			});
+
+			modalInstance.result.then(function (result) {
+				if (result == 'yes') {
+					$scope.changeUserRole(userId, role, true);
+				}
+			});
 		};
 
 		Role.query(function (rolesArray) {
@@ -31,7 +44,12 @@ angular.module('dias.projects').controller('ProjectMembersController', function 
 			$scope.editing = !$scope.editing;
 		};
 
-		$scope.changeUserRole = function (userId, role) {
+		$scope.changeUserRole = function (userId, role, force) {
+			if (!force && userId == $scope.ownUserId) {
+				confirmChangeOwnRole(userId, role);
+				return;
+			}
+
 			var user = getUser(userId);
 			var roleId = $scope.roles[role];
 
@@ -52,6 +70,12 @@ angular.module('dias.projects').controller('ProjectMembersController', function 
 		};
 
 		$scope.removeUser = function (userId) {
+			// leaving the project will be handled by parent controller
+			if (userId == $scope.ownUserId) {
+				$scope.leaveProject();
+				return;
+			}
+
 			var index;
 			var user;
 

@@ -16,7 +16,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr class="project__user ng-cloak" data-ng-repeat="user in users | filter: {project_role_id: roles.{{ $role }}} as {{ $role }}s" class="clearfix">
+					<tr class="project__user ng-cloak" data-ng-repeat="user in users | filter: {project_role_id: roles.{{ $role }}} as {{ $role }}s">
 						<td data-project-member="" draggable="@{{editing}}" data-ng-class="{'bg-danger': removing}">
 							<span data-ng-if="!removing">
 								<span data-ng-bind="user.name"></span>
@@ -31,9 +31,24 @@
 							@endif
 						</td>
 					</tr>
-					<tr data-ng-if="!{{ $role }}s.length"><td class="text-muted">{{ trans('projects::members.no-'.$role) }}</li></td></tr>
+					<tr data-ng-if="!{{ $role }}s.length"><td class="text-muted">{{ trans('projects::members.no-'.$role) }}</td></tr>
 				</tbody>
 			</table>
 		@endforeach
 	</div>
 </div>
+
+@if($isAdmin)
+	<script type="text/ng-template" id="confirmChangeRoleModal.html">
+	<div class="modal-header">
+		<h3 class="modal-title">Confirm role change</h3>
+	</div>
+	<div class="modal-body">
+		<strong>Are you sure you want to change your own user role?</strong> You might not be able to edit the project (and your role) any more afterwards.
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-danger" data-ng-click="$close('yes')">Change role</button>
+		<button class="btn btn-default" data-ng-click="$close()">Cancel</button>
+	</div>
+	</script>
+@endif

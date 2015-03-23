@@ -1,10 +1,10 @@
 @extends('app')
 
-@section('title')@parent Create new project @stop
+@section('title')Create new project@stop
 
 @section('content')
 <div class="container">
-	<div class="col-lg-6 col-lg-offset-3">
+	<div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
 		<h2>New project</h2>
 		<form class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects') }}">
 			<div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">

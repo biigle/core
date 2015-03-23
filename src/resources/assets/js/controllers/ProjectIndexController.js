@@ -4,12 +4,34 @@
  * @name ProjectIndexController
  * @memberOf dias.projects
  * @description Root controller of the project index page.
- * @example
-
  */
-angular.module('dias.projects').controller('ProjectIndexController', function ($scope, $attrs, Project) {
+angular.module('dias.projects').controller('ProjectIndexController', function ($scope, $attrs, Project, $modal, ProjectUser, msg, $timeout) {
 		"use strict";
 
+		var leavingSuccess = function () {
+			msg.success($attrs.leavingSuccessMsg);
+			$timeout(function () {
+				window.location.href = $scope.dashboardUrl;
+			}, 2000);
+		};
+
 		$scope.project = Project.get({id: $attrs.projectId});
+
+		$scope.ownUserId = $attrs.userId;
+
+		$scope.dashboardUrl = $attrs.dashboardUrl;
+
+		$scope.leaveProject = function () {
+			var modalInstance = $modal.open({
+				templateUrl: 'confirmLeaveProjectModal.html',
+				size: 'sm'
+			});
+
+			modalInstance.result.then(function (result) {
+				if (result == 'yes') {
+					ProjectUser.detach({project_id: $scope.project.id}, {id: $scope.ownUserId}, leavingSuccess, msg.responseError);
+				}
+			});
+		};
 	}
 );
