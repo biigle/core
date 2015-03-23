@@ -7,18 +7,18 @@
  * @example
 
  */
-angular.module('dias.projects').controller('ProjectDeleteController', function ($scope, $modal, $attrs, $timeout) {
+angular.module('dias.projects').controller('ProjectDeleteController', function ($scope, $modal, $attrs, $timeout, msg) {
 		"use strict";
 
 		var success = function () {
-			window.$diasPostMessage($attrs.successMsg, 'success');
+			msg.success($attrs.successMsg);
 			$timeout(function () {
 				window.location.href = $attrs.successRedirectUrl;
 			}, 2000);
 		};
 
 		var error = function () {
-			window.$diasPostMessage($attrs.errorMsg, 'danger');
+			msg.danger($attrs.errorMsg);
 		};
 
 		$scope.submit = function () {

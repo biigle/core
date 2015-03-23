@@ -10,7 +10,7 @@
 	<h2 class="col-lg-12 clearfix">
 		{{ $project->name }} <small title="Project ID {{ $project->id }}">#{{ $project->id }}</small>
 		@if($isAdmin)
-			<button class="btn btn-default pull-right" data-ng-controller="ProjectDeleteController" data-ng-click="submit()" data-success-msg="<strong>Project deleted.</strong> Redirecting to dashboard..." data-success-redirect-url="{{ route('home') }}" data-error-msg="There was an error when deleting this project.">Delete this project</button>
+			<button class="btn btn-default pull-right" data-ng-controller="ProjectDeleteController" data-ng-click="submit()" data-success-msg="Project deleted. Redirecting to dashboard..." data-success-redirect-url="{{ route('home') }}" data-error-msg="There was an error when deleting this project.">Delete this project</button>
 		@endif
 	</h2>
 	

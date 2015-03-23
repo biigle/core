@@ -5,7 +5,7 @@
  * @memberOf dias.projects
  * @description Handles modification of the members of a project.
  */
-angular.module('dias.projects').controller('ProjectMembersController', function ($scope, Role, ProjectUser) {
+angular.module('dias.projects').controller('ProjectMembersController', function ($scope, Role, ProjectUser, msg) {
 		"use strict";
 
 		var getUser = function (id) {
@@ -14,11 +14,6 @@ angular.module('dias.projects').controller('ProjectMembersController', function 
 					return $scope.users[i];
 				}
 			}
-		};
-
-		var genericError = function (response) {
-			var message = response.data.message || "There was an error, sorry.";
-			window.$diasPostMessage(message, 'danger');
 		};
 
 		Role.query(function (rolesArray) {
@@ -52,7 +47,7 @@ angular.module('dias.projects').controller('ProjectMembersController', function 
 			ProjectUser.save(
 				{project_id: $scope.project.id},
 				{id: user.id, project_role_id: roleId},
-				success, genericError
+				success, msg.responseError
 			);
 		};
 
@@ -71,7 +66,7 @@ angular.module('dias.projects').controller('ProjectMembersController', function 
 				}
 			}
 
-			user.$detach({project_id: $scope.project.id}, success, genericError);
+			user.$detach({project_id: $scope.project.id}, success, msg.responseError);
 		};
 	}
 );
