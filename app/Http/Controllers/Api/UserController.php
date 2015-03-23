@@ -20,8 +20,11 @@ class UserController extends Controller {
 		parent::__construct($auth, $request);
 
 		$this->middleware('admin', ['except' => [
+			'index',
+			'show',
 			'showOwn',
-			'updateOwn','destroyOwn'
+			'updateOwn',
+			'destroyOwn',
 		]]);
 
 		$this->middleware('session', ['except' => [

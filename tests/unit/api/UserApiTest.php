@@ -8,14 +8,12 @@ class UserApiTest extends ApiTestCase {
 	{
 		$this->doTestApiRoute('GET', '/api/v1/users');
 
-		$this->callToken('GET', '/api/v1/users', $this->admin);
-		$this->assertResponseStatus(401);
-
-		$this->callToken('GET', '/api/v1/users', $this->globalAdmin);
+		// everybody can do this
+		$this->callToken('GET', '/api/v1/users', $this->guest);
 		$this->assertResponseOk();
 
 		// session cookie authentication
-		$this->be($this->globalAdmin);
+		$this->be($this->guest);
 		$r = $this->call('GET', '/api/v1/users');
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('[', $r->getContent());
@@ -27,13 +25,6 @@ class UserApiTest extends ApiTestCase {
 		$this->doTestApiRoute('GET', '/api/v1/users/'.$this->guest->id);
 
 		$this->callToken('GET', '/api/v1/users/'.$this->guest->id, $this->guest);
-		$this->assertResponseStatus(401);
-
-		$this->callToken(
-			'GET',
-			'/api/v1/users/'.$this->guest->id,
-			$this->globalAdmin
-		);
 		$this->assertResponseOk();
 
 		$this->be($this->globalAdmin);
