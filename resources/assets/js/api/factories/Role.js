@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name Role
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for roles.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -17,7 +17,7 @@ var role = Role.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('Role', function ($resource, URL) {
+angular.module('dias.api').factory('Role', function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/roles/:id', { id: '@id' });

@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name Transect
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for transects.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -20,7 +20,7 @@ var transect = Transect.get({id: 1}, function () {
 Transect.save({id: 1, name: "my transect"});
  *
  */
-angular.module('dias.core').factory('Transect', function ($resource, URL) {
+angular.module('dias.api').factory('Transect', function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/transects/:id',

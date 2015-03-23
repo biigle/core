@@ -1,7 +1,7 @@
 describe('The OwnUser resource factory', function () {
 	var $httpBackend;
 
-	beforeEach(module('dias.core'));
+	beforeEach(module('dias.api'));
 
 	beforeEach(inject(function($injector) {
 		var user = {id: 1, firstname: 'joe', lastname: 'user', role_id: 2};

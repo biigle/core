@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name AnnotationPoint
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for annotation points.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -30,7 +30,7 @@ var points = AnnotationPoint.query({annotation_id: 1}, function () {
 AnnotationPoint.delete({id: 1, annotation_id: 1});
  * 
  */
-angular.module('dias.core').factory('AnnotationPoint', function ($resource, URL) {
+angular.module('dias.api').factory('AnnotationPoint', function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/annotations/:annotation_id/points/:id', {

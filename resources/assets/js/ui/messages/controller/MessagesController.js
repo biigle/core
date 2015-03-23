@@ -1,22 +1,20 @@
 /**
- * @namespace dias.messages
+ * @namespace dias.ui.messages
  * @ngdoc controller
  * @name MessagesController
- * @memberOf dias.messages
- * @description Handles the live display of user feedback messages vir JS
- * @example
-
+ * @memberOf dias.ui.messages
+ * @description Handles the live display of user feedback messages via JS
  */
-angular.module('dias.messages').controller('MessagesController', function ($scope, $sce, MAX_MSG) {
+angular.module('dias.ui.messages').controller('MessagesController', function ($scope, MAX_MSG) {
 		"use strict";
 
 		$scope.alerts = [];
 
 		// make method accessible by other modules
-		window.$diasPostMessage = function (message, type) {
+		window.$diasPostMessage = function (type, message) {
 			$scope.$apply(function() {
 				$scope.alerts.unshift({
-					message: $sce.trustAsHtml(message),
+					message: message,
 					type: type || 'info'
 				});
 

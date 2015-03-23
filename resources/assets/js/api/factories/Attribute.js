@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name Attribute
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for attributes.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -32,7 +32,7 @@ var attributes = Attribute.query(function () {
 Attribute.delete({id: 1});
  *
  */
-angular.module('dias.core').factory('Attribute', function ($resource, URL) {
+angular.module('dias.api').factory('Attribute', function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/attributes/:id', { id: '@id' }, {

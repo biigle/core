@@ -1,7 +1,7 @@
 describe('The AnnotationPoint resource factory', function () {
 	var $httpBackend;
 
-	beforeEach(module('dias.core'));
+	beforeEach(module('dias.api'));
 
 	beforeEach(inject(function($injector) {
 		var point = {x: 50, y: 40, id: 1, index: 1, annotation_id: 1};

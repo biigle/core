@@ -1,9 +1,9 @@
 /**
  * @ngdoc constant
  * @name URL
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description The base url of the application.
  * @returns {String}
  *
  */
-angular.module('dias.core').constant('URL', window.$diasBaseUrl || '');
+angular.module('dias.api').constant('URL', window.$diasBaseUrl || '');

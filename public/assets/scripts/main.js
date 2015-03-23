@@ -1,10 +1,10 @@
 /**
- * @namespace dias.core
- * @description The DIAS core AngularJS module.
+ * @namespace dias.api
+ * @description The DIAS api AngularJS module.
  */
-angular.module('dias.core', ['ngResource']);
+angular.module('dias.api', ['ngResource']);
 
-angular.module('dias.core').config(["$httpProvider", function ($httpProvider) {
+angular.module('dias.api').config(["$httpProvider", function ($httpProvider) {
 	"use strict";
 
 	$httpProvider.defaults.headers.common["X-Requested-With"] =
@@ -12,10 +12,10 @@ angular.module('dias.core').config(["$httpProvider", function ($httpProvider) {
 }]);
 
 /**
- * @namespace dias.messages
+ * @namespace dias.ui.messages
  * @description The DIAS user feedback messages AngularJS module.
  */
-angular.module('dias.messages', ['ui.bootstrap']);
+angular.module('dias.ui.messages', ['ui.bootstrap']);
 
 // bootstrap the messages module
 angular.element(document).ready(function () {
@@ -23,65 +23,30 @@ angular.element(document).ready(function () {
 
 	angular.bootstrap(
 		document.querySelector('[data-ng-controller="MessagesController"]'),
-		['dias.messages']
+		['dias.ui.messages']
 	);
 });
+
 /**
- * @ngdoc constant
- * @name MAX_MSG
- * @memberOf dias.messages
- * @description The maximum number of info messages to display.
- * @returns {Integer}
- *
+ * @namespace dias.ui
+ * @description The DIAS UI AngularJS module.
  */
-angular.module('dias.messages').constant('MAX_MSG', 1);
+angular.module('dias.ui', ['dias.ui.messages']);
+
+
 /**
  * @ngdoc constant
  * @name URL
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description The base url of the application.
  * @returns {String}
  *
  */
-angular.module('dias.core').constant('URL', window.$diasBaseUrl || '');
-/**
- * @namespace dias.messages
- * @ngdoc controller
- * @name MessagesController
- * @memberOf dias.messages
- * @description Handles the live display of user feedback messages vir JS
- * @example
-
- */
-angular.module('dias.messages').controller('MessagesController', ["$scope", "$sce", "MAX_MSG", function ($scope, $sce, MAX_MSG) {
-		"use strict";
-
-		$scope.alerts = [];
-
-		// make method accessible by other modules
-		window.$diasPostMessage = function (message, type) {
-			$scope.$apply(function() {
-				$scope.alerts.unshift({
-					message: $sce.trustAsHtml(message),
-					type: type || 'info'
-				});
-
-				if ($scope.alerts.length > MAX_MSG) {
-					$scope.alerts.pop();
-				}
-			});
-		};
-
-		$scope.close = function (index) {
-			$scope.alerts.splice(index, 1);
-		};
-	}]
-);
-
+angular.module('dias.api').constant('URL', window.$diasBaseUrl || '');
 /**
  * @ngdoc factory
  * @name Annotation
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for annotations.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -99,7 +64,7 @@ var annotation = Annotation.get({id: 123}, function () {
 Annotation.delete({id: 123});
  * 
  */
-angular.module('dias.core').factory('Annotation', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('Annotation', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/annotations/:id/', { id: '@id'	});
@@ -107,7 +72,7 @@ angular.module('dias.core').factory('Annotation', ["$resource", "URL", function 
 /**
  * @ngdoc factory
  * @name AnnotationLabel
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for annotation labels.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -137,7 +102,7 @@ var labels = AnnotationLabel.query({annotation_id: 1}, function () {
 AnnotationLabel.detach({id: 1, annotation_id: 1});
  * 
  */
-angular.module('dias.core').factory('AnnotationLabel', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('AnnotationLabel', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/annotations/:annotation_id/labels/:id', {
@@ -152,7 +117,7 @@ angular.module('dias.core').factory('AnnotationLabel', ["$resource", "URL", func
 /**
  * @ngdoc factory
  * @name AnnotationPoint
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for annotation points.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -181,7 +146,7 @@ var points = AnnotationPoint.query({annotation_id: 1}, function () {
 AnnotationPoint.delete({id: 1, annotation_id: 1});
  * 
  */
-angular.module('dias.core').factory('AnnotationPoint', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('AnnotationPoint', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/annotations/:annotation_id/points/:id', {
@@ -195,7 +160,7 @@ angular.module('dias.core').factory('AnnotationPoint', ["$resource", "URL", func
 /**
  * @ngdoc factory
  * @name Attribute
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for attributes.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -226,7 +191,7 @@ var attributes = Attribute.query(function () {
 Attribute.delete({id: 1});
  *
  */
-angular.module('dias.core').factory('Attribute', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('Attribute', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/attributes/:id', { id: '@id' }, {
@@ -236,7 +201,7 @@ angular.module('dias.core').factory('Attribute', ["$resource", "URL", function (
 /**
  * @ngdoc factory
  * @name Image
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for images. This resource is only for 
  * finding out which transect an image belongs to. The image files are
  * directly called from the API.
@@ -249,7 +214,7 @@ var image = Image.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('Image', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('Image', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/images/:id');
@@ -257,7 +222,7 @@ angular.module('dias.core').factory('Image', ["$resource", "URL", function ($res
 /**
  * @ngdoc factory
  * @name ImageAnnotation
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for annotations of an image.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -277,7 +242,7 @@ var annotation = ImageAnnotation.add({
 });
  *
  */
-angular.module('dias.core').factory('ImageAnnotation', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('ImageAnnotation', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(
@@ -289,7 +254,7 @@ angular.module('dias.core').factory('ImageAnnotation', ["$resource", "URL", func
 /**
  * @ngdoc factory
  * @name Label
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for labels.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -325,7 +290,7 @@ var label = Label.get({id: 1}, function () {
 Label.delete({id: 1});
  *
  */
-angular.module('dias.core').factory('Label', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('Label', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/labels/:id', { id: '@id' },
@@ -338,7 +303,7 @@ angular.module('dias.core').factory('Label', ["$resource", "URL", function ($res
 /**
  * @ngdoc factory
  * @name MediaType
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for media types.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -354,7 +319,7 @@ var mediaType = MediaType.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('MediaType', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('MediaType', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/media-types/:id', { id: '@id' });
@@ -362,7 +327,7 @@ angular.module('dias.core').factory('MediaType', ["$resource", "URL", function (
 /**
  * @ngdoc factory
  * @name OwnUser
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for the logged in user.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -388,7 +353,7 @@ var user = OwnUser.get(function () {
 OwnUser.delete();
  * 
  */
-angular.module('dias.core').factory('OwnUser', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('OwnUser', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/users/my', {}, {
@@ -398,7 +363,7 @@ angular.module('dias.core').factory('OwnUser', ["$resource", "URL", function ($r
 /**
  * @ngdoc factory
  * @name Project
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for projects.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -436,7 +401,7 @@ var project = Project.get({id: 1}, function () {
 Project.delete({id: 1});
  *
  */
-angular.module('dias.core').factory('Project', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('Project', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/projects/:id', { id: '@id' },
@@ -451,7 +416,7 @@ angular.module('dias.core').factory('Project', ["$resource", "URL", function ($r
 /**
  * @ngdoc factory
  * @name ProjectTransect
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for transects belonging to a project.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -497,7 +462,7 @@ var transect = Transect.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('ProjectTransect', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('ProjectTransect', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/projects/:project_id/transects/:id',
@@ -512,7 +477,7 @@ angular.module('dias.core').factory('ProjectTransect', ["$resource", "URL", func
 /**
  * @ngdoc factory
  * @name ProjectUser
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for users belonging to a project.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -537,7 +502,7 @@ var users = ProjectUser.query({ project_id: 1 }, function () {
 ProjectUser.detach({project_id: 1}, {id: 1});
  *
  */
-angular.module('dias.core').factory('ProjectUser', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('ProjectUser', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/projects/:project_id/users/:id',
@@ -552,7 +517,7 @@ angular.module('dias.core').factory('ProjectUser', ["$resource", "URL", function
 /**
  * @ngdoc factory
  * @name Role
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for roles.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -568,7 +533,7 @@ var role = Role.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('Role', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('Role', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/roles/:id', { id: '@id' });
@@ -576,7 +541,7 @@ angular.module('dias.core').factory('Role', ["$resource", "URL", function ($reso
 /**
  * @ngdoc factory
  * @name Shape
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for shapes.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -592,7 +557,7 @@ var shape = Shape.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('Shape', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('Shape', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/shapes/:id', { id: '@id' });
@@ -600,7 +565,7 @@ angular.module('dias.core').factory('Shape', ["$resource", "URL", function ($res
 /**
  * @ngdoc factory
  * @name Transect
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for transects.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -619,7 +584,7 @@ var transect = Transect.get({id: 1}, function () {
 Transect.save({id: 1, name: "my transect"});
  *
  */
-angular.module('dias.core').factory('Transect', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('Transect', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/transects/:id',
@@ -632,7 +597,7 @@ angular.module('dias.core').factory('Transect', ["$resource", "URL", function ($
 /**
  * @ngdoc factory
  * @name TransectImage
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for images of transects.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -643,7 +608,7 @@ var images = TransectImage.query({transect_id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('TransectImage', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('TransectImage', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/transects/:transect_id/images');
@@ -651,7 +616,7 @@ angular.module('dias.core').factory('TransectImage', ["$resource", "URL", functi
 /**
  * @ngdoc factory
  * @name User
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for users.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -696,7 +661,7 @@ var user = User.get({id: 1}, function () {
 User.delete({id: 1});
  * 
  */
-angular.module('dias.core').factory('User', ["$resource", "URL", function ($resource, URL) {
+angular.module('dias.api').factory('User', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/users/:id', {id: '@id'}, {
@@ -704,4 +669,87 @@ angular.module('dias.core').factory('User', ["$resource", "URL", function ($reso
 		add: { method: 'POST' }
 	});
 }]);
+/**
+ * @ngdoc constant
+ * @name MAX_MSG
+ * @memberOf dias.ui.messages
+ * @description The maximum number of info messages to display.
+ * @returns {Integer}
+ *
+ */
+angular.module('dias.ui.messages').constant('MAX_MSG', 1);
+/**
+ * @namespace dias.ui.messages
+ * @ngdoc controller
+ * @name MessagesController
+ * @memberOf dias.ui.messages
+ * @description Handles the live display of user feedback messages via JS
+ */
+angular.module('dias.ui.messages').controller('MessagesController', ["$scope", "MAX_MSG", function ($scope, MAX_MSG) {
+		"use strict";
+
+		$scope.alerts = [];
+
+		// make method accessible by other modules
+		window.$diasPostMessage = function (type, message) {
+			$scope.$apply(function() {
+				$scope.alerts.unshift({
+					message: message,
+					type: type || 'info'
+				});
+
+				if ($scope.alerts.length > MAX_MSG) {
+					$scope.alerts.pop();
+				}
+			});
+		};
+
+		$scope.close = function (index) {
+			$scope.alerts.splice(index, 1);
+		};
+	}]
+);
+
+/**
+ * @namespace dias.ui.messages
+ * @ngdoc service
+ * @name msg
+ * @memberOf dias.ui.messages
+ * @description Enables arbitrary AngularJS modules to post user feedback messages using the DIAS UI messaging system.
+ * @example
+msg.post('danger', 'Do you really want to delete this?', 'Everything will be lost.');
+
+msg.danger('Do you really want to delete this?', 'Everything will be lost.');
+ */
+angular.module('dias.ui.messages').service('msg', function () {
+		"use strict";
+
+		this.post = function (type, message) {
+			message = message || type;
+			window.$diasPostMessage(type, message);
+		};
+
+		this.danger = function (message) {
+			this.post('danger', message);
+		};
+
+		this.warning = function (message) {
+			this.post('warning', message);
+		};
+
+		this.success = function (message) {
+			this.post('success', message);
+		};
+
+		this.info = function (message) {
+			this.post('info', message);
+		};
+
+		this.responseError = function (response) {
+			var message = response.data.message || "There was an error, sorry.";
+			this.danger(message);
+		};
+	}
+);
+
 //# sourceMappingURL=main.js.map

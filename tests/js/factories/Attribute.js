@@ -1,7 +1,7 @@
 describe('The Attribute resource factory', function () {
 	var $httpBackend;
 
-	beforeEach(module('dias.core'));
+	beforeEach(module('dias.api'));
 
 	beforeEach(inject(function($injector) {
 		var attribute = {
