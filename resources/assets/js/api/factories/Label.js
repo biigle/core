@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name Label
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for labels.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -37,7 +37,7 @@ var label = Label.get({id: 1}, function () {
 Label.delete({id: 1});
  *
  */
-angular.module('dias.core').factory('Label', function ($resource, URL) {
+angular.module('dias.api').factory('Label', function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/labels/:id', { id: '@id' },

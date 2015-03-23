@@ -1,7 +1,7 @@
 describe('The Annotation resource factory', function () {
 	var $httpBackend;
 
-	beforeEach(module('dias.core'));
+	beforeEach(module('dias.api'));
 
 	beforeEach(inject(function($injector) {
 		var annotation = {id: 1};

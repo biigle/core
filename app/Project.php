@@ -23,8 +23,8 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract {
 	 * @var array
 	 */
 	public static $updateRules = array(
-		'name'        => 'required|max:512',
-		'description' => 'required'
+		'name'        => 'min:2|max:512',
+		'description' => 'min:2'
 	);
 
 	/**

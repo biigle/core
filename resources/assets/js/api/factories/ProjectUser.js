@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name ProjectUser
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for users belonging to a project.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -26,7 +26,7 @@ var users = ProjectUser.query({ project_id: 1 }, function () {
 ProjectUser.detach({project_id: 1}, {id: 1});
  *
  */
-angular.module('dias.core').factory('ProjectUser', function ($resource, URL) {
+angular.module('dias.api').factory('ProjectUser', function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/projects/:project_id/users/:id',

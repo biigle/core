@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title')@parent {{ trans('dias.titles.register') }} @endsection
+@section('title'){{ trans('dias.titles.register') }}@stop
 
 @section('content')
 <div class="container">

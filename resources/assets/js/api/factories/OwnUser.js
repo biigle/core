@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name OwnUser
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for the logged in user.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -27,7 +27,7 @@ var user = OwnUser.get(function () {
 OwnUser.delete();
  * 
  */
-angular.module('dias.core').factory('OwnUser', function ($resource, URL) {
+angular.module('dias.api').factory('OwnUser', function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/users/my', {}, {

@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name Image
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for images. This resource is only for 
  * finding out which transect an image belongs to. The image files are
  * directly called from the API.
@@ -14,7 +14,7 @@ var image = Image.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.core').factory('Image', function ($resource, URL) {
+angular.module('dias.api').factory('Image', function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/images/:id');

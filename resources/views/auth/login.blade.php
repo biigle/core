@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title')@parent {{ trans('dias.titles.login') }} @endsection
+@section('title'){{ trans('dias.titles.login') }}@stop
 
 @section('content')
 <div class="container">
@@ -9,7 +9,7 @@
 			<div data-ng-app="ui.bootstrap" class="info-text">
 				<h1 class="logo  logo--standalone"><a href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></a></h1>
 				<a class="info-text__sign" href="" data-ng-click="isShown = !isShown" data-ng-hide="isShown" title="What is DIAS?"><span class="glyphicon glyphicon-info-sign"></span></a>
-				<p data-ng-cloak="" data-collapse="!isShown" data-ng-click="isShown = !isShown">{{ trans('dias.info') }}</p>
+				<p class="ng-cloak" data-collapse="!isShown" data-ng-click="isShown = !isShown">{{ trans('dias.info') }}</p>
 			</div>
 			<form class="well clearfix" role="form" method="POST" action="{{ url('auth/login') }}">
 				<div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">

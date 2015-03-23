@@ -31,6 +31,9 @@ class ProjectUserApiTest extends ApiTestCase {
 
 	public function testUpdate()
 	{
+		// the creator is also admin and shouldn't interfere with these tests
+		$this->project->removeUserId($this->project->creator->id);
+
 		$this->doTestApiRoute('PUT', '/api/v1/projects/1/users/1');
 
 		// non-admins are not allowed to modify users
@@ -49,20 +52,38 @@ class ProjectUserApiTest extends ApiTestCase {
 		$this->be($this->admin);
 		// missing arguments
 		$this->call('PUT', '/api/v1/projects/1/users/'.$this->editor->id,
-			array('_token' => Session::token())
+			array(
+				'_token' => Session::token()
+			)
 		);
 		$this->assertResponseStatus(400);
 
 		// role does not exist
 		$this->call('PUT', '/api/v1/projects/1/users/'.$this->editor->id,
-			array('_token' => Session::token(), 'project_role_id' => 100)
+			array(
+				'_token' => Session::token(),
+				'project_role_id' => 100
+			)
 		);
 		$this->assertResponseStatus(400);
+
+		// last admin cannot be removed (ajax request gets json response)
+		$r = $this->callAjax('PUT', '/api/v1/projects/1/users/'.$this->admin->id,
+			array(
+				'_token' => Session::token(),
+				'project_role_id' => Role::guestId()
+			)
+		);
+		$this->assertResponseStatus(400);
+		$this->assertEquals('{"message":"The last project admin cannot be removed."}', $r->getContent());
 
 		$this->assertEquals(2, $this->project->users()->find($this->editor->id)->project_role_id);
 
 		$this->call('PUT', '/api/v1/projects/1/users/'.$this->editor->id,
-			array('_token' => Session::token(), 'project_role_id' => 3)
+			array(
+				'_token' => Session::token(),
+				'project_role_id' => Role::guestId()
+			)
 		);
 
 		$this->assertResponseOk();

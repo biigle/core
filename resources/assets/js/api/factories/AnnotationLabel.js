@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name AnnotationLabel
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for annotation labels.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -31,7 +31,7 @@ var labels = AnnotationLabel.query({annotation_id: 1}, function () {
 AnnotationLabel.detach({id: 1, annotation_id: 1});
  * 
  */
-angular.module('dias.core').factory('AnnotationLabel', function ($resource, URL) {
+angular.module('dias.api').factory('AnnotationLabel', function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/annotations/:annotation_id/labels/:id', {

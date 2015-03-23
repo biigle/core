@@ -20,8 +20,11 @@ class UserController extends Controller {
 		parent::__construct($auth, $request);
 
 		$this->middleware('admin', ['except' => [
+			'index',
+			'show',
 			'showOwn',
-			'updateOwn','destroyOwn'
+			'updateOwn',
+			'destroyOwn',
 		]]);
 
 		$this->middleware('session', ['except' => [
@@ -125,7 +128,7 @@ class UserController extends Controller {
 		$user->email = $request->input('email', $user->email);
 		$user->save();
 
-		if (!$this->isAutomatedRequest($request))
+		if (!static::isAutomatedRequest($request))
 		{
 			return redirect()->back()
 				->with('message', 'Saved.')

@@ -18,7 +18,7 @@ Route::group(array(
 {
 	$router->get('/', array(
 		'as'   => 'home',
-		'uses' => 'HomeController@index'
+		'uses' => 'DashboardController@index'
 	));
 
 	$router->get('settings', array(

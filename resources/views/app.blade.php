@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>@section('title')DIAS - @show</title>
+	<title>DIAS - @yield('title')</title>
 
 	<link href="{{ asset('assets/styles/main.css') }}" rel="stylesheet">
 	@yield('styles')
@@ -28,7 +28,6 @@
 	</script>
 	<script src="{{ asset('assets/scripts/angular.min.js') }}"></script>
 	<script src="{{ asset('assets/scripts/angular-resource.min.js') }}"></script>
-	<script src="{{ asset('assets/scripts/angular-sanitize.min.js') }}"></script>
 	<script src="{{ asset('assets/scripts/ui-bootstrap-tpls.min.js') }}"></script>
 	<script src="{{ asset('assets/scripts/main.js') }}"></script>
 	@yield('scripts')

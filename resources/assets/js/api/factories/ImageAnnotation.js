@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name ImageAnnotation
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for annotations of an image.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -21,7 +21,7 @@ var annotation = ImageAnnotation.add({
 });
  *
  */
-angular.module('dias.core').factory('ImageAnnotation', function ($resource, URL) {
+angular.module('dias.api').factory('ImageAnnotation', function ($resource, URL) {
 	"use strict";
 
 	return $resource(

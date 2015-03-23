@@ -1,7 +1,7 @@
 describe('The Transect resource factory', function () {
 	var $httpBackend;
 
-	beforeEach(module('dias.core'));
+	beforeEach(module('dias.api'));
 
 	beforeEach(inject(function($injector) {
 		var transect = {

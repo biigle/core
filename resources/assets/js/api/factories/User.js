@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name User
- * @memberOf dias.core
+ * @memberOf dias.api
  * @description Provides the resource for users.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -46,7 +46,7 @@ var user = User.get({id: 1}, function () {
 User.delete({id: 1});
  * 
  */
-angular.module('dias.core').factory('User', function ($resource, URL) {
+angular.module('dias.api').factory('User', function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/users/:id', {id: '@id'}, {
