@@ -11,6 +11,7 @@ msg.danger('Do you really want to delete this?', 'Everything will be lost.');
  */
 angular.module('dias.ui.messages').service('msg', function () {
 		"use strict";
+		var _this = this;
 
 		this.post = function (type, message) {
 			message = message || type;
@@ -18,24 +19,24 @@ angular.module('dias.ui.messages').service('msg', function () {
 		};
 
 		this.danger = function (message) {
-			this.post('danger', message);
+			_this.post('danger', message);
 		};
 
 		this.warning = function (message) {
-			this.post('warning', message);
+			_this.post('warning', message);
 		};
 
 		this.success = function (message) {
-			this.post('success', message);
+			_this.post('success', message);
 		};
 
 		this.info = function (message) {
-			this.post('info', message);
+			_this.post('info', message);
 		};
 
 		this.responseError = function (response) {
 			var message = response.data.message || "There was an error, sorry.";
-			this.danger(message);
+			_this.danger(message);
 		};
 	}
 );

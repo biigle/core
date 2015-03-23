@@ -1,6 +1,6 @@
 <?php namespace Dias\Http\Controllers\Views;
 
-class HomeController extends Controller {
+class DashboardController extends Controller {
 
 	/**
 	 * Show the application dashboard to the user.
@@ -9,7 +9,7 @@ class HomeController extends Controller {
 	 */
 	public function index()
 	{
-		return view('home')
+		return view('dashboard')
 			->withMixins($this->modules->getMixins('dashboard'))
 			->with('message', session('message'))
 			->with('messageType', session('messageType'));

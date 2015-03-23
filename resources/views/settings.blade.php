@@ -1,11 +1,11 @@
 @extends('app')
 
-@section('title')@parent {{ trans('dias.titles.settings') }} @stop
+@section('title'){{ trans('dias.titles.settings') }}@stop
 
 @section('content')
 <div class="container">
 	<div class="row">
-		<div class="col-lg-6 col-lg-offset-3">
+		<div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
 			<h1>Settings</h1>
 			<div class="panel panel-default">
 				<div class="panel-heading">Profile</div>

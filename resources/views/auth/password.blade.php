@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title')@parent {{ trans('dias.titles.resetpw') }} @endsection
+@section('title'){{ trans('dias.titles.resetpw') }}@stop
 
 @section('content')
 <div class="container">
