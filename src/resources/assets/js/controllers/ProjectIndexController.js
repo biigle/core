@@ -9,17 +9,20 @@ angular.module('dias.projects').controller('ProjectIndexController', function ($
 		"use strict";
 
 		var leavingSuccess = function () {
-			msg.success($attrs.leavingSuccessMsg);
+			$scope.redirectToDashboard($attrs.leavingSuccessMsg);
+		};
+
+		$scope.redirectToDashboard = function (message, type) {
+			type = type || 'success';
+			msg.post(type, message);
 			$timeout(function () {
-				window.location.href = $scope.dashboardUrl;
+				window.location.href = $attrs.dashboardUrl;
 			}, 2000);
 		};
 
 		$scope.project = Project.get({id: $attrs.projectId});
 
 		$scope.ownUserId = $attrs.userId;
-
-		$scope.dashboardUrl = $attrs.dashboardUrl;
 
 		$scope.leaveProject = function () {
 			var modalInstance = $modal.open({

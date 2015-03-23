@@ -7,14 +7,11 @@
  * @example
 
  */
-angular.module('dias.projects').controller('ProjectDeleteController', function ($scope, $modal, $attrs, $timeout, msg) {
+angular.module('dias.projects').controller('ProjectDeleteController', function ($scope, $modal, $attrs, msg) {
 		"use strict";
 
 		var success = function () {
-			msg.success($attrs.successMsg);
-			$timeout(function () {
-				window.location.href = $scope.dashboardUrl;
-			}, 2000);
+			$scope.redirectToDashboard($attrs.successMsg);
 		};
 
 		var error = function () {
