@@ -9,6 +9,9 @@ describe('The User resource factory', function () {
 		// Set up the mock http service responses
 		$httpBackend = $injector.get('$httpBackend');
 
+		$httpBackend.when('GET', '/api/v1/users/find/j')
+		            .respond([user]);
+
 		$httpBackend.when('GET', '/api/v1/users')
 		            .respond([user]);
 		
@@ -84,6 +87,16 @@ describe('The User resource factory', function () {
 		});
 		$httpBackend.expectDELETE('/api/v1/users/1');
 		User.delete({id: 1});
+		$httpBackend.flush();
+	}));
+
+	it('should find users', inject(function (User) {
+		$httpBackend.expectGET('/api/v1/users/find/j');
+		var users = User.find({query: 'j' }, function () {
+			var user = users[0];
+			expect(user instanceof User).toBe(true);
+			expect(user.id).toEqual(1);
+		});
 		$httpBackend.flush();
 	}));
 
