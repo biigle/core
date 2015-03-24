@@ -25,11 +25,11 @@ class ProjectsControllerTest extends TestCase {
 		$this->assertResponseOk();
 
 		// diesn't exist
-		$this->call('GET', 'projects/a');
+		$this->call('GET', 'projects/-1');
 		$this->assertResponseStatus(404);
 	}
 
-	public function testNew() {
+	public function testCreate() {
 		$user = UserTest::create();
 		$user->save();
 
@@ -38,8 +38,7 @@ class ProjectsControllerTest extends TestCase {
 		$this->assertResponseStatus(302);
 
 		$this->be($user);
-		$this->call('GET', 'projects/create');
+		$r = $this->call('GET', 'projects/create');
 		$this->assertResponseOk();
 	}
-
 }
