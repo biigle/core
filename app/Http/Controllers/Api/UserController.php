@@ -20,6 +20,7 @@ class UserController extends Controller {
 		parent::__construct($auth, $request);
 
 		$this->middleware('admin', ['except' => [
+			'find',
 			'index',
 			'show',
 			'showOwn',
@@ -28,10 +29,35 @@ class UserController extends Controller {
 		]]);
 
 		$this->middleware('session', ['except' => [
+			'find',
 			'index',
 			'show',
 			'showOwn'
 		]]);
+	}
+
+	/**
+	 * Finds all users with firstnames or lastnames like `$pattern`.
+	 * Returns the first 10 results.
+	 * 
+	 * @param string $pattern
+	 * @return \Illuminate\Http\Response
+	 */
+	public function find($pattern)
+	{
+		if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection)
+		{
+			$operator = 'ilike';
+		}
+		else
+		{
+			$operator = 'like';
+		}
+
+		return User::where('firstname', $operator, '%'.$pattern.'%')
+			->orWhere('lastname', $operator, '%'.$pattern.'%')
+			->take(10)
+			->get();
 	}
 
 	/**

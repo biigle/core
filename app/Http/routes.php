@@ -114,6 +114,7 @@ Route::group(array(
 		'only' => array('index')
 	));
 
+	$router->get('users/find/{pattern}', 'UserController@find');
 	$router->get('users/my', 'UserController@showOwn');
 	$router->put('users/my', 'UserController@updateOwn');
 	$router->delete('users/my', 'UserController@destroyOwn');
