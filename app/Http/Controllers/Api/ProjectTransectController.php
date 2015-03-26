@@ -38,9 +38,9 @@ class ProjectTransectController extends Controller {
 		$transect->setMediaTypeId($this->request->input('media_type_id'));
 		$transect->creator()->associate($this->user);
 
-		$images = json_decode($this->request->input('images'));
+		$images = preg_split('/\s*,\s*/', $this->request->input('images'));
 
-		if (empty($images))
+		if (empty($images) || !is_array($images))
 		{
 			abort(400, 'No images were supplied for the new transect!');
 		}

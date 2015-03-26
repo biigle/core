@@ -57,27 +57,27 @@ class ProjectTransectApiTest extends ApiTestCase {
 			'name' => 'my transect no. 1',
 			'url' => 'random',
 			'media_type_id' => 99999,
-			'images' => '["1.jpg"]'
+			'images' => '1.jpg, 2.jpg'
 		));
 		// media type does not exist
 		$this->assertResponseStatus(422);
 
-		$this->call('POST', '/api/v1/projects/1/transects', array(
+		$this->callAjax('POST', '/api/v1/projects/1/transects', array(
 			'_token' => Session::token(),
 			'name' => 'my transect no. 1',
 			'url' => 'random',
 			'media_type_id' => MediaType::timeSeriesId(),
-			'images' => "[]"
+			'images' => ""
 		));
 		// images array is empty
-		$this->assertResponseStatus(400);
+		$this->assertResponseStatus(422);
 
 		$r = $this->call('POST', '/api/v1/projects/1/transects', array(
 			'_token' => Session::token(),
 			'name' => 'my transect no. 1',
 			'url' => 'random',
 			'media_type_id' => MediaType::timeSeriesId(),
-			'images' => '["1.jpg"]'
+			'images' => "1.jpg, 2.jpg"
 		));
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
