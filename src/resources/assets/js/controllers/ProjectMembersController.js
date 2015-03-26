@@ -44,6 +44,25 @@ angular.module('dias.projects').controller('ProjectMembersController', function 
 			$scope.editing = !$scope.editing;
 		};
 
+		$scope.addUser = function (user) {
+			// new users are guests by default
+			var roleId = $scope.roles.guest;
+
+			var success = function () {
+				user.project_role_id = roleId;
+				$scope.users.push(user);
+			};
+
+			// user shouldn't already exist
+			if (!getUser(user.id)) {
+				ProjectUser.attach(
+					{project_id: $scope.project.id},
+					{id: user.id, project_role_id: roleId},
+					success, msg.responseError
+				);
+			}
+		};
+
 		$scope.changeUserRole = function (userId, role, force) {
 			if (!force && userId == $scope.ownUserId) {
 				confirmChangeOwnRole(userId, role);
@@ -76,21 +95,24 @@ angular.module('dias.projects').controller('ProjectMembersController', function 
 				return;
 			}
 
-			var index;
-			var user;
-
 			var success = function () {
+				var index;
+
+				for (var i = $scope.users.length - 1; i >= 0; i--) {
+					if ($scope.users[i].id == userId) {
+						index = i;
+						break;
+					}
+				}
+
 				$scope.users.splice(index, 1);
 			};
 
-			for (var i = $scope.users.length - 1; i >= 0; i--) {
-				if ($scope.users[i].id == userId) {
-					user = $scope.users[i];
-					index = i;
-				}
-			}
-
-			user.$detach({project_id: $scope.project.id}, success, msg.responseError);
+			ProjectUser.detach(
+				{project_id: $scope.project.id},
+				{id: userId},
+				success, msg.responseError
+			);
 		};
 	}
 );

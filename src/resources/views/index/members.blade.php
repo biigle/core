@@ -8,8 +8,16 @@
 				@endif
 			</h3>
 		</div>
+		<div data-ng-if="editing" class="panel-body">
+			<form class="form-inline">
+				<div class="form-group">
+					<label for="new-user">New user</label>
+					<input class="form-control" id="new-user" placeholder="Search by username" data-user-chooser="addUser" />
+				</div>
+			</form>
+		</div>
 		@foreach (array('admin', 'editor', 'guest') as $role)
-			<table class="table" data-project-member-container="" data-role="{{ $role }}">
+			<table class="table" data-ng-controller="ProjectMembersContainerController" data-role="{{ $role }}">
 				<thead  data-ng-class="{'bg-info': hovering}">
 					<tr>
 						<th>{{ trans('projects::members.'.$role) }}</th>

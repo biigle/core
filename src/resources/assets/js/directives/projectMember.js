@@ -10,6 +10,7 @@ angular.module('dias.projects').directive('projectMember', function () {
 
 		return {
 			restrict: 'A',
+
 			link: function (scope, element, attrs) {
 				var dragstart = function (e) {
 					e.dataTransfer.effectAllowed = 'move';
@@ -32,6 +33,7 @@ angular.module('dias.projects').directive('projectMember', function () {
 					}
 				});
 			},
+			
 			controller: function ($scope) {
 				$scope.startRemove = function () {
 					$scope.removing = true;
