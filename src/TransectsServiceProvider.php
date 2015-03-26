@@ -13,7 +13,15 @@ class TransectsServiceProvider extends ServiceProvider {
 	public function boot(Modules $modules)
 	{
 		$this->loadViewsFrom(__DIR__.'/resources/views', 'transects');
+
+		$this->publishes([
+			__DIR__.'/public/assets' => public_path('vendor/transects'),
+		], 'public');
+
+		include __DIR__.'/Http/routes.php';
+
 		$modules->addMixin('transects', 'dashboard.projects');
+		$modules->addMixin('transects', 'projects');
 	}
 
 	/**

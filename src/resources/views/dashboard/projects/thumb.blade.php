@@ -1,4 +1,6 @@
-<figure>
-	<img src="{{ url('api/v1/images/'.$transect->images()->first()->id.'/thumb') }}" class="img-thumbnail">
-	<figcaption>{{ $transect->name }}</figcaption>
+<figure class="thumbnail">
+	<a href="{{ route('transect', $transect->id) }}">
+		<img src="{{ url('api/v1/images/'.$transect->images()->first()->id.'/thumb') }}">
+		<figcaption class="caption">{{ $transect->name }}</figcaption>
+	</a>
 </figure>
