@@ -63,7 +63,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract {
 	private function createThumbnail()
 	{
 		return $this->getFile()
-			->resize(180, 180, function ($constraint)
+			->resize(180, 135, function ($constraint)
 			{
 				// resize images proportionally
 				$constraint->aspectRatio();
@@ -157,6 +157,11 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract {
 	 */
 	public function getFile()
 	{
-		return InterventionImage::make($this->url);
+		try {
+			return InterventionImage::make($this->url);
+		} catch (NotReadableException $e) {
+			// source file not readable; nothing we can do about it
+			abort(404, $e->getMessage());
+		}
 	}
 }

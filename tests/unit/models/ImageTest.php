@@ -164,6 +164,16 @@ class ImageTest extends TestCase {
 
 		$file = $image->getFile();
 		$this->assertNotNull($file);
+
+		// error handling when the original file is not readable
+		$image->filename = '';
+
+		InterventionImage::shouldReceive('make')
+			->once()
+			->passthru();
+
+		$this->setExpectedException('Symfony\Component\HttpKernel\Exception\NotFoundHttpException');
+		$image->getFile();
 	}
 
 	public function testRemoveDeletedImages()

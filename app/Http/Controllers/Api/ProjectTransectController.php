@@ -38,18 +38,31 @@ class ProjectTransectController extends Controller {
 		$transect->setMediaTypeId($this->request->input('media_type_id'));
 		$transect->creator()->associate($this->user);
 
-		$images = json_decode($this->request->input('images'));
+		$images = preg_split('/\s*,\s*/', $this->request->input('images'));
 
-		if (empty($images))
+		if (empty($images) || !is_array($images))
 		{
-			abort(400, 'No images were supplied for the new transect!');
+			return $this->buildFailedValidationResponse($this->request, array(
+				'images' => 'No images were supplied for the new transect!'
+			));
 		}
 
 		// save first, so the transect gets an ID for associating with images
 		$transect->save();
 		$transect->createImages($images);
-		// call fresh so the media type object is not included
-		return $transect->fresh();
+		$project->addTransectId($transect->id);
+
+		if (static::isAutomatedRequest($this->request))
+		{
+			// call fresh so the media type object is not included
+			return $transect->fresh();
+		}
+		else
+		{
+			return redirect()->route('home')
+				->with('message', 'Transect '.$transect->name.' created')
+				->with('messageType', 'success');
+		}
 	}
 
 	/**

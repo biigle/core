@@ -40,46 +40,49 @@ class ProjectTransectApiTest extends ApiTestCase {
 
 	public function testStore()
 	{
-		$this->doTestApiRoute('POST', '/api/v1/projects/1/transects');
+		$id = $this->project->id;
+		$this->doTestApiRoute('POST', '/api/v1/projects/'.$id.'/transects');
 
 		// api key authentication
-		$this->callToken('POST', '/api/v1/projects/1/transects', $this->editor);
+		$this->callToken('POST', '/api/v1/projects/'.$id.'/transects', $this->editor);
 		$this->assertResponseStatus(401);
 
-		$this->callToken('POST', '/api/v1/projects/1/transects', $this->admin);
+		$this->callToken('POST', '/api/v1/projects/'.$id.'/transects', $this->admin);
 		// mssing arguments
 		$this->assertResponseStatus(422);
 
 		// session cookie authentication
 		$this->be($this->admin);
-		$this->callAjax('POST', '/api/v1/projects/1/transects', array(
+		$this->callAjax('POST', '/api/v1/projects/'.$id.'/transects', array(
 			'_token' => Session::token(),
 			'name' => 'my transect no. 1',
 			'url' => 'random',
 			'media_type_id' => 99999,
-			'images' => '["1.jpg"]'
+			'images' => '1.jpg, 2.jpg'
 		));
 		// media type does not exist
 		$this->assertResponseStatus(422);
 
-		$this->call('POST', '/api/v1/projects/1/transects', array(
+		$this->callAjax('POST', '/api/v1/projects/'.$id.'/transects', array(
 			'_token' => Session::token(),
 			'name' => 'my transect no. 1',
 			'url' => 'random',
 			'media_type_id' => MediaType::timeSeriesId(),
-			'images' => "[]"
+			'images' => ""
 		));
 		// images array is empty
-		$this->assertResponseStatus(400);
+		$this->assertResponseStatus(422);
 
-		$r = $this->call('POST', '/api/v1/projects/1/transects', array(
+		$count = $this->project->transects()->count();
+		$r = $this->callAjax('POST', '/api/v1/projects/'.$id.'/transects', array(
 			'_token' => Session::token(),
 			'name' => 'my transect no. 1',
 			'url' => 'random',
 			'media_type_id' => MediaType::timeSeriesId(),
-			'images' => '["1.jpg"]'
+			'images' => "1.jpg, 2.jpg"
 		));
 		$this->assertResponseOk();
+		$this->assertEquals($count + 1, $this->project->transects()->count());
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
 
