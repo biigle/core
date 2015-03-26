@@ -268,7 +268,8 @@ class UserApiTest extends ApiTestCase {
 
 	public function testFind()
 	{
-		UserTest::create('abc', 'def')->save();
+		$user = UserTest::create('abc', 'def');
+		$user->save();
 		UserTest::create('abc', 'ghi')->save();
 
 		$this->doTestApiRoute('GET', '/api/v1/users/find/a');
@@ -279,9 +280,11 @@ class UserApiTest extends ApiTestCase {
 		$this->assertContains('"name":"abc def"', $r->getContent());
 		$this->assertContains('"name":"abc ghi"', $r->getContent());
 
+		$this->be($this->guest);
 		$r = $this->call('GET', '/api/v1/users/find/d', array(
 			'_token' => Session::token(),
 		));
+		$this->assertResponseOk();
 
 		$this->assertContains('"name":"abc def"', $r->getContent());
 		$this->assertNotContains('"name":"abc ghi"', $r->getContent());
