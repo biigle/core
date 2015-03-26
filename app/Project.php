@@ -296,7 +296,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract {
 			// but delete the transect only with force!
 			if (!$force)
 			{
-				abort(400, 'The transect would not belong to any project after detaching. Use the "force" argument or detach and delete it first.');
+				abort(400, 'The transect would not belong to any project after detaching. Use the "force" argument to detach and delete it.');
 			}
 
 			$transect->delete();
