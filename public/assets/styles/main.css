@@ -4845,6 +4845,9 @@ button.close {
   right: 14px;
   top: 20px; }
 
+figcaption {
+  text-align: center; }
+
 @-webkit-keyframes fade-in {
   from {
     opacity: 0; }
