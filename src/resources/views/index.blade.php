@@ -44,19 +44,18 @@
 			<button class="btn btn-default" data-ng-click="$close()">Cancel</button>
 		</div>
 		</script>
-
-		<script type="text/ng-template" id="confirmLeaveProjectModal.html">
-		<div class="modal-header">
-			<h3 class="modal-title">Confirm leaving project</h3>
-		</div>
-		<div class="modal-body">
-			<strong>Are you sure you want to leave {{ $project->name }}?</strong> You will not be able to join on your own again.
-		</div>
-		<div class="modal-footer">
-			<button class="btn btn-danger" data-ng-click="$close('yes')">Leave</button>
-			<button class="btn btn-default" data-ng-click="$close()">Cancel</button>
-		</div>
-		</script>
 	@endif
+	<script type="text/ng-template" id="confirmLeaveProjectModal.html">
+	<div class="modal-header">
+		<h3 class="modal-title">Confirm leaving project</h3>
+	</div>
+	<div class="modal-body">
+		<strong>Are you sure you want to leave {{ $project->name }}?</strong> You will not be able to join on your own again.
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-danger" data-ng-click="$close('yes')">Leave</button>
+		<button class="btn btn-default" data-ng-click="$close()">Cancel</button>
+	</div>
+	</script>
 </div>
 @endsection
