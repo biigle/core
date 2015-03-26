@@ -22,7 +22,7 @@ class ImageApiTest extends ApiTestCase {
 		$this->callToken('GET', '/api/v1/images/1', $this->user);
 		$this->assertResponseStatus(401);
 
-		$this->callToken('GET', '/api/v1/images/a', $this->guest);
+		$this->callToken('GET', '/api/v1/images/-1', $this->guest);
 		$this->assertResponseStatus(404);
 
 		// session cookie authentication
@@ -41,7 +41,7 @@ class ImageApiTest extends ApiTestCase {
 		$this->callToken('GET', '/api/v1/images/1/thumb', $this->user);
 		$this->assertResponseStatus(401);
 
-		$this->callToken('GET', '/api/v1/images/a/thumb', $this->guest);
+		$this->callToken('GET', '/api/v1/images/-1/thumb', $this->guest);
 		$this->assertResponseStatus(404);
 
 		// session cookie authentication
@@ -59,7 +59,7 @@ class ImageApiTest extends ApiTestCase {
 		$this->callToken('GET', '/api/v1/images/1/file', $this->user);
 		$this->assertResponseStatus(401);
 
-		$this->callToken('GET', '/api/v1/images/a/file', $this->guest);
+		$this->callToken('GET', '/api/v1/images/-1/file', $this->guest);
 		$this->assertResponseStatus(404);
 
 		// session cookie authentication

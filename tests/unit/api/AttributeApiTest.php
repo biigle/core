@@ -27,7 +27,7 @@ class AttributeApiTest extends ApiTestCase {
 		$this->callToken('GET', '/api/v1/attributes/1', $this->user);
 		$this->assertResponseOk();
 
-		$this->callToken('GET', '/api/v1/attributes/a', $this->user);
+		$r = $this->callToken('GET', '/api/v1/attributes/-1', $this->user);
 		$this->assertResponseStatus(404);
 
 		// session cookie authentication
@@ -50,15 +50,12 @@ class AttributeApiTest extends ApiTestCase {
 		$this->assertResponseStatus(422);
 
 		// enum data type is not supported in SQLite
-		if (!(DB::connection() instanceof Illuminate\Database\SQLiteConnection))
-		{
-			$this->callToken('POST', '/api/v1/attributes', $this->globalAdmin, array(
-				'name' => 'expert',
-				'type' => 'own'
-			));
-			// unsupported type
-			$this->assertResponseStatus(400);
-		}
+		$this->callToken('POST', '/api/v1/attributes', $this->globalAdmin, array(
+			'name' => 'expert',
+			'type' => 'own'
+		));
+		// unsupported type
+		$this->assertResponseStatus(422);
 
 		// session cookie authentication
 		$this->be($this->globalAdmin);

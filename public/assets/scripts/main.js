@@ -28,10 +28,16 @@ angular.element(document).ready(function () {
 });
 
 /**
+ * @namespace dias.ui.users
+ * @description The DIAS users UI AngularJS module.
+ */
+angular.module('dias.ui.users', ['ui.bootstrap', 'dias.api']);
+
+/**
  * @namespace dias.ui
  * @description The DIAS UI AngularJS module.
  */
-angular.module('dias.ui', ['dias.ui.messages']);
+angular.module('dias.ui', ['dias.ui.messages', 'dias.ui.users']);
 
 
 /**
@@ -659,14 +665,20 @@ var user = User.get({id: 1}, function () {
 });
 // or directly
 User.delete({id: 1});
+
+// query for a username
+var users = User.find({query: 'ja' }, function () {
+   console.log(users); // [{id: 1, firstname: "jane", ...}, ...]
+});
  * 
  */
 angular.module('dias.api').factory('User', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource(URL + '/api/v1/users/:id', {id: '@id'}, {
+	return $resource(URL + '/api/v1/users/:id/:query', { id: '@id' }, {
 		save: { method: 'PUT' },
-		add: { method: 'POST' }
+		add: { method: 'POST' },
+      find: { method: 'GET', params: { id: 'find' }, isArray: true }
 	});
 }]);
 /**
@@ -749,6 +761,36 @@ angular.module('dias.ui.messages').service('msg', function () {
 		this.responseError = function (response) {
 			var message = response.data.message || "There was an error, sorry.";
 			_this.danger(message);
+		};
+	}
+);
+
+/**
+ * @namespace dias.ui.users
+ * @ngdoc directive
+ * @name userChooser
+ * @memberOf dias.ui.users
+ * @description An input field to find and enter a user.
+ */
+angular.module('dias.ui.users').directive('userChooser', function () {
+		"use strict";
+
+		return {
+			restrict: 'A',
+
+			scope: {
+				select: '=userChooser'
+			},
+
+			replace: true,
+
+			template: '<input type="text" data-ng-model="selected" data-typeahead="user.name for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
+
+			controller: ["$scope", "User", function ($scope, User) {
+				$scope.find = function (query) {
+					return User.find({query: query}).$promise;
+				};
+			}]
 		};
 	}
 );

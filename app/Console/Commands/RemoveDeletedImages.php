@@ -31,7 +31,7 @@ class RemoveDeletedImages extends Command {
 	 */
 	public function handle()
 	{
-		Image::whereTransectId(null)->chunk(100, function($images) {
+		Image::whereNull('transect_id')->chunk(100, function($images) {
 			foreach ($images as $image) {
 				File::delete($image->thumbPath);
 				$image->delete();

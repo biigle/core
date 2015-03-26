@@ -44,13 +44,19 @@ var user = User.get({id: 1}, function () {
 });
 // or directly
 User.delete({id: 1});
+
+// query for a username
+var users = User.find({query: 'ja' }, function () {
+   console.log(users); // [{id: 1, firstname: "jane", ...}, ...]
+});
  * 
  */
 angular.module('dias.api').factory('User', function ($resource, URL) {
 	"use strict";
 
-	return $resource(URL + '/api/v1/users/:id', {id: '@id'}, {
+	return $resource(URL + '/api/v1/users/:id/:query', { id: '@id' }, {
 		save: { method: 'PUT' },
-		add: { method: 'POST' }
+		add: { method: 'POST' },
+      find: { method: 'GET', params: { id: 'find' }, isArray: true }
 	});
 });

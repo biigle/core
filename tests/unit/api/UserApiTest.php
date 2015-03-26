@@ -265,4 +265,28 @@ class UserApiTest extends ApiTestCase {
 		// deleted user doesn't have permission any more
 		$this->assertResponseStatus(401);
 	}
+
+	public function testFind()
+	{
+		$user = UserTest::create('abc', 'def');
+		$user->save();
+		UserTest::create('abc', 'ghi')->save();
+
+		$this->doTestApiRoute('GET', '/api/v1/users/find/a');
+
+		$r = $this->callToken('GET', '/api/v1/users/find/a', $this->guest);
+		$this->assertResponseOk();
+
+		$this->assertContains('"name":"abc def"', $r->getContent());
+		$this->assertContains('"name":"abc ghi"', $r->getContent());
+
+		$this->be($this->guest);
+		$r = $this->call('GET', '/api/v1/users/find/d', array(
+			'_token' => Session::token(),
+		));
+		$this->assertResponseOk();
+
+		$this->assertContains('"name":"abc def"', $r->getContent());
+		$this->assertNotContains('"name":"abc ghi"', $r->getContent());
+	}
 }
