@@ -13,6 +13,11 @@ return array(
 		'resetpw' => 'Reset password',
 		'register' => 'Register',
 		'dashboard' => 'Dashboard',
-	)
+	),
+
+	'media_types' => array(
+		'time-series' => 'time series',
+		'location-series' => 'location series',
+	),
 
 );
