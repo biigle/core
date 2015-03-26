@@ -22,6 +22,8 @@ angular.module('dias.projects').controller('ProjectIndexController', function ($
 
 		$scope.project = Project.get({id: $attrs.projectId});
 
+		$scope.projectId = $attrs.projectId;
+
 		$scope.ownUserId = $attrs.userId;
 
 		$scope.leaveProject = function () {

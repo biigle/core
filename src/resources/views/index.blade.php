@@ -22,7 +22,7 @@
 	@include('projects::index.members', array('project' => $project))
 
 	@foreach ($mixins as $module => $nestedMixins)
-		@include($module.'::index', array('mixins' => $nestedMixins, 'project' => $project))
+		@include($module.'::projects', array('mixins' => $nestedMixins, 'project' => $project, 'isAdmin' => $isAdmin))
 	@endforeach
 
 	@if($isAdmin)

@@ -5,6 +5,11 @@ use Dias\Http\Controllers\Views\Controller;
 
 class ProjectController extends Controller {
 
+	/**
+	 * Shows the create project page.
+	 * 
+	 * @return \Illuminate\Http\Response
+	 */
 	public function create()
 	{
 		return view('projects::create');

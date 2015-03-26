@@ -36,9 +36,7 @@ angular.module('dias.projects').controller('ProjectMembersController', function 
 			}
 		});
 
-		$scope.project.$promise.then(function () {
-			$scope.users = ProjectUser.query({ project_id: $scope.project.id });
-		});
+		$scope.users = ProjectUser.query({ project_id: $scope.projectId });
 
 		$scope.edit = function () {
 			$scope.editing = !$scope.editing;
@@ -56,7 +54,7 @@ angular.module('dias.projects').controller('ProjectMembersController', function 
 			// user shouldn't already exist
 			if (!getUser(user.id)) {
 				ProjectUser.attach(
-					{project_id: $scope.project.id},
+					{project_id: $scope.projectId},
 					{id: user.id, project_role_id: roleId},
 					success, msg.responseError
 				);
@@ -82,7 +80,7 @@ angular.module('dias.projects').controller('ProjectMembersController', function 
 			};
 
 			ProjectUser.save(
-				{project_id: $scope.project.id},
+				{project_id: $scope.projectId},
 				{id: user.id, project_role_id: roleId},
 				success, msg.responseError
 			);
@@ -109,7 +107,7 @@ angular.module('dias.projects').controller('ProjectMembersController', function 
 			};
 
 			ProjectUser.detach(
-				{project_id: $scope.project.id},
+				{project_id: $scope.projectId},
 				{id: userId},
 				success, msg.responseError
 			);

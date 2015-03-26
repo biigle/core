@@ -1,6 +1,6 @@
 <?php $user = Auth::user() ?>
 
-<h2 class="clearfix">Projects <a href="{{ route('create-project') }}" class="btn btn-success pull-right" title="Create a new project">New Project</a></h2>
+<h2 class="clearfix">Projects <a href="{{ route('create-project') }}" class="btn btn-default pull-right" title="Create a new project">New Project</a></h2>
 
 @forelse($user->projects as $project)
 	<div class="panel panel-default">

@@ -12,7 +12,7 @@ angular.module('dias.projects').controller('ProjectDeleteModalController', funct
 
 		$scope.force = false;
 
-		var deleteSuccess = function (response, status) {
+		var deleteSuccess = function (response) {
 			$scope.$close('success');
 		};
 

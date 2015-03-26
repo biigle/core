@@ -8,7 +8,7 @@
 				@endif
 			</h3>
 		</div>
-		<div data-ng-if="editing" class="panel-body">
+		<div data-ng-if="editing" class="panel-body ng-cloak">
 			<form class="form-inline">
 				<div class="form-group">
 					<label for="new-user">New user</label>
@@ -18,7 +18,7 @@
 		</div>
 		@foreach (array('admin', 'editor', 'guest') as $role)
 			<table class="table" data-ng-controller="ProjectMembersContainerController" data-role="{{ $role }}">
-				<thead  data-ng-class="{'bg-info': hovering}">
+				<thead data-ng-class="{'bg-info': hovering}">
 					<tr>
 						<th>{{ trans('projects::members.'.$role) }}</th>
 					</tr>
@@ -29,7 +29,7 @@
 							<span data-ng-if="!removing">
 								<span data-ng-bind="user.name"></span>
 								@if($isAdmin)
-									<button data-ng-if="editing" type="button" class="close" aria-label="Close" title="Remove this user" data-ng-click="startRemove()"><span aria-hidden="true">&times;</span></button>
+									<button data-ng-if="editing" type="button" class="close ng-cloak" aria-label="Close" title="Remove this user" data-ng-click="startRemove()"><span aria-hidden="true">&times;</span></button>
 								@endif
 							</span>
 							@if($isAdmin)
