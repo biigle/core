@@ -6,6 +6,7 @@
  * @description Controller for a single transect in the transect list of the
  * project index page.
  */
+try {
 angular.module('dias.projects').controller('ProjectTransectController', function ($scope, $element, $modal, ProjectTransect, msg) {
 		"use strict";
 
@@ -66,3 +67,6 @@ angular.module('dias.projects').controller('ProjectTransectController', function
 		});
 	}
 );
+} catch (e) {
+	// dias.projects is not loaded on this page
+}

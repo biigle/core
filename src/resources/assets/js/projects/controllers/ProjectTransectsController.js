@@ -5,6 +5,7 @@
  * @memberOf dias.projects
  * @description Handles modification of the transects of a project.
  */
+try {
 angular.module('dias.projects').controller('ProjectTransectsController', function ($scope, ProjectTransect) {
 		"use strict";
 
@@ -26,3 +27,6 @@ angular.module('dias.projects').controller('ProjectTransectsController', functio
 		});
 	}
 );
+} catch (e) {
+	// dias.projects is not loaded on this page
+}

@@ -2,7 +2,7 @@
 
 use Dias\Role;
 
-class TransectsControllerTest extends TestCase {
+class TransectControllerTest extends TestCase {
 
 	public function testIndex() {
 		$project = ProjectTest::create();

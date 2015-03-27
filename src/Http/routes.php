@@ -16,3 +16,16 @@ Route::group(array(
 		'uses' => 'TransectController@index'
 	));
 });
+
+Route::group(array(
+		'namespace' => '\Dias\Modules\Transects\Http\Controllers',
+		'middleware' => 'auth',
+		'prefix' => 'images'
+	), function ($router)
+{
+	
+	$router->get('/{id}', array(
+		'as'   => 'image',
+		'uses' => 'ImageController@index'
+	));
+});

@@ -5,9 +5,6 @@ use Dias\Project;
 use Dias\MediaType;
 use Dias\Http\Controllers\Views\Controller;
 
-use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
-
 class TransectController extends Controller {
 
 	/**
@@ -38,7 +35,6 @@ class TransectController extends Controller {
 		return view('transects::index')
 			->withTransect($transect)
 			->withMixins($this->modules->getMixins('transects'))
-			->withUser($this->user)
 			->with('message', session('message'))
 			->with('messageType', session('messageType'));
 	}

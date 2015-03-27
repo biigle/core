@@ -1,0 +1,1 @@
+{"version":3,"sources":["main.scss"],"names":[],"mappings":"AAAA;EACC,eAAQ;EACC,uBAAA;EAAA,sBAAA;EAAA,eAAA;EACI,6BAAA;MAAA,wBAAA;UAAA,qBAAA;EACb,iCAAiB;MAAjB,uBAAiB;UAAjB,yBAAiB,EAAA","file":"main.css","sourcesContent":[".transect-figure {\n\theight: 180px;\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: center;\n}"],"sourceRoot":"/source/"}
