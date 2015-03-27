@@ -50,11 +50,11 @@
 	"repositories": [
 		{
 			"type": "vcs",
-			"url": "cebitec:/vol/biodtmin/git/dias-projects.git"
+			"url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-projects.git"
 		},
 		{
 			"type": "vcs",
-			"url": "cebitec:/vol/biodtmin/git/dias-transects.git"
+			"url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-transects.git"
 		}
 	]
 }

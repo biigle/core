@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "034dd4d51c0a6f7c8b6da158c7a4fead",
+    "hash": "c2ae1ceef891a5f118bdcb0ced921ebc",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -127,11 +127,8 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "cebitec:/vol/biodtmin/git/dias-projects.git",
-                "reference": "98a47022cdf356e8f7806f65ed286ab7b5883695"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.0"
+                "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-projects.git",
+                "reference": "1f502a0fb55f0adc7e3871947af270aa3e670b1f"
             },
             "type": "library",
             "autoload": {
@@ -139,21 +136,18 @@
                     "Dias\\Modules\\Projects\\": "src"
                 }
             },
-            "time": "2015-03-16 19:42:34"
+            "time": "2015-03-27 16:19:10"
         },
         {
             "name": "dias/transects",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "cebitec:/vol/biodtmin/git/dias-transects.git",
-                "reference": "d2cfc56b525ef28457c15678fcae2ea22029062b"
+                "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-transects.git",
+                "reference": "c057cf61db17691d5b8ba872ab30b252080c66bd"
             },
             "require": {
                 "dias/projects": "dev-master"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~4.0"
             },
             "type": "library",
             "autoload": {
@@ -161,7 +155,7 @@
                     "Dias\\Modules\\Transects\\": "src"
                 }
             },
-            "time": "2015-03-16 19:47:02"
+            "time": "2015-03-27 16:19:33"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
