@@ -1,0 +1,13 @@
+{
+    "name": "dias/annotations",
+    "require": {
+        "dias/transects": "dev-master"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Dias\\Modules\\Annotations\\": "src"
+        }
+    }
+}
