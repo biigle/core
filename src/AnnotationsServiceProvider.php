@@ -1,4 +1,4 @@
-<?php namespace Dias\Modules\Transects;
+<?php namespace Dias\Modules\Annotations;
 
 use Illuminate\Support\ServiceProvider;
 use Dias\Services\Modules;
