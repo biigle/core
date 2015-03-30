@@ -10,6 +10,7 @@ DISCOL Image Annotation Software
 - PHP JSON extension (`php5-json`)
 - PHP PGSQL extension (`php5-pgsql`)
 - PHP Fileinfo extension
+- PHP EXIF extension
 
 - PHP GD Library (>=2.0) (`php5-gd`) 
 - PostgreSQL

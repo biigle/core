@@ -83,7 +83,7 @@ class ProjectTransectApiTest extends ApiTestCase {
 			'url' => 'random',
 			'media_type_id' => MediaType::timeSeriesId(),
 			// empty parts should be discarded
-			'images' => "1.jpg, 2.jpg, , , ,"
+			'images' => "1.jpg, , 2.jpg, , ,"
 		));
 		$this->assertResponseOk();
 		$this->assertEquals($count + 1, $this->project->transects()->count());
