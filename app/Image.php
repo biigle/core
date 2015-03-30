@@ -151,7 +151,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
 	 * Get the original image file object. The image my be fetched from an
-	 * external resource.
+	 * external source.
 	 * 
 	 * @return InterventionImage
 	 */
