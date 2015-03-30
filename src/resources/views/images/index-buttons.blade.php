@@ -1,0 +1,1 @@
+<a href="{{ route('annotate', $image->id) }}" class="btn btn-success" title="Annotate this image">Annotate</a>

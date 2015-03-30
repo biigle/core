@@ -8,6 +8,6 @@ Route::group(array(
 {
 	$router->get('/{id}', array(
 		'as'   => 'annotate',
-		'uses' => 'AnnotationsController@index'
+		'uses' => 'AnnotationController@index'
 	));
 });
