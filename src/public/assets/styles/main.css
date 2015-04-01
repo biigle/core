@@ -11,10 +11,25 @@ html, body {
   z-index: 0;
   width: 100%;
   height: 100%;
-  padding-top: 50px; }
+  padding-top: 50px;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: columns;
+      -ms-flex-flow: columns;
+          flex-flow: columns; }
 
 .annotator__canvas {
-  height: 100%; }
+  height: 100%;
+  -webkit-flex: 2;
+      -ms-flex: 2;
+          flex: 2; }
 
 .canvas__svg {
   display: block; }
+
+.annotator__sidebar {
+  width: 200px;
+  padding: 1em;
+  background-color: #222;
+  border-left: 1px solid #090909; }

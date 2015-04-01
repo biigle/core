@@ -23,6 +23,7 @@ angular.module('dias.annotations').controller('SVGController', function ($scope,
 
 		var updateScaleTranslate = function (scale) {
 			scaleTmp = 1 - scale;
+			//TODO still jumps around while zooming, don't know why
 			$scope.scaleTranslateX = $scope.relativeMouseX * scaleTmp;
 			$scope.scaleTranslateY = $scope.relativeMouseY * scaleTmp;
 		};
@@ -40,9 +41,9 @@ angular.module('dias.annotations').controller('SVGController', function ($scope,
 				$scope.scale += scaleStep * e.deltaY;
 				e.preventDefault();
 			} else {
-				$scope.translateX += e.deltaX;
-				$scope.translateY += e.deltaY;
-				$scope.scale += e.deltaZ;
+				$scope.translateX -= e.deltaX / $scope.scale;
+				$scope.translateY -= e.deltaY / $scope.scale;
+				$scope.scale += scaleStep * e.deltaZ;
 			}
 		};
 

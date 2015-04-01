@@ -11,8 +11,12 @@ angular.module('dias.annotations', ['dias.api']);
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
  */
-angular.module('dias.annotations').controller('AnnotatorController', ["$scope", "$element", function ($scope, $element) {
+angular.module('dias.annotations').controller('AnnotatorController', ["$scope", "$element", "$attrs", "images", function ($scope, $element, $attrs, images) {
 		"use strict";
+
+		$scope.images = images;
+		images.init($attrs.transectId);
+		images.show(parseInt($attrs.imageId));
 	}]
 );
 /**
@@ -82,6 +86,7 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 
 		var updateScaleTranslate = function (scale) {
 			scaleTmp = 1 - scale;
+			//TODO still jumps around while zooming, don't know why
 			$scope.scaleTranslateX = $scope.relativeMouseX * scaleTmp;
 			$scope.scaleTranslateY = $scope.relativeMouseY * scaleTmp;
 		};
@@ -99,9 +104,9 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 				$scope.scale += scaleStep * e.deltaY;
 				e.preventDefault();
 			} else {
-				$scope.translateX += e.deltaX;
-				$scope.translateY += e.deltaY;
-				$scope.scale += e.deltaZ;
+				$scope.translateX -= e.deltaX / $scope.scale;
+				$scope.translateY -= e.deltaY / $scope.scale;
+				$scope.scale += scaleStep * e.deltaZ;
 			}
 		};
 
@@ -119,32 +124,82 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 );
 /**
  * @namespace dias.annotations
- * @ngdoc directive
- * @name ngSVG
+ * @ngdoc service
+ * @name images
  * @memberOf dias.annotations
- * @description A general directive that enables manipulation of SVG 
- * attributes like `width` or `x` by Angular.
+ * @description Manages (pre-)loading of the images to annotate.
  */
-angular.forEach(
-	[
-		'x',
-		'cx',
-		'y',
-		'cy',
-		'r',
-		'width',
-		'height',
-		'transform'
-	],
-	function(name) {
-		var ngName = 'ng' + name[0].toUpperCase() + name.slice(1);
-		angular.module('dias.annotations').directive(ngName, function() {
-			return function(scope, element, attrs) {
-				attrs.$observe(ngName, function(value) {
-					attrs.$set(name, value); 
-				});
+angular.module('dias.annotations').service('images', ["$rootScope", "TransectImage", "URL", function ($rootScope, TransectImage, URL) {
+		"use strict";
+
+		// svg namespace
+		var SVGNS = "http://www.w3.org/2000/svg";
+		var _this = this;
+		var imageIds = [];
+		var currentId;
+
+		this.buffer = [];
+		this.loading = true;
+
+		var show = function (id) {
+			for (var i = _this.buffer.length - 1; i >= 0; i--) {
+				_this.buffer[i]._show = _this.buffer[i]._id == id;
+			}
+			_this.loading = false;
+			currentId = id;
+		};
+
+		var hasIdInBuffer = function (id) {
+			for (var i = _this.buffer.length - 1; i >= 0; i--) {
+				if (_this.buffer[i]._id == id) {
+					return true;
+				}
+			}
+			return false;
+		};
+
+		var fetchImage = function (id) {
+			if (hasIdInBuffer(id)) {
+				show(id);
+				return;
+			}
+
+			_this.loading = true;
+			var img = document.createElement('img');
+			img._id = id;
+			img.onload = function () {
+				_this.buffer.push(img);
+				show(id);
+				$rootScope.$apply();
 			};
-		});
-	}
+			img.src = URL + "/api/v1/images/" + id + "/file";
+			// var img = document.createElementNS(SVGNS, "image");
+			// img.href.baseVal = URL + "/api/v1/images/" + 1 + "/file";
+			// img.width.baseVal.value = 100;
+			// img.height.baseVal.value = 100;
+			// console.log(img, img2);
+		};
+
+		// initializes the service for a given transect and a given "start" image
+		this.init = function (transectId) {
+			imageIds = TransectImage.query({transect_id: transectId});
+			
+		};
+
+		this.show = function (id) {
+			fetchImage(id);
+		};
+
+		this.next = function () {
+			var index = imageIds.indexOf(currentId);
+			fetchImage(imageIds[(index + 1) % imageIds.length]);
+		};
+
+		this.prev = function () {
+			var index = imageIds.indexOf(currentId);
+			var length = imageIds.length;
+			fetchImage(imageIds[(index - 1 + length) % length]);
+		};
+	}]
 );
 //# sourceMappingURL=main.js.map
