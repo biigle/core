@@ -84,11 +84,13 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 		$scope.relativeMouseX = $scope.mouseX;
 		$scope.relativeMouseY = $scope.mouseY;
 
-		var updateScaleTranslate = function (scale) {
-			scaleTmp = 1 - scale;
-			//TODO still jumps around while zooming, don't know why
-			$scope.scaleTranslateX = $scope.relativeMouseX * scaleTmp;
-			$scope.scaleTranslateY = $scope.relativeMouseY * scaleTmp;
+		// scale around the cursor
+		// see http://stackoverflow.com/a/20996105/1796523
+		var updateScaleTranslate = function (scale, oldScale) {
+			var scaleDifference = scale / oldScale;
+
+			$scope.scaleTranslateX = scaleDifference * ($scope.scaleTranslateX - $scope.mouseX) + $scope.mouseX;
+			$scope.scaleTranslateY = scaleDifference * ($scope.scaleTranslateY - $scope.mouseY) + $scope.mouseY;
 		};
 
 		var updateRelativeMouseX = function (mouseX) {
@@ -101,12 +103,12 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 
 		var transform = function (e) {
 			if (e.ctrlKey) {
-				$scope.scale += scaleStep * e.deltaY;
+				$scope.scale -= scaleStep * e.deltaY;
 				e.preventDefault();
 			} else {
 				$scope.translateX -= e.deltaX / $scope.scale;
 				$scope.translateY -= e.deltaY / $scope.scale;
-				$scope.scale += scaleStep * e.deltaZ;
+				$scope.scale -= scaleStep * e.deltaZ;
 			}
 		};
 
@@ -114,8 +116,6 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 			$scope.$apply(function () { transform(e); });
 		});
 
-		// scale around the cursor
-		// see http://commons.oreilly.com/wiki/index.php/SVG_Essentials/Transforming_the_Coordinate_System#Technique:_Scaling_Around_a_Center_Point
 		$scope.$watch('scale', updateScaleTranslate);
 
 		$scope.$watch('mouseX', updateRelativeMouseX);

@@ -22,7 +22,7 @@
 				<use xlink:href="#marker" data-ng-attr-transform="translate(@{{relativeMouseX}}, @{{relativeMouseY}})"/>
 			</g>
 
-			<image data-ng-if="images.loading" x="0" y="0" width="50" height="50" xlink:href="{{ asset('assets/images/dias_Jelly-Fish.png') }}" data-ng-attr-transform="translate(-25, -25) translate(@{{width/2}}, @{{height/2}})">
+			<image data-ng-if="images.loading" x="0" y="0" width="50" height="50" xlink:href="{{ asset('assets/images/dias_Jelly-Fish.png') }}" data-ng-attr-transform="translate(@{{width/2 - 25}}, @{{height/2 - 25}})">
 				<animate attributeName="y" calcMode="spline" dur="1s" repeatCount="indefinite" from="30" to="30" values="30;-30;30" keySplines="0.4 0.8 0.4 0.8;0.8 0.4 0.8 0.4" keyTimes="0;0.5;1"></animate>
 			</image>
 		</svg>
