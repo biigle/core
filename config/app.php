@@ -151,6 +151,7 @@ return [
 		'Intervention\Image\ImageServiceProvider',
 		'Dias\Modules\Projects\ProjectsServiceProvider',
 		'Dias\Modules\Transects\TransectsServiceProvider',
+		'Dias\Modules\Annotations\AnnotationsServiceProvider',
 	],
 
 	/*

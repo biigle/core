@@ -3,6 +3,7 @@
 use Dias\MediaType;
 use Dias\Transect;
 use Dias\Role;
+use Dias\Image;
 
 class ProjectTransectApiTest extends ApiTestCase {
 
@@ -74,15 +75,19 @@ class ProjectTransectApiTest extends ApiTestCase {
 		$this->assertResponseStatus(422);
 
 		$count = $this->project->transects()->count();
+		$imageCount = Image::all()->count();
+
 		$r = $this->callAjax('POST', '/api/v1/projects/'.$id.'/transects', array(
 			'_token' => Session::token(),
 			'name' => 'my transect no. 1',
 			'url' => 'random',
 			'media_type_id' => MediaType::timeSeriesId(),
-			'images' => "1.jpg, 2.jpg"
+			// empty parts should be discarded
+			'images' => "1.jpg, , 2.jpg, , ,"
 		));
 		$this->assertResponseOk();
 		$this->assertEquals($count + 1, $this->project->transects()->count());
+		$this->assertEquals($imageCount + 2, Image::all()->count());
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
 

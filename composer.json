@@ -8,7 +8,8 @@
 		"laravel/framework": "5.0.*",
 		"intervention/image": "~2.1",
 		"dias/projects": "dev-master",
-		"dias/transects": "dev-master"
+		"dias/transects": "dev-master",
+		"dias/annotations": "dev-master"
 	},
 	"require-dev": {
 		"codeception/codeception": "~2.0",
@@ -55,6 +56,10 @@
 		{
 			"type": "vcs",
 			"url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-transects.git"
+		},
+		{
+			"type": "vcs",
+			"url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-annotations.git"
 		}
 	]
 }

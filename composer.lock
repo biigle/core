@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c2ae1ceef891a5f118bdcb0ced921ebc",
+    "hash": "8b73c97b1c35a586581b3e89a54114a7",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -121,6 +121,25 @@
                 "utils"
             ],
             "time": "2015-02-10 06:19:18"
+        },
+        {
+            "name": "dias/annotations",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-annotations.git",
+                "reference": "81a52fd6477eb797ea93430dab97fb34495a896f"
+            },
+            "require": {
+                "dias/transects": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Dias\\Modules\\Annotations\\": "src"
+                }
+            },
+            "time": "2015-03-30 10:13:58"
         },
         {
             "name": "dias/projects",
@@ -3539,6 +3558,7 @@
     "stability-flags": {
         "dias/projects": 20,
         "dias/transects": 20,
+        "dias/annotations": 20,
         "sami/sami": 20,
         "mockery/mockery": 20
     },

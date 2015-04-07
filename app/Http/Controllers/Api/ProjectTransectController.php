@@ -38,7 +38,12 @@ class ProjectTransectController extends Controller {
 		$transect->setMediaTypeId($this->request->input('media_type_id'));
 		$transect->creator()->associate($this->user);
 
-		$images = preg_split('/\s*,\s*/', $this->request->input('images'));
+		$images = preg_split(
+			'/\s*,\s*/',
+			$this->request->input('images'),
+			null,
+			PREG_SPLIT_NO_EMPTY
+		);
 
 		if (empty($images) || !is_array($images))
 		{
