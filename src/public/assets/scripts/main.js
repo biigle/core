@@ -71,55 +71,100 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "$e
 angular.module('dias.annotations').controller('SVGController', ["$scope", "$element", function ($scope, $element) {
 		"use strict";
 
+		// the scale change per scaling operation
 		var scaleStep = 0.05;
-		var scaleTmp;
+		// the minimal scale
+		var minScale = 1;
+		// is the user currently panning?
+		var panning = false;
+		// translate values when panning starts
+		var panningStartTranslateX = 0;
+		var panningStartTranslateY = 0;
+		// mouse position when panning starts
+		var panningStartMouseX = 0;
+		var panningStartMouseY = 0;
 
+		// the current scale of the elements
 		$scope.scale = 1;
-		// translate the elements so they appear to be zooming towards the cursor
-		$scope.scaleTranslateX = 0;
-		$scope.scaleTranslateY = 0;
+		// the current translation (position) of the elements
 		$scope.translateX = 0;
 		$scope.translateY = 0;
 		// mouse position taking zooming and translating into account
 		$scope.relativeMouseX = $scope.mouseX;
 		$scope.relativeMouseY = $scope.mouseY;
 
-		// scale around the cursor
+		// makes sure the translate boundaries are kept
+		var updateTranslate = function (translateX, translateY) {
+			// scaleFactor for the right/bottom edge
+			var scaleFactor = 1 - $scope.scale;
+			// right
+			translateX = Math.max(translateX, $scope.width * scaleFactor);
+			// bottom
+			translateY = Math.max(translateY, $scope.height * scaleFactor);
+			// left
+			$scope.translateX = Math.min(translateX, 0);
+			// top
+			$scope.translateY = Math.min(translateY, 0);
+		};
+
+		// scale towards the cursor
 		// see http://stackoverflow.com/a/20996105/1796523
 		var updateScaleTranslate = function (scale, oldScale) {
 			var scaleDifference = scale / oldScale;
 
-			$scope.scaleTranslateX = scaleDifference * ($scope.scaleTranslateX - $scope.mouseX) + $scope.mouseX;
-			$scope.scaleTranslateY = scaleDifference * ($scope.scaleTranslateY - $scope.mouseY) + $scope.mouseY;
-		};
+			var translateX = scaleDifference * ($scope.translateX - $scope.mouseX) + $scope.mouseX;
+			var translateY = scaleDifference * ($scope.translateY - $scope.mouseY) + $scope.mouseY;
 
-		var updateRelativeMouseX = function (mouseX) {
-			$scope.relativeMouseX = (mouseX - $scope.scaleTranslateX) / $scope.scale - $scope.translateX;
+			updateTranslate(translateX, translateY);
 		};
-
-		var updateRelativeMouseY = function (mouseY) {
-			$scope.relativeMouseY = (mouseY - $scope.scaleTranslateY) / $scope.scale - $scope.translateY;
-		};
-
-		var transform = function (e) {
-			if (e.ctrlKey) {
-				$scope.scale -= scaleStep * e.deltaY;
-				e.preventDefault();
-			} else {
-				$scope.translateX -= e.deltaX / $scope.scale;
-				$scope.translateY -= e.deltaY / $scope.scale;
-				$scope.scale -= scaleStep * e.deltaZ;
-			}
-		};
-
-		$element.on('wheel', function (e) {
-			$scope.$apply(function () { transform(e); });
-		});
 
 		$scope.$watch('scale', updateScaleTranslate);
 
+		var updateRelativeMouseX = function (mouseX) {
+			$scope.relativeMouseX = (mouseX - $scope.translateX) / $scope.scale;
+		};
+
 		$scope.$watch('mouseX', updateRelativeMouseX);
+
+		var updateRelativeMouseY = function (mouseY) {
+			$scope.relativeMouseY = (mouseY - $scope.translateY) / $scope.scale;
+		};
+
 		$scope.$watch('mouseY', updateRelativeMouseY);
+
+		var zoom = function (e) {
+			var scale = $scope.scale - scaleStep * e.deltaY;
+			$scope.scale = Math.max(scale, minScale);
+			e.preventDefault();
+		};
+
+		$element.on('wheel', function (e) {
+			$scope.$apply(function () { zoom(e); });
+		});
+
+		$scope.startPanning = function (event) {
+			panning = true;
+			panningStartTranslateX = $scope.translateX;
+			panningStartTranslateY = $scope.translateY;
+			panningStartMouseX = $scope.mouseX;
+			panningStartMouseY = $scope.mouseY;
+
+			// prevent default drag & drop behaviour for images
+			event.preventDefault();
+		};
+
+		$scope.pan = function () {
+			if (!panning) return;
+
+			var translateX = panningStartTranslateX - (panningStartMouseX - $scope.mouseX);
+			var translateY = panningStartTranslateY - (panningStartMouseY - $scope.mouseY);
+
+			updateTranslate(translateX, translateY);
+		};
+
+		$scope.stopPanning = function () {
+			panning = false;
+		};
 	}]
 );
 /**
@@ -141,12 +186,22 @@ angular.module('dias.annotations').service('images', ["$rootScope", "TransectIma
 		this.buffer = [];
 		this.loading = true;
 
+		var getImage = function (id) {
+			for (var i = _this.buffer.length - 1; i >= 0; i--) {
+				if (_this.buffer[i]._id == id) return _this.buffer[i];
+			}
+
+			return undefined;
+		};
+
 		var show = function (id) {
 			for (var i = _this.buffer.length - 1; i >= 0; i--) {
 				_this.buffer[i]._show = _this.buffer[i]._id == id;
 			}
 			_this.loading = false;
 			currentId = id;
+
+			$rootScope.$broadcast('images::show', getImage(id));
 		};
 
 		var hasIdInBuffer = function (id) {
@@ -180,25 +235,43 @@ angular.module('dias.annotations').service('images', ["$rootScope", "TransectIma
 			// console.log(img, img2);
 		};
 
-		// initializes the service for a given transect and a given "start" image
+		/**
+		 * Initializes the service for a given transect.
+		 */
 		this.init = function (transectId) {
 			imageIds = TransectImage.query({transect_id: transectId});
 			
 		};
 
+		/**
+		 * Show the image with the specified ID.
+		 */
 		this.show = function (id) {
 			fetchImage(id);
 		};
 
+		/**
+		 * Show the next image.
+		 */
 		this.next = function () {
 			var index = imageIds.indexOf(currentId);
-			fetchImage(imageIds[(index + 1) % imageIds.length]);
+			_this.show(imageIds[(index + 1) % imageIds.length]);
 		};
 
+		/**
+		 * Show the previous image.
+		 */
 		this.prev = function () {
 			var index = imageIds.indexOf(currentId);
 			var length = imageIds.length;
-			fetchImage(imageIds[(index - 1 + length) % length]);
+			_this.show(imageIds[(index - 1 + length) % length]);
+		};
+
+		/**
+		 * Returns the currently displayed image.
+		 */
+		this.current = function () {
+			return getImage(currentId);
 		};
 	}]
 );

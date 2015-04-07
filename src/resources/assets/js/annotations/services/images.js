@@ -17,12 +17,22 @@ angular.module('dias.annotations').service('images', function ($rootScope, Trans
 		this.buffer = [];
 		this.loading = true;
 
+		var getImage = function (id) {
+			for (var i = _this.buffer.length - 1; i >= 0; i--) {
+				if (_this.buffer[i]._id == id) return _this.buffer[i];
+			}
+
+			return undefined;
+		};
+
 		var show = function (id) {
 			for (var i = _this.buffer.length - 1; i >= 0; i--) {
 				_this.buffer[i]._show = _this.buffer[i]._id == id;
 			}
 			_this.loading = false;
 			currentId = id;
+
+			$rootScope.$broadcast('images::show', getImage(id));
 		};
 
 		var hasIdInBuffer = function (id) {
@@ -56,25 +66,43 @@ angular.module('dias.annotations').service('images', function ($rootScope, Trans
 			// console.log(img, img2);
 		};
 
-		// initializes the service for a given transect and a given "start" image
+		/**
+		 * Initializes the service for a given transect.
+		 */
 		this.init = function (transectId) {
 			imageIds = TransectImage.query({transect_id: transectId});
 			
 		};
 
+		/**
+		 * Show the image with the specified ID.
+		 */
 		this.show = function (id) {
 			fetchImage(id);
 		};
 
+		/**
+		 * Show the next image.
+		 */
 		this.next = function () {
 			var index = imageIds.indexOf(currentId);
-			fetchImage(imageIds[(index + 1) % imageIds.length]);
+			_this.show(imageIds[(index + 1) % imageIds.length]);
 		};
 
+		/**
+		 * Show the previous image.
+		 */
 		this.prev = function () {
 			var index = imageIds.indexOf(currentId);
 			var length = imageIds.length;
-			fetchImage(imageIds[(index - 1 + length) % length]);
+			_this.show(imageIds[(index - 1 + length) % length]);
+		};
+
+		/**
+		 * Returns the currently displayed image.
+		 */
+		this.current = function () {
+			return getImage(currentId);
 		};
 	}
 );
