@@ -5,22 +5,11 @@
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
  */
-angular.module('dias.annotations').controller('AnnotatorController', function ($scope, $element, $attrs, images) {
+angular.module('dias.annotations').controller('AnnotatorController', function ($scope, $attrs, images) {
 		"use strict";
 
-		$scope.images = images.buffer;
+		$scope.images = images;
 		$scope.imageLoading = true;
-
-		var finishLoading = function () {
-			$scope.imageLoading = false;
-		};
-
-		var startLoading = function () {
-			$scope.imageLoading = true;
-		};
-
-		images.init($attrs.transectId);
-		images.show(parseInt($attrs.imageId)).then(finishLoading);
 
 		// state of the svg
 		$scope.svg = {
@@ -34,6 +23,14 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 			mouseY: 0
 		};
 
+		var finishLoading = function () {
+			$scope.imageLoading = false;
+		};
+
+		var startLoading = function () {
+			$scope.imageLoading = true;
+		};
+
 		$scope.nextImage = function () {
 			startLoading();
 			images.next().then(finishLoading);
@@ -43,5 +40,8 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 			startLoading();
 			images.prev().then(finishLoading);
 		};
+
+		images.init($attrs.transectId);
+		images.show(parseInt($attrs.imageId)).then(finishLoading);
 	}
 );

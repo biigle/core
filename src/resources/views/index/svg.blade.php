@@ -3,7 +3,7 @@
 		<circle id="marker" data-ng-attr-r="@{{10 / svg.scale}}" fill="red"/>
 	</defs>
 	<g data-ng-attr-transform="translate(@{{ svg.translateX }}, @{{ svg.translateY }}) scale(@{{ svg.scale }})" data-ng-mousedown="startPanning($event)" data-ng-mousemove="pan()" data-ng-mouseup="stopPanning()">
-		<image xlink:href="" data-ng-attr-xlink:href="@{{ image.src }}" data-ng-attr-height="@{{ height }}" data-ng-attr-width="@{{ width }}" data-ng-repeat="image in images | filter: {_show: true}" data-ng-index="@{{ image._index }}"/>
+		<image data-ng-if="images.currentImage" xlink:href="" data-ng-attr-xlink:href="@{{ images.currentImage.src }}" data-ng-attr-height="@{{ height }}" data-ng-attr-width="@{{ width }}" />
 		{{-- <use xlink:href="#marker" data-ng-attr-transform="translate(@{{ svg.mouseX }}, @{{ svg.mouseY }})"/> --}}
 	</g>
 

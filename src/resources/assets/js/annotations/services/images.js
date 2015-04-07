@@ -11,20 +11,20 @@ angular.module('dias.annotations').service('images', function (TransectImage, UR
 		var _this = this;
 		// array of all image IDs of the transect
 		var imageIds = [];
-		// ID of the image currently in `show` state
-		var currentId;
 		// maximum number of images to hold in buffer
 		var MAX_BUFFER_SIZE = 10;
-
 		// buffer of already loaded images
-		this.buffer = [];
+		var buffer = [];
+
+		// the currently shown image
+		this.currentImage = undefined;
 
 		/**
 		 * Returns the next ID of the specified image or the next ID of the 
 		 * current image if no image was specified.
 		 */
 		var nextId = function (id) {
-			id = id || currentId;
+			id = id || _this.currentImage._id;
 			var index = imageIds.indexOf(id);
 			return imageIds[(index + 1) % imageIds.length];
 		};
@@ -34,8 +34,8 @@ angular.module('dias.annotations').service('images', function (TransectImage, UR
 		 * the current image if no image was specified.
 		 */
 		var prevId = function (id) {
-			id = id || currentId;
-			var index = imageIds.indexOf(currentId);
+			id = id || _this.currentImage._id;
+			var index = imageIds.indexOf(id);
 			var length = imageIds.length;
 			return imageIds[(index - 1 + length) % length];
 		};
@@ -45,22 +45,19 @@ angular.module('dias.annotations').service('images', function (TransectImage, UR
 		 * not buffered.
 		 */
 		var getImage = function (id) {
-			id = id || currentId;
-			for (var i = _this.buffer.length - 1; i >= 0; i--) {
-				if (_this.buffer[i]._id == id) return _this.buffer[i];
+			id = id || _this.currentImage._id;
+			for (var i = buffer.length - 1; i >= 0; i--) {
+				if (buffer[i]._id == id) return buffer[i];
 			}
 
 			return undefined;
 		};
 
 		/**
-		 * Sets the specified image to the `show` state.
+		 * Sets the specified image to as the currently shown image.
 		 */
 		var show = function (id) {
-			for (var i = _this.buffer.length - 1; i >= 0; i--) {
-				_this.buffer[i]._show = _this.buffer[i]._id == id;
-			}
-			currentId = id;
+			_this.currentImage = getImage(id);
 		};
 
 		/**
@@ -78,10 +75,10 @@ angular.module('dias.annotations').service('images', function (TransectImage, UR
 				img = document.createElement('img');
 				img._id = id;
 				img.onload = function () {
-					_this.buffer.push(img);
+					buffer.push(img);
 					// control maximum buffer size
-					if (_this.buffer.length > MAX_BUFFER_SIZE) {
-						_this.buffer.shift();
+					if (buffer.length > MAX_BUFFER_SIZE) {
+						buffer.shift();
 					}
 					deferred.resolve(img);
 				};

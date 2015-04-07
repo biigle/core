@@ -11,22 +11,11 @@ angular.module('dias.annotations', ['dias.api']);
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
  */
-angular.module('dias.annotations').controller('AnnotatorController', ["$scope", "$element", "$attrs", "images", function ($scope, $element, $attrs, images) {
+angular.module('dias.annotations').controller('AnnotatorController', ["$scope", "$attrs", "images", function ($scope, $attrs, images) {
 		"use strict";
 
-		$scope.images = images.buffer;
+		$scope.images = images;
 		$scope.imageLoading = true;
-
-		var finishLoading = function () {
-			$scope.imageLoading = false;
-		};
-
-		var startLoading = function () {
-			$scope.imageLoading = true;
-		};
-
-		images.init($attrs.transectId);
-		images.show(parseInt($attrs.imageId)).then(finishLoading);
 
 		// state of the svg
 		$scope.svg = {
@@ -40,6 +29,14 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
 			mouseY: 0
 		};
 
+		var finishLoading = function () {
+			$scope.imageLoading = false;
+		};
+
+		var startLoading = function () {
+			$scope.imageLoading = true;
+		};
+
 		$scope.nextImage = function () {
 			startLoading();
 			images.next().then(finishLoading);
@@ -49,6 +46,9 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
 			startLoading();
 			images.prev().then(finishLoading);
 		};
+
+		images.init($attrs.transectId);
+		images.show(parseInt($attrs.imageId)).then(finishLoading);
 	}]
 );
 /**
@@ -98,7 +98,8 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "$e
  * @ngdoc controller
  * @name SVGController
  * @memberOf dias.annotations
- * @description Controller for the annotation canvas SVG element
+ * @description Controller for the annotation canvas SVG element handling
+ * the zooming and panning etc.
  */
 angular.module('dias.annotations').controller('SVGController', ["$scope", "$element", function ($scope, $element) {
 		"use strict";
@@ -206,20 +207,20 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
 		var _this = this;
 		// array of all image IDs of the transect
 		var imageIds = [];
-		// ID of the image currently in `show` state
-		var currentId;
 		// maximum number of images to hold in buffer
 		var MAX_BUFFER_SIZE = 10;
-
 		// buffer of already loaded images
-		this.buffer = [];
+		var buffer = [];
+
+		// the currently shown image
+		this.currentImage = undefined;
 
 		/**
 		 * Returns the next ID of the specified image or the next ID of the 
 		 * current image if no image was specified.
 		 */
 		var nextId = function (id) {
-			id = id || currentId;
+			id = id || _this.currentImage._id;
 			var index = imageIds.indexOf(id);
 			return imageIds[(index + 1) % imageIds.length];
 		};
@@ -229,8 +230,8 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
 		 * the current image if no image was specified.
 		 */
 		var prevId = function (id) {
-			id = id || currentId;
-			var index = imageIds.indexOf(currentId);
+			id = id || _this.currentImage._id;
+			var index = imageIds.indexOf(id);
 			var length = imageIds.length;
 			return imageIds[(index - 1 + length) % length];
 		};
@@ -240,22 +241,19 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
 		 * not buffered.
 		 */
 		var getImage = function (id) {
-			id = id || currentId;
-			for (var i = _this.buffer.length - 1; i >= 0; i--) {
-				if (_this.buffer[i]._id == id) return _this.buffer[i];
+			id = id || _this.currentImage._id;
+			for (var i = buffer.length - 1; i >= 0; i--) {
+				if (buffer[i]._id == id) return buffer[i];
 			}
 
 			return undefined;
 		};
 
 		/**
-		 * Sets the specified image to the `show` state.
+		 * Sets the specified image to as the currently shown image.
 		 */
 		var show = function (id) {
-			for (var i = _this.buffer.length - 1; i >= 0; i--) {
-				_this.buffer[i]._show = _this.buffer[i]._id == id;
-			}
-			currentId = id;
+			_this.currentImage = getImage(id);
 		};
 
 		/**
@@ -273,10 +271,10 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
 				img = document.createElement('img');
 				img._id = id;
 				img.onload = function () {
-					_this.buffer.push(img);
+					buffer.push(img);
 					// control maximum buffer size
-					if (_this.buffer.length > MAX_BUFFER_SIZE) {
-						_this.buffer.shift();
+					if (buffer.length > MAX_BUFFER_SIZE) {
+						buffer.shift();
 					}
 					deferred.resolve(img);
 				};

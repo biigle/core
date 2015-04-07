@@ -3,7 +3,8 @@
  * @ngdoc controller
  * @name SVGController
  * @memberOf dias.annotations
- * @description Controller for the annotation canvas SVG element
+ * @description Controller for the annotation canvas SVG element handling
+ * the zooming and panning etc.
  */
 angular.module('dias.annotations').controller('SVGController', function ($scope, $element) {
 		"use strict";
