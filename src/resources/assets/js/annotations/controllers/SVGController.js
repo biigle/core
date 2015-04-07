@@ -13,8 +13,6 @@ angular.module('dias.annotations').controller('SVGController', function ($scope,
 		var scaleStep = 0.05;
 		// the minimal scale
 		var minScale = 1;
-		// is the user currently panning?
-		var panning = false;
 		// translate values when panning starts
 		var panningStartTranslateX = 0;
 		var panningStartTranslateY = 0;
@@ -25,6 +23,9 @@ angular.module('dias.annotations').controller('SVGController', function ($scope,
 		// the inherited svg state object
 		var svg = $scope.svg;
 
+		// is the user currently panning?
+		$scope.panning = false;
+
 		// makes sure the translate boundaries are kept
 		var updateTranslate = function (translateX, translateY) {
 			// scaleFactor for the right/bottom edge
@@ -34,9 +35,12 @@ angular.module('dias.annotations').controller('SVGController', function ($scope,
 			// bottom
 			translateY = Math.max(translateY, $scope.height * scaleFactor);
 			// left
-			svg.translateX = Math.min(translateX, 0);
+			translateX = Math.min(translateX, 0);
 			// top
-			svg.translateY = Math.min(translateY, 0);
+			translateY = Math.min(translateY, 0);
+
+			svg.translateX = Math.round(translateX);
+			svg.translateY = Math.round(translateY);
 		};
 
 		// scale towards the cursor
@@ -66,6 +70,7 @@ angular.module('dias.annotations').controller('SVGController', function ($scope,
 
 		var zoom = function (e) {
 			var scale = svg.scale - scaleStep * e.deltaY;
+			scale = Math.round(scale * 1000) / 1000;
 			svg.scale = Math.max(scale, minScale);
 			e.preventDefault();
 		};
@@ -75,7 +80,7 @@ angular.module('dias.annotations').controller('SVGController', function ($scope,
 		});
 
 		$scope.startPanning = function (event) {
-			panning = true;
+			$scope.panning = true;
 			panningStartTranslateX = svg.translateX;
 			panningStartTranslateY = svg.translateY;
 			panningStartMouseX = $scope.mouseX;
@@ -83,10 +88,11 @@ angular.module('dias.annotations').controller('SVGController', function ($scope,
 
 			// prevent default drag & drop behaviour for images
 			event.preventDefault();
+			$scope.$emit('svg.panning.start');
 		};
 
 		$scope.pan = function () {
-			if (!panning) return;
+			if (!$scope.panning) return;
 
 			var translateX = panningStartTranslateX - (panningStartMouseX - $scope.mouseX);
 			var translateY = panningStartTranslateY - (panningStartMouseY - $scope.mouseY);
@@ -95,7 +101,8 @@ angular.module('dias.annotations').controller('SVGController', function ($scope,
 		};
 
 		$scope.stopPanning = function () {
-			panning = false;
+			$scope.panning = false;
+			$scope.$emit('svg.panning.stop');
 		};
 	}
 );

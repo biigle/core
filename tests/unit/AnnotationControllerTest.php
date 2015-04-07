@@ -17,22 +17,22 @@ class AnnotationControllerTest extends TestCase {
 		$user->save();
 
 		// not logged in
-		$this->call('GET', 'annotate/?i='.$image->id);
+		$this->call('GET', 'annotate/'.$image->id);
 		$this->assertResponseStatus(302);
 
 		// doesn't belong to project
 		$this->be($user);
-		$this->call('GET', 'annotate/?i='.$image->id);
+		$this->call('GET', 'annotate/'.$image->id);
 		$this->assertResponseStatus(401);
 
 		$this->be($project->creator);
-		$this->call('GET', 'annotate/?i='.$image->id);
+		$this->call('GET', 'annotate/'.$image->id);
 		$this->assertResponseOk();
 		$this->assertViewHas('user');
 		$this->assertViewHas('image');
 
 		// doesn't exist
-		$this->call('GET', 'annotate/?i=-1');
+		$this->call('GET', 'annotate/-1');
 		$this->assertResponseStatus(404);
 	}
 }

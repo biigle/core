@@ -28,6 +28,10 @@ html, body {
 
 .canvas__svg {
 	display: block;
+
+	&.panning {
+		cursor: move;
+	}
 }
 
 .annotator__sidebar {

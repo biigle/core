@@ -1,9 +1,10 @@
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink" class="canvas__svg" data-ng-attr-height="@{{ height }}" data-ng-attr-width="@{{ width }}" data-ng-controller="SVGController">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink" class="canvas__svg" data-ng-attr-height="@{{ height }}" data-ng-attr-width="@{{ width }}" data-ng-controller="SVGController" data-ng-class="{panning: panning}">
 	<defs>
 		<circle id="marker" data-ng-attr-r="@{{10 / svg.scale}}" fill="red"/>
 	</defs>
 	<g data-ng-attr-transform="translate(@{{ svg.translateX }}, @{{ svg.translateY }}) scale(@{{ svg.scale }})" data-ng-mousedown="startPanning($event)" data-ng-mousemove="pan()" data-ng-mouseup="stopPanning()">
-		<image data-ng-if="images.currentImage" xlink:href="" data-ng-attr-xlink:href="@{{ images.currentImage.src }}" data-ng-attr-height="@{{ height }}" data-ng-attr-width="@{{ width }}" />
+		{{-- ng-if and xlink:href are initially required! --}}
+		<image xlink:href="" data-ng-if="images.currentImage" data-ng-attr-xlink:href="@{{ images.currentImage.src }}" data-ng-attr-height="@{{ height }}" data-ng-attr-width="@{{ width }}" />
 		{{-- <use xlink:href="#marker" data-ng-attr-transform="translate(@{{ svg.mouseX }}, @{{ svg.mouseY }})"/> --}}
 	</g>
 

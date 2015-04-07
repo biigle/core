@@ -6,7 +6,7 @@ Route::group(array(
 		'prefix' => 'annotate'
 	), function ($router)
 {
-	$router->get('/', array(
+	$router->get('/{id}', array(
 		'as'   => 'annotate',
 		'uses' => 'AnnotationController@index'
 	));

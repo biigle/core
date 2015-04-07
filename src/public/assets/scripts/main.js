@@ -11,7 +11,7 @@ angular.module('dias.annotations', ['dias.api']);
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
  */
-angular.module('dias.annotations').controller('AnnotatorController', ["$scope", "$attrs", "images", function ($scope, $attrs, images) {
+angular.module('dias.annotations').controller('AnnotatorController', ["$scope", "$attrs", "images", "urlParams", function ($scope, $attrs, images, urlParams) {
 		"use strict";
 
 		$scope.images = images;
@@ -20,10 +20,12 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
 		// state of the svg
 		$scope.svg = {
 			// the current scale of the elements
-			scale: 1,
+			scale: urlParams.get('s') || 1,
 			// the current translation (position) of the elements
-			translateX: 0,
-			translateY: 0,
+			// the values are stored negated to save the '-' in the URL
+			// (because they are always/mostly negative)
+			translateX: -urlParams.get('x') || 0,
+			translateY: -urlParams.get('y') || 0,
 			// mouse position taking zooming and translating into account
 			mouseX: 0,
 			mouseY: 0
@@ -31,6 +33,7 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
 
 		var finishLoading = function () {
 			$scope.imageLoading = false;
+			urlParams.pushState($scope.images.currentImage._id);
 		};
 
 		var startLoading = function () {
@@ -46,6 +49,24 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
 			startLoading();
 			images.prev().then(finishLoading);
 		};
+
+		$scope.$watch('svg.scale', function (scale) {
+			// scaling affects translate as well
+			urlParams.set({
+				s: scale,
+				// make sure to store the negated values
+				x: -$scope.svg.translateX,
+				y: -$scope.svg.translateY
+			});
+		});
+
+		$scope.$on('svg.panning.stop', function () {
+			urlParams.set({
+				// make sure to store the negated values
+				x: -$scope.svg.translateX,
+				y: -$scope.svg.translateY
+			});
+		});
 
 		images.init($attrs.transectId);
 		images.show(parseInt($attrs.imageId)).then(finishLoading);
@@ -108,8 +129,6 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 		var scaleStep = 0.05;
 		// the minimal scale
 		var minScale = 1;
-		// is the user currently panning?
-		var panning = false;
 		// translate values when panning starts
 		var panningStartTranslateX = 0;
 		var panningStartTranslateY = 0;
@@ -120,6 +139,9 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 		// the inherited svg state object
 		var svg = $scope.svg;
 
+		// is the user currently panning?
+		$scope.panning = false;
+
 		// makes sure the translate boundaries are kept
 		var updateTranslate = function (translateX, translateY) {
 			// scaleFactor for the right/bottom edge
@@ -129,9 +151,12 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 			// bottom
 			translateY = Math.max(translateY, $scope.height * scaleFactor);
 			// left
-			svg.translateX = Math.min(translateX, 0);
+			translateX = Math.min(translateX, 0);
 			// top
-			svg.translateY = Math.min(translateY, 0);
+			translateY = Math.min(translateY, 0);
+
+			svg.translateX = Math.round(translateX);
+			svg.translateY = Math.round(translateY);
 		};
 
 		// scale towards the cursor
@@ -161,6 +186,7 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 
 		var zoom = function (e) {
 			var scale = svg.scale - scaleStep * e.deltaY;
+			scale = Math.round(scale * 1000) / 1000;
 			svg.scale = Math.max(scale, minScale);
 			e.preventDefault();
 		};
@@ -170,7 +196,7 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 		});
 
 		$scope.startPanning = function (event) {
-			panning = true;
+			$scope.panning = true;
 			panningStartTranslateX = svg.translateX;
 			panningStartTranslateY = svg.translateY;
 			panningStartMouseX = $scope.mouseX;
@@ -178,10 +204,11 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 
 			// prevent default drag & drop behaviour for images
 			event.preventDefault();
+			$scope.$emit('svg.panning.start');
 		};
 
 		$scope.pan = function () {
-			if (!panning) return;
+			if (!$scope.panning) return;
 
 			var translateX = panningStartTranslateX - (panningStartMouseX - $scope.mouseX);
 			var translateY = panningStartTranslateY - (panningStartMouseY - $scope.mouseY);
@@ -190,7 +217,8 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 		};
 
 		$scope.stopPanning = function () {
-			panning = false;
+			$scope.panning = false;
+			$scope.$emit('svg.panning.stop');
 		};
 	}]
 );
@@ -332,5 +360,66 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
 			return _this.show(prevId());
 		};
 	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc service
+ * @name urlParams
+ * @memberOf dias.annotations
+ * @description The GET parameters of the url.
+ */
+angular.module('dias.annotations').service('urlParams', function () {
+		"use strict";
+
+		var state = {};
+		var slug = '';
+
+		var decodeState = function () {
+			var params = location.hash.replace('#', '')
+			                          .split('&');
+
+			var state = {};
+
+			params.forEach(function (param) {
+				// capture key-value pairs
+				var capture = param.match(/(.+)\=(.+)/);
+				if (capture && capture.length === 3) {
+					state[capture[1]] = decodeURIComponent(capture[2]);
+				}
+			});
+
+			return state;
+		};
+
+		var encodeState = function (state) {
+			var params = '';
+			for (var key in state) {
+				params += key + '=' + encodeURIComponent(state[key]) + '&';
+			}
+			return params.substring(0, params.length - 1);
+		};
+
+		this.pushState = function (s) {
+			slug = s;
+			history.pushState(state, '', slug + '#' + encodeState(state));
+		};
+
+		this.set = function (params) {
+			for (var key in params) {
+				state[key] = params[key];
+			}
+			history.replaceState(state, '', slug + '#' + encodeState(state));
+		};
+
+		this.get = function (key) {
+			return state[key];
+		};
+
+		state = history.state;
+
+		if (!state) {
+			state = decodeState();
+		}
+	}
 );
 //# sourceMappingURL=main.js.map
