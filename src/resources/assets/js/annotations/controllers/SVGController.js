@@ -21,27 +21,21 @@ angular.module('dias.annotations').controller('SVGController', function ($scope,
 		var panningStartMouseX = 0;
 		var panningStartMouseY = 0;
 
-		// the current scale of the elements
-		$scope.scale = 1;
-		// the current translation (position) of the elements
-		$scope.translateX = 0;
-		$scope.translateY = 0;
-		// mouse position taking zooming and translating into account
-		$scope.relativeMouseX = $scope.mouseX;
-		$scope.relativeMouseY = $scope.mouseY;
+		// the inherited svg state object
+		var svg = $scope.svg;
 
 		// makes sure the translate boundaries are kept
 		var updateTranslate = function (translateX, translateY) {
 			// scaleFactor for the right/bottom edge
-			var scaleFactor = 1 - $scope.scale;
+			var scaleFactor = 1 - svg.scale;
 			// right
 			translateX = Math.max(translateX, $scope.width * scaleFactor);
 			// bottom
 			translateY = Math.max(translateY, $scope.height * scaleFactor);
 			// left
-			$scope.translateX = Math.min(translateX, 0);
+			svg.translateX = Math.min(translateX, 0);
 			// top
-			$scope.translateY = Math.min(translateY, 0);
+			svg.translateY = Math.min(translateY, 0);
 		};
 
 		// scale towards the cursor
@@ -49,29 +43,29 @@ angular.module('dias.annotations').controller('SVGController', function ($scope,
 		var updateScaleTranslate = function (scale, oldScale) {
 			var scaleDifference = scale / oldScale;
 
-			var translateX = scaleDifference * ($scope.translateX - $scope.mouseX) + $scope.mouseX;
-			var translateY = scaleDifference * ($scope.translateY - $scope.mouseY) + $scope.mouseY;
+			var translateX = scaleDifference * (svg.translateX - $scope.mouseX) + $scope.mouseX;
+			var translateY = scaleDifference * (svg.translateY - $scope.mouseY) + $scope.mouseY;
 
 			updateTranslate(translateX, translateY);
 		};
 
-		$scope.$watch('scale', updateScaleTranslate);
+		$scope.$watch('svg.scale', updateScaleTranslate);
 
-		var updateRelativeMouseX = function (mouseX) {
-			$scope.relativeMouseX = (mouseX - $scope.translateX) / $scope.scale;
+		var updateMouseX = function (mouseX) {
+			svg.mouseX = (mouseX - svg.translateX) / svg.scale;
 		};
 
-		$scope.$watch('mouseX', updateRelativeMouseX);
+		$scope.$watch('mouseX', updateMouseX);
 
-		var updateRelativeMouseY = function (mouseY) {
-			$scope.relativeMouseY = (mouseY - $scope.translateY) / $scope.scale;
+		var updateMouseY = function (mouseY) {
+			svg.mouseY = (mouseY - svg.translateY) / svg.scale;
 		};
 
-		$scope.$watch('mouseY', updateRelativeMouseY);
+		$scope.$watch('mouseY', updateMouseY);
 
 		var zoom = function (e) {
-			var scale = $scope.scale - scaleStep * e.deltaY;
-			$scope.scale = Math.max(scale, minScale);
+			var scale = svg.scale - scaleStep * e.deltaY;
+			svg.scale = Math.max(scale, minScale);
 			e.preventDefault();
 		};
 
@@ -81,8 +75,8 @@ angular.module('dias.annotations').controller('SVGController', function ($scope,
 
 		$scope.startPanning = function (event) {
 			panning = true;
-			panningStartTranslateX = $scope.translateX;
-			panningStartTranslateY = $scope.translateY;
+			panningStartTranslateX = svg.translateX;
+			panningStartTranslateY = svg.translateY;
 			panningStartMouseX = $scope.mouseX;
 			panningStartMouseY = $scope.mouseY;
 

@@ -7,11 +7,12 @@ class AnnotationController extends Controller {
 
 	/**
 	 * Shows the annotation index page.
-	 * @param int $id image ID
+	 * 
 	 * @return \Illuminate\Http\Response
 	 */
-	public function index($id)
+	public function index()
 	{
+		$id = $this->request->input('i');
 		$image = $this->requireNotNull(Image::find($id));
 		$this->requireCanSee($image);
 

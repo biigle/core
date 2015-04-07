@@ -14,9 +14,41 @@ angular.module('dias.annotations', ['dias.api']);
 angular.module('dias.annotations').controller('AnnotatorController', ["$scope", "$element", "$attrs", "images", function ($scope, $element, $attrs, images) {
 		"use strict";
 
-		$scope.images = images;
+		$scope.images = images.buffer;
+		$scope.imageLoading = true;
+
+		var finishLoading = function () {
+			$scope.imageLoading = false;
+		};
+
+		var startLoading = function () {
+			$scope.imageLoading = true;
+		};
+
 		images.init($attrs.transectId);
-		images.show(parseInt($attrs.imageId));
+		images.show(parseInt($attrs.imageId)).then(finishLoading);
+
+		// state of the svg
+		$scope.svg = {
+			// the current scale of the elements
+			scale: 1,
+			// the current translation (position) of the elements
+			translateX: 0,
+			translateY: 0,
+			// mouse position taking zooming and translating into account
+			mouseX: 0,
+			mouseY: 0
+		};
+
+		$scope.nextImage = function () {
+			startLoading();
+			images.next().then(finishLoading);
+		};
+
+		$scope.prevImage = function () {
+			startLoading();
+			images.prev().then(finishLoading);
+		};
 	}]
 );
 /**
@@ -84,27 +116,21 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 		var panningStartMouseX = 0;
 		var panningStartMouseY = 0;
 
-		// the current scale of the elements
-		$scope.scale = 1;
-		// the current translation (position) of the elements
-		$scope.translateX = 0;
-		$scope.translateY = 0;
-		// mouse position taking zooming and translating into account
-		$scope.relativeMouseX = $scope.mouseX;
-		$scope.relativeMouseY = $scope.mouseY;
+		// the inherited svg state object
+		var svg = $scope.svg;
 
 		// makes sure the translate boundaries are kept
 		var updateTranslate = function (translateX, translateY) {
 			// scaleFactor for the right/bottom edge
-			var scaleFactor = 1 - $scope.scale;
+			var scaleFactor = 1 - svg.scale;
 			// right
 			translateX = Math.max(translateX, $scope.width * scaleFactor);
 			// bottom
 			translateY = Math.max(translateY, $scope.height * scaleFactor);
 			// left
-			$scope.translateX = Math.min(translateX, 0);
+			svg.translateX = Math.min(translateX, 0);
 			// top
-			$scope.translateY = Math.min(translateY, 0);
+			svg.translateY = Math.min(translateY, 0);
 		};
 
 		// scale towards the cursor
@@ -112,29 +138,29 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 		var updateScaleTranslate = function (scale, oldScale) {
 			var scaleDifference = scale / oldScale;
 
-			var translateX = scaleDifference * ($scope.translateX - $scope.mouseX) + $scope.mouseX;
-			var translateY = scaleDifference * ($scope.translateY - $scope.mouseY) + $scope.mouseY;
+			var translateX = scaleDifference * (svg.translateX - $scope.mouseX) + $scope.mouseX;
+			var translateY = scaleDifference * (svg.translateY - $scope.mouseY) + $scope.mouseY;
 
 			updateTranslate(translateX, translateY);
 		};
 
-		$scope.$watch('scale', updateScaleTranslate);
+		$scope.$watch('svg.scale', updateScaleTranslate);
 
-		var updateRelativeMouseX = function (mouseX) {
-			$scope.relativeMouseX = (mouseX - $scope.translateX) / $scope.scale;
+		var updateMouseX = function (mouseX) {
+			svg.mouseX = (mouseX - svg.translateX) / svg.scale;
 		};
 
-		$scope.$watch('mouseX', updateRelativeMouseX);
+		$scope.$watch('mouseX', updateMouseX);
 
-		var updateRelativeMouseY = function (mouseY) {
-			$scope.relativeMouseY = (mouseY - $scope.translateY) / $scope.scale;
+		var updateMouseY = function (mouseY) {
+			svg.mouseY = (mouseY - svg.translateY) / svg.scale;
 		};
 
-		$scope.$watch('mouseY', updateRelativeMouseY);
+		$scope.$watch('mouseY', updateMouseY);
 
 		var zoom = function (e) {
-			var scale = $scope.scale - scaleStep * e.deltaY;
-			$scope.scale = Math.max(scale, minScale);
+			var scale = svg.scale - scaleStep * e.deltaY;
+			svg.scale = Math.max(scale, minScale);
 			e.preventDefault();
 		};
 
@@ -144,8 +170,8 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
 
 		$scope.startPanning = function (event) {
 			panning = true;
-			panningStartTranslateX = $scope.translateX;
-			panningStartTranslateY = $scope.translateY;
+			panningStartTranslateX = svg.translateX;
+			panningStartTranslateY = svg.translateY;
 			panningStartMouseX = $scope.mouseX;
 			panningStartMouseY = $scope.mouseY;
 
@@ -174,19 +200,47 @@ angular.module('dias.annotations').controller('SVGController', ["$scope", "$elem
  * @memberOf dias.annotations
  * @description Manages (pre-)loading of the images to annotate.
  */
-angular.module('dias.annotations').service('images', ["$rootScope", "TransectImage", "URL", function ($rootScope, TransectImage, URL) {
+angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$q", function (TransectImage, URL, $q) {
 		"use strict";
 
-		// svg namespace
-		var SVGNS = "http://www.w3.org/2000/svg";
 		var _this = this;
+		// array of all image IDs of the transect
 		var imageIds = [];
+		// ID of the image currently in `show` state
 		var currentId;
+		// maximum number of images to hold in buffer
+		var MAX_BUFFER_SIZE = 10;
 
+		// buffer of already loaded images
 		this.buffer = [];
-		this.loading = true;
 
+		/**
+		 * Returns the next ID of the specified image or the next ID of the 
+		 * current image if no image was specified.
+		 */
+		var nextId = function (id) {
+			id = id || currentId;
+			var index = imageIds.indexOf(id);
+			return imageIds[(index + 1) % imageIds.length];
+		};
+
+		/**
+		 * Returns the previous ID of the specified image or the previous ID of
+		 * the current image if no image was specified.
+		 */
+		var prevId = function (id) {
+			id = id || currentId;
+			var index = imageIds.indexOf(currentId);
+			var length = imageIds.length;
+			return imageIds[(index - 1 + length) % length];
+		};
+
+		/**
+		 * Returns the specified image from the buffer or `undefined` if it is
+		 * not buffered.
+		 */
 		var getImage = function (id) {
+			id = id || currentId;
 			for (var i = _this.buffer.length - 1; i >= 0; i--) {
 				if (_this.buffer[i]._id == id) return _this.buffer[i];
 			}
@@ -194,84 +248,90 @@ angular.module('dias.annotations').service('images', ["$rootScope", "TransectIma
 			return undefined;
 		};
 
+		/**
+		 * Sets the specified image to the `show` state.
+		 */
 		var show = function (id) {
 			for (var i = _this.buffer.length - 1; i >= 0; i--) {
 				_this.buffer[i]._show = _this.buffer[i]._id == id;
 			}
-			_this.loading = false;
 			currentId = id;
-
-			$rootScope.$broadcast('images::show', getImage(id));
-		};
-
-		var hasIdInBuffer = function (id) {
-			for (var i = _this.buffer.length - 1; i >= 0; i--) {
-				if (_this.buffer[i]._id == id) {
-					return true;
-				}
-			}
-			return false;
-		};
-
-		var fetchImage = function (id) {
-			if (hasIdInBuffer(id)) {
-				show(id);
-				return;
-			}
-
-			_this.loading = true;
-			var img = document.createElement('img');
-			img._id = id;
-			img.onload = function () {
-				_this.buffer.push(img);
-				show(id);
-				$rootScope.$apply();
-			};
-			img.src = URL + "/api/v1/images/" + id + "/file";
-			// var img = document.createElementNS(SVGNS, "image");
-			// img.href.baseVal = URL + "/api/v1/images/" + 1 + "/file";
-			// img.width.baseVal.value = 100;
-			// img.height.baseVal.value = 100;
-			// console.log(img, img2);
 		};
 
 		/**
-		 * Initializes the service for a given transect.
+		 * Loads the specified image either from buffer or from the external 
+		 * resource. Returns a promise that gets resolved when the image is
+		 * loaded.
+		 */
+		var fetchImage = function (id) {
+			var deferred = $q.defer();
+			var img = getImage(id);
+
+			if (img) {
+				deferred.resolve(img);
+			} else {
+				img = document.createElement('img');
+				img._id = id;
+				img.onload = function () {
+					_this.buffer.push(img);
+					// control maximum buffer size
+					if (_this.buffer.length > MAX_BUFFER_SIZE) {
+						_this.buffer.shift();
+					}
+					deferred.resolve(img);
+				};
+				img.onerror = function (msg) {
+					deferred.reject(msg);
+				};
+				img.src = URL + "/api/v1/images/" + id + "/file";
+			}
+
+			return deferred.promise;
+		};
+
+		/**
+		 * Initializes the service for a given transect. Returns a promise that
+		 * is resolved, when the service is initialized.
 		 */
 		this.init = function (transectId) {
 			imageIds = TransectImage.query({transect_id: transectId});
 			
+			return imageIds.$promise;
 		};
 
 		/**
-		 * Show the image with the specified ID.
+		 * Show the image with the specified ID. Returns a promise that is
+		 * resolved when the image is shown.
 		 */
 		this.show = function (id) {
-			fetchImage(id);
+			var promise = fetchImage(id).then(function() {
+				show(id);
+			});
+
+			// wait for imageIds to be loaded
+			imageIds.$promise.then(function () {
+				// pre-load previous and next images but don't display them
+				fetchImage(nextId(id));
+				fetchImage(prevId(id));
+			});
+
+			return promise;
 		};
 
 		/**
-		 * Show the next image.
+		 * Show the next image. Returns a promise that is
+		 * resolved when the image is shown.
 		 */
 		this.next = function () {
-			var index = imageIds.indexOf(currentId);
-			_this.show(imageIds[(index + 1) % imageIds.length]);
+			return _this.show(nextId());
 		};
 
 		/**
-		 * Show the previous image.
+		 * Show the previous image. Returns a promise that is
+		 * resolved when the image is shown.
 		 */
 		this.prev = function () {
-			var index = imageIds.indexOf(currentId);
-			var length = imageIds.length;
-			_this.show(imageIds[(index - 1 + length) % length]);
-		};
-
-		/**
-		 * Returns the currently displayed image.
-		 */
-		this.current = function () {
-			return getImage(currentId);
+			return _this.show(prevId());
 		};
 	}]
 );

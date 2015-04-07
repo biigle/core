@@ -21,6 +21,9 @@ html, body {
 .annotator__canvas {
 	height: 100%;
 	flex: 2;
+	// so the element shrinks and grows independently from the size of the 
+	// contained svg
+	overflow: hidden;
 }
 
 .canvas__svg {
@@ -28,7 +31,7 @@ html, body {
 }
 
 .annotator__sidebar {
-	width: 200px;
+	width: 380px;
 	padding: 1em;
 	background-color: #222;
 	border-left: 1px solid #090909;

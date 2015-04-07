@@ -23,13 +23,14 @@ html, body {
   height: 100%;
   -webkit-flex: 2;
       -ms-flex: 2;
-          flex: 2; }
+          flex: 2;
+  overflow: hidden; }
 
 .canvas__svg {
   display: block; }
 
 .annotator__sidebar {
-  width: 200px;
+  width: 380px;
   padding: 1em;
   background-color: #222;
   border-left: 1px solid #090909; }
