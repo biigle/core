@@ -23,14 +23,7 @@ angular.module('dias.annotations').controller('CanvasController', function ($sco
 			layers: [imageLayer],
 		});
 
-		map.on('moveend', function(e) {
-			var view = map.getView();
-			$scope.$emit('canvas.moveend', {
-				center: view.getCenter(),
-				zoom: view.getZoom()
-			});
-		});
-
+		// refresh the image source
 		$scope.$on('image.shown', function (e, image) {
 			extent[2] = image.width;
 			extent[3] = image.height;
@@ -65,6 +58,15 @@ angular.module('dias.annotations').controller('CanvasController', function ($sco
 			if (zoom === undefined) {
 				map.getView().fitExtent(extent, map.getSize());
 			}
+		});
+
+		// update the URL parameters
+		map.on('moveend', function(e) {
+			var view = map.getView();
+			$scope.$emit('canvas.moveend', {
+				center: view.getCenter(),
+				zoom: view.getZoom()
+			});
 		});
 	}
 );

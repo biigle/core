@@ -11,36 +11,47 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 		$scope.images = images;
 		$scope.imageLoading = true;
 
+		// the current canvas viewport, synced with the URL parameters
 		$scope.viewport = {
 			zoom: urlParams.get('z'),
 			center: [urlParams.get('x'), urlParams.get('y')]
 		};
 
+		// finish image loading process
 		var finishLoading = function () {
 			$scope.imageLoading = false;
-			var image = $scope.images.currentImage;
-			urlParams.pushState(image._id);
-			$scope.$broadcast('image.shown', image);
+			$scope.$broadcast('image.shown', $scope.images.currentImage);
 		};
 
+		// create a new history entry
+		var pushState = function () {
+			urlParams.pushState($scope.images.currentImage._id);
+		};
+
+		// start image loading process
 		var startLoading = function () {
 			$scope.imageLoading = true;
 		};
 
-		var showImage = function (id) {
-			images.show(parseInt(id)).then(finishLoading);
+		// load the image by id. doesn't create a new history entry by itself
+		var loadImage = function (id) {
+			startLoading();
+			return images.show(parseInt(id)).then(finishLoading);
 		};
 
+		// show the next image and create a new history entry
 		$scope.nextImage = function () {
 			startLoading();
-			images.next().then(finishLoading);
+			images.next().then(finishLoading).then(pushState);
 		};
 
+		// show the previous image and create a new history entry
 		$scope.prevImage = function () {
 			startLoading();
-			images.prev().then(finishLoading);
+			images.prev().then(finishLoading).then(pushState);
 		};
 
+		// update the URL parameters of the viewport
 		$scope.$on('canvas.moveend', function(e, params) {
 			$scope.viewport.zoom = params.zoom;
 			$scope.viewport.center[0] = Math.round(params.center[0]);
@@ -52,7 +63,17 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 			});
 		});
 
+		// listen to the browser "back" button
+		window.onpopstate = function(e) {
+			var state = e.state;
+			if (state && state.slug !== undefined) {
+				loadImage(state.slug);
+			}
+		};
+
+		// initialize the images service
 		images.init($attrs.transectId);
-		showImage($attrs.imageId);
+		// display the first image
+		loadImage($attrs.imageId).then(finishLoading).then(pushState);
 	}
 );
