@@ -7,6 +7,61 @@ angular.module('dias.annotations', ['dias.api']);
 /**
  * @namespace dias.annotations
  * @ngdoc controller
+ * @name AnnotationsController
+ * @memberOf dias.annotations
+ * @description Controller for managing the annotations on the SVG.
+ */
+angular.module('dias.annotations').controller('AnnotationsController', ["$scope", "ImageAnnotation", "AnnotationLabel", "AnnotationPoint", "Shape", function ($scope, ImageAnnotation, AnnotationLabel, AnnotationPoint, Shape) {
+		"use strict";
+
+		// $scope.shapes = {};
+
+		// Shape.query(function (shapes) {
+		// 	shapes.forEach(function (shape) {
+		// 		$scope.shapes[shape.id] = shape.name;
+		// 	});
+		// });
+
+		// $scope.annotations = {};
+
+		// var refreshAnnotations = function (e, image) {
+		// 	$scope.annotations = ImageAnnotation.query({image_id: image._id});
+		// 	$scope.annotations.$promise.then(function () {
+		// 		$scope.annotations.forEach(function (annotation) {
+		// 			annotation.points = AnnotationPoint.query({annotation_id: annotation.id});
+		// 			annotation.labels = AnnotationLabel.query({annotation_id: annotation.id});
+		// 			annotation.shape = function () {
+		// 				return $scope.shapes[this.shape_id];
+		// 			};
+		// 		});
+		// 	});
+		// };
+
+		// var refreshOffset = function () {
+		// 	var image = $scope.images.currentImage;
+		// 	if (!image) return;
+
+		// 	var scaleX = $scope.width / image.width;
+		// 	var scaleY = $scope.height / image.height;
+
+		// 	var offsetX = ($scope.width - image.width * scaleY) / 2;
+		// 	var offsetY = ($scope.height - image.height * scaleX) / 2;
+		// 	offsetX = Math.max(offsetX, 0);
+		// 	offsetY = Math.max(offsetY, 0);
+			
+		// 	$scope.offsetX = offsetX;
+		// 	$scope.offsetY = offsetY;
+		// };
+
+		// $scope.$on('image.shown', refreshAnnotations);
+		// $scope.$on('image.shown', refreshOffset);
+		// $scope.$watch('width', refreshOffset);
+		// $scope.$watch('height', refreshOffset);
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc controller
  * @name AnnotatorController
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
@@ -17,27 +72,24 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
 		$scope.images = images;
 		$scope.imageLoading = true;
 
-		// state of the svg
-		$scope.svg = {
-			// the current scale of the elements
-			scale: urlParams.get('s') || 1,
-			// the current translation (position) of the elements
-			// the values are stored negated to save the '-' in the URL
-			// (because they are always/mostly negative)
-			translateX: -urlParams.get('x') || 0,
-			translateY: -urlParams.get('y') || 0,
-			// mouse position taking zooming and translating into account
-			mouseX: 0,
-			mouseY: 0
+		$scope.viewport = {
+			zoom: urlParams.get('z') || 1,
+			center: [urlParams.get('x') || 0, urlParams.get('y') || 0]
 		};
 
 		var finishLoading = function () {
 			$scope.imageLoading = false;
-			urlParams.pushState($scope.images.currentImage._id);
+			var image = $scope.images.currentImage;
+			urlParams.pushState(image._id);
+			$scope.$broadcast('image.shown', image);
 		};
 
 		var startLoading = function () {
 			$scope.imageLoading = true;
+		};
+
+		var showImage = function (id) {
+			images.show(parseInt(id)).then(finishLoading);
 		};
 
 		$scope.nextImage = function () {
@@ -50,26 +102,19 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
 			images.prev().then(finishLoading);
 		};
 
-		$scope.$watch('svg.scale', function (scale) {
-			// scaling affects translate as well
+		$scope.$on('canvas.moveend', function(e, params) {
+			$scope.viewport.zoom = params.zoom;
+			$scope.viewport.center[0] = Math.round(params.center[0]);
+			$scope.viewport.center[1] = Math.round(params.center[1]);
 			urlParams.set({
-				s: scale,
-				// make sure to store the negated values
-				x: -$scope.svg.translateX,
-				y: -$scope.svg.translateY
-			});
-		});
-
-		$scope.$on('svg.panning.stop', function () {
-			urlParams.set({
-				// make sure to store the negated values
-				x: -$scope.svg.translateX,
-				y: -$scope.svg.translateY
+				z: $scope.viewport.zoom,
+				x: $scope.viewport.center[0],
+				y: $scope.viewport.center[1]
 			});
 		});
 
 		images.init($attrs.transectId);
-		images.show(parseInt($attrs.imageId)).then(finishLoading);
+		showImage($attrs.imageId);
 	}]
 );
 /**
@@ -82,146 +127,98 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
 angular.module('dias.annotations').controller('CanvasController', ["$scope", "$element", function ($scope, $element) {
 		"use strict";
 
-		var offsetTop = 0;
+		var extent = [0, 0, 0, 0];
 
-		// the current mouse position relative to the canvas container
-		$scope.mouseX = 0;
-		$scope.mouseY = 0;
-
-		// the dimensions of the canvas container
-		var updateDimensions = function () {
-			$scope.width = $element[0].offsetWidth;
-			$scope.height = $element[0].offsetHeight;
-		};
-
-		updateDimensions();
-
-		window.addEventListener('resize', function () {
-			$scope.$apply(updateDimensions);
+		var projection = new ol.proj.Projection({
+			code: 'dias-image',
+			units: 'pixels',
+			extent: extent
 		});
 
-		$scope.updateMouse = function (e) {
-			$scope.mouseX = e.clientX;
-			$scope.mouseY = e.clientY - offsetTop;
-		};
+		// var view = new ol.View({
+		// 	projection: projection,
+		// 	zoom: 2
+		// });
 
-		var updateOffset = function () {
-			offsetTop = $element[0].offsetTop;
-		};
+		var imageLayer = new ol.layer.Image();
 
-		updateOffset();
+		var map = new ol.Map({
+			target: 'canvas',
+			layers: [imageLayer],
+			// view: view
+		});
 
-		window.addEventListener('resize', updateOffset);
+		map.on('moveend', function(e) {
+			var view = map.getView();
+			$scope.$emit('canvas.moveend', {
+				center: view.getCenter(),
+				zoom: view.getZoom()
+			});
+		});
+
+		$scope.$on('image.shown', function (e, image) {
+			extent[2] = image.width;
+			extent[3] = image.height;
+
+			var imageStatic = new ol.source.ImageStatic({
+				url: image.src,
+				projection: projection,
+				imageExtent: extent
+			});
+
+			imageLayer.setSource(imageStatic);
+
+			map.setView(new ol.View({
+				projection: projection,
+				center: $scope.viewport.center,
+				zoom: $scope.viewport.zoom
+			}));
+		});
 	}]
 );
 /**
  * @namespace dias.annotations
- * @ngdoc controller
- * @name SVGController
+ * @ngdoc directive
+ * @name annotation
  * @memberOf dias.annotations
- * @description Controller for the annotation canvas SVG element handling
- * the zooming and panning etc.
+ * @description Directive to display an annotation on the SVG.
  */
-angular.module('dias.annotations').controller('SVGController', ["$scope", "$element", function ($scope, $element) {
-		"use strict";
+angular.module('dias.annotations').directive('annotation', function () {
+	return {
+		restrict: 'A',
+		// template: '<polygon data-ng-attr-points="{{ points }}" />',
+		controller: ["$scope", function ($scope) {
+			$scope.shape = $scope.shapes[$scope.annotation.shape_id];
 
-		// the scale change per scaling operation
-		var scaleStep = 0.05;
-		// the minimal scale
-		var minScale = 1;
-		// translate values when panning starts
-		var panningStartTranslateX = 0;
-		var panningStartTranslateY = 0;
-		// mouse position when panning starts
-		var panningStartMouseX = 0;
-		var panningStartMouseY = 0;
+			$scope.points = '';
 
-		// the inherited svg state object
-		var svg = $scope.svg;
-
-		// is the user currently panning?
-		$scope.panning = false;
-
-		// makes sure the translate boundaries are kept
-		var updateTranslate = function (translateX, translateY) {
-			// scaleFactor for the right/bottom edge
-			var scaleFactor = 1 - svg.scale;
-			// right
-			translateX = Math.max(translateX, $scope.width * scaleFactor);
-			// bottom
-			translateY = Math.max(translateY, $scope.height * scaleFactor);
-			// left
-			translateX = Math.min(translateX, 0);
-			// top
-			translateY = Math.min(translateY, 0);
-
-			svg.translateX = Math.round(translateX);
-			svg.translateY = Math.round(translateY);
-		};
-
-		// scale towards the cursor
-		// see http://stackoverflow.com/a/20996105/1796523
-		var updateScaleTranslate = function (scale, oldScale) {
-			var scaleDifference = scale / oldScale;
-
-			var translateX = scaleDifference * (svg.translateX - $scope.mouseX) + $scope.mouseX;
-			var translateY = scaleDifference * (svg.translateY - $scope.mouseY) + $scope.mouseY;
-
-			updateTranslate(translateX, translateY);
-		};
-
-		$scope.$watch('svg.scale', updateScaleTranslate);
-
-		var updateMouseX = function (mouseX) {
-			svg.mouseX = (mouseX - svg.translateX) / svg.scale;
-		};
-
-		$scope.$watch('mouseX', updateMouseX);
-
-		var updateMouseY = function (mouseY) {
-			svg.mouseY = (mouseY - svg.translateY) / svg.scale;
-		};
-
-		$scope.$watch('mouseY', updateMouseY);
-
-		var zoom = function (e) {
-			var scale = svg.scale - scaleStep * e.deltaY;
-			scale = Math.round(scale * 1000) / 1000;
-			svg.scale = Math.max(scale, minScale);
-			e.preventDefault();
-		};
-
-		$element.on('wheel', function (e) {
-			$scope.$apply(function () { zoom(e); });
-		});
-
-		$scope.startPanning = function (event) {
-			$scope.panning = true;
-			panningStartTranslateX = svg.translateX;
-			panningStartTranslateY = svg.translateY;
-			panningStartMouseX = $scope.mouseX;
-			panningStartMouseY = $scope.mouseY;
-
-			// prevent default drag & drop behaviour for images
-			event.preventDefault();
-			$scope.$emit('svg.panning.start');
-		};
-
-		$scope.pan = function () {
-			if (!$scope.panning) return;
-
-			var translateX = panningStartTranslateX - (panningStartMouseX - $scope.mouseX);
-			var translateY = panningStartTranslateY - (panningStartMouseY - $scope.mouseY);
-
-			updateTranslate(translateX, translateY);
-		};
-
-		$scope.stopPanning = function () {
-			$scope.panning = false;
-			$scope.$emit('svg.panning.stop');
-		};
-	}]
-);
+			$scope.annotation.points.$promise.then(function (points) {
+				points.forEach(function (point) {
+					$scope.points += point.x + ',' + point.y + ' ';
+				});
+			});
+		}]
+	};
+});
+/**
+ * @namespace dias.annotations
+ * @ngdoc directive
+ * @name annotationPoint
+ * @memberOf dias.annotations
+ * @description Directive to display an annotationPoint on the SVG.
+ */
+angular.module('dias.annotations').directive('annotationPoint', function () {
+	return {
+		restrict: 'A',
+		template: '<use xlink:href="#marker" data-ng-attr-x="{{ point.x }}" data-ng-attr-y="{{ point.y }}" data-ng-if="point" />',
+		replace: true,
+		controller: ["$scope", function ($scope) {
+			$scope.annotation.points.$promise.then(function (points) {
+				$scope.point = $scope.annotation.points[0];
+			});
+		}]
+	};
+});
 /**
  * @namespace dias.annotations
  * @ngdoc service

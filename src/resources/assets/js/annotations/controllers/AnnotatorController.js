@@ -11,27 +11,24 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 		$scope.images = images;
 		$scope.imageLoading = true;
 
-		// state of the svg
-		$scope.svg = {
-			// the current scale of the elements
-			scale: urlParams.get('s') || 1,
-			// the current translation (position) of the elements
-			// the values are stored negated to save the '-' in the URL
-			// (because they are always/mostly negative)
-			translateX: -urlParams.get('x') || 0,
-			translateY: -urlParams.get('y') || 0,
-			// mouse position taking zooming and translating into account
-			mouseX: 0,
-			mouseY: 0
+		$scope.viewport = {
+			zoom: urlParams.get('z') || 1,
+			center: [urlParams.get('x') || 0, urlParams.get('y') || 0]
 		};
 
 		var finishLoading = function () {
 			$scope.imageLoading = false;
-			urlParams.pushState($scope.images.currentImage._id);
+			var image = $scope.images.currentImage;
+			urlParams.pushState(image._id);
+			$scope.$broadcast('image.shown', image);
 		};
 
 		var startLoading = function () {
 			$scope.imageLoading = true;
+		};
+
+		var showImage = function (id) {
+			images.show(parseInt(id)).then(finishLoading);
 		};
 
 		$scope.nextImage = function () {
@@ -44,25 +41,18 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 			images.prev().then(finishLoading);
 		};
 
-		$scope.$watch('svg.scale', function (scale) {
-			// scaling affects translate as well
+		$scope.$on('canvas.moveend', function(e, params) {
+			$scope.viewport.zoom = params.zoom;
+			$scope.viewport.center[0] = Math.round(params.center[0]);
+			$scope.viewport.center[1] = Math.round(params.center[1]);
 			urlParams.set({
-				s: scale,
-				// make sure to store the negated values
-				x: -$scope.svg.translateX,
-				y: -$scope.svg.translateY
-			});
-		});
-
-		$scope.$on('svg.panning.stop', function () {
-			urlParams.set({
-				// make sure to store the negated values
-				x: -$scope.svg.translateX,
-				y: -$scope.svg.translateY
+				z: $scope.viewport.zoom,
+				x: $scope.viewport.center[0],
+				y: $scope.viewport.center[1]
 			});
 		});
 
 		images.init($attrs.transectId);
-		images.show(parseInt($attrs.imageId)).then(finishLoading);
+		showImage($attrs.imageId);
 	}
 );

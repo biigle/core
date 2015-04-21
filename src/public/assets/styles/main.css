@@ -26,11 +26,6 @@ html, body {
           flex: 2;
   overflow: hidden; }
 
-.canvas__svg {
-  display: block; }
-  .canvas__svg.panning {
-    cursor: move; }
-
 .annotator__sidebar {
   width: 380px;
   padding: 1em;

@@ -8,35 +8,52 @@
 angular.module('dias.annotations').controller('CanvasController', function ($scope, $element) {
 		"use strict";
 
-		var offsetTop = 0;
+		var extent = [0, 0, 0, 0];
 
-		// the current mouse position relative to the canvas container
-		$scope.mouseX = 0;
-		$scope.mouseY = 0;
-
-		// the dimensions of the canvas container
-		var updateDimensions = function () {
-			$scope.width = $element[0].offsetWidth;
-			$scope.height = $element[0].offsetHeight;
-		};
-
-		updateDimensions();
-
-		window.addEventListener('resize', function () {
-			$scope.$apply(updateDimensions);
+		var projection = new ol.proj.Projection({
+			code: 'dias-image',
+			units: 'pixels',
+			extent: extent
 		});
 
-		$scope.updateMouse = function (e) {
-			$scope.mouseX = e.clientX;
-			$scope.mouseY = e.clientY - offsetTop;
-		};
+		// var view = new ol.View({
+		// 	projection: projection,
+		// 	zoom: 2
+		// });
 
-		var updateOffset = function () {
-			offsetTop = $element[0].offsetTop;
-		};
+		var imageLayer = new ol.layer.Image();
 
-		updateOffset();
+		var map = new ol.Map({
+			target: 'canvas',
+			layers: [imageLayer],
+			// view: view
+		});
 
-		window.addEventListener('resize', updateOffset);
+		map.on('moveend', function(e) {
+			var view = map.getView();
+			$scope.$emit('canvas.moveend', {
+				center: view.getCenter(),
+				zoom: view.getZoom()
+			});
+		});
+
+		$scope.$on('image.shown', function (e, image) {
+			extent[2] = image.width;
+			extent[3] = image.height;
+
+			var imageStatic = new ol.source.ImageStatic({
+				url: image.src,
+				projection: projection,
+				imageExtent: extent
+			});
+
+			imageLayer.setSource(imageStatic);
+
+			map.setView(new ol.View({
+				projection: projection,
+				center: $scope.viewport.center,
+				zoom: $scope.viewport.zoom
+			}));
+		});
 	}
 );
