@@ -7,61 +7,6 @@ angular.module('dias.annotations', ['dias.api']);
 /**
  * @namespace dias.annotations
  * @ngdoc controller
- * @name AnnotationsController
- * @memberOf dias.annotations
- * @description Controller for managing the annotations on the SVG.
- */
-angular.module('dias.annotations').controller('AnnotationsController', ["$scope", "ImageAnnotation", "AnnotationLabel", "AnnotationPoint", "Shape", function ($scope, ImageAnnotation, AnnotationLabel, AnnotationPoint, Shape) {
-		"use strict";
-
-		// $scope.shapes = {};
-
-		// Shape.query(function (shapes) {
-		// 	shapes.forEach(function (shape) {
-		// 		$scope.shapes[shape.id] = shape.name;
-		// 	});
-		// });
-
-		// $scope.annotations = {};
-
-		// var refreshAnnotations = function (e, image) {
-		// 	$scope.annotations = ImageAnnotation.query({image_id: image._id});
-		// 	$scope.annotations.$promise.then(function () {
-		// 		$scope.annotations.forEach(function (annotation) {
-		// 			annotation.points = AnnotationPoint.query({annotation_id: annotation.id});
-		// 			annotation.labels = AnnotationLabel.query({annotation_id: annotation.id});
-		// 			annotation.shape = function () {
-		// 				return $scope.shapes[this.shape_id];
-		// 			};
-		// 		});
-		// 	});
-		// };
-
-		// var refreshOffset = function () {
-		// 	var image = $scope.images.currentImage;
-		// 	if (!image) return;
-
-		// 	var scaleX = $scope.width / image.width;
-		// 	var scaleY = $scope.height / image.height;
-
-		// 	var offsetX = ($scope.width - image.width * scaleY) / 2;
-		// 	var offsetY = ($scope.height - image.height * scaleX) / 2;
-		// 	offsetX = Math.max(offsetX, 0);
-		// 	offsetY = Math.max(offsetY, 0);
-			
-		// 	$scope.offsetX = offsetX;
-		// 	$scope.offsetY = offsetY;
-		// };
-
-		// $scope.$on('image.shown', refreshAnnotations);
-		// $scope.$on('image.shown', refreshOffset);
-		// $scope.$watch('width', refreshOffset);
-		// $scope.$watch('height', refreshOffset);
-	}]
-);
-/**
- * @namespace dias.annotations
- * @ngdoc controller
  * @name AnnotatorController
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
@@ -145,13 +90,10 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
  * @memberOf dias.annotations
  * @description Main controller for the annotation canvas element
  */
-angular.module('dias.annotations').controller('CanvasController', ["$scope", "mapImage", function ($scope, mapImage) {
+angular.module('dias.annotations').controller('CanvasController', ["$scope", "mapImage", "mapAnnotations", function ($scope, mapImage, mapAnnotations) {
 		"use strict";
 
-		var map = new ol.Map({
-			target: 'canvas',
-			layers: []
-		});
+		var map = new ol.Map({ target: 'canvas' });
 
 		// update the URL parameters
 		map.on('moveend', function(e) {
@@ -163,51 +105,9 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "ma
 		});
 
 		mapImage.init(map, $scope);
+		mapAnnotations.init(map, $scope);
 	}]
 );
-/**
- * @namespace dias.annotations
- * @ngdoc directive
- * @name annotation
- * @memberOf dias.annotations
- * @description Directive to display an annotation on the SVG.
- */
-angular.module('dias.annotations').directive('annotation', function () {
-	return {
-		restrict: 'A',
-		// template: '<polygon data-ng-attr-points="{{ points }}" />',
-		controller: ["$scope", function ($scope) {
-			$scope.shape = $scope.shapes[$scope.annotation.shape_id];
-
-			$scope.points = '';
-
-			$scope.annotation.points.$promise.then(function (points) {
-				points.forEach(function (point) {
-					$scope.points += point.x + ',' + point.y + ' ';
-				});
-			});
-		}]
-	};
-});
-/**
- * @namespace dias.annotations
- * @ngdoc directive
- * @name annotationPoint
- * @memberOf dias.annotations
- * @description Directive to display an annotationPoint on the SVG.
- */
-angular.module('dias.annotations').directive('annotationPoint', function () {
-	return {
-		restrict: 'A',
-		template: '<use xlink:href="#marker" data-ng-attr-x="{{ point.x }}" data-ng-attr-y="{{ point.y }}" data-ng-if="point" />',
-		replace: true,
-		controller: ["$scope", function ($scope) {
-			$scope.annotation.points.$promise.then(function (points) {
-				$scope.point = $scope.annotation.points[0];
-			});
-		}]
-	};
-});
 /**
  * @namespace dias.annotations
  * @ngdoc service
@@ -344,6 +244,118 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
 		 */
 		this.prev = function () {
 			return _this.show(prevId());
+		};
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc service
+ * @name mapAnnotations
+ * @memberOf dias.annotations
+ * @description Wrapper service handling the annotations layer on the OpenLayers map
+ */
+angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation", "AnnotationLabel", "AnnotationPoint", "Shape", function (ImageAnnotation, AnnotationLabel, AnnotationPoint, Shape) {
+		"use strict";
+		var shapes = {};
+		Shape.query(function (s) {
+			s.forEach(function (shape) {
+				shapes[shape.id] = shape.name;
+			});
+		});
+
+		var annotations = {};
+
+		var featureOverlay = new ol.FeatureOverlay({
+			style: new ol.style.Style({
+				fill: new ol.style.Fill({
+					color: 'rgba(255, 255, 255, 0.2)'
+				}),
+				stroke: new ol.style.Stroke({
+					color: '#ffcc33',
+					width: 2
+				}),
+				image: new ol.style.Circle({
+					radius: 7,
+					fill: new ol.style.Fill({
+						color: '#ffcc33'
+					})
+				})
+			})
+		});
+
+		var convertToOLPoint = function (point) {
+			return [point.x, point.y];
+		};
+
+		var createFeature = function (annotation) {
+			annotation.points.$promise.then(function () {
+				var geometry;
+				var points = annotation.points.map(convertToOLPoint);
+
+				switch (annotation.shape()) {
+					case 'point':
+						geometry = new ol.geom.Point(points[0]);
+						break;
+					case 'polygon':						
+						// close the polygon
+						points.push(points[0]);
+						// example: https://github.com/openlayers/ol3/blob/master/examples/geojson.js#L126
+						geometry = new ol.geom.Polygon([ points ]);
+						break;
+					case 'line':
+						geometry = new ol.geom.LineString(points);
+						break;
+					case 'circle':
+						// radius is the x value of the second point of the circle
+						geometry = new ol.geom.Circle(points[0], points[1][0]);
+				}
+
+				featureOverlay.addFeature(new ol.Feature({ geometry: geometry }));
+			});
+		};
+
+		var refreshAnnotations = function (e, image) {
+			// clear features of previous image
+			featureOverlay.setFeatures(new ol.Collection());
+
+			annotations = ImageAnnotation.query({image_id: image._id});
+			annotations.$promise.then(function () {
+				annotations.forEach(function (annotation) {
+					annotation.points = AnnotationPoint.query({annotation_id: annotation.id});
+					annotation.labels = AnnotationLabel.query({annotation_id: annotation.id});
+					annotation.shape = function () {
+						return shapes[this.shape_id];
+					};
+				});
+
+				annotations.forEach(createFeature);
+			});
+		};
+
+		// select interaction working on "singleclick"
+		var select = new ol.interaction.Select();
+
+		// var modify = new ol.interaction.Modify({
+		// 	features: featureOverlay.getFeatures(),
+		// 	// the SHIFT key must be pressed to delete vertices, so
+		// 	// that new vertices can be drawn at the same position
+		// 	// of existing vertices
+		// 	deleteCondition: function(event) {
+		// 		return ol.events.condition.shiftKeyOnly(event) && ol.events.condition.singleClick(event);
+		// 	}
+		// });
+
+		// var draw = new ol.interaction.Draw({
+		// 	features: featureOverlay.getFeatures(),
+		// 	type: /** @type {ol.geom.GeometryType} */ 'Point'
+		// });
+
+		this.init = function (map, scope) {
+			featureOverlay.setMap(map);
+			// map.addInteraction(modify);
+			// map.addInteraction(draw);
+			map.addInteraction(select);
+			scope.$on('image.shown', refreshAnnotations);
 		};
 	}]
 );
