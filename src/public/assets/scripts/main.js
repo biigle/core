@@ -73,8 +73,8 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
 		$scope.imageLoading = true;
 
 		$scope.viewport = {
-			zoom: urlParams.get('z') || 1,
-			center: [urlParams.get('x') || 0, urlParams.get('y') || 0]
+			zoom: urlParams.get('z'),
+			center: [urlParams.get('x'), urlParams.get('y')]
 		};
 
 		var finishLoading = function () {
@@ -124,7 +124,7 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
  * @memberOf dias.annotations
  * @description Main controller for the annotation canvas element
  */
-angular.module('dias.annotations').controller('CanvasController', ["$scope", "$element", function ($scope, $element) {
+angular.module('dias.annotations').controller('CanvasController', ["$scope", function ($scope) {
 		"use strict";
 
 		var extent = [0, 0, 0, 0];
@@ -135,17 +135,11 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "$e
 			extent: extent
 		});
 
-		// var view = new ol.View({
-		// 	projection: projection,
-		// 	zoom: 2
-		// });
-
 		var imageLayer = new ol.layer.Image();
 
 		var map = new ol.Map({
 			target: 'canvas',
 			layers: [imageLayer],
-			// view: view
 		});
 
 		map.on('moveend', function(e) {
@@ -160,6 +154,14 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "$e
 			extent[2] = image.width;
 			extent[3] = image.height;
 
+			var zoom = $scope.viewport.zoom;
+
+			var center = $scope.viewport.center;
+			// viewport center is still uninitialized
+			if (center[0] === undefined && center[1] === undefined) {
+				center = ol.extent.getCenter(extent);
+			}
+
 			var imageStatic = new ol.source.ImageStatic({
 				url: image.src,
 				projection: projection,
@@ -170,9 +172,18 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "$e
 
 			map.setView(new ol.View({
 				projection: projection,
-				center: $scope.viewport.center,
-				zoom: $scope.viewport.zoom
+				center: center,
+				zoom: zoom,
+				// allow a maximum of 4x magnification
+				minResolution: 0.25,
+				// restrict movement
+				extent: extent
 			}));
+
+			// if zoom is not initialized, fit the view to the image extent
+			if (zoom === undefined) {
+				map.getView().fitExtent(extent, map.getSize());
+			}
 		});
 	}]
 );

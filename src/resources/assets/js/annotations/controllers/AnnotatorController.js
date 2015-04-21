@@ -12,8 +12,8 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 		$scope.imageLoading = true;
 
 		$scope.viewport = {
-			zoom: urlParams.get('z') || 1,
-			center: [urlParams.get('x') || 0, urlParams.get('y') || 0]
+			zoom: urlParams.get('z'),
+			center: [urlParams.get('x'), urlParams.get('y')]
 		};
 
 		var finishLoading = function () {
