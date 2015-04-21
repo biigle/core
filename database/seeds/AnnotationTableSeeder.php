@@ -32,12 +32,22 @@ class AnnotationTableSeeder extends Seeder {
 
 		$annotation = Annotation::create(array(
 			'image_id' => 1,
-			'shape_id' => 4
+			'shape_id' => 3
 		));
 
 		$annotation->labels()->attach(2, array(
 			'confidence' => 0.9,
 			'user_id' => 1
+		));
+
+		$annotation = Annotation::create(array(
+			'image_id' => 1,
+			'shape_id' => 2
+		));
+
+		$annotation = Annotation::create(array(
+			'image_id' => 1,
+			'shape_id' => 4
 		));
 	}
 

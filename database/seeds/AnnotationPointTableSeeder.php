@@ -13,28 +13,56 @@ class AnnotationPointTableSeeder extends Seeder {
 			'annotation_id' => 1,
 			'index' => 1,
 			'x' => 50,
-			'y' => 50
+			'y' => 500
 		));
 
 		AnnotationPoint::create(array(
 			'annotation_id' => 2,
 			'index' => 1,
-			'x' => 10,
-			'y' => 10
+			'x' => 50,
+			'y' => 50
 		));
 
 		AnnotationPoint::create(array(
 			'annotation_id' => 2,
 			'index' => 2,
-			'x' => 20,
-			'y' => 10
+			'x' => 250,
+			'y' => 50
 		));
 
 		AnnotationPoint::create(array(
 			'annotation_id' => 2,
 			'index' => 3,
-			'x' => 15,
-			'y' => 20
+			'x' => 150,
+			'y' => 200
+		));
+
+		AnnotationPoint::create(array(
+			'annotation_id' => 3,
+			'index' => 1,
+			'x' => 200,
+			'y' => 200
+		));
+
+		AnnotationPoint::create(array(
+			'annotation_id' => 3,
+			'index' => 2,
+			'x' => 400,
+			'y' => 400
+		));
+
+		AnnotationPoint::create(array(
+			'annotation_id' => 4,
+			'index' => 1,
+			'x' => 500,
+			'y' => 500
+		));
+
+		AnnotationPoint::create(array(
+			'annotation_id' => 4,
+			'index' => 2,
+			'x' => 100,
+			'y' => 0
 		));
 	}
 
