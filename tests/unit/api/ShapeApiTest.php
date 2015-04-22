@@ -34,6 +34,6 @@ class ShapeApiTest extends ApiTestCase {
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
-		$this->assertContains('circle', $r->getContent());
+		$this->assertContains('Circle', $r->getContent());
 	}
 }

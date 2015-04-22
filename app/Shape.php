@@ -24,7 +24,7 @@ class Shape extends Model {
 	{
 		return Cache::rememberForever('shape-point', function()
 		{
-			return Shape::whereName('point')->first()->id;
+			return Shape::whereName('Point')->first()->id;
 		});
 	}
 
@@ -35,9 +35,9 @@ class Shape extends Model {
 	 */
 	public static function lineId()
 	{
-		return Cache::rememberForever('shape-line', function()
+		return Cache::rememberForever('shape-line-string', function()
 		{
-			return Shape::whereName('line')->first()->id;
+			return Shape::whereName('LineString')->first()->id;
 		});
 	}
 
@@ -50,7 +50,7 @@ class Shape extends Model {
 	{
 		return Cache::rememberForever('shape-polygon', function()
 		{
-			return Shape::whereName('polygon')->first()->id;
+			return Shape::whereName('Polygon')->first()->id;
 		});
 	}
 
@@ -63,7 +63,7 @@ class Shape extends Model {
 	{
 		return Cache::rememberForever('shape-circle', function()
 		{
-			return Shape::whereName('circle')->first()->id;
+			return Shape::whereName('Circle')->first()->id;
 		});
 	}
 }

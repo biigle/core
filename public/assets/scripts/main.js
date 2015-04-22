@@ -682,35 +682,67 @@ angular.module('dias.api').factory('User', ["$resource", "URL", function ($resou
 	});
 }]);
 /**
- * @namespace dias.ui.users
- * @ngdoc directive
- * @name userChooser
- * @memberOf dias.ui.users
- * @description An input field to find and enter a user.
+ * @namespace dias.api
+ * @ngdoc service
+ * @name roles
+ * @memberOf dias.api
+ * @description Wrapper service for the available roles
  */
-angular.module('dias.ui.users').directive('userChooser', function () {
+angular.module('dias.api').service('roles', ["Role", function (Role) {
 		"use strict";
 
-		return {
-			restrict: 'A',
+		var roles = {};
+		var rolesInverse = {};
 
-			scope: {
-				select: '=userChooser'
-			},
+		Role.query(function (r) {
+			r.forEach(function (role) {
+				roles[role.id] = role.name;
+				rolesInverse[role.name] = role.id;
+			});
+		});
 
-			replace: true,
-
-			template: '<input type="text" data-ng-model="selected" data-typeahead="user.name for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
-
-			controller: ["$scope", "User", function ($scope, User) {
-				$scope.find = function (query) {
-					return User.find({query: query}).$promise;
-				};
-			}]
+		this.getName = function (id) {
+			return roles[id];
 		};
-	}
-);
 
+		this.getId = function (name) {
+			return rolesInverse[name];
+		};
+	}]
+);
+/**
+ * @namespace dias.api
+ * @ngdoc service
+ * @name shapes
+ * @memberOf dias.api
+ * @description Wrapper service for the available shapes
+ */
+angular.module('dias.api').service('shapes', ["Shape", function (Shape) {
+		"use strict";
+
+		var shapes = {};
+		var shapesInverse = {};
+
+		var resources = Shape.query(function (s) {
+			s.forEach(function (shape) {
+				shapes[shape.id] = shape.name;
+				shapesInverse[shape.name] = shape.id;
+			});
+		});
+
+		this.getName = function (id) {
+			return shapes[id];
+		};
+
+		this.getId = function (name) {
+			return shapesInverse[name];
+		};
+
+		this.getAll = function () {
+			return resources;
+		};
+	}]
+);
 /**
  * @ngdoc constant
  * @name MAX_MSG
@@ -791,6 +823,36 @@ angular.module('dias.ui.messages').service('msg', function () {
 		this.responseError = function (response) {
 			var message = response.data.message || "There was an error, sorry.";
 			_this.danger(message);
+		};
+	}
+);
+
+/**
+ * @namespace dias.ui.users
+ * @ngdoc directive
+ * @name userChooser
+ * @memberOf dias.ui.users
+ * @description An input field to find and enter a user.
+ */
+angular.module('dias.ui.users').directive('userChooser', function () {
+		"use strict";
+
+		return {
+			restrict: 'A',
+
+			scope: {
+				select: '=userChooser'
+			},
+
+			replace: true,
+
+			template: '<input type="text" data-ng-model="selected" data-typeahead="user.name for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
+
+			controller: ["$scope", "User", function ($scope, User) {
+				$scope.find = function (query) {
+					return User.find({query: query}).$promise;
+				};
+			}]
 		};
 	}
 );

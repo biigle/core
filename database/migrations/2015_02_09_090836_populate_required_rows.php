@@ -28,10 +28,10 @@ class PopulateRequiredRows extends Migration {
 		));
 
 		DB::table('shapes')->insert(array(
-			array('name' => 'point'),
-			array('name' => 'line'),
-			array('name' => 'polygon'),
-			array('name' => 'circle'),
+			array('name' => 'Point'),
+			array('name' => 'LineString'),
+			array('name' => 'Polygon'),
+			array('name' => 'Circle'),
 		));
 
 		//TODO attributes?
