@@ -4,8 +4,10 @@ html, body {
 .navbar, .messages {
   z-index: 1; }
 
+.annotator__container, .controls__minimap {
+  background-image: url(../images/noise.png); }
+
 .annotator__container {
-  background-image: url(../images/noise.png);
   position: absolute;
   top: 0;
   z-index: 0;
@@ -31,3 +33,6 @@ html, body {
   padding: 1em;
   background-color: #222;
   border-left: 1px solid #090909; }
+
+.controls__minimap {
+  height: 200px; }

@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', function (ImageAnnotation, AnnotationLabel, AnnotationPoint, Shape) {
+angular.module('dias.annotations').service('mapAnnotations', function (ImageAnnotation, AnnotationLabel, AnnotationPoint, Shape, map) {
 		"use strict";
 		var shapes = {};
 		Shape.query(function (s) {
@@ -101,7 +101,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (ImageAnno
 		// 	type: /** @type {ol.geom.GeometryType} */ 'Point'
 		// });
 
-		this.init = function (map, scope) {
+		this.init = function (scope) {
 			featureOverlay.setMap(map);
 			// map.addInteraction(modify);
 			// map.addInteraction(draw);

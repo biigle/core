@@ -90,10 +90,8 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
  * @memberOf dias.annotations
  * @description Main controller for the annotation canvas element
  */
-angular.module('dias.annotations').controller('CanvasController', ["$scope", "mapImage", "mapAnnotations", function ($scope, mapImage, mapAnnotations) {
+angular.module('dias.annotations').controller('CanvasController', ["$scope", "mapImage", "mapAnnotations", "map", function ($scope, mapImage, mapAnnotations, map) {
 		"use strict";
-
-		var map = new ol.Map({ target: 'canvas' });
 
 		// update the URL parameters
 		map.on('moveend', function(e) {
@@ -104,8 +102,67 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "ma
 			});
 		});
 
-		mapImage.init(map, $scope);
-		mapAnnotations.init(map, $scope);
+		mapImage.init($scope);
+		mapAnnotations.init($scope);
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc controller
+ * @name MinimapController
+ * @memberOf dias.annotations
+ * @description Controller for the minimap in the sidebar
+ */
+angular.module('dias.annotations').controller('MinimapController', ["$scope", "map", "mapImage", "$element", function ($scope, map, mapImage, $element) {
+		"use strict";
+
+		var minimap = new ol.Map({
+			target: 'minimap',
+			// remove controls
+			controls: [],
+			// disable interactions
+			interactions: []
+		});
+		// get the same layers than the map
+		minimap.bindTo('layergroup', map);
+
+		var featureOverlay = new ol.FeatureOverlay({
+			map: minimap
+		});
+
+		var viewport = new ol.Feature();
+		featureOverlay.addFeature(viewport);
+
+		// refresh the view (the image size could have been changed)
+		$scope.$on('image.shown', function () {
+			minimap.setView(new ol.View({
+				projection: mapImage.getProjection(),
+				center: ol.extent.getCenter(mapImage.getExtent()),
+				zoom: 0
+			}));
+		});
+
+		// move the viewport rectangle on the minimap
+		var refreshViewport = function () {
+			var extent = map.getView().calculateExtent(map.getSize());
+			viewport.setGeometry(ol.geom.Polygon.fromExtent(extent));
+		};
+
+		map.on('moveend', refreshViewport);
+
+		var dragViewport = function (e) {
+			map.getView().setCenter(e.coordinate);
+		};
+
+		minimap.on('pointerdrag', dragViewport);
+
+		$element.on('mouseleave', function () {
+			minimap.un('pointerdrag', dragViewport);
+		});
+
+		$element.on('mouseenter', function () {
+			minimap.on('pointerdrag', dragViewport);
+		});
 	}]
 );
 /**
@@ -249,12 +306,34 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
 );
 /**
  * @namespace dias.annotations
+ * @ngdoc factory
+ * @name map
+ * @memberOf dias.annotations
+ * @description Wrapper factory handling OpenLayers map
+ */
+angular.module('dias.annotations').factory('map', function () {
+		"use strict";
+
+		var map = new ol.Map({
+			target: 'canvas',
+			controls: [
+				new ol.control.Zoom(),
+				new ol.control.ZoomToExtent(),
+				new ol.control.FullScreen(),
+			]
+		});
+
+		return map;
+	}
+);
+/**
+ * @namespace dias.annotations
  * @ngdoc service
  * @name mapAnnotations
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation", "AnnotationLabel", "AnnotationPoint", "Shape", function (ImageAnnotation, AnnotationLabel, AnnotationPoint, Shape) {
+angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation", "AnnotationLabel", "AnnotationPoint", "Shape", "map", function (ImageAnnotation, AnnotationLabel, AnnotationPoint, Shape, map) {
 		"use strict";
 		var shapes = {};
 		Shape.query(function (s) {
@@ -350,7 +429,7 @@ angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation",
 		// 	type: /** @type {ol.geom.GeometryType} */ 'Point'
 		// });
 
-		this.init = function (map, scope) {
+		this.init = function (scope) {
 			featureOverlay.setMap(map);
 			// map.addInteraction(modify);
 			// map.addInteraction(draw);
@@ -366,7 +445,7 @@ angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation",
  * @memberOf dias.annotations
  * @description Wrapper service handling the image layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapImage', function () {
+angular.module('dias.annotations').service('mapImage', ["map", function (map) {
 		"use strict";
 		var extent = [0, 0, 0, 0];
 
@@ -378,7 +457,7 @@ angular.module('dias.annotations').service('mapImage', function () {
 
 		var imageLayer = new ol.layer.Image();
 
-		this.init = function (map, scope) {
+		this.init = function (scope) {
 			map.addLayer(imageLayer);
 
 			// refresh the image source
@@ -418,7 +497,15 @@ angular.module('dias.annotations').service('mapImage', function () {
 				}
 			});
 		};
-	}
+
+		this.getExtent = function () {
+			return extent;
+		};
+
+		this.getProjection = function () {
+			return projection;
+		};
+	}]
 );
 /**
  * @namespace dias.annotations

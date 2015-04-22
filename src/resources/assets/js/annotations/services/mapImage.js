@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service handling the image layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapImage', function () {
+angular.module('dias.annotations').service('mapImage', function (map) {
 		"use strict";
 		var extent = [0, 0, 0, 0];
 
@@ -17,7 +17,7 @@ angular.module('dias.annotations').service('mapImage', function () {
 
 		var imageLayer = new ol.layer.Image();
 
-		this.init = function (map, scope) {
+		this.init = function (scope) {
 			map.addLayer(imageLayer);
 
 			// refresh the image source
@@ -56,6 +56,14 @@ angular.module('dias.annotations').service('mapImage', function () {
 					map.getView().fitExtent(extent, map.getSize());
 				}
 			});
+		};
+
+		this.getExtent = function () {
+			return extent;
+		};
+
+		this.getProjection = function () {
+			return projection;
 		};
 	}
 );

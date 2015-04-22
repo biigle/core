@@ -5,10 +5,8 @@
  * @memberOf dias.annotations
  * @description Main controller for the annotation canvas element
  */
-angular.module('dias.annotations').controller('CanvasController', function ($scope, mapImage, mapAnnotations) {
+angular.module('dias.annotations').controller('CanvasController', function ($scope, mapImage, mapAnnotations, map) {
 		"use strict";
-
-		var map = new ol.Map({ target: 'canvas' });
 
 		// update the URL parameters
 		map.on('moveend', function(e) {
@@ -19,7 +17,7 @@ angular.module('dias.annotations').controller('CanvasController', function ($sco
 			});
 		});
 
-		mapImage.init(map, $scope);
-		mapAnnotations.init(map, $scope);
+		mapImage.init($scope);
+		mapAnnotations.init($scope);
 	}
 );
