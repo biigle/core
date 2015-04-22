@@ -109,6 +109,28 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "ma
 /**
  * @namespace dias.annotations
  * @ngdoc controller
+ * @name ControlsController
+ * @memberOf dias.annotations
+ * @description Controller for the sidebar controls
+ */
+angular.module('dias.annotations').controller('ControlsController', ["$scope", "mapAnnotations", function ($scope, mapAnnotations) {
+		"use strict";
+		var drawing = false;
+
+		$scope.toggleDrawing = function () {
+			if (drawing) {
+				mapAnnotations.finishDrawing();
+				drawing = false;
+			} else {
+				mapAnnotations.startDrawing('Polygon');
+				drawing = true;
+			}
+		};
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc controller
  * @name MinimapController
  * @memberOf dias.annotations
  * @description Controller for the minimap in the sidebar
@@ -302,6 +324,10 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
 		this.prev = function () {
 			return _this.show(prevId());
 		};
+
+		this.getCurrentId = function () {
+			return _this.currentImage._id;
+		};
 	}]
 );
 /**
@@ -333,7 +359,7 @@ angular.module('dias.annotations').factory('map', function () {
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation", "AnnotationLabel", "AnnotationPoint", "Shape", "map", function (ImageAnnotation, AnnotationLabel, AnnotationPoint, Shape, map) {
+angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation", "AnnotationLabel", "AnnotationPoint", "Shape", "map", "images", function (ImageAnnotation, AnnotationLabel, AnnotationPoint, Shape, map, images) {
 		"use strict";
 		var shapes = {};
 		Shape.query(function (s) {
@@ -362,6 +388,15 @@ angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation",
 			})
 		});
 
+		var features = new ol.Collection();
+		featureOverlay.setFeatures(features);
+
+		// convert a point array to a point object
+		var convertFromOLPoint = function (point) {
+			return {x: point[0], y: point[1]};
+		};
+
+		// convert a point object to a point array
 		var convertToOLPoint = function (point) {
 			return [point.x, point.y];
 		};
@@ -389,13 +424,13 @@ angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation",
 						geometry = new ol.geom.Circle(points[0], points[1][0]);
 				}
 
-				featureOverlay.addFeature(new ol.Feature({ geometry: geometry }));
+				features.push(new ol.Feature({ geometry: geometry }));
 			});
 		};
 
 		var refreshAnnotations = function (e, image) {
 			// clear features of previous image
-			featureOverlay.setFeatures(new ol.Collection());
+			features.clear();
 
 			annotations = ImageAnnotation.query({image_id: image._id});
 			annotations.$promise.then(function () {
@@ -414,27 +449,57 @@ angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation",
 		// select interaction working on "singleclick"
 		var select = new ol.interaction.Select();
 
-		// var modify = new ol.interaction.Modify({
-		// 	features: featureOverlay.getFeatures(),
-		// 	// the SHIFT key must be pressed to delete vertices, so
-		// 	// that new vertices can be drawn at the same position
-		// 	// of existing vertices
-		// 	deleteCondition: function(event) {
-		// 		return ol.events.condition.shiftKeyOnly(event) && ol.events.condition.singleClick(event);
-		// 	}
-		// });
+		var modify = new ol.interaction.Modify({
+			features: featureOverlay.getFeatures(),
+			// the SHIFT key must be pressed to delete vertices, so
+			// that new vertices can be drawn at the same position
+			// of existing vertices
+			deleteCondition: function(event) {
+				return ol.events.condition.shiftKeyOnly(event) && ol.events.condition.singleClick(event);
+			}
+		});
 
-		// var draw = new ol.interaction.Draw({
-		// 	features: featureOverlay.getFeatures(),
-		// 	type: /** @type {ol.geom.GeometryType} */ 'Point'
-		// });
+		// drawing interaction
+		var draw;
+
+		var handleNewFeature = function (e) {
+			var geometry = e.feature.getGeometry();
+			var coordinates;
+			if (geometry.getType === 'Circle') {
+				coordinates = [[geometry.getCenter(), [geometry.getRadius(), 0]]];
+			} else {
+				coordinates = geometry.getCoordinates();
+			}
+			coordinates = coordinates[0];
+
+			ImageAnnotation.add({
+				image_id: images.getCurrentId(),
+				shape_id: 3, //TODO
+				points: coordinates.map(convertFromOLPoint)
+			});
+		};
 
 		this.init = function (scope) {
 			featureOverlay.setMap(map);
-			// map.addInteraction(modify);
+			map.addInteraction(modify);
 			// map.addInteraction(draw);
-			map.addInteraction(select);
+			// map.addInteraction(select);
 			scope.$on('image.shown', refreshAnnotations);
+		};
+
+		this.startDrawing = function (type) {
+			type = type || 'Point';
+			
+			draw = new ol.interaction.Draw({
+				features: features,
+				type: type
+			});
+			map.addInteraction(draw);
+			draw.on('drawend', handleNewFeature);
+		};
+
+		this.finishDrawing = function () {
+			map.removeInteraction(draw);
 		};
 	}]
 );

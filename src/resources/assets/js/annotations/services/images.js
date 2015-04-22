@@ -135,5 +135,9 @@ angular.module('dias.annotations').service('images', function (TransectImage, UR
 		this.prev = function () {
 			return _this.show(prevId());
 		};
+
+		this.getCurrentId = function () {
+			return _this.currentImage._id;
+		};
 	}
 );
