@@ -126,7 +126,8 @@ class AnnotationTest extends TestCase {
 
 		$this->assertEquals(0, $annotation->points()->count());
 
-		$point = $annotation->addPoint(10, 10);
+		// float will be converted to int
+		$point = $annotation->addPoint(10.5, 10.22);
 
 		$this->assertEquals($annotation->id, $point->annotation->id);
 		$this->assertEquals(1, $annotation->points()->count());

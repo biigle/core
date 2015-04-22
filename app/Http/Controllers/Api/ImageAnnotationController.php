@@ -40,7 +40,13 @@ class ImageAnnotationController extends Controller {
 			abort(400, 'Shape with ID "'.$this->request->input('shape_id').'" does not exist.');
 		}
 
-		$points = json_decode($this->request->input('points'));
+		// from a JSON request, the array may already be decoded
+		$points = $this->request->input('points');
+		
+		if (is_string($points))
+		{
+			$points = json_decode($points);
+		}
 
 		if (empty($points))
 		{
@@ -53,7 +59,15 @@ class ImageAnnotationController extends Controller {
 		$annotation->save();
 
 		foreach ($points as $point) {
-			$annotation->addPoint($point->x, $point->y);
+			// depending on decoding, a point may be an object or an array
+			if (is_array($point))
+			{
+				$annotation->addPoint($point['x'], $point['y']);
+			}
+			else
+			{
+				$annotation->addPoint($point->x, $point->y);
+			}
 		}
 
 		return $annotation->fresh();

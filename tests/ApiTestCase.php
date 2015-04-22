@@ -51,7 +51,19 @@ class ApiTestCase extends TestCase {
 	 */
 	protected function callAjax($method, $uri, $params = [])
 	{
-		return $this->call($method, $uri, $params, [], [], array('HTTP_X-Requested-With' => 'XMLHttpRequest'));
+		return $this->call($method, $uri, $params, [], [], array(
+			'HTTP_X-Requested-With' => 'XMLHttpRequest'
+		));
+	}
+
+	/*
+	 * Simulates an JSON request.
+	 */
+	protected function callJSON($method, $uri, $params = [])
+	{
+		return $this->call($method, $uri, $params, [], [], array(
+			'HTTP_Content-Type' => 'application/json'
+		));
 	}
 
 	/*
@@ -59,7 +71,9 @@ class ApiTestCase extends TestCase {
 	 */
 	protected function callToken($method, $uri, $user, $params = [])
 	{
-		return $this->call($method, $uri, $params, [], [], array('HTTP_X-Auth-Token' => $user->api_key));
+		return $this->call($method, $uri, $params, [], [], array(
+			'HTTP_X-Auth-Token' => $user->api_key
+		));
 	}
 
 	/*

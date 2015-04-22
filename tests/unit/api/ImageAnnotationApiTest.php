@@ -94,7 +94,7 @@ class ImageAnnotationApiTest extends ApiTestCase {
 			array(
 				'_token' => Session::token(),
 				'shape_id' => \Dias\Shape::pointId(),
-				'points' => '[{"x": 10, "y": 11}]'
+				'points' => '[{"x":10,"y":11}]'
 			)
 		);
 		$this->assertResponseOk();

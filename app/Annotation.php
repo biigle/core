@@ -107,8 +107,8 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
 	public function addPoint($x, $y)
 	{
 		$point = new AnnotationPoint;
-		$point->x = $x;
-		$point->y = $y;
+		$point->x = intval($x);
+		$point->y = intval($y);
 		$index = $this->points()->max('index');
 		// the new point gets the next higher index
 		$point->index = ($index === null) ? 0 : $index + 1;
