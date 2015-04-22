@@ -5,14 +5,8 @@
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', function (ImageAnnotation, AnnotationLabel, AnnotationPoint, Shape, map, images) {
+angular.module('dias.annotations').service('mapAnnotations', function (ImageAnnotation, AnnotationLabel, AnnotationPoint, shapes, map, images, Annotation) {
 		"use strict";
-		var shapes = {};
-		Shape.query(function (s) {
-			s.forEach(function (shape) {
-				shapes[shape.id] = shape.name;
-			});
-		});
 
 		var annotations = {};
 
@@ -35,6 +29,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (ImageAnno
 		});
 
 		var features = new ol.Collection();
+
 		featureOverlay.setFeatures(features);
 
 		// convert a point array to a point object
@@ -53,24 +48,26 @@ angular.module('dias.annotations').service('mapAnnotations', function (ImageAnno
 				var points = annotation.points.map(convertToOLPoint);
 
 				switch (annotation.shape()) {
-					case 'point':
+					case 'Point':
 						geometry = new ol.geom.Point(points[0]);
 						break;
-					case 'polygon':						
+					case 'Polygon':						
 						// close the polygon
 						points.push(points[0]);
 						// example: https://github.com/openlayers/ol3/blob/master/examples/geojson.js#L126
 						geometry = new ol.geom.Polygon([ points ]);
 						break;
-					case 'line':
+					case 'LineString':
 						geometry = new ol.geom.LineString(points);
 						break;
-					case 'circle':
+					case 'Circle':
 						// radius is the x value of the second point of the circle
 						geometry = new ol.geom.Circle(points[0], points[1][0]);
 				}
 
-				features.push(new ol.Feature({ geometry: geometry }));
+				var feature = new ol.Feature({ geometry: geometry });
+				feature.annotation = annotation;
+				features.push(feature);
 			});
 		};
 
@@ -84,7 +81,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (ImageAnno
 					annotation.points = AnnotationPoint.query({annotation_id: annotation.id});
 					annotation.labels = AnnotationLabel.query({annotation_id: annotation.id});
 					annotation.shape = function () {
-						return shapes[this.shape_id];
+						return shapes.getName(this.shape_id);
 					};
 				});
 
@@ -111,41 +108,62 @@ angular.module('dias.annotations').service('mapAnnotations', function (ImageAnno
 		var handleNewFeature = function (e) {
 			var geometry = e.feature.getGeometry();
 			var coordinates;
-			if (geometry.getType === 'Circle') {
-				coordinates = [[geometry.getCenter(), [geometry.getRadius(), 0]]];
-			} else {
-				coordinates = geometry.getCoordinates();
+			switch (geometry.getType()) {
+				case 'Circle':
+					coordinates = [geometry.getCenter(), [geometry.getRadius(), 0]];
+					break;
+				case 'Polygon':
+					coordinates = geometry.getCoordinates()[0];
+					break;
+				case 'Point':
+					coordinates = [geometry.getCoordinates()];
+					break;
+				default:
+					coordinates = geometry.getCoordinates();
 			}
-			coordinates = coordinates[0];
 
-			ImageAnnotation.add({
+			e.feature.annotation = ImageAnnotation.add({
 				image_id: images.getCurrentId(),
-				shape_id: 3, //TODO
+				shape_id: shapes.getId(geometry.getType()),
 				points: coordinates.map(convertFromOLPoint)
 			});
 		};
 
 		this.init = function (scope) {
 			featureOverlay.setMap(map);
-			map.addInteraction(modify);
-			// map.addInteraction(draw);
-			// map.addInteraction(select);
+			map.addInteraction(select);
 			scope.$on('image.shown', refreshAnnotations);
 		};
 
 		this.startDrawing = function (type) {
+			map.removeInteraction(select);
+
 			type = type || 'Point';
 			
 			draw = new ol.interaction.Draw({
 				features: features,
 				type: type
 			});
+			map.addInteraction(modify);
 			map.addInteraction(draw);
 			draw.on('drawend', handleNewFeature);
 		};
 
 		this.finishDrawing = function () {
 			map.removeInteraction(draw);
+			map.removeInteraction(modify);
+			map.addInteraction(select);
+		};
+
+		this.deleteSelected = function () {
+			var selectedFeatures = select.getFeatures();
+			selectedFeatures.forEach(function (feature) {
+				features.remove(feature);
+				Annotation.delete({
+					id: feature.annotation.id
+				});
+			});
+			selectedFeatures.clear();
 		};
 	}
 );
