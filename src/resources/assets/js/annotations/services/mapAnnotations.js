@@ -5,32 +5,36 @@
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', function (AnnotationLabel, shapes, map, images, Annotation, debounce) {
+angular.module('dias.annotations').service('mapAnnotations', function (AnnotationLabel, shapes, map, images, Annotation, debounce, styles) {
 		"use strict";
 
 		var annotations = {};
 
 		var featureOverlay = new ol.FeatureOverlay({
-			// style: new ol.style.Style({
-			// 	fill: new ol.style.Fill({
-			// 		color: 'rgba(255, 255, 255, 0.2)'
-			// 	}),
-			// 	stroke: new ol.style.Stroke({
-			// 		color: '#ffcc33',
-			// 		width: 2
-			// 	}),
-			// 	image: new ol.style.Circle({
-			// 		radius: 7,
-			// 		fill: new ol.style.Fill({
-			// 			color: '#ffcc33'
-			// 		})
-			// 	})
-			// })
+			style: styles.features
 		});
 
 		var features = new ol.Collection();
 
 		featureOverlay.setFeatures(features);
+
+		// select interaction working on "singleclick"
+		var select = new ol.interaction.Select({
+			style: styles.highlight
+		});
+
+		var modify = new ol.interaction.Modify({
+			features: featureOverlay.getFeatures(),
+			// the SHIFT key must be pressed to delete vertices, so
+			// that new vertices can be drawn at the same position
+			// of existing vertices
+			deleteCondition: function(event) {
+				return ol.events.condition.shiftKeyOnly(event) && ol.events.condition.singleClick(event);
+			}
+		});
+
+		// drawing interaction
+		var draw;
 
 		// convert a point array to a point object
 		// re-invert the y axis
@@ -119,22 +123,6 @@ angular.module('dias.annotations').service('mapAnnotations', function (Annotatio
 			});
 		};
 
-		// select interaction working on "singleclick"
-		var select = new ol.interaction.Select();
-
-		var modify = new ol.interaction.Modify({
-			features: featureOverlay.getFeatures(),
-			// the SHIFT key must be pressed to delete vertices, so
-			// that new vertices can be drawn at the same position
-			// of existing vertices
-			deleteCondition: function(event) {
-				return ol.events.condition.shiftKeyOnly(event) && ol.events.condition.singleClick(event);
-			}
-		});
-
-		// drawing interaction
-		var draw;
-
 		var handleNewFeature = function (e) {
 			var geometry = e.feature.getGeometry();
 			var coordinates = getCoordinates(geometry);
@@ -159,7 +147,8 @@ angular.module('dias.annotations').service('mapAnnotations', function (Annotatio
 			
 			draw = new ol.interaction.Draw({
 				features: features,
-				type: type
+				type: type,
+				style: styles.editing
 			});
 			map.addInteraction(modify);
 			map.addInteraction(draw);

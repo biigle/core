@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Controller for the minimap in the sidebar
  */
-angular.module('dias.annotations').controller('MinimapController', function ($scope, map, mapImage, $element) {
+angular.module('dias.annotations').controller('MinimapController', function ($scope, map, mapImage, $element, styles) {
 		"use strict";
 
 		var minimap = new ol.Map({
@@ -19,7 +19,8 @@ angular.module('dias.annotations').controller('MinimapController', function ($sc
 		minimap.bindTo('layergroup', map);
 
 		var featureOverlay = new ol.FeatureOverlay({
-			map: minimap
+			map: minimap,
+			style: styles.viewport
 		});
 
 		var viewport = new ol.Feature();

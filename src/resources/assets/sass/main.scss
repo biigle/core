@@ -38,4 +38,11 @@ html, body {
 
 .controls__minimap {
 	height: 200px;
+	margin-bottom: 1em;
+}
+
+.controls__panel {
+	& > * {
+		margin-bottom: 1em;
+	}
 }

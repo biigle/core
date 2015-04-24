@@ -39,6 +39,17 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 			return images.show(parseInt(id)).then(finishLoading);
 		};
 
+		var handleKeyEvents = function (e) {
+			switch (e.keyCode) {
+				case 37:
+					$scope.prevImage();
+					break;
+				case 39:
+					$scope.nextImage();
+					break;
+			}
+		};
+
 		// show the next image and create a new history entry
 		$scope.nextImage = function () {
 			startLoading();
@@ -70,6 +81,8 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 				loadImage(state.slug);
 			}
 		};
+
+		document.addEventListener('keypress', handleKeyEvents);
 
 		// initialize the images service
 		images.init($attrs.transectId);
