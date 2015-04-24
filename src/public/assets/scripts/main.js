@@ -80,7 +80,7 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
 		// initialize the images service
 		images.init($attrs.transectId);
 		// display the first image
-		loadImage($attrs.imageId).then(finishLoading).then(pushState);
+		loadImage($attrs.imageId).then(pushState);
 	}]
 );
 /**
@@ -365,27 +365,27 @@ angular.module('dias.annotations').factory('map', function () {
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation", "AnnotationLabel", "AnnotationPoint", "shapes", "map", "images", "Annotation", function (ImageAnnotation, AnnotationLabel, AnnotationPoint, shapes, map, images, Annotation) {
+angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel", "shapes", "map", "images", "Annotation", function (AnnotationLabel, shapes, map, images, Annotation) {
 		"use strict";
 
 		var annotations = {};
 
 		var featureOverlay = new ol.FeatureOverlay({
-			style: new ol.style.Style({
-				fill: new ol.style.Fill({
-					color: 'rgba(255, 255, 255, 0.2)'
-				}),
-				stroke: new ol.style.Stroke({
-					color: '#ffcc33',
-					width: 2
-				}),
-				image: new ol.style.Circle({
-					radius: 7,
-					fill: new ol.style.Fill({
-						color: '#ffcc33'
-					})
-				})
-			})
+			// style: new ol.style.Style({
+			// 	fill: new ol.style.Fill({
+			// 		color: 'rgba(255, 255, 255, 0.2)'
+			// 	}),
+			// 	stroke: new ol.style.Stroke({
+			// 		color: '#ffcc33',
+			// 		width: 2
+			// 	}),
+			// 	image: new ol.style.Circle({
+			// 		radius: 7,
+			// 		fill: new ol.style.Fill({
+			// 			color: '#ffcc33'
+			// 		})
+			// 	})
+			// })
 		});
 
 		var features = new ol.Collection();
@@ -403,43 +403,41 @@ angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation",
 		};
 
 		var createFeature = function (annotation) {
-			annotation.points.$promise.then(function () {
-				var geometry;
-				var points = annotation.points.map(convertToOLPoint);
+			var geometry;
+			var points = annotation.points.map(convertToOLPoint);
 
-				switch (annotation.shape()) {
-					case 'Point':
-						geometry = new ol.geom.Point(points[0]);
-						break;
-					case 'Polygon':						
-						// close the polygon
-						points.push(points[0]);
-						// example: https://github.com/openlayers/ol3/blob/master/examples/geojson.js#L126
-						geometry = new ol.geom.Polygon([ points ]);
-						break;
-					case 'LineString':
-						geometry = new ol.geom.LineString(points);
-						break;
-					case 'Circle':
-						// radius is the x value of the second point of the circle
-						geometry = new ol.geom.Circle(points[0], points[1][0]);
-				}
+			switch (annotation.shape()) {
+				case 'Point':
+					geometry = new ol.geom.Point(points[0]);
+					break;
+				case 'Polygon':
+					// close the polygon
+					points.push(points[0]);
+					// example: https://github.com/openlayers/ol3/blob/master/examples/geojson.js#L126
+					geometry = new ol.geom.Polygon([ points ]);
+					break;
+				case 'LineString':
+					geometry = new ol.geom.LineString(points);
+					break;
+				case 'Circle':
+					// radius is the x value of the second point of the circle
+					geometry = new ol.geom.Circle(points[0], points[1][0]);
+			}
 
-				var feature = new ol.Feature({ geometry: geometry });
-				feature.annotation = annotation;
-				features.push(feature);
-			});
+			var feature = new ol.Feature({ geometry: geometry });
+			feature.annotation = annotation;
+			features.push(feature);
 		};
 
 		var refreshAnnotations = function (e, image) {
 			// clear features of previous image
 			features.clear();
 
-			annotations = ImageAnnotation.query({image_id: image._id});
+			annotations = Annotation.query({id: image._id});
 			annotations.$promise.then(function () {
 				annotations.forEach(function (annotation) {
-					annotation.points = AnnotationPoint.query({annotation_id: annotation.id});
-					annotation.labels = AnnotationLabel.query({annotation_id: annotation.id});
+					// TODO: lazy loading when the label overview is opened?
+					// annotation.labels = AnnotationLabel.query({annotation_id: annotation.id});
 					annotation.shape = function () {
 						return shapes.getName(this.shape_id);
 					};
@@ -482,8 +480,8 @@ angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation",
 					coordinates = geometry.getCoordinates();
 			}
 
-			e.feature.annotation = ImageAnnotation.add({
-				image_id: images.getCurrentId(),
+			e.feature.annotation = Annotation.add({
+				id: images.getCurrentId(),
 				shape_id: shapes.getId(geometry.getType()),
 				points: coordinates.map(convertFromOLPoint)
 			});
@@ -519,9 +517,7 @@ angular.module('dias.annotations').service('mapAnnotations', ["ImageAnnotation",
 			var selectedFeatures = select.getFeatures();
 			selectedFeatures.forEach(function (feature) {
 				features.remove(feature);
-				Annotation.delete({
-					id: feature.annotation.id
-				});
+				feature.annotation.$delete();
 			});
 			selectedFeatures.clear();
 		};

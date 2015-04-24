@@ -74,6 +74,6 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 		// initialize the images service
 		images.init($attrs.transectId);
 		// display the first image
-		loadImage($attrs.imageId).then(finishLoading).then(pushState);
+		loadImage($attrs.imageId).then(pushState);
 	}
 );
