@@ -16,6 +16,9 @@ describe('The Annotation resource factory', function () {
 		$httpBackend.when('GET', '/api/v1/annotations/1')
 		            .respond(annotation);
 
+		$httpBackend.when('PUT', '/api/v1/annotations/1')
+		            .respond(200);
+		
 		$httpBackend.when('DELETE', '/api/v1/annotations/1')
 		            .respond(200);
 
@@ -42,6 +45,20 @@ describe('The Annotation resource factory', function () {
 	it('should delete an annotation', inject(function (Annotation) {
 		$httpBackend.expectDELETE('/api/v1/annotations/1');
 		Annotation.delete({id: 1});
+		$httpBackend.flush();
+	}));
+
+	it('should save an annotation', inject(function (Annotation) {
+		$httpBackend.expectPUT('/api/v1/annotations/1', {
+			id: 1, image_id: 1, shape_id: 2, points: [{x: 10, y: 10}]
+		});
+		var annotation = Annotation.get({id: 1}, function () {
+			annotation.points = [{x: 10, y: 10}];
+			annotation.$save();
+		});
+		Annotation.save({
+			id: 1, image_id: 1, shape_id: 2, points: [{x: 10, y: 10}]
+		});
 		$httpBackend.flush();
 	}));
 

@@ -11,6 +11,16 @@ var annotation = Annotation.get({id: 123}, function () {
    console.log(annotation.shape_id);
 });
 
+// saving an annotation (updating the annotation points)
+var annotation = Annotation.get({id: 1}, function () {
+   annotation.points = [{x: 10, y: 10}];
+   annotation.$save();
+});
+// or directly
+Annotation.save({
+   id: 1, points: [{x: 10, y: 10}]
+});
+
 // deleting an annotation
 var annotation = Annotation.get({id: 123}, function () {
    annotation.$delete();
@@ -45,6 +55,10 @@ angular.module('dias.api').factory('Annotation', function ($resource, URL) {
 		{
 			get: {
 				method: 'GET',
+				params: { endpoint: 'annotations' }
+			},
+			save: {
+				method: 'PUT',
 				params: { endpoint: 'annotations' }
 			},
 			delete: {

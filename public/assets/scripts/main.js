@@ -41,6 +41,15 @@ angular.module('dias.ui', ['dias.ui.messages', 'dias.ui.users']);
 
 
 /**
+ * @ngdoc constant
+ * @name URL
+ * @memberOf dias.api
+ * @description The base url of the application.
+ * @returns {String}
+ *
+ */
+angular.module('dias.api').constant('URL', window.$diasBaseUrl || '');
+/**
  * @ngdoc factory
  * @name Annotation
  * @memberOf dias.api
@@ -51,6 +60,16 @@ angular.module('dias.ui', ['dias.ui.messages', 'dias.ui.users']);
 // retrieving the shape ID of an annotation
 var annotation = Annotation.get({id: 123}, function () {
    console.log(annotation.shape_id);
+});
+
+// saving an annotation (updating the annotation points)
+var annotation = Annotation.get({id: 1}, function () {
+   annotation.points = [{x: 10, y: 10}];
+   annotation.$save();
+});
+// or directly
+Annotation.save({
+   id: 1, points: [{x: 10, y: 10}]
 });
 
 // deleting an annotation
@@ -87,6 +106,10 @@ angular.module('dias.api').factory('Annotation', ["$resource", "URL", function (
 		{
 			get: {
 				method: 'GET',
+				params: { endpoint: 'annotations' }
+			},
+			save: {
+				method: 'PUT',
 				params: { endpoint: 'annotations' }
 			},
 			delete: {
@@ -636,15 +659,6 @@ angular.module('dias.api').factory('User', ["$resource", "URL", function ($resou
 	});
 }]);
 /**
- * @ngdoc constant
- * @name URL
- * @memberOf dias.api
- * @description The base url of the application.
- * @returns {String}
- *
- */
-angular.module('dias.api').constant('URL', window.$diasBaseUrl || '');
-/**
  * @namespace dias.api
  * @ngdoc service
  * @name roles
@@ -707,6 +721,15 @@ angular.module('dias.api').service('shapes', ["Shape", function (Shape) {
 	}]
 );
 /**
+ * @ngdoc constant
+ * @name MAX_MSG
+ * @memberOf dias.ui.messages
+ * @description The maximum number of info messages to display.
+ * @returns {Integer}
+ *
+ */
+angular.module('dias.ui.messages').constant('MAX_MSG', 1);
+/**
  * @namespace dias.ui.messages
  * @ngdoc controller
  * @name MessagesController
@@ -738,15 +761,6 @@ angular.module('dias.ui.messages').controller('MessagesController', ["$scope", "
 	}]
 );
 
-/**
- * @ngdoc constant
- * @name MAX_MSG
- * @memberOf dias.ui.messages
- * @description The maximum number of info messages to display.
- * @returns {Integer}
- *
- */
-angular.module('dias.ui.messages').constant('MAX_MSG', 1);
 /**
  * @namespace dias.ui.messages
  * @ngdoc service
