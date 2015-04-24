@@ -6,251 +6,6 @@ angular.module('dias.annotations', ['dias.api']);
 
 /**
  * @namespace dias.annotations
- * @ngdoc controller
- * @name AnnotatorController
- * @memberOf dias.annotations
- * @description Main controller of the Annotator application.
- */
-angular.module('dias.annotations').controller('AnnotatorController', ["$scope", "$attrs", "images", "urlParams", function ($scope, $attrs, images, urlParams) {
-		"use strict";
-
-		$scope.images = images;
-		$scope.imageLoading = true;
-
-		// the current canvas viewport, synced with the URL parameters
-		$scope.viewport = {
-			zoom: urlParams.get('z'),
-			center: [urlParams.get('x'), urlParams.get('y')]
-		};
-
-		// finish image loading process
-		var finishLoading = function () {
-			$scope.imageLoading = false;
-			$scope.$broadcast('image.shown', $scope.images.currentImage);
-		};
-
-		// create a new history entry
-		var pushState = function () {
-			urlParams.pushState($scope.images.currentImage._id);
-		};
-
-		// start image loading process
-		var startLoading = function () {
-			$scope.imageLoading = true;
-		};
-
-		// load the image by id. doesn't create a new history entry by itself
-		var loadImage = function (id) {
-			startLoading();
-			return images.show(parseInt(id)).then(finishLoading);
-		};
-
-		// show the next image and create a new history entry
-		$scope.nextImage = function () {
-			startLoading();
-			images.next().then(finishLoading).then(pushState);
-		};
-
-		// show the previous image and create a new history entry
-		$scope.prevImage = function () {
-			startLoading();
-			images.prev().then(finishLoading).then(pushState);
-		};
-
-		// update the URL parameters of the viewport
-		$scope.$on('canvas.moveend', function(e, params) {
-			$scope.viewport.zoom = params.zoom;
-			$scope.viewport.center[0] = Math.round(params.center[0]);
-			$scope.viewport.center[1] = Math.round(params.center[1]);
-			urlParams.set({
-				z: $scope.viewport.zoom,
-				x: $scope.viewport.center[0],
-				y: $scope.viewport.center[1]
-			});
-		});
-
-		// listen to the browser "back" button
-		window.onpopstate = function(e) {
-			var state = e.state;
-			if (state && state.slug !== undefined) {
-				loadImage(state.slug);
-			}
-		};
-
-		// initialize the images service
-		images.init($attrs.transectId);
-		// display the first image
-		loadImage($attrs.imageId).then(pushState);
-	}]
-);
-/**
- * @namespace dias.annotations
- * @ngdoc controller
- * @name CanvasController
- * @memberOf dias.annotations
- * @description Main controller for the annotation canvas element
- */
-angular.module('dias.annotations').controller('CanvasController', ["$scope", "mapImage", "mapAnnotations", "map", function ($scope, mapImage, mapAnnotations, map) {
-		"use strict";
-
-		// update the URL parameters
-		map.on('moveend', function(e) {
-			var view = map.getView();
-			$scope.$emit('canvas.moveend', {
-				center: view.getCenter(),
-				zoom: view.getZoom()
-			});
-		});
-
-		mapImage.init($scope);
-		mapAnnotations.init($scope);
-	}]
-);
-/**
- * @namespace dias.annotations
- * @ngdoc controller
- * @name ControlsController
- * @memberOf dias.annotations
- * @description Controller for the sidebar controls
- */
-angular.module('dias.annotations').controller('ControlsController', ["$scope", "mapAnnotations", "shapes", function ($scope, mapAnnotations, shapes) {
-		"use strict";
-		var drawing = false;
-
-		$scope.selectedShape = {};
-
-		$scope.toggleDrawing = function () {
-			if (drawing) {
-				mapAnnotations.finishDrawing();
-				drawing = false;
-			} else {
-				mapAnnotations.startDrawing($scope.selectedShape.name);
-				drawing = true;
-			}
-		};
-
-		$scope.shapes = shapes.getAll();
-
-		$scope.deleteSelected = mapAnnotations.deleteSelected;
-	}]
-);
-/**
- * @namespace dias.annotations
- * @ngdoc controller
- * @name MinimapController
- * @memberOf dias.annotations
- * @description Controller for the minimap in the sidebar
- */
-angular.module('dias.annotations').controller('MinimapController', ["$scope", "map", "mapImage", "$element", function ($scope, map, mapImage, $element) {
-		"use strict";
-
-		var minimap = new ol.Map({
-			target: 'minimap',
-			// remove controls
-			controls: [],
-			// disable interactions
-			interactions: []
-		});
-		// get the same layers than the map
-		minimap.bindTo('layergroup', map);
-
-		var featureOverlay = new ol.FeatureOverlay({
-			map: minimap
-		});
-
-		var viewport = new ol.Feature();
-		featureOverlay.addFeature(viewport);
-
-		// refresh the view (the image size could have been changed)
-		$scope.$on('image.shown', function () {
-			minimap.setView(new ol.View({
-				projection: mapImage.getProjection(),
-				center: ol.extent.getCenter(mapImage.getExtent()),
-				zoom: 0
-			}));
-		});
-
-		// move the viewport rectangle on the minimap
-		var refreshViewport = function () {
-			var extent = map.getView().calculateExtent(map.getSize());
-			viewport.setGeometry(ol.geom.Polygon.fromExtent(extent));
-		};
-
-		map.on('moveend', refreshViewport);
-
-		var dragViewport = function (e) {
-			map.getView().setCenter(e.coordinate);
-		};
-
-		minimap.on('pointerdrag', dragViewport);
-
-		$element.on('mouseleave', function () {
-			minimap.un('pointerdrag', dragViewport);
-		});
-
-		$element.on('mouseenter', function () {
-			minimap.on('pointerdrag', dragViewport);
-		});
-	}]
-);
-/**
- * @namespace dias.annotations
- * @ngdoc factory
- * @name debounce
- * @memberOf dias.annotations
- * @description A debounce service to perform an action only when this function
- * wasn't called again in a short period of time.
- * see http://stackoverflow.com/a/13320016/1796523
- */
-angular.module('dias.annotations').factory('debounce', ["$timeout", "$q", function ($timeout, $q) {
-		"use strict";
-
-		var timeouts = {};
-
-		return function (func, wait, id) {
-			// Create a deferred object that will be resolved when we need to
-			// actually call the func
-			var deferred = $q.defer();
-			return (function() {
-				var context = this, args = arguments;
-				var later = function() {
-					timeouts[id] = undefined;
-					deferred.resolve(func.apply(context, args));
-					deferred = $q.defer();
-				};
-				if (timeouts[id]) {
-					$timeout.cancel(timeouts[id]);
-				}
-				timeouts[id] = $timeout(later, wait);
-				return deferred.promise;
-			})();
-		};
-	}]
-);
-/**
- * @namespace dias.annotations
- * @ngdoc factory
- * @name map
- * @memberOf dias.annotations
- * @description Wrapper factory handling OpenLayers map
- */
-angular.module('dias.annotations').factory('map', function () {
-		"use strict";
-
-		var map = new ol.Map({
-			target: 'canvas',
-			controls: [
-				new ol.control.Zoom(),
-				new ol.control.ZoomToExtent(),
-				new ol.control.FullScreen(),
-			]
-		});
-
-		return map;
-	}
-);
-/**
- * @namespace dias.annotations
  * @ngdoc service
  * @name images
  * @memberOf dias.annotations
@@ -427,13 +182,15 @@ angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel",
 		featureOverlay.setFeatures(features);
 
 		// convert a point array to a point object
+		// re-invert the y axis
 		var convertFromOLPoint = function (point) {
-			return {x: point[0], y: point[1]};
+			return {x: point[0], y: images.currentImage.height - point[1]};
 		};
 
 		// convert a point object to a point array
+		// invert the y axis
 		var convertToOLPoint = function (point) {
-			return [point.x, point.y];
+			return [point.x, images.currentImage.height - point.y];
 		};
 
 		// assembles the coordinate arrays depending on the geometry type
@@ -705,6 +462,251 @@ angular.module('dias.annotations').service('urlParams', function () {
 		if (!state) {
 			state = decodeState();
 		}
+	}
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc controller
+ * @name AnnotatorController
+ * @memberOf dias.annotations
+ * @description Main controller of the Annotator application.
+ */
+angular.module('dias.annotations').controller('AnnotatorController', ["$scope", "$attrs", "images", "urlParams", function ($scope, $attrs, images, urlParams) {
+		"use strict";
+
+		$scope.images = images;
+		$scope.imageLoading = true;
+
+		// the current canvas viewport, synced with the URL parameters
+		$scope.viewport = {
+			zoom: urlParams.get('z'),
+			center: [urlParams.get('x'), urlParams.get('y')]
+		};
+
+		// finish image loading process
+		var finishLoading = function () {
+			$scope.imageLoading = false;
+			$scope.$broadcast('image.shown', $scope.images.currentImage);
+		};
+
+		// create a new history entry
+		var pushState = function () {
+			urlParams.pushState($scope.images.currentImage._id);
+		};
+
+		// start image loading process
+		var startLoading = function () {
+			$scope.imageLoading = true;
+		};
+
+		// load the image by id. doesn't create a new history entry by itself
+		var loadImage = function (id) {
+			startLoading();
+			return images.show(parseInt(id)).then(finishLoading);
+		};
+
+		// show the next image and create a new history entry
+		$scope.nextImage = function () {
+			startLoading();
+			images.next().then(finishLoading).then(pushState);
+		};
+
+		// show the previous image and create a new history entry
+		$scope.prevImage = function () {
+			startLoading();
+			images.prev().then(finishLoading).then(pushState);
+		};
+
+		// update the URL parameters of the viewport
+		$scope.$on('canvas.moveend', function(e, params) {
+			$scope.viewport.zoom = params.zoom;
+			$scope.viewport.center[0] = Math.round(params.center[0]);
+			$scope.viewport.center[1] = Math.round(params.center[1]);
+			urlParams.set({
+				z: $scope.viewport.zoom,
+				x: $scope.viewport.center[0],
+				y: $scope.viewport.center[1]
+			});
+		});
+
+		// listen to the browser "back" button
+		window.onpopstate = function(e) {
+			var state = e.state;
+			if (state && state.slug !== undefined) {
+				loadImage(state.slug);
+			}
+		};
+
+		// initialize the images service
+		images.init($attrs.transectId);
+		// display the first image
+		loadImage($attrs.imageId).then(pushState);
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc controller
+ * @name CanvasController
+ * @memberOf dias.annotations
+ * @description Main controller for the annotation canvas element
+ */
+angular.module('dias.annotations').controller('CanvasController', ["$scope", "mapImage", "mapAnnotations", "map", function ($scope, mapImage, mapAnnotations, map) {
+		"use strict";
+
+		// update the URL parameters
+		map.on('moveend', function(e) {
+			var view = map.getView();
+			$scope.$emit('canvas.moveend', {
+				center: view.getCenter(),
+				zoom: view.getZoom()
+			});
+		});
+
+		mapImage.init($scope);
+		mapAnnotations.init($scope);
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc controller
+ * @name ControlsController
+ * @memberOf dias.annotations
+ * @description Controller for the sidebar controls
+ */
+angular.module('dias.annotations').controller('ControlsController', ["$scope", "mapAnnotations", "shapes", function ($scope, mapAnnotations, shapes) {
+		"use strict";
+		var drawing = false;
+
+		$scope.selectedShape = {};
+
+		$scope.toggleDrawing = function () {
+			if (drawing) {
+				mapAnnotations.finishDrawing();
+				drawing = false;
+			} else {
+				mapAnnotations.startDrawing($scope.selectedShape.name);
+				drawing = true;
+			}
+		};
+
+		$scope.shapes = shapes.getAll();
+
+		$scope.deleteSelected = mapAnnotations.deleteSelected;
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc controller
+ * @name MinimapController
+ * @memberOf dias.annotations
+ * @description Controller for the minimap in the sidebar
+ */
+angular.module('dias.annotations').controller('MinimapController', ["$scope", "map", "mapImage", "$element", function ($scope, map, mapImage, $element) {
+		"use strict";
+
+		var minimap = new ol.Map({
+			target: 'minimap',
+			// remove controls
+			controls: [],
+			// disable interactions
+			interactions: []
+		});
+		// get the same layers than the map
+		minimap.bindTo('layergroup', map);
+
+		var featureOverlay = new ol.FeatureOverlay({
+			map: minimap
+		});
+
+		var viewport = new ol.Feature();
+		featureOverlay.addFeature(viewport);
+
+		// refresh the view (the image size could have been changed)
+		$scope.$on('image.shown', function () {
+			minimap.setView(new ol.View({
+				projection: mapImage.getProjection(),
+				center: ol.extent.getCenter(mapImage.getExtent()),
+				zoom: 0
+			}));
+		});
+
+		// move the viewport rectangle on the minimap
+		var refreshViewport = function () {
+			var extent = map.getView().calculateExtent(map.getSize());
+			viewport.setGeometry(ol.geom.Polygon.fromExtent(extent));
+		};
+
+		map.on('moveend', refreshViewport);
+
+		var dragViewport = function (e) {
+			map.getView().setCenter(e.coordinate);
+		};
+
+		minimap.on('pointerdrag', dragViewport);
+
+		$element.on('mouseleave', function () {
+			minimap.un('pointerdrag', dragViewport);
+		});
+
+		$element.on('mouseenter', function () {
+			minimap.on('pointerdrag', dragViewport);
+		});
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc factory
+ * @name debounce
+ * @memberOf dias.annotations
+ * @description A debounce service to perform an action only when this function
+ * wasn't called again in a short period of time.
+ * see http://stackoverflow.com/a/13320016/1796523
+ */
+angular.module('dias.annotations').factory('debounce', ["$timeout", "$q", function ($timeout, $q) {
+		"use strict";
+
+		var timeouts = {};
+
+		return function (func, wait, id) {
+			// Create a deferred object that will be resolved when we need to
+			// actually call the func
+			var deferred = $q.defer();
+			return (function() {
+				var context = this, args = arguments;
+				var later = function() {
+					timeouts[id] = undefined;
+					deferred.resolve(func.apply(context, args));
+					deferred = $q.defer();
+				};
+				if (timeouts[id]) {
+					$timeout.cancel(timeouts[id]);
+				}
+				timeouts[id] = $timeout(later, wait);
+				return deferred.promise;
+			})();
+		};
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc factory
+ * @name map
+ * @memberOf dias.annotations
+ * @description Wrapper factory handling OpenLayers map
+ */
+angular.module('dias.annotations').factory('map', function () {
+		"use strict";
+
+		var map = new ol.Map({
+			target: 'canvas',
+			controls: [
+				new ol.control.Zoom(),
+				new ol.control.ZoomToExtent(),
+				new ol.control.FullScreen(),
+			]
+		});
+
+		return map;
 	}
 );
 //# sourceMappingURL=main.js.map

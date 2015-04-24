@@ -33,13 +33,15 @@ angular.module('dias.annotations').service('mapAnnotations', function (Annotatio
 		featureOverlay.setFeatures(features);
 
 		// convert a point array to a point object
+		// re-invert the y axis
 		var convertFromOLPoint = function (point) {
-			return {x: point[0], y: point[1]};
+			return {x: point[0], y: images.currentImage.height - point[1]};
 		};
 
 		// convert a point object to a point array
+		// invert the y axis
 		var convertToOLPoint = function (point) {
-			return [point.x, point.y];
+			return [point.x, images.currentImage.height - point.y];
 		};
 
 		// assembles the coordinate arrays depending on the geometry type
