@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', function (AnnotationLabel, shapes, map, images, Annotation) {
+angular.module('dias.annotations').service('mapAnnotations', function (AnnotationLabel, shapes, map, images, Annotation, debounce) {
 		"use strict";
 
 		var annotations = {};
@@ -42,6 +42,35 @@ angular.module('dias.annotations').service('mapAnnotations', function (Annotatio
 			return [point.x, point.y];
 		};
 
+		// assembles the coordinate arrays depending on the geometry type
+		// so they have a unified format
+		var getCoordinates = function (geometry) {
+			switch (geometry.getType()) {
+				case 'Circle':
+					// radius is the x value of the second point of the circle
+					return [geometry.getCenter(), [geometry.getRadius(), 0]];
+				case 'Polygon':
+					return geometry.getCoordinates()[0];
+				case 'Point':
+					return [geometry.getCoordinates()];
+				default:
+					return geometry.getCoordinates();
+			}
+		};
+
+		// saves the updated geometry of an annotation feature
+		var handleGeometryChange = function (e) {
+			var feature = e.target;
+			var save = function () {
+				var coordinates = getCoordinates(feature.getGeometry());
+				feature.annotation.points = coordinates.map(convertFromOLPoint);
+				feature.annotation.$save();
+			};
+			// this event is rapidly fired, so wait until the firing stops
+			// before saving the changes
+			debounce(save, 500, feature.annotation.id);
+		};
+
 		var createFeature = function (annotation) {
 			var geometry;
 			var points = annotation.points.map(convertToOLPoint);
@@ -65,6 +94,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (Annotatio
 			}
 
 			var feature = new ol.Feature({ geometry: geometry });
+			feature.on('change', handleGeometryChange);
 			feature.annotation = annotation;
 			features.push(feature);
 		};
@@ -105,20 +135,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (Annotatio
 
 		var handleNewFeature = function (e) {
 			var geometry = e.feature.getGeometry();
-			var coordinates;
-			switch (geometry.getType()) {
-				case 'Circle':
-					coordinates = [geometry.getCenter(), [geometry.getRadius(), 0]];
-					break;
-				case 'Polygon':
-					coordinates = geometry.getCoordinates()[0];
-					break;
-				case 'Point':
-					coordinates = [geometry.getCoordinates()];
-					break;
-				default:
-					coordinates = geometry.getCoordinates();
-			}
+			var coordinates = getCoordinates(geometry);
 
 			e.feature.annotation = Annotation.add({
 				id: images.getCurrentId(),

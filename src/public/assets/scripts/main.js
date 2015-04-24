@@ -195,6 +195,62 @@ angular.module('dias.annotations').controller('MinimapController', ["$scope", "m
 );
 /**
  * @namespace dias.annotations
+ * @ngdoc factory
+ * @name debounce
+ * @memberOf dias.annotations
+ * @description A debounce service to perform an action only when this function
+ * wasn't called again in a short period of time.
+ * see http://stackoverflow.com/a/13320016/1796523
+ */
+angular.module('dias.annotations').factory('debounce', ["$timeout", "$q", function ($timeout, $q) {
+		"use strict";
+
+		var timeouts = {};
+
+		return function (func, wait, id) {
+			// Create a deferred object that will be resolved when we need to
+			// actually call the func
+			var deferred = $q.defer();
+			return (function() {
+				var context = this, args = arguments;
+				var later = function() {
+					timeouts[id] = undefined;
+					deferred.resolve(func.apply(context, args));
+					deferred = $q.defer();
+				};
+				if (timeouts[id]) {
+					$timeout.cancel(timeouts[id]);
+				}
+				timeouts[id] = $timeout(later, wait);
+				return deferred.promise;
+			})();
+		};
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc factory
+ * @name map
+ * @memberOf dias.annotations
+ * @description Wrapper factory handling OpenLayers map
+ */
+angular.module('dias.annotations').factory('map', function () {
+		"use strict";
+
+		var map = new ol.Map({
+			target: 'canvas',
+			controls: [
+				new ol.control.Zoom(),
+				new ol.control.ZoomToExtent(),
+				new ol.control.FullScreen(),
+			]
+		});
+
+		return map;
+	}
+);
+/**
+ * @namespace dias.annotations
  * @ngdoc service
  * @name images
  * @memberOf dias.annotations
@@ -338,34 +394,12 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
 );
 /**
  * @namespace dias.annotations
- * @ngdoc factory
- * @name map
- * @memberOf dias.annotations
- * @description Wrapper factory handling OpenLayers map
- */
-angular.module('dias.annotations').factory('map', function () {
-		"use strict";
-
-		var map = new ol.Map({
-			target: 'canvas',
-			controls: [
-				new ol.control.Zoom(),
-				new ol.control.ZoomToExtent(),
-				new ol.control.FullScreen(),
-			]
-		});
-
-		return map;
-	}
-);
-/**
- * @namespace dias.annotations
  * @ngdoc service
  * @name mapAnnotations
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel", "shapes", "map", "images", "Annotation", function (AnnotationLabel, shapes, map, images, Annotation) {
+angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel", "shapes", "map", "images", "Annotation", "debounce", function (AnnotationLabel, shapes, map, images, Annotation, debounce) {
 		"use strict";
 
 		var annotations = {};
@@ -402,6 +436,35 @@ angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel",
 			return [point.x, point.y];
 		};
 
+		// assembles the coordinate arrays depending on the geometry type
+		// so they have a unified format
+		var getCoordinates = function (geometry) {
+			switch (geometry.getType()) {
+				case 'Circle':
+					// radius is the x value of the second point of the circle
+					return [geometry.getCenter(), [geometry.getRadius(), 0]];
+				case 'Polygon':
+					return geometry.getCoordinates()[0];
+				case 'Point':
+					return [geometry.getCoordinates()];
+				default:
+					return geometry.getCoordinates();
+			}
+		};
+
+		// saves the updated geometry of an annotation feature
+		var handleGeometryChange = function (e) {
+			var feature = e.target;
+			var save = function () {
+				var coordinates = getCoordinates(feature.getGeometry());
+				feature.annotation.points = coordinates.map(convertFromOLPoint);
+				feature.annotation.$save();
+			};
+			// this event is rapidly fired, so wait until the firing stops
+			// before saving the changes
+			debounce(save, 500, feature.annotation.id);
+		};
+
 		var createFeature = function (annotation) {
 			var geometry;
 			var points = annotation.points.map(convertToOLPoint);
@@ -425,6 +488,7 @@ angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel",
 			}
 
 			var feature = new ol.Feature({ geometry: geometry });
+			feature.on('change', handleGeometryChange);
 			feature.annotation = annotation;
 			features.push(feature);
 		};
@@ -465,20 +529,7 @@ angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel",
 
 		var handleNewFeature = function (e) {
 			var geometry = e.feature.getGeometry();
-			var coordinates;
-			switch (geometry.getType()) {
-				case 'Circle':
-					coordinates = [geometry.getCenter(), [geometry.getRadius(), 0]];
-					break;
-				case 'Polygon':
-					coordinates = geometry.getCoordinates()[0];
-					break;
-				case 'Point':
-					coordinates = [geometry.getCoordinates()];
-					break;
-				default:
-					coordinates = geometry.getCoordinates();
-			}
+			var coordinates = getCoordinates(geometry);
 
 			e.feature.annotation = Annotation.add({
 				id: images.getCurrentId(),
