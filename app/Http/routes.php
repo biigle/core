@@ -44,11 +44,7 @@ Route::group(array(
 	), function($router)
 {
 	$router->resource('annotations', 'AnnotationController', array(
-		'only' => array('show', 'destroy')
-	));
-
-	$router->resource('annotations.points', 'AnnotationPointController', array(
-		'only' => array('index', 'store', 'update', 'destroy')
+		'only' => array('show', 'update', 'destroy')
 	));
 
 	$router->resource('annotations.labels', 'AnnotationLabelController', array(

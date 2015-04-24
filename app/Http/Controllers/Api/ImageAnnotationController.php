@@ -58,17 +58,7 @@ class ImageAnnotationController extends Controller {
 		$annotation->image()->associate($image);
 		$annotation->save();
 
-		foreach ($points as $point) {
-			// depending on decoding, a point may be an object or an array
-			if (is_array($point))
-			{
-				$annotation->addPoint($point['x'], $point['y']);
-			}
-			else
-			{
-				$annotation->addPoint($point->x, $point->y);
-			}
-		}
+		$annotation->addPoints($points);
 
 		return Annotation::with('points')->find($annotation->id);
 	}

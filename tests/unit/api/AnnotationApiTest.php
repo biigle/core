@@ -46,6 +46,28 @@ class AnnotationApiTest extends ApiTestCase {
 		$this->assertNotContains('transect', $r->getContent());
 	}
 
+	public function testUpdate()
+	{
+		$this->doTestApiRoute('PUT', '/api/v1/annotations/1');
+
+		$this->callToken('PUT', '/api/v1/annotations/1', $this->user);
+		$this->assertResponseStatus(401);
+
+		$this->annotation->addPoint(10, 10);
+		$points = $this->annotation->points()->get()->toArray();
+		$this->assertEquals(10, $points[0]['y']);
+
+		// api key authentication
+		$this->callToken('PUT', '/api/v1/annotations/1', $this->admin, array(
+			'points' => '[{"x":10, "y":15}, {"x": 100, "y": 200}]'
+		));
+		$this->assertResponseOk();
+
+		$this->assertEquals(2, $this->annotation->points()->count());
+		$points = $this->annotation->points()->get()->toArray();
+		$this->assertEquals(15, $points[0]['y']);
+	}
+
 	public function testDestroy()
 	{
 		$this->doTestApiRoute('DELETE', '/api/v1/annotations/1');

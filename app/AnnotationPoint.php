@@ -22,7 +22,7 @@ class AnnotationPoint extends Model implements BelongsToProjectContract {
 	 * @var array
 	 */
 	protected $visible = array(
-		'id', 'x', 'y'
+		'x', 'y'
 	);
 
 	/**

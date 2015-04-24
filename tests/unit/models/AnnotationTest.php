@@ -139,6 +139,53 @@ class AnnotationTest extends TestCase {
 		$this->assertEquals(1, $point->index);
 	}
 
+	public function testAddPoints()
+	{
+		$annotation = AnnotationTest::create();
+		$annotation->save();
+
+		$this->assertEquals(0, $annotation->points()->count());
+
+		$annotation->addPoints(array(
+			array('x' => 10, 'y' => 10)
+		));
+
+		$this->assertEquals(1, $annotation->points()->count());
+
+		$annotation->addPoints(array(
+			(object) array('x' => 10, 'y' => 10)
+		));
+
+		$this->assertEquals(2, $annotation->points()->count());
+	}
+
+	public function testRefreshPoints()
+	{
+		$annotation = AnnotationTest::create();
+		$annotation->save();
+
+		$annotation->addPoints(array(
+			array('x' => 10, 'y' => 10),
+			array('x' => 20, 'y' => 20)
+		));
+
+		$this->assertEquals(2, $annotation->points()->count());
+
+		$annotation->refreshPoints(array(
+			array('x' => 100, 'y' => 100),
+			array('x' => 200, 'y' => 200)
+		));
+
+		$this->assertEquals(2, $annotation->points()->count());
+
+		$points = $annotation->points->toArray();
+		$this->assertEquals(100, $points[0]['x']);
+		$this->assertEquals(200, $points[1]['x']);
+
+		$annotation->refreshPoints(array());
+		$this->assertEquals(2, $annotation->points()->count());
+	}
+
 	public function testAddLabel()
 	{
 		$annotation = AnnotationTest::create();

@@ -117,6 +117,41 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
 	}
 
 	/**
+	 * Adds an array of points to this annotation.
+	 * A point may be an associative array `['x'=>10, 'y'=>10]` or an object
+	 * `{x => 10, y => 10}`.
+	 * 
+	 * @param array $points array of point arrays or objects
+	 */
+	public function addPoints($points)
+	{
+		foreach ($points as $point) {
+			// depending on decoding, a point may be an object or an array
+			if (is_array($point))
+			{
+				$this->addPoint($point['x'], $point['y']);
+			}
+			else
+			{
+				$this->addPoint($point->x, $point->y);
+			}
+		}
+	}
+
+	/**
+	 * Replaces the current points with the given ones.
+	 * Does nothing if the given array is empty.
+	 * 
+	 * @param array $points array of point arrays or objects
+	 */
+	public function refreshPoints($points)
+	{
+		if (empty($points)) return;
+		$this->points()->delete();
+		$this->addPoints($points);
+	}
+
+	/**
 	 * Adds a new label to this annotation.
 	 * 
 	 * @param int $labelId
