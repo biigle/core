@@ -17,6 +17,15 @@ class AnnotationPoint extends Model implements BelongsToProjectContract {
 	public $timestamps = false;
 
 	/**
+	 * The attributes included in the model's JSON form.
+	 *
+	 * @var array
+	 */
+	protected $visible = array(
+		'id', 'x', 'y'
+	);
+
+	/**
 	 * The annotation, this point belongs to.
 	 * 
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

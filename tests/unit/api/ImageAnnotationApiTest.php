@@ -42,6 +42,7 @@ class ImageAnnotationApiTest extends ApiTestCase {
 		// response should not be an empty array
 		$this->assertStringStartsWith('[{', $r->getContent());
 		$this->assertStringEndsWith('}]', $r->getContent());
+		$this->assertContains('points":[', $r->getContent());
 	}
 
 	public function testStore()
@@ -98,6 +99,8 @@ class ImageAnnotationApiTest extends ApiTestCase {
 			)
 		);
 		$this->assertResponseOk();
+
+		$this->assertContains('points":[', $r->getContent());
 
 		$annotation = $this->image->annotations->first();
 		$this->assertNotNull($annotation);

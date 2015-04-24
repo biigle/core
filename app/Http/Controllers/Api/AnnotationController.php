@@ -12,7 +12,9 @@ class AnnotationController extends Controller {
 	 */
 	public function show($id)
 	{
-		$annotation = $this->requireNotNull(Annotation::find($id));
+		$annotation = $this->requireNotNull(
+			Annotation::with('points')->find($id)
+		);
 
 		// call fresh so the transect and image doesn't appear in the output
 		// (they will be fetched for projectIds())

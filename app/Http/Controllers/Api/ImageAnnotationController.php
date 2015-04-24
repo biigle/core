@@ -17,7 +17,7 @@ class ImageAnnotationController extends Controller {
 		$image = $this->requireNotNull(Image::find($id));
 		$this->requireCanSee($image);
 
-		return $image->annotations;
+		return $image->annotations()->with('points')->get();
 	}
 
 	/**
@@ -70,6 +70,6 @@ class ImageAnnotationController extends Controller {
 			}
 		}
 
-		return $annotation->fresh();
+		return Annotation::with('points')->find($annotation->id);
 	}
 }

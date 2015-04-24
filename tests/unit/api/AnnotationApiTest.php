@@ -1,4 +1,4 @@
- <?php
+<?php
 
 class AnnotationApiTest extends ApiTestCase {
 
@@ -37,9 +37,9 @@ class AnnotationApiTest extends ApiTestCase {
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
-		// the labels and points should be fetched separately
+		$this->assertContains('points":[', $r->getContent());
+		// the labels should be fetched separately
 		$this->assertNotContains('labels', $r->getContent());
-		$this->assertNotContains('points', $r->getContent());
 		// image and transect objects from projectIds() call shouldn't be
 		// included in the output
 		$this->assertNotContains('"image"', $r->getContent());
