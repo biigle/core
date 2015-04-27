@@ -6,7 +6,7 @@ html, body {
 	z-index: 1;
 }
 
-.annotator__container, .controls__minimap {
+.annotator__container {
 	background-image: url(../images/noise.png);
 }
 
@@ -29,20 +29,4 @@ html, body {
 	overflow: hidden;
 }
 
-.annotator__sidebar {
-	width: 380px;
-	padding: 1em;
-	background-color: #222;
-	border-left: 1px solid #090909;
-}
-
-.controls__minimap {
-	height: 200px;
-	margin-bottom: 1em;
-}
-
-.controls__panel {
-	& > * {
-		margin-bottom: 1em;
-	}
-}
+@import "sidebar";

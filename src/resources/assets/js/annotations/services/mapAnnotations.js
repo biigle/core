@@ -5,10 +5,8 @@
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', function (AnnotationLabel, shapes, map, images, Annotation, debounce, styles) {
+angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles) {
 		"use strict";
-
-		var annotations = {};
 
 		var featureOverlay = new ol.FeatureOverlay({
 			style: styles.features
@@ -22,6 +20,8 @@ angular.module('dias.annotations').service('mapAnnotations', function (Annotatio
 		var select = new ol.interaction.Select({
 			style: styles.highlight
 		});
+
+		var selectedFeatures = select.getFeatures();
 
 		var modify = new ol.interaction.Modify({
 			features: featureOverlay.getFeatures(),
@@ -81,7 +81,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (Annotatio
 			var geometry;
 			var points = annotation.points.map(convertToOLPoint);
 
-			switch (annotation.shape()) {
+			switch (annotation.shape) {
 				case 'Point':
 					geometry = new ol.geom.Point(points[0]);
 					break;
@@ -109,16 +109,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (Annotatio
 			// clear features of previous image
 			features.clear();
 
-			annotations = Annotation.query({id: image._id});
-			annotations.$promise.then(function () {
-				annotations.forEach(function (annotation) {
-					// TODO: lazy loading when the label overview is opened?
-					// annotation.labels = AnnotationLabel.query({annotation_id: annotation.id});
-					annotation.shape = function () {
-						return shapes.getName(this.shape_id);
-					};
-				});
-
+			annotations.query({id: image._id}).$promise.then(function () {
 				annotations.forEach(createFeature);
 			});
 		};
@@ -127,9 +118,9 @@ angular.module('dias.annotations').service('mapAnnotations', function (Annotatio
 			var geometry = e.feature.getGeometry();
 			var coordinates = getCoordinates(geometry);
 
-			e.feature.annotation = Annotation.add({
+			e.feature.annotation = annotations.add({
 				id: images.getCurrentId(),
-				shape_id: shapes.getId(geometry.getType()),
+				shape: geometry.getType(),
 				points: coordinates.map(convertFromOLPoint)
 			});
 		};
@@ -138,6 +129,14 @@ angular.module('dias.annotations').service('mapAnnotations', function (Annotatio
 			featureOverlay.setMap(map);
 			map.addInteraction(select);
 			scope.$on('image.shown', refreshAnnotations);
+
+			selectedFeatures.on('change:length', function () {
+				// if not already digesting, digest
+				if (!scope.$$phase) {
+					// propagate new selections through the angular application
+					scope.$apply();
+				}
+			});
 		};
 
 		this.startDrawing = function (type) {
@@ -162,12 +161,32 @@ angular.module('dias.annotations').service('mapAnnotations', function (Annotatio
 		};
 
 		this.deleteSelected = function () {
-			var selectedFeatures = select.getFeatures();
 			selectedFeatures.forEach(function (feature) {
 				features.remove(feature);
-				feature.annotation.$delete();
+				annotations.delete(feature.annotation);
 			});
 			selectedFeatures.clear();
+		};
+
+		this.select = function (id) {
+			var feature;
+			features.forEach(function (f) {
+				if (f.annotation.id === id) {
+					feature = f;
+				}
+			});
+			// remove selection if feature was already selected. otherwise select.
+			if (!selectedFeatures.remove(feature)) {
+				selectedFeatures.push(feature);
+			}
+		};
+
+		this.clearSelection = function () {
+			selectedFeatures.clear();
+		};
+
+		this.getSelectedFeatures = function () {
+			return selectedFeatures;
 		};
 	}
 );

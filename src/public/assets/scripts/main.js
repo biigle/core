@@ -7,6 +7,86 @@ angular.module('dias.annotations', ['dias.api']);
 /**
  * @namespace dias.annotations
  * @ngdoc controller
+ * @name AnnotationsBrowseController
+ * @memberOf dias.annotations
+ * @description Controller for the "browse annotations" foldout
+ */
+angular.module('dias.annotations').controller('AnnotationsBrowseController', ["$scope", "annotations", "shapes", "mapAnnotations", function ($scope, annotations, shapes, mapAnnotations) {
+		"use strict";
+
+		var refreshAnnotations = function () {
+			$scope.annotations = annotations.current();
+		};
+
+		var selectedFeatures = mapAnnotations.getSelectedFeatures();
+
+		$scope.annotations = [];
+
+		$scope.clearSelection = mapAnnotations.clearSelection;
+		$scope.selectAnnotation = function (e, id) {
+			// allow multiple selections
+			if (!e.shiftKey) {
+				$scope.clearSelection();
+			}
+			mapAnnotations.select(id);
+		};
+
+		$scope.isSelected = function (id) {
+			var selected = false;
+			selectedFeatures.forEach(function (feature) {
+				if (feature.annotation && feature.annotation.id == id) {
+					selected = true;
+				}
+			});
+			return selected;
+		};
+
+		$scope.$watch('foldout', function (foldout) {
+			if (foldout === 'annotations-browse') {
+				refreshAnnotations();
+			}
+		});
+
+		$scope.$on('image.shown', refreshAnnotations);
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc controller
+ * @name AnnotationsEditController
+ * @memberOf dias.annotations
+ * @description Controller for the "edit annotations" foldout
+ */
+angular.module('dias.annotations').controller('AnnotationsEditController', ["$scope", "mapAnnotations", function ($scope, mapAnnotations) {
+		"use strict";
+
+		var startDrawing = function () {
+			mapAnnotations.startDrawing($scope.selectedShape);
+		};
+
+		$scope.selectedShape = 'Point';
+
+		$scope.selectShape = function (name) {
+			$scope.selectedShape = name;
+		};
+
+		$scope.$watch('selectedShape', function (shape) {
+			mapAnnotations.finishDrawing();
+			startDrawing();
+		});
+
+		$scope.$watch('foldout', function (foldout) {
+			if (foldout === 'annotations-edit') {
+				startDrawing();
+			} else {
+				mapAnnotations.finishDrawing();
+			}
+		});
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc controller
  * @name AnnotatorController
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
@@ -103,7 +183,7 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
  * @memberOf dias.annotations
  * @description Main controller for the annotation canvas element
  */
-angular.module('dias.annotations').controller('CanvasController', ["$scope", "mapImage", "mapAnnotations", "map", function ($scope, mapImage, mapAnnotations, map) {
+angular.module('dias.annotations').controller('CanvasController', ["$scope", "mapImage", "mapAnnotations", "map", "$timeout", function ($scope, mapImage, mapAnnotations, map, $timeout) {
 		"use strict";
 
 		// update the URL parameters
@@ -117,34 +197,14 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "ma
 
 		mapImage.init($scope);
 		mapAnnotations.init($scope);
-	}]
-);
-/**
- * @namespace dias.annotations
- * @ngdoc controller
- * @name ControlsController
- * @memberOf dias.annotations
- * @description Controller for the sidebar controls
- */
-angular.module('dias.annotations').controller('ControlsController', ["$scope", "mapAnnotations", "shapes", function ($scope, mapAnnotations, shapes) {
-		"use strict";
-		var drawing = false;
 
-		$scope.selectedShape = {};
-
-		$scope.toggleDrawing = function () {
-			if (drawing) {
-				mapAnnotations.finishDrawing();
-				drawing = false;
-			} else {
-				mapAnnotations.startDrawing($scope.selectedShape.name);
-				drawing = true;
-			}
-		};
-
-		$scope.shapes = shapes.getAll();
-
-		$scope.deleteSelected = mapAnnotations.deleteSelected;
+		$scope.$on('sidebar.foldout.toggle', function () {
+			// workaround, so the function is called *after* the angular digest
+			// and *after* the foldout was rendered
+			$timeout(function() {
+				map.updateSize();
+			}, 0, false);
+		});
 	}]
 );
 /**
@@ -209,6 +269,66 @@ angular.module('dias.annotations').controller('MinimapController', ["$scope", "m
 );
 /**
  * @namespace dias.annotations
+ * @ngdoc controller
+ * @name SidebarController
+ * @memberOf dias.annotations
+ * @description Controller for the sidebar
+ */
+angular.module('dias.annotations').controller('SidebarController', ["$scope", "$rootScope", "mapAnnotations", function ($scope, $rootScope, mapAnnotations) {
+		"use strict";
+
+		// the currently opened sidebar-'extension'
+		$scope.foldout = '';
+
+		$scope.toggleFoldout = function(name) {
+			if ($scope.foldout === name) {
+				$scope.foldout = '';
+			} else {
+				$scope.foldout = name;
+			}
+
+			$rootScope.$broadcast('sidebar.foldout.toggle');
+		};
+
+		$scope.deleteSelectedAnnotations = mapAnnotations.deleteSelected;
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc directive
+ * @name annotationListItem
+ * @memberOf dias.annotations
+ * @description An item in the "browse annotations" annotations list
+ */
+angular.module('dias.annotations').directive('annotationListItem', ["map", "$timeout", "mapImage", function (map, $timeout, mapImage) {
+		"use strict";
+
+		return {
+			restrict: 'A',
+
+			replace: true,
+
+			template: '<li data-ng-click="selectAnnotation($event, annotation.id)" data-ng-class="{selected:(isSelected(annotation.id))}"><span class="annotation-thumb" id="annotation-thumb-{{annotation.id}}"></span> #{{annotation.id}} {{annotation.shape}}</li>',
+
+			link: function (scope, element, attrs) {
+				// wait for the element to be rendered
+				// $timeout(function () {
+				// 	var thumb = new ol.Map({
+				// 		target: 'annotation-thumb-' + scope.annotation.id,
+				// 		controls: [],
+				// 		interactions: []
+				// 	});
+				// 	var view = new ol.View({
+				// 		projection: mapImage.getProjection(),
+				// 	});
+				// });
+			}
+		};
+	}]
+);
+
+/**
+ * @namespace dias.annotations
  * @ngdoc factory
  * @name debounce
  * @memberOf dias.annotations
@@ -262,6 +382,57 @@ angular.module('dias.annotations').factory('map', function () {
 
 		return map;
 	}
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc service
+ * @name annotations
+ * @memberOf dias.annotations
+ * @description Wrapper service the annotations to make them available in multiple controllers.
+ */
+angular.module('dias.annotations').service('annotations', ["Annotation", "shapes", function (Annotation, shapes) {
+		"use strict";
+
+		var annotations;
+
+		var resolveShapeName = function (annotation) {
+			annotation.shape = shapes.getName(annotation.shape_id);
+		};
+
+		this.query = function (params) {
+			annotations = Annotation.query(params);
+			annotations.$promise.then(function (a) {
+				a.forEach(resolveShapeName);
+			});
+			return annotations;
+		};
+
+		this.add = function (params) {
+			if (!params.shape_id && params.shape) {
+				params.shape_id = shapes.getId(params.shape);
+			}
+			var annotation = Annotation.add(params);
+			annotation.$promise.then(resolveShapeName);
+			annotations.push(annotation);
+			return annotation;
+		};
+
+		this.delete = function (annotation) {
+			var index = annotations.indexOf(annotation);
+			if (index > -1) {
+				annotations.splice(index, 1);
+				return annotation.$delete();
+			}
+		};
+
+		this.forEach = function (fn) {
+			return annotations.forEach(fn);
+		};
+
+		this.current = function () {
+			return annotations;
+		};
+	}]
 );
 /**
  * @namespace dias.annotations
@@ -413,10 +584,8 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel", "shapes", "map", "images", "Annotation", "debounce", "styles", function (AnnotationLabel, shapes, map, images, Annotation, debounce, styles) {
+angular.module('dias.annotations').service('mapAnnotations', ["map", "images", "annotations", "debounce", "styles", function (map, images, annotations, debounce, styles) {
 		"use strict";
-
-		var annotations = {};
 
 		var featureOverlay = new ol.FeatureOverlay({
 			style: styles.features
@@ -430,6 +599,8 @@ angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel",
 		var select = new ol.interaction.Select({
 			style: styles.highlight
 		});
+
+		var selectedFeatures = select.getFeatures();
 
 		var modify = new ol.interaction.Modify({
 			features: featureOverlay.getFeatures(),
@@ -489,7 +660,7 @@ angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel",
 			var geometry;
 			var points = annotation.points.map(convertToOLPoint);
 
-			switch (annotation.shape()) {
+			switch (annotation.shape) {
 				case 'Point':
 					geometry = new ol.geom.Point(points[0]);
 					break;
@@ -517,16 +688,7 @@ angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel",
 			// clear features of previous image
 			features.clear();
 
-			annotations = Annotation.query({id: image._id});
-			annotations.$promise.then(function () {
-				annotations.forEach(function (annotation) {
-					// TODO: lazy loading when the label overview is opened?
-					// annotation.labels = AnnotationLabel.query({annotation_id: annotation.id});
-					annotation.shape = function () {
-						return shapes.getName(this.shape_id);
-					};
-				});
-
+			annotations.query({id: image._id}).$promise.then(function () {
 				annotations.forEach(createFeature);
 			});
 		};
@@ -535,9 +697,9 @@ angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel",
 			var geometry = e.feature.getGeometry();
 			var coordinates = getCoordinates(geometry);
 
-			e.feature.annotation = Annotation.add({
+			e.feature.annotation = annotations.add({
 				id: images.getCurrentId(),
-				shape_id: shapes.getId(geometry.getType()),
+				shape: geometry.getType(),
 				points: coordinates.map(convertFromOLPoint)
 			});
 		};
@@ -546,6 +708,14 @@ angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel",
 			featureOverlay.setMap(map);
 			map.addInteraction(select);
 			scope.$on('image.shown', refreshAnnotations);
+
+			selectedFeatures.on('change:length', function () {
+				// if not already digesting, digest
+				if (!scope.$$phase) {
+					// propagate new selections through the angular application
+					scope.$apply();
+				}
+			});
 		};
 
 		this.startDrawing = function (type) {
@@ -570,12 +740,32 @@ angular.module('dias.annotations').service('mapAnnotations', ["AnnotationLabel",
 		};
 
 		this.deleteSelected = function () {
-			var selectedFeatures = select.getFeatures();
 			selectedFeatures.forEach(function (feature) {
 				features.remove(feature);
-				feature.annotation.$delete();
+				annotations.delete(feature.annotation);
 			});
 			selectedFeatures.clear();
+		};
+
+		this.select = function (id) {
+			var feature;
+			features.forEach(function (f) {
+				if (f.annotation.id === id) {
+					feature = f;
+				}
+			});
+			// remove selection if feature was already selected. otherwise select.
+			if (!selectedFeatures.remove(feature)) {
+				selectedFeatures.push(feature);
+			}
+		};
+
+		this.clearSelection = function () {
+			selectedFeatures.clear();
+		};
+
+		this.getSelectedFeatures = function () {
+			return selectedFeatures;
 		};
 	}]
 );

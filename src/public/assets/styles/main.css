@@ -4,7 +4,7 @@ html, body {
 .navbar, .messages {
   z-index: 1; }
 
-.annotator__container, .controls__minimap {
+.annotator__container {
   background-image: url(../images/noise.png); }
 
 .annotator__container {
@@ -29,14 +29,53 @@ html, body {
   overflow: hidden; }
 
 .annotator__sidebar {
-  width: 380px;
-  padding: 1em;
   background-color: #222;
-  border-left: 1px solid #090909; }
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: row nowrap;
+      -ms-flex-flow: row nowrap;
+          flex-flow: row nowrap;
+  color: #777; }
+
+.sidebar__controls, .sidebar__annotations-edit, .sidebar__annotations-browse {
+  width: 360px;
+  border-left: 1px solid #090909;
+  padding-top: 1em; }
+  .sidebar__controls h1, .sidebar__annotations-edit h1, .sidebar__annotations-browse h1, .sidebar__controls h2, .sidebar__annotations-edit h2, .sidebar__annotations-browse h2, .sidebar__controls h3, .sidebar__annotations-edit h3, .sidebar__annotations-browse h3, .sidebar__controls h4, .sidebar__annotations-edit h4, .sidebar__annotations-browse h4 {
+    margin-top: 0; }
+
+.sidebar__annotations-edit, .sidebar__annotations-browse {
+  display: none; }
+  .open.sidebar__annotations-edit, .open.sidebar__annotations-browse {
+    display: block; }
 
 .controls__minimap {
+  background-image: url(../images/noise.png);
   height: 200px;
-  margin-bottom: 1em; }
+  margin-bottom: 1em;
+  border: 1px solid #090909; }
 
 .controls__panel > * {
   margin-bottom: 1em; }
+
+.sidebar__annotations {
+  height: 100%; }
+
+.annotation-list__item {
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none; }
+  .annotation-list__item:hover {
+    border-color: #0099ff;
+    color: #aaa; }
+  .annotation-list__item.selected {
+    border-color: #ff5e00;
+    color: #aaa; }
+  .annotation-list__item .annotation-thumb {
+    height: 50px;
+    width: 50px;
+    display: inline-block; }
