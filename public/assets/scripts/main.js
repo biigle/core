@@ -163,13 +163,27 @@ AnnotationLabel.detach({id: 1, annotation_id: 1});
 angular.module('dias.api').factory('AnnotationLabel', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource(URL + '/api/v1/annotations/:annotation_id/labels/:id', {
+	return $resource(URL + '/api/v1/:prefix/:annotation_id/:suffix/:id', {
 			id: '@id',
 			annotation_id: '@annotation_id'
 		}, {
-			attach: {method: 'POST'},
-			save: {method: 'PUT'},
-			detach: {method: 'DELETE'}
+			query: {
+				method: 'GET',
+				params: { prefix: 'annotations', suffix: 'labels' },
+				isArray: true
+			},
+			attach: {
+				method: 'POST',
+				params: { prefix: 'annotations', suffix: 'labels' }
+			},
+			save: {
+				method: 'PUT',
+				params: { prefix: 'annotation-labels', annotation_id: null, suffix: null }
+			},
+			delete: {
+				method: 'DELETE',
+				params: { prefix: 'annotation-labels', annotation_id: null, suffix: null }
+			}
 	});
 }]);
 /**
@@ -730,6 +744,36 @@ angular.module('dias.api').service('shapes', ["Shape", function (Shape) {
  */
 angular.module('dias.ui.messages').constant('MAX_MSG', 1);
 /**
+ * @namespace dias.ui.users
+ * @ngdoc directive
+ * @name userChooser
+ * @memberOf dias.ui.users
+ * @description An input field to find and enter a user.
+ */
+angular.module('dias.ui.users').directive('userChooser', function () {
+		"use strict";
+
+		return {
+			restrict: 'A',
+
+			scope: {
+				select: '=userChooser'
+			},
+
+			replace: true,
+
+			template: '<input type="text" data-ng-model="selected" data-typeahead="user.name for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
+
+			controller: ["$scope", "User", function ($scope, User) {
+				$scope.find = function (query) {
+					return User.find({query: query}).$promise;
+				};
+			}]
+		};
+	}
+);
+
+/**
  * @namespace dias.ui.messages
  * @ngdoc controller
  * @name MessagesController
@@ -800,36 +844,6 @@ angular.module('dias.ui.messages').service('msg', function () {
 		this.responseError = function (response) {
 			var message = response.data.message || "There was an error, sorry.";
 			_this.danger(message);
-		};
-	}
-);
-
-/**
- * @namespace dias.ui.users
- * @ngdoc directive
- * @name userChooser
- * @memberOf dias.ui.users
- * @description An input field to find and enter a user.
- */
-angular.module('dias.ui.users').directive('userChooser', function () {
-		"use strict";
-
-		return {
-			restrict: 'A',
-
-			scope: {
-				select: '=userChooser'
-			},
-
-			replace: true,
-
-			template: '<input type="text" data-ng-model="selected" data-typeahead="user.name for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
-
-			controller: ["$scope", "User", function ($scope, User) {
-				$scope.find = function (query) {
-					return User.find({query: query}).$promise;
-				};
-			}]
 		};
 	}
 );

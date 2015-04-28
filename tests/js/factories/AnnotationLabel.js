@@ -20,10 +20,10 @@ describe('The AnnotationLabel resource factory', function () {
 		$httpBackend.when('POST', '/api/v1/annotations/1/labels')
 		            .respond(label);
 
-		$httpBackend.when('PUT', '/api/v1/annotations/1/labels/1')
+		$httpBackend.when('PUT', '/api/v1/annotation-labels/1')
 		            .respond(200);
 
-		$httpBackend.when('DELETE', '/api/v1/annotations/1/labels/1')
+		$httpBackend.when('DELETE', '/api/v1/annotation-labels/1')
 		            .respond(200);
 	}));
 
@@ -54,12 +54,12 @@ describe('The AnnotationLabel resource factory', function () {
 	}));
 
 	it('should update annotation labels', inject(function (AnnotationLabel) {
-		$httpBackend.expectPUT('/api/v1/annotations/1/labels/1', {
-			confidence: 0.1, annotation_id: 1, id: 1
+		$httpBackend.expectPUT('/api/v1/annotation-labels/1', {
+			confidence: 0.1, id: 1
 		});
-		AnnotationLabel.save({confidence: 0.1, annotation_id: 1, id: 1});
+		AnnotationLabel.save({confidence: 0.1, id: 1});
 
-		$httpBackend.expectPUT('/api/v1/annotations/1/labels/1', {
+		$httpBackend.expectPUT('/api/v1/annotation-labels/1', {
 			id: 1,
 			name: 'my label',
 			user_id: 1,
@@ -74,15 +74,15 @@ describe('The AnnotationLabel resource factory', function () {
 		$httpBackend.flush();
 	}));
 
-	it('should detach annotation points', inject(function (AnnotationLabel) {
-		$httpBackend.expectDELETE('/api/v1/annotations/1/labels/1');
+	it('should delete annotation labels', inject(function (AnnotationLabel) {
+		$httpBackend.expectDELETE('/api/v1/annotation-labels/1');
 		var labels = AnnotationLabel.query({annotation_id: 1}, function () {
 			var label = labels[0];
-			label.$detach();
+			label.$delete();
 		});
 
-		$httpBackend.expectDELETE('/api/v1/annotations/1/labels/1');
-		AnnotationLabel.detach({id: 1, annotation_id: 1});
+		$httpBackend.expectDELETE('/api/v1/annotation-labels/1');
+		AnnotationLabel.delete({id: 1});
 		$httpBackend.flush();
 	}));
 });

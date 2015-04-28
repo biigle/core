@@ -34,12 +34,26 @@ AnnotationLabel.detach({id: 1, annotation_id: 1});
 angular.module('dias.api').factory('AnnotationLabel', function ($resource, URL) {
 	"use strict";
 
-	return $resource(URL + '/api/v1/annotations/:annotation_id/labels/:id', {
+	return $resource(URL + '/api/v1/:prefix/:annotation_id/:suffix/:id', {
 			id: '@id',
 			annotation_id: '@annotation_id'
 		}, {
-			attach: {method: 'POST'},
-			save: {method: 'PUT'},
-			detach: {method: 'DELETE'}
+			query: {
+				method: 'GET',
+				params: { prefix: 'annotations', suffix: 'labels' },
+				isArray: true
+			},
+			attach: {
+				method: 'POST',
+				params: { prefix: 'annotations', suffix: 'labels' }
+			},
+			save: {
+				method: 'PUT',
+				params: { prefix: 'annotation-labels', annotation_id: null, suffix: null }
+			},
+			delete: {
+				method: 'DELETE',
+				params: { prefix: 'annotation-labels', annotation_id: null, suffix: null }
+			}
 	});
 });
