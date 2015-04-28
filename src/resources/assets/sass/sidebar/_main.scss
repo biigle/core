@@ -1,0 +1,106 @@
+.annotator__sidebar {
+	background-color: #222;
+	display: flex;
+	flex-flow: row nowrap;
+	color: #777;
+}
+
+.sidebar__permanent {
+	@extend %sidebar-panel;
+	display: flex;
+	flex-flow: column nowrap;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+%sidebar-panel {
+	width: 360px;
+	border-left: 1px solid #090909;
+	padding-top: 1em;
+	padding-bottom: 1em;
+
+	h1, h2, h3, h4 {
+		margin-top: 0;
+	}
+}
+
+%foldout {
+	display: none;
+	overflow-y: auto;
+
+	&.open {
+		display: block;
+	}
+}
+
+.sidebar__annotations-edit, .sidebar__annotations-browse {
+	@extend %foldout;
+	@extend %sidebar-panel;
+}
+
+.sidebar__minimap {
+	background-image: url(../images/noise.png);
+	height: 200px;
+	margin-bottom: 1em;
+	border: 1px solid #090909;
+}
+
+.sidebar__controls {
+
+	& > * {
+		margin-bottom: 1em;
+	}
+}
+
+.sidebar__annotations {
+	height: 100%;
+}
+
+.annotation-list__item {
+	cursor: pointer;
+	border-left: 3px solid transparent;
+	user-select: none;
+	padding: 1em;
+	padding-left: 40px;
+	border-bottom: 1px solid #333;
+	position: relative;
+
+	&:hover, &.selected {
+		color: white;
+	}
+
+	&.selected {
+		border-left-color: #ff5e00;
+	}
+
+	.icon {
+		position: absolute;
+		top: 7px;
+		left: 0;
+	}
+}
+
+.icon {
+	min-height: 34px;
+	min-width: 34px;
+	display: inline-block;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 20px 20px;
+
+	&.icon-point {
+		background-image: url(../images/point.svg);
+	}
+
+	&.icon-polygon {
+		background-image: url(../images/polygon.svg);
+	}
+
+	&.icon-linestring {
+		background-image: url(../images/linestring.svg);
+	}
+
+	&.icon-circle {
+		background-image: url(../images/circle.svg);
+	}
+}

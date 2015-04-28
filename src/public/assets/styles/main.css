@@ -38,25 +38,37 @@ html, body {
           flex-flow: row nowrap;
   color: #777; }
 
-.sidebar__controls, .sidebar__annotations-edit, .sidebar__annotations-browse {
+.sidebar__permanent {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: column nowrap;
+      -ms-flex-flow: column nowrap;
+          flex-flow: column nowrap;
+  padding-left: 15px;
+  padding-right: 15px; }
+
+.sidebar__permanent, .sidebar__annotations-edit, .sidebar__annotations-browse {
   width: 360px;
   border-left: 1px solid #090909;
-  padding-top: 1em; }
-  .sidebar__controls h1, .sidebar__annotations-edit h1, .sidebar__annotations-browse h1, .sidebar__controls h2, .sidebar__annotations-edit h2, .sidebar__annotations-browse h2, .sidebar__controls h3, .sidebar__annotations-edit h3, .sidebar__annotations-browse h3, .sidebar__controls h4, .sidebar__annotations-edit h4, .sidebar__annotations-browse h4 {
+  padding-top: 1em;
+  padding-bottom: 1em; }
+  .sidebar__permanent h1, .sidebar__annotations-edit h1, .sidebar__annotations-browse h1, .sidebar__permanent h2, .sidebar__annotations-edit h2, .sidebar__annotations-browse h2, .sidebar__permanent h3, .sidebar__annotations-edit h3, .sidebar__annotations-browse h3, .sidebar__permanent h4, .sidebar__annotations-edit h4, .sidebar__annotations-browse h4 {
     margin-top: 0; }
 
 .sidebar__annotations-edit, .sidebar__annotations-browse {
-  display: none; }
+  display: none;
+  overflow-y: auto; }
   .open.sidebar__annotations-edit, .open.sidebar__annotations-browse {
     display: block; }
 
-.controls__minimap {
+.sidebar__minimap {
   background-image: url(../images/noise.png);
   height: 200px;
   margin-bottom: 1em;
   border: 1px solid #090909; }
 
-.controls__panel > * {
+.sidebar__controls > * {
   margin-bottom: 1em; }
 
 .sidebar__annotations {
@@ -68,14 +80,48 @@ html, body {
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
-          user-select: none; }
-  .annotation-list__item:hover {
-    border-color: #0099ff;
-    color: #aaa; }
+          user-select: none;
+  padding: 1em;
+  padding-left: 40px;
+  border-bottom: 1px solid #333;
+  position: relative; }
+  .annotation-list__item:hover, .annotation-list__item.selected {
+    color: white; }
   .annotation-list__item.selected {
-    border-color: #ff5e00;
-    color: #aaa; }
-  .annotation-list__item .annotation-thumb {
-    height: 50px;
-    width: 50px;
-    display: inline-block; }
+    border-left-color: #ff5e00; }
+  .annotation-list__item .icon {
+    position: absolute;
+    top: 7px;
+    left: 0; }
+
+.icon {
+  min-height: 34px;
+  min-width: 34px;
+  display: inline-block;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 20px 20px; }
+  .icon.icon-point {
+    background-image: url(../images/point.svg); }
+  .icon.icon-polygon {
+    background-image: url(../images/polygon.svg); }
+  .icon.icon-linestring {
+    background-image: url(../images/linestring.svg); }
+  .icon.icon-circle {
+    background-image: url(../images/circle.svg); }
+
+.sidebar__labels {
+  -webkit-flex-grow: 2;
+      -ms-flex-positive: 2;
+          flex-grow: 2;
+  overflow-y: auto; }
+
+.label__item {
+  padding: 1em;
+  border-bottom: 1px solid #333; }
+  .label__item .label {
+    font-weight: normal;
+    margin-right: 0.6em;
+    font-size: 100%; }
+  .label__item .label__name {
+    color: white; }

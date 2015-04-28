@@ -210,6 +210,25 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "ma
 /**
  * @namespace dias.annotations
  * @ngdoc controller
+ * @name LabelsController
+ * @memberOf dias.annotations
+ * @description Controller for the labels list in the sidebar
+ */
+angular.module('dias.annotations').controller('LabelsController', ["$scope", "mapAnnotations", "labels", function ($scope, mapAnnotations, labels) {
+		"use strict";
+
+		$scope.selectedFeatures = mapAnnotations.getSelectedFeatures().getArray();
+
+		$scope.$watchCollection('selectedFeatures', function (features) {
+			features.forEach(function (feature) {
+				labels.fetchForAnnotation(feature.annotation);
+			});
+		});
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc controller
  * @name MinimapController
  * @memberOf dias.annotations
  * @description Controller for the minimap in the sidebar
@@ -298,33 +317,45 @@ angular.module('dias.annotations').controller('SidebarController', ["$scope", "$
  * @ngdoc directive
  * @name annotationListItem
  * @memberOf dias.annotations
- * @description An item in the "browse annotations" annotations list
+ * @description An annotation list item.
  */
-angular.module('dias.annotations').directive('annotationListItem', ["map", "$timeout", "mapImage", function (map, $timeout, mapImage) {
+angular.module('dias.annotations').directive('annotationListItem', function () {
 		"use strict";
 
 		return {
-			restrict: 'A',
-
-			replace: true,
-
-			template: '<li data-ng-click="selectAnnotation($event, annotation.id)" data-ng-class="{selected:(isSelected(annotation.id))}"><span class="annotation-thumb" id="annotation-thumb-{{annotation.id}}"></span> #{{annotation.id}} {{annotation.shape}}</li>',
-
-			link: function (scope, element, attrs) {
-				// wait for the element to be rendered
-				// $timeout(function () {
-				// 	var thumb = new ol.Map({
-				// 		target: 'annotation-thumb-' + scope.annotation.id,
-				// 		controls: [],
-				// 		interactions: []
-				// 	});
-				// 	var view = new ol.View({
-				// 		projection: mapImage.getProjection(),
-				// 	});
-				// });
-			}
+			controller: ["$scope", function ($scope) {
+				$scope.shapeClass = 'icon-' + $scope.annotation.shape.toLowerCase();
+			}]
 		};
-	}]
+	}
+);
+
+/**
+ * @namespace dias.annotations
+ * @ngdoc directive
+ * @name labelItem
+ * @memberOf dias.annotations
+ * @description An annotation label list item.
+ */
+angular.module('dias.annotations').directive('labelItem', function () {
+		"use strict";
+
+		return {
+			controller: ["$scope", function ($scope) {
+				var confidence = $scope.annotationLabel.confidence;
+
+				if (confidence <= 0.25) {
+					$scope.class = 'label-danger';
+				} else if (confidence <= 0.5 ) {
+					$scope.class = 'label-warning';
+				} else if (confidence <= 0.75 ) {
+					$scope.class = 'label-success';
+				} else {
+					$scope.class = 'label-primary';
+				}
+			}]
+		};
+	}
 );
 
 /**
@@ -580,6 +611,28 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
 /**
  * @namespace dias.annotations
  * @ngdoc service
+ * @name labels
+ * @memberOf dias.annotations
+ * @description Wrapper service for annotation labels to provide some convenience functions.
+ */
+angular.module('dias.annotations').service('labels', ["AnnotationLabel", function (AnnotationLabel) {
+		"use strict";
+
+		this.fetchForAnnotation = function (annotation) {
+			// don't fetch twice
+			if (!annotation.labels) {
+				annotation.labels = AnnotationLabel.query({
+						annotation_id: annotation.id
+				});
+			}
+
+			return annotation.labels;
+		};
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc service
  * @name mapAnnotations
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
@@ -687,6 +740,7 @@ angular.module('dias.annotations').service('mapAnnotations', ["map", "images", "
 		var refreshAnnotations = function (e, image) {
 			// clear features of previous image
 			features.clear();
+			selectedFeatures.clear();
 
 			annotations.query({id: image._id}).$promise.then(function () {
 				annotations.forEach(createFeature);

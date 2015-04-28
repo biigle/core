@@ -108,6 +108,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		var refreshAnnotations = function (e, image) {
 			// clear features of previous image
 			features.clear();
+			selectedFeatures.clear();
 
 			annotations.query({id: image._id}).$promise.then(function () {
 				annotations.forEach(createFeature);

@@ -3,7 +3,7 @@
 @section('title') Annotate @stop
 
 @section('scripts')
-<script src="{{ asset('vendor/annotations/scripts/ol-debug.js') }}"></script>
+<script src="{{ asset('vendor/annotations/scripts/ol.js') }}"></script>
 <script src="{{ asset('vendor/annotations/scripts/main.js') }}"></script>
 @append
 
