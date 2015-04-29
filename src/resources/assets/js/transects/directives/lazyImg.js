@@ -33,8 +33,10 @@ angular.module('dias.transects').directive('lazyImg', function () {
 				};
 
 				window.addEventListener('scroll', check);
-				// fires initially
 				window.addEventListener('resize', check);
+				
+				// initial check
+				if (isVisible()) setSrc();
 			}
 		};
 	}
