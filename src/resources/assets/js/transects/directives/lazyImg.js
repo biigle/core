@@ -12,8 +12,7 @@ angular.module('dias.transects').directive('lazyImg', function () {
 		return {
 			restrict: 'A',
 			scope: true,
-			template: '<img src="{{src}}" data-ng-if="src">',
-			replace: true,
+			template: '<img data-ng-src="{{src}}" data-ng-if="src">',
 			controller: function ($scope, $element, $attrs) {
 				var rect, isVisible, setSrc, check;
 				var elm = $element[0];
@@ -34,10 +33,8 @@ angular.module('dias.transects').directive('lazyImg', function () {
 				};
 
 				window.addEventListener('scroll', check);
+				// fires initially
 				window.addEventListener('resize', check);
-				
-				// initial check
-				if (isVisible()) setSrc();
 			}
 		};
 	}

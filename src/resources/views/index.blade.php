@@ -18,8 +18,7 @@
 
 	@foreach($transect->images as $image)
 		<figure class="col-sm-3 col-md-2 transect-figure">
-			<a href="{{ route('image', $image->id) }}">
-				<img data-lazy-img="{{ url('api/v1/images/'.$image->id.'/thumb') }}">
+			<a href="{{ route('image', $image->id) }}" data-lazy-img="{{ url('api/v1/images/'.$image->id.'/thumb') }}">
 			</a>
 		</figure>
 	@endforeach
