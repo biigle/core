@@ -17,7 +17,7 @@ class ImageAnnotationController extends Controller {
 		$image = $this->requireNotNull(Image::find($id));
 		$this->requireCanSee($image);
 
-		return $image->annotations;
+		return $image->annotations()->with('points')->get();
 	}
 
 	/**
@@ -40,7 +40,13 @@ class ImageAnnotationController extends Controller {
 			abort(400, 'Shape with ID "'.$this->request->input('shape_id').'" does not exist.');
 		}
 
-		$points = json_decode($this->request->input('points'));
+		// from a JSON request, the array may already be decoded
+		$points = $this->request->input('points');
+		
+		if (is_string($points))
+		{
+			$points = json_decode($points);
+		}
 
 		if (empty($points))
 		{
@@ -52,10 +58,8 @@ class ImageAnnotationController extends Controller {
 		$annotation->image()->associate($image);
 		$annotation->save();
 
-		foreach ($points as $point) {
-			$annotation->addPoint($point->x, $point->y);
-		}
+		$annotation->addPoints($points);
 
-		return $annotation->fresh();
+		return Annotation::with('points')->find($annotation->id);
 	}
 }

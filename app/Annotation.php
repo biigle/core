@@ -74,18 +74,12 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
 	/**
 	 * The labels, this annotation got assigned by the users.
 	 * 
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
 	public function labels()
 	{
-		return $this->belongsToMany('Dias\Label')
-			// display these attributes directly in the labels object and
-			// not in the pivot table object
-			->withPivot(
-				'confidence as confidence',
-				'user_id as user_id',
-				'annotation_id as annotation_id'
-			);
+		return $this->hasMany('Dias\AnnotationLabel')
+			->with('label', 'user');
 	}
 
 	/**
@@ -107,8 +101,8 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
 	public function addPoint($x, $y)
 	{
 		$point = new AnnotationPoint;
-		$point->x = $x;
-		$point->y = $y;
+		$point->x = intval($x);
+		$point->y = intval($y);
 		$index = $this->points()->max('index');
 		// the new point gets the next higher index
 		$point->index = ($index === null) ? 0 : $index + 1;
@@ -117,36 +111,60 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
 	}
 
 	/**
+	 * Adds an array of points to this annotation.
+	 * A point may be an associative array `['x'=>10, 'y'=>10]` or an object
+	 * `{x => 10, y => 10}`.
+	 * 
+	 * @param array $points array of point arrays or objects
+	 */
+	public function addPoints($points)
+	{
+		foreach ($points as $point) {
+			// depending on decoding, a point may be an object or an array
+			if (is_array($point))
+			{
+				$this->addPoint($point['x'], $point['y']);
+			}
+			else
+			{
+				$this->addPoint($point->x, $point->y);
+			}
+		}
+	}
+
+	/**
+	 * Replaces the current points with the given ones.
+	 * Does nothing if the given array is empty.
+	 * 
+	 * @param array $points array of point arrays or objects
+	 */
+	public function refreshPoints($points)
+	{
+		if (empty($points)) return;
+		$this->points()->delete();
+		$this->addPoints($points);
+	}
+
+	/**
 	 * Adds a new label to this annotation.
 	 * 
 	 * @param int $labelId
 	 * @param float $confidence
 	 * @param User $user The user attaching tha label
-	 * @return void
+	 * @return AnnotationLabel
 	 */
 	public function addLabel($labelId, $confidence, $user)
 	{
 		try {
-			$this->labels()->attach($labelId, array(
-				'user_id' => $user->id,
-				'confidence' => $confidence
-			));
+			$annotationLabel = new AnnotationLabel;
+			$annotationLabel->annotation()->associate($this);
+			$annotationLabel->label()->associate(Label::find($labelId));
+			$annotationLabel->user()->associate($user);
+			$annotationLabel->confidence = $confidence;
+			$annotationLabel->save();
+			return $annotationLabel;
 		} catch (QueryException $e) {
 			abort(400, 'The user already attached label "'.$labelId.'" to annotation "'.$this->id.'"!');
 		}
-	}
-
-	/**
-	 * Detaches the specified label attached by the specified user from this
-	 * annotation.
-	 * 
-	 * @param int $labelId
-	 * @param int $userId
-	 * @return boolean `false` if nothing was detached (the label didn't exist)
-	 */
-	public function removeLabel($labelId, $userId)
-	{
-		// TODO do this using Eloquent somehow?
-		return (boolean) \DB::delete('DELETE FROM annotation_label WHERE annotation_id = ? AND label_id = ? AND user_id = ?', array($this->id, $labelId, $userId));
 	}
 }

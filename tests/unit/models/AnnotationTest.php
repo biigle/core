@@ -70,16 +70,17 @@ class AnnotationTest extends TestCase {
 		$label->save();
 		$user = UserTest::create();
 		$user->save();
-		$annotation->labels()->attach($label->id, array(
-			'confidence' => 0.5,
-			'user_id' => $user->id
-		));
+
+		$annotationLabel = AnnotationLabelTest::create(
+			$annotation, $label, $user, 0.5
+		);
+		$annotationLabel->save();
 
 		$this->assertEquals(1, $annotation->labels()->count());
 
 		$label = $annotation->labels()->first();
 		$this->assertEquals(0.5, $label->confidence);
-		$this->assertEquals($user->id, $label->user_id);
+		$this->assertEquals($user->id, $label->user->id);
 	}
 
 	public function testAttributeRelation()
@@ -126,7 +127,8 @@ class AnnotationTest extends TestCase {
 
 		$this->assertEquals(0, $annotation->points()->count());
 
-		$point = $annotation->addPoint(10, 10);
+		// float will be converted to int
+		$point = $annotation->addPoint(10.5, 10.22);
 
 		$this->assertEquals($annotation->id, $point->annotation->id);
 		$this->assertEquals(1, $annotation->points()->count());
@@ -136,6 +138,53 @@ class AnnotationTest extends TestCase {
 		$point = $annotation->addPoint(20, 20);
 		$this->assertEquals(2, $annotation->points()->count());
 		$this->assertEquals(1, $point->index);
+	}
+
+	public function testAddPoints()
+	{
+		$annotation = AnnotationTest::create();
+		$annotation->save();
+
+		$this->assertEquals(0, $annotation->points()->count());
+
+		$annotation->addPoints(array(
+			array('x' => 10, 'y' => 10)
+		));
+
+		$this->assertEquals(1, $annotation->points()->count());
+
+		$annotation->addPoints(array(
+			(object) array('x' => 10, 'y' => 10)
+		));
+
+		$this->assertEquals(2, $annotation->points()->count());
+	}
+
+	public function testRefreshPoints()
+	{
+		$annotation = AnnotationTest::create();
+		$annotation->save();
+
+		$annotation->addPoints(array(
+			array('x' => 10, 'y' => 10),
+			array('x' => 20, 'y' => 20)
+		));
+
+		$this->assertEquals(2, $annotation->points()->count());
+
+		$annotation->refreshPoints(array(
+			array('x' => 100, 'y' => 100),
+			array('x' => 200, 'y' => 200)
+		));
+
+		$this->assertEquals(2, $annotation->points()->count());
+
+		$points = $annotation->points->toArray();
+		$this->assertEquals(100, $points[0]['x']);
+		$this->assertEquals(200, $points[1]['x']);
+
+		$annotation->refreshPoints(array());
+		$this->assertEquals(2, $annotation->points()->count());
 	}
 
 	public function testAddLabel()
@@ -158,21 +207,5 @@ class AnnotationTest extends TestCase {
 		$this->assertEquals($labelId, $label->id);
 		$this->assertEquals($confidence, $label->confidence);
 		$this->assertEquals($user->id, $label->user_id);
-	}
-
-	public function testRemoveLabel()
-	{
-		$annotation = AnnotationTest::create();
-		$annotation->save();
-		$user = UserTest::create();
-		$user->save();
-		$point = $annotation->addLabel(1, 0.5, $user);
-
-		$this->assertNotNull($annotation->labels()->first());
-		$this->assertTrue($annotation->removeLabel(1, $user->id));
-		$this->assertNull($annotation->labels()->first());
-
-		// the label doesn't exist any more for this user and this annotation
-		$this->assertFalse($annotation->removeLabel(1, $user->id));
 	}
 }

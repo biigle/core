@@ -296,8 +296,13 @@ class Initialize extends Migration {
 		| Each annotation may get labels by the users. Each user may set multiple
 		| labels to the same annotation e.g. with different levels of confidence
 		| ("i'm not sure, it may be 90% this type or 10% the other").
+		| 
+		| This was once just a pivot table but is now a table for pivot objects
+		| for better handling of annotation labels.
 		*/
-		Schema::create('annotation_label', function(Blueprint $table) {
+		Schema::create('annotation_labels', function(Blueprint $table) {
+			$table->increments('id');
+			
 			$table->integer('annotation_id')->unsigned();
 			$table->foreign('annotation_id')
 			      ->references('id')
@@ -320,6 +325,8 @@ class Initialize extends Migration {
 
 			$table->double('confidence');
 
+			$table->timestamps();
+
 			// each user may set the same label only once for each annotation
 			$table->unique(array('annotation_id', 'label_id', 'user_id'));
 		});
@@ -334,7 +341,7 @@ class Initialize extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('annotation_label');
+		Schema::drop('annotation_labels');
 		Schema::drop('annotation_points');
 		Schema::drop('annotations');
 		Schema::drop('shapes');

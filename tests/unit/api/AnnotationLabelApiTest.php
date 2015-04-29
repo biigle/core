@@ -81,66 +81,62 @@ class AnnotationLabelApiTest extends ApiTestCase {
 
 	public function testUpdate()
 	{
-		$this->annotation->addLabel(1, 0.5, $this->editor);
+		$annotationLabel = $this->annotation->addLabel(1, 0.5, $this->editor);
+		$id = $annotationLabel->id;
 
-		$this->doTestApiRoute('PUT', '/api/v1/annotations/1/labels/1');
+		$this->doTestApiRoute('PUT', '/api/v1/annotation-labels/'.$id);
 
 		// api key authentication
-		$this->callToken('PUT', '/api/v1/annotations/1/labels/1', $this->user);
+		$this->callToken('PUT', '/api/v1/annotation-labels/'.$id, $this->user);
 		$this->assertResponseStatus(401);
 
-		$this->callToken('PUT', '/api/v1/annotations/1/labels/1', $this->guest);
+		$this->callToken('PUT', '/api/v1/annotation-labels/'.$id, $this->guest);
 		$this->assertResponseStatus(401);
 
-		$this->callToken('PUT', '/api/v1/annotations/1/labels/1', $this->editor);
+		$this->callToken('PUT', '/api/v1/annotation-labels/'.$id, $this->editor);
 		$this->assertResponseOk();
 
-		$this->callToken('PUT', '/api/v1/annotations/1/labels/1', $this->admin);
-		// admin didn't attach any label
-		$this->assertResponseStatus(404);
+		$this->callToken('PUT', '/api/v1/annotation-labels/'.$id, $this->admin);
+		$this->assertResponseOk();
 
 		// session cookie authentication
-		$this->assertEquals(0.5, $this->annotation->labels()->first()->confidence);
+		$this->assertEquals(0.5, $annotationLabel->fresh()->confidence);
 		$this->be($this->editor);
-		$this->call('PUT', '/api/v1/annotations/1/labels/1', array(
+		$this->call('PUT', '/api/v1/annotation-labels/'.$id, array(
 			'_token' => Session::token(),
 			'confidence' => 0.1
 		));
 		$this->assertResponseOk();
-		$this->assertEquals(0.1, $this->annotation->labels()->first()->confidence);
+		$this->assertEquals(0.1, $annotationLabel->fresh()->confidence);
 	}
 
 	public function testDestroy()
 	{
-		$this->annotation->addLabel(1, 0.5, $this->editor);
+		$annotationLabel = $this->annotation->addLabel(1, 0.5, $this->editor);
+		$id = $annotationLabel->id;
 
-		$this->doTestApiRoute('DELETE', '/api/v1/annotations/1/labels/1');
+		$this->doTestApiRoute('DELETE', '/api/v1/annotation-labels/'.$id);
 
 		// api key authentication
-		$this->callToken('DELETE', '/api/v1/annotations/1/labels/1', $this->user);
+		$this->callToken('DELETE', '/api/v1/annotation-labels/'.$id, $this->user);
 		$this->assertResponseStatus(401);
 
-		$this->callToken('DELETE', '/api/v1/annotations/1/labels/1', $this->guest);
+		$this->callToken('DELETE', '/api/v1/annotation-labels/'.$id, $this->guest);
 		$this->assertResponseStatus(401);
 
 		$this->assertNotNull($this->annotation->labels()->first());
-		$this->callToken('DELETE', '/api/v1/annotations/1/labels/1', $this->editor);
+		$this->callToken('DELETE', '/api/v1/annotation-labels/'.$id, $this->editor);
 		$this->assertResponseOk();
 		$this->assertNull($this->annotation->labels()->first());
 
-		$this->annotation->addLabel(1, 0.5, $this->editor);
+		$annotationLabel = $this->annotation->addLabel(1, 0.5, $this->editor);
 		$this->assertNotNull($this->annotation->labels()->first());
-
-		$this->callToken('DELETE', '/api/v1/annotations/1/labels/1', $this->admin);
-		// admin doesn't have the label
-		$this->assertResponseStatus(404);
+		$id = $annotationLabel->id;
 
 		// session cookie authentication
 		$this->be($this->admin);
-		// admin can detach labels of other users as well if the ID is provided
-		$this->call('DELETE', '/api/v1/annotations/1/labels/1', array(
-			'_token' => Session::token(),
-			'user_id' => $this->editor->id
+		$this->call('DELETE', '/api/v1/annotation-labels/'.$id, array(
+			'_token' => Session::token()
 		));
 		$this->assertResponseOk();
 		$this->assertNull($this->annotation->labels()->first());

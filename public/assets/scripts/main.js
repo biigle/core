@@ -62,18 +62,70 @@ var annotation = Annotation.get({id: 123}, function () {
    console.log(annotation.shape_id);
 });
 
+// saving an annotation (updating the annotation points)
+var annotation = Annotation.get({id: 1}, function () {
+   annotation.points = [{x: 10, y: 10}];
+   annotation.$save();
+});
+// or directly
+Annotation.save({
+   id: 1, points: [{x: 10, y: 10}]
+});
+
 // deleting an annotation
 var annotation = Annotation.get({id: 123}, function () {
    annotation.$delete();
 });
 // or directly
 Annotation.delete({id: 123});
+
+// get all annotations of an image
+// note, that the `id` is now the image ID and not the annotation ID for the
+// query!
+var annotations = Annotation.query({id: 1}, function () {
+   console.log(annotations); // [{id: 1, shape_id: 1, ...}, ...]
+});
+
+// add a new annotation to an image
+// note, that the `id` is now the image ID and not the annotation ID for the
+// query!
+var annotation = Annotation.add({
+   id: 1,
+   shape_id: 1,
+   points: [
+      { x: 10, y: 20 }
+   ]
+});
  * 
  */
 angular.module('dias.api').factory('Annotation', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource(URL + '/api/v1/annotations/:id/', { id: '@id'	});
+	return $resource(URL + '/api/v1/:endpoint/:id/:slug',
+		{ id: '@id'	},
+		{
+			get: {
+				method: 'GET',
+				params: { endpoint: 'annotations' }
+			},
+			save: {
+				method: 'PUT',
+				params: { endpoint: 'annotations' }
+			},
+			delete: {
+				method: 'DELETE',
+				params: { endpoint: 'annotations' }
+			},
+			query: {
+				method: 'GET',
+				params: { endpoint: 'images', slug: 'annotations' },
+				isArray: true
+			},
+			add: {
+				method: 'POST',
+				params: { endpoint: 'images', slug: 'annotations' }
+			}
+		});
 }]);
 /**
  * @ngdoc factory
@@ -111,56 +163,27 @@ AnnotationLabel.detach({id: 1, annotation_id: 1});
 angular.module('dias.api').factory('AnnotationLabel', ["$resource", "URL", function ($resource, URL) {
 	"use strict";
 
-	return $resource(URL + '/api/v1/annotations/:annotation_id/labels/:id', {
+	return $resource(URL + '/api/v1/:prefix/:annotation_id/:suffix/:id', {
 			id: '@id',
 			annotation_id: '@annotation_id'
 		}, {
-			attach: {method: 'POST'},
-			save: {method: 'PUT'},
-			detach: {method: 'DELETE'}
-	});
-}]);
-/**
- * @ngdoc factory
- * @name AnnotationPoint
- * @memberOf dias.api
- * @description Provides the resource for annotation points.
- * @requires $resource
- * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
- * @example
-// get all points of an annotation and update one of them
-var points = AnnotationPoint.query({annotation_id: 1}, function () {
-   var point = points[0];
-   point.x = 100;
-   point.$save();
-});
-
-// directly update a point
-AnnotationPoint.save({x: 10, y: 10, annotation_id: 1, id: 1});
-
-// add a new point to an annotation
-var point = AnnotationPoint.add({x: 50, y: 40, annotation_id: 1}, function () {
-   console.log(point); // {x: 50, y: 40, annotation_id: 1, index: 1, id: 1}
-});
-
-// delete a point
-var points = AnnotationPoint.query({annotation_id: 1}, function () {
-   var point = points[0];
-   point.$delete();
-});
-// or directly
-AnnotationPoint.delete({id: 1, annotation_id: 1});
- * 
- */
-angular.module('dias.api').factory('AnnotationPoint', ["$resource", "URL", function ($resource, URL) {
-	"use strict";
-
-	return $resource(URL + '/api/v1/annotations/:annotation_id/points/:id', {
-			id: '@id',
-			annotation_id: '@annotation_id'
-		}, {
-			add: {method: 'POST'},
-			save: {method: 'PUT'}
+			query: {
+				method: 'GET',
+				params: { prefix: 'annotations', suffix: 'labels' },
+				isArray: true
+			},
+			attach: {
+				method: 'POST',
+				params: { prefix: 'annotations', suffix: 'labels' }
+			},
+			save: {
+				method: 'PUT',
+				params: { prefix: 'annotation-labels', annotation_id: null, suffix: null }
+			},
+			delete: {
+				method: 'DELETE',
+				params: { prefix: 'annotation-labels', annotation_id: null, suffix: null }
+			}
 	});
 }]);
 /**
@@ -224,38 +247,6 @@ angular.module('dias.api').factory('Image', ["$resource", "URL", function ($reso
 	"use strict";
 
 	return $resource(URL + '/api/v1/images/:id');
-}]);
-/**
- * @ngdoc factory
- * @name ImageAnnotation
- * @memberOf dias.api
- * @description Provides the resource for annotations of an image.
- * @requires $resource
- * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
- * @example
-// get all annotations of an image
-var annotations = ImageAnnotation.query({image_id: 1}, function () {
-   console.log(annotations); // [{id: 1, shape_id: 1, ...}, ...]
-});
-
-// add a new annotation to an image
-var annotation = ImageAnnotation.add({
-   image_id: 1,
-   shape_id: 1,
-   points: [
-      { x: 10, y: 20 }
-   ]
-});
- *
- */
-angular.module('dias.api').factory('ImageAnnotation', ["$resource", "URL", function ($resource, URL) {
-	"use strict";
-
-	return $resource(
-		URL + '/api/v1/images/:image_id/annotations',
-		{ image_id: '@image_id' },
-		{ add: { method: 'POST' } }
-	);
 }]);
 /**
  * @ngdoc factory
@@ -682,6 +673,77 @@ angular.module('dias.api').factory('User', ["$resource", "URL", function ($resou
 	});
 }]);
 /**
+ * @namespace dias.api
+ * @ngdoc service
+ * @name roles
+ * @memberOf dias.api
+ * @description Wrapper service for the available roles
+ */
+angular.module('dias.api').service('roles', ["Role", function (Role) {
+		"use strict";
+
+		var roles = {};
+		var rolesInverse = {};
+
+		Role.query(function (r) {
+			r.forEach(function (role) {
+				roles[role.id] = role.name;
+				rolesInverse[role.name] = role.id;
+			});
+		});
+
+		this.getName = function (id) {
+			return roles[id];
+		};
+
+		this.getId = function (name) {
+			return rolesInverse[name];
+		};
+	}]
+);
+/**
+ * @namespace dias.api
+ * @ngdoc service
+ * @name shapes
+ * @memberOf dias.api
+ * @description Wrapper service for the available shapes
+ */
+angular.module('dias.api').service('shapes', ["Shape", function (Shape) {
+		"use strict";
+
+		var shapes = {};
+		var shapesInverse = {};
+
+		var resources = Shape.query(function (s) {
+			s.forEach(function (shape) {
+				shapes[shape.id] = shape.name;
+				shapesInverse[shape.name] = shape.id;
+			});
+		});
+
+		this.getName = function (id) {
+			return shapes[id];
+		};
+
+		this.getId = function (name) {
+			return shapesInverse[name];
+		};
+
+		this.getAll = function () {
+			return resources;
+		};
+	}]
+);
+/**
+ * @ngdoc constant
+ * @name MAX_MSG
+ * @memberOf dias.ui.messages
+ * @description The maximum number of info messages to display.
+ * @returns {Integer}
+ *
+ */
+angular.module('dias.ui.messages').constant('MAX_MSG', 1);
+/**
  * @namespace dias.ui.users
  * @ngdoc directive
  * @name userChooser
@@ -711,15 +773,6 @@ angular.module('dias.ui.users').directive('userChooser', function () {
 	}
 );
 
-/**
- * @ngdoc constant
- * @name MAX_MSG
- * @memberOf dias.ui.messages
- * @description The maximum number of info messages to display.
- * @returns {Integer}
- *
- */
-angular.module('dias.ui.messages').constant('MAX_MSG', 1);
 /**
  * @namespace dias.ui.messages
  * @ngdoc controller

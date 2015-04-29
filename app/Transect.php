@@ -87,7 +87,7 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 	 */
 	public function images()
 	{
-		return $this->hasMany('Dias\Image');
+		return $this->hasMany('Dias\Image')->orderBy('id');
 	}
 
 	/**

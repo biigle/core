@@ -1,4 +1,4 @@
- <?php
+<?php
 
 class AnnotationApiTest extends ApiTestCase {
 
@@ -37,13 +37,35 @@ class AnnotationApiTest extends ApiTestCase {
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
-		// the labels and points should be fetched separately
+		$this->assertContains('points":[', $r->getContent());
+		// the labels should be fetched separately
 		$this->assertNotContains('labels', $r->getContent());
-		$this->assertNotContains('points', $r->getContent());
 		// image and transect objects from projectIds() call shouldn't be
 		// included in the output
 		$this->assertNotContains('"image"', $r->getContent());
 		$this->assertNotContains('transect', $r->getContent());
+	}
+
+	public function testUpdate()
+	{
+		$this->doTestApiRoute('PUT', '/api/v1/annotations/1');
+
+		$this->callToken('PUT', '/api/v1/annotations/1', $this->user);
+		$this->assertResponseStatus(401);
+
+		$this->annotation->addPoint(10, 10);
+		$points = $this->annotation->points()->get()->toArray();
+		$this->assertEquals(10, $points[0]['y']);
+
+		// api key authentication
+		$this->callToken('PUT', '/api/v1/annotations/1', $this->admin, array(
+			'points' => '[{"x":10, "y":15}, {"x": 100, "y": 200}]'
+		));
+		$this->assertResponseOk();
+
+		$this->assertEquals(2, $this->annotation->points()->count());
+		$points = $this->annotation->points()->get()->toArray();
+		$this->assertEquals(15, $points[0]['y']);
 	}
 
 	public function testDestroy()
