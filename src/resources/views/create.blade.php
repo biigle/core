@@ -3,10 +3,10 @@
 @section('title') Create new transect @stop
 
 @section('content')
-<div class="container">
+<div class="container" data-ng-app="">
 	<div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
 		<h2>New transect for {{ $project->name }}</h2>
-		<form class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/transects') }}">
+		<form class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/transects') }}" data-ng-submit="submitted=true">
 			<div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
 				<label for="name">Transect name</label>
 				<input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" required>
@@ -49,9 +49,13 @@
 				@endif
 			</div>
 
+			<p class="alert alert-info ng-cloak" data-ng-if="submitted">
+				<strong>Just a moment, please!</strong> Large transects may take a few minutes to process.
+			</p>
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
-			<a href="{{ URL::previous() }}" class="btn btn-link">Cancel</a>
-			<input type="submit" class="btn btn-success pull-right" value="Create">
+			<a href="{{ URL::previous() }}" class="btn btn-link" data-ng-disabled="submitted">Cancel</a>
+			<input type="submit" class="btn btn-success pull-right" value="Create" data-ng-disabled="submitted">
+			</div>
 		</form>
 	</div>
 </div>

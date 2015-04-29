@@ -20,6 +20,7 @@ class ImageController extends Controller {
 			->withImage($image)
 			->withFile($image->getFile())
 			->withMixins($this->modules->getMixins('images.index'))
+			->with('buttonMixins', $this->modules->getMixins('images.index-buttons'))
 			->with('message', session('message'))
 			->with('messageType', session('messageType'));
 	}
