@@ -1,12 +1,20 @@
 /**
  * @namespace dias.annotations
  * @ngdoc controller
- * @name AnnotationsBrowseController
+ * @name AnnotationsController
  * @memberOf dias.annotations
- * @description Controller for the "browse annotations" foldout
+ * @description Controller for the annotations list in the sidebar
  */
-angular.module('dias.annotations').controller('AnnotationsBrowseController', function ($scope, annotations, shapes, mapAnnotations) {
+angular.module('dias.annotations').controller('AnnotationsController', function ($scope, mapAnnotations, labels, annotations, shapes) {
 		"use strict";
+
+		$scope.selectedFeatures = mapAnnotations.getSelectedFeatures().getArray();
+
+		$scope.$watchCollection('selectedFeatures', function (features) {
+			features.forEach(function (feature) {
+				labels.fetchForAnnotation(feature.annotation);
+			});
+		});
 
 		var refreshAnnotations = function () {
 			$scope.annotations = annotations.current();
@@ -17,6 +25,7 @@ angular.module('dias.annotations').controller('AnnotationsBrowseController', fun
 		$scope.annotations = [];
 
 		$scope.clearSelection = mapAnnotations.clearSelection;
+		
 		$scope.selectAnnotation = function (e, id) {
 			// allow multiple selections
 			if (!e.shiftKey) {
@@ -34,12 +43,6 @@ angular.module('dias.annotations').controller('AnnotationsBrowseController', fun
 			});
 			return selected;
 		};
-
-		$scope.$watch('foldout', function (foldout) {
-			if (foldout === 'annotations-browse') {
-				refreshAnnotations();
-			}
-		});
 
 		$scope.$on('image.shown', refreshAnnotations);
 	}

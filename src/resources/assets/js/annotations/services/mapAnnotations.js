@@ -159,6 +159,8 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			map.removeInteraction(draw);
 			map.removeInteraction(modify);
 			map.addInteraction(select);
+			// non't select the last drawn point
+			selectedFeatures.clear();
 		};
 
 		this.deleteSelected = function () {

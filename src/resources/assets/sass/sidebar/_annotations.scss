@@ -1,0 +1,48 @@
+.sidebar__annotations {
+	flex-grow: 2;
+	overflow-y: auto;
+}
+
+.annotation-list__item {
+	cursor: pointer;
+	border-left: 3px solid transparent;
+	user-select: none;
+	padding: 1em;
+	padding-left: 40px;
+	border-bottom: 1px solid #333;
+	position: relative;
+
+	&:hover, &.selected {
+		color: white;
+	}
+
+	&.selected {
+		border-left-color: #ff5e00;
+	}
+
+	.icon {
+		position: absolute;
+		top: 7px;
+		left: 0;
+	}
+}
+
+.label-list {
+	padding-top: 1em;
+}
+
+.label-list__item {
+
+	padding: 1em;
+	border-top: 1px solid #333;
+
+	.label {
+		font-weight: normal;
+		margin-right: 0.6em;
+		font-size: 100%;
+	}
+
+	.label__user {
+		color: #777;
+	}
+}

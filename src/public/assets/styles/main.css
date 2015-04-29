@@ -36,7 +36,7 @@ html, body {
   -webkit-flex-flow: row nowrap;
       -ms-flex-flow: row nowrap;
           flex-flow: row nowrap;
-  color: #777; }
+  color: #9D9D9D; }
 
 .sidebar__permanent {
   display: -webkit-flex;
@@ -48,18 +48,18 @@ html, body {
   padding-left: 15px;
   padding-right: 15px; }
 
-.sidebar__permanent, .sidebar__annotations-edit, .sidebar__annotations-browse {
+.sidebar__permanent, .sidebar__categories {
   width: 360px;
   border-left: 1px solid #090909;
   padding-top: 1em;
   padding-bottom: 1em; }
-  .sidebar__permanent h1, .sidebar__annotations-edit h1, .sidebar__annotations-browse h1, .sidebar__permanent h2, .sidebar__annotations-edit h2, .sidebar__annotations-browse h2, .sidebar__permanent h3, .sidebar__annotations-edit h3, .sidebar__annotations-browse h3, .sidebar__permanent h4, .sidebar__annotations-edit h4, .sidebar__annotations-browse h4 {
+  .sidebar__permanent h1, .sidebar__categories h1, .sidebar__permanent h2, .sidebar__categories h2, .sidebar__permanent h3, .sidebar__categories h3, .sidebar__permanent h4, .sidebar__categories h4 {
     margin-top: 0; }
 
-.sidebar__annotations-edit, .sidebar__annotations-browse {
+.sidebar__categories {
   display: none;
   overflow-y: auto; }
-  .open.sidebar__annotations-edit, .open.sidebar__annotations-browse {
+  .open.sidebar__categories {
     display: block; }
 
 .sidebar__minimap {
@@ -68,11 +68,27 @@ html, body {
   margin-bottom: 1em;
   border: 1px solid #090909; }
 
-.sidebar__controls > * {
-  margin-bottom: 1em; }
+.icon {
+  min-height: 34px;
+  min-width: 34px;
+  display: inline-block;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 20px 20px; }
+  .icon.icon-point {
+    background-image: url(../images/point.svg); }
+  .icon.icon-polygon {
+    background-image: url(../images/polygon.svg); }
+  .icon.icon-linestring {
+    background-image: url(../images/linestring.svg); }
+  .icon.icon-circle {
+    background-image: url(../images/circle.svg); }
 
 .sidebar__annotations {
-  height: 100%; }
+  -webkit-flex-grow: 2;
+      -ms-flex-positive: 2;
+          flex-grow: 2;
+  overflow-y: auto; }
 
 .annotation-list__item {
   cursor: pointer;
@@ -94,34 +110,15 @@ html, body {
     top: 7px;
     left: 0; }
 
-.icon {
-  min-height: 34px;
-  min-width: 34px;
-  display: inline-block;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 20px 20px; }
-  .icon.icon-point {
-    background-image: url(../images/point.svg); }
-  .icon.icon-polygon {
-    background-image: url(../images/polygon.svg); }
-  .icon.icon-linestring {
-    background-image: url(../images/linestring.svg); }
-  .icon.icon-circle {
-    background-image: url(../images/circle.svg); }
+.label-list {
+  padding-top: 1em; }
 
-.sidebar__labels {
-  -webkit-flex-grow: 2;
-      -ms-flex-positive: 2;
-          flex-grow: 2;
-  overflow-y: auto; }
-
-.label__item {
+.label-list__item {
   padding: 1em;
-  border-bottom: 1px solid #333; }
-  .label__item .label {
+  border-top: 1px solid #333; }
+  .label-list__item .label {
     font-weight: normal;
     margin-right: 0.6em;
     font-size: 100%; }
-  .label__item .label__name {
-    color: white; }
+  .label-list__item .label__user {
+    color: #777; }

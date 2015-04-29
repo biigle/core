@@ -2,7 +2,7 @@
 	background-color: #222;
 	display: flex;
 	flex-flow: row nowrap;
-	color: #777;
+	color: #9D9D9D;
 }
 
 .sidebar__permanent {
@@ -33,7 +33,7 @@
 	}
 }
 
-.sidebar__annotations-edit, .sidebar__annotations-browse {
+.sidebar__categories {
 	@extend %foldout;
 	@extend %sidebar-panel;
 }
@@ -43,41 +43,6 @@
 	height: 200px;
 	margin-bottom: 1em;
 	border: 1px solid #090909;
-}
-
-.sidebar__controls {
-
-	& > * {
-		margin-bottom: 1em;
-	}
-}
-
-.sidebar__annotations {
-	height: 100%;
-}
-
-.annotation-list__item {
-	cursor: pointer;
-	border-left: 3px solid transparent;
-	user-select: none;
-	padding: 1em;
-	padding-left: 40px;
-	border-bottom: 1px solid #333;
-	position: relative;
-
-	&:hover, &.selected {
-		color: white;
-	}
-
-	&.selected {
-		border-left-color: #ff5e00;
-	}
-
-	.icon {
-		position: absolute;
-		top: 7px;
-		left: 0;
-	}
 }
 
 .icon {

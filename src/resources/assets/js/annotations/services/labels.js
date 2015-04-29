@@ -9,6 +9,8 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel) 
 		"use strict";
 
 		this.fetchForAnnotation = function (annotation) {
+			if (!annotation) return;
+			
 			// don't fetch twice
 			if (!annotation.labels) {
 				annotation.labels = AnnotationLabel.query({
