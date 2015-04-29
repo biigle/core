@@ -9,15 +9,16 @@
 	@extend %sidebar-panel;
 	display: flex;
 	flex-flow: column nowrap;
-	padding-left: 15px;
-	padding-right: 15px;
+}
+
+.sidebar__controls {
+	padding-bottom: 1em;
 }
 
 %sidebar-panel {
 	width: 360px;
 	border-left: 1px solid #090909;
-	padding-top: 1em;
-	padding-bottom: 1em;
+	padding: 1em;
 
 	h1, h2, h3, h4 {
 		margin-top: 0;
@@ -36,6 +37,12 @@
 .sidebar__categories {
 	@extend %foldout;
 	@extend %sidebar-panel;
+}
+
+.categories-list {
+	li ul {
+		padding-left: 1em;
+	}
 }
 
 .sidebar__minimap {

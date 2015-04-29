@@ -179,6 +179,19 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "ma
 /**
  * @namespace dias.annotations
  * @ngdoc controller
+ * @name CategoriesController
+ * @memberOf dias.annotations
+ * @description Controller for the sidebar label categories foldout
+ */
+angular.module('dias.annotations').controller('CategoriesController', ["$scope", "labels", function ($scope, labels) {
+		"use strict";
+
+		$scope.categories = labels.getTree();
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc controller
  * @name ControlsController
  * @memberOf dias.annotations
  * @description Controller for the sidebar control buttons
@@ -591,12 +604,12 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
  * @memberOf dias.annotations
  * @description Wrapper service for annotation labels to provide some convenience functions.
  */
-angular.module('dias.annotations').service('labels', ["AnnotationLabel", function (AnnotationLabel) {
+angular.module('dias.annotations').service('labels', ["AnnotationLabel", "Label", function (AnnotationLabel, Label) {
 		"use strict";
 
 		this.fetchForAnnotation = function (annotation) {
 			if (!annotation) return;
-			
+
 			// don't fetch twice
 			if (!annotation.labels) {
 				annotation.labels = AnnotationLabel.query({
@@ -605,6 +618,24 @@ angular.module('dias.annotations').service('labels', ["AnnotationLabel", functio
 			}
 
 			return annotation.labels;
+		};
+
+		this.getTree = function () {
+			var tree = {};
+			var build = function (label) {
+				var parent = label.parent_id;
+				if (tree[parent]) {
+					tree[parent].push(label);
+				} else {
+					tree[parent] = [label];
+				}
+			};
+
+			Label.query(function (labels) {
+				labels.forEach(build);
+			});
+
+			return tree;
 		};
 	}]
 );

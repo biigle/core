@@ -44,15 +44,15 @@ html, body {
   display: flex;
   -webkit-flex-flow: column nowrap;
       -ms-flex-flow: column nowrap;
-          flex-flow: column nowrap;
-  padding-left: 15px;
-  padding-right: 15px; }
+          flex-flow: column nowrap; }
+
+.sidebar__controls {
+  padding-bottom: 1em; }
 
 .sidebar__permanent, .sidebar__categories {
   width: 360px;
   border-left: 1px solid #090909;
-  padding-top: 1em;
-  padding-bottom: 1em; }
+  padding: 1em; }
   .sidebar__permanent h1, .sidebar__categories h1, .sidebar__permanent h2, .sidebar__categories h2, .sidebar__permanent h3, .sidebar__categories h3, .sidebar__permanent h4, .sidebar__categories h4 {
     margin-top: 0; }
 
@@ -61,6 +61,9 @@ html, body {
   overflow-y: auto; }
   .open.sidebar__categories {
     display: block; }
+
+.categories-list li ul {
+  padding-left: 1em; }
 
 .sidebar__minimap {
   background-image: url(../images/noise.png);
