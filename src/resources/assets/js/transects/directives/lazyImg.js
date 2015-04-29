@@ -12,7 +12,7 @@ angular.module('dias.transects').directive('lazyImg', function () {
 		return {
 			restrict: 'A',
 			scope: true,
-			template: '<img data-ng-src="{{src}}">',
+			template: '<img src="{{src}}" data-ng-if="src">',
 			replace: true,
 			controller: function ($scope, $element, $attrs) {
 				var rect, isVisible, setSrc, check;
