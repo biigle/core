@@ -11,14 +11,22 @@ angular.module('dias.annotations').controller('SidebarController', function ($sc
 		// the currently opened sidebar-'extension'
 		$scope.foldout = '';
 
-		$scope.toggleFoldout = function(name) {
-			if ($scope.foldout === name) {
-				$scope.foldout = '';
-			} else {
-				$scope.foldout = name;
-			}
+		$scope.openFoldout = function (name) {
+			$scope.foldout = name;
+			$rootScope.$broadcast('sidebar.foldout.open');
+		};
 
-			$rootScope.$broadcast('sidebar.foldout.toggle');
+		$scope.closeFoldout = function () {
+			$scope.foldout = '';
+			$rootScope.$broadcast('sidebar.foldout.close');
+		};
+
+		$scope.toggleFoldout = function (name) {
+			if ($scope.foldout === name) {
+				$scope.closeFoldout();
+			} else {
+				$scope.openFoldout(name);
+			}
 		};
 
 		$scope.deleteSelectedAnnotations = mapAnnotations.deleteSelected;

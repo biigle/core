@@ -124,6 +124,11 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 				shape: geometry.getType(),
 				points: coordinates.map(convertFromOLPoint)
 			});
+
+			// if the feature couldn't be saved, remove it again
+			e.feature.annotation.$promise.catch(function () {
+				features.remove(e.feature);
+			});
 		};
 
 		this.init = function (scope) {

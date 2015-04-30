@@ -1,0 +1,46 @@
+.sidebar__categories.open {
+	display: flex;
+	flex-flow: column nowrap;
+}
+
+.categories-list {
+	flex-grow: 2;
+	overflow: auto;
+	margin-top: 1em;
+}
+
+.label-category-item {
+	padding-left: 1em;
+	padding-top: 0.5em;
+	cursor: pointer;
+
+	.item__name {
+		display: block;
+	}
+
+	& > .item__name:hover {
+		color: white;
+	}
+
+	&.expandable > .item__name:before {
+		content: '► ';
+	}
+
+	&.expandable.open > .item__name:before {
+		content: '▼ ';
+	}
+
+	& > .label-category-subtree {
+		max-height: 0;
+		overflow: hidden;
+	}
+
+	&.open > .label-category-subtree {
+		max-height: none;
+	}
+
+	&.selected > .item__name {
+		color: white;
+		font-weight: bold;
+	}
+}

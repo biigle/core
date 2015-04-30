@@ -2,7 +2,7 @@
  * @namespace dias.annotations
  * @description The DIAS annotations module.
  */
-angular.module('dias.annotations', ['dias.api']);
+angular.module('dias.annotations', ['dias.api', 'dias.ui.messages']);
 
 /**
  * @namespace dias.annotations
@@ -167,13 +167,16 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "ma
 		mapImage.init($scope);
 		mapAnnotations.init($scope);
 
-		$scope.$on('sidebar.foldout.toggle', function () {
+		var updateSize = function () {
 			// workaround, so the function is called *after* the angular digest
 			// and *after* the foldout was rendered
 			$timeout(function() {
 				map.updateSize();
 			}, 0, false);
-		});
+		};
+
+		$scope.$on('sidebar.foldout.open', updateSize);
+		$scope.$on('sidebar.foldout.close', updateSize);
 	}]
 );
 /**
@@ -186,7 +189,30 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "ma
 angular.module('dias.annotations').controller('CategoriesController', ["$scope", "labels", function ($scope, labels) {
 		"use strict";
 
+		$scope.selectedID = null;
+
 		$scope.categories = labels.getTree();
+
+		$scope.confidence = 0.5;
+
+		$scope.selectItem = function (item) {
+			$scope.selectedID = item.id;
+			labels.setSelected(item);
+		};
+
+		$scope.$watch('confidence', function (confidence) {
+			labels.setCurrentConfidence(parseFloat(confidence));
+
+			if (confidence <= 0.25) {
+				$scope.confidenceClass = 'label-danger';
+			} else if (confidence <= 0.5 ) {
+				$scope.confidenceClass = 'label-warning';
+			} else if (confidence <= 0.75 ) {
+				$scope.confidenceClass = 'label-success';
+			} else {
+				$scope.confidenceClass = 'label-primary';
+			}
+		});
 	}]
 );
 /**
@@ -196,12 +222,18 @@ angular.module('dias.annotations').controller('CategoriesController', ["$scope",
  * @memberOf dias.annotations
  * @description Controller for the sidebar control buttons
  */
-angular.module('dias.annotations').controller('ControlsController', ["$scope", "mapAnnotations", function ($scope, mapAnnotations) {
+angular.module('dias.annotations').controller('ControlsController', ["$scope", "mapAnnotations", "labels", "msg", "$attrs", function ($scope, mapAnnotations, labels, msg, $attrs) {
 		"use strict";
 
 		var drawing = false;
 
 		$scope.selectShape = function (name) {
+			if (!labels.hasSelected()) {
+				$scope.openFoldout('categories');
+				msg.info($attrs.selectCategory);
+				return;
+			}
+
 			mapAnnotations.finishDrawing();
 
 			if (drawing || name === null) {
@@ -288,14 +320,22 @@ angular.module('dias.annotations').controller('SidebarController', ["$scope", "$
 		// the currently opened sidebar-'extension'
 		$scope.foldout = '';
 
-		$scope.toggleFoldout = function(name) {
-			if ($scope.foldout === name) {
-				$scope.foldout = '';
-			} else {
-				$scope.foldout = name;
-			}
+		$scope.openFoldout = function (name) {
+			$scope.foldout = name;
+			$rootScope.$broadcast('sidebar.foldout.open');
+		};
 
-			$rootScope.$broadcast('sidebar.foldout.toggle');
+		$scope.closeFoldout = function () {
+			$scope.foldout = '';
+			$rootScope.$broadcast('sidebar.foldout.close');
+		};
+
+		$scope.toggleFoldout = function (name) {
+			if ($scope.foldout === name) {
+				$scope.closeFoldout();
+			} else {
+				$scope.openFoldout(name);
+			}
 		};
 
 		$scope.deleteSelectedAnnotations = mapAnnotations.deleteSelected;
@@ -308,15 +348,64 @@ angular.module('dias.annotations').controller('SidebarController', ["$scope", "$
  * @memberOf dias.annotations
  * @description An annotation list item.
  */
-angular.module('dias.annotations').directive('annotationListItem', function () {
+angular.module('dias.annotations').directive('annotationListItem', ["labels", function (labels) {
 		"use strict";
 
 		return {
+			scope: true,
 			controller: ["$scope", function ($scope) {
 				$scope.shapeClass = 'icon-' + $scope.annotation.shape.toLowerCase();
+
+				$scope.selected = function () {
+					return $scope.isSelected($scope.annotation.id);
+				};
+
+				$scope.attachLabel = function () {
+					labels.attachToAnnotation($scope.annotation);
+				};
 			}]
 		};
-	}
+	}]
+);
+
+/**
+ * @namespace dias.annotations
+ * @ngdoc directive
+ * @name labelCategoryItem
+ * @memberOf dias.annotations
+ * @description A label category list item.
+ */
+angular.module('dias.annotations').directive('labelCategoryItem', ["$compile", function ($compile) {
+		"use strict";
+
+		return {
+			restrict: 'C',
+			template: '<span class="item__name" data-ng-click="select()">{{item.name}}</span>',
+			scope: true,
+			link: function (scope, element, attrs) {
+				scope.isOpen = false;
+				scope.isExpandable = !!scope.categories[scope.item.id];
+				var isAppended = false;
+
+				var content = angular.element('<ul class="label-category-subtree list-unstyled"><li class="label-category-item" data-ng-class="{open: isOpen, expandable: isExpandable, selected: (selectedID == item.id)}" data-ng-repeat="item in categories[item.id]"></li></ul>');
+				var compiled = $compile(content)(scope);
+
+				scope.select = function () {
+					scope.selectItem(scope.item);
+					
+					if (!isAppended) {
+						// do this with compile to conditionally resolve the child
+						// directives. otherwise there would be too much recursion!
+						element.append(compiled);
+						scope.isOpen = true;
+						isAppended = true;
+					} else {
+						scope.isOpen = !scope.isOpen;
+					}
+				};
+			}
+		};
+	}]
 );
 
 /**
@@ -410,13 +499,19 @@ angular.module('dias.annotations').factory('map', function () {
  * @memberOf dias.annotations
  * @description Wrapper service the annotations to make them available in multiple controllers.
  */
-angular.module('dias.annotations').service('annotations', ["Annotation", "shapes", function (Annotation, shapes) {
+angular.module('dias.annotations').service('annotations', ["Annotation", "shapes", "labels", "msg", function (Annotation, shapes, labels, msg) {
 		"use strict";
 
 		var annotations;
 
 		var resolveShapeName = function (annotation) {
 			annotation.shape = shapes.getName(annotation.shape_id);
+			return annotation;
+		};
+
+		var addAnnotation = function (annotation) {
+			annotations.push(annotation);
+			return annotation;
 		};
 
 		this.query = function (params) {
@@ -431,9 +526,15 @@ angular.module('dias.annotations').service('annotations', ["Annotation", "shapes
 			if (!params.shape_id && params.shape) {
 				params.shape_id = shapes.getId(params.shape);
 			}
+			var label = labels.getSelected();
+			params.label_id = label.id;
+			params.confidence = labels.getCurrentConfidence();
 			var annotation = Annotation.add(params);
-			annotation.$promise.then(resolveShapeName);
-			annotations.push(annotation);
+			annotation.$promise
+			          .then(resolveShapeName)
+			          .then(addAnnotation)
+			          .catch(msg.responseError);
+
 			return annotation;
 		};
 
@@ -607,6 +708,9 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
 angular.module('dias.annotations').service('labels', ["AnnotationLabel", "Label", function (AnnotationLabel, Label) {
 		"use strict";
 
+		var selectedLabel;
+		var currentConfidence = 0.5;
+
 		this.fetchForAnnotation = function (annotation) {
 			if (!annotation) return;
 
@@ -618,6 +722,20 @@ angular.module('dias.annotations').service('labels', ["AnnotationLabel", "Label"
 			}
 
 			return annotation.labels;
+		};
+
+		this.attachToAnnotation = function (annotation) {
+			var label = AnnotationLabel.attach({
+				annotation_id: annotation.id,
+				label_id: selectedLabel.id,
+				confidence: currentConfidence
+			});
+
+			label.$promise.then(function () {
+				annotation.labels.push(label);
+			});
+
+			return label;
 		};
 
 		this.getTree = function () {
@@ -636,6 +754,26 @@ angular.module('dias.annotations').service('labels', ["AnnotationLabel", "Label"
 			});
 
 			return tree;
+		};
+
+		this.setSelected = function (label) {
+			selectedLabel = label;
+		};
+
+		this.getSelected = function () {
+			return selectedLabel;
+		};
+
+		this.hasSelected = function () {
+			return !!selectedLabel;
+		};
+
+		this.setCurrentConfidence = function (confidence) {
+			currentConfidence = confidence;
+		};
+
+		this.getCurrentConfidence = function () {
+			return currentConfidence;
 		};
 	}]
 );
@@ -764,6 +902,11 @@ angular.module('dias.annotations').service('mapAnnotations', ["map", "images", "
 				id: images.getCurrentId(),
 				shape: geometry.getType(),
 				points: coordinates.map(convertFromOLPoint)
+			});
+
+			// if the feature couldn't be saved, remove it again
+			e.feature.annotation.$promise.catch(function () {
+				features.remove(e.feature);
 			});
 		};
 

@@ -5,13 +5,19 @@
  * @memberOf dias.annotations
  * @description Wrapper service the annotations to make them available in multiple controllers.
  */
-angular.module('dias.annotations').service('annotations', function (Annotation, shapes) {
+angular.module('dias.annotations').service('annotations', function (Annotation, shapes, labels, msg) {
 		"use strict";
 
 		var annotations;
 
 		var resolveShapeName = function (annotation) {
 			annotation.shape = shapes.getName(annotation.shape_id);
+			return annotation;
+		};
+
+		var addAnnotation = function (annotation) {
+			annotations.push(annotation);
+			return annotation;
 		};
 
 		this.query = function (params) {
@@ -26,9 +32,15 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 			if (!params.shape_id && params.shape) {
 				params.shape_id = shapes.getId(params.shape);
 			}
+			var label = labels.getSelected();
+			params.label_id = label.id;
+			params.confidence = labels.getCurrentConfidence();
 			var annotation = Annotation.add(params);
-			annotation.$promise.then(resolveShapeName);
-			annotations.push(annotation);
+			annotation.$promise
+			          .then(resolveShapeName)
+			          .then(addAnnotation)
+			          .catch(msg.responseError);
+
 			return annotation;
 		};
 

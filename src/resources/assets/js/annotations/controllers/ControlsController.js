@@ -5,12 +5,18 @@
  * @memberOf dias.annotations
  * @description Controller for the sidebar control buttons
  */
-angular.module('dias.annotations').controller('ControlsController', function ($scope, mapAnnotations) {
+angular.module('dias.annotations').controller('ControlsController', function ($scope, mapAnnotations, labels, msg, $attrs) {
 		"use strict";
 
 		var drawing = false;
 
 		$scope.selectShape = function (name) {
+			if (!labels.hasSelected()) {
+				$scope.openFoldout('categories');
+				msg.info($attrs.selectCategory);
+				return;
+			}
+
 			mapAnnotations.finishDrawing();
 
 			if (drawing || name === null) {

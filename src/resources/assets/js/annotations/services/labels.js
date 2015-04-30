@@ -8,6 +8,9 @@
 angular.module('dias.annotations').service('labels', function (AnnotationLabel, Label) {
 		"use strict";
 
+		var selectedLabel;
+		var currentConfidence = 0.5;
+
 		this.fetchForAnnotation = function (annotation) {
 			if (!annotation) return;
 
@@ -19,6 +22,20 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
 			}
 
 			return annotation.labels;
+		};
+
+		this.attachToAnnotation = function (annotation) {
+			var label = AnnotationLabel.attach({
+				annotation_id: annotation.id,
+				label_id: selectedLabel.id,
+				confidence: currentConfidence
+			});
+
+			label.$promise.then(function () {
+				annotation.labels.push(label);
+			});
+
+			return label;
 		};
 
 		this.getTree = function () {
@@ -37,6 +54,26 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
 			});
 
 			return tree;
+		};
+
+		this.setSelected = function (label) {
+			selectedLabel = label;
+		};
+
+		this.getSelected = function () {
+			return selectedLabel;
+		};
+
+		this.hasSelected = function () {
+			return !!selectedLabel;
+		};
+
+		this.setCurrentConfidence = function (confidence) {
+			currentConfidence = confidence;
+		};
+
+		this.getCurrentConfidence = function () {
+			return currentConfidence;
 		};
 	}
 );

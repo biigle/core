@@ -39,12 +39,6 @@
 	@extend %sidebar-panel;
 }
 
-.categories-list {
-	li ul {
-		padding-left: 1em;
-	}
-}
-
 .sidebar__minimap {
 	background-image: url(../images/noise.png);
 	height: 200px;
@@ -53,12 +47,18 @@
 }
 
 .icon {
-	min-height: 34px;
-	min-width: 34px;
+	min-height: 20px;
+	min-width: 20px;
 	display: inline-block;
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 20px 20px;
+	vertical-align: middle;
+
+	&.btn {
+		min-width: 34px;
+		min-height: 34px;
+	}
 
 	&.icon-point {
 		background-image: url(../images/point.svg);
@@ -75,4 +75,10 @@
 	&.icon-circle {
 		background-image: url(../images/circle.svg);
 	}
+}
+
+.confidence-label {
+	font-weight: normal;
+	margin-right: 0.6em;
+	font-size: 100%;
 }

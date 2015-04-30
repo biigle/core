@@ -20,12 +20,15 @@ angular.module('dias.annotations').controller('CanvasController', function ($sco
 		mapImage.init($scope);
 		mapAnnotations.init($scope);
 
-		$scope.$on('sidebar.foldout.toggle', function () {
+		var updateSize = function () {
 			// workaround, so the function is called *after* the angular digest
 			// and *after* the foldout was rendered
 			$timeout(function() {
 				map.updateSize();
 			}, 0, false);
-		});
+		};
+
+		$scope.$on('sidebar.foldout.open', updateSize);
+		$scope.$on('sidebar.foldout.close', updateSize);
 	}
 );

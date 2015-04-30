@@ -1,9 +1,9 @@
-<div class="sidebar__controls" data-ng-controller="ControlsController">
+<div class="sidebar__controls" data-ng-controller="ControlsController" data-select-category="Please select a label category first.">
 	<div class="btn-group">
 		<button class="btn btn-inverse" data-ng-click="prevImage()" data-ng-disabled="imageLoading" title="Previous image"><span class="glyphicon glyphicon-backward" aria-hidden="true"></span></button>
 		<button class="btn btn-inverse" data-ng-click="nextImage()" data-ng-disabled="imageLoading" title="Next image"><span class="glyphicon glyphicon-forward" aria-hidden="true"></span></button>
 
-		<button class="btn btn-inverse" data-ng-click="toggleFoldout('categories')" title="Toggle category list" data-ng-class="{active:(foldout=='categories')}"><span class="glyphicon glyphicon-list" aria-hidden="true"></span></button>
+		<button class="btn btn-inverse" data-ng-click="toggleFoldout('categories')" title="Toggle label category list" data-ng-class="{active:(foldout=='categories')}"><span class="glyphicon glyphicon-list" aria-hidden="true"></span></button>
 	</div>
 	<div class="btn-group">
 		<button class="btn btn-inverse icon icon-point" data-ng-click="selectShape('Point')" data-ng-class="{active:(selectedShape=='Point')}" title="Set a point"></button> 
