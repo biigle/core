@@ -41,15 +41,6 @@ angular.module('dias.ui', ['dias.ui.messages', 'dias.ui.users']);
 
 
 /**
- * @ngdoc constant
- * @name URL
- * @memberOf dias.api
- * @description The base url of the application.
- * @returns {String}
- *
- */
-angular.module('dias.api').constant('URL', window.$diasBaseUrl || '');
-/**
  * @ngdoc factory
  * @name Annotation
  * @memberOf dias.api
@@ -92,6 +83,8 @@ var annotations = Annotation.query({id: 1}, function () {
 var annotation = Annotation.add({
    id: 1,
    shape_id: 1,
+   label_id: 1,
+   confidence: 0.5
    points: [
       { x: 10, y: 20 }
    ]
@@ -673,6 +666,15 @@ angular.module('dias.api').factory('User', ["$resource", "URL", function ($resou
 	});
 }]);
 /**
+ * @ngdoc constant
+ * @name URL
+ * @memberOf dias.api
+ * @description The base url of the application.
+ * @returns {String}
+ *
+ */
+angular.module('dias.api').constant('URL', window.$diasBaseUrl || '');
+/**
  * @namespace dias.api
  * @ngdoc service
  * @name roles
@@ -735,6 +737,61 @@ angular.module('dias.api').service('shapes', ["Shape", function (Shape) {
 	}]
 );
 /**
+ * @namespace dias.ui.messages
+ * @ngdoc service
+ * @name msg
+ * @memberOf dias.ui.messages
+ * @description Enables arbitrary AngularJS modules to post user feedback messages using the DIAS UI messaging system.
+ * @example
+msg.post('danger', 'Do you really want to delete this? Everything will be lost.');
+
+msg.danger('Do you really want to delete this? Everything will be lost.');
+ */
+angular.module('dias.ui.messages').service('msg', function () {
+		"use strict";
+		var _this = this;
+
+		this.post = function (type, message) {
+			message = message || type;
+			window.$diasPostMessage(type, message);
+		};
+
+		this.danger = function (message) {
+			_this.post('danger', message);
+		};
+
+		this.warning = function (message) {
+			_this.post('warning', message);
+		};
+
+		this.success = function (message) {
+			_this.post('success', message);
+		};
+
+		this.info = function (message) {
+			_this.post('info', message);
+		};
+
+		this.responseError = function (response) {
+			var data = response.data;
+
+			if (data.message) {
+				// error response
+				_this.danger(message);
+			} else if (data) {
+				// validation response
+				for (var key in data) {
+					_this.danger(data[key][0]);
+				}
+			} else {
+				// unknown error response
+				_this.danger("There was an error, sorry.");
+			}
+		};
+	}
+);
+
+/**
  * @ngdoc constant
  * @name MAX_MSG
  * @memberOf dias.ui.messages
@@ -743,36 +800,6 @@ angular.module('dias.api').service('shapes', ["Shape", function (Shape) {
  *
  */
 angular.module('dias.ui.messages').constant('MAX_MSG', 1);
-/**
- * @namespace dias.ui.users
- * @ngdoc directive
- * @name userChooser
- * @memberOf dias.ui.users
- * @description An input field to find and enter a user.
- */
-angular.module('dias.ui.users').directive('userChooser', function () {
-		"use strict";
-
-		return {
-			restrict: 'A',
-
-			scope: {
-				select: '=userChooser'
-			},
-
-			replace: true,
-
-			template: '<input type="text" data-ng-model="selected" data-typeahead="user.name for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
-
-			controller: ["$scope", "User", function ($scope, User) {
-				$scope.find = function (query) {
-					return User.find({query: query}).$promise;
-				};
-			}]
-		};
-	}
-);
-
 /**
  * @namespace dias.ui.messages
  * @ngdoc controller
@@ -806,44 +833,31 @@ angular.module('dias.ui.messages').controller('MessagesController', ["$scope", "
 );
 
 /**
- * @namespace dias.ui.messages
- * @ngdoc service
- * @name msg
- * @memberOf dias.ui.messages
- * @description Enables arbitrary AngularJS modules to post user feedback messages using the DIAS UI messaging system.
- * @example
-msg.post('danger', 'Do you really want to delete this?', 'Everything will be lost.');
-
-msg.danger('Do you really want to delete this?', 'Everything will be lost.');
+ * @namespace dias.ui.users
+ * @ngdoc directive
+ * @name userChooser
+ * @memberOf dias.ui.users
+ * @description An input field to find and enter a user.
  */
-angular.module('dias.ui.messages').service('msg', function () {
+angular.module('dias.ui.users').directive('userChooser', function () {
 		"use strict";
-		var _this = this;
 
-		this.post = function (type, message) {
-			message = message || type;
-			window.$diasPostMessage(type, message);
-		};
+		return {
+			restrict: 'A',
 
-		this.danger = function (message) {
-			_this.post('danger', message);
-		};
+			scope: {
+				select: '=userChooser'
+			},
 
-		this.warning = function (message) {
-			_this.post('warning', message);
-		};
+			replace: true,
 
-		this.success = function (message) {
-			_this.post('success', message);
-		};
+			template: '<input type="text" data-ng-model="selected" data-typeahead="user.name for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
 
-		this.info = function (message) {
-			_this.post('info', message);
-		};
-
-		this.responseError = function (response) {
-			var message = response.data.message || "There was an error, sorry.";
-			_this.danger(message);
+			controller: ["$scope", "User", function ($scope, User) {
+				$scope.find = function (query) {
+					return User.find({query: query}).$promise;
+				};
+			}]
 		};
 	}
 );

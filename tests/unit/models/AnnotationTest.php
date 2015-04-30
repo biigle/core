@@ -1,6 +1,7 @@
 <?php
 
 use Dias\Annotation;
+use Dias\Label;
 
 class AnnotationTest extends TestCase {
 
@@ -189,23 +190,26 @@ class AnnotationTest extends TestCase {
 
 	public function testAddLabel()
 	{
+		$label = new Label;
+		$label->name = 'test';
+		$label->save();
+
 		$annotation = AnnotationTest::create();
 		$annotation->save();
 		$user = UserTest::create();
 		$user->save();
-		$labelId = 1;
 		$confidence = 0.1;
 
 		$this->assertEquals(0, $annotation->labels()->count());
 
-		$point = $annotation->addLabel($labelId, $confidence, $user);
+		$point = $annotation->addLabel($label->id, $confidence, $user);
 
 		$this->assertEquals(1, $annotation->labels()->count());
 		
-		$label = $annotation->labels()->first();
+		$l = $annotation->labels()->first();
 
-		$this->assertEquals($labelId, $label->id);
-		$this->assertEquals($confidence, $label->confidence);
-		$this->assertEquals($user->id, $label->user_id);
+		$this->assertEquals($label->id, $l->id);
+		$this->assertEquals($confidence, $l->confidence);
+		$this->assertEquals($user->id, $l->user_id);
 	}
 }
