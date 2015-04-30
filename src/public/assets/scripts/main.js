@@ -343,6 +343,62 @@ angular.module('dias.annotations').controller('SidebarController', ["$scope", "$
 );
 /**
  * @namespace dias.annotations
+ * @ngdoc factory
+ * @name debounce
+ * @memberOf dias.annotations
+ * @description A debounce service to perform an action only when this function
+ * wasn't called again in a short period of time.
+ * see http://stackoverflow.com/a/13320016/1796523
+ */
+angular.module('dias.annotations').factory('debounce', ["$timeout", "$q", function ($timeout, $q) {
+		"use strict";
+
+		var timeouts = {};
+
+		return function (func, wait, id) {
+			// Create a deferred object that will be resolved when we need to
+			// actually call the func
+			var deferred = $q.defer();
+			return (function() {
+				var context = this, args = arguments;
+				var later = function() {
+					timeouts[id] = undefined;
+					deferred.resolve(func.apply(context, args));
+					deferred = $q.defer();
+				};
+				if (timeouts[id]) {
+					$timeout.cancel(timeouts[id]);
+				}
+				timeouts[id] = $timeout(later, wait);
+				return deferred.promise;
+			})();
+		};
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc factory
+ * @name map
+ * @memberOf dias.annotations
+ * @description Wrapper factory handling OpenLayers map
+ */
+angular.module('dias.annotations').factory('map', function () {
+		"use strict";
+
+		var map = new ol.Map({
+			target: 'canvas',
+			controls: [
+				new ol.control.Zoom(),
+				new ol.control.ZoomToExtent(),
+				new ol.control.FullScreen(),
+			]
+		});
+
+		return map;
+	}
+);
+/**
+ * @namespace dias.annotations
  * @ngdoc directive
  * @name annotationListItem
  * @memberOf dias.annotations
@@ -436,62 +492,6 @@ angular.module('dias.annotations').directive('labelItem', function () {
 	}
 );
 
-/**
- * @namespace dias.annotations
- * @ngdoc factory
- * @name debounce
- * @memberOf dias.annotations
- * @description A debounce service to perform an action only when this function
- * wasn't called again in a short period of time.
- * see http://stackoverflow.com/a/13320016/1796523
- */
-angular.module('dias.annotations').factory('debounce', ["$timeout", "$q", function ($timeout, $q) {
-		"use strict";
-
-		var timeouts = {};
-
-		return function (func, wait, id) {
-			// Create a deferred object that will be resolved when we need to
-			// actually call the func
-			var deferred = $q.defer();
-			return (function() {
-				var context = this, args = arguments;
-				var later = function() {
-					timeouts[id] = undefined;
-					deferred.resolve(func.apply(context, args));
-					deferred = $q.defer();
-				};
-				if (timeouts[id]) {
-					$timeout.cancel(timeouts[id]);
-				}
-				timeouts[id] = $timeout(later, wait);
-				return deferred.promise;
-			})();
-		};
-	}]
-);
-/**
- * @namespace dias.annotations
- * @ngdoc factory
- * @name map
- * @memberOf dias.annotations
- * @description Wrapper factory handling OpenLayers map
- */
-angular.module('dias.annotations').factory('map', function () {
-		"use strict";
-
-		var map = new ol.Map({
-			target: 'canvas',
-			controls: [
-				new ol.control.Zoom(),
-				new ol.control.ZoomToExtent(),
-				new ol.control.FullScreen(),
-			]
-		});
-
-		return map;
-	}
-);
 /**
  * @namespace dias.annotations
  * @ngdoc service
@@ -1024,6 +1024,7 @@ angular.module('dias.annotations').service('mapImage', ["map", function (map) {
 					projection: projection,
 					center: center,
 					zoom: zoom,
+					zoomFactor: 1.5,
 					// allow a maximum of 4x magnification
 					minResolution: 0.25,
 					// restrict movement

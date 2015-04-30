@@ -139,7 +139,8 @@ html, body {
       -ms-flex-positive: 2;
           flex-grow: 2;
   overflow: auto;
-  margin-top: 1em; }
+  margin-top: 1em;
+  margin-bottom: 0; }
 
 .label-category-item {
   padding-left: 1em;

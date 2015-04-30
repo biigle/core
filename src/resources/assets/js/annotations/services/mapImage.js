@@ -45,6 +45,7 @@ angular.module('dias.annotations').service('mapImage', function (map) {
 					projection: projection,
 					center: center,
 					zoom: zoom,
+					zoomFactor: 1.5,
 					// allow a maximum of 4x magnification
 					minResolution: 0.25,
 					// restrict movement

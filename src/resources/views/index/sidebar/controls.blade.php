@@ -5,7 +5,7 @@
 
 		<button class="btn btn-inverse" data-ng-click="toggleFoldout('categories')" title="Toggle label category list" data-ng-class="{active:(foldout=='categories')}"><span class="glyphicon glyphicon-list" aria-hidden="true"></span></button>
 	</div>
-	<div class="btn-group">
+	<div class="btn-group pull-right">
 		<button class="btn btn-inverse icon icon-point" data-ng-click="selectShape('Point')" data-ng-class="{active:(selectedShape=='Point')}" title="Set a point"></button> 
 		<button class="btn btn-inverse icon icon-polygon" data-ng-click="selectShape('Polygon')" data-ng-class="{active:(selectedShape=='Polygon')}" title="Draw a polygon"></button> 
 		<button class="btn btn-inverse icon icon-linestring" data-ng-click="selectShape('LineString')" data-ng-class="{active:(selectedShape=='LineString')}" title="Draw a line string"></button> 
