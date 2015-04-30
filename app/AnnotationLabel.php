@@ -59,4 +59,14 @@ class AnnotationLabel extends Model implements BelongsToProjectContract {
 	{
 		return $this->annotation->projectIds();
 	}
+
+	/**
+	 * Accessor function to parse the confidence to float.
+	 * @param string $confidence
+	 * @return float
+	 */
+	public function getConfidenceAttribute($confidence)
+	{
+		return (float) $confidence;
+	}
 }

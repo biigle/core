@@ -9,8 +9,8 @@ class LabelTableSeeder extends Seeder {
 		DB::table('labels')->delete();
 
 		DB::table('labels')->insert(array(
-			array('id' => 1, 'name' => 'Benthic Object', 'parent_id' => null, 'aphia_id' => null),
-			array('id' => 2, 'name' => 'Coral', 'parent_id' => 1, 'aphia_id' => null),
+			array('id' => 1, 'name' => 'Test Root', 'parent_id' => null, 'aphia_id' => null),
+			array('id' => 2, 'name' => 'Test Child', 'parent_id' => 1, 'aphia_id' => null),
 			array('id' => 126, 'name' => 'Medium size Nodule', 'parent_id' => null, 'aphia_id' => null),
 			array('id' => 127, 'name' => 'Habitat', 'parent_id' => null, 'aphia_id' => null),
 			array('id' => 128, 'name' => 'Biotic', 'parent_id' => 127, 'aphia_id' => null),
