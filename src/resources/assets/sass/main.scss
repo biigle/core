@@ -27,6 +27,47 @@ html, body {
 	// so the element shrinks and grows independently from the size of the 
 	// contained svg
 	overflow: hidden;
+	position: relative;
+}
+
+@keyframes rotate {
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+.canvas__loader {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	height: 50px;
+	width: 50px;
+	background-color: rgba(0, 0, 0, 0.75);
+	border-radius: 10px;
+	opacity: 0;
+	pointer-events: none;
+	z-index: 1;
+	transition: opacity 0.25s;
+
+	&.active {
+		opacity: 1;
+
+		&:before {
+			animation: rotate 5s infinite linear;
+		}
+	}
+
+	&:before {
+		content: '';
+		width: 80%;
+		height: 80%;
+		position: absolute;
+		top: 10%;
+		left: 10%;
+		background: url(../images/dias-wheel.png) center no-repeat;
+		background-size: contain;
+	}
 }
 
 @import "sidebar/main";
