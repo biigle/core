@@ -12,15 +12,17 @@
 
 @section('content')
 <div class="container-fluid" data-ng-app="dias.transects">
-	<h2 class="col-lg-12 clearfix">
+	<h2 class="col-xs-12 clearfix">
 		{{ $transect->name }} <small title="Transect ID {{ $transect->id }}">#{{ $transect->id }} ({{ $transect->images->count() }} images)</small>
 	</h2>
 
-	@foreach($transect->images as $image)
-		<figure class="col-sm-3 col-md-2 transect-figure">
-			<a href="{{ route('image', $image->id) }}" data-lazy-img="{{ url('api/v1/images/'.$image->id.'/thumb') }}">
+	<div class="col-xs-12 images-container" data-ng-controller="ImagesController" data-transect-id="{{ $transect->id }}" data-image-url="{{ route('image', '') }}" data-api-url="{{ url('api/v1/images/') }}">
+
+		<figure class="transect-figure" data-ng-repeat="id in images | limitTo: limit">
+			<a href="@{{ imageUrl }}/@{{ id }}">
+				<img data-ng-src="@{{ apiUrl }}/@{{ id }}/thumb">
 			</a>
 		</figure>
-	@endforeach
+	</div>
 </div>
 @endsection
