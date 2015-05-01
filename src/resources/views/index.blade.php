@@ -11,7 +11,7 @@
 @append
 
 @section('content')
-<div class="container-fluid" data-ng-app="dias.transects">
+<div class="transect-container container-fluid" data-ng-app="dias.transects">
 	<h2 class="col-xs-12 clearfix">
 		{{ $transect->name }} <small title="Transect ID {{ $transect->id }}">#{{ $transect->id }} ({{ $transect->images->count() }} images)</small>
 	</h2>
