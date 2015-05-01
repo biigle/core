@@ -34,7 +34,7 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
 		var initialize = function () {
 			if (needsNewStep()) {
 				$scope.limit += step;
-				timeoutPromise = $timeout(initialize, 50);
+				timeoutPromise = $timeout(initialize, 500);
 			} else {
 				// viewport is full, now switch to event listeners for loading
 				$timeout.cancel(timeoutPromise);
@@ -52,6 +52,6 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
 		// number of currently shown images
 		$scope.limit = 20;
 
-		initialize();
+		$timeout(initialize());
 	}
 );
