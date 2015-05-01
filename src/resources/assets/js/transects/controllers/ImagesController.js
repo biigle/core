@@ -52,6 +52,6 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
 		// number of currently shown images
 		$scope.limit = 20;
 
-		$timeout(initialize());
+		$timeout(initialize);
 	}
 );
