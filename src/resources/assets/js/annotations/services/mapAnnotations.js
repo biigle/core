@@ -170,10 +170,11 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
 		this.deleteSelected = function () {
 			selectedFeatures.forEach(function (feature) {
-				features.remove(feature);
-				annotations.delete(feature.annotation);
+				annotations.delete(feature.annotation).then(function () {
+					features.remove(feature);
+					selectedFeatures.remove(feature);
+				});
 			});
-			selectedFeatures.clear();
 		};
 
 		this.select = function (id) {

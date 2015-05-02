@@ -47,8 +47,9 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 		this.delete = function (annotation) {
 			var index = annotations.indexOf(annotation);
 			if (index > -1) {
-				annotations.splice(index, 1);
-				return annotation.$delete();
+				return annotation.$delete(function () {
+					annotations.splice(index, 1);
+				}, msg.responseError);
 			}
 		};
 

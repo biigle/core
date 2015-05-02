@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service for annotation labels to provide some convenience functions.
  */
-angular.module('dias.annotations').service('labels', function (AnnotationLabel, Label) {
+angular.module('dias.annotations').service('labels', function (AnnotationLabel, Label, msg) {
 		"use strict";
 
 		var selectedLabel;
@@ -35,14 +35,17 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
 				annotation.labels.push(label);
 			});
 
+			label.$promise.catch(msg.responseError);
+
 			return label;
 		};
 
 		this.removeFromAnnotation = function (annotation, label) {
 			var index = annotation.labels.indexOf(label);
 			if (index > -1) {
-				annotation.labels.splice(index, 1);
-				return label.$delete();
+				return label.$delete(function () {
+					annotation.labels.splice(index, 1);
+				}, msg.responseError);
 			}
 		};
 

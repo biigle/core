@@ -545,8 +545,9 @@ angular.module('dias.annotations').service('annotations', ["Annotation", "shapes
 		this.delete = function (annotation) {
 			var index = annotations.indexOf(annotation);
 			if (index > -1) {
-				annotations.splice(index, 1);
-				return annotation.$delete();
+				return annotation.$delete(function () {
+					annotations.splice(index, 1);
+				}, msg.responseError);
 			}
 		};
 
@@ -709,7 +710,7 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
  * @memberOf dias.annotations
  * @description Wrapper service for annotation labels to provide some convenience functions.
  */
-angular.module('dias.annotations').service('labels', ["AnnotationLabel", "Label", function (AnnotationLabel, Label) {
+angular.module('dias.annotations').service('labels', ["AnnotationLabel", "Label", "msg", function (AnnotationLabel, Label, msg) {
 		"use strict";
 
 		var selectedLabel;
@@ -739,14 +740,17 @@ angular.module('dias.annotations').service('labels', ["AnnotationLabel", "Label"
 				annotation.labels.push(label);
 			});
 
+			label.$promise.catch(msg.responseError);
+
 			return label;
 		};
 
 		this.removeFromAnnotation = function (annotation, label) {
 			var index = annotation.labels.indexOf(label);
 			if (index > -1) {
-				annotation.labels.splice(index, 1);
-				return label.$delete();
+				return label.$delete(function () {
+					annotation.labels.splice(index, 1);
+				}, msg.responseError);
 			}
 		};
 
@@ -961,10 +965,11 @@ angular.module('dias.annotations').service('mapAnnotations', ["map", "images", "
 
 		this.deleteSelected = function () {
 			selectedFeatures.forEach(function (feature) {
-				features.remove(feature);
-				annotations.delete(feature.annotation);
+				annotations.delete(feature.annotation).then(function () {
+					features.remove(feature);
+					selectedFeatures.remove(feature);
+				});
 			});
-			selectedFeatures.clear();
 		};
 
 		this.select = function (id) {
