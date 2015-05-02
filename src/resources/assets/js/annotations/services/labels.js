@@ -38,6 +38,14 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
 			return label;
 		};
 
+		this.removeFromAnnotation = function (annotation, label) {
+			var index = annotation.labels.indexOf(label);
+			if (index > -1) {
+				annotation.labels.splice(index, 1);
+				return label.$delete();
+			}
+		};
+
 		this.getTree = function () {
 			var tree = {};
 			var build = function (label) {

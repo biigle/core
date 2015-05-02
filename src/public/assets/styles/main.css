@@ -165,7 +165,10 @@ html, body {
   padding: 1em;
   border-top: 1px solid #333; }
   .label-list__item .label__user {
-    color: #777; }
+    color: #9D9D9D; }
+  .label-list__item .close {
+    color: white;
+    text-shadow: none; }
 
 .sidebar__categories.open {
   display: -webkit-flex;

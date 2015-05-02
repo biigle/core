@@ -20,6 +20,10 @@ angular.module('dias.annotations').directive('annotationListItem', function (lab
 				$scope.attachLabel = function () {
 					labels.attachToAnnotation($scope.annotation);
 				};
+
+				$scope.removeLabel = function (label) {
+					labels.removeFromAnnotation($scope.annotation, label);
+				};
 			}
 		};
 	}

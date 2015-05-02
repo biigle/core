@@ -363,6 +363,10 @@ angular.module('dias.annotations').directive('annotationListItem', ["labels", fu
 				$scope.attachLabel = function () {
 					labels.attachToAnnotation($scope.annotation);
 				};
+
+				$scope.removeLabel = function (label) {
+					labels.removeFromAnnotation($scope.annotation, label);
+				};
 			}]
 		};
 	}]
@@ -736,6 +740,14 @@ angular.module('dias.annotations').service('labels', ["AnnotationLabel", "Label"
 			});
 
 			return label;
+		};
+
+		this.removeFromAnnotation = function (annotation, label) {
+			var index = annotation.labels.indexOf(label);
+			if (index > -1) {
+				annotation.labels.splice(index, 1);
+				return label.$delete();
+			}
 		};
 
 		this.getTree = function () {
