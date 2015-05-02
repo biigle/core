@@ -47,7 +47,7 @@ abstract class AdvancedController extends BaseController {
 	{
 		if ($thing === null)
 		{
-			abort(404);
+			abort(404, 'The element does not exist.');
 		}
 
 		return $thing;

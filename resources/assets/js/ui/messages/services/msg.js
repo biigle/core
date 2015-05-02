@@ -39,7 +39,7 @@ angular.module('dias.ui.messages').service('msg', function () {
 
 			if (data.message) {
 				// error response
-				_this.danger(message);
+				_this.danger(data.message);
 			} else if (data) {
 				// validation response
 				for (var key in data) {

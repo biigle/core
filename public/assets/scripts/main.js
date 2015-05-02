@@ -41,6 +41,15 @@ angular.module('dias.ui', ['dias.ui.messages', 'dias.ui.users']);
 
 
 /**
+ * @ngdoc constant
+ * @name URL
+ * @memberOf dias.api
+ * @description The base url of the application.
+ * @returns {String}
+ *
+ */
+angular.module('dias.api').constant('URL', window.$diasBaseUrl || '');
+/**
  * @ngdoc factory
  * @name Annotation
  * @memberOf dias.api
@@ -147,10 +156,10 @@ var label = AnnotationLabel.attach({label_id: 1, confidence: 0.5, annotation_id:
 // detach a label
 var labels = AnnotationLabel.query({annotation_id: 1}, function () {
    var label = labels[0];
-   label.$detach();
+   label.$delete();
 });
 // or directly
-AnnotationLabel.detach({id: 1, annotation_id: 1});
+AnnotationLabel.delete({id: 1});
  * 
  */
 angular.module('dias.api').factory('AnnotationLabel', ["$resource", "URL", function ($resource, URL) {
@@ -666,15 +675,6 @@ angular.module('dias.api').factory('User', ["$resource", "URL", function ($resou
 	});
 }]);
 /**
- * @ngdoc constant
- * @name URL
- * @memberOf dias.api
- * @description The base url of the application.
- * @returns {String}
- *
- */
-angular.module('dias.api').constant('URL', window.$diasBaseUrl || '');
-/**
  * @namespace dias.api
  * @ngdoc service
  * @name roles
@@ -777,7 +777,7 @@ angular.module('dias.ui.messages').service('msg', function () {
 
 			if (data.message) {
 				// error response
-				_this.danger(message);
+				_this.danger(data.message);
 			} else if (data) {
 				// validation response
 				for (var key in data) {
