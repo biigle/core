@@ -35,6 +35,7 @@ class AnnotationLabelTest extends TestCase {
 		$this->assertNotNull($annotationLabel->user);
 		$this->assertNotNull($annotationLabel->created_at);
 		$this->assertNotNull($annotationLabel->updated_at);
+		$this->assertTrue(is_float($annotationLabel->confidence));
 	}
 
 	public function testHiddenAttributes()

@@ -25,10 +25,10 @@ var label = AnnotationLabel.attach({label_id: 1, confidence: 0.5, annotation_id:
 // detach a label
 var labels = AnnotationLabel.query({annotation_id: 1}, function () {
    var label = labels[0];
-   label.$detach();
+   label.$delete();
 });
 // or directly
-AnnotationLabel.detach({id: 1, annotation_id: 1});
+AnnotationLabel.delete({id: 1});
  * 
  */
 angular.module('dias.api').factory('AnnotationLabel', function ($resource, URL) {

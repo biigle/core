@@ -323,7 +323,7 @@ class Initialize extends Migration {
 			      // don't delete labels if the creator is deleted
 			      ->onDelete('set null');
 
-			$table->double('confidence');
+			$table->float('confidence');
 
 			$table->timestamps();
 

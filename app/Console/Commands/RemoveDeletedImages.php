@@ -33,7 +33,10 @@ class RemoveDeletedImages extends Command {
 	{
 		Image::whereNull('transect_id')->chunk(100, function($images) {
 			foreach ($images as $image) {
-				File::delete($image->thumbPath);
+				if (File::exists($image->thumbPath))
+				{
+					File::delete($image->thumbPath);
+				}
 				$image->delete();
 			}
 		});

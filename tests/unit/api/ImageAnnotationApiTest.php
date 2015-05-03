@@ -79,11 +79,35 @@ class ImageAnnotationApiTest extends ApiTestCase {
 		// shape does not exist
 		$this->assertResponseStatus(422);
 
-		$this->call('POST',
+		$this->callAjax('POST',
 			'/api/v1/images/'.$this->image->id.'/annotations',
 			array(
 				'_token' => Session::token(),
 				'shape_id' => \Dias\Shape::lineId(),
+				'label_id' => 99999
+			)
+		);
+		// label is required
+		$this->assertResponseStatus(422);
+
+		$this->callAjax('POST',
+			'/api/v1/images/'.$this->image->id.'/annotations',
+			array(
+				'_token' => Session::token(),
+				'shape_id' => \Dias\Shape::pointId(),
+				'label_id' => $this->labelRoot->id,
+			)
+		);
+		// confidence required
+		$this->assertResponseStatus(422);
+		
+		$this->callAjax('POST',
+			'/api/v1/images/'.$this->image->id.'/annotations',
+			array(
+				'_token' => Session::token(),
+				'shape_id' => \Dias\Shape::pointId(),
+				'label_id' => $this->labelRoot->id,
+				'confidence' => 0.5,
 				'points' => '[]'
 			)
 		);
@@ -95,6 +119,8 @@ class ImageAnnotationApiTest extends ApiTestCase {
 			array(
 				'_token' => Session::token(),
 				'shape_id' => \Dias\Shape::pointId(),
+				'label_id' => $this->labelRoot->id,
+				'confidence' => 0.5,
 				'points' => '[{"x":10,"y":11}]'
 			)
 		);
@@ -108,5 +134,7 @@ class ImageAnnotationApiTest extends ApiTestCase {
 		$point = $annotation->points()->first();
 		$this->assertEquals(10, $point->x);
 		$this->assertEquals(11, $point->y);
+
+		$this->assertEquals(1, $annotation->labels()->count());
 	}
 }

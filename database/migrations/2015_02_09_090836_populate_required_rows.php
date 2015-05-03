@@ -22,11 +22,6 @@ class PopulateRequiredRows extends Migration {
 			array('name' => 'location-series'),
 		));
 
-		DB::table('labels')->insert(array(
-			array('name' => 'Benthic Object', 'parent_id' => null),
-			array('name' => 'Coral', 'parent_id' => 1),
-		));
-
 		DB::table('shapes')->insert(array(
 			array('name' => 'Point'),
 			array('name' => 'LineString'),

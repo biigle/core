@@ -74,10 +74,10 @@ describe('The Annotation resource factory', function () {
 
 	it('should add new annotations', inject(function (Annotation) {
 		$httpBackend.expectPOST('/api/v1/images/1/annotations', {
-			shape_id: 2, points: [{x: 10, y: 20}], id: 1
+			shape_id: 2, points: [{x: 10, y: 20}], id: 1, label_id: 1, confidence: 1
 		});
 		var annotation = Annotation.add(
-			{shape_id: 2, points: [{x: 10, y: 20}], id: 1},
+			{shape_id: 2, points: [{x: 10, y: 20}], id: 1, label_id: 1, confidence: 1},
 			function () { expect(annotation.id).toEqual(1); }
 		);
 		$httpBackend.flush();

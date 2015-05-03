@@ -1,6 +1,7 @@
 <?php
 
 use Dias\Role;
+use Dias\Label;
 
 class ApiTestCase extends TestCase {
 
@@ -11,6 +12,9 @@ class ApiTestCase extends TestCase {
 	protected $user;
 
 	protected $globalAdmin;
+
+	protected $labelRoot;
+	protected $labelChild;
 
 	public function setUp()
 	{
@@ -35,6 +39,15 @@ class ApiTestCase extends TestCase {
 		$this->project->removeUserId($this->user->id);
 		$this->globalAdmin->role()->associate(Role::admin());
 		$this->globalAdmin->save();
+
+		$this->labelRoot = new Label;
+		$this->labelRoot->name = 'Test Root';
+		$this->labelRoot->save();
+
+		$this->labelChild = new Label;
+		$this->labelChild->name = 'Test Child';
+		$this->labelChild->parent_id = $this->labelRoot->id;
+		$this->labelChild->save();
 	}
 
 	private function newProjectUser($roleId)

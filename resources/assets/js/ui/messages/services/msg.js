@@ -5,9 +5,9 @@
  * @memberOf dias.ui.messages
  * @description Enables arbitrary AngularJS modules to post user feedback messages using the DIAS UI messaging system.
  * @example
-msg.post('danger', 'Do you really want to delete this?', 'Everything will be lost.');
+msg.post('danger', 'Do you really want to delete this? Everything will be lost.');
 
-msg.danger('Do you really want to delete this?', 'Everything will be lost.');
+msg.danger('Do you really want to delete this? Everything will be lost.');
  */
 angular.module('dias.ui.messages').service('msg', function () {
 		"use strict";
@@ -35,8 +35,22 @@ angular.module('dias.ui.messages').service('msg', function () {
 		};
 
 		this.responseError = function (response) {
-			var message = response.data.message || "There was an error, sorry.";
-			_this.danger(message);
+			var data = response.data;
+
+			if (!data) {
+				_this.danger("The server didn't respond, sorry.");
+			} else if (data.message) {
+				// error response
+				_this.danger(data.message);
+			} else if (data) {
+				// validation response
+				for (var key in data) {
+					_this.danger(data[key][0]);
+				}
+			} else {
+				// unknown error response
+				_this.danger("There was an error, sorry.");
+			}
 		};
 	}
 );

@@ -2,6 +2,7 @@
 
 use Dias\Image;
 use Dias\Shape;
+use Dias\Label;
 use Dias\Annotation;
 
 class ImageAnnotationController extends Controller {
@@ -32,13 +33,9 @@ class ImageAnnotationController extends Controller {
 		$this->requireCanEdit($image);
 
 		$this->validate($this->request, Image::$createAnnotationRules);
+		$this->validate($this->request, Annotation::$attachLabelRules);
 
 		$shape = Shape::find($this->request->input('shape_id'));
-
-		if (!$shape)
-		{
-			abort(400, 'Shape with ID "'.$this->request->input('shape_id').'" does not exist.');
-		}
 
 		// from a JSON request, the array may already be decoded
 		$points = $this->request->input('points');
@@ -59,6 +56,11 @@ class ImageAnnotationController extends Controller {
 		$annotation->save();
 
 		$annotation->addPoints($points);
+		$annotation->addLabel(
+			$this->request->input('label_id'),
+			$this->request->input('confidence'),
+			$this->user
+		);
 
 		return Annotation::with('points')->find($annotation->id);
 	}

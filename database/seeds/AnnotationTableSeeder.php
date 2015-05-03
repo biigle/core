@@ -19,9 +19,10 @@ class AnnotationTableSeeder extends Seeder {
 		$joe = User::find(1);
 		$jane = User::find(2);
 
-		$annotation->addLabel(2, 0.5, $joe);
-		$annotation->addLabel(1, 0.2, $joe);
-		$annotation->addLabel(1, 0.75, $jane);
+		$annotation->addLabel(2, 0.4, $joe);
+		$annotation->addLabel(1, 0.15, $joe);
+		$annotation->addLabel(1, 0.51, $jane);
+		$annotation->addLabel(2, 0.9, $jane);
 
 		$annotation = Annotation::create(array(
 			'image_id' => 1,

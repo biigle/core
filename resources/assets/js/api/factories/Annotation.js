@@ -41,6 +41,8 @@ var annotations = Annotation.query({id: 1}, function () {
 var annotation = Annotation.add({
    id: 1,
    shape_id: 1,
+   label_id: 1,
+   confidence: 0.5
    points: [
       { x: 10, y: 20 }
    ]
