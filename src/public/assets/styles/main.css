@@ -219,7 +219,7 @@ html, body {
     padding-left: 0; }
 
 .label-category-item {
-  padding-left: 1em;
+  padding-left: 19px;
   padding-top: 0.5em;
   cursor: pointer; }
   .label-category-item .item__name {

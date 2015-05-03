@@ -19,6 +19,7 @@ class AnnotationController extends Controller {
 		return view('annotations::index')
 			->withUser($this->user)
 			->withImage($image)
+			->with('editMode', $this->user->canEditInOneOfProjects($image->projectIds()))
 			->with('message', session('message'))
 			->with('messageType', session('messageType'));
 	}

@@ -10,6 +10,7 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 
 		$scope.images = images;
 		$scope.imageLoading = true;
+		$scope.editMode = !!$attrs.editMode;
 
 		// the current canvas viewport, synced with the URL parameters
 		$scope.viewport = {
