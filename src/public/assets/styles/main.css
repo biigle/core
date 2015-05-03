@@ -171,8 +171,11 @@ html, body {
       -ms-user-select: none;
           user-select: none;
   padding: 1em;
+  padding-right: 0;
   border-bottom: 1px solid #333;
   position: relative; }
+  .annotation-list__item:first-child {
+    border-top: 1px solid #333; }
   .annotation-list__item:hover, .annotation-list__item.selected {
     color: white; }
   .annotation-list__item.selected {
@@ -184,8 +187,11 @@ html, body {
   padding-top: 1em; }
 
 .label-list__item {
-  padding: 1em;
-  border-top: 1px solid #333; }
+  padding: 0.75em 0; }
+  .label-list__item:first-child {
+    padding-top: 0; }
+  .label-list__item:last-child {
+    padding-bottom: 0; }
   .label-list__item .label__user {
     color: #9D9D9D; }
   .label-list__item .close {
