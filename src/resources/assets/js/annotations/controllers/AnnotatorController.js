@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
  */
-angular.module('dias.annotations').controller('AnnotatorController', function ($scope, $attrs, images, urlParams) {
+angular.module('dias.annotations').controller('AnnotatorController', function ($scope, $attrs, images, urlParams, msg) {
 		"use strict";
 
 		$scope.images = images;
@@ -36,7 +36,9 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 		// load the image by id. doesn't create a new history entry by itself
 		var loadImage = function (id) {
 			startLoading();
-			return images.show(parseInt(id)).then(finishLoading);
+			return images.show(parseInt(id))
+			             .then(finishLoading)
+			             .catch(msg.responseError);
 		};
 
 		var handleKeyEvents = function (e) {
@@ -53,13 +55,19 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 		// show the next image and create a new history entry
 		$scope.nextImage = function () {
 			startLoading();
-			images.next().then(finishLoading).then(pushState);
+			images.next()
+			      .then(finishLoading)
+			      .then(pushState)
+			      .catch(msg.responseError);
 		};
 
 		// show the previous image and create a new history entry
 		$scope.prevImage = function () {
 			startLoading();
-			images.prev().then(finishLoading).then(pushState);
+			images.prev()
+			      .then(finishLoading)
+			      .then(pushState)
+			      .catch(msg.responseError);
 		};
 
 		// update the URL parameters of the viewport
