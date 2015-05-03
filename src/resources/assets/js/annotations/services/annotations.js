@@ -45,9 +45,13 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 		};
 
 		this.delete = function (annotation) {
+			// use index to see if the annotation exists in the annotations list
 			var index = annotations.indexOf(annotation);
 			if (index > -1) {
 				return annotation.$delete(function () {
+					// update the index since the annotations list may have been 
+					// modified in the meantime
+					index = annotations.indexOf(annotation);
 					annotations.splice(index, 1);
 				}, msg.responseError);
 			}

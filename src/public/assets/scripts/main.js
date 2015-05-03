@@ -562,9 +562,13 @@ angular.module('dias.annotations').service('annotations', ["Annotation", "shapes
 		};
 
 		this.delete = function (annotation) {
+			// use index to see if the annotation exists in the annotations list
 			var index = annotations.indexOf(annotation);
 			if (index > -1) {
 				return annotation.$delete(function () {
+					// update the index since the annotations list may have been 
+					// modified in the meantime
+					index = annotations.indexOf(annotation);
 					annotations.splice(index, 1);
 				}, msg.responseError);
 			}
@@ -765,9 +769,13 @@ angular.module('dias.annotations').service('labels', ["AnnotationLabel", "Label"
 		};
 
 		this.removeFromAnnotation = function (annotation, label) {
+			// use index to see if the label exists for the annotation
 			var index = annotation.labels.indexOf(label);
 			if (index > -1) {
 				return label.$delete(function () {
+					// update the index since the label list may have been modified 
+					// in the meantime
+					index = annotation.labels.indexOf(label);
 					annotation.labels.splice(index, 1);
 				}, msg.responseError);
 			}

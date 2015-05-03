@@ -41,9 +41,13 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
 		};
 
 		this.removeFromAnnotation = function (annotation, label) {
+			// use index to see if the label exists for the annotation
 			var index = annotation.labels.indexOf(label);
 			if (index > -1) {
 				return label.$delete(function () {
+					// update the index since the label list may have been modified 
+					// in the meantime
+					index = annotation.labels.indexOf(label);
 					annotation.labels.splice(index, 1);
 				}, msg.responseError);
 			}
