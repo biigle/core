@@ -22,6 +22,11 @@ html, body {
       -ms-flex-flow: columns;
           flex-flow: columns; }
 
+.confidence-label {
+  font-weight: normal;
+  font-size: 100%;
+  line-height: inherit; }
+
 .annotator__canvas {
   height: 100%;
   -webkit-flex: 2;
@@ -29,6 +34,26 @@ html, body {
           flex: 2;
   overflow: hidden;
   position: relative; }
+  .annotator__canvas .confidence-control {
+    position: absolute;
+    top: 43px;
+    z-index: 1;
+    width: 51px;
+    transition: width 0.25s ease;
+    right: 0.5em;
+    background-color: rgba(255, 255, 255, 0.4);
+    padding: 4px 3px;
+    border-radius: 0.4em;
+    white-space: nowrap;
+    overflow: hidden; }
+    .annotator__canvas .confidence-control:hover {
+      width: 200px; }
+    .annotator__canvas .confidence-control .confidence-range {
+      display: inline-block;
+      width: 137px;
+      margin-left: 3px;
+      vertical-align: middle;
+      box-sizing: content-box; }
 
 @-webkit-keyframes rotate {
   100% {
@@ -79,6 +104,8 @@ html, body {
       -ms-flex-flow: row nowrap;
           flex-flow: row nowrap;
   color: #9D9D9D; }
+  .annotator__sidebar .confidence-label {
+    margin-right: 0.6em; }
 
 .sidebar__permanent {
   display: -webkit-flex;
@@ -130,11 +157,6 @@ html, body {
   .icon.icon-circle {
     background-image: url(../images/circle.svg); }
 
-.confidence-label {
-  font-weight: normal;
-  margin-right: 0.6em;
-  font-size: 100%; }
-
 .sidebar__annotations {
   -webkit-flex-grow: 2;
       -ms-flex-positive: 2;
@@ -183,7 +205,6 @@ html, body {
       -ms-flex-positive: 2;
           flex-grow: 2;
   overflow: auto;
-  margin-top: 1em;
   margin-bottom: 0; }
 
 .label-category-item {

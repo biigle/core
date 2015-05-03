@@ -3,6 +3,10 @@
 	display: flex;
 	flex-flow: row nowrap;
 	color: #9D9D9D;
+
+	.confidence-label {
+		margin-right: 0.6em;
+	}
 }
 
 .sidebar__permanent {
@@ -75,10 +79,4 @@
 	&.icon-circle {
 		background-image: url(../images/circle.svg);
 	}
-}
-
-.confidence-label {
-	font-weight: normal;
-	margin-right: 0.6em;
-	font-size: 100%;
 }

@@ -193,12 +193,23 @@ angular.module('dias.annotations').controller('CategoriesController', ["$scope",
 
 		$scope.categories = labels.getTree();
 
-		$scope.confidence = 0.5;
-
 		$scope.selectItem = function (item) {
 			$scope.selectedID = item.id;
 			labels.setSelected(item);
 		};
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc controller
+ * @name ConfidenceController
+ * @memberOf dias.annotations
+ * @description Controller for the confidence control
+ */
+angular.module('dias.annotations').controller('ConfidenceController', ["$scope", "labels", function ($scope, labels) {
+		"use strict";
+
+		$scope.confidence = 0.5;
 
 		$scope.$watch('confidence', function (confidence) {
 			labels.setCurrentConfidence(parseFloat(confidence));
@@ -367,6 +378,14 @@ angular.module('dias.annotations').directive('annotationListItem', ["labels", fu
 				$scope.removeLabel = function (label) {
 					labels.removeFromAnnotation($scope.annotation, label);
 				};
+
+				$scope.canAttachLabel = function () {
+					return $scope.selected() && labels.hasSelected();
+				};
+
+				$scope.currentLabel = labels.getSelected;
+
+				$scope.currentConfidence = labels.getCurrentConfidence;
 			}]
 		};
 	}]

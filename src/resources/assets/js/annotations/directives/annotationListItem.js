@@ -24,6 +24,14 @@ angular.module('dias.annotations').directive('annotationListItem', function (lab
 				$scope.removeLabel = function (label) {
 					labels.removeFromAnnotation($scope.annotation, label);
 				};
+
+				$scope.canAttachLabel = function () {
+					return $scope.selected() && labels.hasSelected();
+				};
+
+				$scope.currentLabel = labels.getSelected;
+
+				$scope.currentConfidence = labels.getCurrentConfidence;
 			}
 		};
 	}
