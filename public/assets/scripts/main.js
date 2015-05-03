@@ -775,7 +775,9 @@ angular.module('dias.ui.messages').service('msg', function () {
 		this.responseError = function (response) {
 			var data = response.data;
 
-			if (data.message) {
+			if (!data) {
+				_this.danger("The server didn't respond, sorry.");
+			} else if (data.message) {
 				// error response
 				_this.danger(data.message);
 			} else if (data) {
