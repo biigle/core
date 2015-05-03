@@ -11,6 +11,8 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
 		var selectedLabel;
 		var currentConfidence = 0.5;
 
+		var labels = Label.query();
+
 		this.fetchForAnnotation = function (annotation) {
 			if (!annotation) return;
 
@@ -64,11 +66,15 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
 				}
 			};
 
-			Label.query(function (labels) {
+			labels.$promise.then(function (labels) {
 				labels.forEach(build);
 			});
 
 			return tree;
+		};
+
+		this.getAll = function () {
+			return labels;
 		};
 
 		this.setSelected = function (label) {

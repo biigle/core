@@ -3,10 +3,18 @@
 	flex-flow: column nowrap;
 }
 
+.categories-search {
+	margin-bottom: 1em;
+}
+
 .categories-list {
 	flex-grow: 2;
 	overflow: auto;
 	margin-bottom: 0;
+
+	& > .label-category-item {
+		padding-left: 0;
+	}
 }
 
 .label-category-item {

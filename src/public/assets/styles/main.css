@@ -200,12 +200,17 @@ html, body {
       -ms-flex-flow: column nowrap;
           flex-flow: column nowrap; }
 
+.categories-search {
+  margin-bottom: 1em; }
+
 .categories-list {
   -webkit-flex-grow: 2;
       -ms-flex-positive: 2;
           flex-grow: 2;
   overflow: auto;
   margin-bottom: 0; }
+  .categories-list > .label-category-item {
+    padding-left: 0; }
 
 .label-category-item {
   padding-left: 1em;

@@ -8,13 +8,14 @@
 angular.module('dias.annotations').controller('CategoriesController', function ($scope, labels) {
 		"use strict";
 
-		$scope.selectedID = null;
+		$scope.categories = labels.getAll();
 
-		$scope.categories = labels.getTree();
+		$scope.categoriesTree = labels.getTree();
 
 		$scope.selectItem = function (item) {
-			$scope.selectedID = item.id;
 			labels.setSelected(item);
+			$scope.searchCategory = ''; // clear search field
+			$scope.$broadcast('categories.selected', item);
 		};
 	}
 );
