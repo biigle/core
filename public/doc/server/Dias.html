@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="index, follow, all" />
+    <title>Dias | BIIGLE DIAS Server Documentation</title>
+
+            <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" type="text/css" href="css/sami.css">
+        <script src="js/jquery-1.11.1.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/typeahead.min.js"></script>
+        <script src="sami.js"></script>
+    
+    
+    </head>
+
+    <body id="namespace" data-name="namespace:Dias" data-root-path="">
+            <div id="content">
+        <div id="left-column">
+                <div id="control-panel">
+                <form id="search-form" action="search.html" method="GET">
+            <span class="glyphicon glyphicon-search"></span>
+            <input name="search"
+                   class="typeahead form-control"
+                   type="search"
+                   placeholder="Search">
+        </form>
+    </div>
+
+                <div id="api-tree"></div>
+
+        </div>
+        <div id="right-column">
+                <nav id="site-nav" class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-elements">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">BIIGLE DIAS Server Documentation</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-elements">
+                <ul class="nav navbar-nav">
+                    <li><a href="classes.html">Classes</a></li>
+                                            <li><a href="namespaces.html">Namespaces</a></li>
+                                        <li><a href="interfaces.html">Interfaces</a></li>
+                    <li><a href="traits.html">Traits</a></li>
+                    <li><a href="doc-index.html">Index</a></li>
+                    <li><a href="search.html">Search</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+                <div class="namespace-breadcrumbs">
+        <ol class="breadcrumb">
+            <li><span class="label label-default">Namespace</span></li>
+                                                        <li><a href="Dias.html">Dias</a></li>
+    
+        </ol>
+    </div>
+            <div id="page-content">
+                
+    <div class="page-header">
+        <h1>Dias</h1>
+    </div>
+
+            <h2>Namespaces</h2>
+        <div class="namespace-list">
+            <a href="Dias/Commands.html">Dias\Commands</a><a href="Dias/Console.html">Dias\Console</a><a href="Dias/Contracts.html">Dias\Contracts</a><a href="Dias/Events.html">Dias\Events</a><a href="Dias/Exceptions.html">Dias\Exceptions</a><a href="Dias/Handlers.html">Dias\Handlers</a><a href="Dias/Http.html">Dias\Http</a><a href="Dias/Model.html">Dias\Model</a><a href="Dias/Observers.html">Dias\Observers</a><a href="Dias/Providers.html">Dias\Providers</a><a href="Dias/Services.html">Dias\Services</a>        </div>
+    
+            <h2>Classes</h2>
+        <div class="container-fluid underlined">
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="Dias/Annotation.html"><abbr title="Dias\Annotation">Dias\Annotation</abbr></a>
+                                    </div>
+                <div class="col-md-6">
+                    An annotation is a region of an image that can be labeled by the users.
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="Dias/AnnotationLabel.html"><abbr title="Dias\AnnotationLabel">Dias\AnnotationLabel</abbr></a>
+                                    </div>
+                <div class="col-md-6">
+                    Pivot object for the connection between Annotations and Labels.
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="Dias/AnnotationPoint.html"><abbr title="Dias\AnnotationPoint">Dias\AnnotationPoint</abbr></a>
+                                    </div>
+                <div class="col-md-6">
+                    Annotations consist of one or many of these annotation points, marking
+a point or a region on an image.
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="Dias/Attribute.html"><abbr title="Dias\Attribute">Dias\Attribute</abbr></a>
+                                    </div>
+                <div class="col-md-6">
+                    Some models can have one or many of these flexible attributes.
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="Dias/Image.html"><abbr title="Dias\Image">Dias\Image</abbr></a>
+                                    </div>
+                <div class="col-md-6">
+                    This model stores information on an image file in the file system.
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="Dias/Label.html"><abbr title="Dias\Label">Dias\Label</abbr></a>
+                                    </div>
+                <div class="col-md-6">
+                    Annotations on an image can have multiple labels. A label is e.g. the
+type of the object visible in the region of the annotation. So if
+you put a circle annotation around a rock, you would label the annotation
+with <code>rock</code>.
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="Dias/MediaType.html"><abbr title="Dias\MediaType">Dias\MediaType</abbr></a>
+                                    </div>
+                <div class="col-md-6">
+                    Transects can contain different types of image-series. One type would
+be a time-series of a static camera taking photos in regular intervals
+for example. Another type coud be images from a moving camera.
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="Dias/Project.html"><abbr title="Dias\Project">Dias\Project</abbr></a>
+                                    </div>
+                <div class="col-md-6">
+                    
+
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="Dias/Role.html"><abbr title="Dias\Role">Dias\Role</abbr></a>
+                                    </div>
+                <div class="col-md-6">
+                    A role of a user. Users have one global role and can have many project-
+specific roles.
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="Dias/Shape.html"><abbr title="Dias\Shape">Dias\Shape</abbr></a>
+                                    </div>
+                <div class="col-md-6">
+                    A shape, e.g. <code>point</code> or <code>circle</code>.
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="Dias/Transect.html"><abbr title="Dias\Transect">Dias\Transect</abbr></a>
+                                    </div>
+                <div class="col-md-6">
+                    A transect is a collection of images. Transects belong to one or many
+projects.
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <a href="Dias/User.html"><abbr title="Dias\User">Dias\User</abbr></a>
+                                    </div>
+                <div class="col-md-6">
+                    A user.
+                </div>
+            </div>
+            </div>
+    
+    
+    
+            </div>
+                <div id="footer">
+        Generated by <a href="http://sami.sensiolabs.org/">Sami, the API Documentation Generator</a>.
+    </div>
+
+        </div>
+    </div>
+    </body>
+
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "BIIGLE DIAS REST API Documentation",
+  "version": "0.1.0",
+  "title": "BIIGLE DIAS REST API Documentation",
+  "url" : "api/v1/",
+  "template": {
+    "withCompare": false
+  },
+  "header": {
+    "title": "General",
+    "filename": "apidoc-header.md"
+  }
+}

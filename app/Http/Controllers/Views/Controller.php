@@ -18,6 +18,8 @@ abstract class Controller extends AdvancedController {
 	 * Creates a new ApiController instance.
 	 * 
 	 * @param Guard $auth
+	 * @param Request $request
+	 * @param Modules $modules
 	 */
 	public function __construct(Guard $auth, Request $request, Modules $modules)
 	{

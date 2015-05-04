@@ -4,6 +4,10 @@
  * @name shapes
  * @memberOf dias.api
  * @description Wrapper service for the available shapes
+ * @example
+var shapesArray = spahes.getAll(); // [{id: 1, name: 'Point'}, ...]
+shapes.getId('Point'); // 1
+shapes.getName(1); // 'Point'
  */
 angular.module('dias.api').service('shapes', function (Shape) {
 		"use strict";

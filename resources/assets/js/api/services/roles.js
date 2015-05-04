@@ -4,6 +4,9 @@
  * @name roles
  * @memberOf dias.api
  * @description Wrapper service for the available roles
+ * @example
+var adminRoleId = role.getId('admin'); // 1
+var adminRoleName = role.getName(1); // 'admin'
  */
 angular.module('dias.api').service('roles', function (Role) {
 		"use strict";

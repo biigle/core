@@ -15,6 +15,14 @@ gulp.task('docs', shell.task([
 	'node_modules/jsdoc/jsdoc.js '+ 
 	'-c node_modules/angular-jsdoc/conf.json '+   // config file
 	'-t node_modules/angular-jsdoc/template '+    // template file
-	'-d doc/client '+                             // output directory
+	'-d public/doc/client '+                      // output directory
 	'-r resources/assets/js'                      // source code directory
 ]));
+
+var apidoc = require('gulp-apidoc');
+gulp.task('apidoc', function (cb) {
+	apidoc.exec({
+		src: 'app/Http/Controllers/Api/',
+		dest: 'public/doc/api'
+	}, cb);
+});
