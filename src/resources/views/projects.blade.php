@@ -8,10 +8,8 @@
 			<h3 class="panel-title">
 				Transects
 				<span class="pull-right">
-					@if(Auth::user()->canEditInOneOfProjects($project->projectIds()))
-						<a href="{{ route('create-transect') }}?project={{ $project->id }}" class="btn btn-default btn-xs" title="Add new transect"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
-					@endif
 					@if($isAdmin)
+						<a href="{{ route('create-transect') }}?project={{ $project->id }}" class="btn btn-default btn-xs" title="Add new transect"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
 						<button class="btn btn-default btn-xs" title="Edit transects" data-ng-if="transects.length" data-ng-click="edit()" data-ng-class="{active: editing}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
 					@endif
 				</span>
