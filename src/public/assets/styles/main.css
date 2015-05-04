@@ -36,18 +36,23 @@ html, body {
   position: relative; }
   .annotator__canvas .confidence-control {
     position: absolute;
-    top: 43px;
+    right: 43px;
     z-index: 1;
     width: 51px;
+    height: 28px;
     transition: width 0.25s ease;
-    right: 0.5em;
+    top: 0.5em;
     background-color: rgba(255, 255, 255, 0.4);
     padding: 4px 3px;
-    border-radius: 0.4em;
+    border-radius: 4px;
     white-space: nowrap;
     overflow: hidden; }
     .annotator__canvas .confidence-control:hover {
-      width: 200px; }
+      width: 200px;
+      background-color: rgba(255, 255, 255, 0.6); }
+    .annotator__canvas .confidence-control .label {
+      padding: 0.2em 0.6em;
+      border-radius: 2px; }
     .annotator__canvas .confidence-control .confidence-range {
       display: inline-block;
       width: 137px;
