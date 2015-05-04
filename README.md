@@ -42,7 +42,7 @@ TODO
 
 (`npm install`, Package development, `php artisan tinker`)
 
-Update or generate the API documentation with `./update-doc.sh`.
+Update the documentation with `./doc.sh`.
 
 ## Testing
 
