@@ -3,11 +3,18 @@
  * @ngdoc service
  * @name msg
  * @memberOf dias.ui.messages
- * @description Enables arbitrary AngularJS modules to post user feedback messages using the DIAS UI messaging system.
+ * @description Enables arbitrary AngularJS modules to post user feedback messages using the DIAS UI messaging system. See the [Bootstrap alerts](http://getbootstrap.com/components/#alerts) for available message types and their style. In addition to actively posting messages, it provides the `responseError` method to conveniently display error messages in case an AJAX request went wrong.
  * @example
 msg.post('danger', 'Do you really want to delete this? Everything will be lost.');
 
 msg.danger('Do you really want to delete this? Everything will be lost.');
+msg.warning('Leaving the project is not reversible.');
+msg.success('The project was created.');
+msg.info('You will receive an email about this.');
+
+var label = AnnotationLabel.attach({ ... });
+// handles all error responses automatically
+label.$promise.catch(msg.responseError);
  */
 angular.module('dias.ui.messages').service('msg', function () {
 		"use strict";

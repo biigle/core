@@ -64,6 +64,12 @@ class UserApiTest extends ApiTestCase {
 		));
 		$this->assertResponseStatus(401);
 
+		$this->be($this->editor);
+		$this->call('PUT', '/api/v1/users/'.$this->guest->id, array(
+			'_token' => Session::token()
+		));
+		$this->assertResponseStatus(401);
+
 		$this->be($this->globalAdmin);
 
 		$this->call('PUT', '/api/v1/users/'.$this->globalAdmin->id, array(

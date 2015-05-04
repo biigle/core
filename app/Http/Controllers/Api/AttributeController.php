@@ -22,6 +22,20 @@ class AttributeController extends Controller {
 
 	/**
 	 * Shows a list of all attributes.
+	 * 
+	 * @api {get} attributes Get all attributes
+	 * @apiGroup Attributes
+	 * @apiName IndexAttributes
+	 * @apiPermission user
+	 * 
+	 * @apiSuccessExample {json} Success response:
+	 * [
+	 *    {
+	 *       "id": 1,
+	 *       "name": "bad_quality",
+	 *       "type": "boolean"
+	 *    }
+	 * ]
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
@@ -32,6 +46,19 @@ class AttributeController extends Controller {
 
 	/**
 	 * Shows the specified attribute.
+	 * 
+	 * @api {get} attributes/:id Get an attribute
+	 * @apiGroup Attributes
+	 * @apiName ShowAttributes
+	 * @apiPermission user
+	 * 
+	 * @apiParam {Number} id The attribute ID.
+	 * @apiSuccessExample {json} Success response:
+	 * {
+	 *    "id": 1,
+	 *    "name": "bad_quality",
+	 *    "type": "boolean"
+	 * }
 	 *
 	 * @param int $id attribute id
 	 * @return Attributr
@@ -43,6 +70,20 @@ class AttributeController extends Controller {
 
 	/**
 	 * Creates a new attribute.
+	 * 
+	 * @api {post} attributes Create a new attribute
+	 * @apiGroup Attributes
+	 * @apiName StoreAttributes
+	 * @apiPermission admin
+	 * 
+	 * @apiParam (Required arguments) {String} name The name of the new attribute.
+	 * @apiParam (Required arguments) {String} type One of `integer`, `double`, `string` or `boolean`.
+	 * @apiSuccessExample {json} Success response:
+	 * {
+	 *    "id": 2,
+	 *    "name": "expert",
+	 *    "type": "boolean"
+	 * }
 	 *
 	 * @return Attribute
 	 */
@@ -65,6 +106,14 @@ class AttributeController extends Controller {
 
 	/**
 	 * Removes the specified attribute.
+	 * 
+	 * @api {delete} attributes/:id Delete an attribute
+	 * @apiGroup Attributes
+	 * @apiName DestroyAttributes
+	 * @apiPermission admin
+	 * @apiDescription If an attribute is still in use, it cannot be deleted.
+	 * 
+	 * @apiParam {Number} id The attribute ID.
 	 *
 	 * @param  int  $id
 	 * @return \Illuminate\Http\Response

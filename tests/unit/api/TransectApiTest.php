@@ -43,7 +43,7 @@ class TransectApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		$this->callToken('PUT', '/api/v1/transects/'.$id, $this->editor);
-		$this->assertResponseOk();
+		$this->assertResponseStatus(401);
 
 		// session cookie authentication
 		$this->be($this->admin);

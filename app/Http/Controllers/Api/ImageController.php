@@ -7,6 +7,18 @@ class ImageController extends Controller {
 
 	/**
 	 * Shows the specified image.
+	 * 
+	 * @api {get} images/:id Get image information
+	 * @apiGroup Images
+	 * @apiName ShowImages
+	 * @apiPermission projectMember
+	 * 
+	 * @apiParam {Number} id The image ID.
+	 * @apiSuccessExample {json} Success response:
+	 * {
+	 *    "id": 1,
+	 *    "transect_id": 1
+	 * }
 	 *
 	 * @param int $id image id
 	 * @return Image
@@ -21,6 +33,14 @@ class ImageController extends Controller {
 
 	/**
 	 * Shows the specified image thumbnail file.
+	 * 
+	 * @api {get} images/:id/thumb Get a thumbnail image
+	 * @apiGroup Images
+	 * @apiName ShowImageThumbs
+	 * @apiPermission projectMember
+	 * @apiDescription Responds with a JPG image thumbnail.
+	 * 
+	 * @apiParam {Number} id The image ID.
 	 *
 	 * @param int $id image id
 	 * @return \Illuminate\Http\Response
@@ -35,6 +55,14 @@ class ImageController extends Controller {
 
 	/**
 	 * Shows the specified image file.
+	 * 
+	 * @api {get} images/:id/file Get an original image
+	 * @apiGroup Images
+	 * @apiName ShowImageFiles
+	 * @apiPermission projectMember
+	 * @apiDescription Responds with a JPG image of the original file.
+	 * 
+	 * @apiParam {Number} id The image ID.
 	 *
 	 * @param int $id image id
 	 * @return \Illuminate\Http\Response

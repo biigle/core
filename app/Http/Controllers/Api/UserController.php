@@ -40,6 +40,28 @@ class UserController extends Controller {
 	 * Finds all users with firstnames or lastnames like `$pattern`.
 	 * Returns the first 10 results.
 	 * 
+	 * @api {get} users/find/:pattern Find a user
+	 * @apiGroup Users
+	 * @apiName FindUsers
+	 * @apiPermission user
+	 * @apiDescription Searches for a user with firstname or lastname like `pattern` and returns the first 10 matches.
+	 * 
+	 * @apiParam {String} pattern Part of the firstname or lastname of the user to search for.
+	 * 
+	 * @apiSuccessExample {json} Success response:
+	 * [
+	 *    {
+	 *       "id": 1,
+	 *       "name": "Joe User",
+	 *       "role_id": 2
+	 *    },
+	 *    {
+	 *       "id": 2,
+	 *       "name": "Jane User",
+	 *       "role_id": 2
+	 *    }
+	 * ]
+	 * 
 	 * @param string $pattern
 	 * @return \Illuminate\Http\Response
 	 */
@@ -62,6 +84,25 @@ class UserController extends Controller {
 
 	/**
 	 * Shows a list of all users.
+	 * 
+	 * @api {get} users Get all users
+	 * @apiGroup Users
+	 * @apiName IndexUsers
+	 * @apiPermission user
+	 * 
+	 * @apiSuccessExample {json} Success response:
+	 * [
+	 *    {
+	 *       "id": 1,
+	 *       "name": "Joe User",
+	 *       "role_id": 2
+	 *    },
+	 *    {
+	 *       "id": 2,
+	 *       "name": "Jane User",
+	 *       "role_id": 2
+	 *    }
+	 * ]
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
@@ -72,6 +113,20 @@ class UserController extends Controller {
 
 	/**
 	 * Shows the specified user.
+	 * 
+	 * @api {get} users/:id Get a user
+	 * @apiGroup Users
+	 * @apiName ShowUsers
+	 * @apiPermission user
+	 * 
+	 * @apiParam {Number} id The user ID.
+	 *
+	 * @apiSuccessExample {json} Success response:
+	 * {
+	 *    "id": 1,
+	 *    "name": "Joe User",
+	 *    "role_id": 2
+	 * }
 	 *
 	 * @param int $id
 	 * @return User
@@ -83,6 +138,19 @@ class UserController extends Controller {
 
 	/**
 	 * Shows the requesting user.
+	 * 
+	 * @api {get} users/my Get the own user
+	 * @apiGroup Users
+	 * @apiName ShowOwnUser
+	 * @apiPermission user
+	 * @apiDescription Returns the user making the request.
+	 *
+	 * @apiSuccessExample {json} Success response:
+	 * {
+	 *    "id": 1,
+	 *    "name": "Joe User",
+	 *    "role_id": 2
+	 * }
 	 *
 	 * @return User
 	 */
@@ -93,6 +161,26 @@ class UserController extends Controller {
 
 	/**
 	 * Updates the attributes of the specified user.
+	 * 
+	 * @api {put} users/:id Update a user
+	 * @apiGroup Users
+	 * @apiName UpdateUsers
+	 * @apiPermission admin
+	 * @apiDescription This action is allowed only by session cookie authentication.
+	 * 
+	 * @apiParam {Number} id The user ID.
+	 * 
+	 * @apiParam (Attributes that can be updated) {String} email The new email address of the user. Must be unique for all users.
+	 * @apiParam (Attributes that can be updated) {String} password The new password of the user. If this parameter is set, an additional `password_confirmation` parameter needs to be present, containing the same new password.
+	 * @apiParam (Attributes that can be updated) {String} firstname The new firstname of the user.
+	 * @apiParam (Attributes that can be updated) {String} lastname The new lastname of the user.
+	 * 
+	 * @apiParamExample {String} Request example:
+	 * email: 'new@example.com'
+	 * password: 'TotallySecure'
+	 * passwotd_confirmation: 'TotallySecure'
+	 * firstname: 'New'
+	 * lastname: 'Name'
 	 *
 	 * @param  int  $id
 	 * @return \Illuminate\Http\Response
@@ -123,6 +211,25 @@ class UserController extends Controller {
 
 	/**
 	 * Updates the attributes of the own user.
+	 * 
+	 * @api {put} users/my Update the own user
+	 * @apiGroup Users
+	 * @apiName UpdateOwnUser
+	 * @apiPermission user
+	 * @apiDescription This action is allowed only by session cookie authentication.
+	 * 
+	 * 
+	 * @apiParam (Attributes that can be updated) {String} email The new email address of the user. Must be unique for all users.
+	 * @apiParam (Attributes that can be updated) {String} password The new password of the user. If this parameter is set, an additional `password_confirmation` parameter needs to be present, containing the same new password, as well as an `old_password` parameter, containing the old password.
+	 * @apiParam (Attributes that can be updated) {String} firstname The new firstname of the user.
+	 * @apiParam (Attributes that can be updated) {String} lastname The new lastname of the user.
+	 * 
+	 * @apiParamExample {String} Request example:
+	 * email: 'new@example.com'
+	 * password: 'TotallySecure'
+	 * passwotd_confirmation: 'TotallySecure'
+	 * firstname: 'New'
+	 * lastname: 'Name'
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
@@ -164,6 +271,32 @@ class UserController extends Controller {
 
 	/**
 	 * Creates a new user.
+	 * 
+	 * @api {post} users Create a new user
+	 * @apiGroup Users
+	 * @apiName StoreUsers
+	 * @apiPermission admin
+	 * @apiDescription This action is allowed only by session cookie authentication. A new user gets the global role `editor` by default.
+	 * 
+	 * @apiParam (Required parameters) {String} email The email address of the new user. Must be unique for all users.
+	 * @apiParam (Required parameters) {String} password The password of the new user.
+	 * @apiParam (Required parameters) {String} password_confirmation The password of the new user again.
+	 * @apiParam (Required parameters) {String} firstname The firstname of the new user.
+	 * @apiParam (Required parameters) {String} lastname The lastname of the new user.
+	 * 
+	 * @apiParamExample {String} Request example:
+	 * email: 'new@example.com'
+	 * password: 'TotallySecure'
+	 * passwotd_confirmation: 'TotallySecure'
+	 * firstname: 'New'
+	 * lastname: 'User'
+	 * 
+	 * @apiSuccessExample {json} Success response:
+	 * {
+	 *    "id": 2,
+	 *    "name": "Joe User",
+	 *    "role_id": 2
+	 * }
 	 *
 	 * @param Registrar $registrar
 	 * @return User
@@ -184,6 +317,14 @@ class UserController extends Controller {
 
 	/**
 	 * Removes the specified user.
+	 * 
+	 * @api {delete} users/:id Delete a user
+	 * @apiGroup Users
+	 * @apiName DestroyUsers
+	 * @apiPermission admin
+	 * @apiDescription This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.
+	 * 
+	 * @apiParam {Number} id The user ID.
 	 *
 	 * @param  int  $id
 	 * @return \Illuminate\Http\Response
@@ -202,6 +343,12 @@ class UserController extends Controller {
 
 	/**
 	 * Removes the own user.
+	 * 
+	 * @api {delete} users/my Delete a user
+	 * @apiGroup Users
+	 * @apiName DestroyOwnUser
+	 * @apiPermission user
+	 * @apiDescription This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.
 	 *
 	 * @return \Illuminate\Http\Response
 	 */

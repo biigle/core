@@ -3,7 +3,31 @@
  * @ngdoc directive
  * @name userChooser
  * @memberOf dias.ui.users
- * @description An input field to find and enter a user.
+ * @description An input field to find a user.
+ * @example
+// HTML
+<input placeholder="Search by username" data-user-chooser="addUser" />
+
+// Controller (example for adding a user to a project)
+$scope.addUser = function (user) {
+	// new users are guests by default
+	var roleId = $scope.roles.guest;
+
+	var success = function () {
+		user.project_role_id = roleId;
+		$scope.users.push(user);
+	};
+
+	// user shouldn't already exist
+	if (!getUser(user.id)) {
+		ProjectUser.attach(
+			{project_id: $scope.projectId},
+			{id: user.id, project_role_id: roleId},
+			success, msg.responseError
+		);
+	}
+};
+
  */
 angular.module('dias.ui.users').directive('userChooser', function () {
 		"use strict";
