@@ -8,8 +8,19 @@
 		<div class="row">
 			<h2>Documentation</h2>
 			<p class="lead">
-				This is the documentation center where you can find the API documentation of the server and client applications, as well as the RESTful API. Additionally there are tutorials on custom module development and how-tos.
+				This is the documentation center where you can find the API documentation of the server and client applications, as well as the RESTful API. Additionally there are <a href="#tutorials">tutorials</a> on custom module development and how-tos.
 			</p>
+		</div>
+		<div class="row">
+			<h3><a name="tutorials"></a>Tutorials</h3>
+			
+			<h4><a href="{{ route('documentation').'/package-development' }}">Package Development</a></h4>
+			<p>
+				Learn about PHP package development and how to add custom functionality to your DIAS installation by developing your own modules.
+			</p>
+			{{-- using the JS and CSS resources --}}
+			{{-- install the application / readme --}}
+			{{-- testing environment --}}
 		</div>
 		<div class="row">
 			<h3>RESTful API</h3>
@@ -19,7 +30,9 @@
 			<p>
 				The API works with form (<code>x-www-form-urlencoded</code>) as well as JSON requests. For form requests, you can use <a href="http://laravel.com/docs/5.0/routing#method-spoofing">method spoofing</a> to use different HTTP methods. For the complete documentation, check out the link below.
 			</p>
-			<a class="btn btn-default btn-lg btn-block" href="{{ url('doc/api/index.html') }}">RESTful API documentation</a>
+			<p>
+				<a class="btn btn-default btn-lg btn-block" href="{{ url('doc/api/index.html') }}">RESTful API documentation</a>
+			</p>
 		</div>
 		<div class="row">
 			<h3>Server</h3>
@@ -32,7 +45,9 @@
 			<p>
 				We encourage you to add functionality by developing your own modules! There are some resources on package development in the <a href="http://laravel.com/docs/5.0/packages">Laravel documentation</a> but we have some <a href="#tutorials">tutorials</a> here as well.
 			</p>
-			<a class="btn btn-default btn-lg btn-block" href="{{ url('doc/server/index.html') }}">Server API documentation</a>
+			<p>
+				<a class="btn btn-default btn-lg btn-block" href="{{ url('doc/server/index.html') }}">Server API documentation</a>
+			</p>
 		</div>
 		<div class="row">
 			<h3>Client</h3>
@@ -42,15 +57,9 @@
 			<p>
 				While custom server side modules are free to use any JavaScript framework (or none at all) for client side interactions, the AngularJS core modules are always available for convenient access to the RESTful API and integration in the application ecosystem. Therfore using AngularJS for custom module development is highly recommended.
 			</p>
-			<a class="btn btn-default btn-lg btn-block" href="{{ url('doc/client/index.html') }}">Client API documentation</a>
-		</div>
-		<div class="row">
-			<h3><a name="tutorials"></a>Tutorials</h3>
-			<p class="alert alert-info">
-				There are currently no tutorials, yet. Please come back later.
+			<p>
+				<a class="btn btn-default btn-lg btn-block" href="{{ url('doc/client/index.html') }}">Client API documentation</a>
 			</p>
-			{{-- testing environment --}}
-			{{-- package development --}}
 		</div>
 		@foreach ($mixins as $module => $nestedMixins)
 			@include($module.'::documentation', array('mixins' => $nestedMixins))

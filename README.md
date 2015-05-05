@@ -14,7 +14,7 @@ DISCOL Image Annotation Software
 
 - PHP GD Library (>=2.0) (`php5-gd`) 
 - PostgreSQL
-- Git
+- (Git)
 
 And for development/testing:
 
@@ -34,7 +34,7 @@ And for development/testing:
 2. Run `composer install` ([get composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx)).
 4. Copy `.env.example` to `.env` and populate it with your database credentials. Then run `php artisan key:generate` to generate an encryption key.
 5. Set up the database tables with `php artisan migrate`.
-6. Run a local development server with `php artisan serve`. Alternatively you could use `php -S localhost:8000 -t public/` to mimic a production server.
+6. Run a local development server with `php artisan serve`. Alternatively you can use `php -S localhost:8000 -t public/` to mimic a production server.
 
 ## Developing
 
@@ -46,7 +46,7 @@ Update the documentation with `./doc.sh`.
 
 ## Testing
 
-You shouldn't need to configure your testing environment since for acceptance tests your `local` database is used, and for functional/unit tests an SQLite in-memory database is used.
+You shouldn't need to configure your testing environment since for acceptance tests your local database is used, and for functional/unit tests an SQLite in-memory database is used.
 
 ### Acceptance
 
@@ -78,9 +78,9 @@ Walk through all the `app/config/` files and set the configs:
 - `mail.php`: credentials for the mail server
 - `session.php`: encrypt, secure?
 
-Don't forget to set the encryption key! You can generate one with `php artisan key:generate`. Make sure you don't generate a new key when you laready have things encrypted with the old key!
-Maybe set up the route cache? Cache the environment variables?
+Don't forget to set the encryption key! You can generate one with `php artisan key:generate`. Make sure you don't generate a new key when you already have things encrypted with the old key!
+Maybe set up the route cache? Cache the config?
 
-**Put all sensitive and secret stuff to `.env.php` in the repo root!** You'll see where the `env()` helper is used in the config files.
+**Put all sensitive and secret stuff to `.env.php`!** You'll see where the `env()` helper is used in the config files.
 
-Set up the task scheduler by creating a cron job that calls `php artisan schedule:run` in the application root every minute (or 15 minutes).
+Set up the task scheduler by creating a cron job that calls `php artisan schedule:run` in the application root every minute.

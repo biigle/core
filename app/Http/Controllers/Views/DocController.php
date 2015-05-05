@@ -14,4 +14,14 @@ class DocController extends Controller {
 			->with('message', session('message'))
 			->with('messageType', session('messageType'));
 	}
+
+	/**
+	 * Show the package development tutorial
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function packageDevelopment()
+	{
+		return view('documentation.package-development');
+	}
 }
