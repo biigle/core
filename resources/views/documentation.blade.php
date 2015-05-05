@@ -1,0 +1,60 @@
+@extends('app')
+
+@section('title'){{ trans('dias.titles.doc') }}@stop
+
+@section('content')
+<div class="container">
+	<div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
+		<div class="row">
+			<h2>Documentation</h2>
+			<p class="lead">
+				This is the documentation center where you can find the API documentation of the server and client applications, as well as the RESTful API. Additionally there are tutorials on custom module development and how-tos.
+			</p>
+		</div>
+		<div class="row">
+			<h3>RESTful API</h3>
+			<p>
+				You may access most of the functionality of this application using the RESTful API. Most of the API requires user authentication via session cookie (being logged in to the website) but it is also available for external requests using a personal API key. You can manage your API key in the <a href="{{ route('settings') }}">user settings</a>.
+			</p>
+			<p>
+				The API works with form (<code>x-www-form-urlencoded</code>) as well as JSON requests. For form requests, you can use <a href="http://laravel.com/docs/5.0/routing#method-spoofing">method spoofing</a> to use different HTTP methods. For the complete documentation, check out the link below.
+			</p>
+			<a class="btn btn-default btn-lg btn-block" href="{{ url('doc/api/index.html') }}">RESTful API documentation</a>
+		</div>
+		<div class="row">
+			<h3>Server</h3>
+			<p>
+				The server application is written in PHP using the <a href="http://laravel.com/">Laravel</a> framework. Have a look at their <a href="http://laravel.com/docs/5.0">excellent documentation</a> for further information. For the class reference and API documentation, check out the link below.
+			</p>
+			<p>
+				Laravel allows a modular application design using custom packages (or modules). In fact, the core of this application doesn't provide much more than user and database management as well as the RESTful API. Any additional functionality is added by a new module.
+			</p>
+			<p>
+				We encourage you to add functionality by developing your own modules! There are some resources on package development in the <a href="http://laravel.com/docs/5.0/packages">Laravel documentation</a> but we have some <a href="#tutorials">tutorials</a> here as well.
+			</p>
+			<a class="btn btn-default btn-lg btn-block" href="{{ url('doc/server/index.html') }}">Server API documentation</a>
+		</div>
+		<div class="row">
+			<h3>Client</h3>
+			<p>
+				The client side application is written in JavaScript using the <a href="https://angularjs.org/">AngularJS</a> framework. AngularJS, by default, wraps any application in a module, which works very well with the server side PHP modules for custom package development. The core modules of this application essentially provide utility functions like Angular resources for the RESTful API access or services for e.g. the user feedback <a onclick="window.$diasPostMessage('info', 'I am the user feedback messaging system!');">messaging system</a>.
+			</p>
+			<p>
+				While custom server side modules are free to use any JavaScript framework (or none at all) for client side interactions, the AngularJS core modules are always available for convenient access to the RESTful API and integration in the application ecosystem. Therfore using AngularJS for custom module development is highly recommended.
+			</p>
+			<a class="btn btn-default btn-lg btn-block" href="{{ url('doc/client/index.html') }}">Client API documentation</a>
+		</div>
+		<div class="row">
+			<h3><a name="tutorials"></a>Tutorials</h3>
+			<p class="alert alert-info">
+				There are currently no tutorials, yet. Please come back later.
+			</p>
+			{{-- testing environment --}}
+			{{-- package development --}}
+		</div>
+		@foreach ($mixins as $module => $nestedMixins)
+			@include($module.'::documentation', array('mixins' => $nestedMixins))
+		@endforeach
+	</div>
+</div>
+@endsection

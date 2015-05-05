@@ -11,10 +11,27 @@
 |
 */
 
-Route::group(array(
-		'namespace' => 'Views',
-		'middleware' => 'auth'
-	), function ($router)
+// PUBLIC ROUTES
+Route::group(array( 'namespace' => 'Auth' ), function ($router)
+{
+	$router->controllers(array(
+		'auth' => 'AuthController',
+		'password' => 'PasswordController',
+	));
+});
+
+Route::group(array ( 'namespace' => 'Views' ), function ($router)
+{
+	// route name must be different from the 'doc' directory name of the static 
+	// files in the public directory
+	$router->get('documentation', array(
+		'as' => 'documentation',
+		'uses' => 'DocController@index'
+	));
+});
+
+// PROTECTED ROUTES
+Route::group(array( 'namespace' => 'Views', 'middleware' => 'auth' ), function ($router)
 {
 	$router->get('/', array(
 		'as'   => 'home',
@@ -24,16 +41,6 @@ Route::group(array(
 	$router->get('settings', array(
 		'as' => 'settings',
 		'uses' => 'SettingsController@index'
-	));
-});
-
-Route::group(array(
-		'namespace' => 'Auth'
-	), function ($router)
-{
-	$router->controllers(array(
-		'auth' => 'AuthController',
-		'password' => 'PasswordController',
 	));
 });
 
