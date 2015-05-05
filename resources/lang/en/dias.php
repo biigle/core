@@ -13,6 +13,7 @@ return array(
 		'resetpw' => 'Reset password',
 		'register' => 'Register',
 		'dashboard' => 'Dashboard',
+		'doc' => 'Documentation'
 	),
 
 	'media_types' => array(

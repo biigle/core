@@ -178,7 +178,7 @@ class UserController extends Controller {
 	 * @apiParamExample {String} Request example:
 	 * email: 'new@example.com'
 	 * password: 'TotallySecure'
-	 * passwotd_confirmation: 'TotallySecure'
+	 * password_confirmation: 'TotallySecure'
 	 * firstname: 'New'
 	 * lastname: 'Name'
 	 *
@@ -227,7 +227,7 @@ class UserController extends Controller {
 	 * @apiParamExample {String} Request example:
 	 * email: 'new@example.com'
 	 * password: 'TotallySecure'
-	 * passwotd_confirmation: 'TotallySecure'
+	 * password_confirmation: 'TotallySecure'
 	 * firstname: 'New'
 	 * lastname: 'Name'
 	 *
@@ -287,7 +287,7 @@ class UserController extends Controller {
 	 * @apiParamExample {String} Request example:
 	 * email: 'new@example.com'
 	 * password: 'TotallySecure'
-	 * passwotd_confirmation: 'TotallySecure'
+	 * password_confirmation: 'TotallySecure'
 	 * firstname: 'New'
 	 * lastname: 'User'
 	 * 

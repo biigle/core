@@ -11,6 +11,9 @@
 			</p>
 			<ul class="nav navbar-nav">
 				<li>
+					<a href="{{ route('documentation') }}" title="{{ trans('dias.titles.doc') }}"><i class="glyphicon glyphicon-book"></i></a>
+				</li>
+				<li>
 					<a href="{{ route('settings') }}" title="{{ trans('dias.titles.settings') }}"><i class="glyphicon glyphicon-cog"></i></a>
 				</li>
 				<li>
