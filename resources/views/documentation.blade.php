@@ -8,19 +8,34 @@
 		<div class="row">
 			<h2>Documentation</h2>
 			<p class="lead">
-				This is the documentation center where you can find the API documentation of the server and client applications, as well as the RESTful API. Additionally there are <a href="#tutorials">tutorials</a> on custom module development and how-tos.
+				This is the documentation center where you can find the API documentation of the server and client applications, as well as the RESTful API. Additionally there are tutorials on custom module development and how-tos.
 			</p>
 		</div>
 		<div class="row">
 			<h3><a name="tutorials"></a>Tutorials</h3>
+
+			<h4>Installing DIAS</h4>
+			<p>
+				Walking through the DIAS installation process, we'll show you how to get the application up and running on your own server.
+				{{-- install the application / readme --}}
+			</p>
 			
 			<h4><a href="{{ route('documentation').'/package-development' }}">Package Development</a></h4>
 			<p>
 				Learn about PHP package development and how to add custom functionality to your DIAS installation by developing your own modules.
 			</p>
-			{{-- using the JS and CSS resources --}}
-			{{-- install the application / readme --}}
-			{{-- testing environment --}}
+
+			<h4>Advanced Package Development</h4>
+			<p>
+				Learn how to add new views and routes with a custom package and how to properly test them using the DIAS testing environment.
+			</p>
+
+			<h4>Using Custom Assets for Packages</h4>
+			<p>
+				Learn how to handle custom assets like CSS and JavaScript in addition to the defaults provided by the core application.
+				{{-- publishing custom assets --}}
+				{{-- using the JS and CSS resources of the core app --}}
+			</p>
 		</div>
 		<div class="row">
 			<h3>RESTful API</h3>
