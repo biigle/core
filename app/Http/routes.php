@@ -29,7 +29,7 @@ Route::group(array ( 'namespace' => 'Views', 'prefix' => 'documentation' ), func
 		'uses' => 'DocController@index'
 	));
 
-	$router->get('package-development', 'DocController@packageDevelopment');
+	$router->get('/{article}', 'DocController@article');
 });
 
 // PROTECTED ROUTES

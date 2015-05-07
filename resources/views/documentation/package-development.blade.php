@@ -15,7 +15,7 @@
 			<h3>Basics</h3>
 
 			<p>
-				DIAS is based on <a href="http://laravel.com/">Laravel</a>, a PHP framework for modern web applications. Laravel is designed in an object oriented and very modular fashion making it easily extensible with custom modules. DIAS is designed as a core application, providing user and database management, the RESTful API and some basic views (the dashboard or settings, for example). Any additional functionality - like project management - is added as a separate module, keeping the codebase clean and manageable.
+				DIAS is based on <a href="http://laravel.com/">Laravel</a>, a PHP framework for modern web applications. Laravel is designed in an object oriented and very modular fashion, making it easily extensible with custom modules. DIAS is designed as a core application, providing user and database management, the RESTful API and some basic views (the dashboard or settings, for example). Any additional functionality - like project management - is added as a separate module, keeping the codebase clean and manageable.
 			</p>
 			<p>
 				By implementing a custom module and installing or disabling modules developed by others, you can easily extend DIAS and shape it to your needs, without having to dig deep into the core application. Using <a href="https://getcomposer.org/">Composer</a>, the most popualar dependency manager for PHP packages, and <a href="https://packagist.org/">Packagist</a> you can even share your DIAS modules with others.
@@ -30,10 +30,10 @@
 				In earlier days of PHP, you typically used libraries developed by others using the <code>require</code> keyword. When developing a large application having lots of dependencies, this method becomes very cumbersome an error-prone; not to mention the performance drawbacks of always loading every dependency. This is where Composer comes in.
 			</p>
 			<p>
-				Composer is a dependency manager for PHP packages that makes managing dependencies of a large PHP application very easy. With a single <code>composer.json</code> configuration file, Composer takes care of downloading all the files and generating an <code>autoload.php</code> file. By <code>require</code>-ing this file, you are able to use all the dependencies you configured.
+				Composer is a dependency manager for PHP packages that makes managing dependencies of a large PHP application very easy. With a single <code>composer.json</code> configuration file, Composer takes care of downloading all the files and generating an <code>autoload.php</code> file. By <code>require</code>-ing this file, you are able to use all the dependencies you configured. In our case, Laravel takes care of the autoloading.
 			</p>
 
-			<h4>Package Development</h4>
+			<h4>Package development</h4>
 
 			<p>
 				The <code>conposer.json</code> is also used for developing new packages (similar to the <code>package.json</code> for Node.js modules). Each package has such a file, containing the dependencies of the package or the package name, for example. Take a look at the <code>composer.json</code> of the DIAS annotations package:
@@ -58,13 +58,13 @@
 				Second, the dependencies of the package are delcared. Here, the annotations package requires the <code>dias/transects</code> package (since otherwise there is no way reaching the "annotator" application, but it can have other reasons, too).
 			</p>
 			<p>
-				Last, the namespace of the PHP classes of this package is defined. The <code>autoload</code> section of this configuration tells composer that every file it finds in the <code>src</code> direcory belongs to the <code>Dias\Modules\Annotations\</code> namespace. Any further namespacing inside of this namespace is reflected by the directory structure in <code>src</code>.
+				Last, the namespace of the PHP classes of this package is defined. The <code>autoload</code> section of this configuration tells composer that every file it finds in the <code>src</code> directory belongs to the <code>Dias\Modules\Annotations</code> namespace. Any further namespacing inside of this namespace is reflected by the directory structure in <code>src</code>.
 			</p>
 			<p>
 				This is everything you need to know to understand the more detailed description of developing a package below; all you need for a new package is a directory containing a <code>composer.json</code>.
 			</p>
 
-			<h4>Publishing Packages</h4>
+			<h4>Publishing packages</h4>
 
 			<p>
 				By default, Composer looks for packages in the <a href="https://packagist.org/">Packagist</a> package repository. This is a convenient way of publishing packages to a broad audience. But you might want to keep your package private in some cases, either because it is still in development or you simply don't want to publish it. The good news is that you can still use Composer! The local/private alternative to Packagist is a version contol system like <a href="http://git-scm.com/">Git</a> that you should use for developing, anyway.
@@ -73,10 +73,10 @@
  				The VCS works just like the package repository, having master and develop branches as well as tagged versions. All you have to do is tell Composer to look at your private repository, too, while searching for packages. Have a look at the <a href="https://getcomposer.org/doc/05-repositories.md#vcs">Composer documentation</a> for more information.
  			</p>
 
-			<h3>Setting Up A New Package</h3>
+			<h3>Setting up a new package</h3>
 
 			<p>
-				Having learned all the basics, let's now walk through the process of creating a new package. If you have a local installation of DIAS, you can follow along, implementing, and see how it works.
+				Having learned all the basics, let's now walk through the process of creating a new package. If you have a local installation of DIAS, you should follow along, implementing, and see how it works.
 			</p>
 			<p>
 				Our package should add new a panel to the DIAS dashboard displaying a random <a href="https://github.com/laravel/framework/blob/feb0cee6777daf487ef01b5a0c744d155ac8f057/src/Illuminate/Foundation/Inspiring.php">inspiring quote</a>.
@@ -108,13 +108,13 @@ git init dias-quotes
 }
 </pre>
 			<p>
-				You see, our new package is called <code>dias/quotes</code> but you are free to use your personal name prefix, too. In the autoload section, we define our package to reside in the <code>Dias\Modules\Quotes\</code> namespace. You can choose your own namespace here, too but <code>Dias\Modules\</code> is a good way to keep things organized.
+				You see, our new package is called <code>dias/quotes</code> but you are free to use your personal name prefix, too. In the autoload section, we define our package to reside in the <code>Dias\Modules\Quotes</code> namespace. You can choose your own namespace here, too but <code>Dias\Modules</code> is a good way to keep things organized.
 			</p>
 			<p>
-				Normally you could start implementing now, but our new package still lacks a few things to integrate cleanly with Laravel.
+				Normally you would start implementing now, but our new package still lacks a few things to integrate cleanly with Laravel.
 			</p>
 
-			<h4>Service Provider</h4>
+			<h4>Service provider</h4>
 
 			<p>
 				Each package for Laravel contains one or more <a href="http://laravel.com/docs/5.0/providers">service provider</a> classes. These classes, among other things, tell Laravel where to find the package configuration, views or translation files. So let's create a file called <code>src/QuotesServiceProvider.php</code> with the following content:
@@ -151,7 +151,7 @@ class QuotesServiceProvider extends ServiceProvider {
 				This skeleton is enough for now, we'll populate it later on. But it already enables us to require and install the new module to our DIAS application.
 			</p>
 
-			<h4>Installing the Package</h4>
+			<h4>Installing the package</h4>
 
 			<p>
 				Before the package can be installed, though, we need to make our first commit to the repository:
@@ -188,7 +188,7 @@ git commit -m "Initial commit"
 				Now you can let Composer install the package with <code>php composer.phar update dias/quotes</code> (get the <a href="https://getcomposer.org/composer.phar">composer.phar</a> if you don't have it already installed). That was it! You now can find a cloned copy of the package repository in the <code>vendors/dias/quotes</code> directory (the <code>dias/quotes</code> part is the package name, so the directory names may be different if your package name is different).
 			</p>
 			<p>
-				Since the new directory is just a clone of the original repository, we can use it for development from now on. Like this you can see all the changes you make live in the application before committing or pushing them. Even more important: You can test the package in the complete application environment! But more on that later.
+				Since the new directory is just a clone of the original repository, we can use it for development from now on. Like this you can see all the changes you make live in the application before committing or pushing them. Even more important: You can test the package in the complete application environment! But more on that in another tutorial.
 			</p>
 			<p>
 				We're not done with installing the new package, though. Laravel still has to be told, to <em>use</em> the package, too. To activate the package, open the <code>config/app.php</code> file, scroll down to the <code>'providers'</code> array and append the service provider of our package:
@@ -201,16 +201,14 @@ git commit -m "Initial commit"
 </pre>
 
 			<p>
-				Now we are finally done and the new package is installed and activated! Adding a new package to the <code>composer.json</code> and appending the service provider to the <code>app.php</code> is the usual procedure of installing a new DIAS module. To deactivate a module, simply comment out the line in the <code>'providers'</code> array (but be sure that this doesn't break any dependencies).
+				Now we are finally done and the new package is installed and activated. Adding a new package to the <code>composer.json</code> and appending the service provider to the <code>app.php</code> is the usual procedure of installing a new DIAS module. To deactivate a module, simply comment out the line in the <code>'providers'</code> array (but be sure that this doesn't break any dependencies).
 			</p>
 
-			<h3>Developing the Package</h3>
+			<h3>Developing the package</h3>
 
 			<p>
 				Although the package is already working, it doesn't do anything yet. The service provider is still empty and we don't have any content. Let's fix that.
 			</p>
-
-			<h4>View Mixins</h4>
 
 			<p>
 				As you'll recall we like to add a new section to the DIAS dashboard, displaying an inspiring quote.
@@ -228,7 +226,7 @@ git commit -m "Initial commit"
 <pre>
 &lt;div class="panel panel-default"&gt;
    &lt;div class="panel-heading"&gt;
-      &lt;h3&gt;Inspiring Quote&lt;/h3&gt;
+      &lt;h3 class="panel-title"&gt;Inspiring Quote&lt;/h3&gt;
    &lt;/div&gt;
    &lt;div class="panel-body"&gt;
       &lt;blockquote&gt;
@@ -238,10 +236,10 @@ git commit -m "Initial commit"
 &lt;/div&gt;
 </pre>
 			<p>
-				You see that we can use the entire pallette of <a href="http://getbootstrap.com/">Bootstrap</a> classes for styling without having to set anything up.
+				You see that we can use the entire pallette of <a href="http://getbootstrap.com/">Bootstrap</a> classes for styling without having to set anything up. The actual quote is echoed using the <code>@{{&nbsp;}}</code> control structure of the Laravel <a href="http://laravel.com/docs/5.0/templates">Blade templating engine</a>.
 			</p>
 			<p>
-				Calling the new view <code>dashboard.blade.php</code> is essential here, since the view has to have the same name as the ID of the registered space for view mixins. Usually views only register one such space so taking the view name as ID makes sense. For the dashboard, the ID is <code>dashboard</code> so our view mixin must be called <code>dashboard</code>, too.
+				Calling the new view <code>dashboard.blade.php</code> is essential here, since the view has to have the same name as the identifier of registered space for view mixins. Usually views only register one such space so taking the view name as identifier makes sense. For the dashboard, the ID is <code>dashboard</code> so our view mixin must be called <code>dashboard</code>, too.
 			</p>
 			<p>
 				Next, we have to tell Laravel that our package <em>has</em> any views in the first place. To do so, add the following to the <code>boot</code> function of the packages service provider class:
@@ -291,7 +289,7 @@ class QuotesServiceProvider extends ServiceProvider {
 			</p>
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					Inspiring Quote
+					<h3 class="panel-title">Inspiring Quote</h3>
 				</div>
 				<div class="panel-body">
 					<blockquote>

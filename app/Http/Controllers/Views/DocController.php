@@ -17,11 +17,19 @@ class DocController extends Controller {
 
 	/**
 	 * Show the package development tutorial
-	 *
+	 *	
+	 * @param string $name Article name
 	 * @return \Illuminate\Http\Response
 	 */
-	public function packageDevelopment()
+	public function article($name)
 	{
-		return view('documentation.package-development');
+		if (view()->exists('documentation.'.$name))
+		{
+			return view('documentation.'.$name);
+		}
+		else
+		{
+			abort(404);
+		}
 	}
 }

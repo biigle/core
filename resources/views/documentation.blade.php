@@ -20,21 +20,23 @@
 				{{-- install the application / readme --}}
 			</p>
 			
-			<h4><a href="{{ route('documentation').'/package-development' }}">Package Development</a></h4>
+			<h4><a href="{{ route('documentation').'/package-development' }}">Package development</a></h4>
 			<p>
 				Learn about PHP package development and how to add custom functionality to your DIAS installation by developing your own modules.
 			</p>
 
-			<h4>Advanced Package Development</h4>
+			<h4><a href="{{ route('documentation').'/advanced-package-development' }}">Advanced package development</a></h4>
 			<p>
 				Learn how to add new views and routes with a custom package and how to properly test them using the DIAS testing environment.
 			</p>
 
-			<h4>Using Custom Assets for Packages</h4>
+			<h4>Using custom assets for packages</h4>
 			<p>
 				Learn how to handle custom assets like CSS and JavaScript in addition to the defaults provided by the core application.
 				{{-- publishing custom assets --}}
+				{{-- defining view mixins using the View\Controller of DIAS --}}
 				{{-- using the JS and CSS resources of the core app --}}
+				{{-- USE THE QUOTES VIEW, STYLE IT AND USE JS TO REFRESH IT INTERACIVELY --}}
 			</p>
 		</div>
 		<div class="row">
