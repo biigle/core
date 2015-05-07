@@ -30,14 +30,18 @@
 				Learn how to add new views and routes with a custom package and how to properly test them using the DIAS testing environment.
 			</p>
 
-			<h4>Using custom assets for packages</h4>
+			<h4><a href="{{ route('documentation').'/using-custom-assets-in-packages' }}">Using custom assets in packages</h4></a>
 			<p>
 				Learn how to handle custom assets like CSS and JavaScript in addition to the defaults provided by the core application.
-				{{-- publishing custom assets --}}
-				{{-- defining view mixins using the View\Controller of DIAS --}}
-				{{-- using the JS and CSS resources of the core app --}}
-				{{-- USE THE QUOTES VIEW, STYLE IT AND USE JS TO REFRESH IT INTERACIVELY --}}
 			</p>
+
+			<h4>Mastering view mixins</h4>
+			<p>
+				Building your custom extensions is nice but what about extending the extensions? Learn how to use the view mixin registry of DIAS allowing other modules to extend yours.
+			</p>
+
+			{{-- defining view mixins using the View\Controller of DIAS --}}
+			{{-- adding asset view mixins for repeating view mixins --}}
 		</div>
 		<div class="row">
 			<h3>RESTful API</h3>
