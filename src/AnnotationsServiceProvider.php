@@ -20,8 +20,7 @@ class AnnotationsServiceProvider extends ServiceProvider {
 
 		include __DIR__.'/Http/routes.php';
 
-		$modules->addMixin('annotations', 'images.index-buttons');
-		// $modules->addMixin('transects', 'projects');
+		$modules->addMixin('annotations', 'imagesIndexButtons');
 	}
 
 	/**

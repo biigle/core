@@ -6,138 +6,6 @@ angular.module('dias.annotations', ['dias.api', 'dias.ui.messages']);
 
 /**
  * @namespace dias.annotations
- * @ngdoc directive
- * @name annotationListItem
- * @memberOf dias.annotations
- * @description An annotation list item.
- */
-angular.module('dias.annotations').directive('annotationListItem', ["labels", function (labels) {
-		"use strict";
-
-		return {
-			scope: true,
-			controller: ["$scope", function ($scope) {
-				$scope.shapeClass = 'icon-' + $scope.annotation.shape.toLowerCase();
-
-				$scope.selected = function () {
-					return $scope.isSelected($scope.annotation.id);
-				};
-
-				$scope.attachLabel = function () {
-					labels.attachToAnnotation($scope.annotation);
-				};
-
-				$scope.removeLabel = function (label) {
-					labels.removeFromAnnotation($scope.annotation, label);
-				};
-
-				$scope.canAttachLabel = function () {
-					return $scope.selected() && labels.hasSelected();
-				};
-
-				$scope.currentLabel = labels.getSelected;
-
-				$scope.currentConfidence = labels.getCurrentConfidence;
-			}]
-		};
-	}]
-);
-
-/**
- * @namespace dias.annotations
- * @ngdoc directive
- * @name labelCategoryItem
- * @memberOf dias.annotations
- * @description A label category list item.
- */
-angular.module('dias.annotations').directive('labelCategoryItem', ["$compile", "$timeout", function ($compile, $timeout) {
-		"use strict";
-
-		return {
-			restrict: 'C',
-
-			template: '<span class="item__name" data-ng-click="selectItem(item)">{{item.name}}</span>',
-
-			scope: true,
-
-			link: function (scope, element, attrs) {
-				// wait for this element to be rendered until the children are
-				// appended, otherwise there would be too much recursion for 
-				// angular
-				var content = angular.element('<ul class="label-category-subtree list-unstyled"><li class="label-category-item" data-ng-class="{open: isOpen, expandable: isExpandable, selected: isSelected}" data-ng-repeat="item in categoriesTree[item.id]"></li></ul>');
-				$timeout(function () {
-					element.append($compile(content)(scope));
-				});
-			},
-
-			controller: ["$scope", function ($scope) {
-				// open the subtree of this item
-				$scope.isOpen = false;
-				// this item has children
-				$scope.isExpandable = !!$scope.categoriesTree[$scope.item.id];
-				// this item is currently selected
-				$scope.isSelected = false;
-
-				// handle this by the event rather than an own click handler to 
-				// deal with click and search field actions in a unified way
-				$scope.$on('categories.selected', function (e, category) {
-					// if an item is selected, its subtree and all parent items 
-					// should be opened
-					if ($scope.item.id === category.id) {
-						$scope.isOpen = true;
-						$scope.isSelected = true;
-						// this hits all parent scopes/items
-						$scope.$emit('categories.openParents');
-					} else {
-						$scope.isOpen = false;
-						$scope.isSelected = false;
-					}
-				});
-
-				// if a child item was selected, this item should be opened, too
-				// so the selected item becomes visible in the tree
-				$scope.$on('categories.openParents', function (e) {
-					$scope.isOpen = true;
-					// stop propagation if this is a root element
-					if ($scope.item.parent_id === null) {
-						e.stopPropagation();
-					}
-				});
-			}]
-		};
-	}]
-);
-
-/**
- * @namespace dias.annotations
- * @ngdoc directive
- * @name labelItem
- * @memberOf dias.annotations
- * @description An annotation label list item.
- */
-angular.module('dias.annotations').directive('labelItem', function () {
-		"use strict";
-
-		return {
-			controller: ["$scope", function ($scope) {
-				var confidence = $scope.annotationLabel.confidence;
-
-				if (confidence <= 0.25) {
-					$scope.class = 'label-danger';
-				} else if (confidence <= 0.5 ) {
-					$scope.class = 'label-warning';
-				} else if (confidence <= 0.75 ) {
-					$scope.class = 'label-success';
-				} else {
-					$scope.class = 'label-primary';
-				}
-			}]
-		};
-	}
-);
-
-/**
- * @namespace dias.annotations
  * @ngdoc controller
  * @name AnnotationsController
  * @memberOf dias.annotations
@@ -494,6 +362,138 @@ angular.module('dias.annotations').controller('SidebarController', ["$scope", "$
 		$scope.deleteSelectedAnnotations = mapAnnotations.deleteSelected;
 	}]
 );
+/**
+ * @namespace dias.annotations
+ * @ngdoc directive
+ * @name annotationListItem
+ * @memberOf dias.annotations
+ * @description An annotation list item.
+ */
+angular.module('dias.annotations').directive('annotationListItem', ["labels", function (labels) {
+		"use strict";
+
+		return {
+			scope: true,
+			controller: ["$scope", function ($scope) {
+				$scope.shapeClass = 'icon-' + $scope.annotation.shape.toLowerCase();
+
+				$scope.selected = function () {
+					return $scope.isSelected($scope.annotation.id);
+				};
+
+				$scope.attachLabel = function () {
+					labels.attachToAnnotation($scope.annotation);
+				};
+
+				$scope.removeLabel = function (label) {
+					labels.removeFromAnnotation($scope.annotation, label);
+				};
+
+				$scope.canAttachLabel = function () {
+					return $scope.selected() && labels.hasSelected();
+				};
+
+				$scope.currentLabel = labels.getSelected;
+
+				$scope.currentConfidence = labels.getCurrentConfidence;
+			}]
+		};
+	}]
+);
+
+/**
+ * @namespace dias.annotations
+ * @ngdoc directive
+ * @name labelCategoryItem
+ * @memberOf dias.annotations
+ * @description A label category list item.
+ */
+angular.module('dias.annotations').directive('labelCategoryItem', ["$compile", "$timeout", function ($compile, $timeout) {
+		"use strict";
+
+		return {
+			restrict: 'C',
+
+			template: '<span class="item__name" data-ng-click="selectItem(item)">{{item.name}}</span>',
+
+			scope: true,
+
+			link: function (scope, element, attrs) {
+				// wait for this element to be rendered until the children are
+				// appended, otherwise there would be too much recursion for 
+				// angular
+				var content = angular.element('<ul class="label-category-subtree list-unstyled"><li class="label-category-item" data-ng-class="{open: isOpen, expandable: isExpandable, selected: isSelected}" data-ng-repeat="item in categoriesTree[item.id]"></li></ul>');
+				$timeout(function () {
+					element.append($compile(content)(scope));
+				});
+			},
+
+			controller: ["$scope", function ($scope) {
+				// open the subtree of this item
+				$scope.isOpen = false;
+				// this item has children
+				$scope.isExpandable = !!$scope.categoriesTree[$scope.item.id];
+				// this item is currently selected
+				$scope.isSelected = false;
+
+				// handle this by the event rather than an own click handler to 
+				// deal with click and search field actions in a unified way
+				$scope.$on('categories.selected', function (e, category) {
+					// if an item is selected, its subtree and all parent items 
+					// should be opened
+					if ($scope.item.id === category.id) {
+						$scope.isOpen = true;
+						$scope.isSelected = true;
+						// this hits all parent scopes/items
+						$scope.$emit('categories.openParents');
+					} else {
+						$scope.isOpen = false;
+						$scope.isSelected = false;
+					}
+				});
+
+				// if a child item was selected, this item should be opened, too
+				// so the selected item becomes visible in the tree
+				$scope.$on('categories.openParents', function (e) {
+					$scope.isOpen = true;
+					// stop propagation if this is a root element
+					if ($scope.item.parent_id === null) {
+						e.stopPropagation();
+					}
+				});
+			}]
+		};
+	}]
+);
+
+/**
+ * @namespace dias.annotations
+ * @ngdoc directive
+ * @name labelItem
+ * @memberOf dias.annotations
+ * @description An annotation label list item.
+ */
+angular.module('dias.annotations').directive('labelItem', function () {
+		"use strict";
+
+		return {
+			controller: ["$scope", function ($scope) {
+				var confidence = $scope.annotationLabel.confidence;
+
+				if (confidence <= 0.25) {
+					$scope.class = 'label-danger';
+				} else if (confidence <= 0.5 ) {
+					$scope.class = 'label-warning';
+				} else if (confidence <= 0.75 ) {
+					$scope.class = 'label-success';
+				} else {
+					$scope.class = 'label-primary';
+				}
+			}]
+		};
+	}
+);
+
 /**
  * @namespace dias.annotations
  * @ngdoc factory
