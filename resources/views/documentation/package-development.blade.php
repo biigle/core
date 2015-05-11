@@ -12,7 +12,7 @@
 				In this tutorial you will learn what PHP packages are, how they are developed and how you can create a basic DIAS module by implementing your own package.
 			</p>
 
-			<h3>Basics</h3>
+			<h3><a name="basics"></a>Basics</h3>
 
 			<p>
 				DIAS is based on <a href="http://laravel.com/">Laravel</a>, a PHP framework for modern web applications. Laravel is designed in an object oriented and very modular fashion, making it easily extensible with custom modules. DIAS is designed as a core application, providing user and database management, the RESTful API and some basic views (the dashboard or settings, for example). Any additional functionality - like project management - is added as a separate module, keeping the codebase clean and manageable.
@@ -24,7 +24,7 @@
 				So let's have a quick look at how PHP package development usually works.
 			</p>
 
-			<h4>Composer</h4>
+			<h4><a name="composer"></a>Composer</h4>
 
 			<p>
 				In earlier days of PHP, you typically used libraries developed by others using the <code>require</code> keyword. When developing a large application having lots of dependencies, this method becomes very cumbersome an error-prone; not to mention the performance drawbacks of always loading every dependency. This is where Composer comes in.
@@ -33,7 +33,7 @@
 				Composer is a dependency manager for PHP packages that makes managing dependencies of a large PHP application very easy. With a single <code>composer.json</code> configuration file, Composer takes care of downloading all the files and generating an <code>autoload.php</code> file. By <code>require</code>-ing this file, you are able to use all the dependencies you configured. In our case, Laravel takes care of the autoloading.
 			</p>
 
-			<h4>Package development</h4>
+			<h4><a name="package-development"></a>Package development</h4>
 
 			<p>
 				The <code>conposer.json</code> is also used for developing new packages (similar to the <code>package.json</code> for Node.js modules). Each package has such a file, containing the dependencies of the package or the package name, for example. Take a look at the <code>composer.json</code> of the DIAS annotations package:
@@ -64,7 +64,7 @@
 				This is everything you need to know to understand the more detailed description of developing a package below; all you need for a new package is a directory containing a <code>composer.json</code>.
 			</p>
 
-			<h4>Publishing packages</h4>
+			<h4><a name="publishing-packages"></a>Publishing packages</h4>
 
 			<p>
 				By default, Composer looks for packages in the <a href="https://packagist.org/">Packagist</a> package repository. This is a convenient way of publishing packages to a broad audience. But you might want to keep your package private in some cases, either because it is still in development or you simply don't want to publish it. The good news is that you can still use Composer! The local/private alternative to Packagist is a version contol system like <a href="http://git-scm.com/">Git</a> that you should use for developing, anyway.
@@ -73,7 +73,7 @@
  				The VCS works just like the package repository, having master and develop branches as well as tagged versions. All you have to do is tell Composer to look at your private repository, too, while searching for packages. Have a look at the <a href="https://getcomposer.org/doc/05-repositories.md#vcs">Composer documentation</a> for more information.
  			</p>
 
-			<h3>Setting up a new package</h3>
+			<h3><a name="setting-up-a-new-package"></a>Setting up a new package</h3>
 
 			<p>
 				Having learned all the basics, let's now walk through the process of creating a new package. If you have a local installation of DIAS, you should follow along, implementing, and see how it works.
@@ -86,7 +86,7 @@
 				<footer>Aristotle</footer>
 			</blockquote>
 
-			<h4>VCS and directory structure</h4>
+			<h4><a name="vcs-and-directory-structure"></a>VCS and directory structure</h4>
 
 			<p>
 				In this tutorial we will use Git as VCS but you should be able to follow along with Mercurial or even Subversion just fine. So let's begin by creating a new repository for our package.
@@ -114,7 +114,7 @@ git init dias-quotes
 				Normally you would start implementing now, but our new package still lacks a few things to integrate cleanly with Laravel.
 			</p>
 
-			<h4>Service provider</h4>
+			<h4><a name="service-provider"></a>Service provider</h4>
 
 			<p>
 				Each package for Laravel contains one or more <a href="http://laravel.com/docs/5.0/providers">service provider</a> classes. These classes, among other things, tell Laravel where to find the package configuration, views or translation files. So let's create a file called <code>src/QuotesServiceProvider.php</code> with the following content:
@@ -151,7 +151,7 @@ class QuotesServiceProvider extends ServiceProvider {
 				This skeleton is enough for now, we'll populate it later on. But it already enables us to require and install the new module to our DIAS application.
 			</p>
 
-			<h4>Installing the package</h4>
+			<h4><a name="installing-the-package"></a>Installing the package</h4>
 
 			<p>
 				Before the package can be installed, though, we need to make our first commit to the repository:
@@ -204,7 +204,7 @@ git commit -m "Initial commit"
 				Now we are finally done and the new package is installed and activated. Adding a new package to the <code>composer.json</code> and appending the service provider to the <code>app.php</code> is the usual procedure of installing a new DIAS module. To deactivate a module, simply comment out the line in the <code>'providers'</code> array (but be sure that this doesn't break any dependencies).
 			</p>
 
-			<h3>Developing the package</h3>
+			<h3><a name="developing-the-package"></a>Developing the package</h3>
 
 			<p>
 				Although the package is already working, it doesn't do anything yet. The service provider is still empty and we don't have any content. Let's fix that.
@@ -298,7 +298,7 @@ class QuotesServiceProvider extends ServiceProvider {
 				</div>
 			</div>
 
-			<h3>Conclusion</h3>
+			<h3><a name="conclusion"></a>Conclusion</h3>
 
 			<p>
 				In this tutorial you have learned the basics of Laravel package development and how to extend existing DIAS views with custom view mixins. In a next tutorial we'll talk about implementing new routes and controllers, and how to properly test them using the DIAS testing environment. Further down the road are custom assets like CSS or the JavaScript of a custom client side application.

@@ -24,7 +24,7 @@
 				But before writing any production code, there always comes the testing. If you never heard of Test Driven Development, go <a href="http://butunclebob.com/ArticleS.UncleBob.TheThreeRulesOfTdd">ask Uncle Bob</a> and come back afterwards. Having a server application with restricted access and sensitive data thoroughly tested is always essential!
 			</p>
 
-			<h3>Testing</h3>
+			<h3><a name="testing"></a>Testing</h3>
 
 			<p>
 				Testing our <code>quotes</code> package on its own doesn't work for us, since we need Laravel for the routes, views and controllers we intend to implement. The core application has its testing environment already set up with all functional/unit tests residing in <code>tests/unit</code>. All you have to do is run <code>phpunit</code> in the root directory of the DIAS installation and the tests run. It would be best if we were able to test our package just like it would belong to the core application and fortunately there is a very easy way to do so.
@@ -71,13 +71,13 @@ OK (1 test, 1 assertion)
 				Great! Now on to production code.
 			</p>
 
-			<h3>A new route</h3>
+			<h3><a name="a-new-route"></a>A new route</h3>
 
 			<p>
 				Usually, when creating a new view, we also need to create a new route. Routes are all possible URLs your web application can respond to; all RESTful API endpoints are routes, for example, and even the URL of this simple tutorial view is a route, too. What we would like to create is a <code>quotes</code> route, like <code>{{ url('quotes') }}</code>. Additionally only logged in users should be allowed to visit this route.
 			</p>
 
-			<h4>Adding routes with a custom package</h4>
+			<h4><a name="adding-routes-with-a-custom-package"></a>Adding routes with a custom package</h4>
 
 			<p>
 				All routes of the core application are declared in the <code>app/Http/routes.php</code> file. If you take a look at this file, you'll see that route definition can get quite complex. Fortunately being able to add routes with custom packages, too, is a great way of keeping things organized.
@@ -92,7 +92,7 @@ include __DIR__.'/Http/routes.php';
 				Now we can start implementing our first route.
 			</p>
 
-			<h4>Implementing a new route</h4>
+			<h4><a name="implementing-a-new-route"></a>Implementing a new route</h4>
 
 			<p>
 				But first come the tests! Since it is very handy to have the tests for routes, controllers and views in one place (those three always belong together), we'll create a new test class already called <code>tests/QuotesControllerTest.php</code> looking like this:
@@ -159,13 +159,13 @@ Failed asserting that false is true.
 				Now we get a <code>500</code>; that's an improvement, isn't it? You might have already guessed why we get the internal server error here: The controller for handling the request is still missing.
 			</p>
 
-			<h3>A new controller</h3>
+			<h3><a name="a-new-controller"></a>A new controller</h3>
 
 			<p>
 				Controllers typically reside in the <code>Http/Controllers</code> namespace of a Laravel application. We defined the <code>src</code> directory of our package to be the root of the <code>Dias\Modules\Quotes</code> namespace so we now create the new <code>src/Http/Controllers</code> directory to reflect the <code>Dias\Modules\Quotes\Http\Controllers</code> namespace of our new controller.
 			</p>
 
-			<h4>Creating a controller</h4>
+			<h4><a name="creating-a-controller"></a>Creating a controller</h4>
 
 			<p>
 				Let's create the controller by adding a new <code>QuotesController.php</code> to the <code>Controllers</code> directory, containing:
@@ -227,7 +227,7 @@ Failed asserting that 200 matches expected 302.
 [...]
 </pre>
 
-			<h4>Middleware</h4>
+			<h4><a name="middleware"></a>Middleware</h4>
 
 			<p>
 				Restricting the route to authenticated users is really simple since DIAS has everything already implemented. User authentication in Laravel is done using <a href="http://laravel.com/docs/5.0/middleware">middleware</a>, methods that are run before or after each request and are able to intercept it when needed.
@@ -246,7 +246,7 @@ Route::get('quotes', array(
 				That was it. The <code>auth</code> middleware takes care of checking for authentication and redirecting to the login page if needed. Run the test and see it pass to confirm this for yourself.
 			</p>
 
-			<h3>A new view</h3>
+			<h3><a name="a-new-view"></a>A new view</h3>
 
 			<p>
 				While the route and authentication works, there still is no content on our page. From the previous tutorial we already know how to implement a view, so let's create <code>src/resources/views/index.blade.php</code>:
@@ -272,7 +272,7 @@ public function index()
 				Pretty ugly, isn't it? The view doesn't look like the other DIAS views at all and, in fact, isn't even valid HTML. It displays only the code we defined in the view template and nothing else. This is where view inheritance comes in.
 			</p>
 
-			<h4>Inheriting views</h4>
+			<h4><a name="inheriting-views"></a>Inheriting views</h4>
 
 			<p>
 				The DIAS core application has an <code>app</code> view template containing all the scaffolding of a HTML page and loading the default assets. This <code>app</code> template is what makes all DIAS views look alike.
@@ -311,7 +311,7 @@ public function index()
 				The <code>route</code> helper function is an easy way to link to routes with a name. Even if the URL of the route changes, you don't have to change any code in the views.
 			</p>
 
-			<h3>Conclusion</h3>
+			<h3><a name="conclusion"></a>Conclusion</h3>
 
 			<p>
 				That's it! Now you have learned how to create new routes, controllers and views, and how to test them. This is everything you need to develop complex custom modules where all the content is rendered by the server.

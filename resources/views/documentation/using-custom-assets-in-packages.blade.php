@@ -7,8 +7,6 @@
 	<div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
 		<div class="row">
 			<h2>Using custom assets in packages</h2>
-			
-			{{-- USE THE QUOTES VIEW, STYLE IT AND USE JS TO REFRESH IT INTERACIVELY --}}
 
 			<p class="lead">
 				In this tutorial you will master custom package development by learning how to use custom assets like CSS and JavaScript and how to build upon the defaults provided by the core application.
@@ -17,7 +15,7 @@
 				In previous tutorials on package development you've always used assets provided by the core application, like Bootstrap for styling. In this tutorial we'll talk about what assets are provided by default and how you can add to them with your own. If you haven't done the previous tutorialy yet, <a href="{{ route('documentation').'/package-development' }}">start there</a> and come back later.
 			</p>
 
-			<h3>What's already there</h3>
+			<h3><a name="whats-already-there"></a>What's already there</h3>
 
 			<p>
 				The DIAS frontend is built upon two frameworks, <a href="http://getbootstrap.com/">Bootstrap</a> for CSS and <a href="https://angularjs.org/">AngularJS</a> (exdended with the <a href="https://docs.angularjs.org/api/ngResource">ngResource</a> module) for JavaScript. Using <a href="https://angular-ui.github.io/bootstrap/">Angular UI Bootstrap</a> you can use the interactive components of Bootstrap, too.
@@ -29,7 +27,7 @@
 				Each view extending the base <code>app</code> template automatically has all these assets available. While you are able to ignore them and use your own frameworks for package development, you are highly encouraged to stick to the default frameworks, keeping the application lean and consistent.
 			</p>
 
-			<h4>Using the defaults</h4>
+			<h4><a name="using-the-defaults"></a>Using the defaults</h4>
 
 			<p>
 				Using Bootstrap for styling is really simple. Just use the <a href="http://getbootstrap.com/css/">documentation</a> as reference for what classes and components are available and you are done. You'll recall having used it already, implementing a <a href="http://getbootstrap.com/components/#panels">panel</a> in the dashboard view mixin or using the <a href="http://getbootstrap.com/css/#grid">grid system</a> in the new view of your <code>quotes</code> module.
@@ -38,7 +36,7 @@
 				For using AngularJS you can stick to their documentation as well. If you are not familiar with it, you should <a href="https://thinkster.io/a-better-way-to-learn-angularjs/">learn about it</a> first since we can't give you a crash course in the scope of this tutorial. If you already have some experience with AngularJS you should be able to follow along fine. And maybe reading this tutorial will help you understanding the basics of AngularJS, too.
 			</p>
 
-			<h4>Building upon the API</h4>
+			<h4><a name="building-upon-the-api"></a>Building upon the API</h4>
 
 			<p>
 				While showing you how to use the provided client side API and how to extend it with custom assets, we will extend the previously developed <code>quotes</code> module yet again. First we will implement a button that should interactively refresh the displayed quote in the quotes view and then we will add some custom styling.
@@ -90,7 +88,7 @@ angular.module('dias.quotes').controller('QuotesController', function($scope, ms
 				Now you know how to use the provided AngularJS modules in your own modules and how to access the services and factories. Let's go on to extend the new <code>dias.quotes</code> module and include it as custom asset.
 			</p>
 
-			<h3>Adding your own assets</h3>
+			<h3><a name="adding-your-own-assets"></a>Adding your own assets</h3>
 
 			<p>
 				In the little JavaScript example above we implemented a new AngularJS module using the <code>script</code> tag, putting the code directly into the HTML. Working with real JavaScript and CSS you usually load these assets as external files. Now, all public files - including CSS and JavaScript assets - reside in the <code>public</code> directory of a Laravel application. When custom packages like to use their own assets there needs to be a mechanism to <em>publish</em> the package assets to the public directory.
@@ -98,11 +96,8 @@ angular.module('dias.quotes').controller('QuotesController', function($scope, ms
 			<p>
 				Let's see how this works by extending our AngularJS module to asynchronously refresh the quotes.
 			</p>
-			{{-- publishing custom assets --}}
-			{{-- publish because of public directory --}}
-			{{-- dont overwrite assets of others --}}
 
-			<h4>Publishing JavaScript</h4>
+			<h4><a name="publishing-javascript"></a>Publishing JavaScript</h4>
 
 			<p>
 				First, we want to outsource the code written above to its own JavaScript file. Create a new file <code>src/public/assets/scripts/main.js</code> and populate it with the previously written code. Then remove the <code>script</code> tag from the view (not the section, though).
@@ -206,7 +201,7 @@ angular.module('dias.quotes').controller('QuotesController', function($scope, UR
 				This dynamically sets the content of the element to whatever the content of the <code>quote</code> scope property is. Now publish the new JavaScript file, refresh the view and enjoy your asyncronously reloaded quote!
 			</p>
 
-			<h4>Publishing CSS</h4>
+			<h4><a name="publishing-css"></a>Publishing CSS</h4>
 
 			<p>
 				Publishing custom CSS files is very similar to publishing JavaScript. Having the <code>boot</code> method of the service provider already prepared, we now only have to create a new CSS file and include it in the view template. So let's see if we can style the displayed quote a little.
@@ -231,10 +226,10 @@ blockquote {
 				Publish the assets (the command stays the same) and reload the page. Stylish, isn't it?
 			</p>
 
-			<h3>Conclusion</h3>
+			<h3><a name="conclusion"></a>Conclusion</h3>
 
 			<p>
-				Congratulations! Now you know (almost) anything there is to know about developing custom packages for DIAS. What's still left is how you can implement your views so they can be extended yet by others. You have done it yourself, implementing the dashboard view mixin. There are a few things to keep in mind when registering your own spaces for view mixins but we'll cover that in another tutorial.
+				Congratulations! Now you know (almost) anything there is to know about developing custom packages for DIAS. What's still left is how you can implement your views so they can be extended yet by others. You have done it yourself, implementing the dashboard view mixin. There are a few things to keep in mind when registering your own areas for view mixins but we'll cover that in another tutorial.
 			</p>
 			
 			<p>

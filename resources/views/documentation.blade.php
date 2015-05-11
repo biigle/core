@@ -35,13 +35,10 @@
 				Learn how to handle custom assets like CSS and JavaScript in addition to the defaults provided by the core application.
 			</p>
 
-			<h4>Mastering view mixins</h4>
+			<h4><a href="{{ route('documentation').'/mastering-view-mixins' }}">Mastering view mixins</a></h4>
 			<p>
-				Building your custom extensions is nice but what about extending the extensions? Learn how to use the view mixin registry of DIAS allowing other modules to extend yours.
+				Building your custom extensions is nice but what about extending the extensions? Learn how to use the view mixin registry of DIAS, allowing other modules to extend yours.
 			</p>
-
-			{{-- defining view mixins using the View\Controller of DIAS --}}
-			{{-- adding asset view mixins for repeating view mixins --}}
 		</div>
 		<div class="row">
 			<h3>RESTful API</h3>
