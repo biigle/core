@@ -14,4 +14,22 @@ class DocController extends Controller {
 			->with('message', session('message'))
 			->with('messageType', session('messageType'));
 	}
+
+	/**
+	 * Show the package development tutorial
+	 *	
+	 * @param string $name Article name
+	 * @return \Illuminate\Http\Response
+	 */
+	public function article($name)
+	{
+		if (view()->exists('documentation.'.$name))
+		{
+			return view('documentation.'.$name);
+		}
+		else
+		{
+			abort(404);
+		}
+	}
 }

@@ -20,14 +20,16 @@ Route::group(array( 'namespace' => 'Auth' ), function ($router)
 	));
 });
 
-Route::group(array ( 'namespace' => 'Views' ), function ($router)
+Route::group(array ( 'namespace' => 'Views', 'prefix' => 'documentation' ), function ($router)
 {
 	// route name must be different from the 'doc' directory name of the static 
 	// files in the public directory
-	$router->get('documentation', array(
+	$router->get('/', array(
 		'as' => 'documentation',
 		'uses' => 'DocController@index'
 	));
+
+	$router->get('/{article}', 'DocController@article');
 });
 
 // PROTECTED ROUTES

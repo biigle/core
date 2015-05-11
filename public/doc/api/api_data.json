@@ -1989,7 +1989,7 @@
       "examples": [
         {
           "title": "Request example:",
-          "content": "email: 'new@example.com'\npassword: 'TotallySecure'\npasswotd_confirmation: 'TotallySecure'\nfirstname: 'New'\nlastname: 'User'",
+          "content": "email: 'new@example.com'\npassword: 'TotallySecure'\npassword_confirmation: 'TotallySecure'\nfirstname: 'New'\nlastname: 'User'",
           "type": "String"
         }
       ]
@@ -2057,7 +2057,7 @@
       "examples": [
         {
           "title": "Request example:",
-          "content": "email: 'new@example.com'\npassword: 'TotallySecure'\npasswotd_confirmation: 'TotallySecure'\nfirstname: 'New'\nlastname: 'Name'",
+          "content": "email: 'new@example.com'\npassword: 'TotallySecure'\npassword_confirmation: 'TotallySecure'\nfirstname: 'New'\nlastname: 'Name'",
           "type": "String"
         }
       ]
@@ -2125,7 +2125,7 @@
       "examples": [
         {
           "title": "Request example:",
-          "content": "email: 'new@example.com'\npassword: 'TotallySecure'\npasswotd_confirmation: 'TotallySecure'\nfirstname: 'New'\nlastname: 'Name'",
+          "content": "email: 'new@example.com'\npassword: 'TotallySecure'\npassword_confirmation: 'TotallySecure'\nfirstname: 'New'\nlastname: 'Name'",
           "type": "String"
         }
       ]
