@@ -14,6 +14,11 @@
 <div class="transect-container container-fluid" data-ng-app="dias.transects">
 	<h2 class="col-xs-12 clearfix">
 		{{ $transect->name }} <small title="Transect ID {{ $transect->id }}">#{{ $transect->id }} ({{ $transect->images->count() }} images)</small>
+		<span class="pull-right">
+			@foreach ($mixins as $module => $nestedMixins)
+				@include($module.'::transects', array('mixins' => $nestedMixins))
+			@endforeach
+		</span>
 	</h2>
 
 	<div class="col-xs-12 images-container" data-ng-controller="ImagesController" data-transect-id="{{ $transect->id }}" data-image-url="{{ route('image', '') }}" data-api-url="{{ url('api/v1/images/') }}">

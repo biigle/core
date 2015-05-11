@@ -19,8 +19,8 @@ class ImageController extends Controller {
 		return view('transects::images.index')
 			->withImage($image)
 			->withFile($image->getFile())
-			->withMixins($this->modules->getMixins('images.index'))
-			->with('buttonMixins', $this->modules->getMixins('images.index-buttons'))
+			->withMixins($this->modules->getMixins('imagesIndex'))
+			->with('buttonMixins', $this->modules->getMixins('imagesIndexButtons'))
 			->with('message', session('message'))
 			->with('messageType', session('messageType'));
 	}

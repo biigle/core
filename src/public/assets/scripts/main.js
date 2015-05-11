@@ -1,2 +1,168 @@
-angular.module("dias.transects",["dias.api"]);try{angular.module("dias.projects").controller("ProjectTransectController",["$scope","$element","$modal","ProjectTransect","msg",function(e,t,n,r,c){"use strict";var o=function(){var e=n.open({templateUrl:"confirmDeleteTransectModal.html",size:"sm"});return e},i=function(){e.removeTransect(e.$index)},a=function(t){400===t.status?o().result.then(function(t){"force"==t?e.remove(!0):e.cancelRemove()}):c.responseError(t)};e.startRemove=function(){e.removing=!0},e.cancelRemove=function(){e.removing=!1},e.remove=function(t){var n;n=t?{project_id:e.projectId,force:!0}:{project_id:e.projectId},r.detach(n,{id:e.transect.id},i,a)},e.$watch("editing",function(t){t||e.cancelRemove()})}])}catch(e){}try{angular.module("dias.projects").controller("ProjectTransectsController",["$scope","ProjectTransect",function(e,t){"use strict";e.transects=t.query({project_id:e.projectId}),e.edit=function(){e.editing=!e.editing},e.removeTransect=function(t){e.transects.splice(t,1)},e.$watchCollection("transects",function(t){t&&0===t.length&&(e.editing=!1)})}])}catch(e){}angular.module("dias.transects").controller("ImagesController",["$scope","TransectImage","$attrs","$element","$timeout",function(e,t,n,r,c){"use strict";var o,i,a=r[0],s=20,l=100,d=function(){return o=a.getBoundingClientRect(),o.bottom<=window.innerHeight+l},u=function(){d()&&(e.limit+=s,e.$apply())},m=function(){d()?(e.limit+=s,i=c(m,500)):(c.cancel(i),window.addEventListener("scroll",u),window.addEventListener("resize",u))};e.images=t.query({transect_id:n.transectId}),e.imageUrl=n.imageUrl,e.apiUrl=n.apiUrl,e.limit=20,c(m)}]);
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInRyYW5zZWN0cy9tYWluLmpzIiwicHJvamVjdHMvY29udHJvbGxlcnMvUHJvamVjdFRyYW5zZWN0Q29udHJvbGxlci5qcyIsInByb2plY3RzL2NvbnRyb2xsZXJzL1Byb2plY3RUcmFuc2VjdHNDb250cm9sbGVyLmpzIiwidHJhbnNlY3RzL2NvbnRyb2xsZXJzL0ltYWdlc0NvbnRyb2xsZXIuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBSUEsUUFBQSxPQUFBLGtCQUFBLFlDSUEsS0FDQSxRQUFBLE9BQUEsaUJBQUEsV0FBQSw2QkFBQSxTQUFBLFdBQUEsU0FBQSxrQkFBQSxNQUFBLFNBQUEsRUFBQSxFQUFBLEVBQUEsRUFBQSxHQUNBLFlBRUEsSUFBQSxHQUFBLFdBQ0EsR0FBQSxHQUFBLEVBQUEsTUFDQSxZQUFBLGtDQUNBLEtBQUEsTUFHQSxPQUFBLElBR0EsRUFBQSxXQUNBLEVBQUEsZUFBQSxFQUFBLFNBR0EsRUFBQSxTQUFBLEdBQ0EsTUFBQSxFQUFBLE9BQ0EsSUFBQSxPQUFBLEtBQUEsU0FBQSxHQUNBLFNBQUEsRUFDQSxFQUFBLFFBQUEsR0FFQSxFQUFBLGlCQUlBLEVBQUEsY0FBQSxHQUlBLEdBQUEsWUFBQSxXQUNBLEVBQUEsVUFBQSxHQUdBLEVBQUEsYUFBQSxXQUNBLEVBQUEsVUFBQSxHQUdBLEVBQUEsT0FBQSxTQUFBLEdBQ0EsR0FBQSxFQUdBLEdBREEsR0FDQSxXQUFBLEVBQUEsVUFBQSxPQUFBLElBRUEsV0FBQSxFQUFBLFdBR0EsRUFBQSxPQUNBLEdBQUEsR0FBQSxFQUFBLFNBQUEsSUFDQSxFQUFBLElBSUEsRUFBQSxPQUFBLFVBQUEsU0FBQSxHQUNBLEdBQ0EsRUFBQSxvQkFLQSxNQUFBLElDOURBLElBQ0EsUUFBQSxPQUFBLGlCQUFBLFdBQUEsOEJBQUEsU0FBQSxrQkFBQSxTQUFBLEVBQUEsR0FDQSxZQUVBLEdBQUEsVUFBQSxFQUFBLE9BQUEsV0FBQSxFQUFBLFlBRUEsRUFBQSxLQUFBLFdBQ0EsRUFBQSxTQUFBLEVBQUEsU0FHQSxFQUFBLGVBQUEsU0FBQSxHQUNBLEVBQUEsVUFBQSxPQUFBLEVBQUEsSUFJQSxFQUFBLGlCQUFBLFlBQUEsU0FBQSxHQUNBLEdBQUEsSUFBQSxFQUFBLFNBQ0EsRUFBQSxTQUFBLFFBS0EsTUFBQSxJQ3JCQSxRQUFBLE9BQUEsa0JBQUEsV0FBQSxvQkFBQSxTQUFBLGdCQUFBLFNBQUEsV0FBQSxXQUFBLFNBQUEsRUFBQSxFQUFBLEVBQUEsRUFBQSxHQUNBLFlBRUEsSUFDQSxHQUFBLEVBREEsRUFBQSxFQUFBLEdBR0EsRUFBQSxHQUdBLEVBQUEsSUFFQSxFQUFBLFdBRUEsTUFEQSxHQUFBLEVBQUEsd0JBQ0EsRUFBQSxRQUFBLE9BQUEsWUFBQSxHQUdBLEVBQUEsV0FDQSxNQUNBLEVBQUEsT0FBQSxFQUNBLEVBQUEsV0FNQSxFQUFBLFdBQ0EsS0FDQSxFQUFBLE9BQUEsRUFDQSxFQUFBLEVBQUEsRUFBQSxPQUdBLEVBQUEsT0FBQSxHQUNBLE9BQUEsaUJBQUEsU0FBQSxHQUNBLE9BQUEsaUJBQUEsU0FBQSxJQUtBLEdBQUEsT0FBQSxFQUFBLE9BQUEsWUFBQSxFQUFBLGFBRUEsRUFBQSxTQUFBLEVBQUEsU0FFQSxFQUFBLE9BQUEsRUFBQSxPQUVBLEVBQUEsTUFBQSxHQUVBLEVBQUEiLCJmaWxlIjoibWFpbi5qcyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQG5hbWVzcGFjZSBkaWFzLnRyYW5zZWN0c1xuICogQGRlc2NyaXB0aW9uIFRoZSBESUFTIHRyYW5zZWN0cyBtb2R1bGUuXG4gKi9cbmFuZ3VsYXIubW9kdWxlKCdkaWFzLnRyYW5zZWN0cycsIFsnZGlhcy5hcGknXSk7XG4iLCIvKipcbiAqIEBuYW1lc3BhY2UgZGlhcy5wcm9qZWN0c1xuICogQG5nZG9jIGNvbnRyb2xsZXJcbiAqIEBuYW1lIFByb2plY3RUcmFuc2VjdENvbnRyb2xsZXJcbiAqIEBtZW1iZXJPZiBkaWFzLnByb2plY3RzXG4gKiBAZGVzY3JpcHRpb24gQ29udHJvbGxlciBmb3IgYSBzaW5nbGUgdHJhbnNlY3QgaW4gdGhlIHRyYW5zZWN0IGxpc3Qgb2YgdGhlXG4gKiBwcm9qZWN0IGluZGV4IHBhZ2UuXG4gKi9cbnRyeSB7XG5hbmd1bGFyLm1vZHVsZSgnZGlhcy5wcm9qZWN0cycpLmNvbnRyb2xsZXIoJ1Byb2plY3RUcmFuc2VjdENvbnRyb2xsZXInLCBmdW5jdGlvbiAoJHNjb3BlLCAkZWxlbWVudCwgJG1vZGFsLCBQcm9qZWN0VHJhbnNlY3QsIG1zZykge1xuXHRcdFwidXNlIHN0cmljdFwiO1xuXG5cdFx0dmFyIHNob3dDb25maXJtYXRpb25Nb2RhbCA9IGZ1bmN0aW9uICgpIHtcblx0XHRcdHZhciBtb2RhbEluc3RhbmNlID0gJG1vZGFsLm9wZW4oe1xuXHRcdFx0XHR0ZW1wbGF0ZVVybDogJ2NvbmZpcm1EZWxldGVUcmFuc2VjdE1vZGFsLmh0bWwnLFxuXHRcdFx0XHRzaXplOiAnc20nXG5cdFx0XHR9KTtcblxuXHRcdFx0cmV0dXJuIG1vZGFsSW5zdGFuY2U7XG5cdFx0fTtcblxuXHRcdHZhciByZW1vdmVTdWNjZXNzID0gZnVuY3Rpb24gKCkge1xuXHRcdFx0JHNjb3BlLnJlbW92ZVRyYW5zZWN0KCRzY29wZS4kaW5kZXgpO1xuXHRcdH07XG5cblx0XHR2YXIgcmVtb3ZlRXJyb3IgPSBmdW5jdGlvbiAocmVzcG9uc2UpIHtcblx0XHRcdGlmIChyZXNwb25zZS5zdGF0dXMgPT09IDQwMCkge1xuXHRcdFx0XHRzaG93Q29uZmlybWF0aW9uTW9kYWwoKS5yZXN1bHQudGhlbihmdW5jdGlvbiAocmVzdWx0KSB7XG5cdFx0XHRcdFx0aWYgKHJlc3VsdCA9PSAnZm9yY2UnKSB7XG5cdFx0XHRcdFx0XHQkc2NvcGUucmVtb3ZlKHRydWUpO1xuXHRcdFx0XHRcdH0gZWxzZSB7XG5cdFx0XHRcdFx0XHQkc2NvcGUuY2FuY2VsUmVtb3ZlKCk7XG5cdFx0XHRcdFx0fVxuXHRcdFx0XHR9KTtcblx0XHRcdH0gZWxzZSB7XG5cdFx0XHRcdG1zZy5yZXNwb25zZUVycm9yKHJlc3BvbnNlKTtcblx0XHRcdH1cblx0XHR9O1xuXG5cdFx0JHNjb3BlLnN0YXJ0UmVtb3ZlID0gZnVuY3Rpb24gKCkge1xuXHRcdFx0JHNjb3BlLnJlbW92aW5nID0gdHJ1ZTtcblx0XHR9O1xuXG5cdFx0JHNjb3BlLmNhbmNlbFJlbW92ZSA9IGZ1bmN0aW9uICgpIHtcblx0XHRcdCRzY29wZS5yZW1vdmluZyA9IGZhbHNlO1xuXHRcdH07XG5cblx0XHQkc2NvcGUucmVtb3ZlID0gZnVuY3Rpb24gKGZvcmNlKSB7XG5cdFx0XHR2YXIgcGFyYW1zO1xuXG5cdFx0XHRpZiAoZm9yY2UpIHtcblx0XHRcdFx0cGFyYW1zID0ge3Byb2plY3RfaWQ6ICRzY29wZS5wcm9qZWN0SWQsIGZvcmNlOiB0cnVlfTtcblx0XHRcdH0gZWxzZSB7XG5cdFx0XHRcdHBhcmFtcyA9IHtwcm9qZWN0X2lkOiAkc2NvcGUucHJvamVjdElkfTtcblx0XHRcdH1cblxuXHRcdFx0UHJvamVjdFRyYW5zZWN0LmRldGFjaChcblx0XHRcdFx0cGFyYW1zLCB7aWQ6ICRzY29wZS50cmFuc2VjdC5pZH0sXG5cdFx0XHRcdHJlbW92ZVN1Y2Nlc3MsIHJlbW92ZUVycm9yXG5cdFx0XHQpO1xuXHRcdH07XG5cblx0XHQkc2NvcGUuJHdhdGNoKCdlZGl0aW5nJywgZnVuY3Rpb24gKGVkaXRpbmcpIHtcblx0XHRcdGlmICghZWRpdGluZykge1xuXHRcdFx0XHQkc2NvcGUuY2FuY2VsUmVtb3ZlKCk7XG5cdFx0XHR9XG5cdFx0fSk7XG5cdH1cbik7XG59IGNhdGNoIChlKSB7XG5cdC8vIGRpYXMucHJvamVjdHMgaXMgbm90IGxvYWRlZCBvbiB0aGlzIHBhZ2Vcbn0iLCIvKipcbiAqIEBuYW1lc3BhY2UgZGlhcy5wcm9qZWN0c1xuICogQG5nZG9jIGNvbnRyb2xsZXJcbiAqIEBuYW1lIFByb2plY3RUcmFuc2VjdHNDb250cm9sbGVyXG4gKiBAbWVtYmVyT2YgZGlhcy5wcm9qZWN0c1xuICogQGRlc2NyaXB0aW9uIEhhbmRsZXMgbW9kaWZpY2F0aW9uIG9mIHRoZSB0cmFuc2VjdHMgb2YgYSBwcm9qZWN0LlxuICovXG50cnkge1xuYW5ndWxhci5tb2R1bGUoJ2RpYXMucHJvamVjdHMnKS5jb250cm9sbGVyKCdQcm9qZWN0VHJhbnNlY3RzQ29udHJvbGxlcicsIGZ1bmN0aW9uICgkc2NvcGUsIFByb2plY3RUcmFuc2VjdCkge1xuXHRcdFwidXNlIHN0cmljdFwiO1xuXG5cdFx0JHNjb3BlLnRyYW5zZWN0cyA9IFByb2plY3RUcmFuc2VjdC5xdWVyeSh7IHByb2plY3RfaWQ6ICRzY29wZS5wcm9qZWN0SWQgfSk7XG5cblx0XHQkc2NvcGUuZWRpdCA9IGZ1bmN0aW9uICgpIHtcblx0XHRcdCRzY29wZS5lZGl0aW5nID0gISRzY29wZS5lZGl0aW5nO1xuXHRcdH07XG5cblx0XHQkc2NvcGUucmVtb3ZlVHJhbnNlY3QgPSBmdW5jdGlvbiAoaW5kZXgpIHtcblx0XHRcdCRzY29wZS50cmFuc2VjdHMuc3BsaWNlKGluZGV4LCAxKTtcblx0XHR9O1xuXG5cdFx0Ly8gbGVhdmUgZWRpdGluZyBtb2RlIHdoZW4gdGhlcmUgYXJlIG5vIG1vcmUgdHJhbnNlY3RzIHRvIGVkaXRcblx0XHQkc2NvcGUuJHdhdGNoQ29sbGVjdGlvbigndHJhbnNlY3RzJywgZnVuY3Rpb24gKHRyYW5zZWN0cykge1xuXHRcdFx0aWYgKHRyYW5zZWN0cyAmJiB0cmFuc2VjdHMubGVuZ3RoID09PSAwKSB7XG5cdFx0XHRcdCRzY29wZS5lZGl0aW5nID0gZmFsc2U7XG5cdFx0XHR9XG5cdFx0fSk7XG5cdH1cbik7XG59IGNhdGNoIChlKSB7XG5cdC8vIGRpYXMucHJvamVjdHMgaXMgbm90IGxvYWRlZCBvbiB0aGlzIHBhZ2Vcbn0iLCIvKipcbiAqIEBuYW1lc3BhY2UgZGlhcy50cmFuc2VjdHNcbiAqIEBuZ2RvYyBjb250cm9sbGVyXG4gKiBAbmFtZSBJbWFnZXNDb250cm9sbGVyXG4gKiBAbWVtYmVyT2YgZGlhcy50cmFuc2VjdHNcbiAqIEBkZXNjcmlwdGlvbiBDb250cm9sbGVyIGZvciBkaXNwbGF5aW5nIHRoZSBodWdlIGFtb3V0IG9mIGltYWdlcyBvZiBhXG4gKiB0cmFuc2VjdCBvbiBhIHNpbmdlIHBhZ2UuXG4gKi9cbmFuZ3VsYXIubW9kdWxlKCdkaWFzLnRyYW5zZWN0cycpLmNvbnRyb2xsZXIoJ0ltYWdlc0NvbnRyb2xsZXInLCBmdW5jdGlvbiAoJHNjb3BlLCBUcmFuc2VjdEltYWdlLCAkYXR0cnMsICRlbGVtZW50LCAkdGltZW91dCkge1xuXHRcdFwidXNlIHN0cmljdFwiO1xuXG5cdFx0dmFyIGVsZW1lbnQgPSAkZWxlbWVudFswXTtcblx0XHR2YXIgYm91bmRpbmdSZWN0LCB0aW1lb3V0UHJvbWlzZTtcblx0XHQvLyBhZGQgdGhpcyBtdWNoIGltYWdlcyBmb3IgZWFjaCBzdGVwXG5cdFx0dmFyIHN0ZXAgPSAyMDtcblx0XHQvLyBvZmZzZXQgb2YgdGhlIGVsZW1lbnQgYm90dG9tIHRvIHRoZSB3aW5kb3cgbG93ZXIgYm91bmQgaW4gcGl4ZWxzIGF0IFxuXHRcdC8vIHdoaWNoIGEgbmV3IGJ1bmNoIG9mIGltYWdlcyBzaG91bGQgYmUgZGlzcGxheWVkXG5cdFx0dmFyIG5ld1N0ZXBPZmZzZXQgPSAxMDA7XG5cblx0XHR2YXIgbmVlZHNOZXdTdGVwID0gZnVuY3Rpb24gKCkge1xuXHRcdFx0Ym91bmRpbmdSZWN0ID0gZWxlbWVudC5nZXRCb3VuZGluZ0NsaWVudFJlY3QoKTtcblx0XHRcdHJldHVybiBib3VuZGluZ1JlY3QuYm90dG9tIDw9IHdpbmRvdy5pbm5lckhlaWdodCArIG5ld1N0ZXBPZmZzZXQ7XG5cdFx0fTtcblxuXHRcdHZhciBjaGVja0xvd2VyQm91bmQgPSBmdW5jdGlvbiAoKSB7XG5cdFx0XHRpZiAobmVlZHNOZXdTdGVwKCkpIHtcblx0XHRcdFx0JHNjb3BlLmxpbWl0ICs9IHN0ZXA7XG5cdFx0XHRcdCRzY29wZS4kYXBwbHkoKTtcblx0XHRcdH1cblx0XHR9O1xuXG5cdFx0Ly8gYXR0ZW1wdHMgdG8gZmlsbCB0aGUgY3VycmVudCB2aWV3cG9ydCB3aXRoIGltYWdlc1xuXHRcdC8vIHVzZXMgJHRpbWVvdXQgdG8gd2FpdCBmb3IgRE9NIHJlbmRlcmluZywgdGhlbiBjaGVja3MgYWdhaW5cblx0XHR2YXIgaW5pdGlhbGl6ZSA9IGZ1bmN0aW9uICgpIHtcblx0XHRcdGlmIChuZWVkc05ld1N0ZXAoKSkge1xuXHRcdFx0XHQkc2NvcGUubGltaXQgKz0gc3RlcDtcblx0XHRcdFx0dGltZW91dFByb21pc2UgPSAkdGltZW91dChpbml0aWFsaXplLCA1MDApO1xuXHRcdFx0fSBlbHNlIHtcblx0XHRcdFx0Ly8gdmlld3BvcnQgaXMgZnVsbCwgbm93IHN3aXRjaCB0byBldmVudCBsaXN0ZW5lcnMgZm9yIGxvYWRpbmdcblx0XHRcdFx0JHRpbWVvdXQuY2FuY2VsKHRpbWVvdXRQcm9taXNlKTtcblx0XHRcdFx0d2luZG93LmFkZEV2ZW50TGlzdGVuZXIoJ3Njcm9sbCcsIGNoZWNrTG93ZXJCb3VuZCk7XG5cdFx0XHRcdHdpbmRvdy5hZGRFdmVudExpc3RlbmVyKCdyZXNpemUnLCBjaGVja0xvd2VyQm91bmQpO1xuXHRcdFx0fVxuXHRcdH07XG5cblx0XHQvLyBhcnJheSBvZiBhbGwgaW1hZ2UgaWRzIG9mIHRoaXMgdHJhbnNlY3Rcblx0XHQkc2NvcGUuaW1hZ2VzID0gVHJhbnNlY3RJbWFnZS5xdWVyeSh7dHJhbnNlY3RfaWQ6ICRhdHRycy50cmFuc2VjdElkfSk7XG5cdFx0Ly8gdXJsIHByZWZpeCBmb3IgdGhlIGltYWdlIGluZGV4IHBhZ2Vcblx0XHQkc2NvcGUuaW1hZ2VVcmwgPSAkYXR0cnMuaW1hZ2VVcmw7XG5cdFx0Ly8gdXJsIHByZWZpeCBmb3IgdGhlIGltYWdlIGFwaSBlbmRwb2ludFxuXHRcdCRzY29wZS5hcGlVcmwgPSAkYXR0cnMuYXBpVXJsO1xuXHRcdC8vIG51bWJlciBvZiBjdXJyZW50bHkgc2hvd24gaW1hZ2VzXG5cdFx0JHNjb3BlLmxpbWl0ID0gMjA7XG5cblx0XHQkdGltZW91dChpbml0aWFsaXplKTtcblx0fVxuKTsiXSwic291cmNlUm9vdCI6Ii9zb3VyY2UvIn0=
+/**
+ * @namespace dias.transects
+ * @description The DIAS transects module.
+ */
+angular.module('dias.transects', ['dias.api']);
+
+/**
+ * @namespace dias.projects
+ * @ngdoc controller
+ * @name ProjectTransectController
+ * @memberOf dias.projects
+ * @description Controller for a single transect in the transect list of the
+ * project index page.
+ */
+try {
+angular.module('dias.projects').controller('ProjectTransectController', ["$scope", "$element", "$modal", "ProjectTransect", "msg", function ($scope, $element, $modal, ProjectTransect, msg) {
+		"use strict";
+
+		var showConfirmationModal = function () {
+			var modalInstance = $modal.open({
+				templateUrl: 'confirmDeleteTransectModal.html',
+				size: 'sm'
+			});
+
+			return modalInstance;
+		};
+
+		var removeSuccess = function () {
+			$scope.removeTransect($scope.$index);
+		};
+
+		var removeError = function (response) {
+			if (response.status === 400) {
+				showConfirmationModal().result.then(function (result) {
+					if (result == 'force') {
+						$scope.remove(true);
+					} else {
+						$scope.cancelRemove();
+					}
+				});
+			} else {
+				msg.responseError(response);
+			}
+		};
+
+		$scope.startRemove = function () {
+			$scope.removing = true;
+		};
+
+		$scope.cancelRemove = function () {
+			$scope.removing = false;
+		};
+
+		$scope.remove = function (force) {
+			var params;
+
+			if (force) {
+				params = {project_id: $scope.projectId, force: true};
+			} else {
+				params = {project_id: $scope.projectId};
+			}
+
+			ProjectTransect.detach(
+				params, {id: $scope.transect.id},
+				removeSuccess, removeError
+			);
+		};
+
+		$scope.$watch('editing', function (editing) {
+			if (!editing) {
+				$scope.cancelRemove();
+			}
+		});
+	}]
+);
+} catch (e) {
+	// dias.projects is not loaded on this page
+}
+/**
+ * @namespace dias.projects
+ * @ngdoc controller
+ * @name ProjectTransectsController
+ * @memberOf dias.projects
+ * @description Handles modification of the transects of a project.
+ */
+try {
+angular.module('dias.projects').controller('ProjectTransectsController', ["$scope", "ProjectTransect", function ($scope, ProjectTransect) {
+		"use strict";
+
+		$scope.transects = ProjectTransect.query({ project_id: $scope.projectId });
+
+		$scope.edit = function () {
+			$scope.editing = !$scope.editing;
+		};
+
+		$scope.removeTransect = function (index) {
+			$scope.transects.splice(index, 1);
+		};
+
+		// leave editing mode when there are no more transects to edit
+		$scope.$watchCollection('transects', function (transects) {
+			if (transects && transects.length === 0) {
+				$scope.editing = false;
+			}
+		});
+	}]
+);
+} catch (e) {
+	// dias.projects is not loaded on this page
+}
+/**
+ * @namespace dias.transects
+ * @ngdoc controller
+ * @name ImagesController
+ * @memberOf dias.transects
+ * @description Controller for displaying the huge amout of images of a
+ * transect on a singe page.
+ */
+angular.module('dias.transects').controller('ImagesController', ["$scope", "TransectImage", "$attrs", "$element", "$timeout", function ($scope, TransectImage, $attrs, $element, $timeout) {
+		"use strict";
+
+		var element = $element[0];
+		var boundingRect, timeoutPromise;
+		// add this much images for each step
+		var step = 20;
+		// offset of the element bottom to the window lower bound in pixels at 
+		// which a new bunch of images should be displayed
+		var newStepOffset = 100;
+
+		var needsNewStep = function () {
+			boundingRect = element.getBoundingClientRect();
+			return boundingRect.bottom <= window.innerHeight + newStepOffset;
+		};
+
+		var checkLowerBound = function () {
+			if (needsNewStep()) {
+				$scope.limit += step;
+				$scope.$apply();
+			}
+		};
+
+		// attempts to fill the current viewport with images
+		// uses $timeout to wait for DOM rendering, then checks again
+		var initialize = function () {
+			if (needsNewStep()) {
+				$scope.limit += step;
+				timeoutPromise = $timeout(initialize, 500);
+			} else {
+				// viewport is full, now switch to event listeners for loading
+				$timeout.cancel(timeoutPromise);
+				window.addEventListener('scroll', checkLowerBound);
+				window.addEventListener('resize', checkLowerBound);
+			}
+		};
+
+		// array of all image ids of this transect
+		$scope.images = TransectImage.query({transect_id: $attrs.transectId});
+		// url prefix for the image index page
+		$scope.imageUrl = $attrs.imageUrl;
+		// url prefix for the image api endpoint
+		$scope.apiUrl = $attrs.apiUrl;
+		// number of currently shown images
+		$scope.limit = 20;
+
+		$timeout(initialize);
+	}]
+);
+//# sourceMappingURL=main.js.map

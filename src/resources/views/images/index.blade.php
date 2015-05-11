@@ -8,7 +8,7 @@
 		Image <small title="Image ID {{ $image->id }}">#{{ $image->id }}</small>
 		<span class="pull-right">
 			@foreach ($buttonMixins as $module => $nestedMixins)
-				@include($module.'::images.index-buttons', array('mixins' => $nestedMixins))
+				@include($module.'::imagesIndexButtons', array('mixins' => $nestedMixins))
 			@endforeach
 		</span>
 	</h2>
@@ -21,7 +21,7 @@
 	@include('transects::images.index.exif')
 
 	@foreach ($mixins as $module => $nestedMixins)
-		@include($module.'::images.index', array('mixins' => $nestedMixins))
+		@include($module.'::imagesIndex', array('mixins' => $nestedMixins))
 	@endforeach
 </div>
 @endsection
