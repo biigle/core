@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
 use Dias\Model\ModelWithAttributes;
+use Cache;
 
 /**
  * A user.
@@ -136,7 +137,10 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 	 */
 	public function canSeeOneOfProjects($ids)
 	{
-		return $this->projects()->whereIn('id', $ids)->count() > 0;
+		return Cache::remember('user-'.$this->id.'-can-see-projects-'.join('-', $ids), 0.5, function () use ($ids)
+		{
+			return $this->projects()->whereIn('id', $ids)->count() > 0;
+		});
 	}
 
 	/**
@@ -148,13 +152,16 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 	 */
 	public function canEditInOneOfProjects($ids)
 	{
-		foreach ($this->projects()->whereIn('id', $ids)->get() as $project) {
-			if ($project->hasEditor($this) || $project->hasAdmin($this))
-			{
-				return true;
+		return Cache::remember('user-'.$this->id.'-can-edit-projects-'.join('-', $ids), 0.5, function () use ($ids)
+		{
+			foreach ($this->projects()->whereIn('id', $ids)->get() as $project) {
+				if ($project->hasEditor($this) || $project->hasAdmin($this))
+				{
+					return true;
+				}
 			}
-		}
-		return false;
+			return false;
+		});
 	}
 
 	/**
@@ -165,13 +172,16 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 	 */
 	public function canAdminOneOfProjects($ids)
 	{
-		foreach ($this->projects()->whereIn('id', $ids)->get() as $project) {
-			if ($project->hasAdmin($this))
-			{
-				return true;
+		return Cache::remember('user-'.$this->id.'-can-edit-projects-'.join('-', $ids), 0.5, function () use ($ids)
+		{
+			foreach ($this->projects()->whereIn('id', $ids)->get() as $project) {
+				if ($project->hasAdmin($this))
+				{
+					return true;
+				}
 			}
-		}
-		return false;
+			return false;
+		});
 	}
 
 	/**

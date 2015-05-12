@@ -112,6 +112,7 @@ class ProjectTransectApiTest extends ApiTestCase {
 		$this->assertResponseStatus(401);
 
 		$secondProject->addUserId($this->admin->id, Role::adminId());
+		Cache::flush();
 
 		// session cookie authentication
 		$this->be($this->admin);

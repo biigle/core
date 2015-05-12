@@ -158,10 +158,13 @@ class UserTest extends TestCase {
 		$projectIds = array($project->id);
 		$this->assertFalse($this->user->canSeeOneOfProjects($projectIds));
 		$project->addUserId($this->user->id, Role::guestId());
+		Cache::flush();
 		$this->assertTrue($this->user->canSeeOneOfProjects($projectIds));
 		$project->changeRole($this->user->id, Role::editorId());
+		Cache::flush();
 		$this->assertTrue($this->user->canSeeOneOfProjects($projectIds));
 		$project->changeRole($this->user->id, Role::adminId());
+		Cache::flush();
 		$this->assertTrue($this->user->canSeeOneOfProjects($projectIds));
 	}
 
@@ -173,10 +176,13 @@ class UserTest extends TestCase {
 		$projectIds = array($project->id);
 		$this->assertFalse($this->user->canEditInOneOfProjects($projectIds));
 		$project->addUserId($this->user->id, Role::guestId());
+		Cache::flush();
 		$this->assertFalse($this->user->canEditInOneOfProjects($projectIds));
 		$project->changeRole($this->user->id, Role::editorId());
+		Cache::flush();
 		$this->assertTrue($this->user->canEditInOneOfProjects($projectIds));
 		$project->changeRole($this->user->id, Role::adminId());
+		Cache::flush();
 		$this->assertTrue($this->user->canEditInOneOfProjects($projectIds));
 	}
 
@@ -188,10 +194,13 @@ class UserTest extends TestCase {
 		$projectIds = array($project->id);
 		$this->assertFalse($this->user->canAdminOneOfProjects($projectIds));
 		$project->addUserId($this->user->id, Role::guestId());
+		Cache::flush();
 		$this->assertFalse($this->user->canAdminOneOfProjects($projectIds));
 		$project->changeRole($this->user->id, Role::editorId());
+		Cache::flush();
 		$this->assertFalse($this->user->canAdminOneOfProjects($projectIds));
 		$project->changeRole($this->user->id, Role::adminId());
+		Cache::flush();
 		$this->assertTrue($this->user->canAdminOneOfProjects($projectIds));
 	}
 }
