@@ -71,7 +71,9 @@ angular.module('dias.ui.messages').service('msg', function () {
 		this.responseError = function (response) {
 			var data = response.data;
 
-			if (!data) {
+			if (response.status === 401) {
+				_this.danger("Please log in (again).");
+			} else if (!data) {
 				_this.danger("The server didn't respond, sorry.");
 			} else if (data.message) {
 				// error response

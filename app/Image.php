@@ -38,6 +38,37 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract {
 	}
 
 	/**
+	 * Contains the array keys that should be included in the EXIF data
+	 * if the image. All other fields in the original EXIF array will be
+	 * ignored.
+	 * 
+	 * @var array
+	 */
+	private static $exifSubset = array(
+		'FileName',
+		'FileDateTime',
+		'FileSize',
+		'FileType',
+		'MimeType',
+		'Make',
+		'Model',
+		'Orientation',
+		'DateTime',
+		'ExposureTime',
+		'FNumber',
+		'ShutterSpeedValue',
+		'ApertureValue',
+		'ExposureBiasValue',
+		'MaxApertureValue',
+		'MeteringMode',
+		'Flash',
+		'FocalLength',
+		'ExifImageWidth',
+		'ExifImageLength',
+		'ImageType',
+	);
+
+	/**
 	 * Don't maintain timestamps for this model.
 	 *
 	 * @var boolean
@@ -52,7 +83,10 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract {
 	 */
 	protected $visible = array(
 		'id',
-		'transect_id',
+		'transect',
+		'exif',
+		'width',
+		'height',
 	);
 
 	/**
@@ -129,6 +163,22 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract {
 	public function getUrlAttribute()
 	{
 		return $this->transect->url.'/'.$this->filename;
+	}
+
+	/**
+	 * Returns a subset of the EXIF metadata of the image file.
+	 * The subset is defined in `$exifSubset`.
+	 * 
+	 * @return array
+	 */
+	public function getExif()
+	{
+		$exif = $this->getFile()->exif();
+
+		// get only part of the exif data because other fields may contain
+		// corrupted utf8 encoding, which will break json_encode()!
+		// also it limits the size of the JSON output
+		return array_only($exif, self::$exifSubset);
 	}
 
 	/**
