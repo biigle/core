@@ -21,6 +21,7 @@ class ProjectsControllerTest extends TestCase {
 
 		// can't admin the project
 		$project->addUserId($user->id, Role::editorId());
+		Cache::flush();
 		$this->call('GET', 'projects/1');
 		$this->assertResponseOk();
 
