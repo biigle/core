@@ -118,7 +118,7 @@ angular.module('dias.projects').controller('ProjectTransectsController', ["$scop
 angular.module('dias.transects').controller('ImagePageButtonController', ["$scope", "$attrs", function ($scope, $attrs) {
 		"use strict";
 
-		var prefix = $attrs.imageUrl;
+		var prefix = $attrs.imageUrl + '/';
 		var suffix = '';
 		var id = 'image-page-button';
 
@@ -234,7 +234,7 @@ angular.module('dias.transects').controller('TransectsController', ["$scope", "$
 			if (!prefix && !suffix) {
 				return '#';
 			}
-			return prefix + '/' + id + '/' + suffix;
+			return prefix + id + suffix;
 		};
 
 		$scope.setImageUrl = function (p, s) {
