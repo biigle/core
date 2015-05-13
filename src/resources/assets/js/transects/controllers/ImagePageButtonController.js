@@ -8,7 +8,7 @@
 angular.module('dias.transects').controller('ImagePageButtonController', function ($scope, $attrs) {
 		"use strict";
 
-		var prefix = $attrs.imageUrl;
+		var prefix = $attrs.imageUrl + '/';
 		var suffix = '';
 		var id = 'image-page-button';
 

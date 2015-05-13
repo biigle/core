@@ -21,7 +21,7 @@ angular.module('dias.transects').controller('TransectsController', function ($sc
 			if (!prefix && !suffix) {
 				return '#';
 			}
-			return prefix + '/' + id + '/' + suffix;
+			return prefix + id + suffix;
 		};
 
 		$scope.setImageUrl = function (p, s) {
