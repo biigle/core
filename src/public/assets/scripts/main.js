@@ -1315,7 +1315,7 @@ try {
 angular.module('dias.transects').controller('AnnotatorButtonController', ["$scope", "$attrs", function ($scope, $attrs) {
 		"use strict";
 
-		var prefix = $attrs.annotatorUrl;
+		var prefix = $attrs.annotatorUrl + '/';
 		var suffix = '';
 		var id = 'image-annotator-button';
 
