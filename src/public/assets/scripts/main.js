@@ -111,6 +111,34 @@ angular.module('dias.projects').controller('ProjectTransectsController', ["$scop
 /**
  * @namespace dias.transects
  * @ngdoc controller
+ * @name ImagePageButtonController
+ * @memberOf dias.transects
+ * @description Controls the button for going to the image index page when clicking on an image of the transects view.
+ */
+angular.module('dias.transects').controller('ImagePageButtonController', ["$scope", "$attrs", function ($scope, $attrs) {
+		"use strict";
+
+		var prefix = $attrs.imageUrl;
+		var suffix = '';
+		var id = 'image-page-button';
+
+		$scope.selected = false;
+
+		$scope.activate = function () {
+			$scope.toggleButton(id);
+		};
+
+		$scope.$on('button.setActive', function (e, buttonId) {
+			$scope.selected = id === buttonId;
+			if ($scope.selected) {
+				$scope.setImageUrl(prefix, suffix);
+			}
+		});
+	}]
+);
+/**
+ * @namespace dias.transects
+ * @ngdoc controller
  * @name ImagesController
  * @memberOf dias.transects
  * @description Controller for displaying the huge amout of images of a
@@ -129,7 +157,7 @@ angular.module('dias.transects').controller('ImagesController', ["$scope", "Tran
 
 		var needsNewStep = function () {
 			boundingRect = element.getBoundingClientRect();
-			return boundingRect.bottom <= window.innerHeight + newStepOffset;
+			return element.scrollTop >= element.scrollHeight - element.offsetHeight - newStepOffset;
 		};
 
 		var checkLowerBound = function () {
@@ -148,21 +176,93 @@ angular.module('dias.transects').controller('ImagesController', ["$scope", "Tran
 			} else {
 				// viewport is full, now switch to event listeners for loading
 				$timeout.cancel(timeoutPromise);
-				window.addEventListener('scroll', checkLowerBound);
+				element.addEventListener('scroll', checkLowerBound);
 				window.addEventListener('resize', checkLowerBound);
 			}
 		};
 
 		// array of all image ids of this transect
 		$scope.images = TransectImage.query({transect_id: $attrs.transectId});
-		// url prefix for the image index page
-		$scope.imageUrl = $attrs.imageUrl;
-		// url prefix for the image api endpoint
-		$scope.apiUrl = $attrs.apiUrl;
 		// number of currently shown images
 		$scope.limit = 20;
 
 		$timeout(initialize);
+	}]
+);
+/**
+ * @namespace dias.transects
+ * @ngdoc controller
+ * @name SidebarController
+ * @memberOf dias.transects
+ * @description Controller for the sidebar of the transects index page.
+ */
+angular.module('dias.transects').controller('SidebarController', ["$scope", "Image", "$attrs", function ($scope, Image, $attrs) {
+		"use strict";
+
+		$scope.exifKeys = $attrs.exifKeys.split(',');
+
+		var handleImageClick = function (angularEvent, clickEvent, imageId) {
+			if ($scope.active.button) return;
+
+			clickEvent.preventDefault();
+			$scope.imageData = Image.get({id: imageId});
+		};
+
+		$scope.$on('image.selected', handleImageClick);
+	}]
+);
+/**
+ * @namespace dias.transects
+ * @ngdoc controller
+ * @name TransectsController
+ * @memberOf dias.transects
+ * @description Controller for managing the transects index page.
+ */
+angular.module('dias.transects').controller('TransectsController', ["$scope", "$timeout", function ($scope, $timeout) {
+		"use strict";
+
+		var activeButtonStorageKey = 'dias.transects.index.active.button';
+		var prefix = '';
+		var suffix = '';
+
+		$scope.active = {
+			image: '',
+			button: ''
+		};
+
+		$scope.getImageUrl = function (id) {
+			if (!prefix && !suffix) {
+				return '#';
+			}
+			return prefix + '/' + id + '/' + suffix;
+		};
+
+		$scope.setImageUrl = function (p, s) {
+			prefix = p;
+			suffix = s;
+		};
+
+		$scope.imageSelected = function (e, id) {
+			$scope.$broadcast('image.selected', e, id);
+			$scope.active.image = id;
+		};
+
+		$scope.toggleButton = function (id) {
+			if ($scope.active.button == id) {
+				id = '';
+			}
+			$scope.active.button = id;
+			$scope.$broadcast('button.setActive', id);
+			window.localStorage.setItem(activeButtonStorageKey, id);
+		};
+
+		// default active button is image page button if none was set in 
+		// localStorage
+		// $scope.toggleButton(window.localStorage.getItem(activeButtonStorageKey) ||	'image-page-button');
+		$timeout(function () {
+			var id = window.localStorage.getItem(activeButtonStorageKey);
+			$scope.toggleButton(id === null ? 'image-page-button' : id);
+		});
 	}]
 );
 //# sourceMappingURL=main.js.map

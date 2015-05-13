@@ -14,11 +14,11 @@
 			</tr>
 			<tr>
 				<th>Dimensions</th>
-				<td>{{ $file->width() }} &times; {{ $file->height() }} px</td>
+				<td>{{ $image->width }} &times; {{ $image->height }} px</td>
 			</tr>
 			<tr>
 				<th>Size</th>
-				<td>{{ round($file->filesize() / 1e6, 2) }} MByte</td>
+				<td>{{ round($image->exif['FileSize'] / 1e6, 2) }} MByte</td>
 			</tr>
 		</table>
 	</div>

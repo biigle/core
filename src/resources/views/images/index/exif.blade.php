@@ -4,12 +4,12 @@
 			<h3 class="panel-title">EXIF</h3>
 		</div>
 		<table class="table">
-			@if ($exif = $file->exif())
+			@if ($image->exif)
 				@foreach (array('DateTime', 'Model', 'ShutterSpeedValue', 'ApertureValue', 'Flash', 'GPS Latitude', 'GPS Longitude', 'GPS Altitude') as $field)
-					<?php if (!array_key_exists($field, $exif)) continue; ?>
+					<?php if (!array_key_exists($field, $image->exif)) continue; ?>
 					<tr>
 						<th>{{ $field }}</th>
-						<td>{{ $exif[$field] }}</td>
+						<td>{{ $image->exif[$field] }}</td>
 					</tr>
 				@endforeach
 			@else

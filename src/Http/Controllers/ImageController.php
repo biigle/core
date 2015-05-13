@@ -15,10 +15,13 @@ class ImageController extends Controller {
 	{
 		$image = $this->requireNotNull(Image::find($id));
 		$this->requireCanSee($image);
+		$image->setAttribute('exif', $image->getExif());
+		$file = $image->getFile();
+		$image->setAttribute('width', $file->width());
+		$image->setAttribute('height', $file->height());
 
 		return view('transects::images.index')
 			->withImage($image)
-			->withFile($image->getFile())
 			->withMixins($this->modules->getMixins('imagesIndex'))
 			->with('buttonMixins', $this->modules->getMixins('imagesIndexButtons'))
 			->with('message', session('message'))

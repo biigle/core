@@ -19,7 +19,7 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
 
 		var needsNewStep = function () {
 			boundingRect = element.getBoundingClientRect();
-			return boundingRect.bottom <= window.innerHeight + newStepOffset;
+			return element.scrollTop >= element.scrollHeight - element.offsetHeight - newStepOffset;
 		};
 
 		var checkLowerBound = function () {
@@ -38,17 +38,13 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
 			} else {
 				// viewport is full, now switch to event listeners for loading
 				$timeout.cancel(timeoutPromise);
-				window.addEventListener('scroll', checkLowerBound);
+				element.addEventListener('scroll', checkLowerBound);
 				window.addEventListener('resize', checkLowerBound);
 			}
 		};
 
 		// array of all image ids of this transect
 		$scope.images = TransectImage.query({transect_id: $attrs.transectId});
-		// url prefix for the image index page
-		$scope.imageUrl = $attrs.imageUrl;
-		// url prefix for the image api endpoint
-		$scope.apiUrl = $attrs.apiUrl;
 		// number of currently shown images
 		$scope.limit = 20;
 
