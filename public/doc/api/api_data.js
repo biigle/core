@@ -624,6 +624,7 @@ define({ "api": [
     "type": "get",
     "url": "images/:id",
     "title": "Get image information",
+    "description": "<p>Image information includes a subset of the image EXIF  data as well as the transect, the image belongs to</p> ",
     "group": "Images",
     "name": "ShowImages",
     "permission": [
@@ -650,7 +651,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success response:",
-          "content": "{\n   \"id\": 1,\n   \"transect_id\": 1\n}",
+          "content": "{\n   \"id\":1,\n   \"width\":1000,\n   \"height\":750,\n   \"exif\":{\n      \"FileName\":\"IMG_3275.JPG\"\n      \"FileDateTime\":1411554694,\n      \"FileSize\":3014886,\n      \"FileType\":2,\n      \"MimeType\":\"image\\/jpeg\",\n      \"Make\":\"Canon\",\n      \"Model\":\"Canon PowerShot G9\",\n      \"Orientation\":1,\n      \"DateTime\":\"2014:05:09 00:53:45\",\n      \"ExposureTime\":\"1\\/100\",\n      \"FNumber\":\"28\\/10\",\n      \"ShutterSpeedValue\":\"213\\/32\",\n      \"ApertureValue\":\"95\\/32\",\n      \"ExposureBiasValue\":\"0\\/3\",\n      \"MaxApertureValue\":\"95\\/32\",\n      \"MeteringMode\":5,\n      \"Flash\":9,\n      \"FocalLength\":\"7400\\/1000\",\n      \"ExifImageWidth\":3264,\n      \"ExifImageLength\":2448,\n      \"ImageType\":\"IMG:PowerShot G9 JPEG\"\n   },\n   \"transect\":{\n      \"id\":1,\n      \"name\":\"Test transect\",\n      \"media_type_id\":2,\n      \"creator_id\":1,\n      \"created_at\":\"2015-05-04 07:34:04\",\n      \"updated_at\":\"2015-05-04 07:34:04\",\n      \"url\":\"\\/path\\/to\\/transect\\/1\"\n   }\n}",
           "type": "json"
         }
       ]

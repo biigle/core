@@ -188,4 +188,12 @@ class ImageTest extends TestCase {
 		$this->assertFalse(File::exists($image->thumbPath));
 		$this->assertNull($image->fresh());
 	}
+
+	public function testGetExif()
+	{
+		$image = ImageTest::create();
+		$image->save();
+		$exif = $image->getExif();
+		$this->assertEquals('image/jpeg', $exif['MimeType']);
+	}
 }

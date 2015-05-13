@@ -30,7 +30,10 @@ class ImageApiTest extends ApiTestCase {
 		$r = $this->call('GET', '/api/v1/images/1');
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
-		$this->assertNotContains('"transect"', $r->getContent());
+		$this->assertContains('"transect"', $r->getContent());
+		$this->assertContains('"exif"', $r->getContent());
+		$this->assertContains('"width"', $r->getContent());
+		$this->assertContains('"height"', $r->getContent());
 	}
 
 	public function testShowThumb()

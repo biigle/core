@@ -100,6 +100,16 @@
                 <td></td>
             </tr>
                     <tr>
+                <td class="type" id="property_exifSubset">
+                    static                                        private                    array
+                </td>
+                <td>$exifSubset</td>
+                <td class="last">Contains the array keys that should be included in the EXIF data
+if the image. All other fields in the original EXIF array will be
+ignored.</td>
+                <td></td>
+            </tr>
+                    <tr>
                 <td class="type" id="property_timestamps">
                                                                                 boolean
                 </td>
@@ -197,6 +207,15 @@ to the original image file.</p>                </div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
+                    array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getExif">getExif</a>()
+                                            <p>Returns a subset of the EXIF metadata of the image file.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
                     <abbr title="InterventionImage">InterventionImage</abbr>
                 </div>
                 <div class="col-md-8 type">
@@ -267,7 +286,7 @@ external source.</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_createThumbnail">
-        <div class="location">at line 63</div>
+        <div class="location">at line 97</div>
         <code>                private    <abbr title="InterventionImage">InterventionImage</abbr>
     <strong>createThumbnail</strong>()</code>
     </h3>
@@ -294,7 +313,7 @@ external source.</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_transect">
-        <div class="location">at line 80</div>
+        <div class="location">at line 114</div>
         <code>                    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
     <strong>transect</strong>()</code>
     </h3>
@@ -321,7 +340,7 @@ external source.</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_annotations">
-        <div class="location">at line 90</div>
+        <div class="location">at line 124</div>
         <code>                    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
     <strong>annotations</strong>()</code>
     </h3>
@@ -348,7 +367,7 @@ external source.</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_projectIds">
-        <div class="location">at line 100</div>
+        <div class="location">at line 134</div>
         <code>                    array
     <strong>projectIds</strong>()</code>
     </h3>
@@ -375,7 +394,7 @@ external source.</p>                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_getThumbPathAttribute">
-        <div class="location">at line 118</div>
+        <div class="location">at line 152</div>
         <code>                    string
     <strong>getThumbPathAttribute</strong>()</code>
     </h3>
@@ -403,7 +422,7 @@ to the thumbnail image file of this image.</p>                                </
             </div>
                     <div class="method-item">
                     <h3 id="method_getUrlAttribute">
-        <div class="location">at line 129</div>
+        <div class="location">at line 163</div>
         <code>                    string
     <strong>getUrlAttribute</strong>()</code>
     </h3>
@@ -430,8 +449,35 @@ to the original image file.</p>                                </div>
 
             </div>
                     <div class="method-item">
+                    <h3 id="method_getExif">
+        <div class="location">at line 174</div>
+        <code>                    array
+    <strong>getExif</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Returns a subset of the EXIF metadata of the image file.</p>                    <p>The subset is defined in <code>$exifSubset</code>.</p>            </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>array</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
                     <h3 id="method_getThumb">
-        <div class="location">at line 140</div>
+        <div class="location">at line 190</div>
         <code>                    <abbr title="InterventionImage">InterventionImage</abbr>
     <strong>getThumb</strong>()</code>
     </h3>
@@ -459,7 +505,7 @@ doesn't exist.</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_getFile">
-        <div class="location">at line 158</div>
+        <div class="location">at line 208</div>
         <code>                    <abbr title="InterventionImage">InterventionImage</abbr>
     <strong>getFile</strong>()</code>
     </h3>
