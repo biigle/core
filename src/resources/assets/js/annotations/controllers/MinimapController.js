@@ -15,8 +15,9 @@ angular.module('dias.annotations').controller('MinimapController', function ($sc
 			// disable interactions
 			interactions: []
 		});
+
 		// get the same layers than the map
-		minimap.bindTo('layergroup', map);
+		minimap.setLayerGroup(map.getLayerGroup());
 
 		var featureOverlay = new ol.FeatureOverlay({
 			map: minimap,
