@@ -13,7 +13,7 @@ angular.module('dias.annotations').factory('map', function () {
 			controls: [
 				new ol.control.Zoom(),
 				new ol.control.ZoomToExtent(),
-				new ol.control.FullScreen(),
+				new ol.control.FullScreen()
 			]
 		});
 

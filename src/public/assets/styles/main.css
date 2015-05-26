@@ -155,6 +155,8 @@ html, body {
     min-height: 34px; }
   .icon.icon-point {
     background-image: url(../images/point.svg); }
+  .icon.icon-rectangle {
+    background-image: url(../images/rectangle.svg); }
   .icon.icon-polygon {
     background-image: url(../images/polygon.svg); }
   .icon.icon-linestring {

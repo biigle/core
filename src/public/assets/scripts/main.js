@@ -285,8 +285,9 @@ angular.module('dias.annotations').controller('MinimapController', ["$scope", "m
 			// disable interactions
 			interactions: []
 		});
+
 		// get the same layers than the map
-		minimap.bindTo('layergroup', map);
+		minimap.setLayerGroup(map.getLayerGroup());
 
 		var featureOverlay = new ol.FeatureOverlay({
 			map: minimap,
@@ -543,7 +544,7 @@ angular.module('dias.annotations').factory('map', function () {
 			controls: [
 				new ol.control.Zoom(),
 				new ol.control.ZoomToExtent(),
-				new ol.control.FullScreen(),
+				new ol.control.FullScreen()
 			]
 		});
 
@@ -1013,11 +1014,37 @@ angular.module('dias.annotations').service('mapAnnotations', ["map", "images", "
 
 			type = type || 'Point';
 			
-			draw = new ol.interaction.Draw({
-				features: features,
-				type: type,
-				style: styles.editing
-			});
+			if (type === 'Rectangle') {
+				// see https://github.com/openlayers/ol3/blob/100020fd5976612c15b6e80b05a37b230532075d/examples/draw-features.js#L60-72
+				draw = new ol.interaction.Draw({
+					features: features,
+					// use LineString so the geometry always has an end point
+					// the feature will be saved as Polygon nevertheless
+					type: 'LineString',
+					style: styles.editing,
+					maxPoints: 2,
+					geometryFunction: function (coordinates, geometry) {
+						geometry = geometry || new ol.geom.Polygon(null);
+						var start = coordinates[0];
+						var end = coordinates[1];
+						geometry.setCoordinates([[
+							start,
+							[start[0], end[1]],
+							end,
+							[end[0], start[1]],
+							start
+						]]);
+						return geometry;
+					}
+				});
+			} else {
+				draw = new ol.interaction.Draw({
+					features: features,
+					type: type,
+					style: styles.editing
+				});
+			}
+
 			map.addInteraction(modify);
 			map.addInteraction(draw);
 			draw.on('drawend', handleNewFeature);
