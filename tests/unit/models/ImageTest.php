@@ -2,7 +2,7 @@
 
 use Dias\Image;
 
-class ImageTest extends TestCase {
+class ImageTest extends ModelWithAttributesTest {
 
 	public static function create($file = 'test-image.jpg', $transect = false)
 	{
@@ -84,26 +84,6 @@ class ImageTest extends TestCase {
 		AnnotationTest::create($image)->save();
 		$this->assertEquals(2, $image->annotations()->count());
 		$this->assertEquals($annotation->id, $image->annotations()->first()->id);
-	}
-
-	public function testAttributeRelation()
-	{
-		$image = ImageTest::create();
-		$image->save();
-		$attribute = AttributeTest::create();
-		$attribute->save();
-		$image->attributes()->attach($attribute->id, array(
-			'value_int'    => 123,
-			'value_double' => 0.4,
-			'value_string' => 'test'
-		));
-
-		$this->assertEquals(1, $image->attributes()->count());
-
-		$attribute = $image->attributes()->first();
-		$this->assertEquals(123, $attribute->pivot->value_int);
-		$this->assertEquals(0.4, $attribute->pivot->value_double);
-		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
 
 	public function testProjectIds()

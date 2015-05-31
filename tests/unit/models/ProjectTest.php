@@ -4,7 +4,7 @@ use Dias\Project;
 use Dias\Role;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class ProjectTest extends TestCase {
+class ProjectTest extends ModelWithAttributesTest {
 
 	public static function create($name = 'test', $desc = 'test', $user = false)
 	{
@@ -252,31 +252,9 @@ class ProjectTest extends TestCase {
 		$user = UserTest::create();
 		$user->save();
 		$transect = TransectTest::create('test', null, null, $user);
-		$transect->save();
-
-		$project->transects()->attach($transect->id);
+		$project->transects()->save($transect);
 		$this->assertEquals($transect->id, $project->transects()->first()->id);
 		$this->assertEquals(1, $project->transects()->count());
-	}
-
-	public function testAttributeRelation()
-	{
-		$project = ProjectTest::create();
-		$project->save();
-		$attribute = AttributeTest::create();
-		$attribute->save();
-		$project->attributes()->attach($attribute->id, array(
-			'value_int'    => 123,
-			'value_double' => 0.4,
-			'value_string' => 'test'
-		));
-
-		$this->assertEquals(1, $project->attributes()->count());
-
-		$attribute = $project->attributes()->first();
-		$this->assertEquals(123, $attribute->pivot->value_int);
-		$this->assertEquals(0.4, $attribute->pivot->value_double);
-		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
 
 	public function testAddUserId()

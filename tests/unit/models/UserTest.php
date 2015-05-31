@@ -3,7 +3,7 @@
 use Dias\User;
 use Dias\Role;
 
-class UserTest extends TestCase {
+class UserTest extends ModelWithAttributesTest {
 
 	public static function create($fn = 'joe', $ln = 'user', $pw = 'pw', $mail = false)
 	{
@@ -120,25 +120,6 @@ class UserTest extends TestCase {
 		$this->assertObjectNotHasAttribute('updated_at', $jsonUser);
 		$this->assertObjectNotHasAttribute('login_at', $jsonUser);
 		$this->assertObjectNotHasAttribute('api_key', $jsonUser);
-	}
-
-	public function testAttributeRelation()
-	{
-		$this->user->save();
-		$attribute = AttributeTest::create();
-		$attribute->save();
-		$this->user->attributes()->attach($attribute->id, array(
-			'value_int'    => 123,
-			'value_double' => 0.4,
-			'value_string' => 'test'
-		));
-
-		$this->assertEquals(1, $this->user->attributes()->count());
-
-		$attribute = $this->user->attributes()->first();
-		$this->assertEquals(123, $attribute->pivot->value_int);
-		$this->assertEquals(0.4, $attribute->pivot->value_double);
-		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
 
 	public function testApiKey()

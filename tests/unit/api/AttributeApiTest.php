@@ -96,10 +96,9 @@ class AttributeApiTest extends ApiTestCase {
 		$this->assertResponseStatus(404);
 
 		$attribute = AttributeTest::create();
-		$attribute->save();
 		$project = ProjectTest::create();
 		$project->save();
-		$project->attributes()->attach($attribute->id);
+		$project->attributes()->save($attribute);
 
 		$this->call('DELETE', '/api/v1/attributes/'.$attribute->id, array(
 			'_token' => Session::token()

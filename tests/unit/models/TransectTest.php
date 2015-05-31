@@ -2,7 +2,7 @@
 
 use Dias\Transect;
 
-class TransectTest extends TestCase {
+class TransectTest extends ModelWithAttributesTest {
 
 	public static function create($name = 't1', $url = false, $mt = false, $u = false)
 	{
@@ -74,26 +74,6 @@ class TransectTest extends TestCase {
 		$obj->save();
 		$obj->creator()->delete();
 		$this->assertNull($obj->fresh()->creator_id);
-	}
-
-	public function testAttributeRelation()
-	{
-		$transect = TransectTest::create();
-		$transect->save();
-		$attribute = AttributeTest::create();
-		$attribute->save();
-		$transect->attributes()->attach($attribute->id, array(
-			'value_int'    => 123,
-			'value_double' => 0.4,
-			'value_string' => 'test'
-		));
-
-		$this->assertEquals(1, $transect->attributes()->count());
-
-		$attribute = $transect->attributes()->first();
-		$this->assertEquals(123, $attribute->pivot->value_int);
-		$this->assertEquals(0.4, $attribute->pivot->value_double);
-		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
 
 	public function testImages()

@@ -2,7 +2,7 @@
 
 use Dias\Label;
 
-class LabelTest extends TestCase {
+class LabelTest extends ModelWithAttributesTest {
 
 	public static function create($name = 'test', $parent = null, $aphiaId = null)
 	{
@@ -56,26 +56,6 @@ class LabelTest extends TestCase {
 
 		$parent->delete();
 		$this->assertNull($child->fresh());
-	}
-
-	public function testAttributeRelation()
-	{
-		$label = LabelTest::create();
-		$label->save();
-		$attribute = AttributeTest::create();
-		$attribute->save();
-		$label->attributes()->attach($attribute->id, array(
-			'value_int'    => 123,
-			'value_double' => 0.4,
-			'value_string' => 'test'
-		));
-
-		$this->assertEquals(1, $label->attributes()->count());
-
-		$attribute = $label->attributes()->first();
-		$this->assertEquals(123, $attribute->pivot->value_int);
-		$this->assertEquals(0.4, $attribute->pivot->value_double);
-		$this->assertEquals('test', $attribute->pivot->value_string);
 	}
 
 	public function testChildren()
