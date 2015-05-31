@@ -15,6 +15,10 @@ abstract class ModelWithAttributes extends Model {
 	public function attributes()
 	{
 		return $this->belongsToMany('Dias\Attribute')
-			->withPivot('value_int', 'value_double', 'value_string');
+			->withPivot(
+				'value_int as value_int',
+				'value_double as value_double',
+				'value_string as value_string'
+			);
 	}
 }

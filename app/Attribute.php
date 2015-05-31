@@ -25,4 +25,14 @@ class Attribute extends Model {
 	 * @var boolean
 	 */
 	public $timestamps = false;
+
+	/**
+	 * The attributes excluded from the model's JSON form.
+	 *
+	 * @var array
+	 */
+	protected $hidden = array(
+		// don't display info from the pivot table
+		'pivot',
+	);
 }

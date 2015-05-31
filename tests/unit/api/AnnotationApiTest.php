@@ -1,38 +1,50 @@
 <?php
 
-class AnnotationApiTest extends ApiTestCase {
+class AnnotationApiTest extends ModelWithAttributesApiTest {
+
+	protected function getEndpoint()
+	{
+		return '/api/v1/annotations';
+	}
+
+	protected function getModel()
+	{
+		$annotation = AnnotationTest::create();
+		$annotation->save();
+		$this->project->addTransectId($annotation->image->transect->id);
+		return $annotation;
+	}
 
 	private $annotation;
 
 	public function setUp()
 	{
 		parent::setUp();
-		$this->annotation = AnnotationTest::create();
-		$this->annotation->save();
-		$this->project->addTransectId($this->annotation->image->transect->id);
+		$this->annotation = $this->getModel();
 	}
 
 	public function testShow()
 	{
-		$this->doTestApiRoute('GET', '/api/v1/annotations/1');
+		$id = $this->annotation->id;
+		$this->doTestApiRoute('GET', $this->getEndpoint().'/'.$id);
 
 		// api key authentication
-		$this->callToken('GET', '/api/v1/annotations/1', $this->admin);
+		$this->callToken('GET', $this->getEndpoint().'/'.$id, $this->admin);
 		$this->assertResponseOk();
 
 		// permissions
-		$this->callToken('GET', '/api/v1/annotations/1', $this->editor);
+		$this->callToken('GET', $this->getEndpoint().'/'.$id, $this->editor);
 		$this->assertResponseOk();
 
-		$this->callToken('GET', '/api/v1/annotations/1', $this->guest);
+		$this->callToken('GET', $this->getEndpoint().'/'.$id, $this->guest);
 		$this->assertResponseOk();
 
-		$this->callToken('GET', '/api/v1/annotations/1', $this->user);
+		$this->callToken('GET', $this->getEndpoint().'/'.$id, $this->user);
 		$this->assertResponseStatus(401);
 
 		// session cookie authentication
 		$this->be($this->admin);
-		$r = $this->call('GET', '/api/v1/annotations/1');
+		$r = $this->call('GET', $this->getEndpoint().'/'.$id);
 
 		$this->assertResponseOk();
 		$this->assertStringStartsWith('{', $r->getContent());
@@ -48,9 +60,11 @@ class AnnotationApiTest extends ApiTestCase {
 
 	public function testUpdate()
 	{
-		$this->doTestApiRoute('PUT', '/api/v1/annotations/1');
+		$id = $this->annotation->id;
 
-		$this->callToken('PUT', '/api/v1/annotations/1', $this->user);
+		$this->doTestApiRoute('PUT', $this->getEndpoint().'/'.$id);
+
+		$this->callToken('PUT', $this->getEndpoint().'/'.$id, $this->user);
 		$this->assertResponseStatus(401);
 
 		$this->annotation->addPoint(10, 10);
@@ -58,7 +72,7 @@ class AnnotationApiTest extends ApiTestCase {
 		$this->assertEquals(10, $points[0]['y']);
 
 		// api key authentication
-		$this->callToken('PUT', '/api/v1/annotations/1', $this->admin, array(
+		$this->callToken('PUT', $this->getEndpoint().'/'.$id, $this->admin, array(
 			'points' => '[{"x":10, "y":15}, {"x": 100, "y": 200}]'
 		));
 		$this->assertResponseOk();
@@ -70,15 +84,17 @@ class AnnotationApiTest extends ApiTestCase {
 
 	public function testDestroy()
 	{
-		$this->doTestApiRoute('DELETE', '/api/v1/annotations/1');
+		$id = $this->annotation->id;
 
-		$this->callToken('DELETE', '/api/v1/annotations/1', $this->user);
+		$this->doTestApiRoute('DELETE', $this->getEndpoint().'/'.$id);
+
+		$this->callToken('DELETE', $this->getEndpoint().'/'.$id, $this->user);
 		$this->assertResponseStatus(401);
 
 		$this->assertNotNull($this->annotation->fresh());
 
 		// api key authentication
-		$this->callToken('DELETE', '/api/v1/annotations/1', $this->admin);
+		$this->callToken('DELETE', $this->getEndpoint().'/'.$id, $this->admin);
 		$this->assertResponseOk();
 
 		$this->assertNull($this->annotation->fresh());
@@ -86,22 +102,23 @@ class AnnotationApiTest extends ApiTestCase {
 		$this->annotation = AnnotationTest::create();
 		$this->annotation->save();
 		$this->project->addTransectId($this->annotation->image->transect->id);
+		$id = $this->annotation->id;
 
 		// permissions
-		$this->callToken('DELETE', '/api/v1/annotations/2', $this->user);
+		$this->callToken('DELETE', $this->getEndpoint().'/'.$id, $this->user);
 		$this->assertResponseStatus(401);
 
-		$this->callToken('DELETE', '/api/v1/annotations/2', $this->guest);
+		$this->callToken('DELETE', $this->getEndpoint().'/'.$id, $this->guest);
 		$this->assertResponseStatus(401);
 
-		$this->callToken('DELETE', '/api/v1/annotations/2', $this->editor);
+		$this->callToken('DELETE', $this->getEndpoint().'/'.$id, $this->editor);
 		$this->assertResponseOk();
 
 		// session cookie authentication
 
 		// admin could delete but the annotation was already deleted
 		$this->be($this->admin);
-		$this->call('DELETE', '/api/v1/annotations/2', array(
+		$this->call('DELETE', $this->getEndpoint().'/'.$id, array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(404);

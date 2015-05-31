@@ -24,9 +24,12 @@ class CreateAttributesTable extends Migration {
 		*/
 		Schema::create('attributes', function(Blueprint $table) {
 			$table->increments('id');
-			$table->string('name', 512);
+			// attributes are primarily searched by name, so do index
+			$table->string('name', 512)->index();
 			// types, each attribute can have
 			$table->enum('type', array('integer', 'double', 'string', 'boolean'));
+
+			$table->unique('name');
 
 			// NO timestamps
 		});

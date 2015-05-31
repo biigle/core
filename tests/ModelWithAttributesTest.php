@@ -26,9 +26,9 @@ abstract class ModelWithAttributesTest extends TestCase {
 		$this->assertEquals(1, $model->attributes()->count());
 
 		$attribute = $model->attributes()->first();
-		$this->assertEquals(123, $attribute->pivot->value_int);
-		$this->assertEquals(0.4, $attribute->pivot->value_double);
-		$this->assertEquals('test', $attribute->pivot->value_string);
+		$this->assertEquals(123, $attribute->value_int);
+		$this->assertEquals(0.4, $attribute->value_double);
+		$this->assertEquals('test', $attribute->value_string);
 	}
 
 	// PIVOT TABLE INTEGRITY TESTS
