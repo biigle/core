@@ -31,6 +31,50 @@ abstract class ModelWithAttributesTest extends TestCase {
 		$this->assertEquals('test', $attribute->value_string);
 	}
 
+	public function testAttachDiasAttribute()
+	{
+		$model = static::create();
+		$model->save();
+		$attribute = AttributeTest::create('my-test');
+		$attribute->save();
+
+		$this->assertEquals(0, $model->attributes()->count());
+		$model->attachDiasAttribute($attribute->name, 123);
+		$this->assertEquals(1, $model->attributes()->count());
+
+		$this->assertEquals(123, $model->attributes()->find($attribute->id)->value_int);
+
+		$this->setExpectedException('Illuminate\Database\Eloquent\ModelNotFoundException');
+		$model->attachDiasAttribute('does not exist', 123);
+	}
+
+	public function testGetDiasAttribute()
+	{
+		$model = static::create();
+		$model->save();
+		$attribute = AttributeTest::create('my-test');
+		$attribute->save();
+
+		$model->attachDiasAttribute('my-test', 123);
+
+		$result = $model->getDiasAttribute('my-test');
+		$this->assertEquals(123, $result->value_int);
+		$this->assertEquals('my-test', $result->name);
+	}
+
+	public function testDetachDiasAttribute()
+	{
+		$model = static::create();
+		$model->save();
+		$attribute = AttributeTest::create('my-test');
+		$attribute->save();
+		$model->attachDiasAttribute('my-test', 123);
+
+		$this->assertEquals(1, $model->attributes()->count());
+		$model->detachDiasAttribute('my-test');
+		$this->assertEquals(0, $model->attributes()->count());
+	}
+
 	// PIVOT TABLE INTEGRITY TESTS
 
 	public function testAttributeOnDeleteRestrict()

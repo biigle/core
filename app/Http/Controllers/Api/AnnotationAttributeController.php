@@ -29,4 +29,12 @@ class AnnotationAttributeController extends ModelWithAttributesController {
 	 * @apiPermission projectMember
 	 * @apiUse showAttributes
 	 */
+
+	/**
+	 * @api {post} annotations/:id/attributes Attach an attribute
+	 * @apiGroup Annotations
+	 * @apiName StoreAnnotationAttributes
+	 * @apiPermission projectEditor
+	 * @apiUse storeAttributes
+	 */
 }

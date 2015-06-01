@@ -27,10 +27,15 @@ abstract class ModelWithAttributesApiTest extends ApiTestCase {
 		// $this->model->attributes()->save($attr);
 		$this->doTestApiRoute('GET', $this->endpoint);
 
+		$this->callToken('GET', $this->endpoint, $this->user);
+
 		if ($this->model instanceof BelongsToProjectContract)
 		{
-			$this->callToken('GET', $this->endpoint, $this->user);
 			$this->assertResponseStatus(401);
+		}
+		else
+		{
+			$this->assertResponseOk();
 		}
 
 		// api key authentication
@@ -54,10 +59,15 @@ abstract class ModelWithAttributesApiTest extends ApiTestCase {
 		
 		$this->doTestApiRoute('GET', $this->endpoint.'/my-test');
 
+		$this->callToken('GET', $this->endpoint.'/my-test', $this->user);
+
 		if ($this->model instanceof BelongsToProjectContract)
 		{
-			$this->callToken('GET', $this->endpoint.'/my-test', $this->user);
 			$this->assertResponseStatus(401);
+		}
+		else
+		{
+			$this->assertResponseOk();
 		}
 
 		// api key authentication
@@ -71,26 +81,56 @@ abstract class ModelWithAttributesApiTest extends ApiTestCase {
 		$this->assertContains('"name":"my-test"', $r->getContent());
 	}
 
-	// public function testAttributesShow()
-	// {
-	// 	$this->model->attributes()->save(AttributeTest::create('my-test'));
-		
-	// 	$this->doTestApiRoute('GET', $this->endpoint.'/my-test');
+	// TEST VALIDATION exists:attributes
+	public function testAttributesStore()
+	{	
+		$attr = AttributeTest::create('my-test');
+		$attr->save();
+		$attr2 = AttributeTest::create('my-test2');
+		$attr2->save();
 
-	// 	if ($this->model instanceof BelongsToProjectContract)
-	// 	{
-	// 		$this->callToken('GET', $this->endpoint.'/my-test', $this->user);
-	// 		$this->assertResponseStatus(401);
-	// 	}
+		$this->doTestApiRoute('POST', $this->endpoint);
 
-	// 	// api key authentication
-	// 	$this->callToken('GET', $this->endpoint.'/my-test', $this->admin);
-	// 	$this->assertResponseOk();
+		$this->callToken('POST', $this->endpoint, $this->guest);
+		// missing arguments
+		$this->assertResponseStatus(422);
 
-	// 	$this->be($this->admin);
-	// 	$r = $this->call('GET', $this->endpoint.'/my-test');
-	// 	$this->assertStringStartsWith('{', $r->getContent());
-	// 	$this->assertStringEndsWith('}', $r->getContent());
-	// 	$this->assertContains('"name":"my-test"', $r->getContent());
-	// }
+		if ($this->model instanceof BelongsToProjectContract)
+		{
+			$this->callToken('POST', $this->endpoint, $this->guest, array(
+				'name'  => 'my-test',
+				'value' => 123
+			));
+			$this->assertResponseStatus(401);
+		}
+
+		// api key authentication
+		$this->assertEquals(1, $this->model->attributes()->count());
+		$this->callToken('POST', $this->endpoint, $this->editor, array(
+			'name'  => 'my-test',
+			'value' => 123
+		));
+		$this->assertResponseStatus(201);
+		$this->assertEquals(2, $this->model->attributes()->count());
+
+		$this->be($this->admin);
+		$this->call('POST', $this->endpoint, array(
+			'_token' => Session::token(),
+			'name'  => 'my-test',
+			'value' => 123
+		));
+		// the same attribute can only be attached once
+		$this->assertResponseStatus(400);
+
+		$r = $this->call('POST', $this->endpoint, array(
+			'_token' => Session::token(),
+			'name'  => 'my-test2',
+			'value' => 123
+		));
+		$this->assertResponseStatus(201);
+		$this->assertStringStartsWith('{', $r->getContent());
+		$this->assertStringEndsWith('}', $r->getContent());
+		$this->assertContains('"name":"my-test2"', $r->getContent());
+		dd($r->getContent());
+	}
 }

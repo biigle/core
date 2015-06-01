@@ -68,6 +68,14 @@ class AttributeApiTest extends ApiTestCase {
 		$this->assertEquals($count + 1, Attribute::all()->count());
 		$this->assertStringStartsWith('{', $r->getContent());
 		$this->assertStringEndsWith('}', $r->getContent());
+
+		$this->callAjax('POST', '/api/v1/attributes', array(
+			'_token' => Session::token(),
+			'name' => 'expert',
+			'type' => 'boolean'
+		));
+		// name already exists
+		$this->assertResponseStatus(422);
 	}
 
 	public function testDestroy()

@@ -1,6 +1,7 @@
 <?php namespace Dias\Http\Controllers\Api;
 
 use Dias\Contracts\BelongsToProjectContract;
+use Dias\Attribute;
 
 abstract class ModelWithAttributesController extends Controller {
 
@@ -69,6 +70,49 @@ abstract class ModelWithAttributesController extends Controller {
 		{
 			$this->requireCanSee($model);
 		}
-		return $model->attributes()->whereName($name)->first();
+		return $model->getDiasAttribute($name);
+	}
+
+	/**
+	 * Attaches a new attribute to the specified model.
+	 * 
+	 * @apiDefine storeAttributes
+	 * @apiParam {Number} id The model ID.
+	 * @apiParam (Required arguments) {String} name The attribute name.
+	 * @apiParam (Required arguments) {Mixed} value The attribute value, either `Integer`, `Double`, `String` or `Boolean`, depending on the type of the attribute.
+	 * @apiParamExample {String} Request example:
+	 * name: my-test-attribute
+	 * value: 123
+	 * @apiSuccessExample {json} Success response:
+	 * {
+	 *    "id": 4,
+	 *    "name": "my-test-attribute",
+	 *    "type": "integer",
+	 *    "value_int": 123,
+	 *    "value_double": null,
+	 *    "value_string": null
+	 * }
+	 *
+	 * @param int $id Model ID
+	 * @return \Illuminate\Http\Response
+	 */
+	public function store($id)
+	{
+		$this->validate($this->request, Attribute::$attachRules);
+		$model = $this->requireNotNull($this->getModel($id));
+		if ($model instanceof BelongsToProjectContract)
+		{
+			$this->requireCanEdit($model);
+		}
+
+		$model->attachDiasAttribute(
+			$this->request->input('name'),
+			$this->request->input('value')
+		);
+
+		return response(
+			$model->getDiasAttribute($this->request->input('name')),
+			201
+		);
 	}
 }

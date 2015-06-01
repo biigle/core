@@ -57,7 +57,7 @@ Route::group(array(
 	));
 
 	$router->resource('annotations.attributes', 'AnnotationAttributeController', array(
-		'only' => array('index', 'show'/*, 'store', 'update', 'destroy'*/)
+		'only' => array('index', 'show', 'store'/*, 'update', 'destroy'*/)
 	));
 
 	$router->resource('annotations.labels', 'AnnotationLabelController', array(

@@ -36,6 +36,15 @@ class AttributeTest extends TestCase {
 		$obj->save();
 	}
 
+	public function testNameUnique()
+	{
+		$obj = AttributeTest::create();
+		$obj->save();
+		$obj = AttributeTest::create();
+		$this->setExpectedException('Illuminate\Database\QueryException');
+		$obj->save();
+	}
+
 	public function testTypeRequired()
 	{
 		$obj = AttributeTest::create();

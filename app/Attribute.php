@@ -15,8 +15,18 @@ class Attribute extends Model {
 	 * @var array
 	 */
 	public static $createRules = array(
-		'name' => 'required|max:512',
+		'name' => 'required|max:512|unique:attributes',
 		'type' => 'required|in:integer,double,string,boolean',
+	);
+
+	/**
+	 * Validation rules for attaching a new attribute to a model
+	 * 
+	 * @var array
+	 */
+	public static $attachRules = array(
+		'name'  => 'required|max:512|exists:attributes',
+		'value' => 'required'
 	);
 	
 	/**
