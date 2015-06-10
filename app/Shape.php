@@ -66,4 +66,17 @@ class Shape extends Model {
 			return Shape::whereName('Circle')->first()->id;
 		});
 	}
+
+	/**
+	 * The rectangle shape ID.
+	 * 
+	 * @return int
+	 */
+	public static function rectangleId()
+	{
+		return Cache::rememberForever('shape-rectangle', function()
+		{
+			return Shape::whereName('Rectangle')->first()->id;
+		});
+	}
 }

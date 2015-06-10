@@ -2,7 +2,19 @@
 
 use Dias\Label;
 
-class LabelApiTest extends ApiTestCase {
+class LabelApiTest extends ModelWithAttributesApiTest {
+
+	protected function getEndpoint()
+	{
+		return '/api/v1/labels';
+	}
+
+	protected function getModel()
+	{
+		$model = LabelTest::create();
+		$model->save();
+		return $model;
+	}
 
 	public function testIndex()
 	{

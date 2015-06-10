@@ -172,7 +172,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 	 */
 	public function canAdminOneOfProjects($ids)
 	{
-		return Cache::remember('user-'.$this->id.'-can-edit-projects-'.join('-', $ids), 0.5, function () use ($ids)
+		return Cache::remember('user-'.$this->id.'-can-admin-projects-'.join('-', $ids), 0.5, function () use ($ids)
 		{
 			foreach ($this->projects()->whereIn('id', $ids)->get() as $project) {
 				if ($project->hasAdmin($this))

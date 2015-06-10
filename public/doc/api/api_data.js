@@ -60,6 +60,82 @@ define({ "api": [
     "groupTitle": "Annotations"
   },
   {
+    "type": "delete",
+    "url": "annotations/:id/attributes/:name",
+    "title": "Detach an attribute",
+    "group": "Annotations",
+    "name": "DestroyAnnotationAttributes",
+    "permission": [
+      {
+        "name": "projectEditor",
+        "title": "Project editor",
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/AnnotationAttributeController.php",
+    "groupTitle": "Annotations",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "get",
+    "url": "annotations/:id/attributes",
+    "title": "Get all attributes",
+    "group": "Annotations",
+    "name": "IndexAnnotationAttributes",
+    "permission": [
+      {
+        "name": "projectMember",
+        "title": "Project member",
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/AnnotationAttributeController.php",
+    "groupTitle": "Annotations",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "[\n   {\n      \"id\": 2,\n      \"name\": \"test\",\n      \"type\": \"integer\",\n      \"value_int\": 1,\n      \"value_double\": null,\n      \"value_string\": null\n   }\n]",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "get",
     "url": "annotations/:id/labels",
     "title": "Get all labels",
@@ -136,6 +212,114 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "app/Http/Controllers/Api/AnnotationController.php",
     "groupTitle": "Annotations"
+  },
+  {
+    "type": "get",
+    "url": "annotations/:id/attributes/:name",
+    "title": "Get an attribute",
+    "group": "Annotations",
+    "name": "ShowAnnotationAttributes",
+    "permission": [
+      {
+        "name": "projectMember",
+        "title": "Project member",
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/AnnotationAttributeController.php",
+    "groupTitle": "Annotations",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The annotation ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "{\n    \"id\": 2,\n    \"name\": \"test\",\n    \"type\": \"integer\",\n    \"value_int\": 1,\n    \"value_double\": null,\n    \"value_string\": null\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "annotations/:id/attributes",
+    "title": "Attach an attribute",
+    "group": "Annotations",
+    "name": "StoreAnnotationAttributes",
+    "permission": [
+      {
+        "name": "projectEditor",
+        "title": "Project editor",
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/AnnotationAttributeController.php",
+    "groupTitle": "Annotations",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          }
+        ],
+        "Required arguments": [
+          {
+            "group": "Required arguments",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          },
+          {
+            "group": "Required arguments",
+            "type": "Mixed",
+            "optional": false,
+            "field": "value",
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request example:",
+          "content": "name: my-test-attribute\nvalue: 123",
+          "type": "String"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "{\n   \"id\": 4,\n   \"name\": \"my-test-attribute\",\n   \"type\": \"integer\",\n   \"value_int\": 123,\n   \"value_double\": null,\n   \"value_string\": null\n}",
+          "type": "json"
+        }
+      ]
+    }
   },
   {
     "type": "post",
@@ -333,6 +517,59 @@ define({ "api": [
   },
   {
     "type": "put",
+    "url": "annotations/:id/attributes/:name",
+    "title": "Update an attribute",
+    "group": "Annotations",
+    "name": "UpdateAnnotationAttributes",
+    "permission": [
+      {
+        "name": "projectEditor",
+        "title": "Project editor",
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/AnnotationAttributeController.php",
+    "groupTitle": "Annotations",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ],
+        "Required arguments": [
+          {
+            "group": "Required arguments",
+            "type": "Mixed",
+            "optional": false,
+            "field": "value",
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request example:",
+          "content": "name: my-test-attribute\nvalue: 123",
+          "type": "String"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
     "url": "annotation-labels/:id",
     "title": "Update a label",
     "group": "Annotations",
@@ -520,6 +757,43 @@ define({ "api": [
     "groupTitle": "Attributes"
   },
   {
+    "type": "delete",
+    "url": "images/:id/attributes/:name",
+    "title": "Detach an attribute",
+    "group": "Images",
+    "name": "DestroyImageAttributes",
+    "permission": [
+      {
+        "name": "projectEditor",
+        "title": "Project editor",
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ImageAttributeController.php",
+    "groupTitle": "Images",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "get",
     "url": "images/:id/annotations",
     "title": "Get all annotations",
@@ -557,6 +831,91 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "app/Http/Controllers/Api/ImageAnnotationController.php",
     "groupTitle": "Images"
+  },
+  {
+    "type": "get",
+    "url": "images/:id/attributes",
+    "title": "Get all attributes",
+    "group": "Images",
+    "name": "IndexImageAttributes",
+    "permission": [
+      {
+        "name": "projectMember",
+        "title": "Project member",
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ImageAttributeController.php",
+    "groupTitle": "Images",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "[\n   {\n      \"id\": 2,\n      \"name\": \"test\",\n      \"type\": \"integer\",\n      \"value_int\": 1,\n      \"value_double\": null,\n      \"value_string\": null\n   }\n]",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "images/:id/attributes/:name",
+    "title": "Get an attribute",
+    "group": "Images",
+    "name": "ShowImageAttributes",
+    "permission": [
+      {
+        "name": "projectMember",
+        "title": "Project member",
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ImageAttributeController.php",
+    "groupTitle": "Images",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The annotation ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "{\n    \"id\": 2,\n    \"name\": \"test\",\n    \"type\": \"integer\",\n    \"value_int\": 1,\n    \"value_double\": null,\n    \"value_string\": null\n}",
+          "type": "json"
+        }
+      ]
+    }
   },
   {
     "type": "get",
@@ -624,7 +983,7 @@ define({ "api": [
     "type": "get",
     "url": "images/:id",
     "title": "Get image information",
-    "description": "<p>Image information includes a subset of the image EXIF  data as well as the transect, the image belongs to</p> ",
+    "description": "<p>Image information includes a subset of the image EXIF  data as well as the transect, the image belongs to.</p> ",
     "group": "Images",
     "name": "ShowImages",
     "permission": [
@@ -659,6 +1018,158 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "app/Http/Controllers/Api/ImageController.php",
     "groupTitle": "Images"
+  },
+  {
+    "type": "post",
+    "url": "images/:id/attributes",
+    "title": "Attach an attribute",
+    "group": "Images",
+    "name": "StoreImageAttributes",
+    "permission": [
+      {
+        "name": "projectEditor",
+        "title": "Project editor",
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ImageAttributeController.php",
+    "groupTitle": "Images",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          }
+        ],
+        "Required arguments": [
+          {
+            "group": "Required arguments",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          },
+          {
+            "group": "Required arguments",
+            "type": "Mixed",
+            "optional": false,
+            "field": "value",
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request example:",
+          "content": "name: my-test-attribute\nvalue: 123",
+          "type": "String"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "{\n   \"id\": 4,\n   \"name\": \"my-test-attribute\",\n   \"type\": \"integer\",\n   \"value_int\": 123,\n   \"value_double\": null,\n   \"value_string\": null\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "images/:id/attributes/:name",
+    "title": "Update an attribute",
+    "group": "Images",
+    "name": "UpdateImageAttributes",
+    "permission": [
+      {
+        "name": "projectEditor",
+        "title": "Project editor",
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ImageAttributeController.php",
+    "groupTitle": "Images",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ],
+        "Required arguments": [
+          {
+            "group": "Required arguments",
+            "type": "Mixed",
+            "optional": false,
+            "field": "value",
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request example:",
+          "content": "name: my-test-attribute\nvalue: 123",
+          "type": "String"
+        }
+      ]
+    }
+  },
+  {
+    "type": "delete",
+    "url": "labels/:id/attributes/:name",
+    "title": "Detach an attribute",
+    "group": "Labels",
+    "name": "DestroyLabelAttributes",
+    "permission": [
+      {
+        "name": "admin",
+        "title": "Authenticated admin",
+        "description": "<p>The user needs to be global admin.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/LabelAttributeController.php",
+    "groupTitle": "Labels",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ]
+      }
+    }
   },
   {
     "type": "delete",
@@ -702,6 +1213,45 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "labels/:id/attributes",
+    "title": "Get all attributes",
+    "group": "Labels",
+    "name": "IndexLabelAttributes",
+    "permission": [
+      {
+        "name": "user",
+        "title": "Authenticated user",
+        "description": "<p>The user needs to be authenticated.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/LabelAttributeController.php",
+    "groupTitle": "Labels",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "[\n   {\n      \"id\": 2,\n      \"name\": \"test\",\n      \"type\": \"integer\",\n      \"value_int\": 1,\n      \"value_double\": null,\n      \"value_string\": null\n   }\n]",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "labels",
     "title": "Get all label categories",
     "group": "Labels",
@@ -725,6 +1275,52 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "app/Http/Controllers/Api/LabelController.php",
     "groupTitle": "Labels"
+  },
+  {
+    "type": "get",
+    "url": "labels/:id/attributes/:name",
+    "title": "Get an attribute",
+    "group": "Labels",
+    "name": "ShowLabelAttributes",
+    "permission": [
+      {
+        "name": "user",
+        "title": "Authenticated user",
+        "description": "<p>The user needs to be authenticated.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/LabelAttributeController.php",
+    "groupTitle": "Labels",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The annotation ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "{\n    \"id\": 2,\n    \"name\": \"test\",\n    \"type\": \"integer\",\n    \"value_int\": 1,\n    \"value_double\": null,\n    \"value_string\": null\n}",
+          "type": "json"
+        }
+      ]
+    }
   },
   {
     "type": "get",
@@ -764,6 +1360,68 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "app/Http/Controllers/Api/LabelController.php",
     "groupTitle": "Labels"
+  },
+  {
+    "type": "post",
+    "url": "labels/:id/attributes",
+    "title": "Attach an attribute",
+    "group": "Labels",
+    "name": "StoreLabelAttributes",
+    "permission": [
+      {
+        "name": "admin",
+        "title": "Authenticated admin",
+        "description": "<p>The user needs to be global admin.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/LabelAttributeController.php",
+    "groupTitle": "Labels",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          }
+        ],
+        "Required arguments": [
+          {
+            "group": "Required arguments",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          },
+          {
+            "group": "Required arguments",
+            "type": "Mixed",
+            "optional": false,
+            "field": "value",
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request example:",
+          "content": "name: my-test-attribute\nvalue: 123",
+          "type": "String"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "{\n   \"id\": 4,\n   \"name\": \"my-test-attribute\",\n   \"type\": \"integer\",\n   \"value_int\": 123,\n   \"value_double\": null,\n   \"value_string\": null\n}",
+          "type": "json"
+        }
+      ]
+    }
   },
   {
     "type": "post",
@@ -819,6 +1477,59 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "app/Http/Controllers/Api/LabelController.php",
     "groupTitle": "Labels"
+  },
+  {
+    "type": "put",
+    "url": "labels/:id/attributes/:name",
+    "title": "Update an attribute",
+    "group": "Labels",
+    "name": "UpdateLabelAttributes",
+    "permission": [
+      {
+        "name": "admin",
+        "title": "Authenticated admin",
+        "description": "<p>The user needs to be global admin.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/LabelAttributeController.php",
+    "groupTitle": "Labels",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ],
+        "Required arguments": [
+          {
+            "group": "Required arguments",
+            "type": "Mixed",
+            "optional": false,
+            "field": "value",
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request example:",
+          "content": "name: my-test-attribute\nvalue: 123",
+          "type": "String"
+        }
+      ]
+    }
   },
   {
     "type": "put",
@@ -1031,6 +1742,43 @@ define({ "api": [
   },
   {
     "type": "delete",
+    "url": "projects/:id/attributes/:name",
+    "title": "Detach an attribute",
+    "group": "Projects",
+    "name": "DestroyProjectAttributes",
+    "permission": [
+      {
+        "name": "projectAdmin",
+        "title": "Project admin",
+        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ProjectAttributeController.php",
+    "groupTitle": "Projects",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "delete",
     "url": "projects/:pid/transects/:tid",
     "title": "Detach/delete a transect",
     "group": "Projects",
@@ -1183,6 +1931,45 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "projects/:id/attributes",
+    "title": "Get all attributes",
+    "group": "Projects",
+    "name": "IndexProjectAttributes",
+    "permission": [
+      {
+        "name": "projectMember",
+        "title": "Project member",
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ProjectAttributeController.php",
+    "groupTitle": "Projects",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "[\n   {\n      \"id\": 2,\n      \"name\": \"test\",\n      \"type\": \"integer\",\n      \"value_int\": 1,\n      \"value_double\": null,\n      \"value_string\": null\n   }\n]",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "projects/:id/transects",
     "title": "Get all transects",
     "group": "Projects",
@@ -1261,6 +2048,52 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "projects/:id/attributes/:name",
+    "title": "Get an attribute",
+    "group": "Projects",
+    "name": "ShowProjectAttributes",
+    "permission": [
+      {
+        "name": "projectMember",
+        "title": "Project member",
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ProjectAttributeController.php",
+    "groupTitle": "Projects",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The annotation ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "{\n    \"id\": 2,\n    \"name\": \"test\",\n    \"type\": \"integer\",\n    \"value_int\": 1,\n    \"value_double\": null,\n    \"value_string\": null\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "projects/:id",
     "title": "Get a project",
     "group": "Projects",
@@ -1300,6 +2133,68 @@ define({ "api": [
   },
   {
     "type": "post",
+    "url": "projects/:id/attributes",
+    "title": "Attach an attribute",
+    "group": "Projects",
+    "name": "StoreProjectAttributes",
+    "permission": [
+      {
+        "name": "projectAdmin",
+        "title": "Project admin",
+        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ProjectAttributeController.php",
+    "groupTitle": "Projects",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          }
+        ],
+        "Required arguments": [
+          {
+            "group": "Required arguments",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          },
+          {
+            "group": "Required arguments",
+            "type": "Mixed",
+            "optional": false,
+            "field": "value",
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request example:",
+          "content": "name: my-test-attribute\nvalue: 123",
+          "type": "String"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "{\n   \"id\": 4,\n   \"name\": \"my-test-attribute\",\n   \"type\": \"integer\",\n   \"value_int\": 123,\n   \"value_double\": null,\n   \"value_string\": null\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
     "url": "projects",
     "title": "Create a new project",
     "group": "Projects",
@@ -1335,6 +2230,59 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "app/Http/Controllers/Api/ProjectController.php",
     "groupTitle": "Projects"
+  },
+  {
+    "type": "put",
+    "url": "projects/:id/attributes/:name",
+    "title": "Update an attribute",
+    "group": "Projects",
+    "name": "UpdateProjectAttributes",
+    "permission": [
+      {
+        "name": "projectAdmin",
+        "title": "Project admin",
+        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ProjectAttributeController.php",
+    "groupTitle": "Projects",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ],
+        "Required arguments": [
+          {
+            "group": "Required arguments",
+            "type": "Mixed",
+            "optional": false,
+            "field": "value",
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request example:",
+          "content": "name: my-test-attribute\nvalue: 123",
+          "type": "String"
+        }
+      ]
+    }
   },
   {
     "type": "put",
@@ -1559,6 +2507,82 @@ define({ "api": [
     "groupTitle": "Shapes"
   },
   {
+    "type": "delete",
+    "url": "transects/:id/attributes/:name",
+    "title": "Detach an attribute",
+    "group": "Transects",
+    "name": "DestroyTransectAttributes",
+    "permission": [
+      {
+        "name": "projectEditor",
+        "title": "Project editor",
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/TransectAttributeController.php",
+    "groupTitle": "Transects",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "get",
+    "url": "transects/:id/attributes",
+    "title": "Get all attributes",
+    "group": "Transects",
+    "name": "IndexTransectAttributes",
+    "permission": [
+      {
+        "name": "projectMember",
+        "title": "Project member",
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/TransectAttributeController.php",
+    "groupTitle": "Transects",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "[\n   {\n      \"id\": 2,\n      \"name\": \"test\",\n      \"type\": \"integer\",\n      \"value_int\": 1,\n      \"value_double\": null,\n      \"value_string\": null\n   }\n]",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "get",
     "url": "transects/:id/images",
     "title": "Get all images",
@@ -1597,6 +2621,52 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "app/Http/Controllers/Api/TransectImageController.php",
     "groupTitle": "Transects"
+  },
+  {
+    "type": "get",
+    "url": "transects/:id/attributes/:name",
+    "title": "Get an attribute",
+    "group": "Transects",
+    "name": "ShowTransectAttributes",
+    "permission": [
+      {
+        "name": "projectMember",
+        "title": "Project member",
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/TransectAttributeController.php",
+    "groupTitle": "Transects",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The annotation ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "{\n    \"id\": 2,\n    \"name\": \"test\",\n    \"type\": \"integer\",\n    \"value_int\": 1,\n    \"value_double\": null,\n    \"value_string\": null\n}",
+          "type": "json"
+        }
+      ]
+    }
   },
   {
     "type": "get",
@@ -1714,6 +2784,121 @@ define({ "api": [
     "groupTitle": "Transects"
   },
   {
+    "type": "post",
+    "url": "transects/:id/attributes",
+    "title": "Attach an attribute",
+    "group": "Transects",
+    "name": "StoreTransectAttributes",
+    "permission": [
+      {
+        "name": "projectEditor",
+        "title": "Project editor",
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/TransectAttributeController.php",
+    "groupTitle": "Transects",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          }
+        ],
+        "Required arguments": [
+          {
+            "group": "Required arguments",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          },
+          {
+            "group": "Required arguments",
+            "type": "Mixed",
+            "optional": false,
+            "field": "value",
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request example:",
+          "content": "name: my-test-attribute\nvalue: 123",
+          "type": "String"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "{\n   \"id\": 4,\n   \"name\": \"my-test-attribute\",\n   \"type\": \"integer\",\n   \"value_int\": 123,\n   \"value_double\": null,\n   \"value_string\": null\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "transects/:id/attributes/:name",
+    "title": "Update an attribute",
+    "group": "Transects",
+    "name": "UpdateTransectAttributes",
+    "permission": [
+      {
+        "name": "projectEditor",
+        "title": "Project editor",
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/TransectAttributeController.php",
+    "groupTitle": "Transects",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ],
+        "Required arguments": [
+          {
+            "group": "Required arguments",
+            "type": "Mixed",
+            "optional": false,
+            "field": "value",
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request example:",
+          "content": "name: my-test-attribute\nvalue: 123",
+          "type": "String"
+        }
+      ]
+    }
+  },
+  {
     "type": "put",
     "url": "transects/:id",
     "title": "Update a transect",
@@ -1754,8 +2939,245 @@ define({ "api": [
   },
   {
     "type": "delete",
+    "url": "users/:id/attributes/:name",
+    "title": "Detach an attribute",
+    "group": "User",
+    "name": "DestroyUserAttributes",
+    "permission": [
+      {
+        "name": "admin",
+        "title": "Authenticated admin",
+        "description": "<p>The user needs to be global admin.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/UserAttributeController.php",
+    "groupTitle": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "get",
+    "url": "users/:id/attributes",
+    "title": "Get all attributes",
+    "group": "User",
+    "name": "IndexUserAttributes",
+    "permission": [
+      {
+        "name": "user",
+        "title": "Authenticated user",
+        "description": "<p>The user needs to be authenticated.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/UserAttributeController.php",
+    "groupTitle": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "[\n   {\n      \"id\": 2,\n      \"name\": \"test\",\n      \"type\": \"integer\",\n      \"value_int\": 1,\n      \"value_double\": null,\n      \"value_string\": null\n   }\n]",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "users/:id/attributes/:name",
+    "title": "Get an attribute",
+    "group": "User",
+    "name": "ShowUserAttributes",
+    "permission": [
+      {
+        "name": "user",
+        "title": "Authenticated user",
+        "description": "<p>The user needs to be authenticated.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/UserAttributeController.php",
+    "groupTitle": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The annotation ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "{\n    \"id\": 2,\n    \"name\": \"test\",\n    \"type\": \"integer\",\n    \"value_int\": 1,\n    \"value_double\": null,\n    \"value_string\": null\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "users/:id/attributes",
+    "title": "Attach an attribute",
+    "group": "User",
+    "name": "StoreUserAttributes",
+    "permission": [
+      {
+        "name": "admin",
+        "title": "Authenticated admin",
+        "description": "<p>The user needs to be global admin.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/UserAttributeController.php",
+    "groupTitle": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          }
+        ],
+        "Required arguments": [
+          {
+            "group": "Required arguments",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          },
+          {
+            "group": "Required arguments",
+            "type": "Mixed",
+            "optional": false,
+            "field": "value",
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request example:",
+          "content": "name: my-test-attribute\nvalue: 123",
+          "type": "String"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "{\n   \"id\": 4,\n   \"name\": \"my-test-attribute\",\n   \"type\": \"integer\",\n   \"value_int\": 123,\n   \"value_double\": null,\n   \"value_string\": null\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "users/:id/attributes/:name",
+    "title": "Update an attribute",
+    "group": "User",
+    "name": "UpdateUserAttributes",
+    "permission": [
+      {
+        "name": "admin",
+        "title": "Authenticated admin",
+        "description": "<p>The user needs to be global admin.</p> "
+      }
+    ],
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/UserAttributeController.php",
+    "groupTitle": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The model ID.</p> "
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>The attribute name.</p> "
+          }
+        ],
+        "Required arguments": [
+          {
+            "group": "Required arguments",
+            "type": "Mixed",
+            "optional": false,
+            "field": "value",
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request example:",
+          "content": "name: my-test-attribute\nvalue: 123",
+          "type": "String"
+        }
+      ]
+    }
+  },
+  {
+    "type": "delete",
     "url": "users/my",
-    "title": "Delete a user",
+    "title": "Delete the own user",
     "group": "Users",
     "name": "DestroyOwnUser",
     "permission": [

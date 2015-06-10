@@ -1,6 +1,19 @@
 <?php
 
-class TransectApiTest extends ApiTestCase {
+class TransectApiTest extends ModelWithAttributesApiTest {
+
+	protected function getEndpoint()
+	{
+		return '/api/v1/transects';
+	}
+
+	protected function getModel()
+	{
+		$model = TransectTest::create();
+		$model->save();
+		$this->project->addTransectId($model->id);
+		return $model;
+	}
 
 	private $transect;
 

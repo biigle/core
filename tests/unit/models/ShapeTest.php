@@ -53,4 +53,9 @@ class ShapeTest extends TestCase {
 	{
 		$this->assertNotNull(Shape::circleId());
 	}
+
+	public function testRectangleId()
+	{
+		$this->assertNotNull(Shape::rectangleId());
+	}
 }

@@ -27,6 +27,7 @@ class PopulateRequiredRows extends Migration {
 			array('name' => 'LineString'),
 			array('name' => 'Polygon'),
 			array('name' => 'Circle'),
+			array('name' => 'Rectangle'),
 		));
 
 		//TODO attributes?

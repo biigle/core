@@ -93,10 +93,6 @@ abstract class ModelWithAttributesApiTest extends ApiTestCase {
 
 		$this->doTestApiRoute('POST', $this->endpoint);
 
-		$this->callToken('POST', $this->endpoint, $this->guest);
-		// missing arguments
-		$this->assertResponseStatus(422);
-
 		if ($this->model instanceof BelongsToProjectContract)
 		{
 			$this->callToken('POST', $this->endpoint, $this->guest, array(
@@ -117,7 +113,29 @@ abstract class ModelWithAttributesApiTest extends ApiTestCase {
 			$this->assertResponseStatus(401);
 		}
 
-		$this->callToken('POST', $this->endpoint, $this->editor, array(
+		if ($this->model instanceof Dias\Label || $this->model instanceof Dias\User)
+		{
+			$this->callToken('POST', $this->endpoint, $this->admin, array(
+				'name'  => 'my-test',
+				'value' => 123
+			));
+			// only global admins are allowed to edit labels or users
+			$this->assertResponseStatus(401);
+		}
+
+		// global admin is not member of the project, so change the user to
+		// project admin if the tested model belongs to a project
+		$user = $this->globalAdmin;
+		if ($this->model instanceof BelongsToProjectContract)
+		{
+			$user = $this->admin;
+		}
+
+		$this->callToken('POST', $this->endpoint, $user);
+		// missing arguments
+		$this->assertResponseStatus(422);
+
+		$this->callToken('POST', $this->endpoint, $user, array(
 			'name'  => 'my-test123',
 			'value' => 123
 		));
@@ -126,14 +144,14 @@ abstract class ModelWithAttributesApiTest extends ApiTestCase {
 
 		// api key authentication
 		$this->assertEquals(1, $this->model->attributes()->count());
-		$this->callToken('POST', $this->endpoint, $this->editor, array(
+		$this->callToken('POST', $this->endpoint, $user, array(
 			'name'  => 'my-test',
 			'value' => 123
 		));
 		$this->assertResponseStatus(201);
 		$this->assertEquals(2, $this->model->attributes()->count());
 
-		$this->be($this->admin);
+		$this->be($user);
 		$this->call('POST', $this->endpoint, array(
 			'_token' => Session::token(),
 			'name'  => 'my-test',
@@ -161,10 +179,6 @@ abstract class ModelWithAttributesApiTest extends ApiTestCase {
 
 		$this->doTestApiRoute('PUT', $this->endpoint.'/my-test');
 
-		$this->callToken('PUT', $this->endpoint.'/my-test', $this->guest);
-		// missing arguments
-		$this->assertResponseStatus(422);
-
 		if ($this->model instanceof BelongsToProjectContract)
 		{
 			$this->callToken('PUT', $this->endpoint.'/my-test', $this->guest, array(
@@ -183,7 +197,28 @@ abstract class ModelWithAttributesApiTest extends ApiTestCase {
 			$this->assertResponseStatus(401);
 		}
 
-		$this->callToken('PUT', $this->endpoint.'/my-test123', $this->admin, array(
+		if ($this->model instanceof Dias\Label || $this->model instanceof Dias\User)
+		{
+			$this->callToken('PUT', $this->endpoint.'/my-test', $this->admin, array(
+				'value' => 123
+			));
+			// only global admins are allowed to edit labels
+			$this->assertResponseStatus(401);
+		}
+
+		// global admin is not member of the project, so change the user to
+		// project admin if the tested model belongs to a project
+		$user = $this->globalAdmin;
+		if ($this->model instanceof BelongsToProjectContract)
+		{
+			$user = $this->admin;
+		}
+
+		$this->callToken('PUT', $this->endpoint.'/my-test', $user);
+		// missing arguments
+		$this->assertResponseStatus(422);
+
+		$this->callToken('PUT', $this->endpoint.'/my-test123', $user, array(
 			'value' => 321,
 		));
 		// model does not have this attribute
@@ -195,7 +230,7 @@ abstract class ModelWithAttributesApiTest extends ApiTestCase {
 			$this->model->attributes()->whereName('my-test')->first()->value_int
 		);
 
-		$this->callToken('PUT', $this->endpoint.'/my-test', $this->admin, array(
+		$this->callToken('PUT', $this->endpoint.'/my-test', $user, array(
 			'value' => 321
 		));
 		$this->assertResponseOk();
@@ -205,7 +240,7 @@ abstract class ModelWithAttributesApiTest extends ApiTestCase {
 			$this->model->attributes()->whereName('my-test')->first()->value_int
 		);
 
-		$this->be($this->admin);
+		$this->be($user);
 
 		$this->call('PUT', $this->endpoint.'/my-test', array(
 			'_token' => Session::token(),
@@ -237,8 +272,25 @@ abstract class ModelWithAttributesApiTest extends ApiTestCase {
 			$this->assertResponseStatus(401);
 		}
 
+		if ($this->model instanceof Dias\Label || $this->model instanceof Dias\User)
+		{
+			$this->callToken('DELETE', $this->endpoint.'/my-test', $this->admin, array(
+				'value' => 123
+			));
+			// only global admins are allowed to edit labels
+			$this->assertResponseStatus(401);
+		}
+
+		// global admin is not member of the project, so change the user to
+		// project admin if the tested model belongs to a project
+		$user = $this->globalAdmin;
+		if ($this->model instanceof BelongsToProjectContract)
+		{
+			$user = $this->admin;
+		}
+
 		$count = $this->model->attributes()->count();
-		$this->callToken('DELETE', $this->endpoint.'/my-test', $this->admin);
+		$this->callToken('DELETE', $this->endpoint.'/my-test', $user);
 		$this->assertEquals($count - 1, $this->model->attributes()->count());
 	}
 }

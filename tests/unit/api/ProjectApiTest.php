@@ -3,7 +3,17 @@
 use Dias\Project;
 use Dias\Role;
 
-class ProjectApiTest extends ApiTestCase {
+class ProjectApiTest extends ModelWithAttributesApiTest {
+
+	protected function getEndpoint()
+	{
+		return '/api/v1/projects';
+	}
+
+	protected function getModel()
+	{
+		return $this->project;
+	}
 
 	public function testIndex()
 	{
@@ -40,7 +50,7 @@ class ProjectApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->admin);
-		$this->call('GET', '/api/v1/projects/2');
+		$this->call('GET', '/api/v1/projects/999');
 		$this->assertResponseStatus(404);
 
 		$r = $this->call('GET', '/api/v1/projects/1');
@@ -66,7 +76,7 @@ class ProjectApiTest extends ApiTestCase {
 
 		// session cookie authentication
 		$this->be($this->admin);
-		$this->call('PUT', '/api/v1/projects/2', array(
+		$this->call('PUT', '/api/v1/projects/999', array(
 			'_token' => Session::token()
 		));
 		$this->assertResponseStatus(404);

@@ -11,7 +11,8 @@
 |
 */
 
-// PUBLIC ROUTES
+// PUBLIC ROUTES --------------------------------------------------------------
+
 Route::group(array( 'namespace' => 'Auth' ), function ($router)
 {
 	$router->controllers(array(
@@ -32,7 +33,8 @@ Route::group(array ( 'namespace' => 'Views', 'prefix' => 'documentation' ), func
 	$router->get('/{article}', 'DocController@article');
 });
 
-// PROTECTED ROUTES
+// PROTECTED ROUTES -----------------------------------------------------------
+
 Route::group(array( 'namespace' => 'Views', 'middleware' => 'auth' ), function ($router)
 {
 	$router->get('/', array(
@@ -82,7 +84,15 @@ Route::group(array(
 		'only' => array('index', 'store')
 	));
 
+	$router->resource('images.attributes', 'ImageAttributeController', array(
+		'only' => array('index', 'show', 'store', 'update', 'destroy')
+	));
+
 	$router->resource('labels', 'LabelController', array(
+		'only' => array('index', 'show', 'store', 'update', 'destroy')
+	));
+
+	$router->resource('labels.attributes', 'LabelAttributeController', array(
 		'only' => array('index', 'show', 'store', 'update', 'destroy')
 	));
 
@@ -93,6 +103,10 @@ Route::group(array(
 	$router->get('projects/my', 'ProjectController@index');
 	$router->resource('projects', 'ProjectController', array(
 		'only' => array('show', 'update', 'store', 'destroy')
+	));
+
+	$router->resource('projects.attributes', 'ProjectAttributeController', array(
+		'only' => array('index', 'show', 'store', 'update', 'destroy')
 	));
 
 	$router->post(
@@ -123,6 +137,10 @@ Route::group(array(
 		'only' => array('show', 'update')
 	));
 
+	$router->resource('transects.attributes', 'TransectAttributeController', array(
+		'only' => array('index', 'show', 'store', 'update', 'destroy')
+	));
+
 	$router->resource('transects.images', 'TransectImageController', array(
 		'only' => array('index')
 	));
@@ -134,5 +152,9 @@ Route::group(array(
 	$router->delete('users/my', 'UserController@destroyOwn');
 	$router->resource('users', 'UserController', array(
 		'only' => array('index', 'show', 'update', 'store', 'destroy')
+	));
+
+	$router->resource('users.attributes', 'UserAttributeController', array(
+		'only' => array('index', 'show', 'store', 'update', 'destroy')
 	));
 });

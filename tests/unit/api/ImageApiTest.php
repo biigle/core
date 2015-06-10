@@ -2,7 +2,20 @@
 
 use Dias\Image;
 
-class ImageApiTest extends ApiTestCase {
+class ImageApiTest extends ModelWithAttributesApiTest {
+
+	protected function getEndpoint()
+	{
+		return '/api/v1/images';
+	}
+
+	protected function getModel()
+	{
+		$model = ImageTest::create();
+		$model->save();
+		$this->project->addTransectId($model->transect->id);
+		return $model;
+	}
 
 	private $image;
 

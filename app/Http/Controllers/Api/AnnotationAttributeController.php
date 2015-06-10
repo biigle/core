@@ -42,7 +42,7 @@ class AnnotationAttributeController extends ModelWithAttributesController {
 	 * @api {put} annotations/:id/attributes/:name Update an attribute
 	 * @apiGroup Annotations
 	 * @apiName UpdateAnnotationAttributes
-	 * @apiPermission projectMember
+	 * @apiPermission projectEditor
 	 * @apiUse updateAttributes
 	 */
 
@@ -50,7 +50,7 @@ class AnnotationAttributeController extends ModelWithAttributesController {
 	 * @api {delete} annotations/:id/attributes/:name Detach an attribute
 	 * @apiGroup Annotations
 	 * @apiName DestroyAnnotationAttributes
-	 * @apiPermission projectMember
+	 * @apiPermission projectEditor
 	 * @apiUse destroyAttributes
 	 */
 }

@@ -2,7 +2,19 @@
 
 use Dias\User;
 
-class UserApiTest extends ApiTestCase {
+class UserApiTest extends ModelWithAttributesApiTest {
+
+	protected function getEndpoint()
+	{
+		return '/api/v1/users';
+	}
+
+	protected function getModel()
+	{
+		$model = UserTest::create();
+		$model->save();
+		return $model;
+	}
 
 	public function testIndex()
 	{

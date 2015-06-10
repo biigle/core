@@ -3,7 +3,22 @@
 use Dias\Contracts\BelongsToProjectContract;
 use Dias\Attribute;
 
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
+
 abstract class ModelWithAttributesController extends Controller {
+
+	/**
+	 * Creates a new ModelWithAttributesController instance.
+	 * This constructor allows child controllers to define own middleware.
+	 * 
+	 * @param Guard $auth
+	 * @param Request $request
+	 */
+	public function __construct(Guard $auth, Request $request)
+	{
+		parent::__construct($auth, $request);
+	}
 
 	/**
 	 * Returns the ModelWithAttributes with the specified ID.
@@ -115,6 +130,11 @@ abstract class ModelWithAttributesController extends Controller {
 			$this->requireCanEdit($model);
 		}
 
+		if ($model instanceof \Dias\Project)
+		{
+			$this->requireCanAdmin($model);
+		}
+
 		$model->attachDiasAttribute(
 			$this->request->input('name'),
 			$this->request->input('value')
@@ -145,9 +165,15 @@ abstract class ModelWithAttributesController extends Controller {
 	{
 		$this->validate($this->request, Attribute::$updateRules);
 		$model = $this->requireNotNull($this->getModel($id));
+
 		if ($model instanceof BelongsToProjectContract)
 		{
 			$this->requireCanEdit($model);
+		}
+
+		if ($model instanceof \Dias\Project)
+		{
+			$this->requireCanAdmin($model);
 		}
 
 		try {
@@ -172,9 +198,15 @@ abstract class ModelWithAttributesController extends Controller {
 	public function destroy($id, $name)
 	{
 		$model = $this->requireNotNull($this->getModel($id));
+
 		if ($model instanceof BelongsToProjectContract)
 		{
 			$this->requireCanEdit($model);
+		}
+
+		if ($model instanceof \Dias\Project)
+		{
+			$this->requireCanAdmin($model);
 		}
 
 		$model->detachDiasAttribute($name);
