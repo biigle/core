@@ -344,7 +344,7 @@ class UserController extends Controller {
 	/**
 	 * Removes the own user.
 	 * 
-	 * @api {delete} users/my Delete a user
+	 * @api {delete} users/my Delete the own user
 	 * @apiGroup Users
 	 * @apiName DestroyOwnUser
 	 * @apiPermission user

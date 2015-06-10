@@ -49,6 +49,13 @@ class AttributeApiTest extends ApiTestCase {
 		$this->callToken('POST', '/api/v1/attributes', $this->globalAdmin);
 		$this->assertResponseStatus(422);
 
+		$this->callToken('POST', '/api/v1/attributes', $this->globalAdmin, array(
+			'name' => 'expert name',
+			'type' => 'boolean'
+		));
+		// name must pass alpha_dash validation
+		$this->assertResponseStatus(422);
+
 		// enum data type is not supported in SQLite
 		$this->callToken('POST', '/api/v1/attributes', $this->globalAdmin, array(
 			'name' => 'expert',

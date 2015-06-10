@@ -15,7 +15,7 @@ class Attribute extends Model {
 	 * @var array
 	 */
 	public static $createRules = array(
-		'name' => 'required|max:512|unique:attributes',
+		'name' => 'required|max:512|alpha_dash|unique:attributes',
 		'type' => 'required|in:integer,double,string,boolean',
 	);
 
@@ -26,6 +26,15 @@ class Attribute extends Model {
 	 */
 	public static $attachRules = array(
 		'name'  => 'required|max:512|exists:attributes',
+		'value' => 'required'
+	);
+
+	/**
+	 * Validation rules for updating an attribute of a model
+	 * 
+	 * @var array
+	 */
+	public static $updateRules = array(
 		'value' => 'required'
 	);
 	

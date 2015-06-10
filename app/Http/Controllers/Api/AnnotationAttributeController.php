@@ -37,4 +37,20 @@ class AnnotationAttributeController extends ModelWithAttributesController {
 	 * @apiPermission projectEditor
 	 * @apiUse storeAttributes
 	 */
+
+	/**
+	 * @api {put} annotations/:id/attributes/:name Update an attribute
+	 * @apiGroup Annotations
+	 * @apiName UpdateAnnotationAttributes
+	 * @apiPermission projectMember
+	 * @apiUse updateAttributes
+	 */
+
+	/**
+	 * @api {delete} annotations/:id/attributes/:name Detach an attribute
+	 * @apiGroup Annotations
+	 * @apiName DestroyAnnotationAttributes
+	 * @apiPermission projectMember
+	 * @apiUse destroyAttributes
+	 */
 }

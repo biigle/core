@@ -70,7 +70,17 @@ abstract class ModelWithAttributesController extends Controller {
 		{
 			$this->requireCanSee($model);
 		}
-		return $model->getDiasAttribute($name);
+
+		$attribute = null;
+
+		try {
+			$attribute = $model->getDiasAttribute($name);	
+		} catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+			// attribute doesn't exist
+			$this->requireNotNull(null);
+		}
+
+		return $attribute;
 	}
 
 	/**
@@ -114,5 +124,59 @@ abstract class ModelWithAttributesController extends Controller {
 			$model->getDiasAttribute($this->request->input('name')),
 			201
 		);
+	}
+
+	/**
+	 * Updates an attribute of the specified model.
+	 * 
+	 * @apiDefine updateAttributes
+	 * @apiParam {Number} id The model ID.
+	 * @apiParam {String} name The attribute name.
+	 * @apiParam (Required arguments) {Mixed} value The attribute value, either `Integer`, `Double`, `String` or `Boolean`, depending on the type of the attribute.
+	 * @apiParamExample {String} Request example:
+	 * name: my-test-attribute
+	 * value: 123
+	 *
+	 * @param int $id Model ID
+	 * @param String $name Attribute name
+	 * @return \Illuminate\Http\Response
+	 */
+	public function update($id, $name)
+	{
+		$this->validate($this->request, Attribute::$updateRules);
+		$model = $this->requireNotNull($this->getModel($id));
+		if ($model instanceof BelongsToProjectContract)
+		{
+			$this->requireCanEdit($model);
+		}
+
+		try {
+			$model->updateDiasAttribute($name, $this->request->input('value'));	
+		} catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+			// attribute doesn't exist
+			$this->requireNotNull(null);
+		}
+	}
+
+	/**
+	 * Detaches an attribute from the specified model.
+	 * 
+	 * @apiDefine destroyAttributes
+	 * @apiParam {Number} id The model ID.
+	 * @apiParam {String} name The attribute name.
+	 *
+	 * @param int $id Model ID
+	 * @param String $name Attribute name
+	 * @return \Illuminate\Http\Response
+	 */
+	public function destroy($id, $name)
+	{
+		$model = $this->requireNotNull($this->getModel($id));
+		if ($model instanceof BelongsToProjectContract)
+		{
+			$this->requireCanEdit($model);
+		}
+
+		$model->detachDiasAttribute($name);
 	}
 }

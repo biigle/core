@@ -60,6 +60,10 @@ abstract class ModelWithAttributesTest extends TestCase {
 		$result = $model->getDiasAttribute('my-test');
 		$this->assertEquals(123, $result->value_int);
 		$this->assertEquals('my-test', $result->name);
+
+		// model doesn't have this attribute
+		$this->setExpectedException('Illuminate\Database\Eloquent\ModelNotFoundException');
+		$model->getDiasAttribute('my-test123');
 	}
 
 	public function testDetachDiasAttribute()
@@ -73,6 +77,19 @@ abstract class ModelWithAttributesTest extends TestCase {
 		$this->assertEquals(1, $model->attributes()->count());
 		$model->detachDiasAttribute('my-test');
 		$this->assertEquals(0, $model->attributes()->count());
+	}
+
+	public function testUpdateDiasAttribute()
+	{
+		$model = static::create();
+		$model->save();
+		$attribute = AttributeTest::create('my-test');
+		$attribute->save();
+		$model->attachDiasAttribute('my-test', 123);
+
+		$this->assertEquals(123, $model->getDiasAttribute('my-test')->value_int);
+		$model->updateDiasAttribute('my-test', 321);
+		$this->assertEquals(321, $model->getDiasAttribute('my-test')->value_int);
 	}
 
 	// PIVOT TABLE INTEGRITY TESTS
