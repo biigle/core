@@ -56,6 +56,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 					// radius is the x value of the second point of the circle
 					return [geometry.getCenter(), [geometry.getRadius(), 0]];
 				case 'Polygon':
+				case 'Rectangle':
 					return geometry.getCoordinates()[0];
 				case 'Point':
 					return [geometry.getCoordinates()];
@@ -85,9 +86,13 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 				case 'Point':
 					geometry = new ol.geom.Point(points[0]);
 					break;
+				case 'Rectangle':
+					geometry = new ol.geom.Polygon([ points ]);
+					geometry.getType = function () {
+						return 'Rectangle';
+					};
+					break;
 				case 'Polygon':
-					// close the polygon
-					points.push(points[0]);
 					// example: https://github.com/openlayers/ol3/blob/master/examples/geojson.js#L126
 					geometry = new ol.geom.Polygon([ points ]);
 					break;
@@ -97,6 +102,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 				case 'Circle':
 					// radius is the x value of the second point of the circle
 					geometry = new ol.geom.Circle(points[0], points[1][0]);
+					break;
 			}
 
 			var feature = new ol.Feature({ geometry: geometry });
@@ -158,18 +164,54 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 					// the feature will be saved as Polygon nevertheless
 					type: 'LineString',
 					style: styles.editing,
-					maxPoints: 2,
+					maxPoints: 3,
+					minPoints: 3,
 					geometryFunction: function (coordinates, geometry) {
 						geometry = geometry || new ol.geom.Polygon(null);
-						var start = coordinates[0];
-						var end = coordinates[1];
-						geometry.setCoordinates([[
-							start,
-							[start[0], end[1]],
-							end,
-							[end[0], start[1]],
-							start
-						]]);
+						geometry.getType = function () {
+							return 'Rectangle';
+						};
+						var first = coordinates[0];
+						var second = coordinates[1];
+						var third = coordinates[2];
+
+						if (third === undefined) {
+							geometry.setCoordinates([[first,	second]]);
+						} else {
+							// vector from first to third
+							var a_vec = [
+								second[0] - first[0],
+								second[1] - first[1]
+							];
+							// perpendicular vector to a_vec
+							var b_vec = [-1 * a_vec[1], a_vec[0]];
+
+							// helper
+							var tmp = a_vec[0] / a_vec[1];
+							// compute the intersection of the two lines
+							// going from second in b_vec direction
+							// and from third in a_vec direction
+							var x = (third[0] + tmp * (second[1] - third[1]) - second[0]) / (b_vec[0] - b_vec[1] * tmp);
+
+							// vector from second to the intersection point
+							var intersection_vec = [
+								x * b_vec[0],
+								x * b_vec[1],
+							];
+
+							geometry.setCoordinates([[
+								first,
+								second,
+								[
+									second[0] + intersection_vec[0],
+									second[1] + intersection_vec[1]
+								],
+								[
+									first[0] + intersection_vec[0],
+									first[1] + intersection_vec[1]
+								]
+							]]);
+						}
 						return geometry;
 					}
 				});
