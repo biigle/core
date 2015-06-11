@@ -1,6 +1,6 @@
 // OpenLayers 3. See http://openlayers.org/
 // License: https://raw.githubusercontent.com/openlayers/ol3/master/LICENSE.md
-// Version: v3.5.0-68-gec20891
+// Version: v3.6.0
 
 (function (root, factory) {
   if (typeof define === "function" && define.amd) {
@@ -32580,6 +32580,7 @@ goog.provide('ol.control.Control');
 goog.require('goog.array');
 goog.require('goog.dom');
 goog.require('goog.events');
+goog.require('goog.events.EventType');
 goog.require('ol.MapEventType');
 goog.require('ol.Object');
 
@@ -32653,6 +32654,24 @@ ol.control.Control = function(options) {
 
 };
 goog.inherits(ol.control.Control, ol.Object);
+
+
+/**
+ * Bind a listener that blurs the passed element on any mouseout- or
+ * focusout-event.
+ *
+ * @param {!Element} button The button which shall blur on mouseout- or
+ *     focusout-event.
+ * @protected
+ */
+ol.control.Control.bindMouseOutFocusOutBlur = function(button) {
+  goog.events.listen(button, [
+    goog.events.EventType.MOUSEOUT,
+    goog.events.EventType.FOCUSOUT
+  ], /** @this {Element} */ function() {
+    this.blur();
+  }, false);
+};
 
 
 /**
@@ -33375,10 +33394,344 @@ ol.source.Source.prototype.setProjection = function(projection) {
   this.projection_ = projection;
 };
 
+// Copyright 2008 The Closure Library Authors. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS-IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+/**
+ * @fileoverview Utilities for creating functions. Loosely inspired by the
+ * java classes: http://goo.gl/GM0Hmu and http://goo.gl/6k7nI8.
+ *
+ * @author nicksantos@google.com (Nick Santos)
+ */
+
+
+goog.provide('goog.functions');
+
+
+/**
+ * Creates a function that always returns the same value.
+ * @param {T} retValue The value to return.
+ * @return {function():T} The new function.
+ * @template T
+ */
+goog.functions.constant = function(retValue) {
+  return function() {
+    return retValue;
+  };
+};
+
+
+/**
+ * Always returns false.
+ * @type {function(...): boolean}
+ */
+goog.functions.FALSE = goog.functions.constant(false);
+
+
+/**
+ * Always returns true.
+ * @type {function(...): boolean}
+ */
+goog.functions.TRUE = goog.functions.constant(true);
+
+
+/**
+ * Always returns NULL.
+ * @type {function(...): null}
+ */
+goog.functions.NULL = goog.functions.constant(null);
+
+
+/**
+ * A simple function that returns the first argument of whatever is passed
+ * into it.
+ * @param {T=} opt_returnValue The single value that will be returned.
+ * @param {...*} var_args Optional trailing arguments. These are ignored.
+ * @return {T} The first argument passed in, or undefined if nothing was passed.
+ * @template T
+ */
+goog.functions.identity = function(opt_returnValue, var_args) {
+  return opt_returnValue;
+};
+
+
+/**
+ * Creates a function that always throws an error with the given message.
+ * @param {string} message The error message.
+ * @return {!Function} The error-throwing function.
+ */
+goog.functions.error = function(message) {
+  return function() {
+    throw Error(message);
+  };
+};
+
+
+/**
+ * Creates a function that throws the given object.
+ * @param {*} err An object to be thrown.
+ * @return {!Function} The error-throwing function.
+ */
+goog.functions.fail = function(err) {
+  return function() {
+    throw err;
+  }
+};
+
+
+/**
+ * Given a function, create a function that keeps opt_numArgs arguments and
+ * silently discards all additional arguments.
+ * @param {Function} f The original function.
+ * @param {number=} opt_numArgs The number of arguments to keep. Defaults to 0.
+ * @return {!Function} A version of f that only keeps the first opt_numArgs
+ *     arguments.
+ */
+goog.functions.lock = function(f, opt_numArgs) {
+  opt_numArgs = opt_numArgs || 0;
+  return function() {
+    return f.apply(this, Array.prototype.slice.call(arguments, 0, opt_numArgs));
+  };
+};
+
+
+/**
+ * Creates a function that returns its nth argument.
+ * @param {number} n The position of the return argument.
+ * @return {!Function} A new function.
+ */
+goog.functions.nth = function(n) {
+  return function() {
+    return arguments[n];
+  };
+};
+
+
+/**
+ * Given a function, create a new function that swallows its return value
+ * and replaces it with a new one.
+ * @param {Function} f A function.
+ * @param {T} retValue A new return value.
+ * @return {function(...?):T} A new function.
+ * @template T
+ */
+goog.functions.withReturnValue = function(f, retValue) {
+  return goog.functions.sequence(f, goog.functions.constant(retValue));
+};
+
+
+/**
+ * Creates a function that returns whether its arguement equals the given value.
+ *
+ * Example:
+ * var key = goog.object.findKey(obj, goog.functions.equalTo('needle'));
+ *
+ * @param {*} value The value to compare to.
+ * @param {boolean=} opt_useLooseComparison Whether to use a loose (==)
+ *     comparison rather than a strict (===) one. Defaults to false.
+ * @return {function(*):boolean} The new function.
+ */
+goog.functions.equalTo = function(value, opt_useLooseComparison) {
+  return function(other) {
+    return opt_useLooseComparison ? (value == other) : (value === other);
+  };
+};
+
+
+/**
+ * Creates the composition of the functions passed in.
+ * For example, (goog.functions.compose(f, g))(a) is equivalent to f(g(a)).
+ * @param {function(...?):T} fn The final function.
+ * @param {...Function} var_args A list of functions.
+ * @return {function(...?):T} The composition of all inputs.
+ * @template T
+ */
+goog.functions.compose = function(fn, var_args) {
+  var functions = arguments;
+  var length = functions.length;
+  return function() {
+    var result;
+    if (length) {
+      result = functions[length - 1].apply(this, arguments);
+    }
+
+    for (var i = length - 2; i >= 0; i--) {
+      result = functions[i].call(this, result);
+    }
+    return result;
+  };
+};
+
+
+/**
+ * Creates a function that calls the functions passed in in sequence, and
+ * returns the value of the last function. For example,
+ * (goog.functions.sequence(f, g))(x) is equivalent to f(x),g(x).
+ * @param {...Function} var_args A list of functions.
+ * @return {!Function} A function that calls all inputs in sequence.
+ */
+goog.functions.sequence = function(var_args) {
+  var functions = arguments;
+  var length = functions.length;
+  return function() {
+    var result;
+    for (var i = 0; i < length; i++) {
+      result = functions[i].apply(this, arguments);
+    }
+    return result;
+  };
+};
+
+
+/**
+ * Creates a function that returns true if each of its components evaluates
+ * to true. The components are evaluated in order, and the evaluation will be
+ * short-circuited as soon as a function returns false.
+ * For example, (goog.functions.and(f, g))(x) is equivalent to f(x) && g(x).
+ * @param {...Function} var_args A list of functions.
+ * @return {function(...?):boolean} A function that ANDs its component
+ *      functions.
+ */
+goog.functions.and = function(var_args) {
+  var functions = arguments;
+  var length = functions.length;
+  return function() {
+    for (var i = 0; i < length; i++) {
+      if (!functions[i].apply(this, arguments)) {
+        return false;
+      }
+    }
+    return true;
+  };
+};
+
+
+/**
+ * Creates a function that returns true if any of its components evaluates
+ * to true. The components are evaluated in order, and the evaluation will be
+ * short-circuited as soon as a function returns true.
+ * For example, (goog.functions.or(f, g))(x) is equivalent to f(x) || g(x).
+ * @param {...Function} var_args A list of functions.
+ * @return {function(...?):boolean} A function that ORs its component
+ *    functions.
+ */
+goog.functions.or = function(var_args) {
+  var functions = arguments;
+  var length = functions.length;
+  return function() {
+    for (var i = 0; i < length; i++) {
+      if (functions[i].apply(this, arguments)) {
+        return true;
+      }
+    }
+    return false;
+  };
+};
+
+
+/**
+ * Creates a function that returns the Boolean opposite of a provided function.
+ * For example, (goog.functions.not(f))(x) is equivalent to !f(x).
+ * @param {!Function} f The original function.
+ * @return {function(...?):boolean} A function that delegates to f and returns
+ * opposite.
+ */
+goog.functions.not = function(f) {
+  return function() {
+    return !f.apply(this, arguments);
+  };
+};
+
+
+/**
+ * Generic factory function to construct an object given the constructor
+ * and the arguments. Intended to be bound to create object factories.
+ *
+ * Example:
+ *
+ * var factory = goog.partial(goog.functions.create, Class);
+ *
+ * @param {function(new:T, ...)} constructor The constructor for the Object.
+ * @param {...*} var_args The arguments to be passed to the constructor.
+ * @return {T} A new instance of the class given in {@code constructor}.
+ * @template T
+ */
+goog.functions.create = function(constructor, var_args) {
+  /**
+   * @constructor
+   * @final
+   */
+  var temp = function() {};
+  temp.prototype = constructor.prototype;
+
+  // obj will have constructor's prototype in its chain and
+  // 'obj instanceof constructor' will be true.
+  var obj = new temp();
+
+  // obj is initialized by constructor.
+  // arguments is only array-like so lacks shift(), but can be used with
+  // the Array prototype function.
+  constructor.apply(obj, Array.prototype.slice.call(arguments, 1));
+  return obj;
+};
+
+
+/**
+ * @define {boolean} Whether the return value cache should be used.
+ *    This should only be used to disable caches when testing.
+ */
+goog.define('goog.functions.CACHE_RETURN_VALUE', true);
+
+
+/**
+ * Gives a wrapper function that caches the return value of a parameterless
+ * function when first called.
+ *
+ * When called for the first time, the given function is called and its
+ * return value is cached (thus this is only appropriate for idempotent
+ * functions).  Subsequent calls will return the cached return value. This
+ * allows the evaluation of expensive functions to be delayed until first used.
+ *
+ * To cache the return values of functions with parameters, see goog.memoize.
+ *
+ * @param {!function():T} fn A function to lazily evaluate.
+ * @return {!function():T} A wrapped version the function.
+ * @template T
+ */
+goog.functions.cacheReturnValue = function(fn) {
+  var called = false;
+  var value;
+
+  return function() {
+    if (!goog.functions.CACHE_RETURN_VALUE) {
+      return fn();
+    }
+
+    if (!called) {
+      value = fn();
+      called = true;
+    }
+
+    return value;
+  }
+};
+
 goog.provide('ol.tilegrid.TileGrid');
 
 goog.require('goog.array');
 goog.require('goog.asserts');
+goog.require('goog.functions');
 goog.require('goog.math');
 goog.require('goog.object');
 goog.require('ol');
@@ -33446,10 +33799,14 @@ ol.tilegrid.TileGrid = function(options) {
     goog.asserts.assert(this.origins_.length == this.resolutions_.length,
         'number of origins and resolutions must be equal');
   }
-  if (goog.isNull(this.origins_) && goog.isNull(this.origin_) &&
-      goog.isDef(options.extent)) {
-    this.origin_ = ol.extent.getBottomLeft(options.extent);
+
+  var extent = options.extent;
+
+  if (goog.isDef(extent) &&
+      goog.isNull(this.origin_) && goog.isNull(this.origins_)) {
+    this.origin_ = ol.extent.getBottomLeft(extent);
   }
+
   goog.asserts.assert(
       (goog.isNull(this.origin_) && !goog.isNull(this.origins_)) ||
       (!goog.isNull(this.origin_) && goog.isNull(this.origins_)),
@@ -33478,13 +33835,28 @@ ol.tilegrid.TileGrid = function(options) {
       (!goog.isNull(this.tileSize_) && goog.isNull(this.tileSizes_)),
       'either tileSize or tileSizes must be configured, never both');
 
-  var extent = options.extent;
-
   /**
    * @private
    * @type {ol.Extent}
    */
   this.extent_ = goog.isDef(extent) ? extent : null;
+
+
+  /**
+   * Creates a TileCoord transform function for use with this tile grid.
+   * Transforms the internal tile coordinates with bottom-left origin to
+   * the tile coordinates used by the {@link ol.TileUrlFunction}.
+   * The returned function expects an {@link ol.TileCoord} as first and an
+   * {@link ol.proj.Projection} as second argument and returns a transformed
+   * {@link ol.TileCoord}.
+   * @param {{extent: (ol.Extent|undefined)}=} opt_options Options.
+   * @return {function(ol.TileCoord, ol.proj.Projection, ol.TileCoord=):
+   *     ol.TileCoord} Tile coordinate transform.
+   * @api
+   */
+  this.createTileCoordTransform = goog.isDef(options.createTileCoordTransform) ?
+      options.createTileCoordTransform :
+      goog.functions.identity;
 
   /**
    * @private
@@ -33510,18 +33882,8 @@ ol.tilegrid.TileGrid = function(options) {
       }
       return tileRange;
     }, this);
-  } else if (goog.isDef(extent)) {
-    var extentWidth = ol.extent.getWidth(extent);
-    var extentHeight = ol.extent.getHeight(extent);
-    var fullTileRanges = new Array(this.resolutions_.length);
-    var tileSize;
-    for (var z = 0, zz = fullTileRanges.length; z < zz; ++z) {
-      tileSize = ol.size.toSize(this.getTileSize(z), this.tmpSize_);
-      fullTileRanges[z] = new ol.TileRange(
-          0, Math.ceil(extentWidth / tileSize[0] / this.resolutions_[z]) - 1,
-          0, Math.ceil(extentHeight / tileSize[1] / this.resolutions_[z]) - 1);
-    }
-    this.fullTileRanges_ = fullTileRanges;
+  } else if (goog.isDefAndNotNull(extent)) {
+    this.calculateTileRanges_(extent);
   }
 
   /**
@@ -33538,16 +33900,6 @@ ol.tilegrid.TileGrid = function(options) {
  * @type {ol.TileCoord}
  */
 ol.tilegrid.TileGrid.tmpTileCoord_ = [0, 0, 0];
-
-
-/**
- * Source specific TileCoord transform function. May be implemented by
- * subclasses.
- * @param {{extent: (ol.Extent|undefined)}=} opt_options Options.
- * @return {function(ol.TileCoord, ol.proj.Projection, ol.TileCoord=):
- *     ol.TileCoord} Tile coordinate transform.
- */
-ol.tilegrid.TileGrid.prototype.createTileCoordTransform = goog.abstractMethod;
 
 
 /**
@@ -33883,6 +34235,25 @@ ol.tilegrid.TileGrid.prototype.getZForResolution = function(resolution) {
 
 
 /**
+ * @param {!ol.Extent} extent Extent for this tile grid.
+ * @private
+ */
+ol.tilegrid.TileGrid.prototype.calculateTileRanges_ = function(extent) {
+  var extentWidth = ol.extent.getWidth(extent);
+  var extentHeight = ol.extent.getHeight(extent);
+  var fullTileRanges = new Array(this.resolutions_.length);
+  var tileSize;
+  for (var z = 0, zz = fullTileRanges.length; z < zz; ++z) {
+    tileSize = ol.size.toSize(this.getTileSize(z), this.tmpSize_);
+    fullTileRanges[z] = new ol.TileRange(
+        0, Math.ceil(extentWidth / tileSize[0] / this.resolutions_[z]) - 1,
+        0, Math.ceil(extentHeight / tileSize[1] / this.resolutions_[z]) - 1);
+  }
+  this.fullTileRanges_ = fullTileRanges;
+};
+
+
+/**
  * @param {ol.proj.Projection} projection Projection.
  * @return {ol.tilegrid.TileGrid} Default tile grid for the passed projection.
  */
@@ -33939,6 +34310,17 @@ ol.tilegrid.createXYZ = function(opt_options) {
   options.resolutions = ol.tilegrid.resolutionsFromExtent(
       options.extent, options.maxZoom, options.tileSize);
   delete options.maxZoom;
+
+  /**
+   * @param {{extent: (ol.Extent|undefined)}=} opt_options Options.
+   * @return {function(ol.TileCoord, ol.proj.Projection, ol.TileCoord=):
+   *     ol.TileCoord} Tile coordinate transform.
+   * @this {ol.tilegrid.TileGrid}
+   */
+  options.createTileCoordTransform = function(opt_options) {
+    return ol.tilegrid.createOriginTopLeftTileCoordTransform(this);
+  };
+
   return new ol.tilegrid.TileGrid(options);
 };
 
@@ -34821,12 +35203,7 @@ ol.control.Rotate = function(opt_options) {
   goog.events.listen(button, goog.events.EventType.CLICK,
       ol.control.Rotate.prototype.handleClick_, false, this);
 
-  goog.events.listen(button, [
-    goog.events.EventType.MOUSEOUT,
-    goog.events.EventType.FOCUSOUT
-  ], function() {
-    this.blur();
-  }, false);
+  ol.control.Control.bindMouseOutFocusOutBlur(button);
 
   var cssClasses = className + ' ' + ol.css.CLASS_UNSELECTABLE + ' ' +
       ol.css.CLASS_CONTROL;
@@ -34985,12 +35362,7 @@ ol.control.Zoom = function(opt_options) {
       goog.events.EventType.CLICK, goog.partial(
           ol.control.Zoom.prototype.handleClick_, delta), false, this);
 
-  goog.events.listen(inElement, [
-    goog.events.EventType.MOUSEOUT,
-    goog.events.EventType.FOCUSOUT
-  ], function() {
-    this.blur();
-  }, false);
+  ol.control.Control.bindMouseOutFocusOutBlur(inElement);
 
   var outElement = goog.dom.createDom(goog.dom.TagName.BUTTON, {
     'class': className + '-out',
@@ -35328,12 +35700,7 @@ ol.control.FullScreen = function(opt_options) {
   goog.events.listen(button, goog.events.EventType.CLICK,
       this.handleClick_, false, this);
 
-  goog.events.listen(button, [
-    goog.events.EventType.MOUSEOUT,
-    goog.events.EventType.FOCUSOUT
-  ], function() {
-    this.blur();
-  }, false);
+  ol.control.Control.bindMouseOutFocusOutBlur(button);
 
   goog.events.listen(goog.global.document,
       goog.dom.fullscreen.EventType.CHANGE,
@@ -35682,339 +36049,6 @@ ol.control.MousePosition.prototype.updateHTML_ = function(pixel) {
   if (!goog.isDef(this.renderedHTML_) || html != this.renderedHTML_) {
     this.element.innerHTML = html;
     this.renderedHTML_ = html;
-  }
-};
-
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-/**
- * @fileoverview Utilities for creating functions. Loosely inspired by the
- * java classes: http://goo.gl/GM0Hmu and http://goo.gl/6k7nI8.
- *
- * @author nicksantos@google.com (Nick Santos)
- */
-
-
-goog.provide('goog.functions');
-
-
-/**
- * Creates a function that always returns the same value.
- * @param {T} retValue The value to return.
- * @return {function():T} The new function.
- * @template T
- */
-goog.functions.constant = function(retValue) {
-  return function() {
-    return retValue;
-  };
-};
-
-
-/**
- * Always returns false.
- * @type {function(...): boolean}
- */
-goog.functions.FALSE = goog.functions.constant(false);
-
-
-/**
- * Always returns true.
- * @type {function(...): boolean}
- */
-goog.functions.TRUE = goog.functions.constant(true);
-
-
-/**
- * Always returns NULL.
- * @type {function(...): null}
- */
-goog.functions.NULL = goog.functions.constant(null);
-
-
-/**
- * A simple function that returns the first argument of whatever is passed
- * into it.
- * @param {T=} opt_returnValue The single value that will be returned.
- * @param {...*} var_args Optional trailing arguments. These are ignored.
- * @return {T} The first argument passed in, or undefined if nothing was passed.
- * @template T
- */
-goog.functions.identity = function(opt_returnValue, var_args) {
-  return opt_returnValue;
-};
-
-
-/**
- * Creates a function that always throws an error with the given message.
- * @param {string} message The error message.
- * @return {!Function} The error-throwing function.
- */
-goog.functions.error = function(message) {
-  return function() {
-    throw Error(message);
-  };
-};
-
-
-/**
- * Creates a function that throws the given object.
- * @param {*} err An object to be thrown.
- * @return {!Function} The error-throwing function.
- */
-goog.functions.fail = function(err) {
-  return function() {
-    throw err;
-  }
-};
-
-
-/**
- * Given a function, create a function that keeps opt_numArgs arguments and
- * silently discards all additional arguments.
- * @param {Function} f The original function.
- * @param {number=} opt_numArgs The number of arguments to keep. Defaults to 0.
- * @return {!Function} A version of f that only keeps the first opt_numArgs
- *     arguments.
- */
-goog.functions.lock = function(f, opt_numArgs) {
-  opt_numArgs = opt_numArgs || 0;
-  return function() {
-    return f.apply(this, Array.prototype.slice.call(arguments, 0, opt_numArgs));
-  };
-};
-
-
-/**
- * Creates a function that returns its nth argument.
- * @param {number} n The position of the return argument.
- * @return {!Function} A new function.
- */
-goog.functions.nth = function(n) {
-  return function() {
-    return arguments[n];
-  };
-};
-
-
-/**
- * Given a function, create a new function that swallows its return value
- * and replaces it with a new one.
- * @param {Function} f A function.
- * @param {T} retValue A new return value.
- * @return {function(...?):T} A new function.
- * @template T
- */
-goog.functions.withReturnValue = function(f, retValue) {
-  return goog.functions.sequence(f, goog.functions.constant(retValue));
-};
-
-
-/**
- * Creates a function that returns whether its arguement equals the given value.
- *
- * Example:
- * var key = goog.object.findKey(obj, goog.functions.equalTo('needle'));
- *
- * @param {*} value The value to compare to.
- * @param {boolean=} opt_useLooseComparison Whether to use a loose (==)
- *     comparison rather than a strict (===) one. Defaults to false.
- * @return {function(*):boolean} The new function.
- */
-goog.functions.equalTo = function(value, opt_useLooseComparison) {
-  return function(other) {
-    return opt_useLooseComparison ? (value == other) : (value === other);
-  };
-};
-
-
-/**
- * Creates the composition of the functions passed in.
- * For example, (goog.functions.compose(f, g))(a) is equivalent to f(g(a)).
- * @param {function(...?):T} fn The final function.
- * @param {...Function} var_args A list of functions.
- * @return {function(...?):T} The composition of all inputs.
- * @template T
- */
-goog.functions.compose = function(fn, var_args) {
-  var functions = arguments;
-  var length = functions.length;
-  return function() {
-    var result;
-    if (length) {
-      result = functions[length - 1].apply(this, arguments);
-    }
-
-    for (var i = length - 2; i >= 0; i--) {
-      result = functions[i].call(this, result);
-    }
-    return result;
-  };
-};
-
-
-/**
- * Creates a function that calls the functions passed in in sequence, and
- * returns the value of the last function. For example,
- * (goog.functions.sequence(f, g))(x) is equivalent to f(x),g(x).
- * @param {...Function} var_args A list of functions.
- * @return {!Function} A function that calls all inputs in sequence.
- */
-goog.functions.sequence = function(var_args) {
-  var functions = arguments;
-  var length = functions.length;
-  return function() {
-    var result;
-    for (var i = 0; i < length; i++) {
-      result = functions[i].apply(this, arguments);
-    }
-    return result;
-  };
-};
-
-
-/**
- * Creates a function that returns true if each of its components evaluates
- * to true. The components are evaluated in order, and the evaluation will be
- * short-circuited as soon as a function returns false.
- * For example, (goog.functions.and(f, g))(x) is equivalent to f(x) && g(x).
- * @param {...Function} var_args A list of functions.
- * @return {function(...?):boolean} A function that ANDs its component
- *      functions.
- */
-goog.functions.and = function(var_args) {
-  var functions = arguments;
-  var length = functions.length;
-  return function() {
-    for (var i = 0; i < length; i++) {
-      if (!functions[i].apply(this, arguments)) {
-        return false;
-      }
-    }
-    return true;
-  };
-};
-
-
-/**
- * Creates a function that returns true if any of its components evaluates
- * to true. The components are evaluated in order, and the evaluation will be
- * short-circuited as soon as a function returns true.
- * For example, (goog.functions.or(f, g))(x) is equivalent to f(x) || g(x).
- * @param {...Function} var_args A list of functions.
- * @return {function(...?):boolean} A function that ORs its component
- *    functions.
- */
-goog.functions.or = function(var_args) {
-  var functions = arguments;
-  var length = functions.length;
-  return function() {
-    for (var i = 0; i < length; i++) {
-      if (functions[i].apply(this, arguments)) {
-        return true;
-      }
-    }
-    return false;
-  };
-};
-
-
-/**
- * Creates a function that returns the Boolean opposite of a provided function.
- * For example, (goog.functions.not(f))(x) is equivalent to !f(x).
- * @param {!Function} f The original function.
- * @return {function(...?):boolean} A function that delegates to f and returns
- * opposite.
- */
-goog.functions.not = function(f) {
-  return function() {
-    return !f.apply(this, arguments);
-  };
-};
-
-
-/**
- * Generic factory function to construct an object given the constructor
- * and the arguments. Intended to be bound to create object factories.
- *
- * Example:
- *
- * var factory = goog.partial(goog.functions.create, Class);
- *
- * @param {function(new:T, ...)} constructor The constructor for the Object.
- * @param {...*} var_args The arguments to be passed to the constructor.
- * @return {T} A new instance of the class given in {@code constructor}.
- * @template T
- */
-goog.functions.create = function(constructor, var_args) {
-  /**
-   * @constructor
-   * @final
-   */
-  var temp = function() {};
-  temp.prototype = constructor.prototype;
-
-  // obj will have constructor's prototype in its chain and
-  // 'obj instanceof constructor' will be true.
-  var obj = new temp();
-
-  // obj is initialized by constructor.
-  // arguments is only array-like so lacks shift(), but can be used with
-  // the Array prototype function.
-  constructor.apply(obj, Array.prototype.slice.call(arguments, 1));
-  return obj;
-};
-
-
-/**
- * @define {boolean} Whether the return value cache should be used.
- *    This should only be used to disable caches when testing.
- */
-goog.define('goog.functions.CACHE_RETURN_VALUE', true);
-
-
-/**
- * Gives a wrapper function that caches the return value of a parameterless
- * function when first called.
- *
- * When called for the first time, the given function is called and its
- * return value is cached (thus this is only appropriate for idempotent
- * functions).  Subsequent calls will return the cached return value. This
- * allows the evaluation of expensive functions to be delayed until first used.
- *
- * To cache the return values of functions with parameters, see goog.memoize.
- *
- * @param {!function():T} fn A function to lazily evaluate.
- * @return {!function():T} A wrapped version the function.
- * @template T
- */
-goog.functions.cacheReturnValue = function(fn) {
-  var called = false;
-  var value;
-
-  return function() {
-    if (!goog.functions.CACHE_RETURN_VALUE) {
-      return fn();
-    }
-
-    if (!called) {
-      value = fn();
-      called = true;
-    }
-
-    return value;
   }
 };
 
@@ -61192,6 +61226,29 @@ ol.geom.Circle.prototype.getType = function() {
 
 
 /**
+ * @inheritDoc
+ * @api stable
+ */
+ol.geom.Circle.prototype.intersectsExtent = function(extent) {
+  var circleExtent = this.getExtent();
+  if (ol.extent.intersects(extent, circleExtent)) {
+    var center = this.getCenter();
+
+    if (extent[0] <= center[0] && extent[2] >= center[0]) {
+      return true;
+    }
+    if (extent[1] <= center[1] && extent[3] >= center[1]) {
+      return true;
+    }
+
+    return ol.extent.forEachCorner(extent, this.containsCoordinate, this);
+  }
+  return false;
+
+};
+
+
+/**
  * Set the center of the circle as {@link ol.Coordinate coordinate}.
  * @param {ol.Coordinate} center Center.
  * @api
@@ -82250,15 +82307,19 @@ ol.Map.prototype.disposeInternal = function() {
  * included in the detection.
  * @param {ol.Pixel} pixel Pixel.
  * @param {function(this: S, ol.Feature, ol.layer.Layer): T} callback Feature
- *     callback. If the detected feature is not on a layer, but on a
- *     {@link ol.FeatureOverlay}, then the 2nd argument to this function will
- *     be `null`. To stop detection, callback functions can return a truthy
- *     value.
+ *     callback. The callback will be called with two arguments. The first
+ *     argument is one {@link ol.Feature feature} at the pixel, the second is
+ *     the {@link ol.layer.Layer layer} of the feature. If the detected feature
+ *     is not on a layer, but on a {@link ol.FeatureOverlay}, then the second
+ *     argument to this function will be `null`. To stop detection, callback
+ *     functions can return a truthy value.
  * @param {S=} opt_this Value to use as `this` when executing `callback`.
  * @param {(function(this: U, ol.layer.Layer): boolean)=} opt_layerFilter Layer
- *     filter function, only layers which are visible and for which this
- *     function returns `true` will be tested for features. By default, all
- *     visible layers will be tested. Feature overlays will always be tested.
+ *     filter function. The filter function will receive one argument, the
+ *     {@link ol.layer.Layer layer-candidate} and it should return a boolean
+ *     value. Only layers which are visible and for which this function returns
+ *     `true` will be tested for features. By default, all visible layers will
+ *     be tested. Feature overlays will always be tested.
  * @param {U=} opt_this2 Value to use as `this` when executing `layerFilter`.
  * @return {T|undefined} Callback result, i.e. the return value of last
  * callback execution, or the first truthy callback return value.
@@ -82288,15 +82349,18 @@ ol.Map.prototype.forEachFeatureAtPixel =
  * always be included in the detection.
  * @param {ol.Pixel} pixel Pixel.
  * @param {function(this: S, ol.layer.Layer): T} callback Layer
- *     callback. If the detected feature is not on a layer, but on a
- *     {@link ol.FeatureOverlay}, then the argument to this function will
- *     be `null`. To stop detection, callback functions can return a truthy
- *     value.
+ *     callback. Will receive one argument, the {@link ol.layer.Layer layer}
+ *     that contains the color pixel. If the detected color value is not from a
+ *     layer, but from a {@link ol.FeatureOverlay}, then the argument to this
+ *     function will be `null`. To stop detection, callback functions can return
+ *     a truthy value.
  * @param {S=} opt_this Value to use as `this` when executing `callback`.
  * @param {(function(this: U, ol.layer.Layer): boolean)=} opt_layerFilter Layer
- *     filter function, only layers which are visible and for which this
- *     function returns `true` will be tested for features. By default, all
- *     visible layers will be tested. Feature overlays will always be tested.
+ *     filter function. The filter function will receive one argument, the
+ *     {@link ol.layer.Layer layer-candidate} and it should return a boolean
+ *     value. Only layers which are visible and for which this function returns
+ *     `true` will be tested for features. By default, all visible layers will
+ *     be tested. Feature overlays will always be tested.
  * @param {U=} opt_this2 Value to use as `this` when executing `layerFilter`.
  * @return {T|undefined} Callback result, i.e. the return value of last
  * callback execution, or the first truthy callback return value.
@@ -82324,9 +82388,11 @@ ol.Map.prototype.forEachLayerAtPixel =
  * always be included in the detection.
  * @param {ol.Pixel} pixel Pixel.
  * @param {(function(this: U, ol.layer.Layer): boolean)=} opt_layerFilter Layer
- *     filter function, only layers which are visible and for which this
- *     function returns `true` will be tested for features. By default, all
- *     visible layers will be tested. Feature overlays will always be tested.
+ *     filter function. The filter function will receive one argument, the
+ *     {@link ol.layer.Layer layer-candidate} and it should return a boolean
+ *     value. Only layers which are visible and for which this function returns
+ *     `true` will be tested for features. By default, all visible layers will
+ *     be tested. Feature overlays will always be tested.
  * @param {U=} opt_this Value to use as `this` when executing `layerFilter`.
  * @return {boolean} Is there a feature at the given pixel?
  * @template U
@@ -83913,12 +83979,7 @@ ol.control.OverviewMap = function(opt_options) {
   goog.events.listen(button, goog.events.EventType.CLICK,
       this.handleClick_, false, this);
 
-  goog.events.listen(button, [
-    goog.events.EventType.MOUSEOUT,
-    goog.events.EventType.FOCUSOUT
-  ], function() {
-    this.blur();
-  }, false);
+  ol.control.Control.bindMouseOutFocusOutBlur(button);
 
   var ovmapDiv = goog.dom.createDom(goog.dom.TagName.DIV, 'ol-overviewmap-map');
 
@@ -88109,12 +88170,7 @@ ol.control.ZoomToExtent = function(opt_options) {
   goog.events.listen(button, goog.events.EventType.CLICK,
       this.handleClick_, false, this);
 
-  goog.events.listen(button, [
-    goog.events.EventType.MOUSEOUT,
-    goog.events.EventType.FOCUSOUT
-  ], function() {
-    this.blur();
-  }, false);
+  ol.control.Control.bindMouseOutFocusOutBlur(button);
 
   var cssClasses = className + ' ' + ol.css.CLASS_UNSELECTABLE + ' ' +
       ol.css.CLASS_CONTROL;
@@ -102654,15 +102710,15 @@ ol.format.WKT.Lexer.prototype.readNumber_ = function() {
   do {
     if (c == '.') {
       decimal = true;
-    } else if (goog.isDef(c) && c.toLowerCase() == 'e') {
+    } else if (c == 'e' || c == 'E') {
       scientificNotation = true;
     }
     c = this.nextChar_();
   } while (
       this.isNumeric_(c, decimal) ||
-      // once c is defined we may have a scientific number indicated by 'e'
-      // but only if we haven't detected a scientific number before
-      !scientificNotation && goog.isDef(c) && c.toLowerCase() == 'e' ||
+      // if we haven't detected a scientific number before, 'e' or 'E'
+      // hint that we should continue to read
+      !scientificNotation && (c == 'e' || c == 'E') ||
       // once we know that we have a scientific number, both '-' and '+'
       // are allowed
       scientificNotation && (c == '-' || c == '+')
@@ -109936,11 +109992,13 @@ ol.interaction.SelectFilterFunction;
  * @param {string} type The event type.
  * @param {Array.<ol.Feature>} selected Selected features.
  * @param {Array.<ol.Feature>} deselected Deselected features.
+ * @param {ol.MapBrowserEvent} mapBrowserEvent Associated
+ *     {@link ol.MapBrowserEvent}.
  * @implements {oli.SelectEvent}
  * @extends {goog.events.Event}
  * @constructor
  */
-ol.SelectEvent = function(type, selected, deselected) {
+ol.SelectEvent = function(type, selected, deselected, mapBrowserEvent) {
   goog.base(this, type);
 
   /**
@@ -109956,6 +110014,13 @@ ol.SelectEvent = function(type, selected, deselected) {
    * @api
    */
   this.deselected = deselected;
+
+  /**
+   * Associated {@link ol.MapBrowserEvent}.
+   * @type {ol.MapBrowserEvent}
+   * @api
+   */
+  this.mapBrowserEvent = mapBrowserEvent;
 };
 goog.inherits(ol.SelectEvent, goog.events.Event);
 
@@ -109971,6 +110036,7 @@ goog.inherits(ol.SelectEvent, goog.events.Event);
  * @constructor
  * @extends {ol.interaction.Interaction}
  * @param {olx.interaction.SelectOptions=} opt_options Options.
+ * @fires ol.SelectEvent
  * @api stable
  */
 ol.interaction.Select = function(opt_options) {
@@ -110155,7 +110221,8 @@ ol.interaction.Select.handleEvent = function(mapBrowserEvent) {
   }
   if (change) {
     this.dispatchEvent(
-        new ol.SelectEvent(ol.SelectEventType.SELECT, selected, deselected));
+        new ol.SelectEvent(ol.SelectEventType.SELECT, selected, deselected,
+            mapBrowserEvent));
   }
   return ol.events.condition.pointerMove(mapBrowserEvent);
 };
@@ -111875,6 +111942,28 @@ goog.require('ol.tilecoord');
  * for the projection  as arguments and returns a `{string}` or
  * undefined representing the tile URL.
  *
+ * The {@link ol.TileCoord}'s `x` value
+ * increases from left to right, `y` increases from bottom to top. At the
+ * bottom left corner, `x` and `y` are `0`. To convert `y` to increase from
+ * top to bottom, use the following code:
+ * ```js
+ * var tileGrid = new ol.tilegrid.TileGrid({
+ *   extent: extent,
+ *   resolutions: resolutions,
+ *   tileSize: tileSize
+ * });
+ *
+ * function calculateY(tileCoord) {
+ *   var z = tileCoord[0];
+ *   var yFromBottom = tileCoord[2];
+ *   var resolution = tileGrid.getResolution(z);
+ *   var tileHeight = ol.size.toSize(tileSize)[1];
+ *   var matrixHeight =
+ *       Math.floor(ol.extent.getHeight(extent) / tileHeight / resolution);
+ *   return matrixHeight - yFromBottom - 1;
+ * };
+ * ```
+ *
  * @typedef {function(ol.TileCoord, number,
  *           ol.proj.Projection): (string|undefined)}
  * @api
@@ -112332,7 +112421,7 @@ ol.source.BingMaps.prototype.handleImageryMetadataResponse =
 
   var culture = this.culture_;
   this.tileUrlFunction = ol.TileUrlFunction.withTileCoordTransform(
-      ol.tilegrid.createOriginTopLeftTileCoordTransform(tileGrid),
+      tileGrid.createTileCoordTransform(),
       ol.TileUrlFunction.createFromTileUrlFunctions(
           goog.array.map(
               resource.imageUrlSubdomains,
@@ -113346,8 +113435,7 @@ ol.source.XYZ = function(options) {
    * @private
    * @type {ol.TileCoordTransformType}
    */
-  this.tileCoordTransform_ =
-      ol.tilegrid.createOriginTopLeftTileCoordTransform(tileGrid);
+  this.tileCoordTransform_ = tileGrid.createTileCoordTransform();
 
   if (goog.isDef(options.tileUrlFunction)) {
     this.setTileUrlFunction(options.tileUrlFunction);
@@ -114113,7 +114201,7 @@ ol.source.TileJSON.prototype.handleTileJSONResponse = function(tileJSON) {
   this.tileGrid = tileGrid;
 
   this.tileUrlFunction = ol.TileUrlFunction.withTileCoordTransform(
-      ol.tilegrid.createOriginTopLeftTileCoordTransform(tileGrid),
+      tileGrid.createTileCoordTransform(),
       ol.TileUrlFunction.createFromTemplates(tileJSON.tiles));
 
   if (goog.isDef(tileJSON.attribution) &&
@@ -114279,7 +114367,7 @@ ol.source.TileUTFGrid.prototype.handleTileJSONResponse = function(tileJSON) {
   }
 
   this.tileUrlFunction_ = ol.TileUrlFunction.withTileCoordTransform(
-      ol.tilegrid.createOriginTopLeftTileCoordTransform(tileGrid),
+      tileGrid.createTileCoordTransform(),
       ol.TileUrlFunction.createFromTemplates(grids));
 
   if (goog.isDef(tileJSON.attribution)) {
@@ -115946,64 +116034,68 @@ goog.require('ol.tilegrid.TileGrid');
  */
 ol.tilegrid.Zoomify = function(opt_options) {
   var options = goog.isDef(opt_options) ? opt_options : options;
+
+  /**
+   * @param {{extent: (ol.Extent|undefined)}=} opt_options Options.
+   * @return {function(ol.TileCoord, ol.proj.Projection, ol.TileCoord=):
+   *     ol.TileCoord} Tile coordinate transform.
+   * @this {ol.tilegrid.Zoomify}
+   */
+  var createTileCoordTransform = function(opt_options) {
+    var options = goog.isDef(opt_options) ? opt_options : {};
+    var minZ = this.minZoom;
+    var maxZ = this.maxZoom;
+    /** @type {Array.<ol.TileRange>} */
+    var tileRangeByZ = null;
+    if (goog.isDef(options.extent)) {
+      tileRangeByZ = new Array(maxZ + 1);
+      var z;
+      for (z = 0; z <= maxZ; ++z) {
+        if (z < minZ) {
+          tileRangeByZ[z] = null;
+        } else {
+          tileRangeByZ[z] = this.getTileRangeForExtentAndZ(options.extent, z);
+        }
+      }
+    }
+    return (
+        /**
+         * @param {ol.TileCoord} tileCoord Tile coordinate.
+         * @param {ol.proj.Projection} projection Projection.
+         * @param {ol.TileCoord=} opt_tileCoord Destination tile coordinate.
+         * @return {ol.TileCoord} Tile coordinate.
+         */
+        function(tileCoord, projection, opt_tileCoord) {
+          var z = tileCoord[0];
+          if (z < minZ || maxZ < z) {
+            return null;
+          }
+          var n = Math.pow(2, z);
+          var x = tileCoord[1];
+          if (x < 0 || n <= x) {
+            return null;
+          }
+          var y = tileCoord[2];
+          if (y < -n || -1 < y) {
+            return null;
+          }
+          if (!goog.isNull(tileRangeByZ)) {
+            if (!tileRangeByZ[z].containsXY(x, -y - 1)) {
+              return null;
+            }
+          }
+          return ol.tilecoord.createOrUpdate(z, x, -y - 1, opt_tileCoord);
+        });
+  };
+
   goog.base(this, {
+    createTileCoordTransform: createTileCoordTransform,
     origin: [0, 0],
     resolutions: options.resolutions
   });
 
 };
 goog.inherits(ol.tilegrid.Zoomify, ol.tilegrid.TileGrid);
-
-
-/**
- * @inheritDoc
- */
-ol.tilegrid.Zoomify.prototype.createTileCoordTransform = function(opt_options) {
-  var options = goog.isDef(opt_options) ? opt_options : {};
-  var minZ = this.minZoom;
-  var maxZ = this.maxZoom;
-  /** @type {Array.<ol.TileRange>} */
-  var tileRangeByZ = null;
-  if (goog.isDef(options.extent)) {
-    tileRangeByZ = new Array(maxZ + 1);
-    var z;
-    for (z = 0; z <= maxZ; ++z) {
-      if (z < minZ) {
-        tileRangeByZ[z] = null;
-      } else {
-        tileRangeByZ[z] = this.getTileRangeForExtentAndZ(options.extent, z);
-      }
-    }
-  }
-  return (
-      /**
-       * @param {ol.TileCoord} tileCoord Tile coordinate.
-       * @param {ol.proj.Projection} projection Projection.
-       * @param {ol.TileCoord=} opt_tileCoord Destination tile coordinate.
-       * @return {ol.TileCoord} Tile coordinate.
-       */
-      function(tileCoord, projection, opt_tileCoord) {
-        var z = tileCoord[0];
-        if (z < minZ || maxZ < z) {
-          return null;
-        }
-        var n = Math.pow(2, z);
-        var x = tileCoord[1];
-        if (x < 0 || n <= x) {
-          return null;
-        }
-        var y = tileCoord[2];
-        if (y < -n || -1 < y) {
-          return null;
-        }
-        if (!goog.isNull(tileRangeByZ)) {
-          if (!tileRangeByZ[z].containsXY(x, -y - 1)) {
-            return null;
-          }
-        }
-        return ol.tilecoord.createOrUpdate(z, x, -y - 1, opt_tileCoord);
-      });
-};
 
 goog.provide('ol.source.Zoomify');
 
@@ -118469,6 +118561,11 @@ goog.exportSymbol(
 
 goog.exportProperty(
     ol.tilegrid.TileGrid.prototype,
+    'createTileCoordTransform',
+    ol.tilegrid.TileGrid.prototype.createTileCoordTransform);
+
+goog.exportProperty(
+    ol.tilegrid.TileGrid.prototype,
     'getMaxZoom',
     ol.tilegrid.TileGrid.prototype.getMaxZoom);
 
@@ -120097,6 +120194,11 @@ goog.exportProperty(
     'deselected',
     ol.SelectEvent.prototype.deselected);
 
+goog.exportProperty(
+    ol.SelectEvent.prototype,
+    'mapBrowserEvent',
+    ol.SelectEvent.prototype.mapBrowserEvent);
+
 goog.exportSymbol(
     'ol.interaction.Select',
     ol.interaction.Select,
@@ -120156,6 +120258,11 @@ goog.exportProperty(
     ol.geom.Circle.prototype,
     'getType',
     ol.geom.Circle.prototype.getType);
+
+goog.exportProperty(
+    ol.geom.Circle.prototype,
+    'intersectsExtent',
+    ol.geom.Circle.prototype.intersectsExtent);
 
 goog.exportProperty(
     ol.geom.Circle.prototype,
@@ -121784,6 +121891,11 @@ goog.exportProperty(
 
 goog.exportProperty(
     ol.tilegrid.WMTS.prototype,
+    'createTileCoordTransform',
+    ol.tilegrid.WMTS.prototype.createTileCoordTransform);
+
+goog.exportProperty(
+    ol.tilegrid.WMTS.prototype,
     'getMaxZoom',
     ol.tilegrid.WMTS.prototype.getMaxZoom);
 
@@ -121821,6 +121933,11 @@ goog.exportProperty(
     ol.tilegrid.WMTS.prototype,
     'getTileSize',
     ol.tilegrid.WMTS.prototype.getTileSize);
+
+goog.exportProperty(
+    ol.tilegrid.Zoomify.prototype,
+    'createTileCoordTransform',
+    ol.tilegrid.Zoomify.prototype.createTileCoordTransform);
 
 goog.exportProperty(
     ol.tilegrid.Zoomify.prototype,
