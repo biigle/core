@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel {
 	protected function schedule(Schedule $schedule)
 	{
 		$schedule->command('remove-deleted-images')
-				 ->dailyAt('04:00');
+				 ->dailyAt('04:05');
 	}
 
 }
