@@ -1,4 +1,6 @@
-<?php namespace Dias;
+<?php
+
+namespace Dias;
 
 use Dias\Model\ModelWithAttributes;
 
@@ -10,74 +12,74 @@ use Dias\Model\ModelWithAttributes;
  * 
  * Labels can be ordered in a tree-like structure.
  */
-class Label extends ModelWithAttributes {
+class Label extends ModelWithAttributes
+{
+    /**
+     * Validation rules for creating a new label.
+     * 
+     * @var array
+     */
+    public static $createRules = [
+        'name' => 'required',
+    ];
 
-	/**
-	 * Validation rules for creating a new label
-	 * 
-	 * @var array
-	 */
-	public static $createRules = array(
-		'name' => 'required',
-	);
+    /**
+     * Don't maintain timestamps for this model.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
 
-	/**
-	 * Don't maintain timestamps for this model.
-	 *
-	 * @var boolean
-	 */
-	public $timestamps = false;
+    /**
+     * The attributes excluded from the model's JSON form.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        // hide pivot table in annotation show output
+        'pivot',
+    ];
 
-	/**
-	 * The attributes excluded from the model's JSON form.
-	 *
-	 * @var array
-	 */
-	protected $hidden = array(
-		// hide pivot table in annotation show output
-		'pivot'
-	);
+    /**
+     * The parent label if the labels are ordered in a tree-like structure.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function parent()
+    {
+        return $this->belongsTo('Dias\Label');
+    }
 
-	/**
-	 * The parent label if the labels are ordered in a tree-like structure.
-	 * 
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	public function parent()
-	{
-		return $this->belongsTo('Dias\Label');
-	}
+    /**
+     * Adds the `hasParent` attribute to the label model which specifies whether
+     * the label has a parent label.
+     * 
+     * @return bool
+     */
+    public function getHasParentAttribute()
+    {
+        return $this->parent !== null;
+    }
 
-	/**
-	 * Adds the `hasParent` attribute to the label model which specifies whether
-	 * the label has a parent label.
-	 * 
-	 * @return boolean
-	 */
-	public function getHasParentAttribute()
-	{
-		return $this->parent !== null;
-	}
+    /**
+     * The child labels of this label if they are ordered in a tree-like
+     * structue.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function children()
+    {
+        return $this->hasMany('Dias\Label', 'parent_id');
+    }
 
-	/**
-	 * The child labels of this label if they are ordered in a tree-like
-	 * structue.
-	 * 
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
-	 */
-	public function children()
-	{
-		return $this->hasMany('Dias\Label', 'parent_id');
-	}
-
-	/**
-	 * Adds the `hasChildren` attribute to the label model which specifies
-	 * whether the label has any child labels.
-	 * 
-	 * @return boolean
-	 */
-	public function getHasChildrenAttribute()
-	{
-		return $this->children()->first() !== null;
-	}
+    /**
+     * Adds the `hasChildren` attribute to the label model which specifies
+     * whether the label has any child labels.
+     * 
+     * @return bool
+     */
+    public function getHasChildrenAttribute()
+    {
+        return $this->children()->first() !== null;
+    }
 }

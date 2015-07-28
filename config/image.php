@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
 
     /*
     |--------------------------------------------------------------------------
@@ -18,6 +18,6 @@ return array(
     'driver' => 'gd',
 
     // allow to open external images via URL
-    'allow_url_fopen' => true
+    'allow_url_fopen' => true,
 
-);
+];

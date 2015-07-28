@@ -1,21 +1,22 @@
-<?php namespace Dias\Events;
+<?php
+
+namespace Dias\Events;
 
 use Carbon\Carbon;
 
 /**
  * The generic event object.
  */
-abstract class Event {
+abstract class Event
+{
+    /**
+     * The time, the event was generated.
+     * @var Carbon\Carbon
+     */
+    public $time;
 
-	/**
-	 * The time, the event was generated.
-	 * @var Carbon\Carbon
-	 */
-	public $time;
-
-	public function __construct()
-	{
-		$this->time = new Carbon;
-	}
-
+    public function __construct()
+    {
+        $this->time = new Carbon;
+    }
 }

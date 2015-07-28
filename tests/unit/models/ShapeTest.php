@@ -2,55 +2,61 @@
 
 use Dias\Shape;
 
-class ShapeTest extends TestCase {
+class ShapeTest extends TestCase
+{
+    public static function create($name = 'test')
+    {
+        $obj = new Shape;
+        $obj->name = $name;
 
-	public static function create($name = 'test')
-	{
-		$obj = new Shape;
-		$obj->name = $name;
-		return $obj;
-	}
+        return $obj;
+    }
 
-	public function testCreation()
-	{
-		$obj = ShapeTest::create();
-		$this->assertTrue($obj->save());
-	}
+    public function testCreation()
+    {
+        $obj = self::create();
+        $this->assertTrue($obj->save());
+    }
 
-	public function testAttributes()
-	{
-		$shape = ShapeTest::create();
-		$shape->save();
-		$this->assertNotNull($shape->name);
-		$this->assertNull($shape->created_at);
-		$this->assertNull($shape->updated_at);
-	}
+    public function testAttributes()
+    {
+        $shape = self::create();
+        $shape->save();
+        $this->assertNotNull($shape->name);
+        $this->assertNull($shape->created_at);
+        $this->assertNull($shape->updated_at);
+    }
 
-	public function testNameRequired()
-	{
-		$obj = ShapeTest::create();
-		$obj->name = null;
-		$this->setExpectedException('Illuminate\Database\QueryException');
-		$obj->save();
-	}
+    public function testNameRequired()
+    {
+        $obj = self::create();
+        $obj->name = null;
+        $this->setExpectedException('Illuminate\Database\QueryException');
+        $obj->save();
+    }
 
-	public function testPointId()
-	{
-		$this->assertNotNull(Shape::pointId());
-	}
+    public function testPointId()
+    {
+        $this->assertNotNull(Shape::pointId());
+    }
 
-	public function testLineId()
-	{
-		$this->assertNotNull(Shape::lineId());
-	}
+    public function testLineId()
+    {
+        $this->assertNotNull(Shape::lineId());
+    }
 
-	public function testPolygonId()
-	{
-		$this->assertNotNull(Shape::polygonId());
-	}
+    public function testPolygonId()
+    {
+        $this->assertNotNull(Shape::polygonId());
+    }
 
-	public function testCircleId()
-	{
-		$this->assertNotNull(Shape::circleId());
-	}
+    public function testCircleId()
+    {
+        $this->assertNotNull(Shape::circleId());
+    }
+
+    public function testRectangleId()
+    {
+        $this->assertNotNull(Shape::rectangleId());
+    }
 }

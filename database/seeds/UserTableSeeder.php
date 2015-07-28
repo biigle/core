@@ -3,28 +3,27 @@
 use Illuminate\Database\Seeder;
 use Dias\User;
 
-class UserTableSeeder extends Seeder {
+class UserTableSeeder extends Seeder
+{
+    public function run()
+    {
+        DB::table('users')->delete();
 
-	public function run()
-	{
-		DB::table('users')->delete();
+        $joe = User::create([
+            'firstname' => 'Joe',
+            'lastname'  => 'User',
+            'email'     => 'joe@user.com',
+            'password'  => Hash::make('joespassword'),
+        ]);
 
-		$joe = User::create(array(
-			'firstname' => 'Joe',
-			'lastname'  => 'User',
-			'email'     => 'joe@user.com',
-			'password'  => Hash::make('joespassword'),
-		));
+        $joe->generateApiKey();
+        $joe->save();
 
-		$joe->generateApiKey();
-		$joe->save();
-
-		User::create(array(
-			'firstname' => 'Jane',
-			'lastname'  => 'User',
-			'email'     => 'jane@user.com',
-			'password'  => Hash::make('janespassword'),
-		));
-	}
-
+        User::create([
+            'firstname' => 'Jane',
+            'lastname'  => 'User',
+            'email'     => 'jane@user.com',
+            'password'  => Hash::make('janespassword'),
+        ]);
+    }
 }

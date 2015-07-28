@@ -1,77 +1,67 @@
-<?php namespace Dias\Http\Controllers\Auth;
+<?php
+
+namespace Dias\Http\Controllers\Auth;
 
 use Dias\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Auth\PasswordBroker;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 
-class PasswordController extends Controller {
+class PasswordController extends Controller
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Password Reset Controller
+    |--------------------------------------------------------------------------
+    |
+    | This controller is responsible for handling password reset requests
+    | and uses a simple trait to include this behavior. You're free to
+    | explore this trait and override any methods you wish to tweak.
+    |
+    */
 
-	/*
-	|--------------------------------------------------------------------------
-	| Password Reset Controller
-	|--------------------------------------------------------------------------
-	|
-	| This controller is responsible for handling password reset requests
-	| and uses a simple trait to include this behavior. You're free to
-	| explore this trait and override any methods you wish to tweak.
-	|
-	*/
+    use ResetsPasswords;
 
-	use ResetsPasswords;
+    /**
+     * Create a new password controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->redirectTo = route('home');
+        $this->subject = trans('auth.pw_reset_subject');
 
-	/**
-	 * Create a new password controller instance.
-	 *
-	 * @param  Guard  $auth
-	 * @param  PasswordBroker  $passwords
-	 * @return void
-	 */
-	public function __construct(Guard $auth, PasswordBroker $passwords)
-	{
-		$this->auth = $auth;
-		$this->passwords = $passwords;
-		$this->redirectTo = route('home');
-		$this->subject = trans('auth.pw_reset_subject');
+        $this->middleware('guest');
+    }
 
-		$this->middleware('guest');
-	}
+    /**
+     * Overrides the default method to exclude the password in the error
+     * response.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function postReset(Request $request)
+    {
+        $this->validate($request, \Dias\User::$resetRules);
 
-	/**
-	 * Overrides the default method to exclude the password in the error
-	 * response.
-	 *
-	 * @param  Request  $request
-	 * @return \Illuminate\Http\Response
-	 */
-	public function postReset(Request $request)
-	{
-		$this->validate($request, \Dias\User::$resetRules);
+        $credentials = $request->only(
+            'email', 'password', 'password_confirmation', 'token'
+        );
 
-		$credentials = $request->only(
-			'email', 'password', 'password_confirmation', 'token'
-		);
+        $response = Password::reset($credentials, function ($user, $password) {
+         $this->resetPassword($user, $password);
+     });
 
-		$response = $this->passwords->reset($credentials, function($user, $password)
-		{
-			$user->password = bcrypt($password);
+        switch ($response) {
+         case Password::PASSWORD_RESET:
+             return redirect($this->redirectPath());
 
-			$user->save();
-
-			$this->auth->login($user);
-		});
-
-		switch ($response)
-		{
-			case PasswordBroker::PASSWORD_RESET:
-				return redirect($this->redirectPath());
-
-			default:
-				return redirect()->back()
-							->withInput($request->only('email'))
-							->withErrors(['email' => trans($response)]);
-		}
-	}
-
+         default:
+             return redirect()->back()
+                 ->withInput($request->only('email'))
+                 ->withErrors(['email' => trans($response)]);
+     }
+    }
 }
