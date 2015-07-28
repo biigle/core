@@ -12,7 +12,6 @@
 		"dias/annotations": "dev-master"
 	},
 	"require-dev": {
-		"codeception/codeception": "~2.0",
 		"phpunit/phpunit": "~4.0",
 		"sami/sami": "dev-master",
 		"mockery/mockery": "dev-master"
