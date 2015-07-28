@@ -12,26 +12,25 @@ abstract class ModelWithAttributesController extends Controller
     /**
      * Creates a new ModelWithAttributesController instance.
      * This constructor allows child controllers to define own middleware.
-     * 
-     * @param Guard $auth
+     *
      * @param Request $request
      */
-    public function __construct(Guard $auth, Request $request)
+    public function __construct(Request $request)
     {
-        parent::__construct($auth, $request);
+        parent::__construct($request);
     }
 
     /**
      * Returns the ModelWithAttributes with the specified ID.
-     * 
+     *
      * @param int $id ModelWithAttributes ID
      * @return \Dias\Model\ModelWithAttributes
      */
     abstract protected function getModel($id);
 
-/**
+    /**
      * Shows all attributes of the specified model.
-     * 
+     *
      * @apiDefine indexAttributes
      * @apiParam {Number} id The model ID.
      * @apiSuccessExample {json} Success response:
@@ -74,7 +73,7 @@ abstract class ModelWithAttributesController extends Controller
      *     "value_double": null,
      *     "value_string": null
      * }
-     * 
+     *
      * @param int $modelId ID of the model
      * @param  String  $name name of the attribute
      * @return Annotation
@@ -100,7 +99,7 @@ abstract class ModelWithAttributesController extends Controller
 
     /**
      * Attaches a new attribute to the specified model.
-     * 
+     *
      * @apiDefine storeAttributes
      * @apiParam {Number} id The model ID.
      * @apiParam (Required arguments) {String} name The attribute name.
@@ -138,15 +137,12 @@ abstract class ModelWithAttributesController extends Controller
             $this->request->input('value')
         );
 
-        return response(
-            $model->getDiasAttribute($this->request->input('name')),
-            201
-        );
+        return response($model->getDiasAttribute($this->request->input('name')), 201);
     }
 
     /**
      * Updates an attribute of the specified model.
-     * 
+     *
      * @apiDefine updateAttributes
      * @apiParam {Number} id The model ID.
      * @apiParam {String} name The attribute name.
@@ -182,7 +178,7 @@ abstract class ModelWithAttributesController extends Controller
 
     /**
      * Detaches an attribute from the specified model.
-     * 
+     *
      * @apiDefine destroyAttributes
      * @apiParam {Number} id The model ID.
      * @apiParam {String} name The attribute name.

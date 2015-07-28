@@ -60,8 +60,8 @@ class PasswordController extends Controller
 
          default:
              return redirect()->back()
-                         ->withInput($request->only('email'))
-                         ->withErrors(['email' => trans($response)]);
+                 ->withInput($request->only('email'))
+                 ->withErrors(['email' => trans($response)]);
      }
     }
 }

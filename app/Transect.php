@@ -74,7 +74,7 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract
     public function setMediaTypeId($id)
     {
         $type = MediaType::find($id);
-        if (!$type) {
+        if ($type === null) {
             abort(400, 'The media type "'.$id.'" does not exist!');
         }
         $this->setMediaType($type);

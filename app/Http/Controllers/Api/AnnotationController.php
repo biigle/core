@@ -31,14 +31,11 @@ class AnnotationController extends Controller
      */
     public function show($id)
     {
-        $annotation = $this->requireNotNull(
-            Annotation::with('points')->find($id)
-        );
+        $annotation = $this->requireNotNull(Annotation::with('points')->find($id));
+        $this->requireCanSee($annotation);
 
-        // call fresh so the transect and image doesn't appear in the output
-        // (they will be fetched for projectIds())
-        $this->requireCanSee($annotation->fresh());
-
+        // image will be fetched by requireCanSee but shouldn't be returned
+        unset($annotation->image);
         return $annotation;
     }
 
@@ -67,11 +64,8 @@ class AnnotationController extends Controller
      */
     public function update($id)
     {
-        $annotation = $this->requireNotNull(
-            Annotation::with('points')->find($id)
-        );
-
-        $this->requireCanEdit($annotation->fresh());
+        $annotation = $this->requireNotNull(Annotation::with('points')->find($id));
+        $this->requireCanEdit($annotation);
 
         // from a JSON request, the array may already be decoded
         $points = $this->request->input('points');
@@ -99,7 +93,6 @@ class AnnotationController extends Controller
     public function destroy($id)
     {
         $annotation = $this->requireNotNull(Annotation::find($id));
-
         $this->requireCanEdit($annotation);
 
         $annotation->delete();

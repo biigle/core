@@ -11,24 +11,23 @@ class AttributeController extends Controller
 {
     /**
      * Creates a new AttrbuteController instance.
-     * 
-     * @param Guard $auth
+     *
      * @param Request $request
      */
-    public function __construct(Guard $auth, Request $request)
+    public function __construct(Request $request)
     {
-        parent::__construct($auth, $request);
+        parent::__construct($request);
         $this->middleware('admin', ['only' => ['store', 'destroy']]);
     }
 
     /**
      * Shows a list of all attributes.
-     * 
+     *
      * @api {get} attributes Get all attributes
      * @apiGroup Attributes
      * @apiName IndexAttributes
      * @apiPermission user
-     * 
+     *
      * @apiSuccessExample {json} Success response:
      * [
      *    {
@@ -47,12 +46,12 @@ class AttributeController extends Controller
 
     /**
      * Shows the specified attribute.
-     * 
+     *
      * @api {get} attributes/:id Get an attribute
      * @apiGroup Attributes
      * @apiName ShowAttributes
      * @apiPermission user
-     * 
+     *
      * @apiParam {Number} id The attribute ID.
      * @apiSuccessExample {json} Success response:
      * {
@@ -71,12 +70,12 @@ class AttributeController extends Controller
 
     /**
      * Creates a new attribute.
-     * 
+     *
      * @api {post} attributes Create a new attribute
      * @apiGroup Attributes
      * @apiName StoreAttributes
      * @apiPermission admin
-     * 
+     *
      * @apiParam (Required arguments) {String} name The name of the new attribute.
      * @apiParam (Required arguments) {String} type One of `integer`, `double`, `string` or `boolean`.
      * @apiSuccessExample {json} Success response:
@@ -107,13 +106,13 @@ class AttributeController extends Controller
 
     /**
      * Removes the specified attribute.
-     * 
+     *
      * @api {delete} attributes/:id Delete an attribute
      * @apiGroup Attributes
      * @apiName DestroyAttributes
      * @apiPermission admin
      * @apiDescription If an attribute is still in use, it cannot be deleted.
-     * 
+     *
      * @apiParam {Number} id The attribute ID.
      *
      * @param  int  $id

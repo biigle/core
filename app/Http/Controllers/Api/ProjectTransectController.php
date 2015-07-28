@@ -10,12 +10,12 @@ class ProjectTransectController extends Controller
 {
     /**
      * Shows a list of all transects belonging to the specified project..
-     * 
+     *
      * @api {get} projects/:id/transects Get all transects
      * @apiGroup Projects
      * @apiName IndexProjectTransects
      * @apiPermission projectMember
-     * 
+     *
      * @apiParam {Number} id The project ID.
      *
      * @apiSuccessExample {json} Success response:
@@ -30,7 +30,7 @@ class ProjectTransectController extends Controller
      *       "url": "/vol/transects/1"
      *    }
      * ]
-     * 
+     *
      * @param int $id Project ID
      * @return \Illuminate\Http\Response
      */
@@ -44,25 +44,25 @@ class ProjectTransectController extends Controller
 
     /**
      * Creates a new transect associated to the specified project.
-     * 
+     *
      * @api {post} projects/:id/transects Create a new transect
      * @apiGroup Transects
      * @apiName StoreProjectTransects
      * @apiPermission projectAdmin
-     * 
+     *
      * @apiParam {Number} id The project ID.
-     * 
+     *
      * @apiParam (Required attributes) {String} name The name of the new transect.
      * @apiParam (Required attributes) {String} url The base URL ot the image files. Can be a local path like `/vol/transects/1` or a remote path like `https://example.com/transects/1`.
      * @apiParam (Required attributes) {Number} media_type_id The ID of the media type of the new transect.
      * @apiParam (Required attributes) {String} images List of image file names of the images that can be found at the base URL, formatted as comma separated values. With the base URL `/vol/transects/1` and the image `1.jpg`, the local file `/vol/transects/1/1.jpg` will be used.
-     * 
+     *
      * @apiParamExample {String} Request example:
      * name: 'New transect'
      * url: '/vol/transects/test-transect'
      * media_type_id: 1
      * images: '1.jpg,2.jpg,3.jpg'
-     * 
+     *
      * @apiSuccessExample {json} Success response:
      * {
      *    "id": 2,
@@ -108,8 +108,9 @@ class ProjectTransectController extends Controller
         $project->addTransectId($transect->id);
 
         if (static::isAutomatedRequest($this->request)) {
-            // call fresh so the media type object is not included
-            return $transect->fresh();
+            // media type shouldn't be returned
+            unset($transect->media_type);
+            return $transect;
         } else {
             return redirect()->route('home')
                 ->with('message', 'Transect '.$transect->name.' created')
@@ -120,16 +121,16 @@ class ProjectTransectController extends Controller
     /**
      * Attaches the existing specified transect to the existing specified
      * project.
-     * 
+     *
      * @api {post} projects/:pid/transects/:tid Attach a transect
      * @apiGroup Projects
      * @apiName AttachProjectTransects
      * @apiPermission projectAdmin
      * @apiDescription This endpoint attaches an existing transect to another existing project. The transect then will belong to multiple projects. The user performing this poeration needs to be project admin in both the project, the transect initially belongs to, and the project, the transect should be attached to.
-     * 
+     *
      * @apiParam {Number} pid ID of the project that should get the annotation.
      * @apiParam {Number} tid ID of the existing transect to attach to the project.
-     * 
+     *
      * @param int $projectId
      * @param int $transectId
      * @return \Illuminate\Http\Response
@@ -150,16 +151,16 @@ class ProjectTransectController extends Controller
      * Removes the specified transect from the specified project.
      * If it is the last project the transect belongs to, the transect is
      * deleted (if the `force` argument is present in the request).
-     * 
+     *
      * @api {delete} projects/:pid/transects/:tid Detach/delete a transect
      * @apiGroup Projects
      * @apiName DestroyProjectTransects
      * @apiPermission projectAdmin
      * @apiDescription Detaches a transect from a project. The transect will no longer belong to the project it was detached from. If the transect belongs only to a single project, it cannot be detached but should be deleted. Use the `force` parameter to delete a transect belonging only to one project.
-     * 
+     *
      * @apiParam {Number} pid The project ID, the transect should be detached from.
      * @apiParam {Number} tid The transect ID.
-     * 
+     *
      * @apiParam (Optional parameters) {Boolean} force If the transect only belongs to a single project, set this parameter to delete it instead of detaching it. Otherwise the transect cannot be removed.
      *
      * @param  int  $projectId

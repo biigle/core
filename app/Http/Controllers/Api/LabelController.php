@@ -10,13 +10,12 @@ class LabelController extends Controller
 {
     /**
      * Creates a new LabelController instance.
-     * 
-     * @param Guard $auth
+     *
      * @param Request $request
      */
-    public function __construct(Guard $auth, Request $request)
+    public function __construct(Request $request)
     {
-        parent::__construct($auth, $request);
+        parent::__construct($request);
         $this->middleware('admin', ['except' => ['index', 'show']]);
     }
 
@@ -24,7 +23,7 @@ class LabelController extends Controller
      * Checks if the request contains a parent ID and tries to associate the
      * parent with the given label. Aborts with 400 if the parent does not
      * exist.
-     * 
+     *
      * @param Label $label
      * @return void
      */
@@ -43,7 +42,7 @@ class LabelController extends Controller
 
     /**
      * Shows a list of all labels.
-     * 
+     *
      * @api {get} labels Get all label categories
      * @apiGroup Labels
      * @apiName IndexLabels
@@ -74,12 +73,12 @@ class LabelController extends Controller
 
     /**
      * Displays the specified label.
-     * 
+     *
      * @api {get} labels/:id Get a label category
      * @apiGroup Labels
      * @apiName ShowLabels
      * @apiPermission user
-     * 
+     *
      * @apiParam {Number} id The label ID.
      *
      * @apiSuccessExample {json} Success response:
@@ -100,17 +99,17 @@ class LabelController extends Controller
 
     /**
      * Creates a new label.
-     * 
+     *
      * @api {post} labels Create a new label category
      * @apiGroup Labels
      * @apiName StoreLabels
      * @apiPermission admin
-     * 
+     *
      * @apiParam (Required arguments) {String} name Name of the new label category.
-     * 
+     *
      * @apiParam (Optional arguments) {Number} parent_id ID of the parent label category for ordering in a tree-like stricture.
      * @apiParam (Optional arguments) {Number} aphia_id The [WoRMS](http://www.marinespecies.org/) AphiaID.
-     * 
+     *
      * @apiSuccessExample {json} Success response:
      * {
      *    "id": 4,
@@ -131,20 +130,21 @@ class LabelController extends Controller
         $this->maybeSetParent($label);
 
         $label->save();
-        // call fresh, so the parent object is not included
-        return $label->fresh();
+        // the parent object shouldn't be returned
+        unset($label->parent);
+        return $label;
     }
 
     /**
      * Updates the attributes of the specified label.
-     * 
+     *
      * @api {put} labels/:id Update a label category
      * @apiGroup Labels
      * @apiName UpdateLabels
      * @apiPermission admin
-     * 
+     *
      * @apiParam {Number} id The label ID.
-     * 
+     *
      * @apiParam (Attributes that can be updated) {String} name Name of the label category.
      * @apiParam (Attributes that can be updated) {Number} parent_id ID of the parent label category for ordering in a tree-like stricture.
      * @apiParam (Attributes that can be updated) {Number} aphia_id The [WoRMS](http://www.marinespecies.org/) AphiaID.
@@ -164,15 +164,15 @@ class LabelController extends Controller
 
     /**
      * Removes the specified label.
-     * 
+     *
      * @api {delete} labels/:id Delete a label category
      * @apiGroup Labels
      * @apiName DestroyLabels
      * @apiPermission admin
      * @apiDescription If a label category is still attached to an annotation, it cannot be removed. Also, if a label category has child labels, the `force` argument is required.
-     * 
+     *
      * @apiParam {Number} id The label ID.
-     * 
+     *
      * @apiParam (Optional parameters) {Boolean} force Set this parameter to delete label categories with child labels.
      *
      * @param  int  $id

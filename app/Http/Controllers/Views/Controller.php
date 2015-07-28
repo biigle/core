@@ -17,14 +17,13 @@ abstract class Controller extends AdvancedController
 
     /**
      * Creates a new ApiController instance.
-     * 
-     * @param Guard $auth
+     *
      * @param Request $request
      * @param Modules $modules
      */
-    public function __construct(Guard $auth, Request $request, Modules $modules)
+    public function __construct(Request $request, Modules $modules)
     {
-        parent::__construct($auth, $request);
+        parent::__construct($request);
         $this->modules = $modules;
     }
 }

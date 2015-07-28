@@ -12,12 +12,11 @@ class UserController extends Controller
     /**
      * Creates a new UserController instance.
      *
-     * @param Guard $auth
      * @param Request $request
      */
-    public function __construct(Guard $auth, Request $request)
+    public function __construct(Request $request)
     {
-        parent::__construct($auth, $request);
+        parent::__construct($request);
 
         $this->middleware('admin', ['except' => [
             'find',
@@ -238,11 +237,7 @@ class UserController extends Controller
         if ($request->has('password')) {
             // the user has to provide their old password to set a new one
             if (!Hash::check($request->input('old_password'), $user->password)) {
-                $errors = [
-                    'old_password' => [
-                        trans('validation.custom.old_password'),
-                    ],
-                ];
+                $errors = ['old_password' => [trans('validation.custom.old_password')]];
 
                 return $this->buildFailedValidationResponse($request, $errors);
             }
@@ -343,10 +338,10 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroyOwn(Guard $auth)
+    public function destroyOwn()
     {
         $user = $this->user;
-        $auth->logout();
+        auth()->logout();
         // delete the user AFTER logging them out, otherwise logout would save
         // them again
         $user->delete();

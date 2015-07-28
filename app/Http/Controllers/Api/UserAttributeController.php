@@ -10,17 +10,16 @@ class UserAttributeController extends ModelWithAttributesController
 {
     /**
      * Creates a new UserAttributeController instance.
-     * 
-     * @param Guard $auth
+     *
      * @param Request $request
      */
-    public function __construct(Guard $auth, Request $request)
+    public function __construct(Request $request)
     {
-        parent::__construct($auth, $request);
+        parent::__construct($request);
         $this->middleware('admin', ['except' => ['index', 'show']]);
     }
 
-/**
+    /**
      * {@inheritdoc}
      */
     protected function getModel($id)

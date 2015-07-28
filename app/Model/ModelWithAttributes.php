@@ -12,13 +12,13 @@ use Dias\Attribute;
 abstract class ModelWithAttributes extends Model
 {
     /**
-     * Determines the pivot table attributes array depending on the DIAS 
+     * Determines the pivot table attributes array depending on the DIAS
      * attribute type.
-     * 
+     *
      * @param Attribute $attribute The DIAS attribute
-     * @param mixed $value The value that should be set in the pivot table 
+     * @param mixed $value The value that should be set in the pivot table
      * attributes array
-     * 
+     *
      * @return array
      */
     private function buildPivotAttributes($attribute, $value)
@@ -42,7 +42,7 @@ abstract class ModelWithAttributes extends Model
 
     /**
      * The attributes of this model.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function attributes()
@@ -57,7 +57,7 @@ abstract class ModelWithAttributes extends Model
 
     /**
      * Attaches an attribute to the model.
-     * 
+     *
      * @param String $name attribute name
      * @param mixed $value Attribute value (numeric, String or boolean)
      * @return void
@@ -79,7 +79,7 @@ abstract class ModelWithAttributes extends Model
      * have the attribute.
      * Not called `getAttribute` because every Eloquent model already has this
      * function!
-     * 
+     *
      * @param String $name attribute name
      * @return \Dias\Attribute
      */
@@ -90,7 +90,7 @@ abstract class ModelWithAttributes extends Model
 
     /**
      * Detaches a \Dias\Attribute from this model.
-     * 
+     *
      * @param String $name attribute name
      * @return void
      */
@@ -102,16 +102,14 @@ abstract class ModelWithAttributes extends Model
 
     /**
      * Updates the value of an existing attribute of this model.
-     * 
+     *
      * @param String $name Name of the attribute to update
      * @param mixed $value Value of the new attribute (numeric, String or boolean)
      */
     public function updateDiasAttribute($name, $value)
     {
         $attribute = $this->getDiasAttribute($name);
-
         $pivot = $this->buildPivotAttributes($attribute, $value);
-
         $this->attributes()->updateExistingPivot($attribute->id, $pivot);
     }
 }

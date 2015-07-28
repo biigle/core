@@ -44,10 +44,7 @@ class Handler extends ExceptionHandler
         if (Controller::isAutomatedRequest($request)) {
             $status = $this->isHttpException($e) ? $e->getStatusCode() : 500;
 
-            return new JsonResponse(
-                ['message' => $e->getMessage()],
-                $status
-            );
+            return new JsonResponse(['message' => $e->getMessage()], $status);
         } elseif ($this->isHttpException($e)) {
             return $this->renderHttpException($e);
         } else {

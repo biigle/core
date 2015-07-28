@@ -14,7 +14,7 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
 {
     /**
      * Validation rules for attaching a label to a annotation.
-     * 
+     *
      * @var array
      */
     public static $attachLabelRules = [
@@ -24,12 +24,12 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Validation rules for creating a point for an annotation.
-     * 
+     *
      * @var array
      */
     public static $createPointRules = [
-        'x'    => 'required|numeric',
-        'y'    => 'required|numeric',
+        'x' => 'required|numeric',
+        'y' => 'required|numeric',
     ];
 
     /**
@@ -44,7 +44,7 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * The image, this annotation belongs to.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function image()
@@ -54,7 +54,7 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * The shape of this annotation.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function shape()
@@ -64,7 +64,7 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * The points, this annotation consists of.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function points()
@@ -74,13 +74,12 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * The labels, this annotation got assigned by the users.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function labels()
     {
-        return $this->hasMany('Dias\AnnotationLabel')
-            ->with('label', 'user');
+        return $this->hasMany('Dias\AnnotationLabel')->with('label', 'user');
     }
 
     /**
@@ -94,7 +93,7 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Adds a new point to this annotation.
-     * 
+     *
      * @param int $x x position of the point
      * @param int $y y position of the point
      * @return AnnotationPoint
@@ -108,14 +107,14 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
         // the new point gets the next higher index
         $point->index = ($index === null) ? 0 : $index + 1;
 
-return $this->points()->save($point);
+        return $this->points()->save($point);
     }
 
     /**
      * Adds an array of points to this annotation.
      * A point may be an associative array `['x'=>10, 'y'=>10]` or an object
      * `{x => 10, y => 10}`.
-     * 
+     *
      * @param array $points array of point arrays or objects
      */
     public function addPoints($points)
@@ -133,7 +132,7 @@ return $this->points()->save($point);
     /**
      * Replaces the current points with the given ones.
      * Does nothing if the given array is empty.
-     * 
+     *
      * @param array $points array of point arrays or objects
      */
     public function refreshPoints($points)
@@ -147,7 +146,7 @@ return $this->points()->save($point);
 
     /**
      * Adds a new label to this annotation.
-     * 
+     *
      * @param int $labelId
      * @param float $confidence
      * @param User $user The user attaching tha label

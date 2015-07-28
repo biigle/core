@@ -23,13 +23,11 @@ class AnnotationPoint extends Model implements BelongsToProjectContract
      *
      * @var array
      */
-    protected $visible = [
-        'x', 'y',
-    ];
+    protected $visible = ['x', 'y'];
 
     /**
      * The annotation, this point belongs to.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function annotation()

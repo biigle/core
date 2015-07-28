@@ -10,7 +10,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 {
     /**
      * Validation rules for creating a new project.
-     * 
+     *
      * @var array
      */
     public static $createRules = [
@@ -20,7 +20,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Validation rules for updating a project.
-     * 
+     *
      * @var array
      */
     public static $updateRules = [
@@ -39,10 +39,10 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * {@inheritdoc}
-     * 
+     *
      * A project belongs only to itself but the user permissions can be handled
      * very consistently if a project implements this method, too.
-     * 
+     *
      * @return array
      */
     public function projectIds()
@@ -53,7 +53,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
     /**
      * The members of this project. Every member has a project-specific
      * `project_role_id` besides their global user role.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users()
@@ -64,7 +64,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * All members of this project with the `admin` role.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function admins()
@@ -74,7 +74,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * All members of this project with the `editor` role.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function editors()
@@ -84,7 +84,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * All members of this project with the `guest` role.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function guests()
@@ -94,7 +94,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Checks if the user ID is an admin of this project.
-     * 
+     *
      * @param int $id
      * @return bool
      */
@@ -105,7 +105,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Checks if the user is an admin of this project.
-     * 
+     *
      * @param User $user
      * @return bool
      */
@@ -116,7 +116,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Checks if the user ID is an editor of this project.
-     * 
+     *
      * @param int $id
      * @return bool
      */
@@ -127,7 +127,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Checks if the user is an editor of this project.
-     * 
+     *
      * @param User $user
      * @return bool
      */
@@ -138,7 +138,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Checks if the given user ID exists in this project.
-     * 
+     *
      * @param int $id
      * @return bool
      */
@@ -149,7 +149,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Checks if the given user exists in this project.
-     * 
+     *
      * @param User $user
      * @return bool
      */
@@ -162,7 +162,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
      * The user that created this project. On creation this user is
      * automatically added to the project's users with the 'admin' role by
      * the ProjectObserver.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function creator()
@@ -172,7 +172,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Sets the creator if it isn't already set.
-     * 
+     *
      * @param User $user
      * @return bool
      */
@@ -190,7 +190,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Adds the user with the given role to this project.
-     * 
+     *
      * @param int $userId
      * @param int $roleId
      * @return void
@@ -206,7 +206,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Changes the role of an existing user in this project.
-     * 
+     *
      * @param int $userId
      * @param int $roleId
      * @return void
@@ -229,7 +229,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Removes the user by ID from this project.
-     * 
+     *
      * @param int $userId
      * @return bool
      */
@@ -241,12 +241,12 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
             abort(400, 'The last project admin cannot be removed.');
         }
 
-return (boolean) $this->users()->detach($userId);
+        return (boolean) $this->users()->detach($userId);
     }
 
     /**
      * The transects of this project.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function transects()
@@ -256,7 +256,7 @@ return (boolean) $this->users()->detach($userId);
 
     /**
      * Adds a transect to this project if it wasn't already.
-     * 
+     *
      * @param int $id
      * @return void
      */
@@ -272,7 +272,7 @@ return (boolean) $this->users()->detach($userId);
     /**
      * Detaches the transect from this project. Fails if this is the last
      * project, the transect is attached to, unless force is `true`.
-     * 
+     *
      * @param \Dias\Transect $transect
      * @param bool $force Delete the transect completely if this is the last
      * project it belongs to
@@ -302,7 +302,7 @@ return (boolean) $this->users()->detach($userId);
     /**
      * Detaches the transect from this project. Fails if this is the last
      * project, the transect is attached to, unless force is `true`.
-     * 
+     *
      * @param int $id Transect ID
      * @param bool $force Delete the transect completely if this is the last
      * project it belongs to
@@ -316,7 +316,7 @@ return (boolean) $this->users()->detach($userId);
     /**
      * Detaches all transects from this project. Fails if this is the last
      * project, one of the transects is attached to, unless force is `true`.
-     * 
+     *
      * @param bool $force
      */
     public function removeAllTransects($force = false)
