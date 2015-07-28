@@ -5,7 +5,7 @@ use Dias\Transect;
 use Dias\Role;
 use Dias\Image;
 
-class ProjectTransectApiTest extends ApiTestCase
+class ApiProjectTransectControllerTest extends ApiTestCase
 {
     private $transect;
 

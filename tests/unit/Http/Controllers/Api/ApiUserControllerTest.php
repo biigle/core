@@ -2,7 +2,7 @@
 
 use Dias\User;
 
-class UserApiTest extends ModelWithAttributesApiTest
+class ApiUserControllerTest extends ModelWithAttributesApiTest
 {
     protected function getEndpoint()
     {

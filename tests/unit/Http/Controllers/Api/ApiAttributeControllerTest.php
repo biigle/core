@@ -2,7 +2,7 @@
 
 use Dias\Attribute;
 
-class AttributeApiTest extends ApiTestCase
+class ApiAttributeControllerTest extends ApiTestCase
 {
     public function testIndex()
     {

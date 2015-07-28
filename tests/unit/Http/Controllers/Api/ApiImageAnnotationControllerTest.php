@@ -1,6 +1,6 @@
 <?php
 
-class ImageAnnotationApiTest extends ApiTestCase
+class ApiImageAnnotationControllerTest extends ApiTestCase
 {
     private $image;
 

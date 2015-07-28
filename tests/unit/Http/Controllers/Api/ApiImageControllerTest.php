@@ -2,7 +2,7 @@
 
 use Dias\Image;
 
-class ImageApiTest extends ModelWithAttributesApiTest
+class ApiImageControllerTest extends ModelWithAttributesApiTest
 {
     protected function getEndpoint()
     {

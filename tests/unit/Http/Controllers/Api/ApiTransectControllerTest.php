@@ -1,6 +1,6 @@
 <?php
 
-class TransectApiTest extends ModelWithAttributesApiTest
+class ApiTransectControllerTest extends ModelWithAttributesApiTest
 {
     protected function getEndpoint()
     {

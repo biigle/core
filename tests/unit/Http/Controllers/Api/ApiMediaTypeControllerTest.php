@@ -1,20 +1,21 @@
 <?php
 
-use Dias\Shape;
+use Dias\MediaType;
 
-class ShapeApiTest extends ApiTestCase
+class ApiMediaTypeControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
-        $this->doTestApiRoute('GET', '/api/v1/shapes');
+        $this->doTestApiRoute('GET', '/api/v1/media-types');
+        $this->assertResponseStatus(401);
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/shapes', $this->admin);
+        $this->callToken('GET', '/api/v1/media-types', $this->admin);
         $this->assertResponseOk();
 
         // session cookie authentication
         $this->be($this->user);
-        $r = $this->call('GET', '/api/v1/shapes');
+        $r = $this->call('GET', '/api/v1/media-types');
         $this->assertResponseOk();
         $this->assertStringStartsWith('[', $r->getContent());
         $this->assertStringEndsWith(']', $r->getContent());
@@ -22,18 +23,18 @@ class ShapeApiTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::circleId());
+        $this->doTestApiRoute('GET', '/api/v1/media-types/'.MediaType::timeSeriesId());
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/shapes/'.Shape::circleId(), $this->admin);
+        $this->callToken('GET', '/api/v1/media-types/'.MediaType::timeSeriesId(), $this->admin);
         $this->assertResponseOk();
 
         // session cookie authentication
         $this->be($this->user);
-        $r = $this->call('GET', '/api/v1/shapes/'.Shape::circleId());
+        $r = $this->call('GET', '/api/v1/media-types/'.MediaType::timeSeriesId());
         $this->assertResponseOk();
         $this->assertStringStartsWith('{', $r->getContent());
         $this->assertStringEndsWith('}', $r->getContent());
-        $this->assertContains('Circle', $r->getContent());
+        $this->assertContains('time-series', $r->getContent());
     }
 }

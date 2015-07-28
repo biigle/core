@@ -1,6 +1,6 @@
 <?php
 
-class TransectImageApiTest extends ApiTestCase
+class ApiTransectImageControllerTest extends ApiTestCase
 {
     public function testIndex()
     {

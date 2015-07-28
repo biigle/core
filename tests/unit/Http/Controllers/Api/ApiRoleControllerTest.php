@@ -1,21 +1,20 @@
 <?php
 
-use Dias\MediaType;
+use Dias\Role;
 
-class MediaTypeApiTest extends ApiTestCase
+class ApiRoleControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
-        $this->doTestApiRoute('GET', '/api/v1/media-types');
-        $this->assertResponseStatus(401);
+        $this->doTestApiRoute('GET', '/api/v1/roles');
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/media-types', $this->admin);
+// api key authentication
+        $this->callToken('GET', '/api/v1/roles', $this->user);
         $this->assertResponseOk();
 
         // session cookie authentication
         $this->be($this->user);
-        $r = $this->call('GET', '/api/v1/media-types');
+        $r = $this->call('GET', '/api/v1/roles');
         $this->assertResponseOk();
         $this->assertStringStartsWith('[', $r->getContent());
         $this->assertStringEndsWith(']', $r->getContent());
@@ -23,18 +22,18 @@ class MediaTypeApiTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/media-types/'.MediaType::timeSeriesId());
+        $this->doTestApiRoute('GET', '/api/v1/roles/'.Role::adminId());
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/media-types/'.MediaType::timeSeriesId(), $this->admin);
+        $this->callToken('GET', '/api/v1/roles/'.Role::adminId(), $this->user);
         $this->assertResponseOk();
 
         // session cookie authentication
         $this->be($this->user);
-        $r = $this->call('GET', '/api/v1/media-types/'.MediaType::timeSeriesId());
+        $r = $this->call('GET', '/api/v1/roles/'.Role::adminId());
         $this->assertResponseOk();
         $this->assertStringStartsWith('{', $r->getContent());
         $this->assertStringEndsWith('}', $r->getContent());
-        $this->assertContains('time-series', $r->getContent());
+        $this->assertContains('admin', $r->getContent());
     }
 }

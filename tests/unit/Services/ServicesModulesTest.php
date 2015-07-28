@@ -2,7 +2,7 @@
 
 use Dias\Services\Modules;
 
-class ModulesTest extends TestCase
+class ServicesModulesTest extends TestCase
 {
     public function testGetMixins()
     {

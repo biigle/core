@@ -2,7 +2,7 @@
 
 use Dias\Label;
 
-class LabelApiTest extends ModelWithAttributesApiTest
+class ApiLabelControllerTest extends ModelWithAttributesApiTest
 {
     protected function getEndpoint()
     {

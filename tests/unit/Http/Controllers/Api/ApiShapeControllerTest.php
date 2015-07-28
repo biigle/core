@@ -1,20 +1,20 @@
 <?php
 
-use Dias\Role;
+use Dias\Shape;
 
-class RoleApiTest extends ApiTestCase
+class ApiShapeControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
-        $this->doTestApiRoute('GET', '/api/v1/roles');
+        $this->doTestApiRoute('GET', '/api/v1/shapes');
 
-// api key authentication
-        $this->callToken('GET', '/api/v1/roles', $this->user);
+        // api key authentication
+        $this->callToken('GET', '/api/v1/shapes', $this->admin);
         $this->assertResponseOk();
 
         // session cookie authentication
         $this->be($this->user);
-        $r = $this->call('GET', '/api/v1/roles');
+        $r = $this->call('GET', '/api/v1/shapes');
         $this->assertResponseOk();
         $this->assertStringStartsWith('[', $r->getContent());
         $this->assertStringEndsWith(']', $r->getContent());
@@ -22,18 +22,18 @@ class RoleApiTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/roles/'.Role::adminId());
+        $this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::circleId());
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/roles/'.Role::adminId(), $this->user);
+        $this->callToken('GET', '/api/v1/shapes/'.Shape::circleId(), $this->admin);
         $this->assertResponseOk();
 
         // session cookie authentication
         $this->be($this->user);
-        $r = $this->call('GET', '/api/v1/roles/'.Role::adminId());
+        $r = $this->call('GET', '/api/v1/shapes/'.Shape::circleId());
         $this->assertResponseOk();
         $this->assertStringStartsWith('{', $r->getContent());
         $this->assertStringEndsWith('}', $r->getContent());
-        $this->assertContains('admin', $r->getContent());
+        $this->assertContains('Circle', $r->getContent());
     }
 }

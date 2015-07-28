@@ -1,6 +1,6 @@
 <?php
 
-class AnnotationLabelApiTest extends ApiTestCase
+class ApiAnnotationLabelControllerTest extends ApiTestCase
 {
     private $annotation;
 

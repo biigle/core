@@ -3,7 +3,7 @@
 use Dias\Project;
 use Dias\Role;
 
-class ProjectApiTest extends ModelWithAttributesApiTest
+class ApiProjectControllerTest extends ModelWithAttributesApiTest
 {
     protected function getEndpoint()
     {

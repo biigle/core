@@ -1,6 +1,6 @@
 <?php
 
-class AnnotationApiTest extends ModelWithAttributesApiTest
+class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
 {
     protected function getEndpoint()
     {

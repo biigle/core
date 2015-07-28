@@ -3,7 +3,7 @@
 use Dias\Project;
 use Dias\Role;
 
-class ProjectUserApiTest extends ApiTestCase
+class ApiProjectUserControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
