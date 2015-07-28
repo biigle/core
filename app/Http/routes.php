@@ -13,148 +13,144 @@
 
 // PUBLIC ROUTES --------------------------------------------------------------
 
-Route::group(array( 'namespace' => 'Auth' ), function ($router)
-{
-	$router->controllers(array(
-		'auth' => 'AuthController',
-		'password' => 'PasswordController',
-	));
+Route::group(['namespace' => 'Auth'], function ($router) {
+    $router->controllers([
+        'auth' => 'AuthController',
+        'password' => 'PasswordController',
+    ]);
 });
 
-Route::group(array ( 'namespace' => 'Views', 'prefix' => 'documentation' ), function ($router)
-{
-	// route name must be different from the 'doc' directory name of the static 
-	// files in the public directory
-	$router->get('/', array(
-		'as' => 'documentation',
-		'uses' => 'DocController@index'
-	));
+Route::group(['namespace' => 'Views', 'prefix' => 'documentation'], function ($router) {
+    // route name must be different from the 'doc' directory name of the static 
+    // files in the public directory
+    $router->get('/', [
+        'as' => 'documentation',
+        'uses' => 'DocController@index',
+    ]);
 
-	$router->get('/{article}', 'DocController@article');
+    $router->get('/{article}', 'DocController@article');
 });
 
 // PROTECTED ROUTES -----------------------------------------------------------
 
-Route::group(array( 'namespace' => 'Views', 'middleware' => 'auth' ), function ($router)
-{
-	$router->get('/', array(
-		'as'   => 'home',
-		'uses' => 'DashboardController@index'
-	));
+Route::group(['namespace' => 'Views', 'middleware' => 'auth'], function ($router) {
+    $router->get('/', [
+        'as'   => 'home',
+        'uses' => 'DashboardController@index',
+    ]);
 
-	$router->get('settings', array(
-		'as' => 'settings',
-		'uses' => 'SettingsController@index'
-	));
+    $router->get('settings', [
+        'as' => 'settings',
+        'uses' => 'SettingsController@index',
+    ]);
 });
 
-Route::group(array(
-	'prefix' => 'api/v1',
-	'namespace' => 'Api',
-	'middleware' => 'auth.api'
-	), function($router)
-{
-	$router->resource('annotations', 'AnnotationController', array(
-		'only' => array('show', 'update', 'destroy')
-	));
+Route::group([
+    'prefix' => 'api/v1',
+    'namespace' => 'Api',
+    'middleware' => 'auth.api',
+    ], function ($router) {
+    $router->resource('annotations', 'AnnotationController', [
+        'only' => ['show', 'update', 'destroy'],
+    ]);
 
-	$router->resource('annotations.attributes', 'AnnotationAttributeController', array(
-		'only' => array('index', 'show', 'store', 'update', 'destroy')
-	));
+    $router->resource('annotations.attributes', 'AnnotationAttributeController', [
+        'only' => ['index', 'show', 'store', 'update', 'destroy'],
+    ]);
 
-	$router->resource('annotations.labels', 'AnnotationLabelController', array(
-		'only' => array('index', 'store')
-	));
+    $router->resource('annotations.labels', 'AnnotationLabelController', [
+        'only' => ['index', 'store'],
+    ]);
 
-	$router->resource('annotation-labels', 'AnnotationLabelController', array(
-		'only' => array('update', 'destroy')
-	));
+    $router->resource('annotation-labels', 'AnnotationLabelController', [
+        'only' => ['update', 'destroy'],
+    ]);
 
-	$router->resource('attributes', 'AttributeController', array(
-		'only' => array('index', 'show', 'store', 'destroy')
-	));
+    $router->resource('attributes', 'AttributeController', [
+        'only' => ['index', 'show', 'store', 'destroy'],
+    ]);
 
-	$router->get('images/{id}/thumb', 'ImageController@showThumb');
-	$router->get('images/{id}/file', 'ImageController@showFile');
-	$router->resource('images', 'ImageController', array(
-		'only' => array('show')
-	));
+    $router->get('images/{id}/thumb', 'ImageController@showThumb');
+    $router->get('images/{id}/file', 'ImageController@showFile');
+    $router->resource('images', 'ImageController', [
+        'only' => ['show'],
+    ]);
 
-	$router->resource('images.annotations', 'ImageAnnotationController', array(
-		'only' => array('index', 'store')
-	));
+    $router->resource('images.annotations', 'ImageAnnotationController', [
+        'only' => ['index', 'store'],
+    ]);
 
-	$router->resource('images.attributes', 'ImageAttributeController', array(
-		'only' => array('index', 'show', 'store', 'update', 'destroy')
-	));
+    $router->resource('images.attributes', 'ImageAttributeController', [
+        'only' => ['index', 'show', 'store', 'update', 'destroy'],
+    ]);
 
-	$router->resource('labels', 'LabelController', array(
-		'only' => array('index', 'show', 'store', 'update', 'destroy')
-	));
+    $router->resource('labels', 'LabelController', [
+        'only' => ['index', 'show', 'store', 'update', 'destroy'],
+    ]);
 
-	$router->resource('labels.attributes', 'LabelAttributeController', array(
-		'only' => array('index', 'show', 'store', 'update', 'destroy')
-	));
+    $router->resource('labels.attributes', 'LabelAttributeController', [
+        'only' => ['index', 'show', 'store', 'update', 'destroy'],
+    ]);
 
-	$router->resource('media-types', 'MediaTypeController', array(
-		'only' => array('index', 'show')
-	));
+    $router->resource('media-types', 'MediaTypeController', [
+        'only' => ['index', 'show'],
+    ]);
 
-	$router->get('projects/my', 'ProjectController@index');
-	$router->resource('projects', 'ProjectController', array(
-		'only' => array('show', 'update', 'store', 'destroy')
-	));
+    $router->get('projects/my', 'ProjectController@index');
+    $router->resource('projects', 'ProjectController', [
+        'only' => ['show', 'update', 'store', 'destroy'],
+    ]);
 
-	$router->resource('projects.attributes', 'ProjectAttributeController', array(
-		'only' => array('index', 'show', 'store', 'update', 'destroy')
-	));
+    $router->resource('projects.attributes', 'ProjectAttributeController', [
+        'only' => ['index', 'show', 'store', 'update', 'destroy'],
+    ]);
 
-	$router->post(
-		'projects/{pid}/transects/{tid}',
-		'ProjectTransectController@attach'
-	);
-	$router->resource('projects.transects', 'ProjectTransectController', array(
-		'only' => array('index', 'store', 'destroy')
-	));
+    $router->post(
+        'projects/{pid}/transects/{tid}',
+        'ProjectTransectController@attach'
+    );
+    $router->resource('projects.transects', 'ProjectTransectController', [
+        'only' => ['index', 'store', 'destroy'],
+    ]);
 
-	$router->post(
-		'projects/{pid}/users/{uid}',
-		'ProjectUserController@attach'
-	);
-	$router->resource('projects.users', 'ProjectUserController', array(
-		'only' => array('index', 'update', 'destroy')
-	));
+    $router->post(
+        'projects/{pid}/users/{uid}',
+        'ProjectUserController@attach'
+    );
+    $router->resource('projects.users', 'ProjectUserController', [
+        'only' => ['index', 'update', 'destroy'],
+    ]);
 
-	$router->resource('roles', 'RoleController', array(
-		'only' => array('index', 'show')
-	));
+    $router->resource('roles', 'RoleController', [
+        'only' => ['index', 'show'],
+    ]);
 
-	$router->resource('shapes', 'ShapeController', array(
-		'only' => array('index', 'show')
-	));
+    $router->resource('shapes', 'ShapeController', [
+        'only' => ['index', 'show'],
+    ]);
 
-	$router->resource('transects', 'TransectController', array(
-		'only' => array('show', 'update')
-	));
+    $router->resource('transects', 'TransectController', [
+        'only' => ['show', 'update'],
+    ]);
 
-	$router->resource('transects.attributes', 'TransectAttributeController', array(
-		'only' => array('index', 'show', 'store', 'update', 'destroy')
-	));
+    $router->resource('transects.attributes', 'TransectAttributeController', [
+        'only' => ['index', 'show', 'store', 'update', 'destroy'],
+    ]);
 
-	$router->resource('transects.images', 'TransectImageController', array(
-		'only' => array('index')
-	));
+    $router->resource('transects.images', 'TransectImageController', [
+        'only' => ['index'],
+    ]);
 
-	$router->get('users/find/{pattern}', 'UserController@find');
+    $router->get('users/find/{pattern}', 'UserController@find');
 
-	$router->get('users/my', 'UserController@showOwn');
-	$router->put('users/my', 'UserController@updateOwn');
-	$router->delete('users/my', 'UserController@destroyOwn');
-	$router->resource('users', 'UserController', array(
-		'only' => array('index', 'show', 'update', 'store', 'destroy')
-	));
+    $router->get('users/my', 'UserController@showOwn');
+    $router->put('users/my', 'UserController@updateOwn');
+    $router->delete('users/my', 'UserController@destroyOwn');
+    $router->resource('users', 'UserController', [
+        'only' => ['index', 'show', 'update', 'store', 'destroy'],
+    ]);
 
-	$router->resource('users.attributes', 'UserAttributeController', array(
-		'only' => array('index', 'show', 'store', 'update', 'destroy')
-	));
+    $router->resource('users.attributes', 'UserAttributeController', [
+        'only' => ['index', 'show', 'store', 'update', 'destroy'],
+    ]);
 });

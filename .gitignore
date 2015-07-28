@@ -2,8 +2,9 @@
 /public/vendor
 /node_modules
 /bower_components
-/tests/_*
 /tmp
 
 .env
 *.sublime-*
+*.phar
+*.php_cs.cache

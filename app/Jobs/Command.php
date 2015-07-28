@@ -1,7 +1,8 @@
-<?php namespace Dias\Jobs;
+<?php
 
-abstract class Command {
+namespace Dias\Jobs;
 
-	//
-
+abstract class Command
+{
+    //
 }

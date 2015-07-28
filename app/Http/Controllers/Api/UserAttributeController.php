@@ -1,71 +1,72 @@
-<?php namespace Dias\Http\Controllers\Api;
+<?php
+
+namespace Dias\Http\Controllers\Api;
 
 use Dias\User;
-
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 
-class UserAttributeController extends ModelWithAttributesController {
+class UserAttributeController extends ModelWithAttributesController
+{
+    /**
+     * Creates a new UserAttributeController instance.
+     * 
+     * @param Guard $auth
+     * @param Request $request
+     */
+    public function __construct(Guard $auth, Request $request)
+    {
+        parent::__construct($auth, $request);
+        $this->middleware('admin', ['except' => ['index', 'show']]);
+    }
 
-	/**
-	 * Creates a new UserAttributeController instance.
-	 * 
-	 * @param Guard $auth
-	 * @param Request $request
-	 */
-	public function __construct(Guard $auth, Request $request)
-	{
-		parent::__construct($auth, $request);
-		$this->middleware('admin', ['except' => ['index', 'show']]);
-	}
-	
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function getModel($id)
-	{
-		return User::find($id);
-	}
+/**
+     * {@inheritdoc}
+     */
+    protected function getModel($id)
+    {
+        return User::find($id);
+    }
 
-	// API DOC FOR INHERITED METHODS
+    // API DOC FOR INHERITED METHODS
 
-	/**
-	 * @api {get} users/:id/attributes Get all attributes
-	 * @apiGroup User
-	 * @apiName IndexUserAttributes
-	 * @apiUse indexAttributes
-	 * @apiPermission user
-	 */
+    /*
+     * @api {get} users/:id/attributes Get all attributes
+     * @apiGroup User
+     * @apiName IndexUserAttributes
+     * @apiUse indexAttributes
+     * @apiPermission user
+     */
 
-	/**
-	 * @api {get} users/:id/attributes/:name Get an attribute
-	 * @apiGroup User
-	 * @apiName ShowUserAttributes
-	 * @apiUse showAttributes
-	 * @apiPermission user
-	 */
+    /*
+     * @api {get} users/:id/attributes/:name Get an attribute
+     * @apiGroup User
+     * @apiName ShowUserAttributes
+     * @apiUse showAttributes
+     * @apiPermission user
+     */
 
-	/**
-	 * @api {post} users/:id/attributes Attach an attribute
-	 * @apiGroup User
-	 * @apiName StoreUserAttributes
-	 * @apiPermission admin
-	 * @apiUse storeAttributes
-	 */
+    /*
+     * @api {post} users/:id/attributes Attach an attribute
+     * @apiGroup User
+     * @apiName StoreUserAttributes
+     * @apiPermission admin
+     * @apiUse storeAttributes
+     */
 
-	/**
-	 * @api {put} users/:id/attributes/:name Update an attribute
-	 * @apiGroup User
-	 * @apiName UpdateUserAttributes
-	 * @apiPermission admin
-	 * @apiUse updateAttributes
-	 */
+    /*
+     * @api {put} users/:id/attributes/:name Update an attribute
+     * @apiGroup User
+     * @apiName UpdateUserAttributes
+     * @apiPermission admin
+     * @apiUse updateAttributes
+     */
 
-	/**
-	 * @api {delete} users/:id/attributes/:name Detach an attribute
-	 * @apiGroup User
-	 * @apiName DestroyUserAttributes
-	 * @apiPermission admin
-	 * @apiUse destroyAttributes
-	 */
+    /*
+     * @api {delete} users/:id/attributes/:name Detach an attribute
+     * @apiGroup User
+     * @apiName DestroyUserAttributes
+     * @apiPermission admin
+     * @apiUse destroyAttributes
+     */
 }

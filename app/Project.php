@@ -1,349 +1,338 @@
-<?php namespace Dias;
+<?php
+
+namespace Dias;
 
 use Illuminate\Database\QueryException;
-
 use Dias\Model\ModelWithAttributes;
 use Dias\Contracts\BelongsToProjectContract;
 
-class Project extends ModelWithAttributes implements BelongsToProjectContract {
+class Project extends ModelWithAttributes implements BelongsToProjectContract
+{
+    /**
+     * Validation rules for creating a new project.
+     * 
+     * @var array
+     */
+    public static $createRules = [
+        'name'        => 'required|max:512',
+        'description' => 'required',
+    ];
 
-	/**
-	 * Validation rules for creating a new project
-	 * 
-	 * @var array
-	 */
-	public static $createRules = array(
-		'name'        => 'required|max:512',
-		'description' => 'required'
-	);
+    /**
+     * Validation rules for updating a project.
+     * 
+     * @var array
+     */
+    public static $updateRules = [
+        'name'        => 'min:2|max:512',
+        'description' => 'min:2',
+    ];
 
-	/**
-	 * Validation rules for updating a project
-	 * 
-	 * @var array
-	 */
-	public static $updateRules = array(
-		'name'        => 'min:2|max:512',
-		'description' => 'min:2'
-	);
+    /**
+     * The attributes hidden from the model's JSON form.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'pivot',
+    ];
 
-	/**
-	 * The attributes hidden from the model's JSON form.
-	 *
-	 * @var array
-	 */
-	protected $hidden = array(
-		'pivot',
-	);
+    /**
+     * {@inheritdoc}
+     * 
+     * A project belongs only to itself but the user permissions can be handled
+     * very consistently if a project implements this method, too.
+     * 
+     * @return array
+     */
+    public function projectIds()
+    {
+        return [$this->id];
+    }
 
-	/**
-	 * {@inheritdoc}
-	 * 
-	 * A project belongs only to itself but the user permissions can be handled
-	 * very consistently if a project implements this method, too.
-	 * 
-	 * @return array
-	 */
-	public function projectIds()
-	{
-		return array($this->id);
-	}
+    /**
+     * The members of this project. Every member has a project-specific
+     * `project_role_id` besides their global user role.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users()
+    {
+        return $this->belongsToMany('Dias\User')
+            ->withPivot('project_role_id as project_role_id');
+    }
 
-	/**
-	 * The members of this project. Every member has a project-specific
-	 * `project_role_id` besides their global user role.
-	 * 
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function users()
-	{
-		return $this->belongsToMany('Dias\User')
-			->withPivot('project_role_id as project_role_id');
-	}
+    /**
+     * All members of this project with the `admin` role.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function admins()
+    {
+        return $this->users()->whereProjectRoleId(Role::adminId());
+    }
 
-	/**
-	 * All members of this project with the `admin` role.
-	 * 
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function admins()
-	{
-		return $this->users()->whereProjectRoleId(Role::adminId());
-	}
+    /**
+     * All members of this project with the `editor` role.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function editors()
+    {
+        return $this->users()->whereProjectRoleId(Role::editorId());
+    }
 
-	/**
-	 * All members of this project with the `editor` role.
-	 * 
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function editors()
-	{
-		return $this->users()->whereProjectRoleId(Role::editorId());
-	}
+    /**
+     * All members of this project with the `guest` role.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function guests()
+    {
+        return $this->users()->whereProjectRoleId(Role::guestId());
+    }
 
-	/**
-	 * All members of this project with the `guest` role.
-	 * 
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function guests()
-	{
-		return $this->users()->whereProjectRoleId(Role::guestId());
-	}
+    /**
+     * Checks if the user ID is an admin of this project.
+     * 
+     * @param int $id
+     * @return bool
+     */
+    public function hasAdminId($id)
+    {
+        return $this->admins()->find($id) !== null;
+    }
 
-	/**
-	 * Checks if the user ID is an admin of this project.
-	 * 
-	 * @param int $id
-	 * @return boolean
-	 */
-	public function hasAdminId($id)
-	{
-		return $this->admins()->find($id) !== null;
-	}
+    /**
+     * Checks if the user is an admin of this project.
+     * 
+     * @param User $user
+     * @return bool
+     */
+    public function hasAdmin($user)
+    {
+        return $this->hasAdminId($user->id);
+    }
 
-	/**
-	 * Checks if the user is an admin of this project.
-	 * 
-	 * @param User $user
-	 * @return boolean
-	 */
-	public function hasAdmin($user)
-	{
-		return $this->hasAdminId($user->id);
-	}
+    /**
+     * Checks if the user ID is an editor of this project.
+     * 
+     * @param int $id
+     * @return bool
+     */
+    public function hasEditorId($id)
+    {
+        return $this->editors()->find($id) !== null;
+    }
 
-	/**
-	 * Checks if the user ID is an editor of this project.
-	 * 
-	 * @param int $id
-	 * @return boolean
-	 */
-	public function hasEditorId($id)
-	{
-		return $this->editors()->find($id) !== null;
-	}
+    /**
+     * Checks if the user is an editor of this project.
+     * 
+     * @param User $user
+     * @return bool
+     */
+    public function hasEditor($user)
+    {
+        return $this->hasEditorId($user->id);
+    }
 
-	/**
-	 * Checks if the user is an editor of this project.
-	 * 
-	 * @param User $user
-	 * @return boolean
-	 */
-	public function hasEditor($user)
-	{
-		return $this->hasEditorId($user->id);
-	}
+    /**
+     * Checks if the given user ID exists in this project.
+     * 
+     * @param int $id
+     * @return bool
+     */
+    public function hasUserId($id)
+    {
+        return $this->users()->find($id) !== null;
+    }
 
-	/**
-	 * Checks if the given user ID exists in this project.
-	 * 
-	 * @param int $id
-	 * @return boolean
-	 */
-	public function hasUserId($id)
-	{
-		return $this->users()->find($id) !== null;
-	}
+    /**
+     * Checks if the given user exists in this project.
+     * 
+     * @param User $user
+     * @return bool
+     */
+    public function hasUser($user)
+    {
+        return $this->hasUserId($user->id);
+    }
 
-	/**
-	 * Checks if the given user exists in this project.
-	 * 
-	 * @param User $user
-	 * @return boolean
-	 */
-	public function hasUser($user)
-	{
-		return $this->hasUserId($user->id);
-	}
+    /**
+     * The user that created this project. On creation this user is
+     * automatically added to the project's users with the 'admin' role by
+     * the ProjectObserver.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function creator()
+    {
+        return $this->belongsTo('Dias\User');
+    }
 
-	/**
-	 * The user that created this project. On creation this user is
-	 * automatically added to the project's users with the 'admin' role by
-	 * the ProjectObserver.
-	 * 
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-	 */
-	public function creator()
-	{
-		return $this->belongsTo('Dias\User');
-	}
+    /**
+     * Sets the creator if it isn't already set.
+     * 
+     * @param User $user
+     * @return bool
+     */
+    public function setCreator($user)
+    {
+        // user must exist and creator mustn't
+        if (!$this->creator && $user) {
+            $this->creator()->associate($user);
 
-	/**
-	 * Sets the creator if it isn't already set.
-	 * 
-	 * @param User $user
-	 * @return boolean
-	 */
-	public function setCreator($user)
-	{
-		// user must exist and creator mustn't
-		if (!$this->creator && $user)
-		{
-			$this->creator()->associate($user);
-			return true;
-		}
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Adds the user with the given role to this project.
-	 * 
-	 * @param int $userId
-	 * @param int $roleId
-	 * @return void
-	 */
-	public function addUserId($userId, $roleId)
-	{
-		try {
-			$this->users()->attach($userId, array('project_role_id' => $roleId));
-		} catch (QueryException $e) {
-			abort(400, "The user already exists in this project.");
-		}
-	}
+    /**
+     * Adds the user with the given role to this project.
+     * 
+     * @param int $userId
+     * @param int $roleId
+     * @return void
+     */
+    public function addUserId($userId, $roleId)
+    {
+        try {
+            $this->users()->attach($userId, ['project_role_id' => $roleId]);
+        } catch (QueryException $e) {
+            abort(400, 'The user already exists in this project.');
+        }
+    }
 
-	/**
-	 * Changes the role of an existing user in this project.
-	 * 
-	 * @param int $userId
-	 * @param int $roleId
-	 * @return void
-	 */
-	public function changeRole($userId, $roleId)
-	{
-		if (!$this->hasUserId($userId))
-		{
-			abort(400, "User doesn't exist in this project.");
-		}
+    /**
+     * Changes the role of an existing user in this project.
+     * 
+     * @param int $userId
+     * @param int $roleId
+     * @return void
+     */
+    public function changeRole($userId, $roleId)
+    {
+        if (!$this->hasUserId($userId)) {
+            abort(400, "User doesn't exist in this project.");
+        }
 
-		// removeUserId prevents changing the last remaining admin to anything
-		// else, too!
-		if ($this->removeUserId($userId))
-		{
-			// only re-attach if detach was successful
-			$this->users()->attach($userId, array('project_role_id' => $roleId));
-		}
-		else
-		{
-			abort(500, "The user couldn't be modified.");
-		}
-	}
+        // removeUserId prevents changing the last remaining admin to anything
+        // else, too!
+        if ($this->removeUserId($userId)) {
+            // only re-attach if detach was successful
+            $this->users()->attach($userId, ['project_role_id' => $roleId]);
+        } else {
+            abort(500, "The user couldn't be modified.");
+        }
+    }
 
-	/**
-	 * Removes the user by ID from this project.
-	 * 
-	 * @param int $userId
-	 * @return boolean
-	 */
-	public function removeUserId($userId)
-	{
-		$admins = $this->admins();
-		// is this an attempt to remove the last remaining admin?
-		if ($admins->count() == 1 && $admins->find($userId))
-		{
-			abort(400, "The last project admin cannot be removed.");
-		}
-		
-		return (boolean) $this->users()->detach($userId);
-	}
+    /**
+     * Removes the user by ID from this project.
+     * 
+     * @param int $userId
+     * @return bool
+     */
+    public function removeUserId($userId)
+    {
+        $admins = $this->admins();
+        // is this an attempt to remove the last remaining admin?
+        if ($admins->count() == 1 && $admins->find($userId)) {
+            abort(400, 'The last project admin cannot be removed.');
+        }
 
-	/**
-	 * The transects of this project.
-	 * 
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function transects()
-	{
-		return $this->belongsToMany('Dias\Transect');
-	}
+return (boolean) $this->users()->detach($userId);
+    }
 
-	/**
-	 * Adds a transect to this project if it wasn't already.
-	 * 
-	 * @param int $id
-	 * @return void
-	 */
-	public function addTransectId($id)
-	{
-		try {
-			$this->transects()->attach($id);
-		} catch (QueryException $e) {
-			// transect already exists for this project, so everything is fine
-		}
-	}
+    /**
+     * The transects of this project.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function transects()
+    {
+        return $this->belongsToMany('Dias\Transect');
+    }
 
-	/**
-	 * Detaches the transect from this project. Fails if this is the last
-	 * project, the transect is attached to, unless force is `true`.
-	 * 
-	 * @param \Dias\Transect $transect
-	 * @param boolean $force Delete the transect completely if this is the last
-	 * project it belongs to
-	 */
-	public function removeTransect($transect, $force = false)
-	{
-		if (!$transect)
-		{
-			// nothing to remove
-			return;
-		}
+    /**
+     * Adds a transect to this project if it wasn't already.
+     * 
+     * @param int $id
+     * @return void
+     */
+    public function addTransectId($id)
+    {
+        try {
+            $this->transects()->attach($id);
+        } catch (QueryException $e) {
+            // transect already exists for this project, so everything is fine
+        }
+    }
 
-		// this is the last project the transect belongs to, so it should be
-		// deleted
-		if ($transect->projects()->count() === 1)
-		{
-			// but delete the transect only with force!
-			if (!$force)
-			{
-				abort(400, 'The transect would not belong to any project after detaching. Use the "force" argument to detach and delete it.');
-			}
+    /**
+     * Detaches the transect from this project. Fails if this is the last
+     * project, the transect is attached to, unless force is `true`.
+     * 
+     * @param \Dias\Transect $transect
+     * @param bool $force Delete the transect completely if this is the last
+     * project it belongs to
+     */
+    public function removeTransect($transect, $force = false)
+    {
+        if (!$transect) {
+            // nothing to remove
+            return;
+        }
 
-			$transect->delete();
-		}
+        // this is the last project the transect belongs to, so it should be
+        // deleted
+        if ($transect->projects()->count() === 1) {
+            // but delete the transect only with force!
+            if (!$force) {
+                abort(400, 'The transect would not belong to any project after detaching. Use the "force" argument to detach and delete it.');
+            }
 
-		// if the transect still belongs to other projects, just detach it
-		$this->transects()->detach($transect->id);
-	}
+            $transect->delete();
+        }
 
-	/**
-	 * Detaches the transect from this project. Fails if this is the last
-	 * project, the transect is attached to, unless force is `true`.
-	 * 
-	 * @param int $id Transect ID
-	 * @param boolean $force Delete the transect completely if this is the last
-	 * project it belongs to
-	 */
-	public function removeTransectId($id, $force = false)
-	{
-		$transect = $this->transects()->find($id);
-		$this->removeTransect($transect, $force);
-	}
+        // if the transect still belongs to other projects, just detach it
+        $this->transects()->detach($transect->id);
+    }
 
-	/**
-	 * Detaches all transects from this project. Fails if this is the last
-	 * project, one of the transects is attached to, unless force is `true`.
-	 * 
-	 * @param boolean $force
-	 */
-	public function removeAllTransects($force = false)
-	{
-		$transects = $this->transects;
+    /**
+     * Detaches the transect from this project. Fails if this is the last
+     * project, the transect is attached to, unless force is `true`.
+     * 
+     * @param int $id Transect ID
+     * @param bool $force Delete the transect completely if this is the last
+     * project it belongs to
+     */
+    public function removeTransectId($id, $force = false)
+    {
+        $transect = $this->transects()->find($id);
+        $this->removeTransect($transect, $force);
+    }
 
-		if (!$force)
-		{
-			foreach ($transects as $transect)
-			{
-				if ($transect->projects()->count() === 1)
-				{
-					abort(400, 'One transect would not belong to any project after detaching. Use the "force" argument or detach and delete it first.');
-				}
-			}
-		}
+    /**
+     * Detaches all transects from this project. Fails if this is the last
+     * project, one of the transects is attached to, unless force is `true`.
+     * 
+     * @param bool $force
+     */
+    public function removeAllTransects($force = false)
+    {
+        $transects = $this->transects;
 
-		foreach ($transects as $transect)
-		{
-			$this->removeTransect($transect, $force);
-		}
-	}
+        if (!$force) {
+            foreach ($transects as $transect) {
+                if ($transect->projects()->count() === 1) {
+                    abort(400, 'One transect would not belong to any project after detaching. Use the "force" argument or detach and delete it first.');
+                }
+            }
+        }
+
+        foreach ($transects as $transect) {
+            $this->removeTransect($transect, $force);
+        }
+    }
 }

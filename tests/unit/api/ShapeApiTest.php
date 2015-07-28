@@ -2,38 +2,38 @@
 
 use Dias\Shape;
 
-class ShapeApiTest extends ApiTestCase {
+class ShapeApiTest extends ApiTestCase
+{
+    public function testIndex()
+    {
+        $this->doTestApiRoute('GET', '/api/v1/shapes');
 
-	public function testIndex()
-	{
-		$this->doTestApiRoute('GET', '/api/v1/shapes');
+        // api key authentication
+        $this->callToken('GET', '/api/v1/shapes', $this->admin);
+        $this->assertResponseOk();
 
-		// api key authentication
-		$this->callToken('GET', '/api/v1/shapes', $this->admin);
-		$this->assertResponseOk();
+        // session cookie authentication
+        $this->be($this->user);
+        $r = $this->call('GET', '/api/v1/shapes');
+        $this->assertResponseOk();
+        $this->assertStringStartsWith('[', $r->getContent());
+        $this->assertStringEndsWith(']', $r->getContent());
+    }
 
-		// session cookie authentication
-		$this->be($this->user);
-		$r = $this->call('GET', '/api/v1/shapes');
-		$this->assertResponseOk();
-		$this->assertStringStartsWith('[', $r->getContent());
-		$this->assertStringEndsWith(']', $r->getContent());
-	}
+    public function testShow()
+    {
+        $this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::circleId());
 
-	public function testShow()
-	{
-		$this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::circleId());
+        // api key authentication
+        $this->callToken('GET', '/api/v1/shapes/'.Shape::circleId(), $this->admin);
+        $this->assertResponseOk();
 
-		// api key authentication
-		$this->callToken('GET', '/api/v1/shapes/'.Shape::circleId(), $this->admin);
-		$this->assertResponseOk();
-
-		// session cookie authentication
-		$this->be($this->user);
-		$r = $this->call('GET', '/api/v1/shapes/'.Shape::circleId());
-		$this->assertResponseOk();
-		$this->assertStringStartsWith('{', $r->getContent());
-		$this->assertStringEndsWith('}', $r->getContent());
-		$this->assertContains('Circle', $r->getContent());
-	}
+        // session cookie authentication
+        $this->be($this->user);
+        $r = $this->call('GET', '/api/v1/shapes/'.Shape::circleId());
+        $this->assertResponseOk();
+        $this->assertStringStartsWith('{', $r->getContent());
+        $this->assertStringEndsWith('}', $r->getContent());
+        $this->assertContains('Circle', $r->getContent());
+    }
 }

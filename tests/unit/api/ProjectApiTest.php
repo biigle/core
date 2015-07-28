@@ -3,165 +3,165 @@
 use Dias\Project;
 use Dias\Role;
 
-class ProjectApiTest extends ModelWithAttributesApiTest {
+class ProjectApiTest extends ModelWithAttributesApiTest
+{
+    protected function getEndpoint()
+    {
+        return '/api/v1/projects';
+    }
 
-	protected function getEndpoint()
-	{
-		return '/api/v1/projects';
-	}
+    protected function getModel()
+    {
+        return $this->project;
+    }
 
-	protected function getModel()
-	{
-		return $this->project;
-	}
+    public function testIndex()
+    {
+        $this->call('GET', '/api/v1/projects');
+        $this->assertResponseStatus(405);
 
-	public function testIndex()
-	{
-		$this->call('GET', '/api/v1/projects');
-		$this->assertResponseStatus(405);
+        $this->doTestApiRoute('GET', '/api/v1/projects/my');
 
-		$this->doTestApiRoute('GET', '/api/v1/projects/my');
-		
-		// api key authentication
-		$this->callToken('GET', '/api/v1/projects/my', $this->admin);
-		$this->assertResponseOk();
+// api key authentication
+        $this->callToken('GET', '/api/v1/projects/my', $this->admin);
+        $this->assertResponseOk();
 
-		// session cookie authentication
-		$this->be($this->admin);
-		$r = $this->call('GET', '/api/v1/projects/my');
-		$this->assertResponseOk();
+        // session cookie authentication
+        $this->be($this->admin);
+        $r = $this->call('GET', '/api/v1/projects/my');
+        $this->assertResponseOk();
 
-		$this->assertStringStartsWith('[', $r->getContent());
-		$this->assertStringEndsWith(']', $r->getContent());
-		$this->assertContains('"description":"test"', $r->getContent());
-		$this->assertNotContains('pivot', $r->getContent());
-	}
+        $this->assertStringStartsWith('[', $r->getContent());
+        $this->assertStringEndsWith(']', $r->getContent());
+        $this->assertContains('"description":"test"', $r->getContent());
+        $this->assertNotContains('pivot', $r->getContent());
+    }
 
-	public function testShow()
-	{
-		$this->doTestApiRoute('GET', '/api/v1/projects/1');
-		
-		// api key authentication
-		$this->callToken('GET', '/api/v1/projects/1', $this->admin);
-		$this->assertResponseOk();
+    public function testShow()
+    {
+        $this->doTestApiRoute('GET', '/api/v1/projects/1');
 
-		$this->callToken('GET', '/api/v1/projects/1', $this->user);
-		$this->assertResponseStatus(401);
+// api key authentication
+        $this->callToken('GET', '/api/v1/projects/1', $this->admin);
+        $this->assertResponseOk();
 
-		// session cookie authentication
-		$this->be($this->admin);
-		$this->call('GET', '/api/v1/projects/999');
-		$this->assertResponseStatus(404);
+        $this->callToken('GET', '/api/v1/projects/1', $this->user);
+        $this->assertResponseStatus(401);
 
-		$r = $this->call('GET', '/api/v1/projects/1');
-		$this->assertResponseOk();
+        // session cookie authentication
+        $this->be($this->admin);
+        $this->call('GET', '/api/v1/projects/999');
+        $this->assertResponseStatus(404);
 
-		$this->assertStringStartsWith('{', $r->getContent());
-		$this->assertStringEndsWith('}', $r->getContent());
-		$this->assertContains('"description":"test"', $r->getContent());
-		$this->assertNotContains('pivot', $r->getContent());
-	}
+        $r = $this->call('GET', '/api/v1/projects/1');
+        $this->assertResponseOk();
 
-	public function testUpdate()
-	{
-		$this->doTestApiRoute('PUT', '/api/v1/projects/1');
+        $this->assertStringStartsWith('{', $r->getContent());
+        $this->assertStringEndsWith('}', $r->getContent());
+        $this->assertContains('"description":"test"', $r->getContent());
+        $this->assertNotContains('pivot', $r->getContent());
+    }
 
-		// api key authentication
-		$this->callToken('PUT', '/api/v1/projects/1', $this->admin);
-		$this->assertResponseOk();
+    public function testUpdate()
+    {
+        $this->doTestApiRoute('PUT', '/api/v1/projects/1');
 
-		// non-admins are not allowed to update
-		$this->callToken('PUT', '/api/v1/projects/1', $this->editor);
-		$this->assertResponseStatus(401);
+        // api key authentication
+        $this->callToken('PUT', '/api/v1/projects/1', $this->admin);
+        $this->assertResponseOk();
 
-		// session cookie authentication
-		$this->be($this->admin);
-		$this->call('PUT', '/api/v1/projects/999', array(
-			'_token' => Session::token()
-		));
-		$this->assertResponseStatus(404);
+        // non-admins are not allowed to update
+        $this->callToken('PUT', '/api/v1/projects/1', $this->editor);
+        $this->assertResponseStatus(401);
 
-		$this->callAjax('PUT', '/api/v1/projects/1', array(
-			'_token' => Session::token(),
-			'name' => 'my test',
-			'description' => 'this is my test',
-			'creator_id' => 5
-		));
-		$this->assertResponseOk();
+        // session cookie authentication
+        $this->be($this->admin);
+        $this->call('PUT', '/api/v1/projects/999', [
+            '_token' => Session::token(),
+        ]);
+        $this->assertResponseStatus(404);
 
-		$this->project = $this->project->fresh();
-		$this->assertEquals('my test', $this->project->name);
-		$this->assertEquals('this is my test', $this->project->description);
-		$this->assertNotEquals(5, $this->project->creator_id);
-	}
+        $this->callAjax('PUT', '/api/v1/projects/1', [
+            '_token' => Session::token(),
+            'name' => 'my test',
+            'description' => 'this is my test',
+            'creator_id' => 5,
+        ]);
+        $this->assertResponseOk();
 
-	public function testStore()
-	{
-		$this->doTestApiRoute('POST', '/api/v1/projects');
+        $this->project = $this->project->fresh();
+        $this->assertEquals('my test', $this->project->name);
+        $this->assertEquals('this is my test', $this->project->description);
+        $this->assertNotEquals(5, $this->project->creator_id);
+    }
 
-		// api key authentication
-		// creating an empty project is an error
-		$this->callToken('POST', '/api/v1/projects', $this->admin);
-		$this->assertResponseStatus(422);
+    public function testStore()
+    {
+        $this->doTestApiRoute('POST', '/api/v1/projects');
 
-		$this->assertNull(Project::find(2));
+        // api key authentication
+        // creating an empty project is an error
+        $this->callToken('POST', '/api/v1/projects', $this->admin);
+        $this->assertResponseStatus(422);
 
-		$r = $this->callToken('POST', '/api/v1/projects', $this->admin, array(
-			'name' => 'test project',
-			'description' => 'my test project'
-		));
+        $this->assertNull(Project::find(2));
 
-		$this->assertResponseOk();
-		$this->assertStringStartsWith('{', $r->getContent());
-		$this->assertStringEndsWith('}', $r->getContent());
-		$this->assertContains('"name":"test project"', $r->getContent());
-		$this->assertNotNull(Project::find(2));
+        $r = $this->callToken('POST', '/api/v1/projects', $this->admin, [
+            'name' => 'test project',
+            'description' => 'my test project',
+        ]);
 
-		// session cookie authentication
-		$this->be($this->admin);
-		$this->assertNull(Project::find(3));
+        $this->assertResponseOk();
+        $this->assertStringStartsWith('{', $r->getContent());
+        $this->assertStringEndsWith('}', $r->getContent());
+        $this->assertContains('"name":"test project"', $r->getContent());
+        $this->assertNotNull(Project::find(2));
 
-		$r = $this->callAjax('POST', '/api/v1/projects', array(
-			'_token' => Session::token(),
-			'name' => 'other test project',
-			'description' => 'my other test project'
-		));
+        // session cookie authentication
+        $this->be($this->admin);
+        $this->assertNull(Project::find(3));
 
-		$this->assertResponseOk();
-		$this->assertStringStartsWith('{', $r->getContent());
-		$this->assertStringEndsWith('}', $r->getContent());
-		$this->assertContains('"name":"other test project"', $r->getContent());
-		$this->assertNotNull(Project::find(3));
-	}
+        $r = $this->callAjax('POST', '/api/v1/projects', [
+            '_token' => Session::token(),
+            'name' => 'other test project',
+            'description' => 'my other test project',
+        ]);
 
-	public function testDestroy()
-	{
-		$this->doTestApiRoute('DELETE', '/api/v1/projects/1');
+        $this->assertResponseOk();
+        $this->assertStringStartsWith('{', $r->getContent());
+        $this->assertStringEndsWith('}', $r->getContent());
+        $this->assertContains('"name":"other test project"', $r->getContent());
+        $this->assertNotNull(Project::find(3));
+    }
 
-		// non-admins are not allowed to delete the project
-		$this->callToken('DELETE', '/api/v1/projects/1', $this->editor);
-		$this->assertResponseStatus(401);
+    public function testDestroy()
+    {
+        $this->doTestApiRoute('DELETE', '/api/v1/projects/1');
 
-		// do manual logout because the previously logged in editor would persist
-		Auth::logout();
+        // non-admins are not allowed to delete the project
+        $this->callToken('DELETE', '/api/v1/projects/1', $this->editor);
+        $this->assertResponseStatus(401);
 
-		// project still has a transect belonging only to this project
-		$this->assertNotNull($this->project->fresh());
-		$this->callToken('DELETE', '/api/v1/projects/1', $this->admin);
-		$this->assertResponseStatus(400);
+        // do manual logout because the previously logged in editor would persist
+        Auth::logout();
 
-		$this->assertNotNull($this->project->fresh());
-		$this->callToken('DELETE', '/api/v1/projects/1', $this->admin, array(
-			'force' => 'true'
-		));
-		$this->assertResponseOk();
-		$this->assertNull($this->project->fresh());
+        // project still has a transect belonging only to this project
+        $this->assertNotNull($this->project->fresh());
+        $this->callToken('DELETE', '/api/v1/projects/1', $this->admin);
+        $this->assertResponseStatus(400);
 
-		// already deleted projects can't be re-deleted
-		$this->be($this->admin);
-		$this->call('DELETE', '/api/v1/projects/1', array(
-			'_token' => Session::token()
-		));
-		$this->assertResponseStatus(404);
-	}
+        $this->assertNotNull($this->project->fresh());
+        $this->callToken('DELETE', '/api/v1/projects/1', $this->admin, [
+            'force' => 'true',
+        ]);
+        $this->assertResponseOk();
+        $this->assertNull($this->project->fresh());
+
+        // already deleted projects can't be re-deleted
+        $this->be($this->admin);
+        $this->call('DELETE', '/api/v1/projects/1', [
+            '_token' => Session::token(),
+        ]);
+        $this->assertResponseStatus(404);
+    }
 }
