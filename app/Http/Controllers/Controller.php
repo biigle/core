@@ -1,6 +1,6 @@
 <?php namespace Dias\Http\Controllers;
 
-use Illuminate\Foundation\Bus\DispatchesCommands;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
@@ -9,12 +9,12 @@ use Dias\Http\Middleware\AuthenticateAPI;
 
 abstract class Controller extends BaseController {
 
-	use DispatchesCommands, ValidatesRequests;
+	use DispatchesJobs, ValidatesRequests;
 
 	/**
 	 * Determines if the request was done by an automated script (with API
 	 * token or ajax).
-	 * 
+	 *
 	 * @param Request $request
 	 * @return boolean
 	 */

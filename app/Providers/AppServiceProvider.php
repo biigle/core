@@ -27,7 +27,6 @@ class AppServiceProvider extends ServiceProvider {
 	{
 		$this->app->bind(
 			'Illuminate\Contracts\Auth\Registrar',
-			'Dias\Services\Registrar',
 			'Dias\Services\Modules'
 		);
 	}

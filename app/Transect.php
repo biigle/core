@@ -14,7 +14,7 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
 	 * Validation rules for creating a new transect
-	 * 
+	 *
 	 * @var array
 	 */
 	public static $createRules = array(
@@ -35,7 +35,7 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
 	 * The user that created the transect.
-	 * 
+	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
 	public function creator()
@@ -45,7 +45,7 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
 	 * The media type of this transect.
-	 * 
+	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
 	public function mediaType()
@@ -55,7 +55,7 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
 	 * Sets the media type of this transect.
-	 * 
+	 *
 	 * @param Dias\MediaType $mediaType
 	 * @return void
 	 */
@@ -66,7 +66,7 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
 	 * Sets the media type of this transect to the media type with the given ID.
-	 * 
+	 *
 	 * @param int $id media type ID
 	 * @return void
 	 */
@@ -82,7 +82,7 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
 	 * The images belonging to this transect.
-	 * 
+	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
 	public function images()
@@ -92,7 +92,7 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
 	 * Creates the image objects to be associated with this transect.
-	 * 
+	 *
 	 * @param array $filenames image filenames at the location of the transect URL
 	 * @return void
 	 */
@@ -108,7 +108,7 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 
 	/**
 	 * The project(s), this transect belongs to.
-	 * 
+	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
 	public function projects()
@@ -123,12 +123,12 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract {
 	public function projectIds()
 	{
 		/*
-		 * remember project IDs because e.g. this query would be performed for 
-		 * each and every image request, which would result in dozens of 
+		 * remember project IDs because e.g. this query would be performed for
+		 * each and every image request, which would result in dozens of
 		 * calls per *single* page.
 		 */
 		return Cache::remember('transect-'.$this->id.'pids', 0.5, function() {
-			return $this->projects()->lists('id');
+			return $this->projects()->lists('id')->all();
 		});
 	}
 }

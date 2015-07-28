@@ -2,8 +2,7 @@
 
 use Dias\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Auth\PasswordBroker;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 
 class PasswordController extends Controller {
@@ -24,14 +23,10 @@ class PasswordController extends Controller {
 	/**
 	 * Create a new password controller instance.
 	 *
-	 * @param  Guard  $auth
-	 * @param  PasswordBroker  $passwords
 	 * @return void
 	 */
-	public function __construct(Guard $auth, PasswordBroker $passwords)
+	public function __construct()
 	{
-		$this->auth = $auth;
-		$this->passwords = $passwords;
 		$this->redirectTo = route('home');
 		$this->subject = trans('auth.pw_reset_subject');
 
@@ -53,25 +48,19 @@ class PasswordController extends Controller {
 			'email', 'password', 'password_confirmation', 'token'
 		);
 
-		$response = $this->passwords->reset($credentials, function($user, $password)
-		{
-			$user->password = bcrypt($password);
+		$response = Password::reset($credentials, function ($user, $password) {
+         $this->resetPassword($user, $password);
+     });
 
-			$user->save();
+     switch ($response) {
+         case Password::PASSWORD_RESET:
+             return redirect($this->redirectPath());
 
-			$this->auth->login($user);
-		});
-
-		switch ($response)
-		{
-			case PasswordBroker::PASSWORD_RESET:
-				return redirect($this->redirectPath());
-
-			default:
-				return redirect()->back()
-							->withInput($request->only('email'))
-							->withErrors(['email' => trans($response)]);
-		}
+         default:
+             return redirect()->back()
+                         ->withInput($request->only('email'))
+                         ->withErrors(['email' => trans($response)]);
+     }
 	}
 
 }

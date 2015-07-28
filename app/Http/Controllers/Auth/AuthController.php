@@ -3,10 +3,8 @@
 use Dias\Http\Controllers\Controller;
 use Dias\User;
 use Dias\Events\UserLoggedInEvent;
-
+use Validator;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
 class AuthController extends Controller {
@@ -27,20 +25,42 @@ class AuthController extends Controller {
 
 	/**
 	 * Create a new authentication controller instance.
-	 *
-	 * @param  Guard  $auth
-	 * @param  Registrar  $registrar
 	 * @return void
 	 */
-	public function __construct(Guard $auth, Registrar $registrar)
+	public function __construct()
 	{
-		$this->auth = $auth;
-		$this->registrar = $registrar;
-
 		$this->middleware('guest', ['except' => 'getLogout']);
 
 		// The post register / login redirect path.
 		$this->redirectTo = route('home');
+	}
+
+	/**
+	 * Get a validator for an incoming registration request.
+	 *
+	 * @param  array  $data
+	 * @return \Illuminate\Contracts\Validation\Validator
+	 */
+	public function validator(array $data)
+	{
+		return Validator::make($data, User::$registerRules);
+	}
+
+	/**
+	 * Create a new user instance after a valid registration.
+	 *
+	 * @param  array  $data
+	 * @return User
+	 */
+	public function create(array $data)
+	{
+		$user = new User;
+		$user->firstname = $data['firstname'];
+		$user->lastname = $data['lastname'];
+		$user->email = $data['email'];
+		$user->password = bcrypt($data['password']);
+		$user->save();
+		return $user;
 	}
 
 	/**
@@ -56,9 +76,9 @@ class AuthController extends Controller {
 
 		$credentials = $request->only('email', 'password');
 
-		if ($this->auth->attempt($credentials, $request->has('remember')))
+		if (auth()->attempt($credentials, $request->has('remember')))
 		{
-			event(new UserLoggedInEvent($this->auth->user()));
+			event(new UserLoggedInEvent(auth()->user()));
 			return redirect()->intended($this->redirectPath());
 		}
 
@@ -77,7 +97,7 @@ class AuthController extends Controller {
 	 */
 	public function getLogout()
 	{
-		$this->auth->logout();
+		auth()->logout();
 
 		return redirect()->route('home');
 	}

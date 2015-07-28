@@ -23,12 +23,13 @@ class AnnotationController extends Controller {
 	 *        {"x": 100, "y": 200}
 	 *    ]
 	 * }
-	 * 
+	 *
 	 * @param  int  $id
 	 * @return Annotation
 	 */
 	public function show($id)
 	{
+
 		$annotation = $this->requireNotNull(
 			Annotation::with('points')->find($id)
 		);
@@ -42,12 +43,12 @@ class AnnotationController extends Controller {
 
 	/**
 	 * Updates the annotation including its points.
-	 * 
+	 *
 	 * @api {put} annotations/:id Update an annotation
 	 * @apiGroup Annotations
 	 * @apiName UpdateAnnotation
 	 * @apiPermission projectEditor
-	 * 
+	 *
 	 * @apiParam {Number} id The annotation ID.
 	 * @apiParam (Attributes that can be updated) {Object[]} points Array (JSON or as String) of new points of the annotation. The new points will replace the old points.
 	 * @apiParamExample {json} Request example (JSON):
@@ -58,7 +59,7 @@ class AnnotationController extends Controller {
 	 *    ]
 	 * }
 	 * @apiParamExample {String} Request example (String):
-	 * points: '[{"x":10,"y":11},{"x":20,"y":21}]' 
+	 * points: '[{"x":10,"y":11},{"x":20,"y":21}]'
 	 *
 	 * @param  int  $id
 	 * @return \Illuminate\Http\Response
@@ -73,7 +74,7 @@ class AnnotationController extends Controller {
 
 		// from a JSON request, the array may already be decoded
 		$points = $this->request->input('points');
-		
+
 		if (is_string($points))
 		{
 			$points = json_decode($points);
@@ -84,12 +85,12 @@ class AnnotationController extends Controller {
 
 	/**
 	 * Removes the annotation.
-	 * 
+	 *
 	 * @api {delete} annotations/:id Delete an annotation
 	 * @apiGroup Annotations
 	 * @apiName DestroyAnnotation
 	 * @apiPermission projectEditor
-	 * 
+	 *
 	 * @apiParam {Number} id The annotation ID.
 	 *
 	 * @param  int  $id

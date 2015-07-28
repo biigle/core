@@ -17,7 +17,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 
 	/**
 	 * Validation rules for logging in
-	 * 
+	 *
 	 * @var array
 	 */
 	public static $authRules = array(
@@ -27,7 +27,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 
 	/**
 	 * Validation rules for resetting the password
-	 * 
+	 *
 	 * @var array
 	 */
 	public static $resetRules = array(
@@ -38,7 +38,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 
 	/**
 	 * Validation rules for registering a new user
-	 * 
+	 *
 	 * @var array
 	 */
 	public static $registerRules = array(
@@ -62,7 +62,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 
 	/**
 	 * Attribute accessors that should be added to the JSON form.
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $appends = array(
@@ -71,7 +71,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 
 	/**
 	 * Returns the validation rules for updating the attributes of this user.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function updateRules()
@@ -88,7 +88,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 	/**
 	 * Generates a random string to use as an API key. The key will be stored in
 	 * the `api_key` attribute of the user.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function generateApiKey()
@@ -100,7 +100,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 
 	/**
 	 * The projects, this user is a member of.
-	 * 
+	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
 	public function projects()
@@ -110,7 +110,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 
 	/**
 	 * The global role of this user.
-	 * 
+	 *
 	 * @return Role
 	 */
 	public function role()
@@ -121,7 +121,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 	/**
 	 * Adds the `isAdmin` attribute to the user which determines if the user
 	 * has the global admin role.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public function getIsAdminAttribute()
@@ -131,7 +131,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 
 	/**
 	 * Checks if this user is a member in one of the supplied projects.
-	 * 
+	 *
 	 * @param array $ids Project IDs
 	 * @return boolean
 	 */
@@ -146,7 +146,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 	/**
 	 * Checks if this user is an editor or admin in one of the supplied
 	 * projects.
-	 * 
+	 *
 	 * @param array $ids Project IDs
 	 * @return boolean
 	 */
@@ -166,7 +166,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
 
 	/**
 	 * Checks if this user is an admin in one of the supplied projects.
-	 * 
+	 *
 	 * @param array $ids Project IDs
 	 * @return boolean
 	 */

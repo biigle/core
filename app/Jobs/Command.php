@@ -1,4 +1,4 @@
-<?php namespace Dias\Commands;
+<?php namespace Dias\Jobs;
 
 abstract class Command {
 

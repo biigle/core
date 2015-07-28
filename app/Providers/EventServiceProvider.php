@@ -12,7 +12,7 @@ class EventServiceProvider extends ServiceProvider {
 	 */
 	protected $listen = [
 		'Dias\Events\UserLoggedInEvent' => [
-			'Dias\Handlers\Events\LoginEventHandler@handle',
+			'Dias\Listeners\Events\LoginEventHandler@handle',
 		],
 	];
 

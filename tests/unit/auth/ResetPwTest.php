@@ -42,7 +42,7 @@ class ResetPwTest extends TestCase {
 		$this->assertRedirectedTo('/password/reset/xy');
 
 		// get response after redirect
-		$response = $this->call('GET', '/password/reset/xy');		
+		$response = $this->call('GET', '/password/reset/xy');
 		$this->assertContains('We can&#039;t find a user with that e-mail address.', $response->getContent());
 	}
 

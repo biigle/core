@@ -2,10 +2,9 @@
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Contracts\Routing\Middleware;
 use Dias\User;
 
-class AuthenticateAPI implements Middleware {
+class AuthenticateAPI {
 
 	/**
 	 * The Guard implementation.
@@ -16,7 +15,7 @@ class AuthenticateAPI implements Middleware {
 
 	/**
 	 * Determines if the request contains an API key in its header.
-	 * 
+	 *
 	 * @param \Illuminate\Http\Request  $request
 	 * @return boolean
 	 */
@@ -57,7 +56,7 @@ class AuthenticateAPI implements Middleware {
 		{
 			return false;
 		}
-		
+
 		// like a manual auth->once()
 		$this->auth->setUser($user);
 		return true;
