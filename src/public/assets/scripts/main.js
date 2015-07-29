@@ -5,38 +5,6 @@
 angular.module('dias.annotations', ['dias.api', 'dias.ui.messages']);
 
 /**
- * @namespace dias.transects
- * @ngdoc controller
- * @name AnnotatorButtonController
- * @memberOf dias.transects
- * @description Controls the button for going to the image annotator when clicking on an image of the transects view.
- */
-try {
-angular.module('dias.transects').controller('AnnotatorButtonController', ["$scope", "$attrs", function ($scope, $attrs) {
-		"use strict";
-
-		var prefix = $attrs.annotatorUrl + '/';
-		var suffix = '';
-		var id = 'image-annotator-button';
-
-		$scope.selected = false;
-
-		$scope.activate = function () {
-			$scope.toggleButton(id);
-		};
-
-		$scope.$on('button.setActive', function (e, buttonId) {
-			$scope.selected = id === buttonId;
-			if ($scope.selected) {
-				$scope.setImageUrl(prefix, suffix);
-			}
-		});
-	}]
-);
-} catch (e) {
-	// dias.transects is not loaded on this page
-}
-/**
  * @namespace dias.annotations
  * @ngdoc controller
  * @name AnnotationsController
@@ -983,10 +951,7 @@ angular.module('dias.annotations').service('mapAnnotations', ["map", "images", "
 					geometry = new ol.geom.Point(points[0]);
 					break;
 				case 'Rectangle':
-					geometry = new ol.geom.Polygon([ points ]);
-					geometry.getType = function () {
-						return 'Rectangle';
-					};
+					geometry = new ol.geom.Rectangle([ points ]);
 					break;
 				case 'Polygon':
 					// example: https://github.com/openlayers/ol3/blob/master/examples/geojson.js#L126
@@ -1051,73 +1016,11 @@ angular.module('dias.annotations').service('mapAnnotations', ["map", "images", "
 			map.removeInteraction(select);
 
 			type = type || 'Point';
-			
-			if (type === 'Rectangle') {
-				// see https://github.com/openlayers/ol3/blob/100020fd5976612c15b6e80b05a37b230532075d/examples/draw-features.js#L60-72
-				draw = new ol.interaction.Draw({
-					features: features,
-					// use LineString so the geometry always has an end point
-					// the feature will be saved as Polygon nevertheless
-					type: 'LineString',
-					style: styles.editing,
-					maxPoints: 3,
-					minPoints: 3,
-					geometryFunction: function (coordinates, geometry) {
-						geometry = geometry || new ol.geom.Polygon(null);
-						geometry.getType = function () {
-							return 'Rectangle';
-						};
-						var first = coordinates[0];
-						var second = coordinates[1];
-						var third = coordinates[2];
-
-						if (third === undefined) {
-							geometry.setCoordinates([[first,	second]]);
-						} else {
-							// vector from first to third
-							var a_vec = [
-								second[0] - first[0],
-								second[1] - first[1]
-							];
-							// perpendicular vector to a_vec
-							var b_vec = [-1 * a_vec[1], a_vec[0]];
-
-							// helper
-							var tmp = a_vec[0] / a_vec[1];
-							// compute the intersection of the two lines
-							// going from second in b_vec direction
-							// and from third in a_vec direction
-							var x = (third[0] + tmp * (second[1] - third[1]) - second[0]) / (b_vec[0] - b_vec[1] * tmp);
-
-							// vector from second to the intersection point
-							var intersection_vec = [
-								x * b_vec[0],
-								x * b_vec[1],
-							];
-
-							geometry.setCoordinates([[
-								first,
-								second,
-								[
-									second[0] + intersection_vec[0],
-									second[1] + intersection_vec[1]
-								],
-								[
-									first[0] + intersection_vec[0],
-									first[1] + intersection_vec[1]
-								]
-							]]);
-						}
-						return geometry;
-					}
-				});
-			} else {
-				draw = new ol.interaction.Draw({
-					features: features,
-					type: type,
-					style: styles.editing
-				});
-			}
+			draw = new ol.interaction.Draw({
+				features: features,
+				type: type,
+				style: styles.editing
+			});
 
 			map.addInteraction(modify);
 			map.addInteraction(draw);
@@ -1163,6 +1066,7 @@ angular.module('dias.annotations').service('mapAnnotations', ["map", "images", "
 		};
 	}]
 );
+
 /**
  * @namespace dias.annotations
  * @ngdoc service
@@ -1405,4 +1309,36 @@ angular.module('dias.annotations').service('urlParams', function () {
 		}
 	}
 );
+/**
+ * @namespace dias.transects
+ * @ngdoc controller
+ * @name AnnotatorButtonController
+ * @memberOf dias.transects
+ * @description Controls the button for going to the image annotator when clicking on an image of the transects view.
+ */
+try {
+angular.module('dias.transects').controller('AnnotatorButtonController', ["$scope", "$attrs", function ($scope, $attrs) {
+		"use strict";
+
+		var prefix = $attrs.annotatorUrl + '/';
+		var suffix = '';
+		var id = 'image-annotator-button';
+
+		$scope.selected = false;
+
+		$scope.activate = function () {
+			$scope.toggleButton(id);
+		};
+
+		$scope.$on('button.setActive', function (e, buttonId) {
+			$scope.selected = id === buttonId;
+			if ($scope.selected) {
+				$scope.setImageUrl(prefix, suffix);
+			}
+		});
+	}]
+);
+} catch (e) {
+	// dias.transects is not loaded on this page
+}
 //# sourceMappingURL=main.js.map

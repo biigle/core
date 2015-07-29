@@ -63496,7 +63496,8 @@ ol.renderer.vector.GEOMETRY_RENDERERS_ = {
   'MultiLineString': ol.renderer.vector.renderMultiLineStringGeometry_,
   'MultiPolygon': ol.renderer.vector.renderMultiPolygonGeometry_,
   'GeometryCollection': ol.renderer.vector.renderGeometryCollectionGeometry_,
-  'Circle': ol.renderer.vector.renderCircleGeometry_
+  'Circle': ol.renderer.vector.renderCircleGeometry_,
+  'Rectangle': ol.renderer.vector.renderPolygonGeometry_
 };
 
 goog.provide('ol.ImageCanvas');
@@ -109238,7 +109239,8 @@ ol.interaction.Modify = function(options) {
     'MultiPoint': this.writeMultiPointGeometry_,
     'MultiLineString': this.writeMultiLineStringGeometry_,
     'MultiPolygon': this.writeMultiPolygonGeometry_,
-    'GeometryCollection': this.writeGeometryCollectionGeometry_
+    'GeometryCollection': this.writeGeometryCollectionGeometry_,
+    'Rectangle': this.writePolygonGeometry_
   };
 
   /**
@@ -109589,6 +109591,8 @@ ol.interaction.Modify.handleDragEvent_ = function(evt) {
       vertex.push(0);
     }
 
+    console.log(geometry.getType());
+
     switch (geometry.getType()) {
       case ol.geom.GeometryType.POINT:
         coordinates = vertex;
@@ -109614,6 +109618,38 @@ ol.interaction.Modify.handleDragEvent_ = function(evt) {
         coordinates[depth[1]][depth[0]][segmentData.index + index] = vertex;
         segment[index] = vertex;
         break;
+      case 'Rectangle':
+      //adjacent? gegenueber?
+        var coords = coordinates[depth[0]];
+        var across = coords[(segmentData.index + index + 2) % 4];
+        var acrossToVertex = [vertex[0] - across[0], vertex[1] - across[1]];
+
+        var left = coords[(segmentData.index + index + 1) % 4];
+        var acrossToLeft = [left[0] - across[0], left[1] - across[1]];
+        var length = Math.sqrt(acrossToLeft[0] * acrossToLeft[0] + acrossToLeft[1] * acrossToLeft[1]);
+        acrossToLeft[0] = acrossToLeft[0] / length;
+        acrossToLeft[1] = acrossToLeft[1] / length;
+        var dot = acrossToVertex[0] * acrossToLeft[0] + acrossToVertex[1] * acrossToLeft[1];
+        coords[(segmentData.index + index + 1) % 4] = [
+          across[0] + dot * acrossToLeft[0],
+          across[1] + dot * acrossToLeft[1]
+        ];
+
+        var right = coords[(segmentData.index + index + 3) % 4];
+        var acrossToRight = [right[0] - across[0], right[1] - across[1]];
+        length = Math.sqrt(acrossToRight[0] * acrossToRight[0] + acrossToRight[1] * acrossToRight[1]);
+        acrossToRight[0] = acrossToRight[0] / length;
+        acrossToRight[1] = acrossToRight[1] / length;
+        dot = acrossToVertex[0] * acrossToRight[0] + acrossToVertex[1] * acrossToRight[1];
+        coords[(segmentData.index + index + 3) % 4] = [
+          across[0] + dot * acrossToRight[0],
+          across[1] + dot * acrossToRight[1]
+        ];
+
+        coords[segmentData.index + index] = vertex;
+        this.features_.remove(segmentData.feature);
+        this.features_.push(segmentData.feature);
+        break;
     }
 
     geometry.setCoordinates(coordinates);
@@ -109632,6 +109668,9 @@ ol.interaction.Modify.handleUpEvent_ = function(evt) {
   var segmentData;
   for (var i = this.dragSegments_.length - 1; i >= 0; --i) {
     segmentData = this.dragSegments_[i][0];
+    if (segmentData.geometry.getType() === 'Rectangle') {
+      continue;
+    }
     this.rBush_.update(ol.extent.boundingExtent(segmentData.segment),
         segmentData);
   }
