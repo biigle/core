@@ -71,7 +71,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $r = $this->callAjax('PUT', '/api/v1/projects/1/users/'.$this->admin->id,
             [
                 '_token' => Session::token(),
-                'project_role_id' => Role::guestId(),
+                'project_role_id' => Role::$guest->id,
             ]
         );
         $this->assertResponseStatus(400);
@@ -82,7 +82,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $this->call('PUT', '/api/v1/projects/1/users/'.$this->editor->id,
             [
                 '_token' => Session::token(),
-                'project_role_id' => Role::guestId(),
+                'project_role_id' => Role::$guest->id,
             ]
         );
 
@@ -125,7 +125,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $this->assertResponseOk();
         $newUser = $this->project->users()->find($id);
         $this->assertEquals($id, $newUser->id);
-        $this->assertEquals(Role::editorId(), $newUser->project_role_id);
+        $this->assertEquals(Role::$editor->id, $newUser->project_role_id);
     }
 
     public function testDestroy()
@@ -148,7 +148,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $this->assertResponseOk();
         $this->assertNull($this->project->fresh()->users()->find($this->editor->id));
 
-        $this->project->addUserId($this->editor->id, Role::editorId());
+        $this->project->addUserId($this->editor->id, Role::$editor->id);
 
         // admins can delete anyone
         $this->assertNotNull($this->project->fresh()->users()->find($this->editor->id));
@@ -158,7 +158,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $this->assertResponseOk();
         $this->assertNull($this->project->fresh()->users()->find($this->editor->id));
 
-        $this->project->addUserId($this->editor->id, Role::editorId());
+        $this->project->addUserId($this->editor->id, Role::$editor->id);
 
 // session cookie authentication
         $this->be($this->admin);

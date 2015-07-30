@@ -30,6 +30,6 @@ class ProjectObserver
     public function created($project)
     {
         // this must be done *after* the project is savet so it already has an id
-        $project->addUserId($project->creator->id, Role::adminId());
+        $project->addUserId($project->creator->id, Role::$admin->id);
     }
 }

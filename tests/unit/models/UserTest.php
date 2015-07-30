@@ -68,13 +68,13 @@ class UserTest extends ModelWithAttributesTest
 
     public function testRole()
     {
-        $this->assertEquals(Role::editorId(), $this->model->role->id);
+        $this->assertEquals(Role::$editor->id, $this->model->role->id);
     }
 
     public function testIsAdmin()
     {
         $this->assertFalse($this->model->isAdmin);
-        $this->model->role()->associate(Role::admin());
+        $this->model->role()->associate(Role::$admin);
         $this->assertTrue($this->model->isAdmin);
     }
 
@@ -106,13 +106,13 @@ class UserTest extends ModelWithAttributesTest
         $project = ProjectTest::create();
         $projectIds = [$project->id];
         $this->assertFalse($this->model->canSeeOneOfProjects($projectIds));
-        $project->addUserId($this->model->id, Role::guestId());
+        $project->addUserId($this->model->id, Role::$guest->id);
         Cache::flush();
         $this->assertTrue($this->model->canSeeOneOfProjects($projectIds));
-        $project->changeRole($this->model->id, Role::editorId());
+        $project->changeRole($this->model->id, Role::$editor->id);
         Cache::flush();
         $this->assertTrue($this->model->canSeeOneOfProjects($projectIds));
-        $project->changeRole($this->model->id, Role::adminId());
+        $project->changeRole($this->model->id, Role::$admin->id);
         Cache::flush();
         $this->assertTrue($this->model->canSeeOneOfProjects($projectIds));
     }
@@ -122,13 +122,13 @@ class UserTest extends ModelWithAttributesTest
         $project = ProjectTest::create();
         $projectIds = [$project->id];
         $this->assertFalse($this->model->canEditInOneOfProjects($projectIds));
-        $project->addUserId($this->model->id, Role::guestId());
+        $project->addUserId($this->model->id, Role::$guest->id);
         Cache::flush();
         $this->assertFalse($this->model->canEditInOneOfProjects($projectIds));
-        $project->changeRole($this->model->id, Role::editorId());
+        $project->changeRole($this->model->id, Role::$editor->id);
         Cache::flush();
         $this->assertTrue($this->model->canEditInOneOfProjects($projectIds));
-        $project->changeRole($this->model->id, Role::adminId());
+        $project->changeRole($this->model->id, Role::$admin->id);
         Cache::flush();
         $this->assertTrue($this->model->canEditInOneOfProjects($projectIds));
     }
@@ -138,13 +138,13 @@ class UserTest extends ModelWithAttributesTest
         $project = ProjectTest::create();
         $projectIds = [$project->id];
         $this->assertFalse($this->model->canAdminOneOfProjects($projectIds));
-        $project->addUserId($this->model->id, Role::guestId());
+        $project->addUserId($this->model->id, Role::$guest->id);
         Cache::flush();
         $this->assertFalse($this->model->canAdminOneOfProjects($projectIds));
-        $project->changeRole($this->model->id, Role::editorId());
+        $project->changeRole($this->model->id, Role::$editor->id);
         Cache::flush();
         $this->assertFalse($this->model->canAdminOneOfProjects($projectIds));
-        $project->changeRole($this->model->id, Role::adminId());
+        $project->changeRole($this->model->id, Role::$admin->id);
         Cache::flush();
         $this->assertTrue($this->model->canAdminOneOfProjects($projectIds));
     }

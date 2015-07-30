@@ -66,7 +66,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
             '_token' => Session::token(),
             'name' => 'my transect no. 1',
             'url' => 'random',
-            'media_type_id' => MediaType::timeSeriesId(),
+            'media_type_id' => MediaType::$timeSeriesId,
             'images' => '',
         ]);
         // images array is empty
@@ -79,7 +79,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
             '_token' => Session::token(),
             'name' => 'my transect no. 1',
             'url' => 'random',
-            'media_type_id' => MediaType::timeSeriesId(),
+            'media_type_id' => MediaType::$timeSeriesId,
             // empty parts should be discarded
             'images' => '1.jpg, , 2.jpg, , ,',
         ]);
@@ -100,7 +100,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         $secondProject = ProjectTest::create();
         $pid = $secondProject->id;
-        // $secondProject->addUserId($this->admin->id, Role::adminId());
+        // $secondProject->addUserId($this->admin->id, Role::$admin->id);
 
         $this->doTestApiRoute('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid);
 
@@ -108,7 +108,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         $this->callToken('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid, $this->admin);
         $this->assertResponseStatus(401);
 
-        $secondProject->addUserId($this->admin->id, Role::adminId());
+        $secondProject->addUserId($this->admin->id, Role::$admin->id);
         Cache::flush();
 
         // session cookie authentication

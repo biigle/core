@@ -76,7 +76,7 @@ class ProjectTest extends ModelWithAttributesTest
     public function testUsers()
     {
         $user = UserTest::create();
-        $this->model->addUserId($user->id, Role::adminId());
+        $this->model->addUserId($user->id, Role::$admin->id);
 
         $this->assertNotNull($this->model->users()->find($user->id));
     }
@@ -85,8 +85,8 @@ class ProjectTest extends ModelWithAttributesTest
     {
         $admin = UserTest::create();
         $member = UserTest::create();
-        $this->model->addUserId($admin->id, Role::adminId());
-        $this->model->addUserId($member->id, Role::editorId());
+        $this->model->addUserId($admin->id, Role::$admin->id);
+        $this->model->addUserId($member->id, Role::$editor->id);
         // the creator doesn't count
         $this->model->creator->delete();
 
@@ -98,8 +98,8 @@ class ProjectTest extends ModelWithAttributesTest
     {
         $editor = UserTest::create();
         $member = UserTest::create();
-        $this->model->addUserId($editor->id, Role::editorId());
-        $this->model->addUserId($member->id, Role::guestId());
+        $this->model->addUserId($editor->id, Role::$editor->id);
+        $this->model->addUserId($member->id, Role::$guest->id);
 
         // count the project creator, too
         $this->assertEquals(3, $this->model->users()->count());
@@ -109,7 +109,7 @@ class ProjectTest extends ModelWithAttributesTest
     public function testGuests()
     {
         $member = UserTest::create();
-        $this->model->addUserId($member->id, Role::guestId());
+        $this->model->addUserId($member->id, Role::$guest->id);
 
         // count the project creator, too
         $this->assertEquals(2, $this->model->users()->count());
@@ -120,8 +120,8 @@ class ProjectTest extends ModelWithAttributesTest
     {
         $admin = UserTest::create();
         $member = UserTest::create();
-        $this->model->addUserId($admin->id, Role::adminId());
-        $this->model->addUserId($member->id, Role::editorId());
+        $this->model->addUserId($admin->id, Role::$admin->id);
+        $this->model->addUserId($member->id, Role::$editor->id);
         $this->assertTrue($this->model->hasAdmin($admin));
         $this->assertFalse($this->model->hasAdmin($member));
     }
@@ -132,8 +132,8 @@ class ProjectTest extends ModelWithAttributesTest
         $admin->save();
         $member = UserTest::create();
         $member->save();
-        $this->model->addUserId($admin->id, Role::adminId());
-        $this->model->addUserId($member->id, Role::editorId());
+        $this->model->addUserId($admin->id, Role::$admin->id);
+        $this->model->addUserId($member->id, Role::$editor->id);
         $this->assertTrue($this->model->hasAdminId($admin->id));
         $this->assertFalse($this->model->hasAdminId($member->id));
     }
@@ -142,8 +142,8 @@ class ProjectTest extends ModelWithAttributesTest
     {
         $editor = UserTest::create();
         $member = UserTest::create();
-        $this->model->addUserId($editor->id, Role::editorId());
-        $this->model->addUserId($member->id, Role::guestId());
+        $this->model->addUserId($editor->id, Role::$editor->id);
+        $this->model->addUserId($member->id, Role::$guest->id);
         $this->assertTrue($this->model->hasEditor($editor));
         $this->assertFalse($this->model->hasEditor($member));
     }
@@ -152,8 +152,8 @@ class ProjectTest extends ModelWithAttributesTest
     {
         $editor = UserTest::create();
         $member = UserTest::create();
-        $this->model->addUserId($editor->id, Role::editorId());
-        $this->model->addUserId($member->id, Role::guestId());
+        $this->model->addUserId($editor->id, Role::$editor->id);
+        $this->model->addUserId($member->id, Role::$guest->id);
         $this->assertTrue($this->model->hasEditorId($editor->id));
         $this->assertFalse($this->model->hasEditorId($member->id));
     }
@@ -162,7 +162,7 @@ class ProjectTest extends ModelWithAttributesTest
     {
         $user = UserTest::create();
         $this->assertFalse($this->model->hasUser($user));
-        $this->model->addUserId($user->id, Role::adminId());
+        $this->model->addUserId($user->id, Role::$admin->id);
         $this->assertTrue($this->model->hasUser($user));
     }
 
@@ -170,7 +170,7 @@ class ProjectTest extends ModelWithAttributesTest
     {
         $user = UserTest::create();
         $this->assertFalse($this->model->hasUserId($user->id));
-        $this->model->addUserId($user->id, Role::adminId());
+        $this->model->addUserId($user->id, Role::$admin->id);
         $this->assertTrue($this->model->hasUserId($user->id));
     }
 
@@ -187,20 +187,20 @@ class ProjectTest extends ModelWithAttributesTest
         $user = UserTest::create();
         $this->assertNull($this->model->users()->find($user->id));
 
-        $this->model->addUserId($user->id, Role::editorId());
+        $this->model->addUserId($user->id, Role::$editor->id);
         $user = $this->model->users()->find($user->id);
         $this->assertNotNull($user);
-        $this->assertEquals(Role::editorId(), $user->role_id);
+        $this->assertEquals(Role::$editor->id, $user->role_id);
 
         // a user can only be added once regardless the role
         $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
-        $this->model->addUserId($user->id, Role::adminId());
+        $this->model->addUserId($user->id, Role::$admin->id);
     }
 
     public function testRemoveUserId()
     {
         $admin = UserTest::create();
-        $this->model->addUserId($admin->id, Role::adminId());
+        $this->model->addUserId($admin->id, Role::$admin->id);
 
         $this->assertNotNull($this->model->users()->find($admin->id));
         $this->assertTrue($this->model->removeUserId($admin->id));
@@ -217,21 +217,21 @@ class ProjectTest extends ModelWithAttributesTest
         $user = UserTest::create();
 
         try {
-            $this->model->changeRole($user->id, Role::adminId());
+            $this->model->changeRole($user->id, Role::$admin->id);
             // this shouldn't be reached
             $this->assertTrue(false);
         } catch (HttpException $e) {
             $this->assertNotNull($e);
         }
 
-        $this->model->addUserId($user->id, Role::adminId());
-        $this->assertEquals(Role::adminId(), $this->model->users()->find($user->id)->project_role_id);
-        $this->model->changeRole($user->id, Role::editorId());
-        $this->assertEquals(Role::editorId(), $this->model->users()->find($user->id)->project_role_id);
+        $this->model->addUserId($user->id, Role::$admin->id);
+        $this->assertEquals(Role::$admin->id, $this->model->users()->find($user->id)->project_role_id);
+        $this->model->changeRole($user->id, Role::$editor->id);
+        $this->assertEquals(Role::$editor->id, $this->model->users()->find($user->id)->project_role_id);
 
         // attempt to change the last admin to an editor
         $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
-        $this->model->changeRole($admin->id, Role::editorId());
+        $this->model->changeRole($admin->id, Role::$editor->id);
     }
 
     public function testAddTransect()

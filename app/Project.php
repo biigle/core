@@ -69,7 +69,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
      */
     public function admins()
     {
-        return $this->users()->whereProjectRoleId(Role::adminId());
+        return $this->users()->whereProjectRoleId(Role::$admin->id);
     }
 
     /**
@@ -79,7 +79,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
      */
     public function editors()
     {
-        return $this->users()->whereProjectRoleId(Role::editorId());
+        return $this->users()->whereProjectRoleId(Role::$editor->id);
     }
 
     /**
@@ -89,7 +89,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
      */
     public function guests()
     {
-        return $this->users()->whereProjectRoleId(Role::guestId());
+        return $this->users()->whereProjectRoleId(Role::$guest->id);
     }
 
     /**

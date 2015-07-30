@@ -24,16 +24,16 @@ class ApiTestCase extends TestCase
         $transect = TransectTest::create();
         $this->project->addTransectId($transect->id);
 
-        $this->admin = $this->newProjectUser(Role::adminId());
-        $this->editor = $this->newProjectUser(Role::editorId());
-        $this->guest = $this->newProjectUser(Role::guestId());
+        $this->admin = $this->newProjectUser(Role::$admin->id);
+        $this->editor = $this->newProjectUser(Role::$editor->id);
+        $this->guest = $this->newProjectUser(Role::$guest->id);
 
-        $this->user = $this->newProjectUser(Role::guestId());
+        $this->user = $this->newProjectUser(Role::$guest->id);
         $this->project->removeUserId($this->user->id);
 
-        $this->globalAdmin = $this->newProjectUser(Role::guestId());
+        $this->globalAdmin = $this->newProjectUser(Role::$guest->id);
         $this->project->removeUserId($this->user->id);
-        $this->globalAdmin->role()->associate(Role::admin());
+        $this->globalAdmin->role()->associate(Role::$admin);
         $this->globalAdmin->save();
 
         $this->labelRoot = LabelTest::create(['name' => 'Test Root']);

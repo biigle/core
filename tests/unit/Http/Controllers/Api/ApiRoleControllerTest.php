@@ -22,15 +22,15 @@ class ApiRoleControllerTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/roles/'.Role::adminId());
+        $this->doTestApiRoute('GET', '/api/v1/roles/'.Role::$admin->id);
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/roles/'.Role::adminId(), $this->user);
+        $this->callToken('GET', '/api/v1/roles/'.Role::$admin->id, $this->user);
         $this->assertResponseOk();
 
         // session cookie authentication
         $this->be($this->user);
-        $r = $this->call('GET', '/api/v1/roles/'.Role::adminId());
+        $r = $this->call('GET', '/api/v1/roles/'.Role::$admin->id);
         $this->assertResponseOk();
         $this->assertStringStartsWith('{', $r->getContent());
         $this->assertStringEndsWith('}', $r->getContent());

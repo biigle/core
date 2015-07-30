@@ -32,11 +32,11 @@ class MediaTypeTest extends ModelTestCase
 
     public function testTimeSeriesId()
     {
-        $this->assertNotNull(MediaType::timeSeriesId());
+        $this->assertNotNull(MediaType::$timeSeriesId);
     }
 
     public function testLocationSeriesId()
     {
-        $this->assertNotNull(MediaType::locationSeriesId());
+        $this->assertNotNull(MediaType::$locationSeriesId);
     }
 }

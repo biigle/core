@@ -25,26 +25,26 @@ class ShapeTest extends ModelTestCase
 
     public function testPointId()
     {
-        $this->assertNotNull(Shape::pointId());
+        $this->assertNotNull(Shape::$pointId);
     }
 
     public function testLineId()
     {
-        $this->assertNotNull(Shape::lineId());
+        $this->assertNotNull(Shape::$lineId);
     }
 
     public function testPolygonId()
     {
-        $this->assertNotNull(Shape::polygonId());
+        $this->assertNotNull(Shape::$polygonId);
     }
 
     public function testCircleId()
     {
-        $this->assertNotNull(Shape::circleId());
+        $this->assertNotNull(Shape::$circleId);
     }
 
     public function testRectangleId()
     {
-        $this->assertNotNull(Shape::rectangleId());
+        $this->assertNotNull(Shape::$rectangleId);
     }
 }

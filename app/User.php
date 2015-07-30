@@ -128,7 +128,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
      */
     public function getIsAdminAttribute()
     {
-        return $this->role->id === Role::adminId();
+        return $this->role->id === Role::$admin->id;
     }
 
     /**

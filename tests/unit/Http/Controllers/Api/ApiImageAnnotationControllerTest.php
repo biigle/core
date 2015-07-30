@@ -81,7 +81,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             '/api/v1/images/'.$this->image->id.'/annotations',
             [
                 '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::lineId(),
+                'shape_id' => \Dias\Shape::$lineId,
                 'label_id' => 99999,
             ]
         );
@@ -92,7 +92,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             '/api/v1/images/'.$this->image->id.'/annotations',
             [
                 '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::pointId(),
+                'shape_id' => \Dias\Shape::$pointId,
                 'label_id' => $this->labelRoot->id,
             ]
         );
@@ -103,7 +103,7 @@ $this->callAjax('POST',
             '/api/v1/images/'.$this->image->id.'/annotations',
             [
                 '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::pointId(),
+                'shape_id' => \Dias\Shape::$pointId,
                 'label_id' => $this->labelRoot->id,
                 'confidence' => 0.5,
                 'points' => '[]',
@@ -116,7 +116,7 @@ $this->callAjax('POST',
             '/api/v1/images/'.$this->image->id.'/annotations',
             [
                 '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::pointId(),
+                'shape_id' => \Dias\Shape::$pointId,
                 'label_id' => $this->labelRoot->id,
                 'confidence' => 0.5,
                 'points' => '[{"x":10,"y":11}]',

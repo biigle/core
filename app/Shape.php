@@ -19,61 +19,56 @@ class Shape extends Model
 
     /**
      * The point shape ID.
-     * 
-     * @return int
+     *
+     * @var int
      */
-    public static function pointId()
-    {
-        return Cache::rememberForever('shape-point', function () {
-            return Shape::whereName('Point')->first()->id;
-        });
-    }
+    public static $pointId;
 
     /**
      * The line shape ID.
-     * 
-     * @return int
+     *
+     * @var int
      */
-    public static function lineId()
-    {
-        return Cache::rememberForever('shape-line-string', function () {
-            return Shape::whereName('LineString')->first()->id;
-        });
-    }
+    public static $lineId;
 
     /**
      * The polygon shape ID.
-     * 
-     * @return int
+     *
+     * @var int
      */
-    public static function polygonId()
-    {
-        return Cache::rememberForever('shape-polygon', function () {
-            return Shape::whereName('Polygon')->first()->id;
-        });
-    }
+    public static $polygonId;
 
     /**
      * The circle shape ID.
-     * 
-     * @return int
+     *
+     * @var int
      */
-    public static function circleId()
-    {
-        return Cache::rememberForever('shape-circle', function () {
-            return Shape::whereName('Circle')->first()->id;
-        });
-    }
+    public static $circleId;
 
     /**
      * The rectangle shape ID.
-     * 
-     * @return int
+     *
+     * @var int
      */
-    public static function rectangleId()
-    {
-        return Cache::rememberForever('shape-rectangle', function () {
-            return Shape::whereName('Rectangle')->first()->id;
-        });
-    }
+    public static $rectangleId;
 }
+
+Shape::$pointId = Cache::rememberForever('shape-point', function () {
+    return Shape::whereName('Point')->first()->id;
+});
+
+Shape::$lineId = Cache::rememberForever('shape-line', function () {
+    return Shape::whereName('LineString')->first()->id;
+});
+
+Shape::$polygonId = Cache::rememberForever('shape-polygon', function () {
+    return Shape::whereName('Polygon')->first()->id;
+});
+
+Shape::$circleId = Cache::rememberForever('shape-circle', function () {
+    return Shape::whereName('Circle')->first()->id;
+});
+
+Shape::$rectangleId = Cache::rememberForever('shape-rectangle', function () {
+    return Shape::whereName('Rectangle')->first()->id;
+});
