@@ -132,6 +132,8 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			e.feature.annotation.$promise.catch(function () {
 				features.remove(e.feature);
 			});
+
+			e.feature.on('change', handleGeometryChange);
 		};
 
 		this.init = function (scope) {
