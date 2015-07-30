@@ -2,41 +2,21 @@
 
 use Dias\AnnotationLabel;
 
-class AnnotationLabelTest extends TestCase
+class AnnotationLabelTest extends ModelTestCase
 {
-    public static function create($annotation = false, $label = false, $user = false, $confidence = 0.0)
-    {
-        $obj = new AnnotationLabel;
-        $annotation = $annotation ? $annotation : AnnotationTest::create();
-        $annotation->save();
-        $obj->annotation()->associate($annotation);
-        $label = $label ? $label : LabelTest::create();
-        $label->save();
-        $obj->label()->associate($label);
-        $user = $user ? $user : UserTest::create();
-        $user->save();
-        $obj->user()->associate($user);
-        $obj->confidence = $confidence;
-
-        return $obj;
-    }
-
-    public function testCreation()
-    {
-        $obj = self::create();
-        $this->assertTrue($obj->save());
-    }
+    /**
+     * The model class this class will test.
+     */
+    protected static $modelClass = Dias\AnnotationLabel::class;
 
     public function testAttributes()
     {
-        $annotationLabel = self::create();
-        $annotationLabel->save();
-        $this->assertNotNull($annotationLabel->annotation);
-        $this->assertNotNull($annotationLabel->label);
-        $this->assertNotNull($annotationLabel->user);
-        $this->assertNotNull($annotationLabel->created_at);
-        $this->assertNotNull($annotationLabel->updated_at);
-        $this->assertTrue(is_float($annotationLabel->confidence));
+        $this->assertNotNull($this->model->annotation);
+        $this->assertNotNull($this->model->label);
+        $this->assertNotNull($this->model->user);
+        $this->assertNotNull($this->model->created_at);
+        $this->assertNotNull($this->model->updated_at);
+        $this->assertTrue(is_float($this->model->confidence));
     }
 
     public function testHiddenAttributes()
@@ -51,42 +31,32 @@ class AnnotationLabelTest extends TestCase
 
     public function testAnnotationOnDeleteCascade()
     {
-        $annotationLabel = self::create();
-        $annotationLabel->save();
-        $this->assertNotNull(AnnotationLabel::find($annotationLabel->id));
-        $annotationLabel->annotation()->delete();
-        $this->assertNull(AnnotationLabel::find($annotationLabel->id));
+        $this->assertNotNull(AnnotationLabel::find($this->model->id));
+        $this->model->annotation()->delete();
+        $this->assertNull(AnnotationLabel::find($this->model->id));
     }
 
     public function testLabelOnDeleteRestrict()
     {
-        $annotationLabel = self::create();
-        $annotationLabel->save();
-        $this->assertNotNull(AnnotationLabel::find($annotationLabel->id));
+        $this->assertNotNull(AnnotationLabel::find($this->model->id));
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $annotationLabel->label()->delete();
+        $this->model->label()->delete();
     }
 
     public function testUserOnDeleteSetNull()
     {
-        $annotationLabel = self::create();
-        $annotationLabel->save();
-        $this->assertNotNull($annotationLabel->fresh()->user);
-        $annotationLabel->user->delete();
-        $this->assertNull($annotationLabel->fresh()->user);
+        $this->assertNotNull($this->model->fresh()->user);
+        $this->model->user->delete();
+        $this->assertNull($this->model->fresh()->user);
     }
 
     public function testUniqueProperties()
     {
-        $annotationLabel = self::create();
-        $annotationLabel->save();
-
-$test = self::create(
-            $annotationLabel->annotation,
-            $annotationLabel->label,
-            $annotationLabel->user
-        );
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $test->save();
+        self::create([
+            'annotation_id' => $this->model->annotation_id,
+            'label_id' => $this->model->label_id,
+            'user_id' => $this->model->user_id,
+        ]);
     }
 }

@@ -5,6 +5,7 @@ namespace Dias\Http\Controllers\Auth;
 use Dias\Http\Controllers\Controller;
 use Dias\User;
 use Dias\Events\UserLoggedInEvent;
+use Auth;
 use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
@@ -79,8 +80,8 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (auth()->attempt($credentials, $request->has('remember'))) {
-            event(new UserLoggedInEvent(auth()->user()));
+        if (Auth::attempt($credentials, $request->has('remember'))) {
+            event(new UserLoggedInEvent(Auth::user()));
 
             return redirect()->intended($this->redirectPath());
         }
@@ -98,7 +99,7 @@ class AuthController extends Controller
      */
     public function getLogout()
     {
-        auth()->logout();
+        Auth::logout();
 
         return redirect()->route('home');
     }

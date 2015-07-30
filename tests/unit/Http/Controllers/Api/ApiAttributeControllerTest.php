@@ -88,7 +88,6 @@ class ApiAttributeControllerTest extends ApiTestCase
     public function testDestroy()
     {
         $attribute = AttributeTest::create();
-        $attribute->save();
         $id = $attribute->id;
 
         $this->doTestApiRoute('DELETE', '/api/v1/attributes/'.$id);
@@ -110,9 +109,8 @@ class ApiAttributeControllerTest extends ApiTestCase
         // the attribute doesn't exist any more
         $this->assertResponseStatus(404);
 
-        $attribute = AttributeTest::create();
+        $attribute = AttributeTest::make();
         $project = ProjectTest::create();
-        $project->save();
         $project->attributes()->save($attribute);
 
         $this->call('DELETE', '/api/v1/attributes/'.$attribute->id, [

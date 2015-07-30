@@ -5,18 +5,12 @@ class ApiTransectImageControllerTest extends ApiTestCase
     public function testIndex()
     {
         $transect = TransectTest::create();
-        $transect->save();
         $id = $transect->id;
 
         $this->project->addTransectId($id);
-        $image = ImageTest::create('a');
-        $image->transect()->associate($transect);
-        $image->save();
-        $image = ImageTest::create('b');
-        $image->transect()->associate($transect);
-        $image->save();
+        $image = ImageTest::create(['transect_id' => $id]);
 
-$this->doTestApiRoute('GET', '/api/v1/transects/'.$id.'/images');
+        $this->doTestApiRoute('GET', '/api/v1/transects/'.$id.'/images');
 
         // api key authentication
         $this->callToken('GET', '/api/v1/transects/'.$id.'/images', $this->user);

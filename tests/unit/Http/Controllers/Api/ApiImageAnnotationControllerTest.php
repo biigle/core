@@ -8,14 +8,12 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->image = ImageTest::create();
-        $this->image->save();
         $this->project->addTransectId($this->image->transect->id);
     }
 
     public function testIndex()
     {
-        $annotation = AnnotationTest::create($this->image);
-        $annotation->save();
+        $annotation = AnnotationTest::create(['image_id' => $this->image->id]);
 
         $this->doTestApiRoute('GET',
             '/api/v1/images/'.$this->image->id.'/annotations'

@@ -12,7 +12,6 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
     protected function getModel()
     {
         $model = UserTest::create();
-        $model->save();
 
         return $model;
     }
@@ -287,9 +286,8 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
 
     public function testFind()
     {
-        $user = UserTest::create('abc', 'def');
-        $user->save();
-        UserTest::create('abc', 'ghi')->save();
+        $user = UserTest::create(['firstname' => 'abc', 'lastname' => 'def']);
+        UserTest::create(['firstname' => 'abc', 'lastname' => 'ghi']);
 
         $this->doTestApiRoute('GET', '/api/v1/users/find/a');
 

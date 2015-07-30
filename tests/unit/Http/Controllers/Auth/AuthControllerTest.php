@@ -18,12 +18,10 @@ class AuthControllerTest extends TestCase
      */
     public function testLoginViewRedirect()
     {
-        $user = UserTest::create('joe', 'user', 'pw', 'test@test.com');
-        $user->save();
         $this->call('GET', '/');
         $this->assertRedirectedTo('/auth/login');
 
-        $this->be($user);
+        $this->be(UserTest::create());
         $this->call('GET', '/');
         $this->assertResponseOk();
     }
@@ -37,7 +35,7 @@ class AuthControllerTest extends TestCase
     public function testLoginXSRF()
     {
         // user would be able to log in
-        UserTest::create('joe', 'user', 'pw', 'test@test.com');
+        UserTest::create(['email' => 'test@test.com', 'password' => bcrypt('example123')]);
 
         $this->call('POST', '/auth/login', [
             'email'    => 'test@test.com',
@@ -62,8 +60,7 @@ class AuthControllerTest extends TestCase
 
     public function testLoginSuccess()
     {
-        $user = UserTest::create('joe', 'user', 'example123', 'test@test.com');
-        $user->save();
+        $user = UserTest::create(['email' => 'test@test.com', 'password' => bcrypt('example123')]);
         // login_at attribute should be null after creation
         $this->assertNull($user->login_at);
 
@@ -132,7 +129,7 @@ class AuthControllerTest extends TestCase
 
     public function testRegisterEmailTaken()
     {
-        UserTest::create('joe', 'user', 'pw', 'test@test.com')->save();
+        UserTest::create(['email' => 'test@test.com']);
         $this->assertEquals(1, \Dias\User::all()->count());
 
         $this->call('GET', '/auth/register');
@@ -151,10 +148,8 @@ class AuthControllerTest extends TestCase
 
     public function testRegisterWhenLoggedIn()
     {
-        $user = UserTest::create();
-        $user->save();
+        $this->be(UserTest::create());
         $this->assertEquals(1, \Dias\User::all()->count());
-        $this->be($user);
 
         $this->call('GET', '/auth/register');
         $this->assertRedirectedTo('/');

@@ -2,56 +2,39 @@
 
 use Dias\Attribute;
 
-class AttributeTest extends TestCase
+class AttributeTest extends ModelTestCase
 {
-    public static function create($name = 'test', $type = 'integer')
-    {
-        $obj = new Attribute;
-        $obj->name = $name;
-        $obj->type = $type;
-
-        return $obj;
-    }
-
-    public function testCreation()
-    {
-        $obj = self::create();
-        $this->assertTrue($obj->save());
-    }
+    /**
+     * The model class this class will test.
+     */
+    protected static $modelClass = Dias\Attribute::class;
 
     public function testAttributes()
     {
-        $attribute = self::create();
-        $attribute->save();
-        $this->assertNotNull($attribute->name);
-        $this->assertNotNull($attribute->type);
-        $this->assertNull($attribute->created_at);
-        $this->assertNull($attribute->updated_at);
+        $this->assertNotNull($this->model->name);
+        $this->assertNotNull($this->model->type);
+        $this->assertNull($this->model->created_at);
+        $this->assertNull($this->model->updated_at);
     }
 
     public function testNameRequired()
     {
-        $obj = self::create();
-        $obj->name = null;
+        $this->model->name = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        $this->model->save();
     }
 
     public function testNameUnique()
     {
-        $obj = self::create();
-        $obj->save();
-        $obj = self::create();
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        static::create(['name' => $this->model->name]);
     }
 
     public function testTypeRequired()
     {
-        $obj = self::create();
-        $obj->type = null;
+        $this->model->type = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        $this->model->save();
     }
 
     public function testTypes()
@@ -60,16 +43,11 @@ class AttributeTest extends TestCase
             // SQLite doesn't support enums
             return;
         }
-        $obj = self::create('test', 'integer');
-        $obj->save();
-        $obj->type = 'double';
-        $obj->save();
-        $obj->type = 'string';
-        $obj->save();
-        $obj->type = 'boolean';
-        $obj->save();
-        $obj->type = 'test';
+        self::create(['type' => 'integer']);
+        self::create(['type' => 'double']);
+        self::create(['type' => 'string']);
+        self::create(['type' => 'boolean']);
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        self::create(['type' => 'test']);
     }
 }

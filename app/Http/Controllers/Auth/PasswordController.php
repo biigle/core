@@ -33,13 +33,18 @@ class PasswordController extends Controller
         $this->subject = trans('auth.pw_reset_subject');
 
         $this->middleware('guest');
+
+        $this->redirectPath = route('home');
+
+        $this->subject = '[DIAS] - Your Password Reset Link';
     }
 
     /**
      * Overrides the default method to exclude the password in the error
      * response.
      *
-     * @param  Request  $request
+     * @param  \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function postReset(Request $request)

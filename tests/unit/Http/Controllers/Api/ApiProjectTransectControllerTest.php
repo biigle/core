@@ -12,9 +12,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
     public function setUp()
     {
         parent::setUp();
-
-        $this->transect = TransectTest::create('test', base_path().'/tests/files');
-        $this->transect->save();
+        $this->transect = TransectTest::create();
         $this->project->addTransectId($this->transect->id);
     }
 
@@ -101,7 +99,6 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         $tid = $this->transect->id;
 
         $secondProject = ProjectTest::create();
-        $secondProject->save();
         $pid = $secondProject->id;
         // $secondProject->addUserId($this->admin->id, Role::adminId());
 
@@ -125,9 +122,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
     public function testDestroy()
     {
         $id = $this->transect->id;
-        $image = ImageTest::create();
-        $image->transect()->associate($this->transect);
-        $image->save();
+        $image = ImageTest::create(['transect_id' => $id]);
         $image->getThumb();
 
         $this->doTestApiRoute('DELETE', '/api/v1/projects/1/transects/'.$id);

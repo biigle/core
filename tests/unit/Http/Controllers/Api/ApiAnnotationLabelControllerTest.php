@@ -8,14 +8,12 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->annotation = AnnotationTest::create();
-        $this->annotation->save();
         $this->project->addTransectId($this->annotation->image->transect->id);
     }
 
     public function testIndex()
     {
         $label = LabelTest::create();
-        $label->save();
         $this->annotation->addLabel($label->id, 0.5, $this->editor);
         $this->doTestApiRoute('GET', '/api/v1/annotations/1/labels');
 

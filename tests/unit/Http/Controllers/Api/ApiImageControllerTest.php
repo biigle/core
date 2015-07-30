@@ -12,7 +12,6 @@ class ApiImageControllerTest extends ModelWithAttributesApiTest
     protected function getModel()
     {
         $model = ImageTest::create();
-        $model->save();
         $this->project->addTransectId($model->transect->id);
 
         return $model;
@@ -24,7 +23,6 @@ class ApiImageControllerTest extends ModelWithAttributesApiTest
     {
         parent::setUp();
         $this->image = ImageTest::create();
-        $this->image->save();
         $this->project->addTransectId($this->image->transect->id);
     }
 

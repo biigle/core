@@ -11,10 +11,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
 
     protected function getModel()
     {
-        $model = LabelTest::create();
-        $model->save();
-
-        return $model;
+        return LabelTest::create();
     }
 
     public function testIndex()
@@ -35,7 +32,6 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
     public function testShow()
     {
         $label = LabelTest::create();
-        $label->save();
         $this->doTestApiRoute('GET', '/api/v1/labels/'.$label->id);
 
         // api key authentication
@@ -105,7 +101,6 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
     public function testUpdate()
     {
         $label = LabelTest::create();
-        $label->save();
 
         $this->doTestApiRoute('PUT', '/api/v1/labels/'.$label->id);
 
@@ -144,7 +139,6 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
     public function testDestroy()
     {
         $label = LabelTest::create();
-        $label->save();
 
         $this->doTestApiRoute('DELETE', '/api/v1/labels/'.$label->id);
 
@@ -159,10 +153,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $this->assertNull($label->fresh());
 
         $parent = LabelTest::create();
-        $parent->save();
-        $label = LabelTest::create();
-        $label->parent()->associate($parent);
-        $label->save();
+        $label = LabelTest::create(['parent_id' => $parent->id]);
 
         // session cookie authentication
         $this->be($this->globalAdmin);

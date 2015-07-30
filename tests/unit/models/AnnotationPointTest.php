@@ -2,105 +2,78 @@
 
 use Dias\AnnotationPoint;
 
-class AnnotationPointTest extends TestCase
+class AnnotationPointTest extends ModelTestCase
 {
-    public static function create($annotation = false, $idx = 0, $x = 0, $y = 0)
-    {
-        $obj = new AnnotationPoint;
-        if (!$annotation) {
-            $annotation = AnnotationTest::create();
-        }
-        $annotation->save();
-        $obj->annotation()->associate($annotation);
-        $obj->index = $idx;
-        $obj->x = $x;
-        $obj->y = $y;
-
-        return $obj;
-    }
-
-    public function testCreation()
-    {
-        $obj = self::create();
-        $this->assertTrue($obj->save());
-    }
+    /**
+     * The model class this class will test.
+     */
+    protected static $modelClass = Dias\AnnotationPoint::class;
 
     public function testAttributes()
     {
-        $point = self::create();
-        $point->save();
-        $this->assertNotNull($point->annotation);
-        $this->assertNotNull($point->index);
-        $this->assertNotNull($point->x);
-        $this->assertNotNull($point->y);
-        $this->assertNull($point->created_at);
-        $this->assertNull($point->updated_at);
+        $this->assertNotNull($this->model->annotation);
+        $this->assertNotNull($this->model->index);
+        $this->assertNotNull($this->model->x);
+        $this->assertNotNull($this->model->y);
+        $this->assertNull($this->model->created_at);
+        $this->assertNull($this->model->updated_at);
     }
 
     public function testAnnotationRequired()
     {
-        $obj = self::create();
-        $obj->annotation()->dissociate();
+        $this->model->annotation()->dissociate();
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        $this->model->save();
     }
 
     public function testIndexRequired()
     {
-        $obj = self::create();
-        $obj->index = null;
+        $this->model->index = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        $this->model->save();
     }
 
     public function testXRequired()
     {
-        $obj = self::create();
-        $obj->x = null;
+        $this->model->x = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        $this->model->save();
     }
 
     public function testYRequired()
     {
-        $obj = self::create();
-        $obj->y = null;
+        $this->model->y = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        $this->model->save();
     }
 
     public function testAnnotationOnDeleteCascade()
     {
-        $annotation = AnnotationTest::create();
-        $point = self::create($annotation);
-        $point->save();
-        $this->assertNotNull(AnnotationPoint::where('annotation_id', '=', $annotation->id)->first());
-        $point->annotation()->delete();
-        $this->assertNull(AnnotationPoint::where('annotation_id', '=', $annotation->id)->first());
+        $this->assertNotNull($this->model->fresh());
+        $this->model->annotation->delete();
+        $this->assertNull($this->model->fresh());
     }
 
     public function testAnnotationIndexUnique()
     {
-        $annotation = AnnotationTest::create();
-        self::create($annotation)->save();
         $this->setExpectedException('Illuminate\Database\QueryException');
-        self::create($annotation)->save();
+        self::create([
+            'annotation_id' => $this->model->annotation_id,
+            'index' => $this->model->index
+        ]);
     }
 
     public function testProjectIds()
     {
         $annotation = AnnotationTest::create();
-        $annotation->save();
-        $point = $annotation->addPoint(10, 10);
+        $this->model = $annotation->addPoint(10, 10);
         $project = ProjectTest::create();
-        $project->save();
         $transect = $annotation->image->transect;
-
-        $this->assertEmpty($point->projectIds());
+        $this->assertEmpty($this->model->projectIds());
         $project->addTransectId($transect->id);
         // clear caching of previous call
         Cache::flush();
-        $ids = $point->projectIds();
+        $ids = $this->model->projectIds();
         $this->assertNotEmpty($ids);
         $this->assertEquals($project->id, $ids[0]);
     }

@@ -9,7 +9,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
     {
         $this->doTestApiRoute('GET', '/api/v1/projects/1/users');
 
-// api key authentication
+        // api key authentication
         $this->callToken('GET', '/api/v1/projects/1/users', $this->admin);
         $this->assertResponseOk();
 
@@ -24,7 +24,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
 
         $this->assertStringStartsWith('[', $r->getContent());
         $this->assertStringEndsWith(']', $r->getContent());
-        $this->assertContains('"name":"joe user"', $r->getContent());
+        $this->assertContains('"name":"'.$this->admin->name.'"', $r->getContent());
         $this->assertContains('project_role_id', $r->getContent());
         $this->assertNotContains('pivot', $r->getContent());
     }

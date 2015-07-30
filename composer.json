@@ -12,6 +12,7 @@
 		"dias/annotations": "dev-master"
 	},
 	"require-dev": {
+        "fzaninotto/faker": "~1.4",
 		"phpunit/phpunit": "~4.0",
 		"sami/sami": "dev-master",
 		"mockery/mockery": "dev-master"
@@ -27,7 +28,8 @@
 	"autoload-dev": {
 		"classmap": [
 			"tests/TestCase.php",
-			"tests/ApiTestCase.php"
+			"tests/ApiTestCase.php",
+            "tests/ModelTestCase.php"
 		]
 	},
 	"scripts": {

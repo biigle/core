@@ -128,7 +128,7 @@ class Initialize extends Migration
         | the default data directory on the same machine (e.g. another volume).
         |
         | If the transect references to a remote location, only the image
-        | thumbnails are stored locally; the original images are loaded from 
+        | thumbnails are stored locally; the original images are loaded from
         | remote.
         */
         Schema::create('transects', function (Blueprint $table) {
@@ -296,14 +296,14 @@ class Initialize extends Migration
         | Each annotation may get labels by the users. Each user may set multiple
         | labels to the same annotation e.g. with different levels of confidence
         | ("i'm not sure, it may be 90% this type or 10% the other").
-        | 
+        |
         | This was once just a pivot table but is now a table for pivot objects
         | for better handling of annotation labels.
         */
         Schema::create('annotation_labels', function (Blueprint $table) {
             $table->increments('id');
 
-$table->integer('annotation_id')->unsigned();
+            $table->integer('annotation_id')->unsigned();
             $table->foreign('annotation_id')
                   ->references('id')
                   ->on('annotations')

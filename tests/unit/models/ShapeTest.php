@@ -2,37 +2,25 @@
 
 use Dias\Shape;
 
-class ShapeTest extends TestCase
+class ShapeTest extends ModelTestCase
 {
-    public static function create($name = 'test')
-    {
-        $obj = new Shape;
-        $obj->name = $name;
-
-        return $obj;
-    }
-
-    public function testCreation()
-    {
-        $obj = self::create();
-        $this->assertTrue($obj->save());
-    }
+    /**
+     * The model class this class will test.
+     */
+    protected static $modelClass = Dias\Shape::class;
 
     public function testAttributes()
     {
-        $shape = self::create();
-        $shape->save();
-        $this->assertNotNull($shape->name);
-        $this->assertNull($shape->created_at);
-        $this->assertNull($shape->updated_at);
+        $this->assertNotNull($this->model->name);
+        $this->assertNull($this->model->created_at);
+        $this->assertNull($this->model->updated_at);
     }
 
     public function testNameRequired()
     {
-        $obj = self::create();
-        $obj->name = null;
+        $this->model->name = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        $this->model->save();
     }
 
     public function testPointId()
