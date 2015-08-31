@@ -12,7 +12,7 @@ DISCOL Image Annotation Software
 - PHP Fileinfo extension
 - PHP EXIF extension
 
-- PHP GD Library (>=2.0) (`php5-gd`) 
+- PHP GD Library (>=2.0) (`php5-gd`)
 - PostgreSQL
 - (Git)
 
@@ -42,28 +42,11 @@ TODO
 
 (`npm install`, Package development, `php artisan tinker`)
 
-Update the documentation with `./doc.sh`.
+Update the documentation with `composer doc`.
 
 ## Testing
 
-You shouldn't need to configure your testing environment since for acceptance tests your local database is used, and for functional/unit tests an SQLite in-memory database is used.
-
-### Acceptance
-
-1. start `phantomjs --webdriver=4444`
-2. start `php -S localhost:8000 -t public/`
-3. start your database (it will be wiped and re-seeded during testing!)
-4. run `php vendor/bin/codecept run`
-
-### Server Unit/Functional
-
-Run `phpunit`.
-
-### Client Unit
-
-Run `npm test`.
-
-To run all tests, power up the PHP server and run `./test.sh`.
+To run all tests, run `composer test`.
 
 ## Deployment
 

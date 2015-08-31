@@ -44,7 +44,20 @@
 		"post-create-project-cmd": [
 			"php -r \"copy('.env.example', '.env');\"",
 			"php artisan key:generate"
-		]
+		],
+        "test": [
+            "php vendor/bin/phpunit",
+            "karma start karma.conf.js --single-run"
+        ],
+        "fix": [
+            "php php-cs-fixer.phar --config-file='.php_cs' fix"
+        ],
+        "doc": [
+            "rm -rf public/doc",
+            "php vendor/bin/sami.php update sami.php -v",
+            "gulp docs",
+            "gulp apidoc"
+        ]
 	},
 	"config": {
 		"preferred-install": "dist"
