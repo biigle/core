@@ -38,20 +38,29 @@ class LabelTest extends ModelWithAttributesTest
         $this->assertNull($child->fresh());
     }
 
+    public function testProject()
+    {
+        $project = ProjectTest::create();
+        $label = self::create(['project_id' => $project->id]);
+        $this->assertEquals($project->id, $label->project->id);
+    }
+
+    public function testProjectOnDeleteCascade()
+    {
+        // adding foreign keys doesn't work for SQLite, test this with Postgres instead
+        if (!(DB::connection() instanceof Illuminate\Database\SQLiteConnection)) {
+            $project = ProjectTest::create();
+            $label = self::create(['project_id' => $project->id]);
+            $project->delete();
+            $this->assertNull($label->fresh());
+        }
+    }
+
     public function testChildren()
     {
         $parent = self::create();
         $child = self::create(['parent_id' => $parent->id]);
         $this->assertEquals($child->id, $parent->children()->first()->id);
-    }
-
-    public function testHasParent()
-    {
-        $parent = self::create();
-        $child = self::create();
-        $this->assertFalse($child->hasParent);
-        $child->parent()->associate($parent);
-        $this->assertTrue($child->hasParent);
     }
 
     public function testHasChildren()

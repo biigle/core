@@ -21,7 +21,7 @@ Route::group(['namespace' => 'Auth'], function ($router) {
 });
 
 Route::group(['namespace' => 'Views', 'prefix' => 'documentation'], function ($router) {
-    // route name must be different from the 'doc' directory name of the static 
+    // route name must be different from the 'doc' directory name of the static
     // files in the public directory
     $router->get('/', [
         'as' => 'documentation',
@@ -103,6 +103,10 @@ Route::group([
 
     $router->resource('projects.attributes', 'ProjectAttributeController', [
         'only' => ['index', 'show', 'store', 'update', 'destroy'],
+    ]);
+
+    $router->resource('projects.labels', 'ProjectLabelController', [
+        'only' => ['index', 'show'],
     ]);
 
     $router->post(

@@ -81,6 +81,13 @@ class ProjectTest extends ModelWithAttributesTest
         $this->assertNotNull($this->model->users()->find($user->id));
     }
 
+    public function testLabels()
+    {
+        $this->assertEmpty($this->model->labels()->get());
+        LabelTest::create(['project_id' => $this->model->id]);
+        $this->assertNotEmpty($this->model->labels()->get());
+    }
+
     public function testAdmins()
     {
         $admin = UserTest::create();

@@ -9,18 +9,31 @@ use Dias\Model\ModelWithAttributes;
  * type of the object visible in the region of the annotation. So if
  * you put a circle annotation around a rock, you would label the annotation
  * with `rock`.
- * 
+ *
  * Labels can be ordered in a tree-like structure.
  */
 class Label extends ModelWithAttributes
 {
     /**
      * Validation rules for creating a new label.
-     * 
+     *
      * @var array
      */
     public static $createRules = [
         'name' => 'required',
+        'parent_id' => 'integer|exists:labels,id',
+        'aphia_id' => 'integer',
+        'project_id' => 'integer|exists:projects,id'
+    ];
+
+    /**
+     * Validation rules for updating a label.
+     *
+     * @var array
+     */
+    public static $updateRules = [
+        'parent_id' => 'integer|exists:labels,id',
+        'aphia_id' => 'integer',
     ];
 
     /**
@@ -42,7 +55,7 @@ class Label extends ModelWithAttributes
 
     /**
      * The parent label if the labels are ordered in a tree-like structure.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function parent()
@@ -51,20 +64,19 @@ class Label extends ModelWithAttributes
     }
 
     /**
-     * Adds the `hasParent` attribute to the label model which specifies whether
-     * the label has a parent label.
-     * 
-     * @return bool
+     * The project this label belongs to. If `null`, it is a global label.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function getHasParentAttribute()
+    public function project()
     {
-        return $this->parent !== null;
+        return $this->belongsTo('Dias\Project');
     }
 
     /**
      * The child labels of this label if they are ordered in a tree-like
      * structue.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function children()
@@ -75,7 +87,7 @@ class Label extends ModelWithAttributes
     /**
      * Adds the `hasChildren` attribute to the label model which specifies
      * whether the label has any child labels.
-     * 
+     *
      * @return bool
      */
     public function getHasChildrenAttribute()

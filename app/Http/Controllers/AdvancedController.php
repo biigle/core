@@ -53,7 +53,7 @@ abstract class AdvancedController extends BaseController
         return $thing;
     }
 
-/**
+    /**
      * Requires the requesting user to be able to see the thing.
      *
      * @param BelongsToProject $thing a thing that belongs to a project
@@ -88,6 +88,13 @@ abstract class AdvancedController extends BaseController
     protected function requireCanAdmin(BelongsToProject $thing)
     {
         if (!$this->user->canAdminOneOfProjects($thing->projectIds())) {
+            abort(401, 'You need admin privileges to perform this operation.');
+        }
+    }
+
+    protected function requireAdmin()
+    {
+        if (!$this->user->isAdmin) {
             abort(401, 'You need admin privileges to perform this operation.');
         }
     }

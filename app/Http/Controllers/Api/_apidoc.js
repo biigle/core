@@ -24,3 +24,8 @@
  * @apiDefine projectAdmin Project admin
  * The authenticated user needs to be admin of the project.
  */
+
+/**
+ * @apiDefine adminOrProjectAdmin Global admin or project admin
+ * The authenticated user needs to be global admin or admin of the project.
+ */

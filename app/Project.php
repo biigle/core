@@ -335,4 +335,14 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
             $this->removeTransect($transect, $force);
         }
     }
+
+    /**
+     * The project specific labels of this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function labels()
+    {
+        return $this->hasMany('Dias\Label');
+    }
 }

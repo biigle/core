@@ -61,6 +61,7 @@ $factory->define(Dias\Label::class, function ($faker) {
     return [
         'name' => str_random(10),
         'parent_id' => null,
+        'project_id' => null,
         'aphia_id' => null
     ];
 });
