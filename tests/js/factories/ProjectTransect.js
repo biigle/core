@@ -20,7 +20,7 @@ describe('The ProjectTransect resource factory', function () {
 
 		$httpBackend.when('POST', '/api/v1/projects/2/transects/1')
 		            .respond(200);
-	
+
 		$httpBackend.when('DELETE', '/api/v1/projects/1/transects/1')
 		            .respond(200);
 	}));

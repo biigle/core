@@ -47,7 +47,7 @@
 		],
         "test": [
             "php vendor/bin/phpunit",
-            "karma start karma.conf.js --single-run"
+            "npm test"
         ],
         "fix": [
             "php php-cs-fixer.phar --config-file='.php_cs' fix"

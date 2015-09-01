@@ -41,35 +41,4 @@ class ProjectLabelController extends Controller
         $this->requireCanSee($project);
         return $project->labels;
     }
-
-    /**
-     * Displays the specified label.
-     *
-     * @api {get} labels/:id Get a label category
-     * @apiGroup Labels
-     * @apiName ShowLabels
-     * @apiPermission user
-     *
-     * @apiParam {Number} pid The project ID.
-     * @apiParam {Number} lid The label ID.
-     *
-     * @apiSuccessExample {json} Success response:
-     * {
-     *    "aphia_id": null,
-     *    "id": 1,
-     *    "name": "Benthic Object",
-     *    "parent_id": null,
-     *    "project_id": 1
-     * }
-     *
-     * @param  int  $pid Project ID
-     * @param  int  $lid Label ID
-     * @return Label
-     */
-    public function show($pid, $lid)
-    {
-        $project = $this->requireNotNull(Project::find($pid));
-        $this->requireCanSee($project);
-        return $this->requireNotNull($project->labels()->find($lid));
-    }
 }

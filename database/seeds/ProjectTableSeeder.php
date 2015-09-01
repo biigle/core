@@ -19,7 +19,7 @@ class ProjectTableSeeder extends Seeder
         ]);
 
         // creator is already user
-        $project->addUserId(2, Role::editorId());
+        $project->addUserId(2, Role::$editor->id);
         $project->transects()->attach(1);
 
         $project = Project::create([

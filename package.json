@@ -11,5 +11,8 @@
     "gulp-shell": "~0.3.0",
     "jsdoc": "~3.3.0-beta1",
     "gulp-apidoc": "~0.1.2"
+  },
+  "scripts": {
+    "test": "karma start karma.conf.js --single-run"
   }
 }

@@ -119,6 +119,7 @@ class LabelController extends Controller
         $this->validate($this->request, Label::$createRules);
 
         if ($this->request->has('project_id')) {
+            // if the project exists is checked by the validation before
             $this->requireCanAdmin(\Dias\Project::find($this->request->input('project_id')));
         } else {
             $this->requireAdmin();
@@ -165,7 +166,6 @@ class LabelController extends Controller
             $this->requireCanAdmin($label->project);
         }
 
-        // TODO only where 'project_id' is null
         $label->name = $this->request->input('name', $label->name);
         $label->aphia_id = $this->request->input('aphia_id', $label->aphia_id);
         $label->parent_id = $this->request->input('parent_id', $label->parent_id);
