@@ -21,3 +21,36 @@
 		padding-right: .5em;
 	}
 }
+
+.project-categories-list {
+    max-height: 200px;
+    overflow: auto;
+}
+
+.project-label-category-item {
+    // width of the expandable before element
+    padding-left: 19px;
+    padding-top: 0.5em;
+    cursor: pointer;
+
+    &.expandable > .item .item__name:before {
+        content: '► ';
+    }
+
+    &.expandable.open > .item .item__name:before {
+        content: '▼ ';
+    }
+
+    & > .project-label-category-subtree {
+        max-height: 0;
+        overflow: hidden;
+    }
+
+    &.open > .project-label-category-subtree {
+        max-height: none;
+    }
+
+    &.selected > .item .item__name {
+        font-weight: bold;
+    }
+}

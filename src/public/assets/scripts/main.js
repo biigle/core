@@ -1,2 +1,503 @@
-angular.module("dias.projects",["dias.api","dias.ui.messages","dias.ui.users","ui.bootstrap"]),angular.module("dias.projects").controller("ProjectDeleteController",["$scope","$modal","$attrs","msg",function(e,r,o,t){"use strict";var n=function(){e.redirectToDashboard(o.successMsg)},c=function(){t.danger(o.errorMsg)};e.submit=function(){var o=r.open({templateUrl:"confirmDeleteModal.html",size:"sm",controller:"ProjectDeleteModalController",scope:e});o.result.then(function(e){switch(e){case"success":n();break;case"error":c()}})}}]),angular.module("dias.projects").controller("ProjectDeleteModalController",["$scope","Project",function(e){"use strict";e.force=!1;var r=function(){e.$close("success")},o=function(r){400===r.status?e.force=!0:e.$close("error")};e.delete=function(){var t=e.force?{force:!0}:{};e.project.$delete(t,r,o)}}]),angular.module("dias.projects").controller("ProjectIndexController",["$scope","$attrs","Project","$modal","ProjectUser","msg","$timeout",function(e,r,o,t,n,c,s){"use strict";var i=function(){e.redirectToDashboard(r.leavingSuccessMsg)};e.redirectToDashboard=function(e,o){o=o||"success",c.post(o,e),s(function(){window.location.href=r.dashboardUrl},2e3)},e.project=o.get({id:r.projectId}),e.projectId=r.projectId,e.ownUserId=r.userId,e.leaveProject=function(){var r=t.open({templateUrl:"confirmLeaveProjectModal.html",size:"sm"});r.result.then(function(r){"yes"==r&&n.detach({project_id:e.project.id},{id:e.ownUserId},i,c.responseError)})}}]),angular.module("dias.projects").controller("ProjectInformationController",["$scope",function(e){"use strict";e.edit=function(){e.editing=!e.editing}}]),angular.module("dias.projects").controller("ProjectMembersContainerController",["$scope","$element","$attrs",function(e,r,o){"use strict";var t=function(r){e.hovering=!0,e.$apply(),r.preventDefault()},n=function(){e.hovering=!1,e.$apply()},c=function(r){e.hovering=!1,e.changeUserRole(r.dataTransfer.getData("text/plain"),o.role),e.$apply(),r.preventDefault()};e.$watch("editing",function(e){e?(r.on("dragover",t),r.on("dragleave",n),r.on("drop",c)):(r.off("dragover",t),r.off("dragleave",n),r.off("drop",c))})}]),angular.module("dias.projects").controller("ProjectMembersController",["$scope","Role","ProjectUser","msg","$modal",function(e,r,o,t,n){"use strict";var c=function(r){for(var o=e.users.length-1;o>=0;o--)if(e.users[o].id==r)return e.users[o]},s=function(r,o){var t=n.open({templateUrl:"confirmChangeRoleModal.html",size:"sm"});t.result.then(function(t){"yes"==t&&e.changeUserRole(r,o,!0)})};r.query(function(r){e.roles={};for(var o=r.length-1;o>=0;o--)e.roles[r[o].name]=r[o].id}),e.users=o.query({project_id:e.projectId}),e.edit=function(){e.editing=!e.editing},e.addUser=function(r){var n=e.roles.guest,s=function(){r.project_role_id=n,e.users.push(r)};c(r.id)||o.attach({project_id:e.projectId},{id:r.id,project_role_id:n},s,t.responseError)},e.changeUserRole=function(r,n,i){if(!i&&r==e.ownUserId)return s(r,n),void 0;var a=c(r),l=e.roles[n];if(a.project_role_id!=l){var d=function(){a.project_role_id=l};o.save({project_id:e.projectId},{id:a.id,project_role_id:l},d,t.responseError)}},e.removeUser=function(r){if(r==e.ownUserId)return e.leaveProject(),void 0;var n=function(){for(var o,t=e.users.length-1;t>=0;t--)if(e.users[t].id==r){o=t;break}e.users.splice(o,1)};o.detach({project_id:e.projectId},{id:r},n,t.responseError)}}]),angular.module("dias.projects").directive("projectMember",function(){"use strict";return{restrict:"A",link:function(e,r){var o=function(r){r.dataTransfer.effectAllowed="move",r.dataTransfer.setData("text/plain",e.user.id)};e.$watch("removing",function(e){e?r.off("dragstart",o):r.on("dragstart",o)}),e.$watch("editing",function(r){r||e.cancelRemove()})},controller:["$scope",function(e){e.startRemove=function(){e.removing=!0},e.cancelRemove=function(){e.removing=!1},e.remove=function(){e.removeUser(e.user.id)}}]}});
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2plY3RzL21haW4uanMiLCJwcm9qZWN0cy9jb250cm9sbGVycy9Qcm9qZWN0RGVsZXRlQ29udHJvbGxlci5qcyIsInByb2plY3RzL2NvbnRyb2xsZXJzL1Byb2plY3REZWxldGVNb2RhbENvbnRyb2xsZXIuanMiLCJwcm9qZWN0cy9jb250cm9sbGVycy9Qcm9qZWN0SW5kZXhDb250cm9sbGVyLmpzIiwicHJvamVjdHMvY29udHJvbGxlcnMvUHJvamVjdEluZm9ybWF0aW9uQ29udHJvbGxlci5qcyIsInByb2plY3RzL2NvbnRyb2xsZXJzL1Byb2plY3RNZW1iZXJzQ29udGFpbmVyQ29udHJvbGxlci5qcyIsInByb2plY3RzL2NvbnRyb2xsZXJzL1Byb2plY3RNZW1iZXJzQ29udHJvbGxlci5qcyIsInByb2plY3RzL2RpcmVjdGl2ZXMvcHJvamVjdE1lbWJlci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFJQSxRQUFBLE9BQUEsaUJBQUEsV0FBQSxtQkFBQSxnQkFBQSxpQkNLQSxRQUFBLE9BQUEsaUJBQUEsV0FBQSwyQkFBQSxTQUFBLFNBQUEsU0FBQSxNQUFBLFNBQUEsRUFBQSxFQUFBLEVBQUEsR0FDQSxZQUVBLElBQUEsR0FBQSxXQUNBLEVBQUEsb0JBQUEsRUFBQSxhQUdBLEVBQUEsV0FDQSxFQUFBLE9BQUEsRUFBQSxVQUdBLEdBQUEsT0FBQSxXQUNBLEdBQUEsR0FBQSxFQUFBLE1BQ0EsWUFBQSwwQkFDQSxLQUFBLEtBQ0EsV0FBQSwrQkFDQSxNQUFBLEdBR0EsR0FBQSxPQUFBLEtBQUEsU0FBQSxHQUNBLE9BQUEsR0FDQSxJQUFBLFVBQ0EsR0FDQSxNQUNBLEtBQUEsUUFDQSxXQ3pCQSxRQUFBLE9BQUEsaUJBQUEsV0FBQSxnQ0FBQSxTQUFBLFVBQUEsU0FBQSxHQUNBLFlBRUEsR0FBQSxPQUFBLENBRUEsSUFBQSxHQUFBLFdBQ0EsRUFBQSxPQUFBLFlBR0EsRUFBQSxTQUFBLEdBQ0EsTUFBQSxFQUFBLE9BQ0EsRUFBQSxPQUFBLEVBRUEsRUFBQSxPQUFBLFNBSUEsR0FBQSxPQUFBLFdBQ0EsR0FBQSxHQUFBLEVBQUEsT0FBQSxPQUFBLEtBQ0EsR0FBQSxRQUFBLFFBQUEsRUFBQSxFQUFBLE9DckJBLFFBQUEsT0FBQSxpQkFBQSxXQUFBLDBCQUFBLFNBQUEsU0FBQSxVQUFBLFNBQUEsY0FBQSxNQUFBLFdBQUEsU0FBQSxFQUFBLEVBQUEsRUFBQSxFQUFBLEVBQUEsRUFBQSxHQUNBLFlBRUEsSUFBQSxHQUFBLFdBQ0EsRUFBQSxvQkFBQSxFQUFBLG1CQUdBLEdBQUEsb0JBQUEsU0FBQSxFQUFBLEdBQ0EsRUFBQSxHQUFBLFVBQ0EsRUFBQSxLQUFBLEVBQUEsR0FDQSxFQUFBLFdBQ0EsT0FBQSxTQUFBLEtBQUEsRUFBQSxjQUNBLE1BR0EsRUFBQSxRQUFBLEVBQUEsS0FBQSxHQUFBLEVBQUEsWUFFQSxFQUFBLFVBQUEsRUFBQSxVQUVBLEVBQUEsVUFBQSxFQUFBLE9BRUEsRUFBQSxhQUFBLFdBQ0EsR0FBQSxHQUFBLEVBQUEsTUFDQSxZQUFBLGdDQUNBLEtBQUEsTUFHQSxHQUFBLE9BQUEsS0FBQSxTQUFBLEdBQ0EsT0FBQSxHQUNBLEVBQUEsUUFBQSxXQUFBLEVBQUEsUUFBQSxLQUFBLEdBQUEsRUFBQSxXQUFBLEVBQUEsRUFBQSxxQkMzQkEsUUFBQSxPQUFBLGlCQUFBLFdBQUEsZ0NBQUEsU0FBQSxTQUFBLEdBQ0EsWUFFQSxHQUFBLEtBQUEsV0FDQSxFQUFBLFNBQUEsRUFBQSxZQ05BLFFBQUEsT0FBQSxpQkFBQSxXQUFBLHFDQUFBLFNBQUEsV0FBQSxTQUFBLFNBQUEsRUFBQSxFQUFBLEdBQ0EsWUFFQSxJQUFBLEdBQUEsU0FBQSxHQUNBLEVBQUEsVUFBQSxFQUNBLEVBQUEsU0FDQSxFQUFBLGtCQUdBLEVBQUEsV0FDQSxFQUFBLFVBQUEsRUFDQSxFQUFBLFVBR0EsRUFBQSxTQUFBLEdBQ0EsRUFBQSxVQUFBLEVBQ0EsRUFBQSxlQUVBLEVBQUEsYUFBQSxRQUFBLGNBRUEsRUFBQSxNQUVBLEVBQUEsU0FDQSxFQUFBLGlCQUlBLEdBQUEsT0FBQSxVQUFBLFNBQUEsR0FDQSxHQUNBLEVBQUEsR0FBQSxXQUFBLEdBQ0EsRUFBQSxHQUFBLFlBQUEsR0FDQSxFQUFBLEdBQUEsT0FBQSxLQUVBLEVBQUEsSUFBQSxXQUFBLEdBQ0EsRUFBQSxJQUFBLFlBQUEsR0FDQSxFQUFBLElBQUEsT0FBQSxTQ25DQSxRQUFBLE9BQUEsaUJBQUEsV0FBQSw0QkFBQSxTQUFBLE9BQUEsY0FBQSxNQUFBLFNBQUEsU0FBQSxFQUFBLEVBQUEsRUFBQSxFQUFBLEdBQ0EsWUFFQSxJQUFBLEdBQUEsU0FBQSxHQUNBLElBQUEsR0FBQSxHQUFBLEVBQUEsTUFBQSxPQUFBLEVBQUEsR0FBQSxFQUFBLElBQ0EsR0FBQSxFQUFBLE1BQUEsR0FBQSxJQUFBLEVBQ0EsTUFBQSxHQUFBLE1BQUEsSUFLQSxFQUFBLFNBQUEsRUFBQSxHQUNBLEdBQUEsR0FBQSxFQUFBLE1BQ0EsWUFBQSw4QkFDQSxLQUFBLE1BR0EsR0FBQSxPQUFBLEtBQUEsU0FBQSxHQUNBLE9BQUEsR0FDQSxFQUFBLGVBQUEsRUFBQSxHQUFBLEtBS0EsR0FBQSxNQUFBLFNBQUEsR0FDQSxFQUFBLFFBQ0EsS0FBQSxHQUFBLEdBQUEsRUFBQSxPQUFBLEVBQUEsR0FBQSxFQUFBLElBQ0EsRUFBQSxNQUFBLEVBQUEsR0FBQSxNQUFBLEVBQUEsR0FBQSxLQUlBLEVBQUEsTUFBQSxFQUFBLE9BQUEsV0FBQSxFQUFBLFlBRUEsRUFBQSxLQUFBLFdBQ0EsRUFBQSxTQUFBLEVBQUEsU0FHQSxFQUFBLFFBQUEsU0FBQSxHQUVBLEdBQUEsR0FBQSxFQUFBLE1BQUEsTUFFQSxFQUFBLFdBQ0EsRUFBQSxnQkFBQSxFQUNBLEVBQUEsTUFBQSxLQUFBLEdBSUEsR0FBQSxFQUFBLEtBQ0EsRUFBQSxRQUNBLFdBQUEsRUFBQSxZQUNBLEdBQUEsRUFBQSxHQUFBLGdCQUFBLEdBQ0EsRUFBQSxFQUFBLGdCQUtBLEVBQUEsZUFBQSxTQUFBLEVBQUEsRUFBQSxHQUNBLElBQUEsR0FBQSxHQUFBLEVBQUEsVUFFQSxNQURBLEdBQUEsRUFBQSxHQUNBLE1BR0EsSUFBQSxHQUFBLEVBQUEsR0FDQSxFQUFBLEVBQUEsTUFBQSxFQUdBLElBQUEsRUFBQSxpQkFBQSxFQUFBLENBSUEsR0FBQSxHQUFBLFdBQ0EsRUFBQSxnQkFBQSxFQUdBLEdBQUEsTUFDQSxXQUFBLEVBQUEsWUFDQSxHQUFBLEVBQUEsR0FBQSxnQkFBQSxHQUNBLEVBQUEsRUFBQSxpQkFJQSxFQUFBLFdBQUEsU0FBQSxHQUVBLEdBQUEsR0FBQSxFQUFBLFVBRUEsTUFEQSxHQUFBLGVBQ0EsTUFHQSxJQUFBLEdBQUEsV0FHQSxJQUFBLEdBRkEsR0FFQSxFQUFBLEVBQUEsTUFBQSxPQUFBLEVBQUEsR0FBQSxFQUFBLElBQ0EsR0FBQSxFQUFBLE1BQUEsR0FBQSxJQUFBLEVBQUEsQ0FDQSxFQUFBLENBQ0EsT0FJQSxFQUFBLE1BQUEsT0FBQSxFQUFBLEdBR0EsR0FBQSxRQUNBLFdBQUEsRUFBQSxZQUNBLEdBQUEsR0FDQSxFQUFBLEVBQUEsbUJDeEdBLFFBQUEsT0FBQSxpQkFBQSxVQUFBLGdCQUFBLFdBQ0EsWUFFQSxRQUNBLFNBQUEsSUFFQSxLQUFBLFNBQUEsRUFBQSxHQUNBLEdBQUEsR0FBQSxTQUFBLEdBQ0EsRUFBQSxhQUFBLGNBQUEsT0FDQSxFQUFBLGFBQUEsUUFBQSxhQUFBLEVBQUEsS0FBQSxJQUlBLEdBQUEsT0FBQSxXQUFBLFNBQUEsR0FDQSxFQUNBLEVBQUEsSUFBQSxZQUFBLEdBRUEsRUFBQSxHQUFBLFlBQUEsS0FLQSxFQUFBLE9BQUEsVUFBQSxTQUFBLEdBQ0EsR0FDQSxFQUFBLGtCQUtBLFlBQUEsU0FBQSxTQUFBLEdBQ0EsRUFBQSxZQUFBLFdBQ0EsRUFBQSxVQUFBLEdBR0EsRUFBQSxhQUFBLFdBQ0EsRUFBQSxVQUFBLEdBR0EsRUFBQSxPQUFBLFdBQ0EsRUFBQSxXQUFBLEVBQUEsS0FBQSIsImZpbGUiOiJtYWluLmpzIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBAbmFtZXNwYWNlIGRpYXMucHJvamVjdHNcbiAqIEBkZXNjcmlwdGlvbiBUaGUgRElBUyBwcm9qZWN0cyBtb2R1bGUuXG4gKi9cbmFuZ3VsYXIubW9kdWxlKCdkaWFzLnByb2plY3RzJywgWydkaWFzLmFwaScsICdkaWFzLnVpLm1lc3NhZ2VzJywgJ2RpYXMudWkudXNlcnMnLCAndWkuYm9vdHN0cmFwJ10pO1xuIiwiLyoqXG4gKiBAbmFtZXNwYWNlIGRpYXMucHJvamVjdHNcbiAqIEBuZ2RvYyBjb250cm9sbGVyXG4gKiBAbmFtZSBQcm9qZWN0RGVsZXRlQ29udHJvbGxlclxuICogQG1lbWJlck9mIGRpYXMucHJvamVjdHNcbiAqIEBkZXNjcmlwdGlvbiBJbml0aWF0ZXMgdGhlIGRlbGV0aW9uIGNvbmZpcm1hdGlvbiBtb2RhbFxuICogQGV4YW1wbGVcblxuICovXG5hbmd1bGFyLm1vZHVsZSgnZGlhcy5wcm9qZWN0cycpLmNvbnRyb2xsZXIoJ1Byb2plY3REZWxldGVDb250cm9sbGVyJywgZnVuY3Rpb24gKCRzY29wZSwgJG1vZGFsLCAkYXR0cnMsIG1zZykge1xuXHRcdFwidXNlIHN0cmljdFwiO1xuXG5cdFx0dmFyIHN1Y2Nlc3MgPSBmdW5jdGlvbiAoKSB7XG5cdFx0XHQkc2NvcGUucmVkaXJlY3RUb0Rhc2hib2FyZCgkYXR0cnMuc3VjY2Vzc01zZyk7XG5cdFx0fTtcblxuXHRcdHZhciBlcnJvciA9IGZ1bmN0aW9uICgpIHtcblx0XHRcdG1zZy5kYW5nZXIoJGF0dHJzLmVycm9yTXNnKTtcblx0XHR9O1xuXG5cdFx0JHNjb3BlLnN1Ym1pdCA9IGZ1bmN0aW9uICgpIHtcblx0XHRcdHZhciBtb2RhbEluc3RhbmNlID0gJG1vZGFsLm9wZW4oe1xuXHRcdFx0XHR0ZW1wbGF0ZVVybDogJ2NvbmZpcm1EZWxldGVNb2RhbC5odG1sJyxcblx0XHRcdFx0c2l6ZTogJ3NtJyxcblx0XHRcdFx0Y29udHJvbGxlcjogJ1Byb2plY3REZWxldGVNb2RhbENvbnRyb2xsZXInLFxuXHRcdFx0XHRzY29wZTogJHNjb3BlXG5cdFx0XHR9KTtcblxuXHRcdFx0bW9kYWxJbnN0YW5jZS5yZXN1bHQudGhlbihmdW5jdGlvbiAocmVzdWx0KSB7XG5cdFx0XHRcdHN3aXRjaCAocmVzdWx0KSB7XG5cdFx0XHRcdFx0Y2FzZSAnc3VjY2Vzcyc6XG5cdFx0XHRcdFx0XHRzdWNjZXNzKCk7XG5cdFx0XHRcdFx0XHRicmVhaztcblx0XHRcdFx0XHRjYXNlICdlcnJvcic6XG5cdFx0XHRcdFx0XHRlcnJvcigpO1xuXHRcdFx0XHRcdFx0YnJlYWs7XG5cdFx0XHRcdH1cblx0XHRcdH0pO1xuXHRcdH07XG5cdH1cbik7XG4iLCIvKipcbiAqIEBuYW1lc3BhY2UgZGlhcy5wcm9qZWN0c1xuICogQG5nZG9jIGNvbnRyb2xsZXJcbiAqIEBuYW1lIFByb2plY3REZWxldGVNb2RhbENvbnRyb2xsZXJcbiAqIEBtZW1iZXJPZiBkaWFzLnByb2plY3RzXG4gKiBAZGVzY3JpcHRpb24gSGFuZGxlcyB0aGUgY29uZmlybWF0aW9uIG9mIGRlbGV0aW9uIG9mIGEgcHJvamVjdC5cbiAqIEBleGFtcGxlXG5cbiAqL1xuYW5ndWxhci5tb2R1bGUoJ2RpYXMucHJvamVjdHMnKS5jb250cm9sbGVyKCdQcm9qZWN0RGVsZXRlTW9kYWxDb250cm9sbGVyJywgZnVuY3Rpb24gKCRzY29wZSwgUHJvamVjdCkge1xuXHRcdFwidXNlIHN0cmljdFwiO1xuXG5cdFx0JHNjb3BlLmZvcmNlID0gZmFsc2U7XG5cblx0XHR2YXIgZGVsZXRlU3VjY2VzcyA9IGZ1bmN0aW9uIChyZXNwb25zZSkge1xuXHRcdFx0JHNjb3BlLiRjbG9zZSgnc3VjY2VzcycpO1xuXHRcdH07XG5cblx0XHR2YXIgZGVsZXRlRXJyb3IgPSBmdW5jdGlvbihyZXNwb25zZSkge1xuXHRcdFx0aWYgKHJlc3BvbnNlLnN0YXR1cyA9PT0gNDAwKSB7XG5cdFx0XHRcdCRzY29wZS5mb3JjZSA9IHRydWU7XG5cdFx0XHR9IGVsc2Uge1xuXHRcdFx0XHQkc2NvcGUuJGNsb3NlKCdlcnJvcicpO1xuXHRcdFx0fVxuXHRcdH07XG5cblx0XHQkc2NvcGUuZGVsZXRlID0gZnVuY3Rpb24gKCkge1xuXHRcdFx0dmFyIHBhcmFtcyA9ICRzY29wZS5mb3JjZSA/IHtmb3JjZTogdHJ1ZX0gOiB7fTtcblx0XHRcdCRzY29wZS5wcm9qZWN0LiRkZWxldGUocGFyYW1zLCBkZWxldGVTdWNjZXNzLCBkZWxldGVFcnJvcik7XG5cdFx0fTtcblx0fVxuKTtcbiIsIi8qKlxuICogQG5hbWVzcGFjZSBkaWFzLnByb2plY3RzXG4gKiBAbmdkb2MgY29udHJvbGxlclxuICogQG5hbWUgUHJvamVjdEluZGV4Q29udHJvbGxlclxuICogQG1lbWJlck9mIGRpYXMucHJvamVjdHNcbiAqIEBkZXNjcmlwdGlvbiBSb290IGNvbnRyb2xsZXIgb2YgdGhlIHByb2plY3QgaW5kZXggcGFnZS5cbiAqL1xuYW5ndWxhci5tb2R1bGUoJ2RpYXMucHJvamVjdHMnKS5jb250cm9sbGVyKCdQcm9qZWN0SW5kZXhDb250cm9sbGVyJywgZnVuY3Rpb24gKCRzY29wZSwgJGF0dHJzLCBQcm9qZWN0LCAkbW9kYWwsIFByb2plY3RVc2VyLCBtc2csICR0aW1lb3V0KSB7XG5cdFx0XCJ1c2Ugc3RyaWN0XCI7XG5cblx0XHR2YXIgbGVhdmluZ1N1Y2Nlc3MgPSBmdW5jdGlvbiAoKSB7XG5cdFx0XHQkc2NvcGUucmVkaXJlY3RUb0Rhc2hib2FyZCgkYXR0cnMubGVhdmluZ1N1Y2Nlc3NNc2cpO1xuXHRcdH07XG5cblx0XHQkc2NvcGUucmVkaXJlY3RUb0Rhc2hib2FyZCA9IGZ1bmN0aW9uIChtZXNzYWdlLCB0eXBlKSB7XG5cdFx0XHR0eXBlID0gdHlwZSB8fCAnc3VjY2Vzcyc7XG5cdFx0XHRtc2cucG9zdCh0eXBlLCBtZXNzYWdlKTtcblx0XHRcdCR0aW1lb3V0KGZ1bmN0aW9uICgpIHtcblx0XHRcdFx0d2luZG93LmxvY2F0aW9uLmhyZWYgPSAkYXR0cnMuZGFzaGJvYXJkVXJsO1xuXHRcdFx0fSwgMjAwMCk7XG5cdFx0fTtcblxuXHRcdCRzY29wZS5wcm9qZWN0ID0gUHJvamVjdC5nZXQoe2lkOiAkYXR0cnMucHJvamVjdElkfSk7XG5cblx0XHQkc2NvcGUucHJvamVjdElkID0gJGF0dHJzLnByb2plY3RJZDtcblxuXHRcdCRzY29wZS5vd25Vc2VySWQgPSAkYXR0cnMudXNlcklkO1xuXG5cdFx0JHNjb3BlLmxlYXZlUHJvamVjdCA9IGZ1bmN0aW9uICgpIHtcblx0XHRcdHZhciBtb2RhbEluc3RhbmNlID0gJG1vZGFsLm9wZW4oe1xuXHRcdFx0XHR0ZW1wbGF0ZVVybDogJ2NvbmZpcm1MZWF2ZVByb2plY3RNb2RhbC5odG1sJyxcblx0XHRcdFx0c2l6ZTogJ3NtJ1xuXHRcdFx0fSk7XG5cblx0XHRcdG1vZGFsSW5zdGFuY2UucmVzdWx0LnRoZW4oZnVuY3Rpb24gKHJlc3VsdCkge1xuXHRcdFx0XHRpZiAocmVzdWx0ID09ICd5ZXMnKSB7XG5cdFx0XHRcdFx0UHJvamVjdFVzZXIuZGV0YWNoKHtwcm9qZWN0X2lkOiAkc2NvcGUucHJvamVjdC5pZH0sIHtpZDogJHNjb3BlLm93blVzZXJJZH0sIGxlYXZpbmdTdWNjZXNzLCBtc2cucmVzcG9uc2VFcnJvcik7XG5cdFx0XHRcdH1cblx0XHRcdH0pO1xuXHRcdH07XG5cdH1cbik7XG4iLCIvKipcbiAqIEBuYW1lc3BhY2UgZGlhcy5wcm9qZWN0c1xuICogQG5nZG9jIGNvbnRyb2xsZXJcbiAqIEBuYW1lIFByb2plY3RJbmZvcm1hdGlvbkNvbnRyb2xsZXJcbiAqIEBtZW1iZXJPZiBkaWFzLnByb2plY3RzXG4gKiBAZGVzY3JpcHRpb24gSGFuZGxlcyBtb2RpZmljYXRpb24gb2YgdGhlIGluZm9ybWF0aW9uIG9mIGEgcHJvamVjdC5cbiAqIEBleGFtcGxlXG5cbiAqL1xuYW5ndWxhci5tb2R1bGUoJ2RpYXMucHJvamVjdHMnKS5jb250cm9sbGVyKCdQcm9qZWN0SW5mb3JtYXRpb25Db250cm9sbGVyJywgZnVuY3Rpb24gKCRzY29wZSkge1xuXHRcdFwidXNlIHN0cmljdFwiO1xuXHRcdFxuXHRcdCRzY29wZS5lZGl0ID0gZnVuY3Rpb24gKCkge1xuXHRcdFx0JHNjb3BlLmVkaXRpbmcgPSAhJHNjb3BlLmVkaXRpbmc7XG5cdFx0fTtcblx0fVxuKTtcbiIsIi8qKlxuICogQG5hbWVzcGFjZSBkaWFzLnByb2plY3RzXG4gKiBAbmdkb2MgY29udHJvbGxlclxuICogQG5hbWUgUHJvamVjdE1lbWJlcnNDb250YWluZXJDb250cm9sbGVyXG4gKiBAbWVtYmVyT2YgZGlhcy5wcm9qZWN0c1xuICogQGRlc2NyaXB0aW9uIENvbnRhaW5zIHByb2plY3QgbWVtYmVycyBvZiBhIGNlcnRhaW4gcm9sZS4gTmV3IG1lbWJlcnMgY2FuIGJlIGRyb3BwZWQgaW4uXG4gKi9cbmFuZ3VsYXIubW9kdWxlKCdkaWFzLnByb2plY3RzJykuY29udHJvbGxlcignUHJvamVjdE1lbWJlcnNDb250YWluZXJDb250cm9sbGVyJywgZnVuY3Rpb24gKCRzY29wZSwgJGVsZW1lbnQsICRhdHRycykge1xuXHRcdFwidXNlIHN0cmljdFwiO1xuXG5cdFx0dmFyIGRyYWdvdmVyID0gZnVuY3Rpb24gKGUpIHtcblx0XHRcdCRzY29wZS5ob3ZlcmluZyA9IHRydWU7XG5cdFx0XHQkc2NvcGUuJGFwcGx5KCk7XG5cdFx0XHQgZS5wcmV2ZW50RGVmYXVsdCgpO1xuXHRcdH07XG5cblx0XHR2YXIgZHJhZ2xlYXZlID0gZnVuY3Rpb24gKGUpIHtcblx0XHRcdCRzY29wZS5ob3ZlcmluZyA9IGZhbHNlO1xuXHRcdFx0JHNjb3BlLiRhcHBseSgpO1xuXHRcdH07XG5cblx0XHR2YXIgZHJvcCA9IGZ1bmN0aW9uIChlKSB7XG5cdFx0XHQkc2NvcGUuaG92ZXJpbmcgPSBmYWxzZTtcblx0XHRcdCRzY29wZS5jaGFuZ2VVc2VyUm9sZShcblx0XHRcdFx0Ly8gdXNlciBpZFxuXHRcdFx0XHRlLmRhdGFUcmFuc2Zlci5nZXREYXRhKCd0ZXh0L3BsYWluJyksXG5cdFx0XHRcdC8vIG5ldyByb2xlIG5hbWVcblx0XHRcdFx0JGF0dHJzLnJvbGVcblx0XHRcdCk7XG5cdFx0XHQkc2NvcGUuJGFwcGx5KCk7XG5cdFx0XHRlLnByZXZlbnREZWZhdWx0KCk7XG5cdFx0fTtcblxuXHRcdC8vIG9ubHkgYWxsb3cgZHJvcHBpbmcgaWYgZWRpdGluZ1xuXHRcdCRzY29wZS4kd2F0Y2goJ2VkaXRpbmcnLCBmdW5jdGlvbiAoZWRpdGluZykge1xuXHRcdFx0aWYgKGVkaXRpbmcpIHtcblx0XHRcdFx0JGVsZW1lbnQub24oJ2RyYWdvdmVyJywgZHJhZ292ZXIpO1xuXHRcdFx0XHQkZWxlbWVudC5vbignZHJhZ2xlYXZlJywgZHJhZ2xlYXZlKTtcblx0XHRcdFx0JGVsZW1lbnQub24oJ2Ryb3AnLCBkcm9wKTtcblx0XHRcdH0gZWxzZSB7XG5cdFx0XHRcdCRlbGVtZW50Lm9mZignZHJhZ292ZXInLCBkcmFnb3Zlcik7XG5cdFx0XHRcdCRlbGVtZW50Lm9mZignZHJhZ2xlYXZlJywgZHJhZ2xlYXZlKTtcblx0XHRcdFx0JGVsZW1lbnQub2ZmKCdkcm9wJywgZHJvcCk7XG5cdFx0XHR9XG5cdFx0fSk7XG5cdH1cbik7XG4iLCIvKipcbiAqIEBuYW1lc3BhY2UgZGlhcy5wcm9qZWN0c1xuICogQG5nZG9jIGNvbnRyb2xsZXJcbiAqIEBuYW1lIFByb2plY3RNZW1iZXJzQ29udHJvbGxlclxuICogQG1lbWJlck9mIGRpYXMucHJvamVjdHNcbiAqIEBkZXNjcmlwdGlvbiBIYW5kbGVzIG1vZGlmaWNhdGlvbiBvZiB0aGUgbWVtYmVycyBvZiBhIHByb2plY3QuXG4gKi9cbmFuZ3VsYXIubW9kdWxlKCdkaWFzLnByb2plY3RzJykuY29udHJvbGxlcignUHJvamVjdE1lbWJlcnNDb250cm9sbGVyJywgZnVuY3Rpb24gKCRzY29wZSwgUm9sZSwgUHJvamVjdFVzZXIsIG1zZywgJG1vZGFsKSB7XG5cdFx0XCJ1c2Ugc3RyaWN0XCI7XG5cblx0XHR2YXIgZ2V0VXNlciA9IGZ1bmN0aW9uIChpZCkge1xuXHRcdFx0Zm9yICh2YXIgaSA9ICRzY29wZS51c2Vycy5sZW5ndGggLSAxOyBpID49IDA7IGktLSkge1xuXHRcdFx0XHRpZiAoJHNjb3BlLnVzZXJzW2ldLmlkID09IGlkKSB7XG5cdFx0XHRcdFx0cmV0dXJuICRzY29wZS51c2Vyc1tpXTtcblx0XHRcdFx0fVxuXHRcdFx0fVxuXHRcdH07XG5cblx0XHR2YXIgY29uZmlybUNoYW5nZU93blJvbGUgPSBmdW5jdGlvbiAodXNlcklkLCByb2xlKSB7XG5cdFx0XHR2YXIgbW9kYWxJbnN0YW5jZSA9ICRtb2RhbC5vcGVuKHtcblx0XHRcdFx0dGVtcGxhdGVVcmw6ICdjb25maXJtQ2hhbmdlUm9sZU1vZGFsLmh0bWwnLFxuXHRcdFx0XHRzaXplOiAnc20nXG5cdFx0XHR9KTtcblxuXHRcdFx0bW9kYWxJbnN0YW5jZS5yZXN1bHQudGhlbihmdW5jdGlvbiAocmVzdWx0KSB7XG5cdFx0XHRcdGlmIChyZXN1bHQgPT0gJ3llcycpIHtcblx0XHRcdFx0XHQkc2NvcGUuY2hhbmdlVXNlclJvbGUodXNlcklkLCByb2xlLCB0cnVlKTtcblx0XHRcdFx0fVxuXHRcdFx0fSk7XG5cdFx0fTtcblxuXHRcdFJvbGUucXVlcnkoZnVuY3Rpb24gKHJvbGVzQXJyYXkpIHtcblx0XHRcdCRzY29wZS5yb2xlcyA9IHt9O1xuXHRcdFx0Zm9yICh2YXIgaSA9IHJvbGVzQXJyYXkubGVuZ3RoIC0gMTsgaSA+PSAwOyBpLS0pIHtcblx0XHRcdFx0JHNjb3BlLnJvbGVzW3JvbGVzQXJyYXlbaV0ubmFtZV0gPSByb2xlc0FycmF5W2ldLmlkO1xuXHRcdFx0fVxuXHRcdH0pO1xuXG5cdFx0JHNjb3BlLnVzZXJzID0gUHJvamVjdFVzZXIucXVlcnkoeyBwcm9qZWN0X2lkOiAkc2NvcGUucHJvamVjdElkIH0pO1xuXG5cdFx0JHNjb3BlLmVkaXQgPSBmdW5jdGlvbiAoKSB7XG5cdFx0XHQkc2NvcGUuZWRpdGluZyA9ICEkc2NvcGUuZWRpdGluZztcblx0XHR9O1xuXG5cdFx0JHNjb3BlLmFkZFVzZXIgPSBmdW5jdGlvbiAodXNlcikge1xuXHRcdFx0Ly8gbmV3IHVzZXJzIGFyZSBndWVzdHMgYnkgZGVmYXVsdFxuXHRcdFx0dmFyIHJvbGVJZCA9ICRzY29wZS5yb2xlcy5ndWVzdDtcblxuXHRcdFx0dmFyIHN1Y2Nlc3MgPSBmdW5jdGlvbiAoKSB7XG5cdFx0XHRcdHVzZXIucHJvamVjdF9yb2xlX2lkID0gcm9sZUlkO1xuXHRcdFx0XHQkc2NvcGUudXNlcnMucHVzaCh1c2VyKTtcblx0XHRcdH07XG5cblx0XHRcdC8vIHVzZXIgc2hvdWxkbid0IGFscmVhZHkgZXhpc3Rcblx0XHRcdGlmICghZ2V0VXNlcih1c2VyLmlkKSkge1xuXHRcdFx0XHRQcm9qZWN0VXNlci5hdHRhY2goXG5cdFx0XHRcdFx0e3Byb2plY3RfaWQ6ICRzY29wZS5wcm9qZWN0SWR9LFxuXHRcdFx0XHRcdHtpZDogdXNlci5pZCwgcHJvamVjdF9yb2xlX2lkOiByb2xlSWR9LFxuXHRcdFx0XHRcdHN1Y2Nlc3MsIG1zZy5yZXNwb25zZUVycm9yXG5cdFx0XHRcdCk7XG5cdFx0XHR9XG5cdFx0fTtcblxuXHRcdCRzY29wZS5jaGFuZ2VVc2VyUm9sZSA9IGZ1bmN0aW9uICh1c2VySWQsIHJvbGUsIGZvcmNlKSB7XG5cdFx0XHRpZiAoIWZvcmNlICYmIHVzZXJJZCA9PSAkc2NvcGUub3duVXNlcklkKSB7XG5cdFx0XHRcdGNvbmZpcm1DaGFuZ2VPd25Sb2xlKHVzZXJJZCwgcm9sZSk7XG5cdFx0XHRcdHJldHVybjtcblx0XHRcdH1cblxuXHRcdFx0dmFyIHVzZXIgPSBnZXRVc2VyKHVzZXJJZCk7XG5cdFx0XHR2YXIgcm9sZUlkID0gJHNjb3BlLnJvbGVzW3JvbGVdO1xuXG5cdFx0XHQvLyBubyBhY3Rpb24gcmVxdWlyZWRcblx0XHRcdGlmICh1c2VyLnByb2plY3Rfcm9sZV9pZCA9PSByb2xlSWQpIHtcblx0XHRcdFx0cmV0dXJuO1xuXHRcdFx0fVxuXG5cdFx0XHR2YXIgc3VjY2VzcyA9IGZ1bmN0aW9uICgpIHtcblx0XHRcdFx0dXNlci5wcm9qZWN0X3JvbGVfaWQgPSByb2xlSWQ7XG5cdFx0XHR9O1xuXG5cdFx0XHRQcm9qZWN0VXNlci5zYXZlKFxuXHRcdFx0XHR7cHJvamVjdF9pZDogJHNjb3BlLnByb2plY3RJZH0sXG5cdFx0XHRcdHtpZDogdXNlci5pZCwgcHJvamVjdF9yb2xlX2lkOiByb2xlSWR9LFxuXHRcdFx0XHRzdWNjZXNzLCBtc2cucmVzcG9uc2VFcnJvclxuXHRcdFx0KTtcblx0XHR9O1xuXG5cdFx0JHNjb3BlLnJlbW92ZVVzZXIgPSBmdW5jdGlvbiAodXNlcklkKSB7XG5cdFx0XHQvLyBsZWF2aW5nIHRoZSBwcm9qZWN0IHdpbGwgYmUgaGFuZGxlZCBieSBwYXJlbnQgY29udHJvbGxlclxuXHRcdFx0aWYgKHVzZXJJZCA9PSAkc2NvcGUub3duVXNlcklkKSB7XG5cdFx0XHRcdCRzY29wZS5sZWF2ZVByb2plY3QoKTtcblx0XHRcdFx0cmV0dXJuO1xuXHRcdFx0fVxuXG5cdFx0XHR2YXIgc3VjY2VzcyA9IGZ1bmN0aW9uICgpIHtcblx0XHRcdFx0dmFyIGluZGV4O1xuXG5cdFx0XHRcdGZvciAodmFyIGkgPSAkc2NvcGUudXNlcnMubGVuZ3RoIC0gMTsgaSA+PSAwOyBpLS0pIHtcblx0XHRcdFx0XHRpZiAoJHNjb3BlLnVzZXJzW2ldLmlkID09IHVzZXJJZCkge1xuXHRcdFx0XHRcdFx0aW5kZXggPSBpO1xuXHRcdFx0XHRcdFx0YnJlYWs7XG5cdFx0XHRcdFx0fVxuXHRcdFx0XHR9XG5cblx0XHRcdFx0JHNjb3BlLnVzZXJzLnNwbGljZShpbmRleCwgMSk7XG5cdFx0XHR9O1xuXG5cdFx0XHRQcm9qZWN0VXNlci5kZXRhY2goXG5cdFx0XHRcdHtwcm9qZWN0X2lkOiAkc2NvcGUucHJvamVjdElkfSxcblx0XHRcdFx0e2lkOiB1c2VySWR9LFxuXHRcdFx0XHRzdWNjZXNzLCBtc2cucmVzcG9uc2VFcnJvclxuXHRcdFx0KTtcblx0XHR9O1xuXHR9XG4pO1xuIiwiLyoqXG4gKiBAbmFtZXNwYWNlIGRpYXMucHJvamVjdHNcbiAqIEBuZ2RvYyBkaXJlY3RpdmVcbiAqIEBuYW1lIHByb2plY3RNZW1iZXJcbiAqIEBtZW1iZXJPZiBkaWFzLnByb2plY3RzXG4gKiBAZGVzY3JpcHRpb24gQSBwcm9qZWN0IG1lbWJlciBlbGVtZW50IGluIHRoZSBwcm9qZWN0IG1lbWJlcnMgb3ZlcnZpZXcuXG4gKi9cbmFuZ3VsYXIubW9kdWxlKCdkaWFzLnByb2plY3RzJykuZGlyZWN0aXZlKCdwcm9qZWN0TWVtYmVyJywgZnVuY3Rpb24gKCkge1xuXHRcdFwidXNlIHN0cmljdFwiO1xuXG5cdFx0cmV0dXJuIHtcblx0XHRcdHJlc3RyaWN0OiAnQScsXG5cblx0XHRcdGxpbms6IGZ1bmN0aW9uIChzY29wZSwgZWxlbWVudCwgYXR0cnMpIHtcblx0XHRcdFx0dmFyIGRyYWdzdGFydCA9IGZ1bmN0aW9uIChlKSB7XG5cdFx0XHRcdFx0ZS5kYXRhVHJhbnNmZXIuZWZmZWN0QWxsb3dlZCA9ICdtb3ZlJztcbiAgXHRcdFx0XHRcdGUuZGF0YVRyYW5zZmVyLnNldERhdGEoJ3RleHQvcGxhaW4nLCBzY29wZS51c2VyLmlkKTtcblx0XHRcdFx0fTtcblxuXHRcdFx0XHQvLyBkaXNhYmxlIGRyYWdnaW5nIHdoZW4gcmVtb3ZpbmcgaXMgaW4gcHJvZ3Jlc3Ncblx0XHRcdFx0c2NvcGUuJHdhdGNoKCdyZW1vdmluZycsIGZ1bmN0aW9uIChyZW1vdmluZykge1xuXHRcdFx0XHRcdGlmIChyZW1vdmluZykge1xuXHRcdFx0XHRcdFx0ZWxlbWVudC5vZmYoJ2RyYWdzdGFydCcsIGRyYWdzdGFydCk7XG5cdFx0XHRcdFx0fSBlbHNlIHtcblx0XHRcdFx0XHRcdGVsZW1lbnQub24oJ2RyYWdzdGFydCcsIGRyYWdzdGFydCk7XG5cdFx0XHRcdFx0fVxuXHRcdFx0XHR9KTtcblxuXHRcdFx0XHQvLyB3aGVuIGVkaXRpbmcgaXMgc3dpdGNoZWQgb2ZmLCByZW1vdmluZyBpcyBjYW5jZWxlZCwgdG9vXG5cdFx0XHRcdHNjb3BlLiR3YXRjaCgnZWRpdGluZycsIGZ1bmN0aW9uIChlZGl0aW5nKSB7XG5cdFx0XHRcdFx0aWYgKCFlZGl0aW5nKSB7XG5cdFx0XHRcdFx0XHRzY29wZS5jYW5jZWxSZW1vdmUoKTtcblx0XHRcdFx0XHR9XG5cdFx0XHRcdH0pO1xuXHRcdFx0fSxcblx0XHRcdFxuXHRcdFx0Y29udHJvbGxlcjogZnVuY3Rpb24gKCRzY29wZSkge1xuXHRcdFx0XHQkc2NvcGUuc3RhcnRSZW1vdmUgPSBmdW5jdGlvbiAoKSB7XG5cdFx0XHRcdFx0JHNjb3BlLnJlbW92aW5nID0gdHJ1ZTtcblx0XHRcdFx0fTtcblxuXHRcdFx0XHQkc2NvcGUuY2FuY2VsUmVtb3ZlID0gZnVuY3Rpb24gKCkge1xuXHRcdFx0XHRcdCRzY29wZS5yZW1vdmluZyA9IGZhbHNlO1xuXHRcdFx0XHR9O1xuXG5cdFx0XHRcdCRzY29wZS5yZW1vdmUgPSBmdW5jdGlvbiAoKSB7XG5cdFx0XHRcdFx0JHNjb3BlLnJlbW92ZVVzZXIoJHNjb3BlLnVzZXIuaWQpO1xuXHRcdFx0XHR9O1xuXHRcdFx0fVxuXHRcdH07XG5cdH1cbik7XG4iXSwic291cmNlUm9vdCI6Ii9zb3VyY2UvIn0=
+/**
+ * @namespace dias.projects
+ * @description The DIAS projects module.
+ */
+angular.module('dias.projects', ['dias.api', 'dias.ui.messages', 'dias.ui.users', 'ui.bootstrap']);
+
+/**
+ * @namespace dias.projects
+ * @ngdoc controller
+ * @name ProjectDeleteController
+ * @memberOf dias.projects
+ * @description Initiates the deletion confirmation modal
+ * @example
+
+ */
+angular.module('dias.projects').controller('ProjectDeleteController', ["$scope", "$modal", "$attrs", "msg", function ($scope, $modal, $attrs, msg) {
+		"use strict";
+
+		var success = function () {
+			$scope.redirectToDashboard($attrs.successMsg);
+		};
+
+		var error = function () {
+			msg.danger($attrs.errorMsg);
+		};
+
+		$scope.submit = function () {
+			var modalInstance = $modal.open({
+				templateUrl: 'confirmDeleteModal.html',
+				size: 'sm',
+				controller: 'ProjectDeleteModalController',
+				scope: $scope
+			});
+
+			modalInstance.result.then(function (result) {
+				switch (result) {
+					case 'success':
+						success();
+						break;
+					case 'error':
+						error();
+						break;
+				}
+			});
+		};
+	}]
+);
+
+/**
+ * @namespace dias.projects
+ * @ngdoc controller
+ * @name ProjectDeleteModalController
+ * @memberOf dias.projects
+ * @description Handles the confirmation of deletion of a project.
+ * @example
+
+ */
+angular.module('dias.projects').controller('ProjectDeleteModalController', ["$scope", "Project", function ($scope, Project) {
+		"use strict";
+
+		$scope.force = false;
+
+		var deleteSuccess = function (response) {
+			$scope.$close('success');
+		};
+
+		var deleteError = function(response) {
+			if (response.status === 400) {
+				$scope.force = true;
+			} else {
+				$scope.$close('error');
+			}
+		};
+
+		$scope.delete = function () {
+			var params = $scope.force ? {force: true} : {};
+			$scope.project.$delete(params, deleteSuccess, deleteError);
+		};
+	}]
+);
+
+/**
+ * @namespace dias.projects
+ * @ngdoc controller
+ * @name ProjectIndexController
+ * @memberOf dias.projects
+ * @description Root controller of the project index page.
+ */
+angular.module('dias.projects').controller('ProjectIndexController', ["$scope", "$attrs", "Project", "$modal", "ProjectUser", "msg", "$timeout", function ($scope, $attrs, Project, $modal, ProjectUser, msg, $timeout) {
+		"use strict";
+
+		var leavingSuccess = function () {
+			$scope.redirectToDashboard($attrs.leavingSuccessMsg);
+		};
+
+		$scope.redirectToDashboard = function (message, type) {
+			type = type || 'success';
+			msg.post(type, message);
+			$timeout(function () {
+				window.location.href = $attrs.dashboardUrl;
+			}, 2000);
+		};
+
+		$scope.project = Project.get({id: $attrs.projectId});
+
+		$scope.projectId = $attrs.projectId;
+
+		$scope.ownUserId = $attrs.userId;
+
+		$scope.leaveProject = function () {
+			var modalInstance = $modal.open({
+				templateUrl: 'confirmLeaveProjectModal.html',
+				size: 'sm'
+			});
+
+			modalInstance.result.then(function (result) {
+				if (result == 'yes') {
+					ProjectUser.detach({project_id: $scope.project.id}, {id: $scope.ownUserId}, leavingSuccess, msg.responseError);
+				}
+			});
+		};
+	}]
+);
+
+/**
+ * @namespace dias.projects
+ * @ngdoc controller
+ * @name ProjectInformationController
+ * @memberOf dias.projects
+ * @description Handles modification of the information of a project.
+ * @example
+
+ */
+angular.module('dias.projects').controller('ProjectInformationController', ["$scope", function ($scope) {
+		"use strict";
+		
+		$scope.edit = function () {
+			$scope.editing = !$scope.editing;
+		};
+	}]
+);
+
+/**
+ * @namespace dias.projects
+ * @ngdoc controller
+ * @name ProjectLabelsController
+ * @memberOf dias.projects
+ * @description Handles modification of the labels of a project.
+ * @example
+
+ */
+angular.module('dias.projects').controller('ProjectLabelsController', ["$scope", "ProjectLabel", "Label", function ($scope, ProjectLabel, Label) {
+		"use strict";
+
+        $scope.edit = function () {
+            $scope.editing = !$scope.editing;
+        };
+
+        var labels = ProjectLabel.query({project_id: $scope.projectId}, function () {
+            var tree = {};
+            var build = function (label) {
+                var parent = label.parent_id;
+                if (tree[parent]) {
+                    tree[parent].push(label);
+                } else {
+                    tree[parent] = [label];
+                }
+            };
+
+            labels.forEach(build);
+            $scope.categoriesTree = tree;
+        });
+
+        $scope.selectItem = function (item) {
+            // labels.setSelected(item);
+            // $scope.searchCategory = ''; // clear search field
+            $scope.$broadcast('categories.selected', item);
+        };
+
+        $scope.remove = function (item) {
+            // always use force here because the user already had to confirm deletion
+            Label.delete({id: item.id, force: true}, function () {
+                // remove item
+                var index = $scope.categoriesTree[item.parent_id].indexOf(item);
+                $scope.categoriesTree[item.parent_id].splice(index, 1);
+                // remove parent subtree if this was the last child
+                // (so the tree can be emptied completely)
+                if ($scope.categoriesTree[item.parent_id].length === 0) {
+                    $scope.categoriesTree[item.parent_id] = undefined;
+                }
+                // remove subtree
+                $scope.categoriesTree[item.id] = undefined;
+                $scope.$broadcast('categories.refresh');
+            });
+        };
+
+        $scope.$watch('categoriesTree', function (categoriesTree) {
+            $scope.noItems = !categoriesTree || categoriesTree[null] === undefined;
+        }, true);
+	}]
+);
+
+/**
+ * @namespace dias.projects
+ * @ngdoc controller
+ * @name ProjectMembersContainerController
+ * @memberOf dias.projects
+ * @description Contains project members of a certain role. New members can be dropped in.
+ */
+angular.module('dias.projects').controller('ProjectMembersContainerController', ["$scope", "$element", "$attrs", function ($scope, $element, $attrs) {
+		"use strict";
+
+		var dragover = function (e) {
+			$scope.hovering = true;
+			$scope.$apply();
+			 e.preventDefault();
+		};
+
+		var dragleave = function (e) {
+			$scope.hovering = false;
+			$scope.$apply();
+		};
+
+		var drop = function (e) {
+			$scope.hovering = false;
+			$scope.changeUserRole(
+				// user id
+				e.dataTransfer.getData('text/plain'),
+				// new role name
+				$attrs.role
+			);
+			$scope.$apply();
+			e.preventDefault();
+		};
+
+		// only allow dropping if editing
+		$scope.$watch('editing', function (editing) {
+			if (editing) {
+				$element.on('dragover', dragover);
+				$element.on('dragleave', dragleave);
+				$element.on('drop', drop);
+			} else {
+				$element.off('dragover', dragover);
+				$element.off('dragleave', dragleave);
+				$element.off('drop', drop);
+			}
+		});
+	}]
+);
+
+/**
+ * @namespace dias.projects
+ * @ngdoc controller
+ * @name ProjectMembersController
+ * @memberOf dias.projects
+ * @description Handles modification of the members of a project.
+ */
+angular.module('dias.projects').controller('ProjectMembersController', ["$scope", "Role", "ProjectUser", "msg", "$modal", function ($scope, Role, ProjectUser, msg, $modal) {
+		"use strict";
+
+		var getUser = function (id) {
+			for (var i = $scope.users.length - 1; i >= 0; i--) {
+				if ($scope.users[i].id == id) {
+					return $scope.users[i];
+				}
+			}
+		};
+
+		var confirmChangeOwnRole = function (userId, role) {
+			var modalInstance = $modal.open({
+				templateUrl: 'confirmChangeRoleModal.html',
+				size: 'sm'
+			});
+
+			modalInstance.result.then(function (result) {
+				if (result == 'yes') {
+					$scope.changeUserRole(userId, role, true);
+				}
+			});
+		};
+
+		Role.query(function (rolesArray) {
+			$scope.roles = {};
+			for (var i = rolesArray.length - 1; i >= 0; i--) {
+				$scope.roles[rolesArray[i].name] = rolesArray[i].id;
+			}
+		});
+
+		$scope.users = ProjectUser.query({ project_id: $scope.projectId });
+
+		$scope.edit = function () {
+			$scope.editing = !$scope.editing;
+		};
+
+		$scope.addUser = function (user) {
+			// new users are guests by default
+			var roleId = $scope.roles.guest;
+
+			var success = function () {
+				user.project_role_id = roleId;
+				$scope.users.push(user);
+			};
+
+			// user shouldn't already exist
+			if (!getUser(user.id)) {
+				ProjectUser.attach(
+					{project_id: $scope.projectId},
+					{id: user.id, project_role_id: roleId},
+					success, msg.responseError
+				);
+			}
+		};
+
+		$scope.changeUserRole = function (userId, role, force) {
+			if (!force && userId == $scope.ownUserId) {
+				confirmChangeOwnRole(userId, role);
+				return;
+			}
+
+			var user = getUser(userId);
+			var roleId = $scope.roles[role];
+
+			// no action required
+			if (user.project_role_id == roleId) {
+				return;
+			}
+
+			var success = function () {
+				user.project_role_id = roleId;
+			};
+
+			ProjectUser.save(
+				{project_id: $scope.projectId},
+				{id: user.id, project_role_id: roleId},
+				success, msg.responseError
+			);
+		};
+
+		$scope.removeUser = function (userId) {
+			// leaving the project will be handled by parent controller
+			if (userId == $scope.ownUserId) {
+				$scope.leaveProject();
+				return;
+			}
+
+			var success = function () {
+				var index;
+
+				for (var i = $scope.users.length - 1; i >= 0; i--) {
+					if ($scope.users[i].id == userId) {
+						index = i;
+						break;
+					}
+				}
+
+				$scope.users.splice(index, 1);
+			};
+
+			ProjectUser.detach(
+				{project_id: $scope.projectId},
+				{id: userId},
+				success, msg.responseError
+			);
+		};
+	}]
+);
+
+/**
+ * @namespace dias.projects
+ * @ngdoc directive
+ * @name projectLabelCategoryItem
+ * @memberOf dias.projects
+ * @description A label category list item.
+ */
+angular.module('dias.projects').directive('projectLabelCategoryItem', ["$compile", "$timeout", function ($compile, $timeout) {
+		"use strict";
+
+		return {
+			restrict: 'C',
+
+			templateUrl: 'label-item.html',
+
+			scope: true,
+
+			link: function (scope, element, attrs) {
+				// wait for this element to be rendered until the children are
+				// appended, otherwise there would be too much recursion for
+				// angular
+				var content = angular.element('<ul class="project-label-category-subtree list-unstyled"><li class="project-label-category-item" data-ng-class="{open: isOpen, expandable: isExpandable, selected: isSelected, \'text-danger\': removing}" data-ng-repeat="item in categoriesTree[item.id]"></li></ul>');
+				$timeout(function () {
+					element.append($compile(content)(scope));
+				});
+			},
+
+			controller: ["$scope", function ($scope) {
+				// open the subtree of this item
+				$scope.isOpen = false;
+				// this item has children
+				$scope.isExpandable = !!$scope.categoriesTree[$scope.item.id];
+				// this item is currently selected
+				$scope.isSelected = false;
+
+                $scope.removing = false;
+
+                $scope.startRemove = function () {
+                    $scope.removing = true;
+                };
+
+                $scope.cancelRemove = function () {
+                    $scope.removing = false;
+                };
+
+				// handle this by the event rather than an own click handler to
+				// deal with click and search field actions in a unified way
+				$scope.$on('categories.selected', function (e, category) {
+					// if an item is selected, its subtree and all parent items
+					// should be opened
+					if ($scope.item.id === category.id) {
+						$scope.isOpen = true;
+						$scope.isSelected = true;
+						// this hits all parent scopes/items
+						$scope.$emit('categories.openParents');
+					} else {
+						$scope.isOpen = false;
+						$scope.isSelected = false;
+					}
+				});
+
+				// if a child item was selected, this item should be opened, too
+				// so the selected item becomes visible in the tree
+				$scope.$on('categories.openParents', function (e) {
+					$scope.isOpen = true;
+					// stop propagation if this is a root element
+					if ($scope.item.parent_id === null) {
+						e.stopPropagation();
+					}
+				});
+
+                // check, if item still has children
+                $scope.$on('categories.refresh', function (e) {
+                    if ($scope.isExpandable) {
+                        $scope.isExpandable = !!$scope.categoriesTree[$scope.item.id];
+                    }
+                });
+			}]
+		};
+	}]
+);
+
+/**
+ * @namespace dias.projects
+ * @ngdoc directive
+ * @name projectMember
+ * @memberOf dias.projects
+ * @description A project member element in the project members overview.
+ */
+angular.module('dias.projects').directive('projectMember', function () {
+		"use strict";
+
+		return {
+			restrict: 'A',
+
+			link: function (scope, element, attrs) {
+				var dragstart = function (e) {
+					e.dataTransfer.effectAllowed = 'move';
+  					e.dataTransfer.setData('text/plain', scope.user.id);
+				};
+
+				// disable dragging when removing is in progress
+				scope.$watch('removing', function (removing) {
+					if (removing) {
+						element.off('dragstart', dragstart);
+					} else {
+						element.on('dragstart', dragstart);
+					}
+				});
+
+				// when editing is switched off, removing is canceled, too
+				scope.$watch('editing', function (editing) {
+					if (!editing) {
+						scope.cancelRemove();
+					}
+				});
+			},
+			
+			controller: ["$scope", function ($scope) {
+				$scope.startRemove = function () {
+					$scope.removing = true;
+				};
+
+				$scope.cancelRemove = function () {
+					$scope.removing = false;
+				};
+
+				$scope.remove = function () {
+					$scope.removeUser($scope.user.id);
+				};
+			}]
+		};
+	}
+);
+
+//# sourceMappingURL=main.js.map

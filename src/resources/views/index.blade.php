@@ -16,10 +16,12 @@
 			@endif
 		</span>
 	</h2>
-	
+
 	@include('projects::index.info')
 
-	@include('projects::index.members', array('project' => $project))
+	@include('projects::index.members')
+
+    @include('projects::index.labels')
 
 	@foreach ($mixins as $module => $nestedMixins)
 		@include($module.'::projects', array('mixins' => $nestedMixins, 'project' => $project, 'isAdmin' => $isAdmin))
