@@ -50,75 +50,6 @@ angular.module('dias.ui', ['dias.ui.messages', 'dias.ui.users']);
  */
 angular.module('dias.api').constant('URL', window.$diasBaseUrl || '');
 /**
- * @namespace dias.api
- * @ngdoc service
- * @name roles
- * @memberOf dias.api
- * @description Wrapper service for the available roles
- * @example
-var adminRoleId = role.getId('admin'); // 1
-var adminRoleName = role.getName(1); // 'admin'
- */
-angular.module('dias.api').service('roles', ["Role", function (Role) {
-		"use strict";
-
-		var roles = {};
-		var rolesInverse = {};
-
-		Role.query(function (r) {
-			r.forEach(function (role) {
-				roles[role.id] = role.name;
-				rolesInverse[role.name] = role.id;
-			});
-		});
-
-		this.getName = function (id) {
-			return roles[id];
-		};
-
-		this.getId = function (name) {
-			return rolesInverse[name];
-		};
-	}]
-);
-/**
- * @namespace dias.api
- * @ngdoc service
- * @name shapes
- * @memberOf dias.api
- * @description Wrapper service for the available shapes
- * @example
-var shapesArray = spahes.getAll(); // [{id: 1, name: 'Point'}, ...]
-shapes.getId('Point'); // 1
-shapes.getName(1); // 'Point'
- */
-angular.module('dias.api').service('shapes', ["Shape", function (Shape) {
-		"use strict";
-
-		var shapes = {};
-		var shapesInverse = {};
-
-		var resources = Shape.query(function (s) {
-			s.forEach(function (shape) {
-				shapes[shape.id] = shape.name;
-				shapesInverse[shape.name] = shape.id;
-			});
-		});
-
-		this.getName = function (id) {
-			return shapes[id];
-		};
-
-		this.getId = function (name) {
-			return shapesInverse[name];
-		};
-
-		this.getAll = function () {
-			return resources;
-		};
-	}]
-);
-/**
  * @ngdoc factory
  * @name Annotation
  * @memberOf dias.api
@@ -764,6 +695,84 @@ angular.module('dias.api').factory('User', ["$resource", "URL", function ($resou
 	});
 }]);
 /**
+ * @namespace dias.api
+ * @ngdoc service
+ * @name roles
+ * @memberOf dias.api
+ * @description Wrapper service for the available roles
+ * @example
+var adminRoleId = role.getId('admin'); // 1
+var adminRoleName = role.getName(1); // 'admin'
+ */
+angular.module('dias.api').service('roles', ["Role", function (Role) {
+		"use strict";
+
+		var roles = {};
+		var rolesInverse = {};
+
+		Role.query(function (r) {
+			r.forEach(function (role) {
+				roles[role.id] = role.name;
+				rolesInverse[role.name] = role.id;
+			});
+		});
+
+		this.getName = function (id) {
+			return roles[id];
+		};
+
+		this.getId = function (name) {
+			return rolesInverse[name];
+		};
+	}]
+);
+/**
+ * @namespace dias.api
+ * @ngdoc service
+ * @name shapes
+ * @memberOf dias.api
+ * @description Wrapper service for the available shapes
+ * @example
+var shapesArray = spahes.getAll(); // [{id: 1, name: 'Point'}, ...]
+shapes.getId('Point'); // 1
+shapes.getName(1); // 'Point'
+ */
+angular.module('dias.api').service('shapes', ["Shape", function (Shape) {
+		"use strict";
+
+		var shapes = {};
+		var shapesInverse = {};
+
+		var resources = Shape.query(function (s) {
+			s.forEach(function (shape) {
+				shapes[shape.id] = shape.name;
+				shapesInverse[shape.name] = shape.id;
+			});
+		});
+
+		this.getName = function (id) {
+			return shapes[id];
+		};
+
+		this.getId = function (name) {
+			return shapesInverse[name];
+		};
+
+		this.getAll = function () {
+			return resources;
+		};
+	}]
+);
+/**
+ * @ngdoc constant
+ * @name MAX_MSG
+ * @memberOf dias.ui.messages
+ * @description The maximum number of info messages to display.
+ * @returns {Integer}
+ *
+ */
+angular.module('dias.ui.messages').constant('MAX_MSG', 1);
+/**
  * @namespace dias.ui.messages
  * @ngdoc controller
  * @name MessagesController
@@ -795,15 +804,6 @@ angular.module('dias.ui.messages').controller('MessagesController', ["$scope", "
 	}]
 );
 
-/**
- * @ngdoc constant
- * @name MAX_MSG
- * @memberOf dias.ui.messages
- * @description The maximum number of info messages to display.
- * @returns {Integer}
- *
- */
-angular.module('dias.ui.messages').constant('MAX_MSG', 1);
 /**
  * @namespace dias.ui.messages
  * @ngdoc service

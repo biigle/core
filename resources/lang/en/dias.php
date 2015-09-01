@@ -12,7 +12,7 @@ return array(
 		'settings' => 'Settings',
 		'resetpw' => 'Reset password',
 		'register' => 'Register',
-		'dashboard' => 'Dashboard',
+		'dashboard' => 'BIIGLE DIAS',
 		'doc' => 'Documentation'
 	),
 

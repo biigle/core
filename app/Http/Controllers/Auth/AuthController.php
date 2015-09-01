@@ -8,7 +8,7 @@ use Dias\Events\UserLoggedInEvent;
 use Auth;
 use Validator;
 use Illuminate\Http\Request;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class AuthController extends Controller
 {
@@ -24,7 +24,7 @@ class AuthController extends Controller
     */
 
     // disable default trait and implement own authentication
-    use AuthenticatesAndRegistersUsers;
+    use AuthenticatesUsers;
 
     /**
      * Create a new authentication controller instance.
