@@ -4916,9 +4916,9 @@ figcaption {
   color: #777777; }
 
 .logo.logo-inverse .logo__biigle {
-  color: #777777; }
-.logo.logo-inverse .logo__dias {
   color: #eeeeee; }
+.logo.logo-inverse .logo__dias {
+  color: inherit; }
 
 .btn-inverse {
   color: #9d9d9d;
