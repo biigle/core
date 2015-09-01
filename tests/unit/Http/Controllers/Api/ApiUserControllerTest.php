@@ -306,4 +306,57 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         $this->assertContains('"name":"abc def"', $r->getContent());
         $this->assertNotContains('"name":"abc ghi"', $r->getContent());
     }
+
+    public function testStoreOwnToken()
+    {
+        $this->doTestApiRoute('POST', '/api/v1/users/my/token');
+
+        $this->callToken('POST', '/api/v1/users/my/token', $this->user);
+        // api key authentication is not allowed for this route
+        $this->assertResponseStatus(401);
+
+        $this->be($this->user);
+        $this->user->api_key = null;
+
+        $this->callAjax('POST', '/api/v1/users/my/token', [
+            '_token' => Session::token(),
+        ]);
+        $this->assertResponseOk();
+        $this->assertNotNull($this->user->api_key);
+        $key = $this->user->api_key;
+
+        $r = $this->call('POST', '/api/v1/users/my/token', [
+            '_token' => Session::token(),
+        ]);
+        $this->assertResponseStatus(302);
+        // redirect to settings tokens page for form requests
+        $this->assertContains('settings/tokens', $r->getContent());
+        $this->assertNotEquals($key, $this->user->api_key);
+    }
+
+    public function testDestroyOwnToken()
+    {
+        $this->doTestApiRoute('DELETE', '/api/v1/users/my/token');
+
+        $this->callToken('DELETE', '/api/v1/users/my/token', $this->user);
+        // api key authentication is not allowed for this route
+        $this->assertResponseStatus(401);
+
+        $this->be($this->user);
+        $this->user->generateApiKey();
+        $this->callAjax('DELETE', '/api/v1/users/my/token', [
+            '_token' => Session::token(),
+        ]);
+        $this->assertResponseOk();
+        $this->assertNull($this->user->api_key);
+
+        $this->user->generateApiKey();
+        $r = $this->call('DELETE', '/api/v1/users/my/token', [
+            '_token' => Session::token(),
+        ]);
+        $this->assertResponseStatus(302);
+        // redirect to settings tokens page for form requests
+        $this->assertContains('settings/tokens', $r->getContent());
+        $this->assertNull($this->user->api_key);
+    }
 }

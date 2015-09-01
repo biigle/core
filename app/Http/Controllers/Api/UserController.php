@@ -18,13 +18,10 @@ class UserController extends Controller
     {
         parent::__construct($request);
 
-        $this->middleware('admin', ['except' => [
-            'find',
-            'index',
-            'show',
-            'showOwn',
-            'updateOwn',
-            'destroyOwn',
+        $this->middleware('admin', ['only' => [
+            'update',
+            'store',
+            'destroy'
         ]]);
 
         $this->middleware('session', ['except' => [
@@ -252,8 +249,7 @@ class UserController extends Controller
 
         if (!static::isAutomatedRequest($request)) {
             return redirect()->back()
-                ->with('message', 'Saved.')
-                ->with('messageType', 'success');
+                ->with('saved', true);
         }
     }
 
@@ -351,5 +347,47 @@ class UserController extends Controller
         }
 
         return redirect()->route('home');
+    }
+
+    /**
+     * Generates a new API token
+     *
+     * @api {post} users/my/token Generate a new API token
+     * @apiDescription This action is allowed only by session cookie authentication.
+     * @apiGroup Users
+     * @apiName StoreOwnTokenUsers
+     * @apiPermission user
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function storeOwnToken()
+    {
+        $this->user->generateApiKey();
+        $this->user->save();
+
+        if (!static::isAutomatedRequest($this->request)) {
+            return redirect()->route('settings-tokens')->with('generated', true);
+        }
+    }
+
+    /**
+     * Generates a new API token
+     *
+     * @api {delete} users/my/token Revoke an API token
+     * @apiDescription This action is allowed only by session cookie authentication.
+     * @apiGroup Users
+     * @apiName DestroyOwnTokenUsers
+     * @apiPermission user
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function destroyOwnToken()
+    {
+        $this->user->api_key = null;
+        $this->user->save();
+
+        if (!static::isAutomatedRequest($this->request)) {
+            return redirect()->route('settings-tokens')->with('deleted', true);
+        }
     }
 }

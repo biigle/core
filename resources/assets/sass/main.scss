@@ -10,14 +10,15 @@
 	height: 100vh;
 }
 
-.navbar-noradius {
-	border-radius: 0;
-}
-
 .info-text__sign {
 	position: absolute;
 	right: 14px;
 	top: 20px;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0;
 }
 
 // custom imports

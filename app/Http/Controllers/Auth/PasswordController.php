@@ -32,7 +32,7 @@ class PasswordController extends Controller
         $this->redirectTo = route('home');
         $this->subject = trans('auth.pw_reset_subject');
 
-        $this->middleware('guest');
+        $this->middleware('guest', ['except' => ['getEmail']]);
 
         $this->redirectPath = route('home');
 
@@ -56,8 +56,8 @@ class PasswordController extends Controller
         );
 
         $response = Password::reset($credentials, function ($user, $password) {
-         $this->resetPassword($user, $password);
-     });
+            $this->resetPassword($user, $password);
+        });
 
         switch ($response) {
          case Password::PASSWORD_RESET:
@@ -67,6 +67,6 @@ class PasswordController extends Controller
              return redirect()->back()
                  ->withInput($request->only('email'))
                  ->withErrors(['email' => trans($response)]);
-     }
+        }
     }
 }

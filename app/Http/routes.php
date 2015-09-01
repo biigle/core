@@ -43,6 +43,18 @@ Route::group(['namespace' => 'Views', 'middleware' => 'auth'], function ($router
         'as' => 'settings',
         'uses' => 'SettingsController@index',
     ]);
+    $router->get('settings/profile', [
+        'as' => 'settings-profile',
+        'uses' => 'SettingsController@profile',
+    ]);
+    $router->get('settings/account', [
+        'as' => 'settings-account',
+        'uses' => 'SettingsController@account',
+    ]);
+    $router->get('settings/tokens', [
+        'as' => 'settings-tokens',
+        'uses' => 'SettingsController@tokens',
+    ]);
 });
 
 Route::group([
@@ -150,6 +162,10 @@ Route::group([
     $router->get('users/my', 'UserController@showOwn');
     $router->put('users/my', 'UserController@updateOwn');
     $router->delete('users/my', 'UserController@destroyOwn');
+
+    $router->post('users/my/token', 'UserController@storeOwnToken');
+    $router->delete('users/my/token', 'UserController@destroyOwnToken');
+
     $router->resource('users', 'UserController', [
         'only' => ['index', 'show', 'update', 'store', 'destroy'],
     ]);
