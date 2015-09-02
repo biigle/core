@@ -33,7 +33,7 @@
 				@if($isAdmin)
 					<input type="hidden" name="_method" value="put" />
 					<input type="hidden" name="_token" value="{{ csrf_token() }}" />
-					<button data-ng-if="editing" title="Save" type="submit" class="btn btn-default ng-cloak">Save</button>
+					<button data-ng-if="editing" title="Save" type="submit" class="btn btn-success ng-cloak">Save</button>
 				@endif
 			</form>
 		</div>

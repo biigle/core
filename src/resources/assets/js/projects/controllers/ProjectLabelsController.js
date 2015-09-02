@@ -7,53 +7,61 @@
  * @example
 
  */
-angular.module('dias.projects').controller('ProjectLabelsController', function ($scope, ProjectLabel, Label) {
+angular.module('dias.projects').controller('ProjectLabelsController', function ($scope, ProjectLabel, Label, msg) {
 		"use strict";
+
+        var buildTree = function (label) {
+            var parent = label.parent_id;
+            if ($scope.categoriesTree[parent]) {
+                $scope.categoriesTree[parent].push(label);
+            } else {
+                $scope.categoriesTree[parent] = [label];
+            }
+        };
+
+        var refreshLabels = function () {
+            $scope.labels = ProjectLabel.query({project_id: $scope.projectId}, function () {
+                $scope.categoriesTree = {};
+                $scope.labels.forEach(buildTree);
+                $scope.selectItem($scope.selectedItem);
+            });
+        };
+
+        refreshLabels();
+
+        $scope.newLabel = {
+            parent_id: null,
+            name: null,
+            project_id: $scope.projectId
+        };
 
         $scope.edit = function () {
             $scope.editing = !$scope.editing;
         };
 
-        var labels = ProjectLabel.query({project_id: $scope.projectId}, function () {
-            var tree = {};
-            var build = function (label) {
-                var parent = label.parent_id;
-                if (tree[parent]) {
-                    tree[parent].push(label);
-                } else {
-                    tree[parent] = [label];
-                }
-            };
-
-            labels.forEach(build);
-            $scope.categoriesTree = tree;
-        });
-
         $scope.selectItem = function (item) {
-            // labels.setSelected(item);
-            // $scope.searchCategory = ''; // clear search field
+            $scope.selectedItem = item;
+            $scope.newLabel.parent_id = (item) ? item.id : null;
             $scope.$broadcast('categories.selected', item);
         };
 
         $scope.remove = function (item) {
             // always use force here because the user already had to confirm deletion
             Label.delete({id: item.id, force: true}, function () {
-                // remove item
-                var index = $scope.categoriesTree[item.parent_id].indexOf(item);
-                $scope.categoriesTree[item.parent_id].splice(index, 1);
-                // remove parent subtree if this was the last child
-                // (so the tree can be emptied completely)
-                if ($scope.categoriesTree[item.parent_id].length === 0) {
-                    $scope.categoriesTree[item.parent_id] = undefined;
+                if ($scope.selectedItem.id === item.id) {
+                    $scope.selectItem(null);
                 }
-                // remove subtree
-                $scope.categoriesTree[item.id] = undefined;
-                $scope.$broadcast('categories.refresh');
+                refreshLabels();
             });
         };
 
-        $scope.$watch('categoriesTree', function (categoriesTree) {
-            $scope.noItems = !categoriesTree || categoriesTree[null] === undefined;
-        }, true);
+        $scope.addLabel = function () {
+            Label.add($scope.newLabel, function (response) {
+                $scope.labels.push(response);
+                buildTree(response);
+                $scope.$broadcast('categories.refresh');
+                $scope.newLabel.name = '';
+            }, msg.responseError);
+        };
 	}
 );

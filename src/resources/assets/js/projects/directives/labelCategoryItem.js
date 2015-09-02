@@ -5,7 +5,7 @@
  * @memberOf dias.projects
  * @description A label category list item.
  */
-angular.module('dias.projects').directive('projectLabelCategoryItem', function ($compile, $timeout) {
+angular.module('dias.projects').directive('projectLabelCategoryItem', function ($compile, $timeout, $templateCache) {
 		"use strict";
 
 		return {
@@ -19,7 +19,7 @@ angular.module('dias.projects').directive('projectLabelCategoryItem', function (
 				// wait for this element to be rendered until the children are
 				// appended, otherwise there would be too much recursion for
 				// angular
-				var content = angular.element('<ul class="project-label-category-subtree list-unstyled"><li class="project-label-category-item" data-ng-class="{open: isOpen, expandable: isExpandable, selected: isSelected, \'text-danger\': removing}" data-ng-repeat="item in categoriesTree[item.id]"></li></ul>');
+				var content = angular.element($templateCache.get('label-subtree.html'));
 				$timeout(function () {
 					element.append($compile(content)(scope));
 				});
@@ -32,7 +32,7 @@ angular.module('dias.projects').directive('projectLabelCategoryItem', function (
 				$scope.isExpandable = !!$scope.categoriesTree[$scope.item.id];
 				// this item is currently selected
 				$scope.isSelected = false;
-
+                // the user clicked on the 'x' button
                 $scope.removing = false;
 
                 $scope.startRemove = function () {
@@ -48,7 +48,7 @@ angular.module('dias.projects').directive('projectLabelCategoryItem', function (
 				$scope.$on('categories.selected', function (e, category) {
 					// if an item is selected, its subtree and all parent items
 					// should be opened
-					if ($scope.item.id === category.id) {
+					if (category && $scope.item.id === category.id) {
 						$scope.isOpen = true;
 						$scope.isSelected = true;
 						// this hits all parent scopes/items
@@ -71,9 +71,7 @@ angular.module('dias.projects').directive('projectLabelCategoryItem', function (
 
                 // check, if item still has children
                 $scope.$on('categories.refresh', function (e) {
-                    if ($scope.isExpandable) {
-                        $scope.isExpandable = !!$scope.categoriesTree[$scope.item.id];
-                    }
+                    $scope.isExpandable = !!$scope.categoriesTree[$scope.item.id];
                 });
 			}
 		};

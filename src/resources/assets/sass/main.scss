@@ -22,15 +22,22 @@
 	}
 }
 
+.project-add-category {
+    border-bottom: 1px solid $gray-lighter;
+}
+
 .project-categories-list {
     max-height: 200px;
     overflow: auto;
+    padding-right: 15px;
+
+    li {
+        // 19px is the width of the expandable before element
+        padding: 10px 0 0 19px;
+    }
 }
 
 .project-label-category-item {
-    // width of the expandable before element
-    padding-left: 19px;
-    padding-top: 0.5em;
     cursor: pointer;
 
     &.expandable > .item .item__name:before {

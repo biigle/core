@@ -149,54 +149,62 @@ angular.module('dias.projects').controller('ProjectInformationController', ["$sc
  * @example
 
  */
-angular.module('dias.projects').controller('ProjectLabelsController', ["$scope", "ProjectLabel", "Label", function ($scope, ProjectLabel, Label) {
+angular.module('dias.projects').controller('ProjectLabelsController', ["$scope", "ProjectLabel", "Label", "msg", function ($scope, ProjectLabel, Label, msg) {
 		"use strict";
+
+        var buildTree = function (label) {
+            var parent = label.parent_id;
+            if ($scope.categoriesTree[parent]) {
+                $scope.categoriesTree[parent].push(label);
+            } else {
+                $scope.categoriesTree[parent] = [label];
+            }
+        };
+
+        var refreshLabels = function () {
+            $scope.labels = ProjectLabel.query({project_id: $scope.projectId}, function () {
+                $scope.categoriesTree = {};
+                $scope.labels.forEach(buildTree);
+                $scope.selectItem($scope.selectedItem);
+            });
+        };
+
+        refreshLabels();
+
+        $scope.newLabel = {
+            parent_id: null,
+            name: null,
+            project_id: $scope.projectId
+        };
 
         $scope.edit = function () {
             $scope.editing = !$scope.editing;
         };
 
-        var labels = ProjectLabel.query({project_id: $scope.projectId}, function () {
-            var tree = {};
-            var build = function (label) {
-                var parent = label.parent_id;
-                if (tree[parent]) {
-                    tree[parent].push(label);
-                } else {
-                    tree[parent] = [label];
-                }
-            };
-
-            labels.forEach(build);
-            $scope.categoriesTree = tree;
-        });
-
         $scope.selectItem = function (item) {
-            // labels.setSelected(item);
-            // $scope.searchCategory = ''; // clear search field
+            $scope.selectedItem = item;
+            $scope.newLabel.parent_id = (item) ? item.id : null;
             $scope.$broadcast('categories.selected', item);
         };
 
         $scope.remove = function (item) {
             // always use force here because the user already had to confirm deletion
             Label.delete({id: item.id, force: true}, function () {
-                // remove item
-                var index = $scope.categoriesTree[item.parent_id].indexOf(item);
-                $scope.categoriesTree[item.parent_id].splice(index, 1);
-                // remove parent subtree if this was the last child
-                // (so the tree can be emptied completely)
-                if ($scope.categoriesTree[item.parent_id].length === 0) {
-                    $scope.categoriesTree[item.parent_id] = undefined;
+                if ($scope.selectedItem.id === item.id) {
+                    $scope.selectItem(null);
                 }
-                // remove subtree
-                $scope.categoriesTree[item.id] = undefined;
-                $scope.$broadcast('categories.refresh');
+                refreshLabels();
             });
         };
 
-        $scope.$watch('categoriesTree', function (categoriesTree) {
-            $scope.noItems = !categoriesTree || categoriesTree[null] === undefined;
-        }, true);
+        $scope.addLabel = function () {
+            Label.add($scope.newLabel, function (response) {
+                $scope.labels.push(response);
+                buildTree(response);
+                $scope.$broadcast('categories.refresh');
+                $scope.newLabel.name = '';
+            }, msg.responseError);
+        };
 	}]
 );
 
@@ -372,7 +380,7 @@ angular.module('dias.projects').controller('ProjectMembersController', ["$scope"
  * @memberOf dias.projects
  * @description A label category list item.
  */
-angular.module('dias.projects').directive('projectLabelCategoryItem', ["$compile", "$timeout", function ($compile, $timeout) {
+angular.module('dias.projects').directive('projectLabelCategoryItem', ["$compile", "$timeout", "$templateCache", function ($compile, $timeout, $templateCache) {
 		"use strict";
 
 		return {
@@ -386,7 +394,7 @@ angular.module('dias.projects').directive('projectLabelCategoryItem', ["$compile
 				// wait for this element to be rendered until the children are
 				// appended, otherwise there would be too much recursion for
 				// angular
-				var content = angular.element('<ul class="project-label-category-subtree list-unstyled"><li class="project-label-category-item" data-ng-class="{open: isOpen, expandable: isExpandable, selected: isSelected, \'text-danger\': removing}" data-ng-repeat="item in categoriesTree[item.id]"></li></ul>');
+				var content = angular.element($templateCache.get('label-subtree.html'));
 				$timeout(function () {
 					element.append($compile(content)(scope));
 				});
@@ -399,7 +407,7 @@ angular.module('dias.projects').directive('projectLabelCategoryItem', ["$compile
 				$scope.isExpandable = !!$scope.categoriesTree[$scope.item.id];
 				// this item is currently selected
 				$scope.isSelected = false;
-
+                // the user clicked on the 'x' button
                 $scope.removing = false;
 
                 $scope.startRemove = function () {
@@ -415,7 +423,7 @@ angular.module('dias.projects').directive('projectLabelCategoryItem', ["$compile
 				$scope.$on('categories.selected', function (e, category) {
 					// if an item is selected, its subtree and all parent items
 					// should be opened
-					if ($scope.item.id === category.id) {
+					if (category && $scope.item.id === category.id) {
 						$scope.isOpen = true;
 						$scope.isSelected = true;
 						// this hits all parent scopes/items
@@ -438,9 +446,7 @@ angular.module('dias.projects').directive('projectLabelCategoryItem', ["$compile
 
                 // check, if item still has children
                 $scope.$on('categories.refresh', function (e) {
-                    if ($scope.isExpandable) {
-                        $scope.isExpandable = !!$scope.categoriesTree[$scope.item.id];
-                    }
+                    $scope.isExpandable = !!$scope.categoriesTree[$scope.item.id];
                 });
 			}]
 		};

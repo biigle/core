@@ -8,14 +8,16 @@
 				@endif
 			</h3>
 		</div>
-		<div data-ng-if="editing" class="panel-body ng-cloak">
-			<form class="form-inline">
-				<div class="form-group">
-					<label for="new-user">New user</label>
-					<input class="form-control" id="new-user" placeholder="Search by username" data-user-chooser="addUser" />
-				</div>
-			</form>
-		</div>
+        @if ($isAdmin)
+    		<div data-ng-if="editing" class="panel-body ng-cloak">
+    			<form class="form-inline">
+    				<div class="form-group">
+    					<label for="new-user">New user</label>
+    					<input class="form-control" id="new-user" placeholder="Search by username" data-user-chooser="addUser" />
+    				</div>
+    			</form>
+    		</div>
+        @endif
 		@foreach (array('admin', 'editor', 'guest') as $role)
 			<table class="table" data-ng-controller="ProjectMembersContainerController" data-role="{{ $role }}">
 				<thead data-ng-class="{'bg-info': hovering}">

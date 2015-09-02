@@ -18,13 +18,17 @@
     content: "::";
     padding-right: .5em; }
 
+.project-add-category {
+  border-bottom: 1px solid #eeeeee; }
+
 .project-categories-list {
   max-height: 200px;
-  overflow: auto; }
+  overflow: auto;
+  padding-right: 15px; }
+  .project-categories-list li {
+    padding: 10px 0 0 19px; }
 
 .project-label-category-item {
-  padding-left: 19px;
-  padding-top: 0.5em;
   cursor: pointer; }
   .project-label-category-item.expandable > .item .item__name:before {
     content: '► '; }
