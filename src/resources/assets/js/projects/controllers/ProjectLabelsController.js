@@ -23,16 +23,21 @@ angular.module('dias.projects').controller('ProjectLabelsController', function (
             $scope.labels = ProjectLabel.query({project_id: $scope.projectId}, function () {
                 $scope.categoriesTree = {};
                 $scope.labels.forEach(buildTree);
-                $scope.selectItem($scope.selectedItem);
             });
         };
 
         refreshLabels();
 
+        // label that should be newly created on submit
         $scope.newLabel = {
             parent_id: null,
             name: null,
             project_id: $scope.projectId
+        };
+
+        // currently selected label
+        $scope.selected = {
+            label: null
         };
 
         $scope.edit = function () {
@@ -40,15 +45,15 @@ angular.module('dias.projects').controller('ProjectLabelsController', function (
         };
 
         $scope.selectItem = function (item) {
-            $scope.selectedItem = item;
-            $scope.newLabel.parent_id = (item) ? item.id : null;
-            $scope.$broadcast('categories.selected', item);
+            $scope.selected.label = item;
+            $scope.newLabel.parent_id = item ? item.id : null;
+            $scope.$broadcast('categories.selected', $scope.newLabel.parent_id);
         };
 
-        $scope.remove = function (item) {
+        $scope.remove = function (id) {
             // always use force here because the user already had to confirm deletion
-            Label.delete({id: item.id, force: true}, function () {
-                if ($scope.selectedItem.id === item.id) {
+            Label.delete({id: id, force: true}, function () {
+                if ($scope.selected.label.id === id) {
                     $scope.selectItem(null);
                 }
                 refreshLabels();
