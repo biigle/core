@@ -35,7 +35,7 @@
             </div>
         @endif
         <ul class="project-categories-list list-unstyled">
-            <li class="project-label-category-item" data-ng-class="{open: isOpen, expandable: isExpandable, selected: isSelected, 'text-danger': removing}" data-ng-repeat="item in categoriesTree[null]"></li>
+            <li class="project-label-category-item" data-ng-class="{open: isOpen, expandable: isExpandable, selected: isSelected, 'text-danger': removing}" data-ng-repeat="item in categoriesTree[null] | orderBy: 'name'"></li>
             <li data-ng-if="!labels.length" class="text-muted ng-cloak">No labels.</li>
         </ul>
 	</div>
@@ -59,6 +59,6 @@
 
 <script type="text/ng-template" id="label-subtree.html">
     <ul class="project-label-category-subtree list-unstyled">
-        <li class="project-label-category-item" data-ng-class="{open: isOpen, expandable: isExpandable, selected: isSelected, 'text-danger': removing}" data-ng-repeat="item in categoriesTree[item.id]"></li>
+        <li class="project-label-category-item" data-ng-class="{open: isOpen, expandable: isExpandable, selected: isSelected, 'text-danger': removing}" data-ng-repeat="item in categoriesTree[item.id] | orderBy: 'name'"></li>
     </ul>
 </script>
