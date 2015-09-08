@@ -25,7 +25,7 @@ angular.module('dias.annotations').controller('AnnotationsController', function 
 		$scope.annotations = [];
 
 		$scope.clearSelection = mapAnnotations.clearSelection;
-		
+
 		$scope.selectAnnotation = function (e, id) {
 			// allow multiple selections
 			if (!e.shiftKey) {

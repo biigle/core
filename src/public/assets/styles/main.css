@@ -127,8 +127,6 @@ html, body {
   width: 360px;
   border-left: 1px solid #090909;
   padding: 1em; }
-  .sidebar__permanent h1, .sidebar__categories h1, .sidebar__permanent h2, .sidebar__categories h2, .sidebar__permanent h3, .sidebar__categories h3, .sidebar__permanent h4, .sidebar__categories h4 {
-    margin-top: 0; }
 
 .sidebar__categories {
   display: none;
@@ -172,7 +170,6 @@ html, body {
 
 .annotation-list__item {
   cursor: pointer;
-  border-left: 3px solid transparent;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
@@ -185,8 +182,13 @@ html, body {
     border-top: 1px solid #333; }
   .annotation-list__item:hover, .annotation-list__item.selected {
     color: white; }
-  .annotation-list__item.selected {
-    border-left-color: #ff5e00; }
+  .annotation-list__item.selected:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    border-left: 3px solid #ff5e00; }
   .annotation-list__item .icon {
     margin-right: 1em; }
 
@@ -215,15 +217,24 @@ html, body {
 
 .categories-search {
   margin-bottom: 1em; }
+  .categories-search .form-control {
+    display: inline-block;
+    width: auto; }
 
-.categories-list {
+.categories-body {
   -webkit-flex-grow: 2;
       -ms-flex-positive: 2;
           flex-grow: 2;
-  overflow: auto;
-  margin-bottom: 0; }
-  .categories-list > .label-category-item {
-    padding-left: 0; }
+  overflow: auto; }
+
+.categories-list:not(:last-child) {
+  border-bottom: 1px solid #333; }
+
+.categories-list__name {
+  margin-bottom: 2px; }
+
+.categories-list__items > .label-category-item {
+  padding-left: 0; }
 
 .label-category-item {
   padding-left: 19px;
@@ -231,12 +242,16 @@ html, body {
   cursor: pointer; }
   .label-category-item .item__name {
     display: block; }
+  .label-category-item > .item__name:before {
+    content: '▹ '; }
   .label-category-item > .item__name:hover {
     color: white; }
   .label-category-item.expandable > .item__name:before {
-    content: '► '; }
-  .label-category-item.expandable.open > .item__name:before {
-    content: '▼ '; }
+    content: '▸ '; }
+  .label-category-item.expandable.open > .item__name {
+    color: white; }
+    .label-category-item.expandable.open > .item__name:before {
+      content: '▾ '; }
   .label-category-item > .label-category-subtree {
     max-height: 0;
     overflow: hidden; }

@@ -5,7 +5,6 @@
 
 .annotation-list__item {
 	cursor: pointer;
-	border-left: 3px solid transparent;
 	user-select: none;
 	padding: 1em;
 	padding-right: 0;
@@ -20,8 +19,13 @@
 		color: white;
 	}
 
-	&.selected {
-		border-left-color: #ff5e00;
+	&.selected:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+		border-left: 3px solid #ff5e00;
 	}
 
 	.icon {

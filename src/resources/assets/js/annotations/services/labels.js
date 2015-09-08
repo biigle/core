@@ -5,13 +5,38 @@
  * @memberOf dias.annotations
  * @description Wrapper service for annotation labels to provide some convenience functions.
  */
-angular.module('dias.annotations').service('labels', function (AnnotationLabel, Label, msg) {
+angular.module('dias.annotations').service('labels', function (AnnotationLabel, Label, ProjectLabel, Project, msg, $q) {
         "use strict";
 
         var selectedLabel;
         var currentConfidence = 1.0;
 
-        var labels = Label.query();
+        var labels = {};
+
+        // this promise is resolved when all labels were loaded
+        this.promise = null;
+
+        this.setProjectIds = function (ids) {
+            var deferred = $q.defer();
+            this.promise = deferred.promise;
+            // -1 bcause of global labels
+            var finished = -1;
+
+            // check if all labels are there. if yes, resolve
+            var maybeResolve = function () {
+                if (++finished === ids.length) {
+                    deferred.resolve(labels);
+                }
+            };
+
+            labels[null] = Label.query(maybeResolve);
+
+            ids.forEach(function (id) {
+                Project.get({id: id}, function (project) {
+                    labels[project.name] = ProjectLabel.query({project_id: id}, maybeResolve);
+                });
+            });
+        };
 
         this.fetchForAnnotation = function (annotation) {
             if (!annotation) return;
@@ -19,7 +44,7 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
             // don't fetch twice
             if (!annotation.labels) {
                 annotation.labels = AnnotationLabel.query({
-                        annotation_id: annotation.id
+                    annotation_id: annotation.id
                 });
             }
 
@@ -57,17 +82,21 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
 
         this.getTree = function () {
             var tree = {};
+            var key = null;
             var build = function (label) {
                 var parent = label.parent_id;
-                if (tree[parent]) {
-                    tree[parent].push(label);
+                if (tree[key][parent]) {
+                    tree[key][parent].push(label);
                 } else {
-                    tree[parent] = [label];
+                    tree[key][parent] = [label];
                 }
             };
 
-            labels.$promise.then(function (labels) {
-                labels.forEach(build);
+            this.promise.then(function (labels) {
+                for (key in labels) {
+                    tree[key] = {};
+                    labels[key].forEach(build);
+                }
             });
 
             return tree;

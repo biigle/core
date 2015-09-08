@@ -31,7 +31,7 @@ angular.module('dias.annotations').controller('AnnotationsController', ["$scope"
 		$scope.annotations = [];
 
 		$scope.clearSelection = mapAnnotations.clearSelection;
-		
+
 		$scope.selectAnnotation = function (e, id) {
 			// allow multiple selections
 			if (!e.shiftKey) {
@@ -53,6 +53,7 @@ angular.module('dias.annotations').controller('AnnotationsController', ["$scope"
 		$scope.$on('image.shown', refreshAnnotations);
 	}]
 );
+
 /**
  * @namespace dias.annotations
  * @ngdoc controller
@@ -60,100 +61,104 @@ angular.module('dias.annotations').controller('AnnotationsController', ["$scope"
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
  */
-angular.module('dias.annotations').controller('AnnotatorController', ["$scope", "$attrs", "images", "urlParams", "msg", function ($scope, $attrs, images, urlParams, msg) {
-		"use strict";
+angular.module('dias.annotations').controller('AnnotatorController', ["$scope", "$attrs", "images", "urlParams", "msg", "labels", function ($scope, $attrs, images, urlParams, msg, labels) {
+        "use strict";
 
-		$scope.images = images;
-		$scope.imageLoading = true;
-		$scope.editMode = !!$attrs.editMode;
+        $scope.images = images;
+        $scope.imageLoading = true;
+        $scope.editMode = !!$attrs.editMode;
+        $scope.projectIds = $attrs.projectIds.split(',');
 
-		// the current canvas viewport, synced with the URL parameters
-		$scope.viewport = {
-			zoom: urlParams.get('z'),
-			center: [urlParams.get('x'), urlParams.get('y')]
-		};
+        labels.setProjectIds($scope.projectIds);
 
-		// finish image loading process
-		var finishLoading = function () {
-			$scope.imageLoading = false;
-			$scope.$broadcast('image.shown', $scope.images.currentImage);
-		};
+        // the current canvas viewport, synced with the URL parameters
+        $scope.viewport = {
+            zoom: urlParams.get('z'),
+            center: [urlParams.get('x'), urlParams.get('y')]
+        };
 
-		// create a new history entry
-		var pushState = function () {
-			urlParams.pushState($scope.images.currentImage._id);
-		};
+        // finish image loading process
+        var finishLoading = function () {
+            $scope.imageLoading = false;
+            $scope.$broadcast('image.shown', $scope.images.currentImage);
+        };
 
-		// start image loading process
-		var startLoading = function () {
-			$scope.imageLoading = true;
-		};
+        // create a new history entry
+        var pushState = function () {
+            urlParams.pushState($scope.images.currentImage._id);
+        };
 
-		// load the image by id. doesn't create a new history entry by itself
-		var loadImage = function (id) {
-			startLoading();
-			return images.show(parseInt(id))
-			             .then(finishLoading)
-			             .catch(msg.responseError);
-		};
+        // start image loading process
+        var startLoading = function () {
+            $scope.imageLoading = true;
+        };
 
-		var handleKeyEvents = function (e) {
-			switch (e.keyCode) {
-				case 37:
-					$scope.prevImage();
-					break;
-				case 39:
-					$scope.nextImage();
-					break;
-			}
-		};
+        // load the image by id. doesn't create a new history entry by itself
+        var loadImage = function (id) {
+            startLoading();
+            return images.show(parseInt(id))
+                         .then(finishLoading)
+                         .catch(msg.responseError);
+        };
 
-		// show the next image and create a new history entry
-		$scope.nextImage = function () {
-			startLoading();
-			images.next()
-			      .then(finishLoading)
-			      .then(pushState)
-			      .catch(msg.responseError);
-		};
+        var handleKeyEvents = function (e) {
+            switch (e.keyCode) {
+                case 37:
+                    $scope.prevImage();
+                    break;
+                case 39:
+                    $scope.nextImage();
+                    break;
+            }
+        };
 
-		// show the previous image and create a new history entry
-		$scope.prevImage = function () {
-			startLoading();
-			images.prev()
-			      .then(finishLoading)
-			      .then(pushState)
-			      .catch(msg.responseError);
-		};
+        // show the next image and create a new history entry
+        $scope.nextImage = function () {
+            startLoading();
+            images.next()
+                  .then(finishLoading)
+                  .then(pushState)
+                  .catch(msg.responseError);
+        };
 
-		// update the URL parameters of the viewport
-		$scope.$on('canvas.moveend', function(e, params) {
-			$scope.viewport.zoom = params.zoom;
-			$scope.viewport.center[0] = Math.round(params.center[0]);
-			$scope.viewport.center[1] = Math.round(params.center[1]);
-			urlParams.set({
-				z: $scope.viewport.zoom,
-				x: $scope.viewport.center[0],
-				y: $scope.viewport.center[1]
-			});
-		});
+        // show the previous image and create a new history entry
+        $scope.prevImage = function () {
+            startLoading();
+            images.prev()
+                  .then(finishLoading)
+                  .then(pushState)
+                  .catch(msg.responseError);
+        };
 
-		// listen to the browser "back" button
-		window.onpopstate = function(e) {
-			var state = e.state;
-			if (state && state.slug !== undefined) {
-				loadImage(state.slug);
-			}
-		};
+        // update the URL parameters of the viewport
+        $scope.$on('canvas.moveend', function(e, params) {
+            $scope.viewport.zoom = params.zoom;
+            $scope.viewport.center[0] = Math.round(params.center[0]);
+            $scope.viewport.center[1] = Math.round(params.center[1]);
+            urlParams.set({
+                z: $scope.viewport.zoom,
+                x: $scope.viewport.center[0],
+                y: $scope.viewport.center[1]
+            });
+        });
 
-		document.addEventListener('keypress', handleKeyEvents);
+        // listen to the browser "back" button
+        window.onpopstate = function(e) {
+            var state = e.state;
+            if (state && state.slug !== undefined) {
+                loadImage(state.slug);
+            }
+        };
 
-		// initialize the images service
-		images.init($attrs.transectId);
-		// display the first image
-		loadImage($attrs.imageId).then(pushState);
-	}]
+        document.addEventListener('keypress', handleKeyEvents);
+
+        // initialize the images service
+        images.init($attrs.transectId);
+        // display the first image
+        loadImage($attrs.imageId).then(pushState);
+    }]
 );
+
 /**
  * @namespace dias.annotations
  * @ngdoc controller
@@ -196,19 +201,25 @@ angular.module('dias.annotations').controller('CanvasController', ["$scope", "ma
  * @description Controller for the sidebar label categories foldout
  */
 angular.module('dias.annotations').controller('CategoriesController', ["$scope", "labels", function ($scope, labels) {
-		"use strict";
+        "use strict";
 
-		$scope.categories = labels.getAll();
+        $scope.categories = [];
+        labels.promise.then(function (all) {
+            for (var key in all) {
+                $scope.categories = $scope.categories.concat(all[key]);
+            }
+        });
 
-		$scope.categoriesTree = labels.getTree();
+        $scope.categoriesTree = labels.getTree();
 
-		$scope.selectItem = function (item) {
-			labels.setSelected(item);
-			$scope.searchCategory = ''; // clear search field
-			$scope.$broadcast('categories.selected', item);
-		};
-	}]
+        $scope.selectItem = function (item) {
+            labels.setSelected(item);
+            $scope.searchCategory = ''; // clear search field
+            $scope.$broadcast('categories.selected', item);
+        };
+    }]
 );
+
 /**
  * @namespace dias.annotations
  * @ngdoc controller
@@ -410,62 +421,62 @@ angular.module('dias.annotations').directive('annotationListItem', ["labels", fu
  * @memberOf dias.annotations
  * @description A label category list item.
  */
-angular.module('dias.annotations').directive('labelCategoryItem', ["$compile", "$timeout", function ($compile, $timeout) {
-		"use strict";
+angular.module('dias.annotations').directive('labelCategoryItem', ["$compile", "$timeout", "$templateCache", function ($compile, $timeout, $templateCache) {
+        "use strict";
 
-		return {
-			restrict: 'C',
+        return {
+            restrict: 'C',
 
-			template: '<span class="item__name" data-ng-click="selectItem(item)">{{item.name}}</span>',
+            templateUrl: 'label-item.html',
 
-			scope: true,
+            scope: true,
 
-			link: function (scope, element, attrs) {
-				// wait for this element to be rendered until the children are
-				// appended, otherwise there would be too much recursion for 
-				// angular
-				var content = angular.element('<ul class="label-category-subtree list-unstyled"><li class="label-category-item" data-ng-class="{open: isOpen, expandable: isExpandable, selected: isSelected}" data-ng-repeat="item in categoriesTree[item.id]"></li></ul>');
-				$timeout(function () {
-					element.append($compile(content)(scope));
-				});
-			},
+            link: function (scope, element, attrs) {
+                // wait for this element to be rendered until the children are
+                // appended, otherwise there would be too much recursion for
+                // angular
+                var content = angular.element($templateCache.get('label-subtree.html'));
+                $timeout(function () {
+                    element.append($compile(content)(scope));
+                });
+            },
 
-			controller: ["$scope", function ($scope) {
-				// open the subtree of this item
-				$scope.isOpen = false;
-				// this item has children
-				$scope.isExpandable = !!$scope.categoriesTree[$scope.item.id];
-				// this item is currently selected
-				$scope.isSelected = false;
+            controller: ["$scope", function ($scope) {
+                // open the subtree of this item
+                $scope.isOpen = false;
+                // this item has children
+                $scope.isExpandable = !!$scope.tree[$scope.item.id];
+                // this item is currently selected
+                $scope.isSelected = false;
 
-				// handle this by the event rather than an own click handler to 
-				// deal with click and search field actions in a unified way
-				$scope.$on('categories.selected', function (e, category) {
-					// if an item is selected, its subtree and all parent items 
-					// should be opened
-					if ($scope.item.id === category.id) {
-						$scope.isOpen = true;
-						$scope.isSelected = true;
-						// this hits all parent scopes/items
-						$scope.$emit('categories.openParents');
-					} else {
-						$scope.isOpen = false;
-						$scope.isSelected = false;
-					}
-				});
+                // handle this by the event rather than an own click handler to
+                // deal with click and search field actions in a unified way
+                $scope.$on('categories.selected', function (e, category) {
+                    // if an item is selected, its subtree and all parent items
+                    // should be opened
+                    if ($scope.item.id === category.id) {
+                        $scope.isOpen = true;
+                        $scope.isSelected = true;
+                        // this hits all parent scopes/items
+                        $scope.$emit('categories.openParents');
+                    } else {
+                        $scope.isOpen = false;
+                        $scope.isSelected = false;
+                    }
+                });
 
-				// if a child item was selected, this item should be opened, too
-				// so the selected item becomes visible in the tree
-				$scope.$on('categories.openParents', function (e) {
-					$scope.isOpen = true;
-					// stop propagation if this is a root element
-					if ($scope.item.parent_id === null) {
-						e.stopPropagation();
-					}
-				});
-			}]
-		};
-	}]
+                // if a child item was selected, this item should be opened, too
+                // so the selected item becomes visible in the tree
+                $scope.$on('categories.openParents', function (e) {
+                    $scope.isOpen = true;
+                    // stop propagation if this is a root element
+                    if ($scope.item.parent_id === null) {
+                        e.stopPropagation();
+                    }
+                });
+            }]
+        };
+    }]
 );
 
 /**
@@ -770,13 +781,38 @@ angular.module('dias.annotations').service('images', ["TransectImage", "URL", "$
  * @memberOf dias.annotations
  * @description Wrapper service for annotation labels to provide some convenience functions.
  */
-angular.module('dias.annotations').service('labels', ["AnnotationLabel", "Label", "msg", function (AnnotationLabel, Label, msg) {
+angular.module('dias.annotations').service('labels', ["AnnotationLabel", "Label", "ProjectLabel", "Project", "msg", "$q", function (AnnotationLabel, Label, ProjectLabel, Project, msg, $q) {
         "use strict";
 
         var selectedLabel;
         var currentConfidence = 1.0;
 
-        var labels = Label.query();
+        var labels = {};
+
+        // this promise is resolved when all labels were loaded
+        this.promise = null;
+
+        this.setProjectIds = function (ids) {
+            var deferred = $q.defer();
+            this.promise = deferred.promise;
+            // -1 bcause of global labels
+            var finished = -1;
+
+            // check if all labels are there. if yes, resolve
+            var maybeResolve = function () {
+                if (++finished === ids.length) {
+                    deferred.resolve(labels);
+                }
+            };
+
+            labels[null] = Label.query(maybeResolve);
+
+            ids.forEach(function (id) {
+                Project.get({id: id}, function (project) {
+                    labels[project.name] = ProjectLabel.query({project_id: id}, maybeResolve);
+                });
+            });
+        };
 
         this.fetchForAnnotation = function (annotation) {
             if (!annotation) return;
@@ -784,7 +820,7 @@ angular.module('dias.annotations').service('labels', ["AnnotationLabel", "Label"
             // don't fetch twice
             if (!annotation.labels) {
                 annotation.labels = AnnotationLabel.query({
-                        annotation_id: annotation.id
+                    annotation_id: annotation.id
                 });
             }
 
@@ -822,17 +858,21 @@ angular.module('dias.annotations').service('labels', ["AnnotationLabel", "Label"
 
         this.getTree = function () {
             var tree = {};
+            var key = null;
             var build = function (label) {
                 var parent = label.parent_id;
-                if (tree[parent]) {
-                    tree[parent].push(label);
+                if (tree[key][parent]) {
+                    tree[key][parent].push(label);
                 } else {
-                    tree[parent] = [label];
+                    tree[key][parent] = [label];
                 }
             };
 
-            labels.$promise.then(function (labels) {
-                labels.forEach(build);
+            this.promise.then(function (labels) {
+                for (key in labels) {
+                    tree[key] = {};
+                    labels[key].forEach(build);
+                }
             });
 
             return tree;

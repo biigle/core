@@ -6,16 +6,21 @@
  * @description Controller for the sidebar label categories foldout
  */
 angular.module('dias.annotations').controller('CategoriesController', function ($scope, labels) {
-		"use strict";
+        "use strict";
 
-		$scope.categories = labels.getAll();
+        $scope.categories = [];
+        labels.promise.then(function (all) {
+            for (var key in all) {
+                $scope.categories = $scope.categories.concat(all[key]);
+            }
+        });
 
-		$scope.categoriesTree = labels.getTree();
+        $scope.categoriesTree = labels.getTree();
 
-		$scope.selectItem = function (item) {
-			labels.setSelected(item);
-			$scope.searchCategory = ''; // clear search field
-			$scope.$broadcast('categories.selected', item);
-		};
-	}
+        $scope.selectItem = function (item) {
+            labels.setSelected(item);
+            $scope.searchCategory = ''; // clear search field
+            $scope.$broadcast('categories.selected', item);
+        };
+    }
 );

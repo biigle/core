@@ -13,7 +13,7 @@
 @append
 
 @section('content')
-<div class="annotator__container" data-ng-app="dias.annotations" data-ng-controller="AnnotatorController" data-image-id="{{ $image->id }}" data-transect-id="{{ $image->transect->id }}" data-edit-mode="{{ $editMode }}">
+<div class="annotator__container" data-ng-app="dias.annotations" data-ng-controller="AnnotatorController" data-image-id="{{ $image->id }}" data-transect-id="{{ $image->transect->id }}" data-edit-mode="{{ $editMode }}" data-project-ids="{{ $projectIds }}">
 	<div id="canvas" class="annotator__canvas" data-ng-controller="CanvasController">
 		<div class="canvas__loader" data-ng-class="{active:imageLoading}"></div>
 		@if ($editMode)

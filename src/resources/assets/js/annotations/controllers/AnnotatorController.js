@@ -5,97 +5,100 @@
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
  */
-angular.module('dias.annotations').controller('AnnotatorController', function ($scope, $attrs, images, urlParams, msg) {
-		"use strict";
+angular.module('dias.annotations').controller('AnnotatorController', function ($scope, $attrs, images, urlParams, msg, labels) {
+        "use strict";
 
-		$scope.images = images;
-		$scope.imageLoading = true;
-		$scope.editMode = !!$attrs.editMode;
+        $scope.images = images;
+        $scope.imageLoading = true;
+        $scope.editMode = !!$attrs.editMode;
+        $scope.projectIds = $attrs.projectIds.split(',');
 
-		// the current canvas viewport, synced with the URL parameters
-		$scope.viewport = {
-			zoom: urlParams.get('z'),
-			center: [urlParams.get('x'), urlParams.get('y')]
-		};
+        labels.setProjectIds($scope.projectIds);
 
-		// finish image loading process
-		var finishLoading = function () {
-			$scope.imageLoading = false;
-			$scope.$broadcast('image.shown', $scope.images.currentImage);
-		};
+        // the current canvas viewport, synced with the URL parameters
+        $scope.viewport = {
+            zoom: urlParams.get('z'),
+            center: [urlParams.get('x'), urlParams.get('y')]
+        };
 
-		// create a new history entry
-		var pushState = function () {
-			urlParams.pushState($scope.images.currentImage._id);
-		};
+        // finish image loading process
+        var finishLoading = function () {
+            $scope.imageLoading = false;
+            $scope.$broadcast('image.shown', $scope.images.currentImage);
+        };
 
-		// start image loading process
-		var startLoading = function () {
-			$scope.imageLoading = true;
-		};
+        // create a new history entry
+        var pushState = function () {
+            urlParams.pushState($scope.images.currentImage._id);
+        };
 
-		// load the image by id. doesn't create a new history entry by itself
-		var loadImage = function (id) {
-			startLoading();
-			return images.show(parseInt(id))
-			             .then(finishLoading)
-			             .catch(msg.responseError);
-		};
+        // start image loading process
+        var startLoading = function () {
+            $scope.imageLoading = true;
+        };
 
-		var handleKeyEvents = function (e) {
-			switch (e.keyCode) {
-				case 37:
-					$scope.prevImage();
-					break;
-				case 39:
-					$scope.nextImage();
-					break;
-			}
-		};
+        // load the image by id. doesn't create a new history entry by itself
+        var loadImage = function (id) {
+            startLoading();
+            return images.show(parseInt(id))
+                         .then(finishLoading)
+                         .catch(msg.responseError);
+        };
 
-		// show the next image and create a new history entry
-		$scope.nextImage = function () {
-			startLoading();
-			images.next()
-			      .then(finishLoading)
-			      .then(pushState)
-			      .catch(msg.responseError);
-		};
+        var handleKeyEvents = function (e) {
+            switch (e.keyCode) {
+                case 37:
+                    $scope.prevImage();
+                    break;
+                case 39:
+                    $scope.nextImage();
+                    break;
+            }
+        };
 
-		// show the previous image and create a new history entry
-		$scope.prevImage = function () {
-			startLoading();
-			images.prev()
-			      .then(finishLoading)
-			      .then(pushState)
-			      .catch(msg.responseError);
-		};
+        // show the next image and create a new history entry
+        $scope.nextImage = function () {
+            startLoading();
+            images.next()
+                  .then(finishLoading)
+                  .then(pushState)
+                  .catch(msg.responseError);
+        };
 
-		// update the URL parameters of the viewport
-		$scope.$on('canvas.moveend', function(e, params) {
-			$scope.viewport.zoom = params.zoom;
-			$scope.viewport.center[0] = Math.round(params.center[0]);
-			$scope.viewport.center[1] = Math.round(params.center[1]);
-			urlParams.set({
-				z: $scope.viewport.zoom,
-				x: $scope.viewport.center[0],
-				y: $scope.viewport.center[1]
-			});
-		});
+        // show the previous image and create a new history entry
+        $scope.prevImage = function () {
+            startLoading();
+            images.prev()
+                  .then(finishLoading)
+                  .then(pushState)
+                  .catch(msg.responseError);
+        };
 
-		// listen to the browser "back" button
-		window.onpopstate = function(e) {
-			var state = e.state;
-			if (state && state.slug !== undefined) {
-				loadImage(state.slug);
-			}
-		};
+        // update the URL parameters of the viewport
+        $scope.$on('canvas.moveend', function(e, params) {
+            $scope.viewport.zoom = params.zoom;
+            $scope.viewport.center[0] = Math.round(params.center[0]);
+            $scope.viewport.center[1] = Math.round(params.center[1]);
+            urlParams.set({
+                z: $scope.viewport.zoom,
+                x: $scope.viewport.center[0],
+                y: $scope.viewport.center[1]
+            });
+        });
 
-		document.addEventListener('keypress', handleKeyEvents);
+        // listen to the browser "back" button
+        window.onpopstate = function(e) {
+            var state = e.state;
+            if (state && state.slug !== undefined) {
+                loadImage(state.slug);
+            }
+        };
 
-		// initialize the images service
-		images.init($attrs.transectId);
-		// display the first image
-		loadImage($attrs.imageId).then(pushState);
-	}
+        document.addEventListener('keypress', handleKeyEvents);
+
+        // initialize the images service
+        images.init($attrs.transectId);
+        // display the first image
+        loadImage($attrs.imageId).then(pushState);
+    }
 );
