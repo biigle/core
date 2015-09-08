@@ -8,7 +8,7 @@ class AnnotationController extends Controller {
 	/**
 	 * Shows the annotation index page.
 	 * @param int $id the image ID
-	 * 
+	 *
 	 * @return \Illuminate\Http\Response
 	 */
 	public function index($id)

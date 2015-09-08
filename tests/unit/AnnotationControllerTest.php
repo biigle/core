@@ -6,22 +6,15 @@ class AnnotationControllerTest extends TestCase {
 
    public function testIndex() {
       $project = ProjectTest::create();
-      $project->save();
       $transect = TransectTest::create();
-      $transect->save();
-      $image = ImageTest::create();
-      $image->transect()->associate($transect);
-      $image->save();
+      $image = ImageTest::create(['transect_id' => $transect->id]);
       $project->addTransectId($transect->id);
-      $user = UserTest::create();
-      $user->save();
-
       // not logged in
       $this->get('annotate/'.$image->id);
       $this->assertResponseStatus(302);
 
       // doesn't belong to project
-      $this->be($user);
+      $this->be(UserTest::create());
       $this->get('annotate/'.$image->id);
       $this->assertResponseStatus(401);
 

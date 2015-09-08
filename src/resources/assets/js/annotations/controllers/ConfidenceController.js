@@ -8,7 +8,7 @@
 angular.module('dias.annotations').controller('ConfidenceController', function ($scope, labels) {
 		"use strict";
 
-		$scope.confidence = 0.5;
+		$scope.confidence = 1.0;
 
 		$scope.$watch('confidence', function (confidence) {
 			labels.setCurrentConfidence(parseFloat(confidence));
