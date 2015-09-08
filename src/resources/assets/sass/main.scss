@@ -40,12 +40,16 @@
 .project-label-category-item {
     cursor: pointer;
 
+    & > .item .item__name:before {
+        content: '▹ ';
+    }
+
     &.expandable > .item .item__name:before {
-        content: '► ';
+        content: '▸ ';
     }
 
     &.expandable.open > .item .item__name:before {
-        content: '▼ ';
+        content: '▾ ';
     }
 
     & > .project-label-category-subtree {
