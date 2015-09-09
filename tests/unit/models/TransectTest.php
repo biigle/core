@@ -4,150 +4,106 @@ use Dias\Transect;
 
 class TransectTest extends ModelWithAttributesTest
 {
-    public static function create($name = 't1', $url = false, $mt = false, $u = false)
-    {
-        $obj = new Transect;
-        $obj->name = $name;
-        $obj->url = $url ? $url : str_random(5);
-        $u = $u ? $u : UserTest::create();
-        $u->save();
-        $obj->creator()->associate($u);
-        $mt = $mt ? $mt : MediaTypeTest::create();
-        $mt->save();
-        $obj->mediaType()->associate($mt);
-
-        return $obj;
-    }
-
-    public function testCreation()
-    {
-        $obj = self::create();
-        $this->assertTrue($obj->save());
-    }
+    /**
+     * The model class this class will test.
+     */
+    protected static $modelClass = Dias\Transect::class;
 
     public function testAttributes()
     {
-        $transect = self::create('test', 'url');
-        $transect->save();
-        $this->assertNotNull($transect->name);
-        $this->assertNotNull($transect->url);
-        $this->assertNotNull($transect->media_type_id);
-        $this->assertNotNull($transect->creator_id);
-        $this->assertNotNull($transect->created_at);
-        $this->assertNotNull($transect->updated_at);
+        $this->assertNotNull($this->model->name);
+        $this->assertNotNull($this->model->url);
+        $this->assertNotNull($this->model->media_type_id);
+        $this->assertNotNull($this->model->creator_id);
+        $this->assertNotNull($this->model->created_at);
+        $this->assertNotNull($this->model->updated_at);
     }
 
     public function testNameRequired()
     {
-        $obj = self::create();
-        $obj->name = null;
+        $this->model->name = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        $this->model->save();
     }
 
     public function testUrlRequired()
     {
-        $obj = self::create();
-        $obj->url = null;
+        $this->model->url = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        $this->model->save();
     }
 
     public function testMediaTypeRequired()
     {
-        $obj = self::create();
-        $obj->mediaType()->dissociate();
+        $this->model->mediaType()->dissociate();
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        $this->model->save();
     }
 
     public function testMediaTypeOnDeleteRestrict()
     {
-        $obj = self::create();
-        $obj->save();
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->mediaType()->delete();
+        $this->model->mediaType()->delete();
     }
 
     public function testCreatorOnDeleteSetNull()
     {
-        $obj = self::create();
-        $obj->save();
-        $obj->creator()->delete();
-        $this->assertNull($obj->fresh()->creator_id);
+        $this->model->creator()->delete();
+        $this->assertNull($this->model->fresh()->creator_id);
     }
 
     public function testImages()
     {
-        $transect = self::create();
-        $transect->save();
-        $image = ImageTest::create('test', $transect);
-        $image->save();
-        $this->assertEquals($image->id, $transect->images()->first()->id);
+        $image = ImageTest::create(['transect_id' => $this->model->id]);
+        $this->assertEquals($image->id, $this->model->images()->first()->id);
     }
 
     public function testProjects()
     {
-        $transect = self::create();
-        $transect->save();
         $project = ProjectTest::create();
-        $project->save();
-        $this->assertEquals(0, $transect->projects()->count());
-        $project->addTransectId($transect->id);
-        $this->assertEquals(1, $transect->projects()->count());
+        $this->assertEquals(0, $this->model->projects()->count());
+        $project->addTransectId($this->model->id);
+        $this->assertEquals(1, $this->model->projects()->count());
     }
 
     public function testProjectIds()
     {
-        $transect = self::create();
-        $transect->save();
         $project = ProjectTest::create();
-        $project->save();
-        $this->assertEmpty($transect->projectIds());
-        $project->addTransectId($transect->id);
+        $this->assertEmpty($this->model->projectIds());
+        $project->addTransectId($this->model->id);
         // clear caching of previous call
         Cache::flush();
-        $ids = $transect->projectIds();
+        $ids = $this->model->projectIds();
         $this->assertNotEmpty($ids);
         $this->assertEquals($project->id, $ids[0]);
     }
 
     public function testSetMediaType()
     {
-        $transect = self::create();
-        $transect->save();
         $type = MediaTypeTest::create();
-        $type->save();
-
-        $this->assertNotEquals($type->id, $transect->mediaType->id);
-        $transect->setMediaType($type);
-        $this->assertEquals($type->id, $transect->mediaType->id);
+        $this->assertNotEquals($type->id, $this->model->mediaType->id);
+        $this->model->setMediaType($type);
+        $this->assertEquals($type->id, $this->model->mediaType->id);
     }
 
     public function testSetMediaTypeId()
     {
-        $transect = self::create();
-        $transect->save();
         $type = MediaTypeTest::create();
-        $type->save();
-
-        $this->assertNotEquals($type->id, $transect->mediaType->id);
-        $transect->setMediaTypeId($type->id);
-        $this->assertEquals($type->id, $transect->mediaType->id);
+        $this->assertNotEquals($type->id, $this->model->mediaType->id);
+        $this->model->setMediaTypeId($type->id);
+        $this->assertEquals($type->id, $this->model->mediaType->id);
 
         // media type does not exist
         $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
-        $transect->setMediaTypeId(99999);
+        $this->model->setMediaTypeId(99999);
     }
 
     public function testCreateImages()
     {
-        $transect = self::create();
-        $transect->save();
-        $this->assertEmpty($transect->images);
-        $transect->createImages(['1.jpg']);
-        $transect = $transect->fresh();
-        $this->assertNotEmpty($transect->images);
-        $this->assertEquals('1.jpg', $transect->images()->first()->filename);
+        $this->assertEmpty($this->model->images);
+        $this->model->createImages(['1.jpg']);
+        $this->model = $this->model->fresh();
+        $this->assertNotEmpty($this->model->images);
+        $this->assertEquals('1.jpg', $this->model->images()->first()->filename);
     }
 }

@@ -21,25 +21,23 @@ class MediaType extends Model
 
     /**
      * The time series media type ID.
-     * 
-     * @return int
+     *
+     * @var int
      */
-    public static function timeSeriesId()
-    {
-        return Cache::rememberForever('media-type-time-series', function () {
-            return MediaType::whereName('time-series')->first()->id;
-        });
-    }
+    public static $timeSeriesId;
 
     /**
      * The location series media type ID.
-     * 
-     * @return int
+     *
+     * @var int
      */
-    public static function locationSeriesId()
-    {
-        return Cache::rememberForever('media-type-location-series', function () {
-            return MediaType::whereName('location-series')->first()->id;
-        });
-    }
+    public static $locationSeriesId;
 }
+
+MediaType::$timeSeriesId = Cache::rememberForever('media-type-time-series', function () {
+    return MediaType::whereName('time-series')->first()->id;
+});
+
+MediaType::$locationSeriesId = Cache::rememberForever('media-type-location-series', function () {
+    return MediaType::whereName('location-series')->first()->id;
+});

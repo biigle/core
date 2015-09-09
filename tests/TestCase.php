@@ -10,7 +10,22 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->prepareForTests();
+
+        // activate sqlite foreign key integrity checks on SQLite
+        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+            DB::statement('PRAGMA foreign_keys = ON;');
+        }
+
+        Artisan::call('migrate');
+    }
+
+    public function tearDown()
+    {
+        if (!(DB::connection() instanceof Illuminate\Database\SQLiteConnection)) {
+            Artisan::call('migrate:rollback');
+        }
+
+        DB::disconnect();
     }
 
     /**
@@ -25,21 +40,5 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
         return $app;
-    }
-
-    /**
-     * Migrates the database (SQLite in-memory).
-     * This will cause the tests to run quickly.
-     */
-    private function prepareForTests()
-    {
-        // activate sqlite foreign key integrity checks on SQLite
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
-            DB::statement('PRAGMA foreign_keys = ON;');
-            Artisan::call('migrate');
-        } else {
-            // in case the real DB connection should be tested
-            Artisan::call('migrate:refresh');
-        }
     }
 }

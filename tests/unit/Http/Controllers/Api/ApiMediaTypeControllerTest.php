@@ -23,15 +23,15 @@ class ApiMediaTypeControllerTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/media-types/'.MediaType::timeSeriesId());
+        $this->doTestApiRoute('GET', '/api/v1/media-types/'.MediaType::$timeSeriesId);
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/media-types/'.MediaType::timeSeriesId(), $this->admin);
+        $this->callToken('GET', '/api/v1/media-types/'.MediaType::$timeSeriesId, $this->admin);
         $this->assertResponseOk();
 
         // session cookie authentication
         $this->be($this->user);
-        $r = $this->call('GET', '/api/v1/media-types/'.MediaType::timeSeriesId());
+        $r = $this->call('GET', '/api/v1/media-types/'.MediaType::$timeSeriesId);
         $this->assertResponseOk();
         $this->assertStringStartsWith('{', $r->getContent());
         $this->assertStringEndsWith('}', $r->getContent());

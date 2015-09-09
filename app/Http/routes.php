@@ -21,7 +21,7 @@ Route::group(['namespace' => 'Auth'], function ($router) {
 });
 
 Route::group(['namespace' => 'Views', 'prefix' => 'documentation'], function ($router) {
-    // route name must be different from the 'doc' directory name of the static 
+    // route name must be different from the 'doc' directory name of the static
     // files in the public directory
     $router->get('/', [
         'as' => 'documentation',
@@ -42,6 +42,18 @@ Route::group(['namespace' => 'Views', 'middleware' => 'auth'], function ($router
     $router->get('settings', [
         'as' => 'settings',
         'uses' => 'SettingsController@index',
+    ]);
+    $router->get('settings/profile', [
+        'as' => 'settings-profile',
+        'uses' => 'SettingsController@profile',
+    ]);
+    $router->get('settings/account', [
+        'as' => 'settings-account',
+        'uses' => 'SettingsController@account',
+    ]);
+    $router->get('settings/tokens', [
+        'as' => 'settings-tokens',
+        'uses' => 'SettingsController@tokens',
     ]);
 });
 
@@ -105,6 +117,10 @@ Route::group([
         'only' => ['index', 'show', 'store', 'update', 'destroy'],
     ]);
 
+    $router->resource('projects.labels', 'ProjectLabelController', [
+        'only' => ['index', 'show'],
+    ]);
+
     $router->post(
         'projects/{pid}/transects/{tid}',
         'ProjectTransectController@attach'
@@ -146,6 +162,10 @@ Route::group([
     $router->get('users/my', 'UserController@showOwn');
     $router->put('users/my', 'UserController@updateOwn');
     $router->delete('users/my', 'UserController@destroyOwn');
+
+    $router->post('users/my/token', 'UserController@storeOwnToken');
+    $router->delete('users/my/token', 'UserController@destroyOwnToken');
+
     $router->resource('users', 'UserController', [
         'only' => ['index', 'show', 'update', 'store', 'destroy'],
     ]);

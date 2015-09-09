@@ -5,113 +5,84 @@ use Dias\Role;
 
 class UserTest extends ModelWithAttributesTest
 {
-    public static function create($fn = 'joe', $ln = 'user', $pw = 'pw', $mail = false)
-    {
-        $user = new User;
-        $user->firstname = $fn;
-        $user->lastname = $ln;
-        $user->password = bcrypt($pw);
-        $user->email = ($mail) ? $mail : str_random(10);
-
-        return $user;
-    }
-
-    private $user;
-
-    public function setUp()
-    {
-        parent::setUp();
-        $this->user = self::create();
-    }
-
-    public function testCreation()
-    {
-        $this->assertTrue($this->user->save());
-    }
+    /**
+     * The model class this class will test.
+     */
+    protected static $modelClass = Dias\User::class;
 
     public function testAttributes()
     {
-        $this->user->save();
-        $this->assertNotNull($this->user->firstname);
-        $this->assertNotNull($this->user->lastname);
-        $this->assertNotNull($this->user->name);
-        $this->assertNotNull($this->user->password);
-        $this->assertNotNull($this->user->email);
-        $this->assertNotNull($this->user->role_id);
-        $this->assertNotNull($this->user->created_at);
-        $this->assertNotNull($this->user->updated_at);
+        $this->assertNotNull($this->model->firstname);
+        $this->assertNotNull($this->model->lastname);
+        $this->assertNotNull($this->model->name);
+        $this->assertNotNull($this->model->password);
+        $this->assertNotNull($this->model->email);
+        $this->assertNotNull($this->model->role_id);
+        $this->assertNotNull($this->model->created_at);
+        $this->assertNotNull($this->model->updated_at);
     }
 
     public function testFirstnameRequired()
     {
-        $this->user->firstname = null;
+        $this->model->firstname = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $this->user->save();
+        $this->model->save();
     }
 
     public function testLastnameRequired()
     {
-        $this->user->lastname = null;
+        $this->model->lastname = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $this->user->save();
+        $this->model->save();
     }
 
     public function testPasswordRequired()
     {
-        $this->user->password = null;
+        $this->model->password = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $this->user->save();
+        $this->model->save();
     }
 
     public function testEmailRequired()
     {
-        $this->user->email = null;
+        $this->model->email = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $this->user->save();
+        $this->model->save();
     }
 
     public function testEmailUnique()
     {
-        $this->user = self::create('joe', 'user', 'pw', 'test@test.com');
-        $this->user->save();
-        $this->user = self::create('joe', 'user', 'pw', 'test@test.com');
+        self::create(['email' => 'test@test.com']);
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $this->user->save();
+        self::create(['email' => 'test@test.com']);
     }
 
     public function testProjects()
     {
         $project = ProjectTest::create();
-        $project->save();
-        $this->user->save();
         $role = RoleTest::create();
-        $role->save();
-        $project->addUserId($this->user->id, $role->id);
+        $project->addUserId($this->model->id, $role->id);
 
-        $this->assertEquals($this->user->projects()->first()->id, $project->id);
+        $this->assertEquals($this->model->projects()->first()->id, $project->id);
     }
 
     public function testRole()
     {
-        $this->user->save();
-        $role = $this->user->role;
-        $this->assertNotNull($role);
-        $this->assertEquals(Role::editorId(), $role->id);
+        $this->assertEquals(Role::$editor->id, $this->model->role->id);
     }
 
     public function testIsAdmin()
     {
-        $this->user->save();
-        $this->assertFalse($this->user->isAdmin);
-        $this->user->role()->associate(Role::admin());
-        $this->assertTrue($this->user->isAdmin);
+        $this->assertFalse($this->model->isAdmin);
+        $this->model->role()->associate(Role::$admin);
+        $this->assertTrue($this->model->isAdmin);
     }
 
     public function testHiddenAttributes()
     {
         // API key mustn't show up in the JSON
-        $this->user->generateAPIKey();
-        $jsonUser = json_decode((string) $this->user);
+        $this->model->generateAPIKey();
+        $jsonUser = json_decode((string) $this->model);
         $this->assertObjectNotHasAttribute('firstname', $jsonUser);
         $this->assertObjectNotHasAttribute('lastname', $jsonUser);
         $this->assertObjectNotHasAttribute('password', $jsonUser);
@@ -125,64 +96,66 @@ class UserTest extends ModelWithAttributesTest
 
     public function testApiKey()
     {
-        $this->user->save();
-        $this->assertNull($this->user->api_key);
-        $key = $this->user->generateApiKey();
-        $this->user->save();
-        $this->assertEquals($key, $this->user->fresh()->api_key);
+        $this->assertNull($this->model->api_key);
+        $key = $this->model->generateApiKey();
+        $this->assertNotNull($this->model->api_key);
     }
 
     public function testCanSeeOneOfProjects()
     {
-        $this->user->save();
         $project = ProjectTest::create();
-        $project->save();
         $projectIds = [$project->id];
-        $this->assertFalse($this->user->canSeeOneOfProjects($projectIds));
-        $project->addUserId($this->user->id, Role::guestId());
+        $this->assertFalse($this->model->canSeeOneOfProjects($projectIds));
+        $project->addUserId($this->model->id, Role::$guest->id);
         Cache::flush();
-        $this->assertTrue($this->user->canSeeOneOfProjects($projectIds));
-        $project->changeRole($this->user->id, Role::editorId());
+        $this->assertTrue($this->model->canSeeOneOfProjects($projectIds));
+        $project->changeRole($this->model->id, Role::$editor->id);
         Cache::flush();
-        $this->assertTrue($this->user->canSeeOneOfProjects($projectIds));
-        $project->changeRole($this->user->id, Role::adminId());
+        $this->assertTrue($this->model->canSeeOneOfProjects($projectIds));
+        $project->changeRole($this->model->id, Role::$admin->id);
         Cache::flush();
-        $this->assertTrue($this->user->canSeeOneOfProjects($projectIds));
+        $this->assertTrue($this->model->canSeeOneOfProjects($projectIds));
     }
 
     public function testCanEditInOneOfProjects()
     {
-        $this->user->save();
         $project = ProjectTest::create();
-        $project->save();
         $projectIds = [$project->id];
-        $this->assertFalse($this->user->canEditInOneOfProjects($projectIds));
-        $project->addUserId($this->user->id, Role::guestId());
+        $this->assertFalse($this->model->canEditInOneOfProjects($projectIds));
+        $project->addUserId($this->model->id, Role::$guest->id);
         Cache::flush();
-        $this->assertFalse($this->user->canEditInOneOfProjects($projectIds));
-        $project->changeRole($this->user->id, Role::editorId());
+        $this->assertFalse($this->model->canEditInOneOfProjects($projectIds));
+        $project->changeRole($this->model->id, Role::$editor->id);
         Cache::flush();
-        $this->assertTrue($this->user->canEditInOneOfProjects($projectIds));
-        $project->changeRole($this->user->id, Role::adminId());
+        $this->assertTrue($this->model->canEditInOneOfProjects($projectIds));
+        $project->changeRole($this->model->id, Role::$admin->id);
         Cache::flush();
-        $this->assertTrue($this->user->canEditInOneOfProjects($projectIds));
+        $this->assertTrue($this->model->canEditInOneOfProjects($projectIds));
     }
 
     public function testCanAdminOneOfProjects()
     {
-        $this->user->save();
         $project = ProjectTest::create();
-        $project->save();
         $projectIds = [$project->id];
-        $this->assertFalse($this->user->canAdminOneOfProjects($projectIds));
-        $project->addUserId($this->user->id, Role::guestId());
+        $this->assertFalse($this->model->canAdminOneOfProjects($projectIds));
+        $project->addUserId($this->model->id, Role::$guest->id);
         Cache::flush();
-        $this->assertFalse($this->user->canAdminOneOfProjects($projectIds));
-        $project->changeRole($this->user->id, Role::editorId());
+        $this->assertFalse($this->model->canAdminOneOfProjects($projectIds));
+        $project->changeRole($this->model->id, Role::$editor->id);
         Cache::flush();
-        $this->assertFalse($this->user->canAdminOneOfProjects($projectIds));
-        $project->changeRole($this->user->id, Role::adminId());
+        $this->assertFalse($this->model->canAdminOneOfProjects($projectIds));
+        $project->changeRole($this->model->id, Role::$admin->id);
         Cache::flush();
-        $this->assertTrue($this->user->canAdminOneOfProjects($projectIds));
+        $this->assertTrue($this->model->canAdminOneOfProjects($projectIds));
+    }
+
+    public function testCheckCanBeDeleted()
+    {
+        $project = ProjectTest::create();
+        $project->addUserId($this->model->id, Role::$guest->id);
+
+        $this->model->checkCanBeDeleted();
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $project->creator->checkCanBeDeleted();
     }
 }

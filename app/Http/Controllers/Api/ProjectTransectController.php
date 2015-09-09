@@ -110,6 +110,7 @@ class ProjectTransectController extends Controller
         if (static::isAutomatedRequest($this->request)) {
             // media type shouldn't be returned
             unset($transect->media_type);
+
             return $transect;
         } else {
             return redirect()->route('home')

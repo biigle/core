@@ -10,7 +10,6 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
     protected function getModel()
     {
         $annotation = AnnotationTest::create();
-        $annotation->save();
         $this->project->addTransectId($annotation->image->transect->id);
 
         return $annotation;
@@ -101,7 +100,6 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
         $this->assertNull($this->annotation->fresh());
 
         $this->annotation = AnnotationTest::create();
-        $this->annotation->save();
         $this->project->addTransectId($this->annotation->image->transect->id);
         $id = $this->annotation->id;
 

@@ -127,6 +127,7 @@ class ProjectController extends Controller
         if (static::isAutomatedRequest($this->request)) {
             // creator shouldn't be returned
             unset($project->creator);
+
             return $project;
         }
 

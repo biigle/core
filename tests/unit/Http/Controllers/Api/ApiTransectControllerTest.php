@@ -10,7 +10,6 @@ class ApiTransectControllerTest extends ModelWithAttributesApiTest
     protected function getModel()
     {
         $model = TransectTest::create();
-        $model->save();
         $this->project->addTransectId($model->id);
 
         return $model;
@@ -21,9 +20,7 @@ class ApiTransectControllerTest extends ModelWithAttributesApiTest
     public function setUp()
     {
         parent::setUp();
-
         $this->transect = TransectTest::create();
-        $this->transect->save();
         $this->project->addTransectId($this->transect->id);
     }
 

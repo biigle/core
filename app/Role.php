@@ -20,67 +20,34 @@ class Role extends Model
 
     /**
      * The admin role.
-     * 
-     * @return Role
+     *
+     * @var Role
      */
-    public static function admin()
-    {
-        return Cache::rememberForever('role-admin', function () {
-            return Role::whereName('admin')->first();
-        });
-    }
-
-    /**
-     * The admin role ID.
-     * 
-     * @return int
-     */
-    public static function adminId()
-    {
-        return self::admin()->id;
-    }
+    public static $admin;
 
     /**
      * The editor role.
-     * 
-     * @return Role
+     *
+     * @var Role
      */
-    public static function editor()
-    {
-        return Cache::rememberForever('role-editor', function () {
-            return Role::whereName('editor')->first();
-        });
-    }
-
-    /**
-     * The editor role ID.
-     * 
-     * @return int
-     */
-    public static function editorId()
-    {
-        return self::editor()->id;
-    }
+    public static $editor;
 
     /**
      * The guest role.
-     * 
-     * @return Role
+     *
+     * @var Role
      */
-    public static function guest()
-    {
-        return Cache::rememberForever('role-guest', function () {
-            return Role::whereName('guest')->first();
-        });
-    }
-
-    /**
-     * The guest role ID.
-     * 
-     * @return int
-     */
-    public static function guestId()
-    {
-        return self::guest()->id;
-    }
+    public static $guest;
 }
+
+Role::$admin = Cache::rememberForever('role-admin', function () {
+    return Role::whereName('admin')->first();
+});
+
+Role::$editor = Cache::rememberForever('role-editor', function () {
+    return Role::whereName('editor')->first();
+});
+
+Role::$guest = Cache::rememberForever('role-guest', function () {
+    return Role::whereName('guest')->first();
+});

@@ -22,7 +22,7 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
 
         $this->doTestApiRoute('GET', '/api/v1/projects/my');
 
-// api key authentication
+        // api key authentication
         $this->callToken('GET', '/api/v1/projects/my', $this->admin);
         $this->assertResponseOk();
 
@@ -33,7 +33,7 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
 
         $this->assertStringStartsWith('[', $r->getContent());
         $this->assertStringEndsWith(']', $r->getContent());
-        $this->assertContains('"description":"test"', $r->getContent());
+        $this->assertContains('"description":"', $r->getContent());
         $this->assertNotContains('pivot', $r->getContent());
     }
 
@@ -41,7 +41,7 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
     {
         $this->doTestApiRoute('GET', '/api/v1/projects/1');
 
-// api key authentication
+        // api key authentication
         $this->callToken('GET', '/api/v1/projects/1', $this->admin);
         $this->assertResponseOk();
 
@@ -58,7 +58,7 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
 
         $this->assertStringStartsWith('{', $r->getContent());
         $this->assertStringEndsWith('}', $r->getContent());
-        $this->assertContains('"description":"test"', $r->getContent());
+        $this->assertContains('"description":"', $r->getContent());
         $this->assertNotContains('pivot', $r->getContent());
     }
 

@@ -52,9 +52,9 @@ abstract class ModelWithAttributesApiTest extends ApiTestCase
 
     public function testAttributesShow()
     {
-        $this->model->attributes()->save(AttributeTest::create('my-test'));
+        $this->model->attributes()->save(AttributeTest::create(['name' => 'my-test']));
 
-$this->doTestApiRoute('GET', $this->endpoint.'/my-test');
+        $this->doTestApiRoute('GET', $this->endpoint.'/my-test');
 
         $this->callToken('GET', $this->endpoint.'/my-test', $this->user);
 
@@ -80,10 +80,8 @@ $this->doTestApiRoute('GET', $this->endpoint.'/my-test');
 
     public function testAttributesStore()
     {
-        $attr = AttributeTest::create('my-test');
-        $attr->save();
-        $attr2 = AttributeTest::create('my-test2');
-        $attr2->save();
+        AttributeTest::create(['name' => 'my-test', 'type' => 'integer']);
+        AttributeTest::create(['name' => 'my-test2', 'type' => 'integer']);
 
         $this->doTestApiRoute('POST', $this->endpoint);
 
@@ -163,8 +161,7 @@ $this->doTestApiRoute('GET', $this->endpoint.'/my-test');
 
     public function testAttributesUpdate()
     {
-        $attr = AttributeTest::create('my-test');
-        $attr->save();
+        AttributeTest::create(['name' => 'my-test', 'type' => 'integer']);
         $this->model->attachDiasAttribute('my-test', 123);
 
         $this->doTestApiRoute('PUT', $this->endpoint.'/my-test');
@@ -238,8 +235,7 @@ $this->doTestApiRoute('GET', $this->endpoint.'/my-test');
 
     public function testAttributesDestroy()
     {
-        $attr = AttributeTest::create('my-test');
-        $attr->save();
+        AttributeTest::create(['name' => 'my-test', 'type' => 'integer']);
         $this->model->attachDiasAttribute('my-test', 123);
 
         $this->doTestApiRoute('DELETE', $this->endpoint.'/my-test');

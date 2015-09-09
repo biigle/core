@@ -13,7 +13,7 @@ class UserObserver
      */
     public function creating($user)
     {
-        $user->role()->associate(Role::editor());
+        $user->role_id = Role::$editor->id;
 
         return true;
     }
@@ -21,10 +21,10 @@ class UserObserver
     /**
      * Removes the user from all project memberships, thus checking if it is
      * allowed to delete the user.
-     * 
+     *
      * If the user were the last admin of a project for example, they mustn't
      * be deleted.
-     * 
+     *
      * @param \Dias\User $user
      * @return bool
      */

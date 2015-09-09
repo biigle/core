@@ -8,14 +8,12 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->image = ImageTest::create();
-        $this->image->save();
         $this->project->addTransectId($this->image->transect->id);
     }
 
     public function testIndex()
     {
-        $annotation = AnnotationTest::create($this->image);
-        $annotation->save();
+        $annotation = AnnotationTest::create(['image_id' => $this->image->id]);
 
         $this->doTestApiRoute('GET',
             '/api/v1/images/'.$this->image->id.'/annotations'
@@ -83,7 +81,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             '/api/v1/images/'.$this->image->id.'/annotations',
             [
                 '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::lineId(),
+                'shape_id' => \Dias\Shape::$lineId,
                 'label_id' => 99999,
             ]
         );
@@ -94,18 +92,18 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             '/api/v1/images/'.$this->image->id.'/annotations',
             [
                 '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::pointId(),
+                'shape_id' => \Dias\Shape::$pointId,
                 'label_id' => $this->labelRoot->id,
             ]
         );
         // confidence required
         $this->assertResponseStatus(422);
 
-$this->callAjax('POST',
+        $this->callAjax('POST',
             '/api/v1/images/'.$this->image->id.'/annotations',
             [
                 '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::pointId(),
+                'shape_id' => \Dias\Shape::$pointId,
                 'label_id' => $this->labelRoot->id,
                 'confidence' => 0.5,
                 'points' => '[]',
@@ -118,7 +116,7 @@ $this->callAjax('POST',
             '/api/v1/images/'.$this->image->id.'/annotations',
             [
                 '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::pointId(),
+                'shape_id' => \Dias\Shape::$pointId,
                 'label_id' => $this->labelRoot->id,
                 'confidence' => 0.5,
                 'points' => '[{"x":10,"y":11}]',

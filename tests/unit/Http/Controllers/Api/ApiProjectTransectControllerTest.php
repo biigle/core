@@ -12,9 +12,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
     public function setUp()
     {
         parent::setUp();
-
-        $this->transect = TransectTest::create('test', base_path().'/tests/files');
-        $this->transect->save();
+        $this->transect = TransectTest::create();
         $this->project->addTransectId($this->transect->id);
     }
 
@@ -68,7 +66,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
             '_token' => Session::token(),
             'name' => 'my transect no. 1',
             'url' => 'random',
-            'media_type_id' => MediaType::timeSeriesId(),
+            'media_type_id' => MediaType::$timeSeriesId,
             'images' => '',
         ]);
         // images array is empty
@@ -81,7 +79,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
             '_token' => Session::token(),
             'name' => 'my transect no. 1',
             'url' => 'random',
-            'media_type_id' => MediaType::timeSeriesId(),
+            'media_type_id' => MediaType::$timeSeriesId,
             // empty parts should be discarded
             'images' => '1.jpg, , 2.jpg, , ,',
         ]);
@@ -101,9 +99,8 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         $tid = $this->transect->id;
 
         $secondProject = ProjectTest::create();
-        $secondProject->save();
         $pid = $secondProject->id;
-        // $secondProject->addUserId($this->admin->id, Role::adminId());
+        // $secondProject->addUserId($this->admin->id, Role::$admin->id);
 
         $this->doTestApiRoute('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid);
 
@@ -111,7 +108,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         $this->callToken('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid, $this->admin);
         $this->assertResponseStatus(401);
 
-        $secondProject->addUserId($this->admin->id, Role::adminId());
+        $secondProject->addUserId($this->admin->id, Role::$admin->id);
         Cache::flush();
 
         // session cookie authentication
@@ -125,9 +122,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
     public function testDestroy()
     {
         $id = $this->transect->id;
-        $image = ImageTest::create();
-        $image->transect()->associate($this->transect);
-        $image->save();
+        $image = ImageTest::create(['transect_id' => $id]);
         $image->getThumb();
 
         $this->doTestApiRoute('DELETE', '/api/v1/projects/1/transects/'.$id);

@@ -7,12 +7,8 @@ class ProjectUserIntegrityTest extends TestCase
     public function testRoleOnDeleteRestrict()
     {
         $project = ProjectTest::create();
-        $project->save();
-        $user = UserTest::create();
-        $user->save();
         $role = RoleTest::create();
-        $role->save();
-        $project->addUserId($user->id, $role->id);
+        $project->addUserId(UserTest::create()->id, $role->id);
         $this->setExpectedException('Illuminate\Database\QueryException');
         $role->delete();
     }
@@ -20,12 +16,8 @@ class ProjectUserIntegrityTest extends TestCase
     public function testProjectOnDeleteCascade()
     {
         $project = ProjectTest::create();
-        $project->save();
         $user = UserTest::create();
-        $user->save();
-        $role = RoleTest::create();
-        $role->save();
-        $project->addUserId($user->id, $role->id);
+        $project->addUserId($user->id, RoleTest::create()->id);
 
         $this->assertEquals(1, $user->projects()->count());
         $project->delete();
@@ -35,10 +27,8 @@ class ProjectUserIntegrityTest extends TestCase
     public function testUserOnDeleteCascade()
     {
         $member = UserTest::create();
-        $member->save();
         $project = ProjectTest::create();
-        $project->save();
-        $project->addUserId($member->id, Role::guestId());
+        $project->addUserId($member->id, Role::$guest->id);
 
         // count the project creator, too
         $this->assertEquals(2, $project->users()->count());
@@ -49,11 +39,8 @@ class ProjectUserIntegrityTest extends TestCase
     public function testUserProjectRoleUnique()
     {
         $project = ProjectTest::create();
-        $project->save();
         $user = UserTest::create();
-        $user->save();
         $role = RoleTest::create();
-        $role->save();
         $project->addUserId($user->id, $role->id);
         $this->setExpectedException('Illuminate\Database\QueryException');
         // attach manually so the error-check in addUserId is circumvented

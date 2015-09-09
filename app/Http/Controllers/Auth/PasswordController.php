@@ -33,13 +33,18 @@ class PasswordController extends Controller
         $this->subject = trans('auth.pw_reset_subject');
 
         $this->middleware('guest');
+
+        $this->redirectPath = route('home');
+
+        $this->subject = '[BIIGLE DIAS] - Your Password Reset Link';
     }
 
     /**
      * Overrides the default method to exclude the password in the error
      * response.
      *
-     * @param  Request  $request
+     * @param  \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function postReset(Request $request)
@@ -51,8 +56,8 @@ class PasswordController extends Controller
         );
 
         $response = Password::reset($credentials, function ($user, $password) {
-         $this->resetPassword($user, $password);
-     });
+            $this->resetPassword($user, $password);
+        });
 
         switch ($response) {
          case Password::PASSWORD_RESET:
@@ -62,6 +67,6 @@ class PasswordController extends Controller
              return redirect()->back()
                  ->withInput($request->only('email'))
                  ->withErrors(['email' => trans($response)]);
-     }
+        }
     }
 }

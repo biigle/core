@@ -4837,13 +4837,14 @@ button.close {
           justify-content: center;
   height: 100vh; }
 
-.navbar-noradius {
-  border-radius: 0; }
-
 .info-text__sign {
   position: absolute;
   right: 14px;
   top: 20px; }
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+  margin-top: 0; }
 
 figcaption {
   text-align: center; }
@@ -4916,9 +4917,9 @@ figcaption {
   color: #777777; }
 
 .logo.logo-inverse .logo__biigle {
-  color: #777777; }
-.logo.logo-inverse .logo__dias {
   color: #eeeeee; }
+.logo.logo-inverse .logo__dias {
+  color: inherit; }
 
 .btn-inverse {
   color: #9d9d9d;

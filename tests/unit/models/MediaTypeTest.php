@@ -2,55 +2,41 @@
 
 use Dias\MediaType;
 
-class MediaTypeTest extends TestCase
+class MediaTypeTest extends ModelTestCase
 {
-    public static function create($name = false)
-    {
-        $mediaType = new MediaType;
-        $mediaType->name = $name ? $name : str_random(10);
-
-        return $mediaType;
-    }
-
-    public function testCreation()
-    {
-        $mediaType = self::create();
-        $this->assertTrue($mediaType->save());
-    }
+    /**
+     * The model class this class will test.
+     */
+    protected static $modelClass = Dias\MediaType::class;
 
     public function testAttributes()
     {
-        $mediaType = self::create();
-        $mediaType->save();
-        $this->assertNotNull($mediaType->name);
-        $this->assertNull($mediaType->created_at);
-        $this->assertNull($mediaType->updated_at);
+        $this->assertNotNull($this->model->name);
+        $this->assertNull($this->model->created_at);
+        $this->assertNull($this->model->updated_at);
     }
 
     public function testNameRequired()
     {
-        $obj = self::create();
-        $obj->name = null;
+        $this->model->name = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        $this->model->save();
     }
 
     public function testNameUnique()
     {
-        $obj = self::create('images');
-        $obj->save();
-        $obj = self::create('images');
+        self::create(['name' => 'images']);
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $obj->save();
+        self::create(['name' => 'images']);
     }
 
     public function testTimeSeriesId()
     {
-        $this->assertNotNull(MediaType::timeSeriesId());
+        $this->assertNotNull(MediaType::$timeSeriesId);
     }
 
     public function testLocationSeriesId()
     {
-        $this->assertNotNull(MediaType::locationSeriesId());
+        $this->assertNotNull(MediaType::$locationSeriesId);
     }
 }

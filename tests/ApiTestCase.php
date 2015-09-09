@@ -19,40 +19,34 @@ class ApiTestCase extends TestCase
     public function setUp()
     {
         parent::setUp();
-        Session::start();
 
         $this->project = ProjectTest::create();
-        $this->project->save();
-
         $transect = TransectTest::create();
-        $transect->save();
         $this->project->addTransectId($transect->id);
 
-        $this->admin = $this->newProjectUser(Role::adminId());
-        $this->editor = $this->newProjectUser(Role::editorId());
-        $this->guest = $this->newProjectUser(Role::guestId());
+        $this->admin = $this->newProjectUser(Role::$admin->id);
+        $this->editor = $this->newProjectUser(Role::$editor->id);
+        $this->guest = $this->newProjectUser(Role::$guest->id);
 
-        $this->user = $this->newProjectUser(Role::guestId());
+        $this->user = $this->newProjectUser(Role::$guest->id);
         $this->project->removeUserId($this->user->id);
 
-        $this->globalAdmin = $this->newProjectUser(Role::guestId());
+        $this->globalAdmin = $this->newProjectUser(Role::$guest->id);
         $this->project->removeUserId($this->user->id);
-        $this->globalAdmin->role()->associate(Role::admin());
+        $this->globalAdmin->role()->associate(Role::$admin);
         $this->globalAdmin->save();
 
-        $this->labelRoot = new Label;
-        $this->labelRoot->name = 'Test Root';
-        $this->labelRoot->save();
+        $this->labelRoot = LabelTest::create(['name' => 'Test Root']);
 
-        $this->labelChild = new Label;
-        $this->labelChild->name = 'Test Child';
-        $this->labelChild->parent_id = $this->labelRoot->id;
-        $this->labelChild->save();
+        $this->labelChild = LabelTest::create([
+            'name' => 'Test Child',
+            'parent_id' => $this->labelRoot->id,
+        ]);
     }
 
     private function newProjectUser($roleId)
     {
-        $user = UserTest::create();
+        $user = UserTest::make();
         $user->generateApiKey();
         $user->save();
         $this->project->addUserId($user->id, $roleId);

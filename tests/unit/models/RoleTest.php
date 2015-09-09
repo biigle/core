@@ -2,86 +2,68 @@
 
 use Dias\Role;
 
-class RoleTest extends TestCase
+class RoleTest extends ModelTestCase
 {
-    public static function create($name = 'member')
-    {
-        $role = new Role;
-        $role->name = $name;
-
-        return $role;
-    }
-
-    public function testCreation()
-    {
-        $role = self::create();
-        $this->assertTrue($role->save());
-    }
+    /**
+     * The model class this class will test.
+     */
+    protected static $modelClass = Dias\Role::class;
 
     public function testAttributes()
     {
-        $role = self::create();
-        $role->save();
-        $this->assertNotNull($role->name);
+        $this->assertNotNull($this->model->name);
     }
 
     public function testNameRequired()
     {
-        $role = self::create();
-        $role->name = null;
+        $this->model->name = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $role->save();
+        $this->model->save();
     }
 
     public function testNameUnique()
     {
-        $role = self::create();
-        $role->save();
-        $role = self::create();
+        self::create(['name' => 'xyz']);
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $role->save();
+        self::create(['name' => 'xyz']);
     }
 
     public function testOnDeleteRestrict()
     {
         $project = ProjectTest::create();
-        $project->save();
         $user = UserTest::create();
-        $user->save();
-        $role = self::create();
-        $role->save();
-        $project->addUserId($user->id, $role->id);
+        $project->addUserId($user->id, $this->model->id);
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $role->delete();
+        $this->model->delete();
     }
 
     public function testAdminId()
     {
-        $this->assertNotNull(Role::adminId());
+        $this->assertNotNull(Role::$admin->id);
     }
 
     public function testAdmin()
     {
-        $this->assertEquals('admin', Role::admin()->name);
+        $this->assertEquals('admin', Role::$admin->name);
     }
 
     public function testEditorId()
     {
-        $this->assertNotNull(Role::editorId());
+        $this->assertNotNull(Role::$editor->id);
     }
 
     public function testEditor()
     {
-        $this->assertEquals('editor', Role::editor()->name);
+        $this->assertEquals('editor', Role::$editor->name);
     }
 
     public function testGuestId()
     {
-        $this->assertNotNull(Role::guestId());
+        $this->assertNotNull(Role::$guest->id);
     }
 
     public function testGuest()
     {
-        $this->assertEquals('guest', Role::guest()->name);
+        $this->assertEquals('guest', Role::$guest->name);
     }
 }

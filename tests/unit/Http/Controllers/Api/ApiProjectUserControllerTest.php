@@ -9,7 +9,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
     {
         $this->doTestApiRoute('GET', '/api/v1/projects/1/users');
 
-// api key authentication
+        // api key authentication
         $this->callToken('GET', '/api/v1/projects/1/users', $this->admin);
         $this->assertResponseOk();
 
@@ -24,7 +24,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
 
         $this->assertStringStartsWith('[', $r->getContent());
         $this->assertStringEndsWith(']', $r->getContent());
-        $this->assertContains('"name":"joe user"', $r->getContent());
+        $this->assertContains('"name":"'.$this->admin->name.'"', $r->getContent());
         $this->assertContains('project_role_id', $r->getContent());
         $this->assertNotContains('pivot', $r->getContent());
     }
@@ -71,18 +71,18 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $r = $this->callAjax('PUT', '/api/v1/projects/1/users/'.$this->admin->id,
             [
                 '_token' => Session::token(),
-                'project_role_id' => Role::guestId(),
+                'project_role_id' => Role::$guest->id,
             ]
         );
         $this->assertResponseStatus(400);
-        $this->assertEquals('{"message":"The last project admin cannot be removed."}', $r->getContent());
+        $this->assertStringStartsWith('{"message":"The last admin of '.$this->project->name.' cannot be removed.', $r->getContent());
 
         $this->assertEquals(2, $this->project->users()->find($this->editor->id)->project_role_id);
 
         $this->call('PUT', '/api/v1/projects/1/users/'.$this->editor->id,
             [
                 '_token' => Session::token(),
-                'project_role_id' => Role::guestId(),
+                'project_role_id' => Role::$guest->id,
             ]
         );
 
@@ -125,7 +125,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $this->assertResponseOk();
         $newUser = $this->project->users()->find($id);
         $this->assertEquals($id, $newUser->id);
-        $this->assertEquals(Role::editorId(), $newUser->project_role_id);
+        $this->assertEquals(Role::$editor->id, $newUser->project_role_id);
     }
 
     public function testDestroy()
@@ -148,7 +148,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $this->assertResponseOk();
         $this->assertNull($this->project->fresh()->users()->find($this->editor->id));
 
-        $this->project->addUserId($this->editor->id, Role::editorId());
+        $this->project->addUserId($this->editor->id, Role::$editor->id);
 
         // admins can delete anyone
         $this->assertNotNull($this->project->fresh()->users()->find($this->editor->id));
@@ -158,7 +158,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $this->assertResponseOk();
         $this->assertNull($this->project->fresh()->users()->find($this->editor->id));
 
-        $this->project->addUserId($this->editor->id, Role::editorId());
+        $this->project->addUserId($this->editor->id, Role::$editor->id);
 
 // session cookie authentication
         $this->be($this->admin);

@@ -69,7 +69,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
      */
     public function admins()
     {
-        return $this->users()->whereProjectRoleId(Role::adminId());
+        return $this->users()->whereProjectRoleId(Role::$admin->id);
     }
 
     /**
@@ -79,7 +79,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
      */
     public function editors()
     {
-        return $this->users()->whereProjectRoleId(Role::editorId());
+        return $this->users()->whereProjectRoleId(Role::$editor->id);
     }
 
     /**
@@ -89,7 +89,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
      */
     public function guests()
     {
-        return $this->users()->whereProjectRoleId(Role::guestId());
+        return $this->users()->whereProjectRoleId(Role::$guest->id);
     }
 
     /**
@@ -228,6 +228,21 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
     }
 
     /**
+     * Checks if the user can be removed from the project.
+     * Throws an exception if not.
+     *
+     * @param int $userId
+     */
+    public function checkUserCanBeRemoved($userId)
+    {
+        $admins = $this->admins();
+        // is this an attempt to remove the last remaining admin?
+        if ($admins->count() === 1 && $admins->find($userId) !== null) {
+            abort(400, "The last admin of {$this->name} cannot be removed. The admin status must be passed on to another user or the project must be deleted first.");
+        }
+    }
+
+    /**
      * Removes the user by ID from this project.
      *
      * @param int $userId
@@ -235,11 +250,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
      */
     public function removeUserId($userId)
     {
-        $admins = $this->admins();
-        // is this an attempt to remove the last remaining admin?
-        if ($admins->count() == 1 && $admins->find($userId)) {
-            abort(400, 'The last project admin cannot be removed.');
-        }
+        $this->checkUserCanBeRemoved($userId);
 
         return (boolean) $this->users()->detach($userId);
     }
@@ -334,5 +345,15 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
         foreach ($transects as $transect) {
             $this->removeTransect($transect, $force);
         }
+    }
+
+    /**
+     * The project specific labels of this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function labels()
+    {
+        return $this->hasMany('Dias\Label');
     }
 }

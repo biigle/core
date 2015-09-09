@@ -22,15 +22,15 @@ class ApiShapeControllerTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::circleId());
+        $this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::$circleId);
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/shapes/'.Shape::circleId(), $this->admin);
+        $this->callToken('GET', '/api/v1/shapes/'.Shape::$circleId, $this->admin);
         $this->assertResponseOk();
 
         // session cookie authentication
         $this->be($this->user);
-        $r = $this->call('GET', '/api/v1/shapes/'.Shape::circleId());
+        $r = $this->call('GET', '/api/v1/shapes/'.Shape::$circleId);
         $this->assertResponseOk();
         $this->assertStringStartsWith('{', $r->getContent());
         $this->assertStringEndsWith('}', $r->getContent());

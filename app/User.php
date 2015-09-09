@@ -128,7 +128,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
      */
     public function getIsAdminAttribute()
     {
-        return $this->role->id === Role::adminId();
+        return $this->role->id === Role::$admin->id;
     }
 
     /**
@@ -190,5 +190,16 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
     public function getNameAttribute()
     {
         return $this->firstname.' '.$this->lastname;
+    }
+
+    /**
+     * Checks if the user can be deleted.
+     * Throws an exception if not.
+     */
+    public function checkCanBeDeleted()
+    {
+        foreach ($this->projects as $project) {
+            $project->checkUserCanBeRemoved($this->id);
+        }
     }
 }

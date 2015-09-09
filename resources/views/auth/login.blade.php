@@ -44,7 +44,7 @@
 			</form>
 			<p class="clearfix">
 				<a href="{{ url('password/email') }}" class="">{{ trans('auth.forgotpw') }}</a>
-				<a href="{{ url('auth/register') }}" class="pull-right">{{ trans('auth.register') }}</a>
+				{{--<a href="{{ url('auth/register') }}" class="pull-right">{{ trans('auth.register') }}</a>--}}
 			</p>
 		</div>
 	</div>

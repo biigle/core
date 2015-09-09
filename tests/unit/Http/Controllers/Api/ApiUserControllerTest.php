@@ -12,7 +12,6 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
     protected function getModel()
     {
         $model = UserTest::create();
-        $model->save();
 
         return $model;
     }
@@ -159,6 +158,13 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         // no old password provided
         $this->assertResponseStatus(422);
 
+        $this->callAjax('PUT', '/api/v1/users/my', [
+            '_token' => Session::token(),
+            'email' => 'new@email.me',
+        ]);
+        // no old password provided either
+        $this->assertResponseStatus(422);
+
         // ajax call to get the correct response status
         $this->callAjax('PUT', '/api/v1/users/my', [
             '_token' => Session::token(),
@@ -278,18 +284,36 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         $this->assertResponseOk();
         $this->assertNull($this->guest->fresh());
 
+        $this->be($this->editor);
+        $this->call('DELETE', '/api/v1/users/my', [
+            '_token' => Session::token(),
+        ]);
+        $this->assertRedirectedTo('auth/login');
+        $this->assertNull(Auth::user());
+
         $this->call('DELETE', '/api/v1/users/my', [
             '_token' => Session::token(),
         ]);
         // deleted user doesn't have permission any more
         $this->assertResponseStatus(401);
+
+        $this->be($this->admin);
+        // make admin the only admin
+        $this->project->creator->delete();
+        $this->visit('settings/profile');
+        $this->call('DELETE', '/api/v1/users/my', [
+            '_token' => Session::token(),
+        ]);
+        // couldn't be deleted, returns with error message
+        $this->assertRedirectedTo('settings/profile');
+        $this->assertNotNull(Auth::user());
+        $this->assertSessionHas('errors');
     }
 
     public function testFind()
     {
-        $user = UserTest::create('abc', 'def');
-        $user->save();
-        UserTest::create('abc', 'ghi')->save();
+        $user = UserTest::create(['firstname' => 'abc', 'lastname' => 'def']);
+        UserTest::create(['firstname' => 'abc', 'lastname' => 'ghi']);
 
         $this->doTestApiRoute('GET', '/api/v1/users/find/a');
 
@@ -307,5 +331,58 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
 
         $this->assertContains('"name":"abc def"', $r->getContent());
         $this->assertNotContains('"name":"abc ghi"', $r->getContent());
+    }
+
+    public function testStoreOwnToken()
+    {
+        $this->doTestApiRoute('POST', '/api/v1/users/my/token');
+
+        $this->callToken('POST', '/api/v1/users/my/token', $this->user);
+        // api key authentication is not allowed for this route
+        $this->assertResponseStatus(401);
+
+        $this->be($this->user);
+        $this->user->api_key = null;
+
+        $this->callAjax('POST', '/api/v1/users/my/token', [
+            '_token' => Session::token(),
+        ]);
+        $this->assertResponseOk();
+        $this->assertNotNull($this->user->api_key);
+        $key = $this->user->api_key;
+
+        $r = $this->call('POST', '/api/v1/users/my/token', [
+            '_token' => Session::token(),
+        ]);
+        $this->assertResponseStatus(302);
+        // redirect to settings tokens page for form requests
+        $this->assertContains('settings/tokens', $r->getContent());
+        $this->assertNotEquals($key, $this->user->api_key);
+    }
+
+    public function testDestroyOwnToken()
+    {
+        $this->doTestApiRoute('DELETE', '/api/v1/users/my/token');
+
+        $this->callToken('DELETE', '/api/v1/users/my/token', $this->user);
+        // api key authentication is not allowed for this route
+        $this->assertResponseStatus(401);
+
+        $this->be($this->user);
+        $this->user->generateApiKey();
+        $this->callAjax('DELETE', '/api/v1/users/my/token', [
+            '_token' => Session::token(),
+        ]);
+        $this->assertResponseOk();
+        $this->assertNull($this->user->api_key);
+
+        $this->user->generateApiKey();
+        $r = $this->call('DELETE', '/api/v1/users/my/token', [
+            '_token' => Session::token(),
+        ]);
+        $this->assertResponseStatus(302);
+        // redirect to settings tokens page for form requests
+        $this->assertContains('settings/tokens', $r->getContent());
+        $this->assertNull($this->user->api_key);
     }
 }

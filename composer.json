@@ -12,6 +12,7 @@
 		"dias/annotations": "dev-master"
 	},
 	"require-dev": {
+        "fzaninotto/faker": "~1.4",
 		"phpunit/phpunit": "~4.0",
 		"sami/sami": "dev-master",
 		"mockery/mockery": "dev-master"
@@ -27,7 +28,8 @@
 	"autoload-dev": {
 		"classmap": [
 			"tests/TestCase.php",
-			"tests/ApiTestCase.php"
+			"tests/ApiTestCase.php",
+            "tests/ModelTestCase.php"
 		]
 	},
 	"scripts": {
@@ -42,7 +44,20 @@
 		"post-create-project-cmd": [
 			"php -r \"copy('.env.example', '.env');\"",
 			"php artisan key:generate"
-		]
+		],
+        "test": [
+            "php vendor/bin/phpunit",
+            "npm test"
+        ],
+        "fix": [
+            "php php-cs-fixer.phar --config-file='.php_cs' fix"
+        ],
+        "doc": [
+            "rm -rf public/doc",
+            "php vendor/bin/sami.php update sami.php -v",
+            "gulp docs",
+            "gulp apidoc"
+        ]
 	},
 	"config": {
 		"preferred-install": "dist"
