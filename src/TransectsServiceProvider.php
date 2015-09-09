@@ -21,6 +21,7 @@ class TransectsServiceProvider extends ServiceProvider {
 		include __DIR__.'/Http/routes.php';
 
 		$modules->addMixin('transects', 'dashboard.projects');
+        $modules->addMixin('transects', 'dashboardStyles');
 		$modules->addMixin('transects', 'projects');
 	}
 
