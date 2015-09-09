@@ -75,7 +75,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
             ]
         );
         $this->assertResponseStatus(400);
-        $this->assertEquals('{"message":"The last project admin cannot be removed."}', $r->getContent());
+        $this->assertStringStartsWith('{"message":"The last admin of '.$this->project->name.' cannot be removed.', $r->getContent());
 
         $this->assertEquals(2, $this->project->users()->find($this->editor->id)->project_role_id);
 

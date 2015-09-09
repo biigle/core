@@ -40,7 +40,7 @@
             </p>
             <pre class="token-toggle hidden">{{$user->api_key}}</pre>
             <form class="" role="form" method="POST" action="{{ url('api/v1/users/my/token') }}">
-                <span class="help-block">By revoking your current token, all applications using it will losse the ability to access the COPRIA API.</span>
+                <span class="help-block">By revoking your current token, all applications using it will losse the ability to access the BIIGLE DIAS API.</span>
                 <input type="hidden" name="_method" value="DELETE">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="submit" class="btn btn-danger" value="Revoke token">

@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Hash;
 use Dias\User;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UserController extends Controller
 {
@@ -210,7 +211,7 @@ class UserController extends Controller
      * @apiDescription This action is allowed only by session cookie authentication.
      *
      *
-     * @apiParam (Attributes that can be updated) {String} email The new email address of the user. Must be unique for all users.
+     * @apiParam (Attributes that can be updated) {String} email The new email address of the user. Must be unique for all users. If this parameter is set, an additional `old_password` needs to be present, containing the user's current password.
      * @apiParam (Attributes that can be updated) {String} password The new password of the user. If this parameter is set, an additional `password_confirmation` parameter needs to be present, containing the same new password, as well as an `old_password` parameter, containing the old password.
      * @apiParam (Attributes that can be updated) {String} firstname The new firstname of the user.
      * @apiParam (Attributes that can be updated) {String} lastname The new lastname of the user.
@@ -231,25 +232,29 @@ class UserController extends Controller
         $user = $this->user;
         $this->validate($request, $user->updateRules());
 
-        if ($request->has('password')) {
+        // confirm change of credentials with old password
+        if ($request->has('password') || $request->has('email')) {
             // the user has to provide their old password to set a new one
             if (!Hash::check($request->input('old_password'), $user->password)) {
                 $errors = ['old_password' => [trans('validation.custom.old_password')]];
 
                 return $this->buildFailedValidationResponse($request, $errors);
             }
+        }
 
+        if ($request->has('password')) {
             $user->password = bcrypt($request->input('password'));
         }
 
         $user->firstname = $request->input('firstname', $user->firstname);
         $user->lastname = $request->input('lastname', $user->lastname);
         $user->email = $request->input('email', $user->email);
+        $wasDirty = $user->isDirty();
         $user->save();
 
         if (!static::isAutomatedRequest($request)) {
             return redirect()->back()
-                ->with('saved', true);
+                ->with('saved', $wasDirty);
         }
     }
 
@@ -337,16 +342,26 @@ class UserController extends Controller
     public function destroyOwn()
     {
         $user = $this->user;
+
+        try {
+            $user->checkCanBeDeleted();
+        } catch (HttpException $e) {
+            return $this->buildFailedValidationResponse(
+                $this->request,
+                ['submit' => [$e->getMessage()]]
+            );
+        }
+
         auth()->logout();
         // delete the user AFTER logging them out, otherwise logout would save
         // them again
         $user->delete();
 
-        if ($this->request->ajax()) {
+        if (static::isAutomatedRequest($this->request)) {
             return response('Deleted.', 200);
         }
 
-        return redirect()->route('home');
+        return redirect('auth/login');
     }
 
     /**

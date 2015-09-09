@@ -32,11 +32,11 @@ class PasswordController extends Controller
         $this->redirectTo = route('home');
         $this->subject = trans('auth.pw_reset_subject');
 
-        $this->middleware('guest', ['except' => ['getEmail']]);
+        $this->middleware('guest');
 
         $this->redirectPath = route('home');
 
-        $this->subject = '[DIAS] - Your Password Reset Link';
+        $this->subject = '[BIIGLE DIAS] - Your Password Reset Link';
     }
 
     /**

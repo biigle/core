@@ -148,4 +148,14 @@ class UserTest extends ModelWithAttributesTest
         Cache::flush();
         $this->assertTrue($this->model->canAdminOneOfProjects($projectIds));
     }
+
+    public function testCheckCanBeDeleted()
+    {
+        $project = ProjectTest::create();
+        $project->addUserId($this->model->id, Role::$guest->id);
+
+        $this->model->checkCanBeDeleted();
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $project->creator->checkCanBeDeleted();
+    }
 }

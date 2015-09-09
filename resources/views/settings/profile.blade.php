@@ -23,14 +23,6 @@
                 @endif
             </div>
 
-            <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                <label for="email">Email</label>
-                <input type="text" class="form-control" name="email" id="email" value="{{ $user->email }}">
-                @if($errors->has('email'))
-                    <span class="help-block">{{ $errors->first('email') }}</span>
-                @endif
-            </div>
-
             @if ($saved)
                 <div class="alert alert-success" role="alert">
                     Your profile was successfully updated.

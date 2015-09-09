@@ -8,10 +8,10 @@
     <div class="panel-body">
         <form class="" role="form" method="POST" action="{{ url('api/v1/users/my') }}">
 
-            <div class="form-group{{ $errors->has('old_password') ? ' has-error' : '' }}">
+            <div class="form-group{{ $errors->has('old_password') && old('_origin') === 'password'  ? ' has-error' : '' }}">
                 <label for="old_password">Old password</label>
                 <input type="password" class="form-control" name="old_password" id="old_password">
-                @if($errors->has('old_password'))
+                @if($errors->has('old_password') && old('_origin') === 'password')
                     <span class="help-block">{{ $errors->first('old_password') }}</span>
                 @endif
             </div>
@@ -32,28 +32,50 @@
                 @endif
             </div>
 
-            @if ($saved)
+            @if ($saved && old('_origin') === 'password')
                 <div class="alert alert-success" role="alert">
                     Your password was successfully updated.
                 </div>
             @endif
 
-            <input type="hidden" name="_redirect-route" value="settings-account">
+            <input type="hidden" name="_origin" value="password">
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            <input type="submit" class="btn btn-success" value="Update password"> <a href="{{ url('password/email') }}">{{ trans('auth.forgotpw') }}</a>
+            <input type="submit" class="btn btn-success" value="Update password">
         </form>
     </div>
 </div>
 
 <div class="panel panel-default">
-    <div class="panel-heading">Change username</div>
+    <div class="panel-heading">Change email</div>
     <div class="panel-body">
-        <form class="" role="form">
-            <div class="form-group">
-                <input type="text" class="form-control" id="username" value="{{ $user->name }}" disabled>
-                <span class="help-block">Your username currently cannot be changed.</span>
+        <form class="" role="form" method="POST" action="{{ url('api/v1/users/my') }}">
+            <div class="form-group{{ $errors->has('old_password') && old('_origin') === 'email' ? ' has-error' : '' }}">
+                <label for="old_password">Old password</label>
+                <input type="password" class="form-control" name="old_password" id="old_password">
+                @if($errors->has('old_password') && old('_origin') === 'email')
+                    <span class="help-block">{{ $errors->first('old_password') }}</span>
+                @endif
             </div>
+
+            <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" name="email" id="email" value="{{$user->email}}">
+                @if($errors->has('email'))
+                    <span class="help-block">{{ $errors->first('email') }}</span>
+                @endif
+            </div>
+
+            @if ($saved && old('_origin') === 'email')
+                <div class="alert alert-success" role="alert">
+                    Your password was successfully updated.
+                </div>
+            @endif
+
+            <input type="hidden" name="_origin" value="email">
+            <input type="hidden" name="_method" value="PUT">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <input type="submit" class="btn btn-success" value="Update email">
         </form>
     </div>
 </div>
@@ -65,13 +87,18 @@
     </div>
     <div class="panel-body">
         <p class="text-danger">
-            Deleting your account will delete all your jobs and pipelines.<br>
-            <strong>This cannot be undone!</strong>
+            Deleting your account won't delete any of your projects, transects or annotations etc. (they just won't be associated with you any more).<br>
+            <strong>Deleting your account cannot be undone!</strong>
         </p>
         <form role="form" method="POST" action="{{ url('api/v1/users/my') }}">
             <input type="hidden" name="_method" value="DELETE">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            <input type="submit" class="btn btn-danger disabled" id="delete-button" value="Delete your account">
+            <div class="form-group{{ $errors->has('submit') ? ' has-error' : '' }}">
+                @if($errors->has('submit'))
+                    <span class="help-block alert alert-danger">{{ $errors->first('submit') }}</span>
+                @endif
+                <input type="submit" class="btn btn-danger disabled" id="delete-button" value="Delete your account">
+            </div>
         </form>
     </div>
 </div>

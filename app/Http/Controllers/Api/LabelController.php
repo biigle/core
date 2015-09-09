@@ -9,27 +9,6 @@ use Dias\Label;
 class LabelController extends Controller
 {
     /**
-     * Checks if the request contains a parent ID and tries to associate the
-     * parent with the given label. Aborts with 400 if the parent does not
-     * exist.
-     *
-     * @param Label $label
-     * @return void
-     */
-    private function maybeSetParent($label)
-    {
-        if ($this->request->has('parent_id')) {
-            $parent = Label::find($this->request->input('parent_id'));
-
-            if (!$parent) {
-                abort(400, 'Parent label with ID "'.$this->request->input('parent_id').'" does not exist!');
-            }
-
-            $label->parent()->associate($parent);
-        }
-    }
-
-    /**
      * Shows a list of all labels.
      *
      * @api {get} labels Get all label categories

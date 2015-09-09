@@ -191,4 +191,15 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
     {
         return $this->firstname.' '.$this->lastname;
     }
+
+    /**
+     * Checks if the user can be deleted.
+     * Throws an exception if not.
+     */
+    public function checkCanBeDeleted()
+    {
+        foreach ($this->projects as $project) {
+            $project->checkUserCanBeRemoved($this->id);
+        }
+    }
 }

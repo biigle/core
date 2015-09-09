@@ -158,6 +158,13 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         // no old password provided
         $this->assertResponseStatus(422);
 
+        $this->callAjax('PUT', '/api/v1/users/my', [
+            '_token' => Session::token(),
+            'email' => 'new@email.me',
+        ]);
+        // no old password provided either
+        $this->assertResponseStatus(422);
+
         // ajax call to get the correct response status
         $this->callAjax('PUT', '/api/v1/users/my', [
             '_token' => Session::token(),
@@ -277,11 +284,30 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         $this->assertResponseOk();
         $this->assertNull($this->guest->fresh());
 
+        $this->be($this->editor);
+        $this->call('DELETE', '/api/v1/users/my', [
+            '_token' => Session::token()
+        ]);
+        $this->assertRedirectedTo('auth/login');
+        $this->assertNull(Auth::user());
+
         $this->call('DELETE', '/api/v1/users/my', [
             '_token' => Session::token(),
         ]);
         // deleted user doesn't have permission any more
         $this->assertResponseStatus(401);
+
+        $this->be($this->admin);
+        // make admin the only admin
+        $this->project->creator->delete();
+        $this->visit('settings/profile');
+        $this->call('DELETE', '/api/v1/users/my', [
+            '_token' => Session::token()
+        ]);
+        // couldn't be deleted, returns with error message
+        $this->assertRedirectedTo('settings/profile');
+        $this->assertNotNull(Auth::user());
+        $this->assertSessionHas('errors');
     }
 
     public function testFind()

@@ -208,7 +208,6 @@ class ProjectTest extends ModelWithAttributesTest
     {
         $admin = UserTest::create();
         $this->model->addUserId($admin->id, Role::$admin->id);
-
         $this->assertNotNull($this->model->users()->find($admin->id));
         $this->assertTrue($this->model->removeUserId($admin->id));
         $this->assertNull($this->model->users()->find($admin->id));
@@ -216,6 +215,16 @@ class ProjectTest extends ModelWithAttributesTest
         // the last admin mustn't be removed
         $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
         $this->model->removeUserId($this->model->creator->id);
+    }
+
+    public function testCheckUserCanBeRemoved()
+    {
+        $user = UserTest::create();
+        $this->model->addUserId($user->id, Role::$editor->id);
+        $this->model->checkUserCanBeRemoved($user->id);
+        // the last admin mustn't be removed
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->model->checkUserCanBeRemoved($this->model->creator->id);
     }
 
     public function testChangeRole()

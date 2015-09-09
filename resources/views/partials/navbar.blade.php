@@ -7,9 +7,6 @@
 		</div>
         <div class="navbar-right">
             <ul class="nav navbar-nav">
-                <li>
-                    <a href="{{ route('documentation') }}" title="{{ trans('dias.titles.doc') }}"><i class="glyphicon glyphicon-book"></i></a>
-                </li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-menu-hamburger"></i> <span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -19,6 +16,9 @@
                         <li role="separator" class="divider"></li>
                         <li>
                             <a href="{{ route('home') }}" title="Dashboard">Dashboard</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('documentation') }}" title="{{ trans('dias.titles.doc') }}">{{ trans('dias.titles.doc') }}</a>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li>
