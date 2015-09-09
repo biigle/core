@@ -59,7 +59,7 @@ class AnnotationPointTest extends ModelTestCase
         $this->setExpectedException('Illuminate\Database\QueryException');
         self::create([
             'annotation_id' => $this->model->annotation_id,
-            'index' => $this->model->index
+            'index' => $this->model->index,
         ]);
     }
 

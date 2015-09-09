@@ -35,12 +35,12 @@ class AnnotationTest extends ModelWithAttributesTest
         $this->assertEquals(0, $this->model->points()->count());
         AnnotationPointTest::create([
             'annotation_id' => $this->model->id,
-            'index' => 0
+            'index' => 0,
         ]);
         $this->assertEquals(1, $this->model->points()->count());
         AnnotationPointTest::create([
             'annotation_id' => $this->model->id,
-            'index' => 1
+            'index' => 1,
         ]);
         $this->assertEquals(2, $this->model->points()->count());
     }
@@ -53,7 +53,7 @@ class AnnotationTest extends ModelWithAttributesTest
             'annotation_id' => $this->model->id,
             'label_id' => $label->id,
             'user_id' => $user->id,
-            'confidence' => 0.5
+            'confidence' => 0.5,
         ]);
         $this->modelLabel->save();
         $this->assertEquals(1, $this->model->labels()->count());

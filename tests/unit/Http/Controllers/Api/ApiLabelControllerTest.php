@@ -77,7 +77,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
 
         // api key authentication
         $this->callToken('POST', '/api/v1/labels', $this->admin, [
-            'name' => 'Sea Cucumber'
+            'name' => 'Sea Cucumber',
         ]);
         // only global admins have access
         $this->assertResponseStatus(401);
@@ -126,14 +126,14 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
     {
         $this->callToken('POST', '/api/v1/labels', $this->user, [
             'name' => 'test123',
-            'project_id' => $this->project->id
+            'project_id' => $this->project->id,
         ]);
         // only project admins have access
         $this->assertResponseStatus(401);
 
         $this->callToken('POST', '/api/v1/labels', $this->admin, [
             'name' => 'test123',
-            'project_id' => 9999
+            'project_id' => 9999,
         ]);
         // project does not exist
         $this->assertResponseStatus(422);
@@ -142,7 +142,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $this->call('POST', '/api/v1/labels', [
             '_token' => Session::token(),
             'name' => 'test123',
-            'project_id' => $this->project->id
+            'project_id' => $this->project->id,
         ]);
         $this->assertResponseOk();
 

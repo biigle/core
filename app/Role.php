@@ -38,8 +38,6 @@ class Role extends Model
      * @var Role
      */
     public static $guest;
-
-
 }
 
 Role::$admin = Cache::rememberForever('role-admin', function () {

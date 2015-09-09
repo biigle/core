@@ -113,6 +113,7 @@ class LabelController extends Controller
         $label->save();
         // the parent object shouldn't be returned
         unset($label->parent);
+
         return $label;
     }
 

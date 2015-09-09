@@ -40,7 +40,7 @@ class ApiTestCase extends TestCase
 
         $this->labelChild = LabelTest::create([
             'name' => 'Test Child',
-            'parent_id' => $this->labelRoot->id
+            'parent_id' => $this->labelRoot->id,
         ]);
     }
 

@@ -286,7 +286,7 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
 
         $this->be($this->editor);
         $this->call('DELETE', '/api/v1/users/my', [
-            '_token' => Session::token()
+            '_token' => Session::token(),
         ]);
         $this->assertRedirectedTo('auth/login');
         $this->assertNull(Auth::user());
@@ -302,7 +302,7 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         $this->project->creator->delete();
         $this->visit('settings/profile');
         $this->call('DELETE', '/api/v1/users/my', [
-            '_token' => Session::token()
+            '_token' => Session::token(),
         ]);
         // couldn't be deleted, returns with error message
         $this->assertRedirectedTo('settings/profile');

@@ -22,7 +22,7 @@ class UserController extends Controller
         $this->middleware('admin', ['only' => [
             'update',
             'store',
-            'destroy'
+            'destroy',
         ]]);
 
         $this->middleware('session', ['except' => [
@@ -365,7 +365,7 @@ class UserController extends Controller
     }
 
     /**
-     * Generates a new API token
+     * Generates a new API token.
      *
      * @api {post} users/my/token Generate a new API token
      * @apiDescription This action is allowed only by session cookie authentication.
@@ -386,7 +386,7 @@ class UserController extends Controller
     }
 
     /**
-     * Generates a new API token
+     * Generates a new API token.
      *
      * @api {delete} users/my/token Revoke an API token
      * @apiDescription This action is allowed only by session cookie authentication.

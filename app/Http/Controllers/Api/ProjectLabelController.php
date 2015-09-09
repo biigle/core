@@ -39,6 +39,7 @@ class ProjectLabelController extends Controller
     {
         $project = $this->requireNotNull(Project::find($id));
         $this->requireCanSee($project);
+
         return $project->labels;
     }
 }

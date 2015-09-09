@@ -99,7 +99,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
         // confidence required
         $this->assertResponseStatus(422);
 
-$this->callAjax('POST',
+        $this->callAjax('POST',
             '/api/v1/images/'.$this->image->id.'/annotations',
             [
                 '_token' => Session::token(),

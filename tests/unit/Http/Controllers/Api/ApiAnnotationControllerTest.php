@@ -11,6 +11,7 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
     {
         $annotation = AnnotationTest::create();
         $this->project->addTransectId($annotation->image->transect->id);
+
         return $annotation;
     }
 

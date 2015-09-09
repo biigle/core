@@ -16,7 +16,7 @@ class AuthPasswordControllerTest extends TestCase
 
         $this->post('password/email', [
             '_token' => Session::token(),
-            'email' => Faker\Factory::create()->email
+            'email' => Faker\Factory::create()->email,
         ]);
 
         $user = UserTest::create();
@@ -53,10 +53,9 @@ class AuthPasswordControllerTest extends TestCase
             'token' => $token,
             'email' => $user->email,
             'password' => 'new-password',
-            'password_confirmation' => 'new-password'
+            'password_confirmation' => 'new-password',
         ]);
 
         $this->assertTrue(Hash::check('new-password', $user->fresh()->password));
-
     }
 }

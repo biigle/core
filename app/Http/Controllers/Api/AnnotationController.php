@@ -36,6 +36,7 @@ class AnnotationController extends Controller
 
         // image will be fetched by requireCanSee but shouldn't be returned
         unset($annotation->image);
+
         return $annotation;
     }
 

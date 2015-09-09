@@ -23,7 +23,7 @@ class Label extends ModelWithAttributes
         'name' => 'required',
         'parent_id' => 'integer|exists:labels,id',
         'aphia_id' => 'integer',
-        'project_id' => 'integer|exists:projects,id'
+        'project_id' => 'integer|exists:projects,id',
     ];
 
     /**

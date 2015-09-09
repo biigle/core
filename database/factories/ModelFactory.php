@@ -13,7 +13,7 @@
 
 $factory->define(Dias\Role::class, function ($faker) {
     return [
-        'name' => str_random(10)
+        'name' => str_random(10),
     ];
 });
 
@@ -23,7 +23,7 @@ $factory->define(Dias\User::class, function ($faker) {
         'lastname' => $faker->lastName,
         'password' => bcrypt(str_random(10)),
         'email' => $faker->email,
-        'remember_token' => str_random(10)
+        'remember_token' => str_random(10),
     ];
 });
 
@@ -31,13 +31,13 @@ $factory->define(Dias\Project::class, function ($faker) {
     return [
         'name' => str_random(10),
         'description' => $faker->sentence(),
-        'creator_id' => factory(Dias\User::class)->create()->id
+        'creator_id' => factory(Dias\User::class)->create()->id,
     ];
 });
 
 $factory->define(Dias\MediaType::class, function ($faker) {
     return [
-        'name' => str_random(10)
+        'name' => str_random(10),
     ];
 });
 
@@ -46,14 +46,14 @@ $factory->define(Dias\Transect::class, function ($faker) {
         'name' => $faker->sentence(),
         'media_type_id' => factory(Dias\MediaType::class)->create()->id,
         'creator_id' => factory(Dias\User::class)->create()->id,
-        'url' => base_path().'/tests/files'
+        'url' => base_path().'/tests/files',
     ];
 });
 
 $factory->define(Dias\Image::class, function ($faker) {
     return [
         'filename' => 'test-image.jpg',
-        'transect_id' => factory(Dias\Transect::class)->create()->id
+        'transect_id' => factory(Dias\Transect::class)->create()->id,
     ];
 });
 
@@ -62,20 +62,20 @@ $factory->define(Dias\Label::class, function ($faker) {
         'name' => str_random(10),
         'parent_id' => null,
         'project_id' => null,
-        'aphia_id' => null
+        'aphia_id' => null,
     ];
 });
 
 $factory->define(Dias\Shape::class, function ($faker) {
     return [
-        'name' => str_random(10)
+        'name' => str_random(10),
     ];
 });
 
 $factory->define(Dias\Annotation::class, function ($faker) {
     return [
         'image_id' => factory(Dias\Image::class)->create()->id,
-        'shape_id' => factory(Dias\Shape::class)->create()->id
+        'shape_id' => factory(Dias\Shape::class)->create()->id,
     ];
 });
 
@@ -84,7 +84,7 @@ $factory->define(Dias\AnnotationPoint::class, function ($faker) {
         'annotation_id' => factory(Dias\Annotation::class)->create()->id,
         'index' => 0,
         'x' => 0,
-        'y' => 0
+        'y' => 0,
     ];
 });
 
@@ -93,13 +93,13 @@ $factory->define(Dias\AnnotationLabel::class, function ($faker) {
         'annotation_id' => factory(Dias\Annotation::class)->create()->id,
         'label_id' => factory(Dias\Label::class)->create()->id,
         'user_id' => factory(Dias\User::class)->create()->id,
-        'confidence' => $faker->randomFloat(null, 0, 1)
+        'confidence' => $faker->randomFloat(null, 0, 1),
     ];
 });
 
 $factory->define(Dias\Attribute::class, function ($faker) {
     return [
         'name' => str_random(10),
-        'type' => $faker->randomElement(['integer', 'double', 'string', 'boolean'])
+        'type' => $faker->randomElement(['integer', 'double', 'string', 'boolean']),
     ];
 });
