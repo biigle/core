@@ -73,18 +73,6 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
     }
 
     /**
-     * The points, this annotation consists of, ordered by 'index' in ascending order.
-     * On this set no more aggregate functions like `count` or `max` can be performed,
-     * thus the extra function.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function orderedPoints()
-    {
-        return $this->hasMany('Dias\AnnotationPoint')->orderBy('index', 'asc');
-    }
-
-    /**
      * The labels, this annotation got assigned by the users.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
