@@ -41,7 +41,9 @@ class ImageAnnotationController extends Controller
         $image = $this->requireNotNull(Image::find($id));
         $this->requireCanSee($image);
 
-        return $image->annotations()->with('points')->get();
+        return $image->annotations()->with(['points' => function ($query) {
+            $query->orderBy('index', 'asc');
+        }])->get();
     }
 
     /**
@@ -124,6 +126,8 @@ class ImageAnnotationController extends Controller
             $this->user
         );
 
-        return Annotation::with('points')->find($annotation->id);
+        return Annotation::with(['points' => function ($query) {
+            $query->orderBy('index', 'asc');
+        }])->find($annotation->id);
     }
 }
