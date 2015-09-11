@@ -31,7 +31,7 @@ class AnnotationController extends Controller
      */
     public function show($id)
     {
-        $annotation = $this->requireNotNull(Annotation::with('points')->find($id));
+        $annotation = $this->requireNotNull(Annotation::with('orderedPoints')->find($id));
         $this->requireCanSee($annotation);
 
         // image will be fetched by requireCanSee but shouldn't be returned

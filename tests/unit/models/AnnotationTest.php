@@ -45,6 +45,20 @@ class AnnotationTest extends ModelWithAttributesTest
         $this->assertEquals(2, $this->model->points()->count());
     }
 
+    public function testOrderedPoints()
+    {
+        AnnotationPointTest::create([
+            'annotation_id' => $this->model->id,
+            'index' => 1,
+        ]);
+        AnnotationPointTest::create([
+            'annotation_id' => $this->model->id,
+            'index' => 0,
+        ]);
+        $this->assertEquals(1, $this->model->points()->get()[0]->index);
+        $this->assertEquals(0, $this->model->orderedPoints()->get()[0]->index);
+    }
+
     public function testLabels()
     {
         $label = LabelTest::create();
