@@ -15,6 +15,17 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
     {
         $annotation = AnnotationTest::create(['image_id' => $this->image->id]);
 
+        // test ordering of points, too
+        // use fresh() so numbers get strings in SQLite and stay numbers in Postgres
+        $point1 = AnnotationPointTest::create([
+            'annotation_id' => $annotation->id,
+            'index' => 1,
+        ])->fresh();
+        $point2 = AnnotationPointTest::create([
+            'annotation_id' => $annotation->id,
+            'index' => 0,
+        ])->fresh();
+
         $this->doTestApiRoute('GET',
             '/api/v1/images/'.$this->image->id.'/annotations'
         );
@@ -34,13 +45,13 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
         // session cookie authentication
         $this->be($this->guest);
-        $r = $this->call('GET',
-            '/api/v1/images/'.$this->image->id.'/annotations'
-        );
-        // response should not be an empty array
-        $this->assertStringStartsWith('[{', $r->getContent());
-        $this->assertStringEndsWith('}]', $r->getContent());
-        $this->assertContains('points":[', $r->getContent());
+        $this->get('/api/v1/images/'.$this->image->id.'/annotations')
+            ->seeJson([
+                'points' => [
+                    ['x' => $point2->x, 'y' => $point2->y],
+                    ['x' => $point1->x, 'y' => $point1->y],
+                ]
+            ]);
     }
 
     public function testStore()
@@ -112,26 +123,34 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
         // at least one point required
         $this->assertResponseStatus(400);
 
-        $r = $this->call('POST',
-            '/api/v1/images/'.$this->image->id.'/annotations',
-            [
-                '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::$pointId,
-                'label_id' => $this->labelRoot->id,
-                'confidence' => 0.5,
-                'points' => '[{"x":10,"y":11}]',
-            ]
-        );
-        $this->assertResponseOk();
+        $this->post('/api/v1/images/'.$this->image->id.'/annotations', [
+            '_token' => Session::token(),
+            'shape_id' => \Dias\Shape::$pointId,
+            'label_id' => $this->labelRoot->id,
+            'confidence' => 0.5,
+            'points' => '[{"x":10,"y":11},{"x":12,"y":13}]',
+        ]);
 
-        $this->assertContains('points":[', $r->getContent());
+        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+            $this->seeJson([
+                'points' => [
+                    ['x' => '10', 'y' => '11'],
+                    ['x' => '12', 'y' => '13'],
+                ]
+            ]);
+        } else {
+            $this->seeJson([
+                'points' => [
+                    ['x' => 10, 'y' => 11],
+                    ['x' => 12, 'y' => 13],
+                ]
+            ]);
+        }
 
         $annotation = $this->image->annotations->first();
         $this->assertNotNull($annotation);
 
-        $point = $annotation->points()->first();
-        $this->assertEquals(10, $point->x);
-        $this->assertEquals(11, $point->y);
+        $this->assertEquals(2, $annotation->points()->count());
 
         $this->assertEquals(1, $annotation->labels()->count());
     }

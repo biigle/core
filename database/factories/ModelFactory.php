@@ -83,8 +83,8 @@ $factory->define(Dias\AnnotationPoint::class, function ($faker) {
     return [
         'annotation_id' => factory(Dias\Annotation::class)->create()->id,
         'index' => 0,
-        'x' => 0,
-        'y' => 0,
+        'x' => $faker->randomDigit(),
+        'y' => $faker->randomDigit(),
     ];
 });
 
