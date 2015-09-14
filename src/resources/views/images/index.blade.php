@@ -1,4 +1,5 @@
 @extends('app')
+@inject('modules', 'Dias\Services\Modules')
 
 @section('title') Image {{ $image->id }}@stop
 
@@ -7,7 +8,7 @@
 	<h2 class="col-lg-12 clearfix">
 		Image <small title="Image ID {{ $image->id }}">#{{ $image->id }}</small>
 		<span class="pull-right">
-			@foreach ($buttonMixins as $module => $nestedMixins)
+			@foreach ($modules->getMixins('imagesIndexButtons') as $module => $nestedMixins)
 				@include($module.'::imagesIndexButtons', array('mixins' => $nestedMixins))
 			@endforeach
 		</span>
@@ -20,7 +21,7 @@
 
 	@include('transects::images.index.exif')
 
-	@foreach ($mixins as $module => $nestedMixins)
+	@foreach ($modules->getMixins('imagesIndex') as $module => $nestedMixins)
 		@include($module.'::imagesIndex', array('mixins' => $nestedMixins))
 	@endforeach
 </div>

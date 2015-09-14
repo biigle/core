@@ -1,10 +1,12 @@
+@inject('modules', 'Dias\Services\Modules')
+
 <div class="transect__sidebar" data-ng-controller="SidebarController" data-exif-keys="DateTime,Model,ShutterSpeedValue,ApertureValue,Flash,GPSLatitude,GPSLongitude,GPSAltitude">
 	<h2 class="sidebar__title">
 		{{ $transect->name }} <small title="Transect ID {{ $transect->id }}">#{{ $transect->id }} ({{ $transect->images->count() }} images)</small>
 	</h2>
 	<div class="btn-group sidebar__buttons">
 		<button class="btn btn-default" title="Go to the image page when clicking an image" data-image-url="{{ route('image', '') }}" data-ng-controller="ImagePageButtonController" data-ng-click="activate()" data-ng-class="{active:selected}"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span></button>
-		@foreach ($mixins as $module => $nestedMixins)
+		@foreach ($modules->getMixins('transects') as $module => $nestedMixins)
 			@include($module.'::transects', array('mixins' => $nestedMixins))
 		@endforeach
 	</div>
@@ -39,5 +41,5 @@
 				</tr>
 			</table>
 		</div>
-	</div>	
+	</div>
 </div>

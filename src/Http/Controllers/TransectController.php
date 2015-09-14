@@ -9,7 +9,7 @@ class TransectController extends Controller {
 
 	/**
 	 * Shows the create transect page.
-	 * 
+	 *
 	 * @return \Illuminate\Http\Response
 	 */
 	public function create()
@@ -33,9 +33,6 @@ class TransectController extends Controller {
 		$this->requireCanSee($transect);
 
 		return view('transects::index')
-			->withTransect($transect)
-			->withMixins($this->modules->getMixins('transects'))
-			->with('message', session('message'))
-			->with('messageType', session('messageType'));
+			->withTransect($transect);
 	}
 }

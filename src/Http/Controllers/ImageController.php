@@ -7,7 +7,7 @@ class ImageController extends Controller {
 
 	/**
 	 * Shows the image index page.
-	 * 
+	 *
 	 * @param int $id transect ID
 	 * @return \Illuminate\Http\Response
 	 */
@@ -21,10 +21,6 @@ class ImageController extends Controller {
 		$image->setAttribute('height', $file->height());
 
 		return view('transects::images.index')
-			->withImage($image)
-			->withMixins($this->modules->getMixins('imagesIndex'))
-			->with('buttonMixins', $this->modules->getMixins('imagesIndexButtons'))
-			->with('message', session('message'))
-			->with('messageType', session('messageType'));
+			->withImage($image);
 	}
 }
