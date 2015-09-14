@@ -1,10 +1,12 @@
-<?php namespace Dias\Modules\Projects\Http\Controllers;
+<?php
+
+namespace Dias\Modules\Projects\Http\Controllers;
 
 use Dias\Project;
 use Dias\Http\Controllers\Views\Controller;
 
-class ProjectController extends Controller {
-
+class ProjectController extends Controller
+{
     /**
      * Shows the create project page.
      *

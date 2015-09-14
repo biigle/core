@@ -2,5 +2,7 @@
 /node_modules
 /bower_components
 /tests/_*
+/.php_cs.cache
+/php-cs-fixer.phar
 
 *.sublime-*

@@ -8,5 +8,10 @@
         "psr-4": {
             "Dias\\Modules\\Projects\\": "src"
         }
+    },
+    "scripts": {
+        "fix": [
+            "php php-cs-fixer.phar --config-file='.php_cs' fix"
+        ]
     }
 }
