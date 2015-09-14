@@ -1,11 +1,11 @@
 @extends('app')
+@inject('modules', 'Dias\Services\Modules')
 
 @section('title'){{ $project->name }}@stop
 
 @include('projects::assets')
 
 @section('content')
-<?php $isAdmin = $project->hasAdmin($user); ?>
 <div class="container" data-ng-app="dias.projects" data-ng-controller="ProjectIndexController" data-project-id="{{ $project->id }}" data-user-id="{{ $user->id }}" data-leaving-success-msg="Project left. Redirecting to dashboard..." data-dashboard-url="{{ route('home') }}">
 	<h2 class="col-lg-12 clearfix">
 		{{ $project->name }} <small title="Project ID {{ $project->id }}">#{{ $project->id }}</small>
@@ -23,7 +23,7 @@
 
     @include('projects::index.labels')
 
-	@foreach ($mixins as $module => $nestedMixins)
+	@foreach ($modules->getMixins('projects') as $module => $nestedMixins)
 		@include($module.'::projects', array('mixins' => $nestedMixins, 'project' => $project, 'isAdmin' => $isAdmin))
 	@endforeach
 
