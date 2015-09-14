@@ -26,8 +26,6 @@ class AnnotationController extends Controller {
 			->withUser($this->user)
 			->withImage($image)
 			->with('editMode', $this->user->canEditInOneOfProjects($image->projectIds()))
-            ->with('projectIds', implode(',', $projectIds))
-			->with('message', session('message'))
-			->with('messageType', session('messageType'));
+            ->with('projectIds', implode(',', $projectIds));
 	}
 }
