@@ -14,9 +14,9 @@
             </div>
         </div>
     </div>
-    @foreach ($modules->getMixins('admin-index') as $module => $nestedMixins)
+    @foreach ($modules->getMixins('adminIndex') as $module => $nestedMixins)
         <div class="col-sm-6">
-            @include($module.'::admin-index')
+            @include($module.'::adminIndex')
         </div>
     @endforeach
 @endsection

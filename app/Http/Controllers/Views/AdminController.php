@@ -26,7 +26,7 @@ class AdminController extends Controller
     {
         return view('admin.users')
             ->withUsers(
-                User::select(['id', 'firstname', 'lastname', 'email', 'login_at'])->get()
+                User::select('id', 'firstname', 'lastname', 'email', 'login_at')->get()
             );
     }
 }

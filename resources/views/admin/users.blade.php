@@ -6,7 +6,6 @@
 <table class="table">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Name</th>
             <th>Email</th>
             <th>Last login</th>
@@ -15,9 +14,8 @@
     <tbody>
         @foreach ($users as $user)
             <tr>
-                <td>{{$user->id}}</td>
                 <td>{{$user->name}}</td>
-                <td>{{$user->email}}</td>
+                <td><a href="mailto:{{$user->email}}">{{$user->email}}</a></td>
                 <td>{{$user->login_at}}</td>
             </tr>
         @endforeach
