@@ -2,7 +2,7 @@
 
 namespace Dias\Http\Controllers\Views;
 
-class DocController extends Controller
+class DocumentationController extends Controller
 {
     /**
      * Show the application documentation center to the user.
@@ -19,7 +19,7 @@ class DocController extends Controller
 
     /**
      * Show the package development tutorial.
-     *	
+     *
      * @param string $name Article name
      * @return \Illuminate\Http\Response
      */

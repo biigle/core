@@ -1,6 +1,6 @@
 <?php
 
-class DocControllerTest extends TestCase
+class ViewsDocumentationControllerTest extends TestCase
 {
     public function testRoute()
     {
