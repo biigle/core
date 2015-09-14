@@ -18,11 +18,16 @@ class AnnotationController extends Controller
         $image = $this->requireNotNull(Image::find($id));
         $this->requireCanSee($image);
 
-        // array of all project IDs that the user and the image have in common
-        $projectIds = array_intersect(
-            $this->user->projects()->select('id')->get()->pluck('id')->toArray(),
-            $image->projectIds()
-        );
+        if ($this->user->isAdmin) {
+            // admins have no restrictions
+            $projectIds = $image->projectIds();
+        } else {
+            // array of all project IDs that the user and the image have in common
+            $projectIds = array_intersect(
+                $this->user->projects()->select('id')->get()->pluck('id')->toArray(),
+                $image->projectIds()
+            );
+        }
 
         return view('annotations::index')
             ->withUser($this->user)
