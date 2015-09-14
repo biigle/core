@@ -7,7 +7,7 @@
 	<div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
 		<div class="row">
 			<h2>Mastering view mixins</h2>
-			
+
 			<p class="lead">
 				In this tutorial we will look at how to register areas for view mixins, enabling other packages to extend your views. We then look at some advanced use cases of view mixins.
 			</p>
@@ -18,57 +18,25 @@
 			<h3>Implementing a new area for view mixins</h3>
 
 			<p>
-				Implementing a new area for view mixins is a two step process. First, the controller of the view has to load all the mixins that want to be inserted and pass them on to the view. Second, the view has to handle the supplied mixins, decide how they are added and finally add them.
-			</p>
-
-			<h4>Loading the mixins in the controller</h4>
-
-			<p>
-				The DIAS core application provides the <code>Dias\Services\Modules</code> service which is responsible for accepting all mixin registrations, storing them and supplying the right mixins to the right views. You'll recall to have used this service already in the <code>QuotesServiceProvider</code> when registering the dashboard mixin using the <code>addMixin</code> method. In case of the <code>quotes</code> module, this method tells the <code>Modules</code> service that the <code>quotes</code> module will provide a new mixin to the dashboard view.
-			</p>
-			<p>
-				The (dashboard) view gets all data and variables from its controller so the controller is responsible to fetch the view mixins from the <code>Modules</code> service. The DIAS core already provides the <code>Dias\Http\Controllers\Views\Controller</code> class which takes care of loading and initializing the <code>Modules</code> service. If you want to add view mixins to your view, the view controller should extend this class.
-			</p>
-			<p>
-				By extending the <code>Views\Controller</code> class, the <code>modules</code> property will become available, which you can use to load registered mixins. Take a look at a stripped down version of the DIAS dashboard controller:
-			</p>
-<pre>
-&lt;?php namespace Dias\Http\Controllers\Views;
-
-class DashboardController extends Controller {
-
-   /**
-    * Show the application dashboard to the user.
-    *
-    * @return \Illuminate\Http\Response
-    */
-   public function index()
-   {
-      return view('dashboard')
-         ->withMixins($this->modules->getMixins('dashboard'));
-   }
-}
-</pre>
-			<p>
-				The controller extends the <code>Views\Controller</code> class to be able to use the <code>modules</code> property. In the <code>index</code> method - displaying the dashboard - the <code>getMixins</code> method is used to get all mixins which were registered in the service provider of other packages like this:
-			</p>
-<pre>
-$modules->addMixin('package-view-namespace', 'dashboard');
-</pre>
-			<p>
-				The controller then passes the array of view mixins <a href="http://laravel.com/docs/5.0/views#basic-usage">on to the view</a> as the <code>$mixins</code> variable. Now the view has to handle this array and make sure to add the mixins.
+				Implementing a new area for view mixins is not a great deal. Everything happens in the view so no controllers need to be changed if new mixins are added (especially handy for mixins in the global navbar)!
 			</p>
 
 			<h4>Handling the mixins in the view</h4>
 
 			<p>
-				View mixins are basically no more than a dynamic usage of the <code>&#64;include</code> control structure of the <a href="http://laravel.com/docs/5.0/templates">Blade templating engine</a>. With <code>&#64;include</code> you can take a view and insert it into another view making view modularization and separation of concerns possible. Adding a view mixin to a view is nothing else than <code>&#64;include</code>-ing it, except the name of the view to load is dynamically fetched from the <code>Modules</code> service.
+				View mixins are basically no more than a dynamic usage of the <code>&#64;include</code> control structure of the <a href="http://laravel.com/docs/5.0/templates">Blade templating engine</a>. With <code>&#64;include</code> you can take a view and insert it into another view making view modularization and separation of concerns possible. Adding a view mixin to a view is nothing else than <code>&#64;include</code>-ing it, except the name of the view to load is dynamically fetched from the <code>Dias\Services\Modules</code> service.
 			</p>
 			<p>
-				The <code>$mixins</code> array passed on from the controller contains the names of all views that should be included as a mixin. Let's take a look at how the dashboard view handles including the mixins:
+                But first we need to <a href="http://laravel.com/docs/5.1/blade#service-injection">inject</a> the <code>Modules</code> service into the view like this:
+            </p>
+<pre>
+&#64;inject('modules', 'Dias\Services\Modules')
+</pre>
+            <p>
+				Now the service can be used to fetch the names of all views that should be included as a mixin. Let's take a look at how the dashboard view handles including the mixins:
 			</p>
 <pre>
-&#64;forelse ($mixins as $module => $nestedMixins)
+&#64;forelse ($modules->getMixins('dashboard') as $module => $nestedMixins)
    &#64;include($module.'::dashboard', array('mixins' => $nestedMixins))
 &#64;empty
    &lt;p class="alert alert-info"&gt;
@@ -77,10 +45,10 @@ $modules->addMixin('package-view-namespace', 'dashboard');
 &#64;endforelse
 </pre>
 			<p>
-				First, it makes use of the <code>&#64;forelse</code> Blade control structure to display a message if there are no view mixins. Otherwise it loops over all the content of the <code>$mixins</code> array. Each item is a key-value pair called <code>$module</code> as the key and <code>$nestedMixins</code> as the value. We'll set aside the nested mixins for the next section.
+				First, it makes use of the <code>&#64;forelse</code> Blade control structure to display a message if there are no view mixins. Otherwise it loops over all the content of the array returned by the modules service. Each item is a key-value pair called <code>$module</code> as the key and <code>$nestedMixins</code> as the value. We'll set aside the nested mixins for the next section.
 			</p>
 			<p>
-				The <code>$module</code> variable for each item in <code>$mixins</code> contains the view namespace of the package that registered the mixin. If your package were called <code>quotes</code> and you wanted to load the <code>dashboard</code> view from it, you'd access it with <code>quotes::dashboard</code>. The part before the <code>::</code> is the view namespace of the package (the namaspace is defined by the <code>loadViewsFrom</code> method, really, not by the package name but you should always use the same identifiers).
+				The <code>$module</code> variable for each item contains the view namespace of the package that registered the mixin. If your package were called <code>quotes</code> and you wanted to load the <code>dashboard</code> view from it, you'd access it with <code>quotes::dashboard</code>. The part before the <code>::</code> is the view namespace of the package (the namaspace is defined by the <code>loadViewsFrom</code> method, really, not by the package name but you should always use the same identifiers).
 			</p>
 			<p>
 				Following the <a href="http://en.wikipedia.org/wiki/Convention_over_configuration">convention over configuration</a> paradigm, if a package wants to add a mixin to the <code>dashboard</code> view, the mixin should be called <code>dashboard</code>, too (resulting in <code>views/dashboard.blade.php</code> in the package). If a view has multiple areas reserved for mixins, these identifiers can differ. We'll cover that in a later section.
@@ -101,17 +69,17 @@ $modules->addMixin('package-view-namespace', 'dashboard');
 				We have already seen the <code>$nestedMixins</code> variable in the code snippet above. Let's take a closer look at it:
 			</p>
 <pre>
-&#64;forelse ($mixins as $module => <strong>$nestedMixins</strong>)
+&#64;forelse ($modules->getMixins('dashboard') as $module => <strong>$nestedMixins</strong>)
    &#64;include($module.'::dashboard', <strong>array('mixins' => $nestedMixins)</strong>)
 </pre>
 			<p>
-				Previously we only talked about keys of the <code>$mixins</code> array (<code>$module</code>). The values of the array (<code>$nestedMixins</code>) contain an array of <em>nested</em> view mixins that should be inserted into the current mixin. Let's take the transects thumbnails and project boxes as an example.
+				Previously we only talked about keys of the mixins array (<code>$module</code>). The values of the array (<code>$nestedMixins</code>) contain an array of <em>nested</em> view mixins that should be inserted into the current mixin. Let's take the transects thumbnails and project boxes as an example.
 			</p>
 			<p>
 				The project boxes are the first level of mixins that are added to the dashboard; this works just as described in the previous section. Now the transect thumbnails should be added to <em>each</em> project box. These are the second level of mixins, supplied to the project box mixin as an additional argument of <code>&#64;include</code>. The structure can be visualized in a tree like this:
 			</p>
 <pre>
-$mixins
+$modules->getMixins('dashboard')
 ├─ <strong>projects</strong> (the project boxes)
 │  └─ <strong>transects</strong> (the transect thumbnails for each box)
 │     └─ empty
@@ -125,7 +93,7 @@ $mixins
 			<h4>Registering nested mixins</h4>
 
 			<p>
-				If your Laravel application has lots of views you are able to <a href="http://laravel.com/docs/5.0/views">order them in different directories</a>. Views ordered like that can be accessed using the dot notation, e.g. the view <code>public/views/admin/profile.php</code> can be accessed with <code>view('admin.profile')</code>. Nested mixins make use of this method of accessing views; let's see how.
+				If your Laravel application has lots of views you should <a href="http://laravel.com/docs/5.0/views">order them in different directories</a>. Views ordered like that can be accessed using the dot notation, e.g. the view <code>public/views/admin/profile.php</code> can be accessed with <code>view('admin.profile')</code>. Nested mixins make use of this method of accessing views; let's see how.
 			</p>
 			<p>
 				The view mixin for the project boxes of the dashboard is registered as usual:
@@ -160,17 +128,9 @@ $modules->addMixin('transects', 'dashboard.projects');
 			<p>
 				In fact there is nothing preventing us to implement a separate "style" mixin and add it to the dashboard. That's exactly what is already provided by the dashboard, looking like this:
 			</p>
-Controller
-<pre>
-return view('dashboard')
-   [...]
-   ->with('mixinStyles', $this->modules->getMixins('dashboardStyles'))
-   [...]
-</pre>
-View
 <pre>
 &#64;section('styles')
-   &#64;foreach ($mixinStyles as $module => $nestedMixins)
+   &#64;foreach ($modules->getMixins('dashboardStyles') as $module => $nestedMixins)
       &#64;include($module.'::dashboardStyles')
    &#64;endforeach
 &#64;append
@@ -199,7 +159,7 @@ $modules->addMixin('transects', 'dashboardStyles');
 			<p>
 				Now we have de-mystified the mechanisms behind view mixins and you know how to register areas for view mixins, use nested mixins and in which situations asset mixins are required. You can now consider yourself a fully qualified DIAS package developer!
 			</p>
-			
+
 			<p>
 				<a href="{{ route('documentation') }}" class="btn btn-default" title="Back to the documentation center"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> back</a>
 			</p>

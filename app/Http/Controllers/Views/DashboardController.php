@@ -11,11 +11,6 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return view('dashboard')
-            ->withMixins($this->modules->getMixins('dashboard'))
-            ->with('mixinStyles', $this->modules->getMixins('dashboardStyles'))
-            ->with('mixinScripts', $this->modules->getMixins('dashboardScripts'))
-            ->with('message', session('message'))
-            ->with('messageType', session('messageType'));
+        return view('dashboard');
     }
 }

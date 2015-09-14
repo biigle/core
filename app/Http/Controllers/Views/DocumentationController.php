@@ -2,7 +2,7 @@
 
 namespace Dias\Http\Controllers\Views;
 
-class DocController extends Controller
+class DocumentationController extends Controller
 {
     /**
      * Show the application documentation center to the user.
@@ -11,15 +11,12 @@ class DocController extends Controller
      */
     public function index()
     {
-        return view('documentation')
-            ->withMixins($this->modules->getMixins('documentation'))
-            ->with('message', session('message'))
-            ->with('messageType', session('messageType'));
+        return view('documentation');
     }
 
     /**
      * Show the package development tutorial.
-     *	
+     *
      * @param string $name Article name
      * @return \Illuminate\Http\Response
      */

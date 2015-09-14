@@ -26,6 +26,16 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
     public function testShow()
     {
         $id = $this->annotation->id;
+        // test ordering of points, too
+        // use fresh() so numbers get strings in SQLite and stay numbers in Postgres
+        $point1 = AnnotationPointTest::create([
+            'annotation_id' => $id,
+            'index' => 1,
+        ])->fresh();
+        $point2 = AnnotationPointTest::create([
+            'annotation_id' => $id,
+            'index' => 0,
+        ])->fresh();
         $this->doTestApiRoute('GET', $this->getEndpoint().'/'.$id);
 
         // api key authentication
@@ -44,18 +54,19 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
 
         // session cookie authentication
         $this->be($this->admin);
-        $r = $this->call('GET', $this->getEndpoint().'/'.$id);
-
-        $this->assertResponseOk();
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
-        $this->assertContains('points":[', $r->getContent());
+        $this->get($this->getEndpoint().'/'.$id)
+            ->seeJson([
+                'points' => [
+                    ['x' => $point2->x, 'y' => $point2->y],
+                    ['x' => $point1->x, 'y' => $point1->y],
+                ]
+            ]);
         // the labels should be fetched separately
-        $this->assertNotContains('labels', $r->getContent());
+        $this->assertNotContains('labels', $this->response->getContent());
         // image and transect objects from projectIds() call shouldn't be
         // included in the output
-        $this->assertNotContains('"image"', $r->getContent());
-        $this->assertNotContains('transect', $r->getContent());
+        $this->assertNotContains('"image"', $this->response->getContent());
+        $this->assertNotContains('transect', $this->response->getContent());
     }
 
     public function testUpdate()

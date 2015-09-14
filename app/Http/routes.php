@@ -25,10 +25,10 @@ Route::group(['namespace' => 'Views', 'prefix' => 'documentation'], function ($r
     // files in the public directory
     $router->get('/', [
         'as' => 'documentation',
-        'uses' => 'DocController@index',
+        'uses' => 'DocumentationController@index',
     ]);
 
-    $router->get('/{article}', 'DocController@article');
+    $router->get('/{article}', 'DocumentationController@article');
 });
 
 // PROTECTED ROUTES -----------------------------------------------------------
