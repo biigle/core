@@ -1,11 +1,6 @@
 <?php
 
-Route::group(array(
-		'namespace' => '\Dias\Modules\Projects\Http\Controllers',
-		'middleware' => 'auth',
-		'prefix' => 'projects'
-	), function ($router)
-{
+Route::group(['namespace' => '\Dias\Modules\Projects\Http\Controllers', 'middleware' => 'auth', 'prefix' => 'projects'], function ($router) {
 	$router->get('/create', array(
 		'as'   => 'create-project',
 		'uses' => 'ProjectController@create'
@@ -15,4 +10,12 @@ Route::group(array(
 		'as'   => 'project',
 		'uses' => 'ProjectController@index'
 	));
+});
+
+Route::group(['namespace' => '\Dias\Modules\Projects\Http\Controllers', 'middleware' => 'auth'], function ($router) {
+    $router->get('admin/projects', [
+        'as' => 'admin-projects',
+        'middleware' => 'admin',
+        'uses' => 'ProjectController@admin'
+    ]);
 });

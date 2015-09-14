@@ -39,4 +39,14 @@ class ProjectsControllerTest extends TestCase {
       $r = $this->get('projects/create');
       $this->assertResponseOk();
    }
+
+   public function testAdmin()
+   {
+        $this->visit("admin/projects")->seePageIs('auth/login');
+        $user = UserTest::create();
+        $this->be($user);
+        $this->get("admin/projects")->assertResponseStatus(401);
+        $user->role()->associate(Dias\Role::$admin);
+        $this->visit("admin/projects")->assertResponseOk();
+   }
 }

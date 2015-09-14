@@ -17,6 +17,7 @@ class ProjectController extends Controller {
 
     /**
      * Shows the project index page.
+     *
      * @param int $id project ID
      * @return \Illuminate\Http\Response
      */
@@ -28,6 +29,18 @@ class ProjectController extends Controller {
         return view('projects::index')
             ->withProject($project)
             ->withUser($this->user)
+            ->with('isMember', $project->users()->find($this->user->id) !== null)
             ->with('isAdmin', $this->user->canAdminOneOfProjects([$id]));
+    }
+
+    /**
+     * Shows the projects admin page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function admin()
+    {
+        return view('projects::admin')
+            ->withProjects(Project::select('id', 'name', 'description')->get());
     }
 }

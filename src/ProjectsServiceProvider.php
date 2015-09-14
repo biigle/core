@@ -22,6 +22,8 @@ class ProjectsServiceProvider extends ServiceProvider {
 		include __DIR__.'/Http/routes.php';
 
 		$modules->addMixin('projects', 'dashboard');
+        $modules->addMixin('projects', 'adminMenu');
+        $modules->addMixin('projects', 'adminIndex');
 	}
 
 	/**
