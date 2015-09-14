@@ -11,7 +11,8 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
         $scope.images = images;
         $scope.imageLoading = true;
         $scope.editMode = !!$attrs.editMode;
-        $scope.projectIds = $attrs.projectIds.split(',');
+        // don't parse an empty string
+        $scope.projectIds = $attrs.projectIds ? $attrs.projectIds.split(',') : [];
 
         labels.setProjectIds($scope.projectIds);
 

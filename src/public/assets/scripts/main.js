@@ -67,7 +67,8 @@ angular.module('dias.annotations').controller('AnnotatorController', ["$scope", 
         $scope.images = images;
         $scope.imageLoading = true;
         $scope.editMode = !!$attrs.editMode;
-        $scope.projectIds = $attrs.projectIds.split(',');
+        // don't parse an empty string
+        $scope.projectIds = $attrs.projectIds ? $attrs.projectIds.split(',') : [];
 
         labels.setProjectIds($scope.projectIds);
 
@@ -374,194 +375,6 @@ angular.module('dias.annotations').controller('SidebarController', ["$scope", "$
 
 		$scope.deleteSelectedAnnotations = mapAnnotations.deleteSelected;
 	}]
-);
-/**
- * @namespace dias.annotations
- * @ngdoc directive
- * @name annotationListItem
- * @memberOf dias.annotations
- * @description An annotation list item.
- */
-angular.module('dias.annotations').directive('annotationListItem', ["labels", function (labels) {
-		"use strict";
-
-		return {
-			scope: true,
-			controller: ["$scope", function ($scope) {
-				$scope.shapeClass = 'icon-' + $scope.annotation.shape.toLowerCase();
-
-				$scope.selected = function () {
-					return $scope.isSelected($scope.annotation.id);
-				};
-
-				$scope.attachLabel = function () {
-					labels.attachToAnnotation($scope.annotation);
-				};
-
-				$scope.removeLabel = function (label) {
-					labels.removeFromAnnotation($scope.annotation, label);
-				};
-
-				$scope.canAttachLabel = function () {
-					return $scope.selected() && labels.hasSelected();
-				};
-
-				$scope.currentLabel = labels.getSelected;
-
-				$scope.currentConfidence = labels.getCurrentConfidence;
-			}]
-		};
-	}]
-);
-
-/**
- * @namespace dias.annotations
- * @ngdoc directive
- * @name labelCategoryItem
- * @memberOf dias.annotations
- * @description A label category list item.
- */
-angular.module('dias.annotations').directive('labelCategoryItem', ["$compile", "$timeout", "$templateCache", function ($compile, $timeout, $templateCache) {
-        "use strict";
-
-        return {
-            restrict: 'C',
-
-            templateUrl: 'label-item.html',
-
-            scope: true,
-
-            link: function (scope, element, attrs) {
-                // wait for this element to be rendered until the children are
-                // appended, otherwise there would be too much recursion for
-                // angular
-                var content = angular.element($templateCache.get('label-subtree.html'));
-                $timeout(function () {
-                    element.append($compile(content)(scope));
-                });
-            },
-
-            controller: ["$scope", function ($scope) {
-                // open the subtree of this item
-                $scope.isOpen = false;
-                // this item has children
-                $scope.isExpandable = !!$scope.tree[$scope.item.id];
-                // this item is currently selected
-                $scope.isSelected = false;
-
-                // handle this by the event rather than an own click handler to
-                // deal with click and search field actions in a unified way
-                $scope.$on('categories.selected', function (e, category) {
-                    // if an item is selected, its subtree and all parent items
-                    // should be opened
-                    if ($scope.item.id === category.id) {
-                        $scope.isOpen = true;
-                        $scope.isSelected = true;
-                        // this hits all parent scopes/items
-                        $scope.$emit('categories.openParents');
-                    } else {
-                        $scope.isOpen = false;
-                        $scope.isSelected = false;
-                    }
-                });
-
-                // if a child item was selected, this item should be opened, too
-                // so the selected item becomes visible in the tree
-                $scope.$on('categories.openParents', function (e) {
-                    $scope.isOpen = true;
-                    // stop propagation if this is a root element
-                    if ($scope.item.parent_id === null) {
-                        e.stopPropagation();
-                    }
-                });
-            }]
-        };
-    }]
-);
-
-/**
- * @namespace dias.annotations
- * @ngdoc directive
- * @name labelItem
- * @memberOf dias.annotations
- * @description An annotation label list item.
- */
-angular.module('dias.annotations').directive('labelItem', function () {
-		"use strict";
-
-		return {
-			controller: ["$scope", function ($scope) {
-				var confidence = $scope.annotationLabel.confidence;
-
-				if (confidence <= 0.25) {
-					$scope.class = 'label-danger';
-				} else if (confidence <= 0.5 ) {
-					$scope.class = 'label-warning';
-				} else if (confidence <= 0.75 ) {
-					$scope.class = 'label-success';
-				} else {
-					$scope.class = 'label-primary';
-				}
-			}]
-		};
-	}
-);
-
-/**
- * @namespace dias.annotations
- * @ngdoc factory
- * @name debounce
- * @memberOf dias.annotations
- * @description A debounce service to perform an action only when this function
- * wasn't called again in a short period of time.
- * see http://stackoverflow.com/a/13320016/1796523
- */
-angular.module('dias.annotations').factory('debounce', ["$timeout", "$q", function ($timeout, $q) {
-		"use strict";
-
-		var timeouts = {};
-
-		return function (func, wait, id) {
-			// Create a deferred object that will be resolved when we need to
-			// actually call the func
-			var deferred = $q.defer();
-			return (function() {
-				var context = this, args = arguments;
-				var later = function() {
-					timeouts[id] = undefined;
-					deferred.resolve(func.apply(context, args));
-					deferred = $q.defer();
-				};
-				if (timeouts[id]) {
-					$timeout.cancel(timeouts[id]);
-				}
-				timeouts[id] = $timeout(later, wait);
-				return deferred.promise;
-			})();
-		};
-	}]
-);
-/**
- * @namespace dias.annotations
- * @ngdoc factory
- * @name map
- * @memberOf dias.annotations
- * @description Wrapper factory handling OpenLayers map
- */
-angular.module('dias.annotations').factory('map', function () {
-		"use strict";
-
-		var map = new ol.Map({
-			target: 'canvas',
-			controls: [
-				new ol.control.Zoom(),
-				new ol.control.ZoomToExtent(),
-				new ol.control.FullScreen()
-			]
-		});
-
-		return map;
-	}
 );
 /**
  * @namespace dias.annotations
@@ -1351,6 +1164,194 @@ angular.module('dias.annotations').service('urlParams', function () {
 		if (!state) {
 			state = decodeState();
 		}
+	}
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc directive
+ * @name annotationListItem
+ * @memberOf dias.annotations
+ * @description An annotation list item.
+ */
+angular.module('dias.annotations').directive('annotationListItem', ["labels", function (labels) {
+		"use strict";
+
+		return {
+			scope: true,
+			controller: ["$scope", function ($scope) {
+				$scope.shapeClass = 'icon-' + $scope.annotation.shape.toLowerCase();
+
+				$scope.selected = function () {
+					return $scope.isSelected($scope.annotation.id);
+				};
+
+				$scope.attachLabel = function () {
+					labels.attachToAnnotation($scope.annotation);
+				};
+
+				$scope.removeLabel = function (label) {
+					labels.removeFromAnnotation($scope.annotation, label);
+				};
+
+				$scope.canAttachLabel = function () {
+					return $scope.selected() && labels.hasSelected();
+				};
+
+				$scope.currentLabel = labels.getSelected;
+
+				$scope.currentConfidence = labels.getCurrentConfidence;
+			}]
+		};
+	}]
+);
+
+/**
+ * @namespace dias.annotations
+ * @ngdoc directive
+ * @name labelCategoryItem
+ * @memberOf dias.annotations
+ * @description A label category list item.
+ */
+angular.module('dias.annotations').directive('labelCategoryItem', ["$compile", "$timeout", "$templateCache", function ($compile, $timeout, $templateCache) {
+        "use strict";
+
+        return {
+            restrict: 'C',
+
+            templateUrl: 'label-item.html',
+
+            scope: true,
+
+            link: function (scope, element, attrs) {
+                // wait for this element to be rendered until the children are
+                // appended, otherwise there would be too much recursion for
+                // angular
+                var content = angular.element($templateCache.get('label-subtree.html'));
+                $timeout(function () {
+                    element.append($compile(content)(scope));
+                });
+            },
+
+            controller: ["$scope", function ($scope) {
+                // open the subtree of this item
+                $scope.isOpen = false;
+                // this item has children
+                $scope.isExpandable = !!$scope.tree[$scope.item.id];
+                // this item is currently selected
+                $scope.isSelected = false;
+
+                // handle this by the event rather than an own click handler to
+                // deal with click and search field actions in a unified way
+                $scope.$on('categories.selected', function (e, category) {
+                    // if an item is selected, its subtree and all parent items
+                    // should be opened
+                    if ($scope.item.id === category.id) {
+                        $scope.isOpen = true;
+                        $scope.isSelected = true;
+                        // this hits all parent scopes/items
+                        $scope.$emit('categories.openParents');
+                    } else {
+                        $scope.isOpen = false;
+                        $scope.isSelected = false;
+                    }
+                });
+
+                // if a child item was selected, this item should be opened, too
+                // so the selected item becomes visible in the tree
+                $scope.$on('categories.openParents', function (e) {
+                    $scope.isOpen = true;
+                    // stop propagation if this is a root element
+                    if ($scope.item.parent_id === null) {
+                        e.stopPropagation();
+                    }
+                });
+            }]
+        };
+    }]
+);
+
+/**
+ * @namespace dias.annotations
+ * @ngdoc directive
+ * @name labelItem
+ * @memberOf dias.annotations
+ * @description An annotation label list item.
+ */
+angular.module('dias.annotations').directive('labelItem', function () {
+		"use strict";
+
+		return {
+			controller: ["$scope", function ($scope) {
+				var confidence = $scope.annotationLabel.confidence;
+
+				if (confidence <= 0.25) {
+					$scope.class = 'label-danger';
+				} else if (confidence <= 0.5 ) {
+					$scope.class = 'label-warning';
+				} else if (confidence <= 0.75 ) {
+					$scope.class = 'label-success';
+				} else {
+					$scope.class = 'label-primary';
+				}
+			}]
+		};
+	}
+);
+
+/**
+ * @namespace dias.annotations
+ * @ngdoc factory
+ * @name debounce
+ * @memberOf dias.annotations
+ * @description A debounce service to perform an action only when this function
+ * wasn't called again in a short period of time.
+ * see http://stackoverflow.com/a/13320016/1796523
+ */
+angular.module('dias.annotations').factory('debounce', ["$timeout", "$q", function ($timeout, $q) {
+		"use strict";
+
+		var timeouts = {};
+
+		return function (func, wait, id) {
+			// Create a deferred object that will be resolved when we need to
+			// actually call the func
+			var deferred = $q.defer();
+			return (function() {
+				var context = this, args = arguments;
+				var later = function() {
+					timeouts[id] = undefined;
+					deferred.resolve(func.apply(context, args));
+					deferred = $q.defer();
+				};
+				if (timeouts[id]) {
+					$timeout.cancel(timeouts[id]);
+				}
+				timeouts[id] = $timeout(later, wait);
+				return deferred.promise;
+			})();
+		};
+	}]
+);
+/**
+ * @namespace dias.annotations
+ * @ngdoc factory
+ * @name map
+ * @memberOf dias.annotations
+ * @description Wrapper factory handling OpenLayers map
+ */
+angular.module('dias.annotations').factory('map', function () {
+		"use strict";
+
+		var map = new ol.Map({
+			target: 'canvas',
+			controls: [
+				new ol.control.Zoom(),
+				new ol.control.ZoomToExtent(),
+				new ol.control.FullScreen()
+			]
+		});
+
+		return map;
 	}
 );
 /**
