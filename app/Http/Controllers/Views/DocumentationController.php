@@ -11,10 +11,7 @@ class DocumentationController extends Controller
      */
     public function index()
     {
-        return view('documentation')
-            ->withMixins($this->modules->getMixins('documentation'))
-            ->with('message', session('message'))
-            ->with('messageType', session('messageType'));
+        return view('documentation');
     }
 
     /**

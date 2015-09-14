@@ -28,7 +28,7 @@ Route::group(['namespace' => 'Views', 'prefix' => 'documentation'], function ($r
         'uses' => 'DocumentationController@index',
     ]);
 
-    $router->get('/{article}', 'DocController@article');
+    $router->get('/{article}', 'DocumentationController@article');
 });
 
 // PROTECTED ROUTES -----------------------------------------------------------

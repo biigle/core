@@ -1,4 +1,5 @@
 @extends('app')
+@inject('modules', 'Dias\Services\Modules')
 
 @section('title'){{ trans('dias.titles.doc') }}@stop
 
@@ -19,7 +20,7 @@
 				Walking through the DIAS installation process, we'll show you how to get the application up and running on your own server.
 				{{-- install the application / readme --}}
 			</p>
-			
+
 			<h4><a href="{{ route('documentation').'/package-development' }}">Package development</a></h4>
 			<p>
 				Learn about PHP package development and how to add custom functionality to your DIAS installation by developing your own modules.
@@ -79,7 +80,7 @@
 				<a class="btn btn-default btn-lg btn-block" href="{{ url('doc/client/index.html') }}">Client API documentation</a>
 			</p>
 		</div>
-		@foreach ($mixins as $module => $nestedMixins)
+		@foreach ($modules->getMixins('documentation') as $module => $nestedMixins)
 			@include($module.'::documentation', array('mixins' => $nestedMixins))
 		@endforeach
 	</div>
