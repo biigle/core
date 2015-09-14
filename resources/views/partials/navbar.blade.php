@@ -11,12 +11,17 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-menu-hamburger"></i> <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li class="dropdown-header">
-                            Signed in as <strong>{{ Auth::user()->name }}</strong>
+                            Signed in as <strong>{{ auth()->user()->name }}</strong>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li>
                             <a href="{{ route('home') }}" title="Dashboard">Dashboard</a>
                         </li>
+                        @if (auth()->user()->isAdmin)
+                            <li>
+                                <a href="{{ route('admin') }}" title="Admin area">Admin area</a>
+                            </li>
+                        @endif
                         <li>
                             <a href="{{ route('documentation') }}" title="{{ trans('dias.titles.doc') }}">{{ trans('dias.titles.doc') }}</a>
                         </li>

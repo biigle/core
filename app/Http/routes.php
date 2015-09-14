@@ -55,6 +55,18 @@ Route::group(['namespace' => 'Views', 'middleware' => 'auth'], function ($router
         'as' => 'settings-tokens',
         'uses' => 'SettingsController@tokens',
     ]);
+
+    $router->get('admin', [
+        'as' => 'admin',
+        'middleware' => 'admin',
+        'uses' => 'AdminController@index'
+    ]);
+
+    $router->get('admin/users', [
+        'as' => 'admin-users',
+        'middleware' => 'admin',
+        'uses' => 'AdminController@users'
+    ]);
 });
 
 Route::group([
