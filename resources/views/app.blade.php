@@ -17,7 +17,7 @@
 	<![endif]-->
 </head>
 <body>
-@if(Auth::check())
+@if(auth()->check())
 	@include('partials.navbar')
 @endif
 	@include('partials.messages')

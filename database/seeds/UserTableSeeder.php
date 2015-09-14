@@ -27,5 +27,6 @@ class UserTableSeeder extends Seeder
         ]);
 
         $jane->role()->associate(Dias\Role::$admin);
+        $jane->save();
     }
 }
