@@ -9,5 +9,10 @@
         "psr-4": {
             "Dias\\Modules\\Transects\\": "src"
         }
+    },
+    "scripts": {
+        "fix": [
+            "php-cs-fixer --config-file='.php_cs' fix"
+        ]
     }
 }

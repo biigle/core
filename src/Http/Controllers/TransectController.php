@@ -1,38 +1,40 @@
-<?php namespace Dias\Modules\Transects\Http\Controllers;
+<?php
+
+namespace Dias\Modules\Transects\Http\Controllers;
 
 use Dias\Transect;
 use Dias\Project;
 use Dias\MediaType;
 use Dias\Http\Controllers\Views\Controller;
 
-class TransectController extends Controller {
+class TransectController extends Controller
+{
+    /**
+     * Shows the create transect page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $project = $this->requireNotNull(Project::find($this->request->input('project')));
+        $this->requireCanEdit($project);
 
-	/**
-	 * Shows the create transect page.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function create()
-	{
-		$project = $this->requireNotNull(Project::find($this->request->input('project')));
-		$this->requireCanEdit($project);
+        return view('transects::create')
+            ->with('project', $project)
+            ->with('mediaTypes', MediaType::all());
+    }
 
-		return view('transects::create')
-			->with('project', $project)
-			->with('mediaTypes', MediaType::all());
-	}
+    /**
+     * Shows the transect index page.
+     * @param int $id transect ID
+     * @return \Illuminate\Http\Response
+     */
+    public function index($id)
+    {
+        $transect = $this->requireNotNull(Transect::find($id));
+        $this->requireCanSee($transect);
 
-	/**
-	 * Shows the transect index page.
-	 * @param int $id transect ID
-	 * @return \Illuminate\Http\Response
-	 */
-	public function index($id)
-	{
-		$transect = $this->requireNotNull(Transect::find($id));
-		$this->requireCanSee($transect);
-
-		return view('transects::index')
-			->withTransect($transect);
-	}
+        return view('transects::index')
+            ->withTransect($transect);
+    }
 }

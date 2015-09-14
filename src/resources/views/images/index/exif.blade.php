@@ -6,7 +6,9 @@
 		<table class="table">
 			@if ($image->exif)
 				@foreach (array('DateTime', 'Model', 'ShutterSpeedValue', 'ApertureValue', 'Flash', 'GPS Latitude', 'GPS Longitude', 'GPS Altitude') as $field)
-					<?php if (!array_key_exists($field, $image->exif)) continue; ?>
+					<?php if (!array_key_exists($field, $image->exif)) {
+    continue;
+} ?>
 					<tr>
 						<th>{{ $field }}</th>
 						<td>{{ $image->exif[$field] }}</td>
