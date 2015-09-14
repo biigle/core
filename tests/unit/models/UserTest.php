@@ -105,6 +105,11 @@ class UserTest extends ModelWithAttributesTest
     {
         $project = ProjectTest::create();
         $projectIds = [$project->id];
+        // global admins can see all projects
+        $this->model->role()->associate(Role::$admin);
+        $this->assertTrue($this->model->canSeeOneOfProjects($projectIds));
+        Cache::flush();
+        $this->model->role()->associate(Role::$editor);
         $this->assertFalse($this->model->canSeeOneOfProjects($projectIds));
         $project->addUserId($this->model->id, Role::$guest->id);
         Cache::flush();
@@ -121,6 +126,11 @@ class UserTest extends ModelWithAttributesTest
     {
         $project = ProjectTest::create();
         $projectIds = [$project->id];
+        // global admins can edit all projects
+        $this->model->role()->associate(Role::$admin);
+        $this->assertTrue($this->model->canEditInOneOfProjects($projectIds));
+        Cache::flush();
+        $this->model->role()->associate(Role::$editor);
         $this->assertFalse($this->model->canEditInOneOfProjects($projectIds));
         $project->addUserId($this->model->id, Role::$guest->id);
         Cache::flush();
@@ -137,6 +147,11 @@ class UserTest extends ModelWithAttributesTest
     {
         $project = ProjectTest::create();
         $projectIds = [$project->id];
+        // global admins can admin all projects
+        $this->model->role()->associate(Role::$admin);
+        $this->assertTrue($this->model->canAdminOneOfProjects($projectIds));
+        Cache::flush();
+        $this->model->role()->associate(Role::$editor);
         $this->assertFalse($this->model->canAdminOneOfProjects($projectIds));
         $project->addUserId($this->model->id, Role::$guest->id);
         Cache::flush();

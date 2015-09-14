@@ -93,72 +93,6 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
     }
 
     /**
-     * Checks if the user ID is an admin of this project.
-     *
-     * @param int $id
-     * @return bool
-     */
-    public function hasAdminId($id)
-    {
-        return $this->admins()->find($id) !== null;
-    }
-
-    /**
-     * Checks if the user is an admin of this project.
-     *
-     * @param User $user
-     * @return bool
-     */
-    public function hasAdmin($user)
-    {
-        return $this->hasAdminId($user->id);
-    }
-
-    /**
-     * Checks if the user ID is an editor of this project.
-     *
-     * @param int $id
-     * @return bool
-     */
-    public function hasEditorId($id)
-    {
-        return $this->editors()->find($id) !== null;
-    }
-
-    /**
-     * Checks if the user is an editor of this project.
-     *
-     * @param User $user
-     * @return bool
-     */
-    public function hasEditor($user)
-    {
-        return $this->hasEditorId($user->id);
-    }
-
-    /**
-     * Checks if the given user ID exists in this project.
-     *
-     * @param int $id
-     * @return bool
-     */
-    public function hasUserId($id)
-    {
-        return $this->users()->find($id) !== null;
-    }
-
-    /**
-     * Checks if the given user exists in this project.
-     *
-     * @param User $user
-     * @return bool
-     */
-    public function hasUser($user)
-    {
-        return $this->hasUserId($user->id);
-    }
-
-    /**
      * The user that created this project. On creation this user is
      * automatically added to the project's users with the 'admin' role by
      * the ProjectObserver.
@@ -213,7 +147,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
      */
     public function changeRole($userId, $roleId)
     {
-        if (!$this->hasUserId($userId)) {
+        if ($this->users()->find($userId) === null) {
             abort(400, "User doesn't exist in this project.");
         }
 
@@ -238,7 +172,7 @@ class Project extends ModelWithAttributes implements BelongsToProjectContract
         $admins = $this->admins();
         // is this an attempt to remove the last remaining admin?
         if ($admins->count() === 1 && $admins->find($userId) !== null) {
-            abort(400, "The last admin of {$this->name} cannot be removed. The admin status must be passed on to another user or the project must be deleted first.");
+            abort(400, "The last admin of {$this->name} cannot be removed. The admin status must be passed on to another user first.");
         }
     }
 

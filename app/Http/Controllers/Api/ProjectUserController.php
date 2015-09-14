@@ -134,11 +134,10 @@ class ProjectUserController extends Controller
     public function destroy($projectId, $userId)
     {
         $project = $this->requireNotNull(Project::find($projectId));
-        $user = $this->user;
 
         // the user is only allowed to do this if they are admin or want to
         // remove themselves
-        if ($project->hasAdmin($user) || $user->id == $userId) {
+        if ($this->user->canAdminOneOfProjects([$projectId]) || $this->user->id == $userId) {
             $project->removeUserId($userId);
 
             return response('Ok.', 200);

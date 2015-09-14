@@ -123,64 +123,6 @@ class ProjectTest extends ModelWithAttributesTest
         $this->assertEquals(1, $this->model->guests()->count());
     }
 
-    public function testHasAdmin()
-    {
-        $admin = UserTest::create();
-        $member = UserTest::create();
-        $this->model->addUserId($admin->id, Role::$admin->id);
-        $this->model->addUserId($member->id, Role::$editor->id);
-        $this->assertTrue($this->model->hasAdmin($admin));
-        $this->assertFalse($this->model->hasAdmin($member));
-    }
-
-    public function testHasAdminId()
-    {
-        $admin = UserTest::create();
-        $admin->save();
-        $member = UserTest::create();
-        $member->save();
-        $this->model->addUserId($admin->id, Role::$admin->id);
-        $this->model->addUserId($member->id, Role::$editor->id);
-        $this->assertTrue($this->model->hasAdminId($admin->id));
-        $this->assertFalse($this->model->hasAdminId($member->id));
-    }
-
-    public function testHasEditor()
-    {
-        $editor = UserTest::create();
-        $member = UserTest::create();
-        $this->model->addUserId($editor->id, Role::$editor->id);
-        $this->model->addUserId($member->id, Role::$guest->id);
-        $this->assertTrue($this->model->hasEditor($editor));
-        $this->assertFalse($this->model->hasEditor($member));
-    }
-
-    public function testHasEditorId()
-    {
-        $editor = UserTest::create();
-        $member = UserTest::create();
-        $this->model->addUserId($editor->id, Role::$editor->id);
-        $this->model->addUserId($member->id, Role::$guest->id);
-        $this->assertTrue($this->model->hasEditorId($editor->id));
-        $this->assertFalse($this->model->hasEditorId($member->id));
-    }
-
-    public function testHasUser()
-    {
-        $user = UserTest::create();
-        $this->assertFalse($this->model->hasUser($user));
-        $this->model->addUserId($user->id, Role::$admin->id);
-        $this->assertTrue($this->model->hasUser($user));
-    }
-
-    public function testHasUserId()
-    {
-        $user = UserTest::create();
-        $this->assertFalse($this->model->hasUserId($user->id));
-        $this->model->addUserId($user->id, Role::$admin->id);
-        $this->assertTrue($this->model->hasUserId($user->id));
-    }
-
     public function testTransects()
     {
         $transect = TransectTest::make();

@@ -19,11 +19,13 @@ class UserTableSeeder extends Seeder
         $joe->generateApiKey();
         $joe->save();
 
-        User::create([
+        $jane = User::create([
             'firstname' => 'Jane',
             'lastname'  => 'User',
             'email'     => 'jane@user.com',
             'password'  => Hash::make('janespassword'),
         ]);
+
+        $jane->role()->associate(Dias\Role::$admin);
     }
 }

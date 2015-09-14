@@ -139,8 +139,8 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
      */
     public function canSeeOneOfProjects($ids)
     {
-        return Cache::remember('user-'.$this->id.'-can-see-projects-'.implode('-', $ids), 0.5, function () use ($ids) {
-            return $this->projects()
+        return Cache::remember('user-'.$this->id.'-can-see-projects-'.implode('-', $ids), 0.1, function () use ($ids) {
+            return $this->isAdmin || $this->projects()
                 ->whereIn('id', $ids)
                 ->count() > 0;
         });
@@ -155,8 +155,8 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
      */
     public function canEditInOneOfProjects($ids)
     {
-        return Cache::remember('user-'.$this->id.'-can-edit-projects-'.implode('-', $ids), 0.5, function () use ($ids) {
-            return $this->projects()
+        return Cache::remember('user-'.$this->id.'-can-edit-projects-'.implode('-', $ids), 0.1, function () use ($ids) {
+            return $this->isAdmin || $this->projects()
                 ->whereIn('id', $ids)
                 ->whereIn('project_role_id', [Role::$admin->id, Role::$editor->id])
                 ->count() > 0;
@@ -171,8 +171,8 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
      */
     public function canAdminOneOfProjects($ids)
     {
-        return Cache::remember('user-'.$this->id.'-can-admin-projects-'.implode('-', $ids), 0.5, function () use ($ids) {
-            return $this->projects()
+        return Cache::remember('user-'.$this->id.'-can-admin-projects-'.implode('-', $ids), 0.1, function () use ($ids) {
+            return $this->isAdmin || $this->projects()
                 ->whereIn('id', $ids)
                 ->where('project_role_id', Role::$admin->id)
                 ->count() > 0;
