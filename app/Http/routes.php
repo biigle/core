@@ -67,6 +67,12 @@ Route::group(['namespace' => 'Views', 'middleware' => 'auth'], function ($router
         'middleware' => 'admin',
         'uses' => 'AdminController@users'
     ]);
+
+    $router->get('admin/labels', [
+        'as' => 'admin-labels',
+        'middleware' => 'admin',
+        'uses' => 'AdminController@labels'
+    ]);
 });
 
 Route::group([
