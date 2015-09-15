@@ -1,1 +1,1 @@
-{{ trans('auth.pw_reset_link') }} {{ url('password/reset/'.$token) }}
+{{ trans('auth.pw_reset_link') }} <a href="{{ url('password/reset/'.$token) }}">{{ url('password/reset/'.$token) }}</a>
