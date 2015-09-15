@@ -8,10 +8,10 @@
     <div class="panel-body">
         <form class="" role="form" method="POST" action="{{ url('api/v1/users/my') }}">
 
-            <div class="form-group{{ $errors->has('old_password') && old('_origin') === 'password'  ? ' has-error' : '' }}">
+            <div class="form-group{{ $errors->has('old_password') && $origin === 'password'  ? ' has-error' : '' }}">
                 <label for="old_password">Old password</label>
                 <input type="password" class="form-control" name="old_password" id="old_password">
-                @if($errors->has('old_password') && old('_origin') === 'password')
+                @if($errors->has('old_password') && $origin === 'password')
                     <span class="help-block">{{ $errors->first('old_password') }}</span>
                 @endif
             </div>
@@ -32,7 +32,7 @@
                 @endif
             </div>
 
-            @if ($saved && old('_origin') === 'password')
+            @if ($saved && $origin === 'password')
                 <div class="alert alert-success" role="alert">
                     Your password was successfully updated.
                 </div>
@@ -50,10 +50,10 @@
     <div class="panel-heading">Change email</div>
     <div class="panel-body">
         <form class="" role="form" method="POST" action="{{ url('api/v1/users/my') }}">
-            <div class="form-group{{ $errors->has('old_password') && old('_origin') === 'email' ? ' has-error' : '' }}">
+            <div class="form-group{{ $errors->has('old_password') && $origin === 'email' ? ' has-error' : '' }}">
                 <label for="old_password">Old password</label>
                 <input type="password" class="form-control" name="old_password" id="old_password">
-                @if($errors->has('old_password') && old('_origin') === 'email')
+                @if($errors->has('old_password') && $origin === 'email')
                     <span class="help-block">{{ $errors->first('old_password') }}</span>
                 @endif
             </div>
@@ -66,9 +66,9 @@
                 @endif
             </div>
 
-            @if ($saved && old('_origin') === 'email')
+            @if ($saved && $origin === 'email')
                 <div class="alert alert-success" role="alert">
-                    Your password was successfully updated.
+                    Your email was successfully updated.
                 </div>
             @endif
 

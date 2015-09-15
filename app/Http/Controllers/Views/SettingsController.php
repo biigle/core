@@ -35,7 +35,8 @@ class SettingsController extends Controller
     {
         return view('settings.account')
             ->withUser($this->user)
-            ->withSaved(session('saved'));
+            ->withSaved(session('saved'))
+            ->withOrigin(session('_origin'));
     }
 
     /**

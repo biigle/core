@@ -254,7 +254,8 @@ class UserController extends Controller
 
         if (!static::isAutomatedRequest($request)) {
             return redirect()->back()
-                ->with('saved', $wasDirty);
+                ->with('saved', $wasDirty)
+                ->with('_origin', $request->input('_origin'));
         }
     }
 
