@@ -61,7 +61,9 @@ class PasswordController extends Controller
 
         switch ($response) {
          case Password::PASSWORD_RESET:
-             return redirect($this->redirectPath());
+             return redirect($this->redirectPath())
+                ->with('message', 'You have successfully reset your password.')
+                ->with('messageType', 'success');
 
          default:
              return redirect()->back()
