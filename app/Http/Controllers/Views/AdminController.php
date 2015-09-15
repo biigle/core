@@ -29,4 +29,14 @@ class AdminController extends Controller
                 User::select('id', 'firstname', 'lastname', 'email', 'login_at')->get()
             );
     }
+
+    /**
+     * Shows the admin labels page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function labels()
+    {
+        return view('admin.labels');
+    }
 }

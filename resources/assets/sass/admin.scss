@@ -1,0 +1,49 @@
+/*
+ * This is the CSS for the admin area only. It has a separate file so it is not always included
+ * throughout the app.
+ */
+@import 'bootstrap/variables';
+
+.admin-add-category {
+    border-bottom: 1px solid $gray-lighter;
+}
+
+.admin-categories-list {
+    max-height: 400px;
+    overflow: auto;
+    padding-right: 15px;
+
+    li {
+        // 19px is the width of the expandable before element
+        padding: 10px 0 0 19px;
+    }
+}
+
+.admin-label-category-item {
+    cursor: pointer;
+
+    & > .item .item__name:before {
+        content: '▹ ';
+    }
+
+    &.expandable > .item .item__name:before {
+        content: '▸ ';
+    }
+
+    &.expandable.open > .item .item__name:before {
+        content: '▾ ';
+    }
+
+    & > .admin-label-category-subtree {
+        max-height: 0;
+        overflow: hidden;
+    }
+
+    &.open > .admin-label-category-subtree {
+        max-height: none;
+    }
+
+    &.selected > .item .item__name {
+        font-weight: bold;
+    }
+}
