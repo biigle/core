@@ -15,7 +15,7 @@ angular.module('dias.transects').directive('lazyImage', function ($q) {
                 // promise that is resolved when the image was loaded
                 var deferred = $q.defer();
                 scope.enqueueImage(deferred.promise).then(function () {
-                    element.bind('load', deferred.resolve);
+                    element.bind('load error', deferred.resolve);
                     attrs.$set('src', attrs.lazyImage);
                 });
             }
