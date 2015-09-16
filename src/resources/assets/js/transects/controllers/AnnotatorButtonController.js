@@ -5,7 +5,6 @@
  * @memberOf dias.transects
  * @description Controls the button for going to the image annotator when clicking on an image of the transects view.
  */
-try {
 angular.module('dias.transects').controller('AnnotatorButtonController', function ($scope, $attrs) {
 		"use strict";
 
@@ -27,6 +26,3 @@ angular.module('dias.transects').controller('AnnotatorButtonController', functio
 		});
 	}
 );
-} catch (e) {
-	// dias.transects is not loaded on this page
-}
