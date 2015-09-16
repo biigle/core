@@ -62,21 +62,41 @@
 
 	&.icon-point {
 		background-image: url(../images/point.svg);
+
+        &.active {
+            background-image: url(../images/point_white.svg);
+        }
 	}
 
 	&.icon-rectangle {
 		background-image: url(../images/rectangle.svg);
+
+        &.active {
+            background-image: url(../images/rectangle_white.svg);
+        }
 	}
 
 	&.icon-polygon {
 		background-image: url(../images/polygon.svg);
+
+        &.active {
+            background-image: url(../images/polygon_white.svg);
+        }
 	}
 
 	&.icon-linestring {
 		background-image: url(../images/linestring.svg);
+
+        &.active {
+            background-image: url(../images/linestring_white.svg);
+        }
 	}
 
 	&.icon-circle {
 		background-image: url(../images/circle.svg);
+
+        &.active {
+            background-image: url(../images/circle_white.svg);
+        }
 	}
 }

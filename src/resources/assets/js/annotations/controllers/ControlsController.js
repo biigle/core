@@ -19,7 +19,7 @@ angular.module('dias.annotations').controller('ControlsController', function ($s
 
 			mapAnnotations.finishDrawing();
 
-			if (drawing || name === null) {
+			if (name === null || (drawing && $scope.selectedShape === name)) {
 				$scope.selectedShape = '';
 				drawing = false;
 			} else {

@@ -11,7 +11,7 @@ elixir(function (mix) {
 	mix.sass('main.scss', 'public/assets/styles/main.css')
 	   .angular('resources/assets/js/annotations/', 'public/assets/scripts', 'main.js');
     mix.sass('transects.scss', 'public/assets/styles/transects.css');
-    mix.task('publish', 'resources/assets/**/*');
+    mix.task('publish', 'public/assets/**/*');
 });
 
 gulp.task('publish', function () {

@@ -152,14 +152,24 @@ html, body {
     min-height: 34px; }
   .icon.icon-point {
     background-image: url(../images/point.svg); }
+    .icon.icon-point.active {
+      background-image: url(../images/point_white.svg); }
   .icon.icon-rectangle {
     background-image: url(../images/rectangle.svg); }
+    .icon.icon-rectangle.active {
+      background-image: url(../images/rectangle_white.svg); }
   .icon.icon-polygon {
     background-image: url(../images/polygon.svg); }
+    .icon.icon-polygon.active {
+      background-image: url(../images/polygon_white.svg); }
   .icon.icon-linestring {
     background-image: url(../images/linestring.svg); }
+    .icon.icon-linestring.active {
+      background-image: url(../images/linestring_white.svg); }
   .icon.icon-circle {
     background-image: url(../images/circle.svg); }
+    .icon.icon-circle.active {
+      background-image: url(../images/circle_white.svg); }
 
 .sidebar__annotations {
   -webkit-flex-grow: 2;
