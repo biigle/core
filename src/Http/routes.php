@@ -27,3 +27,15 @@ Route::group([
         'uses' => 'ImageController@index',
     ]);
 });
+
+Route::group([
+        'namespace' => '\Dias\Modules\Transects\Http\Controllers',
+        'middleware' => 'auth'
+    ], function ($router) {
+
+    $router->get('admin/transects', [
+        'as' => 'admin-transects',
+        'middleware' => 'admin',
+        'uses' => 'AdminController@index',
+    ]);
+});
