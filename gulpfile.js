@@ -9,9 +9,9 @@ var shell   = require('gulp-shell');
 elixir(function (mix) {
 	process.chdir('src');
 	mix.sass('main.scss', 'public/assets/styles/main.css')
-	   .angular('resources/assets/js/', 'public/assets/scripts', 'main.js');
+	   .angular('resources/assets/js/transects/', 'public/assets/scripts', 'main.js');
     mix.sass('dashboard.scss', 'public/assets/styles/dashboard.css')
-       .angular('resources/assets/js-projects/', 'public/assets/scripts', 'projects.js');
+       .angular('resources/assets/js/projects/', 'public/assets/scripts', 'projects.js');
     mix.task('publish', 'resources/assets/**/*');
 });
 
