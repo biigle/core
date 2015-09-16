@@ -1,0 +1,29 @@
+.transects-dashboard__thumb {
+  position: relative;
+  margin-bottom: 30px; }
+  .transects-dashboard__thumb:hover figcaption {
+    min-height: 100%; }
+  .transects-dashboard__thumb img, .transects-dashboard__thumb figcaption {
+    border-radius: 4px; }
+  .transects-dashboard__thumb img {
+    width: 100%; }
+  .transects-dashboard__thumb figcaption {
+    min-height: 1em;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    color: white;
+    padding: 0.5em;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8)) center no-repeat;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    transition: all ease 0.25s; }
+
+/*# sourceMappingURL=dashboard.css.map */

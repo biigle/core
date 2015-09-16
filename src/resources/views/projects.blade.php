@@ -1,5 +1,5 @@
 @section('scripts')
-<script src="{{ asset('vendor/transects/scripts/main.js') }}"></script>
+<script src="{{ asset('vendor/transects/scripts/projects.js') }}"></script>
 @append
 
 <div class="col-sm-6 col-lg-4">

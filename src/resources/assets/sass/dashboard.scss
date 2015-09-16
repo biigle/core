@@ -1,0 +1,30 @@
+.transects-dashboard__thumb {
+    position: relative;
+    margin-bottom: 30px;
+
+    &:hover figcaption {
+        min-height: 100%;
+    }
+
+    img, figcaption {
+        border-radius: 4px;
+    }
+
+    img {
+        width: 100%;
+    }
+
+    figcaption {
+        min-height: 1em;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        color: white;
+        padding: 0.5em;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8)) center no-repeat;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all ease .25s;
+    }
+}

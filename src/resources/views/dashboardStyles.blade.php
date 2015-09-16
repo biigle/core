@@ -1,1 +1,1 @@
-<link href="{{ asset('vendor/transects/styles/main.css') }}" rel="stylesheet">
+<link href="{{ asset('vendor/transects/styles/dashboard.css') }}" rel="stylesheet">
