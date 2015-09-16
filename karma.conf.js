@@ -1,6 +1,6 @@
 module.exports = function (config) {
 	return config.set({
-		
+
 		basePath: '',
 
 		frameworks: ['jasmine'],
@@ -9,8 +9,8 @@ module.exports = function (config) {
 			'public/assets/scripts/angular.min.js',
 			'public/assets/scripts/angular-resource.min.js',
 			'public/assets/scripts/ui-bootstrap-tpls.min.js',
-			'resources/assets/js/main.js',
-			'resources/assets/js/**/*.js',
+			'resources/assets/js/core/main.js',
+			'resources/assets/js/core/**/*.js',
 			'tests/js/**/*.js',
 		],
 
