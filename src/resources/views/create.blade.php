@@ -50,7 +50,7 @@
 			</div>
 
 			<p class="alert alert-info ng-cloak" data-ng-if="submitted">
-				<strong>Just a moment, please!</strong> Large transects may take a few minutes to process.
+				<strong>Just a moment, please!</strong> Large transects may take a few seconds to process.
 			</p>
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 			<a href="{{ URL::previous() }}" class="btn btn-link" data-ng-disabled="submitted">Cancel</a>

@@ -11,6 +11,10 @@
     bottom: 0;
     color: white;
     padding: 0.5em;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8)) center no-repeat; }
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8)) center no-repeat;
+    opacity: 0.75;
+    transition: opacity 0.25s ease; }
+  .transects-dashboard__thumb:hover figcaption {
+    opacity: 1; }
 
 /*# sourceMappingURL=dashboard.css.map */

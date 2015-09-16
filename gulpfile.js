@@ -12,7 +12,7 @@ elixir(function (mix) {
 	   .angular('resources/assets/js/transects/', 'public/assets/scripts', 'main.js');
     mix.sass('dashboard.scss', 'public/assets/styles/dashboard.css')
        .angular('resources/assets/js/projects/', 'public/assets/scripts', 'projects.js');
-    mix.task('publish', 'resources/assets/**/*');
+    mix.task('publish', 'public/assets/**/*');
 });
 
 gulp.task('publish', function () {
