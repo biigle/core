@@ -9,7 +9,8 @@
   },
   "devDependencies": {
     "gulp-cli": "~0.1.5",
-    "laravel-elixir-angular": "~0.1.1",
-    "laravel-elixir": "~0.13.1"
+    "laravel-elixir-angular": "~1.0.1",
+    "laravel-elixir": "~3.2.8",
+    "gulp-shell": "~0.3.0"
   }
 }
