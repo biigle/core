@@ -10,7 +10,7 @@ elixir(function (mix) {
 	process.chdir('src');
 	mix.sass('main.scss', 'public/assets/styles/main.css')
 	   .angular('resources/assets/js/annotations/', 'public/assets/scripts', 'main.js');
-    mix.angular('resources/assets/js/transects/', 'public/assets/scripts', 'transects.js')
+    mix.sass('transects.scss', 'public/assets/styles/transects.css');
     mix.task('publish', 'resources/assets/**/*');
 });
 
