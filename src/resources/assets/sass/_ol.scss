@@ -1,0 +1,27 @@
+%custom-icon {
+    color: transparent;
+
+    &:before {
+        color: white;
+        display: block;
+        font-family: "Glyphicons Halflings";
+        font-weight: normal;
+    }
+}
+
+.ol-zoom-extent button {
+    @extend %custom-icon;
+
+    &:before {
+        content: "\e097";
+    }
+}
+
+.ol-full-screen button.ol-full-screen-false {
+    @extend %custom-icon;
+
+    &:before {
+        padding-top: 8px;
+        content: "\e140";
+    }
+}

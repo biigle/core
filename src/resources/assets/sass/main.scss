@@ -30,7 +30,7 @@ html, body {
 .annotator__canvas {
 	height: 100%;
 	flex: 2;
-	// so the element shrinks and grows independently from the size of the 
+	// so the element shrinks and grows independently from the size of the
 	// contained svg
 	overflow: hidden;
 	position: relative;
@@ -119,3 +119,4 @@ html, body {
 @import "sidebar/main";
 @import "sidebar/annotations";
 @import "sidebar/categories";
+@import "ol";

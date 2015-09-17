@@ -270,4 +270,19 @@ html, body {
     color: white;
     font-weight: bold; }
 
+.ol-zoom-extent button, .ol-full-screen button.ol-full-screen-false {
+  color: transparent; }
+  .ol-zoom-extent button:before, .ol-full-screen button.ol-full-screen-false:before {
+    color: white;
+    display: block;
+    font-family: "Glyphicons Halflings";
+    font-weight: normal; }
+
+.ol-zoom-extent button:before {
+  content: "\e097"; }
+
+.ol-full-screen button.ol-full-screen-false:before {
+  padding-top: 8px;
+  content: "\e140"; }
+
 /*# sourceMappingURL=main.css.map */
