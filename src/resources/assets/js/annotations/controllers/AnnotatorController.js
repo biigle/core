@@ -54,6 +54,8 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
                 case 39:
                     $scope.nextImage();
                     break;
+                default:
+                    $scope.$broadcast('keypress', e.keyCode);
             }
         };
 

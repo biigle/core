@@ -29,10 +29,20 @@ angular.module('dias.annotations').controller('SidebarController', function ($sc
 			}
 		};
 
-		$scope.deleteSelectedAnnotations = mapAnnotations.deleteSelected;
+		$scope.deleteSelectedAnnotations = function () {
+            if (mapAnnotations.getSelectedFeatures().getLength() > 0 && confirm('Are you sure you want to delete all selected annotations?')) {
+                mapAnnotations.deleteSelected();
+            }
+        };
 
         $rootScope.$on('sidebar.foldout.do-open', function (e, name) {
             $scope.openFoldout(name);
+        });
+
+        $scope.$on('keypress', function (e, keyCode) {
+            if (keyCode === 46) {
+                $scope.deleteSelectedAnnotations();
+            }
         });
 	}
 );
