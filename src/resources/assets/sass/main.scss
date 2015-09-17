@@ -21,12 +21,6 @@ html, body {
 	flex-flow: columns;
 }
 
-.confidence-label {
-	font-weight: normal;
-	font-size: 100%;
-	line-height: inherit;
-}
-
 .annotator__canvas {
 	height: 100%;
 	flex: 2;
@@ -34,46 +28,6 @@ html, body {
 	// contained svg
 	overflow: hidden;
 	position: relative;
-
-	.confidence-control {
-		position: absolute;
-		// ~0.5em distance to full-screen OpenLayers control
-		right: 43px;
-		// on top of the map canvas
-		z-index: 1;
-		width: 51px;
-		height: 28px;
-		transition: width 0.25s ease;
-
-		// border and padding like OpenLayers controls
-		top: 0.5em;
-		background-color: rgba(255, 255, 255, 0.4);
-		padding: 4px 3px;
-		border-radius: 4px;
-
-		white-space: nowrap;
-		overflow: hidden;
-
-		&:hover {
-			width: 200px;
-			background-color: rgba(255, 255, 255, 0.6);
-		}
-
-		// decrease height to fit to OpenLayers control
-		.label {
-			padding: 0.2em 0.6em;
-			border-radius: 2px;
-		}
-
-		.confidence-range {
-			display: inline-block;
-			width: 137px;
-			margin-left: 3px;
-			vertical-align: middle;
-			// otherwise the border witdth of the container isn't correct
-			box-sizing: content-box;
-		}
-	}
 }
 
 @keyframes rotate {
@@ -116,7 +70,85 @@ html, body {
 	}
 }
 
+.icon {
+    min-height: 20px;
+    min-width: 20px;
+    display: inline-block;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    vertical-align: middle;
+
+    &.btn {
+        min-width: 34px;
+        min-height: 34px;
+    }
+
+    &.icon-point {
+        background-image: url(../images/point.svg);
+
+        &:hover, &.active {
+            background-image: url(../images/point_white.svg);
+        }
+    }
+
+    &.icon-rectangle {
+        background-image: url(../images/rectangle.svg);
+
+        &:hover, &.active {
+            background-image: url(../images/rectangle_white.svg);
+        }
+    }
+
+    &.icon-polygon {
+        background-image: url(../images/polygon.svg);
+
+        &:hover, &.active {
+            background-image: url(../images/polygon_white.svg);
+        }
+    }
+
+    &.icon-linestring {
+        background-image: url(../images/linestring.svg);
+
+        &:hover, &.active {
+            background-image: url(../images/linestring_white.svg);
+        }
+    }
+
+    &.icon-circle {
+        background-image: url(../images/circle.svg);
+
+        &:hover, &.active {
+            background-image: url(../images/circle_white.svg);
+        }
+    }
+
+    &.icon-white {
+        &.icon-point {
+            background-image: url(../images/point_white.svg);
+        }
+
+        &.icon-rectangle {
+            background-image: url(../images/rectangle_white.svg);
+        }
+
+        &.icon-polygon {
+            background-image: url(../images/polygon_white.svg);
+        }
+
+        &.icon-linestring {
+            background-image: url(../images/linestring_white.svg);
+        }
+
+        &.icon-circle {
+            background-image: url(../images/circle_white.svg);
+        }
+    }
+}
+
 @import "sidebar/main";
 @import "sidebar/annotations";
 @import "sidebar/categories";
+@import "map-controls";
 @import "ol";

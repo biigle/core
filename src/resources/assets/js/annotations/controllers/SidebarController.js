@@ -30,5 +30,9 @@ angular.module('dias.annotations').controller('SidebarController', function ($sc
 		};
 
 		$scope.deleteSelectedAnnotations = mapAnnotations.deleteSelected;
+
+        $rootScope.$on('sidebar.foldout.do-open', function (e, name) {
+            $scope.openFoldout(name);
+        });
 	}
 );

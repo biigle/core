@@ -12,7 +12,7 @@ angular.module('dias.annotations').controller('ControlsController', function ($s
 
 		$scope.selectShape = function (name) {
 			if (!labels.hasSelected()) {
-				$scope.openFoldout('categories');
+                $scope.$emit('sidebar.foldout.do-open', 'categories');
 				msg.info($attrs.selectCategory);
 				return;
 			}

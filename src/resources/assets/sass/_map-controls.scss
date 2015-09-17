@@ -1,0 +1,79 @@
+.annotator__canvas {
+    position: relative;
+}
+
+%ol-control {
+    // on top of the map canvas
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.4);
+    padding: 4px 3px;
+    border-radius: 4px;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.6);
+    }
+}
+
+.confidence-control {
+    @extend %ol-control;
+
+    position: absolute;
+    // ~0.5em distance to full-screen OpenLayers control
+    right: 43px;
+    width: 51px;
+    height: 28px;
+    transition: width 0.25s ease;
+
+    // border and padding like OpenLayers controls
+    top: 0.5em;
+
+    white-space: nowrap;
+    overflow: hidden;
+
+    &:hover {
+        width: 200px;
+    }
+
+    // decrease height to fit to OpenLayers control
+    .label {
+        padding: 0.2em 0.6em;
+        border-radius: 2px;
+    }
+
+    .confidence-range {
+        display: inline-block;
+        width: 137px;
+        margin-left: 3px;
+        vertical-align: middle;
+        // otherwise the border witdth of the container isn't correct
+        box-sizing: content-box;
+    }
+}
+
+.confidence-label {
+    font-weight: normal;
+    font-size: 100%;
+    line-height: inherit;
+}
+
+.drawing-controls-container {
+    position: absolute;
+    bottom: 0.5em;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.drawing-controls {
+    @extend %ol-control;
+
+    .btn {
+        padding: 0;
+        border-radius: 2px;
+        background-color: rgba(0, 60, 136, 0.5);
+
+        &:hover, &.active {
+            background-color: rgb(0, 60, 136);
+        }
+    }
+}

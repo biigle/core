@@ -21,6 +21,15 @@
 				<span class="label confidence-label" data-ng-class="confidenceClass" data-ng-bind="confidence | number:2"></span>
 				<input class="confidence-range" type="range" min="0.01" max="1.0" step="0.01" data-ng-model="confidence">
 			</div>
+            <div class="drawing-controls-container">
+                <div class="btn-group drawing-controls" data-ng-controller="ControlsController" data-select-category="Please select a label category first.">
+                    <button class="btn icon icon-white icon-point" data-ng-click="selectShape('Point')" data-ng-class="{active:(selectedShape=='Point')}" title="Set a point"></button>
+                    <button class="btn icon icon-white icon-rectangle" data-ng-click="selectShape('Rectangle')" data-ng-class="{active:(selectedShape=='Rectangle')}" title="Draw a rectangle"></button>
+                    <button class="btn icon icon-white icon-circle" data-ng-click="selectShape('Circle')" data-ng-class="{active:(selectedShape=='Circle')}" title="Draw a circle"></button>
+                    <button class="btn icon icon-white icon-linestring" data-ng-click="selectShape('LineString')" data-ng-class="{active:(selectedShape=='LineString')}" title="Draw a line string"></button>
+                    <button class="btn icon icon-white icon-polygon" data-ng-click="selectShape('Polygon')" data-ng-class="{active:(selectedShape=='Polygon')}" title="Draw a polygon"></button>
+                </div>
+            </div>
 		@endif
 	</div>
 	@include('annotations::index.sidebar')

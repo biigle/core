@@ -22,11 +22,6 @@ html, body {
   -ms-flex-flow: columns;
   flex-flow: columns; }
 
-.confidence-label {
-  font-weight: normal;
-  font-size: 100%;
-  line-height: inherit; }
-
 .annotator__canvas {
   height: 100%;
   -webkit-flex: 2;
@@ -34,31 +29,6 @@ html, body {
   flex: 2;
   overflow: hidden;
   position: relative; }
-  .annotator__canvas .confidence-control {
-    position: absolute;
-    right: 43px;
-    z-index: 1;
-    width: 51px;
-    height: 28px;
-    transition: width 0.25s ease;
-    top: 0.5em;
-    background-color: rgba(255, 255, 255, 0.4);
-    padding: 4px 3px;
-    border-radius: 4px;
-    white-space: nowrap;
-    overflow: hidden; }
-    .annotator__canvas .confidence-control:hover {
-      width: 200px;
-      background-color: rgba(255, 255, 255, 0.6); }
-    .annotator__canvas .confidence-control .label {
-      padding: 0.2em 0.6em;
-      border-radius: 2px; }
-    .annotator__canvas .confidence-control .confidence-range {
-      display: inline-block;
-      width: 137px;
-      margin-left: 3px;
-      vertical-align: middle;
-      box-sizing: content-box; }
 
 @-webkit-keyframes rotate {
   100% {
@@ -99,6 +69,48 @@ html, body {
     background: url(../images/dias-wheel.png) center no-repeat;
     background-size: contain; }
 
+.icon {
+  min-height: 20px;
+  min-width: 20px;
+  display: inline-block;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  vertical-align: middle; }
+  .icon.btn {
+    min-width: 34px;
+    min-height: 34px; }
+  .icon.icon-point {
+    background-image: url(../images/point.svg); }
+    .icon.icon-point:hover, .icon.icon-point.active {
+      background-image: url(../images/point_white.svg); }
+  .icon.icon-rectangle {
+    background-image: url(../images/rectangle.svg); }
+    .icon.icon-rectangle:hover, .icon.icon-rectangle.active {
+      background-image: url(../images/rectangle_white.svg); }
+  .icon.icon-polygon {
+    background-image: url(../images/polygon.svg); }
+    .icon.icon-polygon:hover, .icon.icon-polygon.active {
+      background-image: url(../images/polygon_white.svg); }
+  .icon.icon-linestring {
+    background-image: url(../images/linestring.svg); }
+    .icon.icon-linestring:hover, .icon.icon-linestring.active {
+      background-image: url(../images/linestring_white.svg); }
+  .icon.icon-circle {
+    background-image: url(../images/circle.svg); }
+    .icon.icon-circle:hover, .icon.icon-circle.active {
+      background-image: url(../images/circle_white.svg); }
+  .icon.icon-white.icon-point {
+    background-image: url(../images/point_white.svg); }
+  .icon.icon-white.icon-rectangle {
+    background-image: url(../images/rectangle_white.svg); }
+  .icon.icon-white.icon-polygon {
+    background-image: url(../images/polygon_white.svg); }
+  .icon.icon-white.icon-linestring {
+    background-image: url(../images/linestring_white.svg); }
+  .icon.icon-white.icon-circle {
+    background-image: url(../images/circle_white.svg); }
+
 .annotator__sidebar {
   background-color: #222;
   display: -webkit-flex;
@@ -138,38 +150,6 @@ html, body {
   height: 200px;
   margin-bottom: 1em;
   border: 1px solid #090909; }
-
-.icon {
-  min-height: 20px;
-  min-width: 20px;
-  display: inline-block;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 20px 20px;
-  vertical-align: middle; }
-  .icon.btn {
-    min-width: 34px;
-    min-height: 34px; }
-  .icon.icon-point {
-    background-image: url(../images/point.svg); }
-    .icon.icon-point.active {
-      background-image: url(../images/point_white.svg); }
-  .icon.icon-rectangle {
-    background-image: url(../images/rectangle.svg); }
-    .icon.icon-rectangle.active {
-      background-image: url(../images/rectangle_white.svg); }
-  .icon.icon-polygon {
-    background-image: url(../images/polygon.svg); }
-    .icon.icon-polygon.active {
-      background-image: url(../images/polygon_white.svg); }
-  .icon.icon-linestring {
-    background-image: url(../images/linestring.svg); }
-    .icon.icon-linestring.active {
-      background-image: url(../images/linestring_white.svg); }
-  .icon.icon-circle {
-    background-image: url(../images/circle.svg); }
-    .icon.icon-circle.active {
-      background-image: url(../images/circle_white.svg); }
 
 .sidebar__annotations {
   -webkit-flex-grow: 2;
@@ -269,6 +249,61 @@ html, body {
   .label-category-item.selected > .item__name {
     color: white;
     font-weight: bold; }
+
+.annotator__canvas {
+  position: relative; }
+
+.confidence-control, .drawing-controls {
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.4);
+  padding: 4px 3px;
+  border-radius: 4px; }
+  .confidence-control:hover, .drawing-controls:hover {
+    background-color: rgba(255, 255, 255, 0.6); }
+
+.confidence-control {
+  position: absolute;
+  right: 43px;
+  width: 51px;
+  height: 28px;
+  transition: width 0.25s ease;
+  top: 0.5em;
+  white-space: nowrap;
+  overflow: hidden; }
+  .confidence-control:hover {
+    width: 200px; }
+  .confidence-control .label {
+    padding: 0.2em 0.6em;
+    border-radius: 2px; }
+  .confidence-control .confidence-range {
+    display: inline-block;
+    width: 137px;
+    margin-left: 3px;
+    vertical-align: middle;
+    box-sizing: content-box; }
+
+.confidence-label {
+  font-weight: normal;
+  font-size: 100%;
+  line-height: inherit; }
+
+.drawing-controls-container {
+  position: absolute;
+  bottom: 0.5em;
+  width: 100%;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center; }
+
+.drawing-controls .btn {
+  padding: 0;
+  border-radius: 2px;
+  background-color: rgba(0, 60, 136, 0.5); }
+  .drawing-controls .btn:hover, .drawing-controls .btn.active {
+    background-color: #003c88; }
 
 .ol-zoom-extent button, .ol-full-screen button.ol-full-screen-false {
   color: transparent; }
