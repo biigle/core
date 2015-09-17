@@ -28,5 +28,26 @@ angular.module('dias.annotations').controller('ControlsController', function ($s
 				drawing = true;
 			}
 		};
+
+        $scope.$on('keypress', function (e, keyEvent) {
+            var charCode = (keyEvent.which) ? keyEvent.which : keyEvent.keyCode;
+            switch (String.fromCharCode(charCode)) {
+                case 'a':
+                    $scope.selectShape('Point');
+                    break;
+                case 's':
+                    $scope.selectShape('Rectangle');
+                    break;
+                case 'd':
+                    $scope.selectShape('Circle');
+                    break;
+                case 'f':
+                    $scope.selectShape('LineString');
+                    break;
+                case 'g':
+                    $scope.selectShape('Polygon');
+                    break;
+            }
+        });
 	}
 );

@@ -39,8 +39,8 @@ angular.module('dias.annotations').controller('SidebarController', function ($sc
             $scope.openFoldout(name);
         });
 
-        $scope.$on('keypress', function (e, keyCode) {
-            if (keyCode === 46) {
+        $scope.$on('keypress', function (e, keyEvent) {
+            if (keyEvent.keyCode === 46) {
                 $scope.deleteSelectedAnnotations();
             }
         });
