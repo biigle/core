@@ -10,7 +10,7 @@
 	height: 100%;
 	padding-top: 51px;
 	display: flex;
-	flex-flow: columns;
+	flex-flow: column;
 }
 
 .transect__images {
@@ -52,4 +52,21 @@
             opacity: 1;
         }
     }
+}
+
+.transect__progress {
+    height: 4px;
+    width: 100%;
+    position: absolute;
+    z-index: 1;
+}
+
+.transect__progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #31B0D5;
+    transition: width 0.1s ease;
+    border-right: 1px solid rgba(255, 255, 255, 0.75);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+    border-bottom-right-radius: 3px;
 }

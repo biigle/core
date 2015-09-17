@@ -30,7 +30,7 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
 
 		var checkLowerBound = function () {
 			if (needsNewStep()) {
-				$scope.limit += step;
+				$scope.info.limit += step;
 				$scope.$apply();
 			}
 		};
@@ -39,7 +39,7 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
 		// uses $timeout to wait for DOM rendering, then checks again
 		var initialize = function () {
 			if (needsNewStep()) {
-				$scope.limit += step;
+				$scope.info.limit += step;
 				timeoutPromise = $timeout(initialize, 500);
 			} else {
 				// viewport is full, now switch to event listeners for loading
@@ -76,9 +76,9 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
         };
 
 		// array of all image ids of this transect
-		$scope.images = TransectImage.query({transect_id: $attrs.transectId});
-		// number of currently shown images
-		$scope.limit = 20;
+		$scope.images = TransectImage.query({transect_id: $attrs.transectId}, function () {
+            $scope.info.numberOfImages = $scope.images.length;
+        });
 
 		$timeout(initialize);
 	}

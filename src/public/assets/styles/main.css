@@ -8,9 +8,9 @@
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  -webkit-flex-flow: columns;
-  -ms-flex-flow: columns;
-  flex-flow: columns; }
+  -webkit-flex-flow: column;
+  -ms-flex-flow: column;
+  flex-flow: column; }
 
 .transect__images {
   -webkit-flex: 2;
@@ -43,5 +43,20 @@
     opacity: 0.75; }
     .transect-figure:hover a.info-link:hover {
       opacity: 1; }
+
+.transect__progress {
+  height: 4px;
+  width: 100%;
+  position: absolute;
+  z-index: 1; }
+
+.transect__progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: #31B0D5;
+  transition: width 0.1s ease;
+  border-right: 1px solid rgba(255, 255, 255, 0.75);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+  border-bottom-right-radius: 3px; }
 
 /*# sourceMappingURL=main.css.map */
