@@ -30,6 +30,11 @@ angular.module('dias.annotations').controller('ControlsController', function ($s
 		};
 
         $scope.$on('keypress', function (e, keyEvent) {
+            // deselect drawing tool on escape
+            if (keyEvent.keyCode === 27) {
+                $scope.selectShape(null);
+                return;
+            }
             var charCode = (keyEvent.which) ? keyEvent.which : keyEvent.keyCode;
             switch (String.fromCharCode(charCode)) {
                 case 'a':
