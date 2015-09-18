@@ -17,12 +17,12 @@ angular.module('dias.annotations').controller('CategoriesController', function (
             var tmp = $scope.favourites.map(function (item) {
                 return item.id;
             });
-            window.localStorage.setItem(favouritesStorageKey, JSON.stringify(tmp));
+            window.localStorage[favouritesStorageKey] = JSON.stringify(tmp);
         };
 
         // restores the favourites from the IDs in localStorage
         var loadFavourites = function () {
-            var tmp = JSON.parse(window.localStorage.getItem(favouritesStorageKey));
+            var tmp = JSON.parse(window.localStorage[favouritesStorageKey]);
             $scope.favourites = $scope.categories.filter(function (item) {
                 return tmp.indexOf(item.id) !== -1;
             });

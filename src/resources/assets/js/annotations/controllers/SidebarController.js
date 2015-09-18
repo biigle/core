@@ -8,16 +8,21 @@
 angular.module('dias.annotations').controller('SidebarController', function ($scope, $rootScope, mapAnnotations) {
 		"use strict";
 
-		// the currently opened sidebar-'extension'
-		$scope.foldout = '';
+        var foldoutStorageKey = 'dias.annotations.sidebar-foldout';
+
+		// the currently opened sidebar-'extension' is remembered through localStorage
+		$scope.foldout = window.localStorage[foldoutStorageKey] || '';
+        if ($scope.foldout) {
+            $rootScope.$broadcast('sidebar.foldout.open');
+        }
 
 		$scope.openFoldout = function (name) {
-			$scope.foldout = name;
+			$scope.foldout = window.localStorage[foldoutStorageKey] = name;
 			$rootScope.$broadcast('sidebar.foldout.open');
 		};
 
 		$scope.closeFoldout = function () {
-			$scope.foldout = '';
+			$scope.foldout = window.localStorage[foldoutStorageKey] = '';
 			$rootScope.$broadcast('sidebar.foldout.close');
 		};
 
