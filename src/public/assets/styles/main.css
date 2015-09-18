@@ -302,8 +302,10 @@ html, body {
   padding: 0;
   border-radius: 2px;
   background-color: rgba(0, 60, 136, 0.5); }
+  .drawing-controls .btn:not(:last-child) {
+    margin-right: 2px; }
   .drawing-controls .btn:hover, .drawing-controls .btn.active {
-    background-color: #003c88; }
+    background-color: rgba(0, 60, 136, 0.7); }
 
 .ol-zoom-extent button, .ol-full-screen button.ol-full-screen-false {
   color: transparent; }

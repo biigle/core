@@ -72,8 +72,12 @@
         border-radius: 2px;
         background-color: rgba(0, 60, 136, 0.5);
 
+        &:not(:last-child) {
+            margin-right: 2px;
+        }
+
         &:hover, &.active {
-            background-color: rgb(0, 60, 136);
+            background-color: rgba(0, 60, 136, 0.7);
         }
     }
 }
