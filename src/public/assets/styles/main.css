@@ -82,34 +82,29 @@ html, body {
     min-height: 34px; }
   .icon.icon-point {
     background-image: url(../images/point.svg); }
-    .icon.icon-point:hover, .icon.icon-point.active {
-      background-image: url(../images/point_white.svg); }
   .icon.icon-rectangle {
     background-image: url(../images/rectangle.svg); }
-    .icon.icon-rectangle:hover, .icon.icon-rectangle.active {
-      background-image: url(../images/rectangle_white.svg); }
   .icon.icon-polygon {
     background-image: url(../images/polygon.svg); }
-    .icon.icon-polygon:hover, .icon.icon-polygon.active {
-      background-image: url(../images/polygon_white.svg); }
   .icon.icon-linestring {
     background-image: url(../images/linestring.svg); }
-    .icon.icon-linestring:hover, .icon.icon-linestring.active {
-      background-image: url(../images/linestring_white.svg); }
   .icon.icon-circle {
     background-image: url(../images/circle.svg); }
-    .icon.icon-circle:hover, .icon.icon-circle.active {
-      background-image: url(../images/circle_white.svg); }
-  .icon.icon-white.icon-point {
-    background-image: url(../images/point_white.svg); }
-  .icon.icon-white.icon-rectangle {
-    background-image: url(../images/rectangle_white.svg); }
-  .icon.icon-white.icon-polygon {
-    background-image: url(../images/polygon_white.svg); }
-  .icon.icon-white.icon-linestring {
-    background-image: url(../images/linestring_white.svg); }
-  .icon.icon-white.icon-circle {
-    background-image: url(../images/circle_white.svg); }
+
+.icon.icon-white.icon-point, .icon.active.icon-point, .annotation-list__item.selected .icon.icon-point, .annotation-list__item:hover .icon.icon-point {
+  background-image: url(../images/point_white.svg); }
+
+.icon.icon-white.icon-rectangle, .icon.active.icon-rectangle, .annotation-list__item.selected .icon.icon-rectangle, .annotation-list__item:hover .icon.icon-rectangle {
+  background-image: url(../images/rectangle_white.svg); }
+
+.icon.icon-white.icon-polygon, .icon.active.icon-polygon, .annotation-list__item.selected .icon.icon-polygon, .annotation-list__item:hover .icon.icon-polygon {
+  background-image: url(../images/polygon_white.svg); }
+
+.icon.icon-white.icon-linestring, .icon.active.icon-linestring, .annotation-list__item.selected .icon.icon-linestring, .annotation-list__item:hover .icon.icon-linestring {
+  background-image: url(../images/linestring_white.svg); }
+
+.icon.icon-white.icon-circle, .icon.active.icon-circle, .annotation-list__item.selected .icon.icon-circle, .annotation-list__item:hover .icon.icon-circle {
+  background-image: url(../images/circle_white.svg); }
 
 .annotator__sidebar {
   background-color: #222;

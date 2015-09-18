@@ -1,6 +1,6 @@
 <div class="sidebar__annotations" data-ng-controller="AnnotationsController">
 	<ul class="annotation-list list-unstyled ng-cloak">
-		<li class="annotation-list__item" data-ng-repeat="annotation in annotations | orderBy:'id':true" data-ng-click="selectAnnotation($event, annotation.id)" data-ng-class="{selected:(selected())}" data-annotation-list-item="">
+		<li class="annotation-list__item" data-ng-repeat="annotation in annotations | orderBy:'id':true" data-ng-click="selectAnnotation($event, annotation.id)" data-ng-dblclick="fitAnnotation(annotation.id)" data-ng-class="{selected:(selected())}" data-annotation-list-item="">
 			<span class="icon" data-ng-class="shapeClass"></span>#@{{annotation.id}}
 			@if ($editMode)
 				<button class="btn btn-inverse btn-xs pull-right" title="Attach '@{{ currentLabel().name }}' with confidence @{{ currentConfidence() }}" data-ng-if="canAttachLabel()" data-ng-click="attachLabel()"><span class="glyphicon glyphicon-tag" aria-hidden="true"></span></button>

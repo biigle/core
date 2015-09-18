@@ -195,6 +195,15 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			}
 		};
 
+        // fits the view to the given feature
+        this.fit = function (id) {
+            features.forEach(function (f) {
+                if (f.annotation.id === id) {
+                    map.getView().fitGeometry(f.getGeometry(), map.getSize());
+                }
+            });
+        };
+
 		this.clearSelection = function () {
 			selectedFeatures.clear();
 		};

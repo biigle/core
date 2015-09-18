@@ -34,6 +34,8 @@ angular.module('dias.annotations').controller('AnnotationsController', function 
 			mapAnnotations.select(id);
 		};
 
+        $scope.fitAnnotation = mapAnnotations.fit;
+
 		$scope.isSelected = function (id) {
 			var selected = false;
 			selectedFeatures.forEach(function (feature) {
