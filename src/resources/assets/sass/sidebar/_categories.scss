@@ -35,10 +35,6 @@
 	padding-top: 0.5em;
 	cursor: pointer;
 
-	.item__name {
-		display: block;
-	}
-
 	& > .item__name {
         &:before {
             content: '▹ ';

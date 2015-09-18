@@ -224,8 +224,6 @@ html, body {
   padding-left: 19px;
   padding-top: 0.5em;
   cursor: pointer; }
-  .label-category-item .item__name {
-    display: block; }
   .label-category-item > .item__name:before {
     content: '▹ '; }
   .label-category-item > .item__name:hover {

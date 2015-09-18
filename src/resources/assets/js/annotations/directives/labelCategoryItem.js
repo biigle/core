@@ -29,7 +29,7 @@ angular.module('dias.annotations').directive('labelCategoryItem', function ($com
                 // open the subtree of this item
                 $scope.isOpen = false;
                 // this item has children
-                $scope.isExpandable = !!$scope.tree[$scope.item.id];
+                $scope.isExpandable = $scope.tree && !!$scope.tree[$scope.item.id];
                 // this item is currently selected
                 $scope.isSelected = false;
 
