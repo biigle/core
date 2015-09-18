@@ -151,7 +151,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		};
 
 		this.startDrawing = function (type) {
-			map.removeInteraction(select);
+            select.setActive(false);
 
 			type = type || 'Point';
 			draw = new ol.interaction.Draw({
@@ -168,7 +168,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		this.finishDrawing = function () {
 			map.removeInteraction(draw);
 			map.removeInteraction(modify);
-			map.addInteraction(select);
+            select.setActive(true);
 			// non't select the last drawn point
 			selectedFeatures.clear();
 		};
