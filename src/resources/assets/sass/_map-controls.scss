@@ -6,7 +6,7 @@
     // on top of the map canvas
     z-index: 1;
     background-color: rgba(255, 255, 255, 0.4);
-    padding: 4px 3px;
+    padding: 4px;
     border-radius: 4px;
 
     &:hover {
@@ -80,4 +80,13 @@
             background-color: rgba(0, 60, 136, 0.7);
         }
     }
+}
+
+.selected-label-container {
+    @extend %ol-control;
+    position: absolute;
+    right: 0.5em;
+    bottom: 0.5em;
+    color: #333;
+    font-weight: bold;
 }
