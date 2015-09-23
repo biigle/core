@@ -10,8 +10,21 @@ angular.module('dias.ui.messages').controller('MessagesController', function ($s
 
 		$scope.alerts = [];
 
+        var closeFullscreen = function () {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        };
+
 		// make method accessible by other modules
 		window.$diasPostMessage = function (type, message) {
+            closeFullscreen();
 			$scope.$apply(function() {
 				$scope.alerts.unshift({
 					message: message,
