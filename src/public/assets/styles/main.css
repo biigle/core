@@ -6,9 +6,6 @@ html, body {
   z-index: 1; }
 
 .annotator__container {
-  background-image: url(../images/noise.png); }
-
-.annotator__container {
   position: absolute;
   top: 0;
   z-index: 0;
@@ -20,7 +17,8 @@ html, body {
   display: flex;
   -webkit-flex-flow: columns;
   -ms-flex-flow: columns;
-  flex-flow: columns; }
+  flex-flow: columns;
+  background-color: #222; }
 
 .annotator__canvas {
   height: 100%;
@@ -28,7 +26,8 @@ html, body {
   -ms-flex: 2;
   flex: 2;
   overflow: hidden;
-  position: relative; }
+  position: relative;
+  background-image: url(../images/noise.png); }
 
 @-webkit-keyframes rotate {
   100% {
