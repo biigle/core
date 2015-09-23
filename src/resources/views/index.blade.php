@@ -30,9 +30,7 @@
                     <button class="btn icon icon-white icon-polygon" data-ng-click="selectShape('Polygon')" data-ng-class="{active:(selectedShape=='Polygon')}" title="Draw a polygon 𝗚"></button>
                 </div>
             </div>
-            <div class="selected-label-container" data-ng-controller="SelectedLabelController" title="Currently selected label category">
-                @{{getSelectedLabel().name}}
-            </div>
+            <div class="selected-label-container" data-ng-controller="SelectedLabelController" title="Currently selected label category" data-ng-bind="getSelectedLabel().name"></div>
 		@endif
 	</div>
 	@include('annotations::index.sidebar')

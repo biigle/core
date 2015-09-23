@@ -36,7 +36,7 @@ angular.module('dias.annotations').controller('ControlsController', function ($s
                 return;
             }
             var charCode = (keyEvent.which) ? keyEvent.which : keyEvent.keyCode;
-            switch (String.fromCharCode(charCode)) {
+            switch (String.fromCharCode(charCode).toLowerCase()) {
                 case 'a':
                     $scope.selectShape('Point');
                     break;

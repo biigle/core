@@ -99,7 +99,7 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
             }
         };
 
-        document.addEventListener('keypress', handleKeyEvents);
+        document.addEventListener('keydown', handleKeyEvents);
 
         // initialize the images service
         images.init($attrs.transectId);
