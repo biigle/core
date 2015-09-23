@@ -22,10 +22,12 @@ angular.module('dias.annotations').controller('CategoriesController', function (
 
         // restores the favourites from the IDs in localStorage
         var loadFavourites = function () {
-            var tmp = JSON.parse(window.localStorage[favouritesStorageKey]);
-            $scope.favourites = $scope.categories.filter(function (item) {
-                return tmp.indexOf(item.id) !== -1;
-            });
+            if (window.localStorage[favouritesStorageKey]) {
+                var tmp = JSON.parse(window.localStorage[favouritesStorageKey]);
+                $scope.favourites = $scope.categories.filter(function (item) {
+                    return tmp.indexOf(item.id) !== -1;
+                });
+            }
         };
 
         $scope.categories = [];
