@@ -5916,13 +5916,14 @@ figcaption {
   margin: 0 auto;
   position: fixed;
   top: 0;
-  z-index: 1000;
   width: 100%; }
 
 .messages__message {
   text-align: center;
   -webkit-animation: scale-up 0.25s;
   animation: scale-up 0.25s;
-  margin-bottom: 0; }
+  margin-bottom: 0;
+  position: relative;
+  z-index: 1000; }
 
 /*# sourceMappingURL=main.css.map */

@@ -4,7 +4,6 @@
 	// margin-bottom: $navbar-margin-bottom;
 	position: fixed;
 	top: 0;
-	z-index: 1000;
 	width: 100%;
 }
 
@@ -14,4 +13,6 @@
 	text-align: center;
 	animation: scale-up 0.25s;
 	margin-bottom: 0;
+    position: relative;
+    z-index: 1000;
 }
