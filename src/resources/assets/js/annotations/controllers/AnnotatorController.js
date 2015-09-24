@@ -52,6 +52,7 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
                     $scope.prevImage();
                     break;
                 case 39:
+                case 32:
                     $scope.nextImage();
                     break;
                 default:
