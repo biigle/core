@@ -14,7 +14,10 @@ angular.module('dias.annotations').factory('map', function () {
 				new ol.control.Zoom(),
 				new ol.control.ZoomToExtent(),
 				new ol.control.FullScreen()
-			]
+			],
+            interactions: ol.interaction.defaults({
+                keyboard: false
+            })
 		});
 
 		return map;
