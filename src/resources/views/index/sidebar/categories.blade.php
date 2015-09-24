@@ -8,7 +8,7 @@
         <div data-ng-if="favourites.length > 0" class="categories-list">
         <h4 class="categories-list__name" title="Favourites can be selected with the hotkeys 𝟭-𝟵">Favourites</h4>
         <ol class="categories-list__items list-unstyled">
-            <li class="label-category-item clearfix" data-ng-class="{selected: isSelected}" data-ng-repeat="item in favourites"></li>
+            <li class="label-category-item clearfix" data-ng-class="{selected: isSelected}" data-ng-repeat="item in favourites" title="Select favourite @{{hotkeysMap[$index]}}"></li>
         </ol>
         </div>
         <div data-ng-if="tree[null]" class="categories-list" data-ng-repeat="(project, tree) in categoriesTree">

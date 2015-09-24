@@ -30,6 +30,7 @@ angular.module('dias.annotations').controller('CategoriesController', function (
             }
         };
 
+        $scope.hotkeysMap = ['𝟭', '𝟮', '𝟯', '𝟰', '𝟱', '𝟲', '𝟳', '𝟴', '𝟵'];
         $scope.categories = [];
         $scope.favourites = [];
         labels.promise.then(function (all) {
