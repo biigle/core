@@ -12,6 +12,9 @@
         <script src="../js/bootstrap.min.js"></script>
         <script src="../js/typeahead.min.js"></script>
         <script src="../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     
     
     </head>
@@ -72,7 +75,8 @@
     </div>
 
     <p>    class
-    <strong>Attribute</strong>        extends <abbr title="Illuminate\Database\Eloquent\Model">Model</abbr></p>
+    <strong>Attribute</strong>        extends <abbr title="Illuminate\Database\Eloquent\Model">Model</abbr>
+</p>
 
             <div class="description">
             <p>Some models can have one or many of these flexible attributes.</p>            <p>Attributes are imformation on an object that is very seldom assigned
@@ -85,31 +89,35 @@
             <table class="table table-condensed">
                     <tr>
                 <td class="type" id="property_createRules">
-                    static                                                            array
+                    static                                                            
+    array
                 </td>
                 <td>$createRules</td>
-                <td class="last">Validation rules for creating a new attribute</td>
+                <td class="last">Validation rules for creating a new attribute.</td>
                 <td></td>
             </tr>
                     <tr>
                 <td class="type" id="property_attachRules">
-                    static                                                            array
+                    static                                                            
+    array
                 </td>
                 <td>$attachRules</td>
-                <td class="last">Validation rules for attaching a new attribute to a model</td>
+                <td class="last">Validation rules for attaching a new attribute to a model.</td>
                 <td></td>
             </tr>
                     <tr>
                 <td class="type" id="property_updateRules">
-                    static                                                            array
+                    static                                                            
+    array
                 </td>
                 <td>$updateRules</td>
-                <td class="last">Validation rules for updating an attribute of a model</td>
+                <td class="last">Validation rules for updating an attribute of a model.</td>
                 <td></td>
             </tr>
                     <tr>
                 <td class="type" id="property_timestamps">
-                                                                                boolean
+                                                                                
+    bool
                 </td>
                 <td>$timestamps</td>
                 <td class="last">Don't maintain timestamps for this model.</td>
@@ -117,7 +125,8 @@
             </tr>
                     <tr>
                 <td class="type" id="property_hidden">
-                                        protected                                        array
+                                        protected                                        
+    array
                 </td>
                 <td>$hidden</td>
                 <td class="last">The attributes excluded from the model's JSON form.</td>

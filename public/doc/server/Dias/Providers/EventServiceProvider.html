@@ -12,6 +12,9 @@
         <script src="../../js/bootstrap.min.js"></script>
         <script src="../../js/typeahead.min.js"></script>
         <script src="../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     
     
     </head>
@@ -73,7 +76,8 @@
     </div>
 
     <p>    class
-    <strong>EventServiceProvider</strong>        extends <abbr title="Illuminate\Foundation\Support\Providers\EventServiceProvider">EventServiceProvider</abbr></p>
+    <strong>EventServiceProvider</strong>        extends <abbr title="Illuminate\Foundation\Support\Providers\EventServiceProvider">EventServiceProvider</abbr>
+</p>
 
     
     
@@ -83,7 +87,8 @@
             <table class="table table-condensed">
                     <tr>
                 <td class="type" id="property_listen">
-                                        protected                                        array
+                                        protected                                        
+    array
                 </td>
                 <td>$listen</td>
                 <td class="last">The event handler mappings for the application.</td>
@@ -97,10 +102,12 @@
             <div class="container-fluid underlined">
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    
+    void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_boot">boot</a>(<abbr title="Illuminate\Contracts\Events\Dispatcher">Dispatcher</abbr> $events)
+                    <a href="#method_boot">boot</a>(
+    <abbr title="Dias\Providers\Illuminate\Contracts\Events\Dispatcher">Dispatcher</abbr> $events)
                                             <p>Register any other events for your application.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -112,9 +119,11 @@
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method_boot">
-        <div class="location">at line 25</div>
-        <code>                    void
-    <strong>boot</strong>(<abbr title="Illuminate\Contracts\Events\Dispatcher">Dispatcher</abbr> $events)</code>
+        <div class="location">at line 27</div>
+        <code>                    
+    void
+    <strong>boot</strong>(
+    <abbr title="Dias\Providers\Illuminate\Contracts\Events\Dispatcher">Dispatcher</abbr> $events)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -124,7 +133,8 @@
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Illuminate\Contracts\Events\Dispatcher">Dispatcher</abbr></td>
+                <td>
+    <abbr title="Dias\Providers\Illuminate\Contracts\Events\Dispatcher">Dispatcher</abbr></td>
                 <td>$events</td>
                 <td>
 </td>
@@ -136,7 +146,8 @@
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td>
+    void</td>
             <td>
 </td>
         </tr>

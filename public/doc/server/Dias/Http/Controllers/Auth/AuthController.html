@@ -12,6 +12,9 @@
         <script src="../../../../js/bootstrap.min.js"></script>
         <script src="../../../../js/typeahead.min.js"></script>
         <script src="../../../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     
     
     </head>
@@ -75,15 +78,17 @@
     </div>
 
     <p>    class
-    <strong>AuthController</strong>        extends <a href="../../../../Dias/Http/Controllers/Controller.html"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a></p>
+    <strong>AuthController</strong>        extends <a href="../../../../Dias/Http/Controllers/Controller.html"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a>
+</p>
 
     
             <h2>Traits</h2>
 
-        <div class="container-fluid underlined">
+        
+    <div class="container-fluid underlined">
                     <div class="row">
                 <div class="col-md-6">
-                                            <abbr title="Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers">Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers</abbr>
+                                            <abbr title="Illuminate\Foundation\Auth\AuthenticatesUsers">Illuminate\Foundation\Auth\AuthenticatesUsers</abbr>
                                     </div>
                 <div class="col-md-6">
                     
@@ -92,7 +97,7 @@
             </div>
                     <div class="row">
                 <div class="col-md-6">
-                                            <abbr title="Illuminate\Foundation\Bus\DispatchesCommands">Illuminate\Foundation\Bus\DispatchesCommands</abbr>
+                                            <abbr title="Illuminate\Foundation\Bus\DispatchesJobs">Illuminate\Foundation\Bus\DispatchesJobs</abbr>
                                     </div>
                 <div class="col-md-6">
                     
@@ -117,44 +122,77 @@
             <div class="container-fluid underlined">
                     <div class="row">
                 <div class="col-md-2 type">
-                    static&nbsp;boolean
+                    static&nbsp;
+    bool
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_isAutomatedRequest">isAutomatedRequest</a>(<abbr title="Illuminate\Http\Request">Request</abbr> $request)
+                    <a href="#method_isAutomatedRequest">isAutomatedRequest</a>(
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request)
                                             <p>Determines if the request was done by an automated script (with API
 token or ajax).</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/Controller.html#method_isAutomatedRequest"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a></small></div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../../../../Dias/Http/Controllers/Controller.html#method_isAutomatedRequest"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <abbr title="Illuminate\Http\Response">Response</abbr>
+                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_buildFailedValidationResponse">buildFailedValidationResponse</a>(<abbr title="Illuminate\Http\Request">Request</abbr> $request, array $errors)
+                    <a href="#method_buildFailedValidationResponse">buildFailedValidationResponse</a>(
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request, 
+    array $errors)
                                             <p>Create the response for when a request fails validation.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/Controller.html#method_buildFailedValidationResponse"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a></small></div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../../../../Dias/Http/Controllers/Controller.html#method_buildFailedValidationResponse"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    
+    void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method___construct">__construct</a>(<abbr title="Illuminate\Contracts\Auth\Guard">Guard</abbr> $auth, <abbr title="Illuminate\Contracts\Auth\Registrar">Registrar</abbr> $registrar)
+                    <a href="#method___construct">__construct</a>()
                                             <p>Create a new authentication controller instance.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <abbr title="Illuminate\Http\Response">Response</abbr>
+                    
+    <abbr title="Illuminate\Contracts\Validation\Validator">Validator</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_postLogin">postLogin</a>(<abbr title="Illuminate\Http\Request">Request</abbr> $request)
+                    <a href="#method_validator">validator</a>(
+    array $data)
+                                            <p>Get a validator for an incoming registration request.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+    <a href="../../../../Dias/User.html"><abbr title="Dias\User">User</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_create">create</a>(
+    array $data)
+                                            <p>Create a new user instance after a valid registration.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_postLogin">postLogin</a>(
+    <abbr title="Dias\Http\Controllers\Auth\Illuminate\Http\Request">Request</abbr> $request)
                                             <p>Handle a login request to the application.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <abbr title="Illuminate\Http\Response">Response</abbr>
+                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getLogout">getLogout</a>()
@@ -169,9 +207,12 @@ token or ajax).</p>                </div>
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method_isAutomatedRequest">
-        <div class="location">in <a href="../../../../Dias/Http/Controllers/Controller.html#method_isAutomatedRequest"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a> at line 21</div>
-        <code>        static            boolean
-    <strong>isAutomatedRequest</strong>(<abbr title="Illuminate\Http\Request">Request</abbr> $request)</code>
+        <div class="location">in 
+    <a href="../../../../Dias/Http/Controllers/Controller.html#method_isAutomatedRequest"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a> at line 23</div>
+        <code>        static            
+    bool
+    <strong>isAutomatedRequest</strong>(
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -182,7 +223,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Illuminate\Http\Request">Request</abbr></td>
+                <td>
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr></td>
                 <td>$request</td>
                 <td>
 </td>
@@ -194,7 +236,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td>boolean</td>
+            <td>
+    bool</td>
             <td>
 </td>
         </tr>
@@ -208,9 +251,13 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_buildFailedValidationResponse">
-        <div class="location">in <a href="../../../../Dias/Http/Controllers/Controller.html#method_buildFailedValidationResponse"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a> at line 34</div>
-        <code>            protected        <abbr title="Illuminate\Http\Response">Response</abbr>
-    <strong>buildFailedValidationResponse</strong>(<abbr title="Illuminate\Http\Request">Request</abbr> $request, array $errors)</code>
+        <div class="location">in 
+    <a href="../../../../Dias/Http/Controllers/Controller.html#method_buildFailedValidationResponse"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a> at line 36</div>
+        <code>            protected        
+    <abbr title="Illuminate\Http\Response">Response</abbr>
+    <strong>buildFailedValidationResponse</strong>(
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request, 
+    array $errors)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -220,13 +267,15 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Illuminate\Http\Request">Request</abbr></td>
+                <td>
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr></td>
                 <td>$request</td>
                 <td>
 </td>
             </tr>
                     <tr>
-                <td>array</td>
+                <td>
+    array</td>
                 <td>$errors</td>
                 <td>
 </td>
@@ -238,7 +287,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td><abbr title="Illuminate\Http\Response">Response</abbr></td>
+            <td>
+    <abbr title="Illuminate\Http\Response">Response</abbr></td>
             <td>
 </td>
         </tr>
@@ -252,26 +302,52 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">at line 35</div>
-        <code>                    void
-    <strong>__construct</strong>(<abbr title="Illuminate\Contracts\Auth\Guard">Guard</abbr> $auth, <abbr title="Illuminate\Contracts\Auth\Registrar">Registrar</abbr> $registrar)</code>
+        <div class="location">at line 33</div>
+        <code>                    
+    void
+    <strong>__construct</strong>()</code>
     </h3>
     <div class="details">
                     <div class="method-description">
                                     <p>Create a new authentication controller instance.</p>                                </div>
                 <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>
+    void</td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_validator">
+        <div class="location">at line 47</div>
+        <code>                    
+    <abbr title="Illuminate\Contracts\Validation\Validator">Validator</abbr>
+    <strong>validator</strong>(
+    array $data)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Get a validator for an incoming registration request.</p>                                </div>
+                <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Illuminate\Contracts\Auth\Guard">Guard</abbr></td>
-                <td>$auth</td>
                 <td>
-</td>
-            </tr>
-                    <tr>
-                <td><abbr title="Illuminate\Contracts\Auth\Registrar">Registrar</abbr></td>
-                <td>$registrar</td>
+    array</td>
+                <td>$data</td>
                 <td>
 </td>
             </tr>
@@ -282,7 +358,50 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td>
+    <abbr title="Illuminate\Contracts\Validation\Validator">Validator</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_create">
+        <div class="location">at line 58</div>
+        <code>                    
+    <a href="../../../../Dias/User.html"><abbr title="Dias\User">User</abbr></a>
+    <strong>create</strong>(
+    array $data)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Create a new user instance after a valid registration.</p>                                </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>
+    array</td>
+                <td>$data</td>
+                <td>
+</td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>
+    <a href="../../../../Dias/User.html"><abbr title="Dias\User">User</abbr></a></td>
             <td>
 </td>
         </tr>
@@ -296,9 +415,11 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_postLogin">
-        <div class="location">at line 53</div>
-        <code>                    <abbr title="Illuminate\Http\Response">Response</abbr>
-    <strong>postLogin</strong>(<abbr title="Illuminate\Http\Request">Request</abbr> $request)</code>
+        <div class="location">at line 77</div>
+        <code>                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
+    <strong>postLogin</strong>(
+    <abbr title="Dias\Http\Controllers\Auth\Illuminate\Http\Request">Request</abbr> $request)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -308,7 +429,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Illuminate\Http\Request">Request</abbr></td>
+                <td>
+    <abbr title="Dias\Http\Controllers\Auth\Illuminate\Http\Request">Request</abbr></td>
                 <td>$request</td>
                 <td>
 </td>
@@ -320,7 +442,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td><abbr title="Illuminate\Http\Response">Response</abbr></td>
+            <td>
+    <abbr title="Illuminate\Http\Response">Response</abbr></td>
             <td>
 </td>
         </tr>
@@ -334,8 +457,9 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_getLogout">
-        <div class="location">at line 78</div>
-        <code>                    <abbr title="Illuminate\Http\Response">Response</abbr>
+        <div class="location">at line 100</div>
+        <code>                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
     <strong>getLogout</strong>()</code>
     </h3>
     <div class="details">
@@ -347,7 +471,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td><abbr title="Illuminate\Http\Response">Response</abbr></td>
+            <td>
+    <abbr title="Illuminate\Http\Response">Response</abbr></td>
             <td>
 </td>
         </tr>

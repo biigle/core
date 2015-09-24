@@ -12,6 +12,9 @@
         <script src="../../js/bootstrap.min.js"></script>
         <script src="../../js/typeahead.min.js"></script>
         <script src="../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     
     
     </head>
@@ -73,7 +76,8 @@
     </div>
 
     <p>    class
-    <strong>Handler</strong>        extends <abbr title="Illuminate\Foundation\Exceptions\Handler">Handler</abbr></p>
+    <strong>Handler</strong>        extends <abbr title="Illuminate\Foundation\Exceptions\Handler">Handler</abbr>
+</p>
 
     
     
@@ -83,7 +87,8 @@
             <table class="table table-condensed">
                     <tr>
                 <td class="type" id="property_dontReport">
-                                        protected                                        array
+                                        protected                                        
+    array
                 </td>
                 <td>$dontReport</td>
                 <td class="last">A list of the exception types that should not be reported.</td>
@@ -97,19 +102,24 @@
             <div class="container-fluid underlined">
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    
+    void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_report">report</a>(<a href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a> $e)
+                    <a href="#method_report">report</a>(
+    <a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a> $e)
                                             <p>Report or log an exception.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <abbr title="Illuminate\Http\Response">Response</abbr>
+                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_render">render</a>(<abbr title="Illuminate\Http\Request">Request</abbr> $request, <a href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a> $e)
+                    <a href="#method_render">render</a>(
+    <abbr title="Illuminate\Http\Request">Request</abbr> $request, 
+    <a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a> $e)
                                             <p>Render an exception into an HTTP response.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -121,9 +131,11 @@
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method_report">
-        <div class="location">at line 27</div>
-        <code>                    void
-    <strong>report</strong>(<a href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a> $e)</code>
+        <div class="location">at line 29</div>
+        <code>                    
+    void
+    <strong>report</strong>(
+    <a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a> $e)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -133,7 +145,8 @@
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
+                <td>
+    <a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
                 <td>$e</td>
                 <td>
 </td>
@@ -145,7 +158,8 @@
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td>
+    void</td>
             <td>
 </td>
         </tr>
@@ -159,9 +173,12 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_render">
-        <div class="location">at line 39</div>
-        <code>                    <abbr title="Illuminate\Http\Response">Response</abbr>
-    <strong>render</strong>(<abbr title="Illuminate\Http\Request">Request</abbr> $request, <a href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a> $e)</code>
+        <div class="location">at line 41</div>
+        <code>                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
+    <strong>render</strong>(
+    <abbr title="Illuminate\Http\Request">Request</abbr> $request, 
+    <a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a> $e)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -171,13 +188,15 @@
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Illuminate\Http\Request">Request</abbr></td>
+                <td>
+    <abbr title="Illuminate\Http\Request">Request</abbr></td>
                 <td>$request</td>
                 <td>
 </td>
             </tr>
                     <tr>
-                <td><a href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
+                <td>
+    <a target="_blank" href="http://php.net/Exception"><abbr title="Exception">Exception</abbr></a></td>
                 <td>$e</td>
                 <td>
 </td>
@@ -189,7 +208,8 @@
 
                     <table class="table table-condensed">
         <tr>
-            <td><abbr title="Illuminate\Http\Response">Response</abbr></td>
+            <td>
+    <abbr title="Illuminate\Http\Response">Response</abbr></td>
             <td>
 </td>
         </tr>

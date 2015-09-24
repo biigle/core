@@ -12,6 +12,9 @@
         <script src="../js/bootstrap.min.js"></script>
         <script src="../js/typeahead.min.js"></script>
         <script src="../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     
     
     </head>
@@ -72,7 +75,8 @@
     </div>
 
     <p>    class
-    <strong>Shape</strong>        extends <abbr title="Illuminate\Database\Eloquent\Model">Model</abbr></p>
+    <strong>Shape</strong>        extends <abbr title="Illuminate\Database\Eloquent\Model">Model</abbr>
+</p>
 
             <div class="description">
             <p>A shape, e.g. <code>point</code> or <code>circle</code>.</p>                    </div>
@@ -84,206 +88,61 @@
             <table class="table table-condensed">
                     <tr>
                 <td class="type" id="property_timestamps">
-                                                                                boolean
+                                                                                
+    bool
                 </td>
                 <td>$timestamps</td>
                 <td class="last">Don't maintain timestamps for this model.</td>
                 <td></td>
             </tr>
+                    <tr>
+                <td class="type" id="property_pointId">
+                    static                                                            
+    int
+                </td>
+                <td>$pointId</td>
+                <td class="last">The point shape ID.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_lineId">
+                    static                                                            
+    int
+                </td>
+                <td>$lineId</td>
+                <td class="last">The line shape ID.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_polygonId">
+                    static                                                            
+    int
+                </td>
+                <td>$polygonId</td>
+                <td class="last">The polygon shape ID.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_circleId">
+                    static                                                            
+    int
+                </td>
+                <td>$circleId</td>
+                <td class="last">The circle shape ID.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_rectangleId">
+                    static                                                            
+    int
+                </td>
+                <td>$rectangleId</td>
+                <td class="last">The rectangle shape ID.</td>
+                <td></td>
+            </tr>
             </table>
 
     
-            <h2>Methods</h2>
-
-            <div class="container-fluid underlined">
-                    <div class="row">
-                <div class="col-md-2 type">
-                    static&nbsp;int
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_pointId">pointId</a>()
-                                            <p>The point shape ID.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    static&nbsp;int
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_lineId">lineId</a>()
-                                            <p>The line shape ID.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    static&nbsp;int
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_polygonId">polygonId</a>()
-                                            <p>The polygon shape ID.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    static&nbsp;int
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_circleId">circleId</a>()
-                                            <p>The circle shape ID.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    static&nbsp;int
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_rectangleId">rectangleId</a>()
-                                            <p>The rectangle shape ID.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-            </div>
-
-
-        <h2>Details</h2>
-
-            <div id="method-details">
-                    <div class="method-item">
-                    <h3 id="method_pointId">
-        <div class="location">at line 23</div>
-        <code>        static            int
-    <strong>pointId</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The point shape ID.</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>int</td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_lineId">
-        <div class="location">at line 36</div>
-        <code>        static            int
-    <strong>lineId</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The line shape ID.</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>int</td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_polygonId">
-        <div class="location">at line 49</div>
-        <code>        static            int
-    <strong>polygonId</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The polygon shape ID.</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>int</td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_circleId">
-        <div class="location">at line 62</div>
-        <code>        static            int
-    <strong>circleId</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The circle shape ID.</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>int</td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_rectangleId">
-        <div class="location">at line 75</div>
-        <code>        static            int
-    <strong>rectangleId</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The rectangle shape ID.</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>int</td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-            </div>
-
     
             </div>
                 <div id="footer">

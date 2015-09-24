@@ -12,6 +12,9 @@
         <script src="../js/bootstrap.min.js"></script>
         <script src="../js/typeahead.min.js"></script>
         <script src="../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     
     
     </head>
@@ -72,7 +75,8 @@
     </div>
 
     <p>    class
-    <strong>Role</strong>        extends <abbr title="Illuminate\Database\Eloquent\Model">Model</abbr></p>
+    <strong>Role</strong>        extends <abbr title="Illuminate\Database\Eloquent\Model">Model</abbr>
+</p>
 
             <div class="description">
             <p>A role of a user. Users have one global role and can have many project-
@@ -85,242 +89,43 @@ specific roles.</p>                    </div>
             <table class="table table-condensed">
                     <tr>
                 <td class="type" id="property_timestamps">
-                                                                                boolean
+                                                                                
+    bool
                 </td>
                 <td>$timestamps</td>
                 <td class="last">Don't maintain timestamps for this model.</td>
                 <td></td>
             </tr>
+                    <tr>
+                <td class="type" id="property_admin">
+                    static                                                            
+    <a href="../Dias/Role.html"><abbr title="Dias\Role">Role</abbr></a>
+                </td>
+                <td>$admin</td>
+                <td class="last">The admin role.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_editor">
+                    static                                                            
+    <a href="../Dias/Role.html"><abbr title="Dias\Role">Role</abbr></a>
+                </td>
+                <td>$editor</td>
+                <td class="last">The editor role.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_guest">
+                    static                                                            
+    <a href="../Dias/Role.html"><abbr title="Dias\Role">Role</abbr></a>
+                </td>
+                <td>$guest</td>
+                <td class="last">The guest role.</td>
+                <td></td>
+            </tr>
             </table>
 
     
-            <h2>Methods</h2>
-
-            <div class="container-fluid underlined">
-                    <div class="row">
-                <div class="col-md-2 type">
-                    static&nbsp;<a href="../Dias/Role.html"><abbr title="Dias\Role">Role</abbr></a>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_admin">admin</a>()
-                                            <p>The admin role.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    static&nbsp;int
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_adminId">adminId</a>()
-                                            <p>The admin role ID.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    static&nbsp;<a href="../Dias/Role.html"><abbr title="Dias\Role">Role</abbr></a>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_editor">editor</a>()
-                                            <p>The editor role.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    static&nbsp;int
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_editorId">editorId</a>()
-                                            <p>The editor role ID.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    static&nbsp;<a href="../Dias/Role.html"><abbr title="Dias\Role">Role</abbr></a>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_guest">guest</a>()
-                                            <p>The guest role.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    static&nbsp;int
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_guestId">guestId</a>()
-                                            <p>The guest role ID.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-            </div>
-
-
-        <h2>Details</h2>
-
-            <div id="method-details">
-                    <div class="method-item">
-                    <h3 id="method_admin">
-        <div class="location">at line 24</div>
-        <code>        static            <a href="../Dias/Role.html"><abbr title="Dias\Role">Role</abbr></a>
-    <strong>admin</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The admin role.</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td><a href="../Dias/Role.html"><abbr title="Dias\Role">Role</abbr></a></td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_adminId">
-        <div class="location">at line 37</div>
-        <code>        static            int
-    <strong>adminId</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The admin role ID.</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>int</td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_editor">
-        <div class="location">at line 47</div>
-        <code>        static            <a href="../Dias/Role.html"><abbr title="Dias\Role">Role</abbr></a>
-    <strong>editor</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The editor role.</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td><a href="../Dias/Role.html"><abbr title="Dias\Role">Role</abbr></a></td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_editorId">
-        <div class="location">at line 60</div>
-        <code>        static            int
-    <strong>editorId</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The editor role ID.</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>int</td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_guest">
-        <div class="location">at line 70</div>
-        <code>        static            <a href="../Dias/Role.html"><abbr title="Dias\Role">Role</abbr></a>
-    <strong>guest</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The guest role.</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td><a href="../Dias/Role.html"><abbr title="Dias\Role">Role</abbr></a></td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_guestId">
-        <div class="location">at line 83</div>
-        <code>        static            int
-    <strong>guestId</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The guest role ID.</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>int</td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-            </div>
-
     
             </div>
                 <div id="footer">

@@ -12,6 +12,9 @@
         <script src="../js/bootstrap.min.js"></script>
         <script src="../js/typeahead.min.js"></script>
         <script src="../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     
     
     </head>
@@ -73,7 +76,8 @@
 
     <p>    class
     <strong>Image</strong>        extends <a href="../Dias/Model/ModelWithAttributes.html"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a>        implements
-        <a href="../Dias/Contracts/BelongsToProjectContract.html"><abbr title="Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></a></p>
+        <a href="../Dias/Contracts/BelongsToProjectContract.html"><abbr title="Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></a>
+</p>
 
             <div class="description">
             <p>This model stores information on an image file in the file system.</p>                    </div>
@@ -85,15 +89,17 @@
             <table class="table table-condensed">
                     <tr>
                 <td class="type" id="property_createAnnotationRules">
-                    static                                                            array
+                    static                                                            
+    array
                 </td>
                 <td>$createAnnotationRules</td>
-                <td class="last">Validation rules for creating a new annotation in an image</td>
+                <td class="last">Validation rules for creating a new annotation in an image.</td>
                 <td></td>
             </tr>
                     <tr>
                 <td class="type" id="property_thumbPath">
-                    static                                                            string
+                    static                                                            
+    string
                 </td>
                 <td>$thumbPath</td>
                 <td class="last">The absolute path to the image thumbnail storage directory.</td>
@@ -101,7 +107,8 @@
             </tr>
                     <tr>
                 <td class="type" id="property_exifSubset">
-                    static                                        private                    array
+                    static                                        private                    
+    array
                 </td>
                 <td>$exifSubset</td>
                 <td class="last">Contains the array keys that should be included in the EXIF data
@@ -111,7 +118,8 @@ ignored.</td>
             </tr>
                     <tr>
                 <td class="type" id="property_timestamps">
-                                                                                boolean
+                                                                                
+    bool
                 </td>
                 <td>$timestamps</td>
                 <td class="last">Don't maintain timestamps for this model.</td>
@@ -119,7 +127,8 @@ ignored.</td>
             </tr>
                     <tr>
                 <td class="type" id="property_visible">
-                                        protected                                        array
+                                        protected                                        
+    array
                 </td>
                 <td>$visible</td>
                 <td class="last">The attributes included in the model's JSON form. All other are hidden.</td>
@@ -133,63 +142,84 @@ ignored.</td>
             <div class="container-fluid underlined">
                     <div class="row">
                 <div class="col-md-2 type">
-                    array
+                    
+    array
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_buildPivotAttributes">buildPivotAttributes</a>(<a href="../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a> $attribute, mixed $value)
+                    <a href="#method_buildPivotAttributes">buildPivotAttributes</a>(
+    <a href="../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a> $attribute, 
+    mixed $value)
                                             <p>Determines the pivot table attributes array depending on the DIAS
 attribute type.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../Dias/Model/ModelWithAttributes.html#method_buildPivotAttributes"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_attributes">attributes</a>()
-                                            <p>The attributes of this model.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../Dias/Model/ModelWithAttributes.html#method_attributes"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    void
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_attachDiasAttribute">attachDiasAttribute</a>(String $name, mixed $value)
-                                            <p>Attaches an attribute to the model.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../Dias/Model/ModelWithAttributes.html#method_attachDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    <a href="../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_getDiasAttribute">getDiasAttribute</a>(String $name)
-                                            <p>Returns a \Dias\Attribute of this model. Fails if this model doesn't
-have the attribute.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../Dias/Model/ModelWithAttributes.html#method_getDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    void
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_detachDiasAttribute">detachDiasAttribute</a>(String $name)
-                                            <p>Detaches a \Dias\Attribute from this model.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../Dias/Model/ModelWithAttributes.html#method_detachDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a></small></div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../Dias/Model/ModelWithAttributes.html#method_buildPivotAttributes"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
                     
+    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_updateDiasAttribute">updateDiasAttribute</a>(String $name, mixed $value)
+                    <a href="#method_attributes">attributes</a>()
+                                            <p>The attributes of this model.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../Dias/Model/ModelWithAttributes.html#method_attributes"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_attachDiasAttribute">attachDiasAttribute</a>(
+    String $name, 
+    mixed $value)
+                                            <p>Attaches an attribute to the model.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../Dias/Model/ModelWithAttributes.html#method_attachDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+    <a href="../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getDiasAttribute">getDiasAttribute</a>(
+    String $name)
+                                            <p>Returns a \Dias\Attribute of this model. Fails if this model doesn't
+have the attribute.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../Dias/Model/ModelWithAttributes.html#method_getDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_detachDiasAttribute">detachDiasAttribute</a>(
+    String $name)
+                                            <p>Detaches a \Dias\Attribute from this model.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../Dias/Model/ModelWithAttributes.html#method_detachDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_updateDiasAttribute">updateDiasAttribute</a>(
+    String $name, 
+    mixed $value)
                                             <p>Updates the value of an existing attribute of this model.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../Dias/Model/ModelWithAttributes.html#method_updateDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a></small></div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../Dias/Model/ModelWithAttributes.html#method_updateDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
                     static&nbsp;
+    
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_boot">boot</a>()
@@ -198,7 +228,8 @@ have the attribute.</p>                </div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <abbr title="InterventionImage">InterventionImage</abbr>
+                    
+    <abbr title="InterventionImage">InterventionImage</abbr>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_createThumbnail">createThumbnail</a>()
@@ -207,7 +238,8 @@ have the attribute.</p>                </div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
+                    
+    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_transect">transect</a>()
@@ -216,7 +248,8 @@ have the attribute.</p>                </div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
+                    
+    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_annotations">annotations</a>()
@@ -225,7 +258,8 @@ have the attribute.</p>                </div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    array
+                    
+    array
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_projectIds">projectIds</a>()
@@ -234,7 +268,8 @@ have the attribute.</p>                </div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    string
+                    
+    string
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getThumbPathAttribute">getThumbPathAttribute</a>()
@@ -244,7 +279,8 @@ to the thumbnail image file of this image.</p>                </div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    string
+                    
+    string
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getUrlAttribute">getUrlAttribute</a>()
@@ -254,7 +290,8 @@ to the original image file.</p>                </div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    array
+                    
+    array
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getExif">getExif</a>()
@@ -263,7 +300,8 @@ to the original image file.</p>                </div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <abbr title="InterventionImage">InterventionImage</abbr>
+                    
+    <abbr title="InterventionImage">InterventionImage</abbr>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getThumb">getThumb</a>()
@@ -273,7 +311,8 @@ doesn't exist.</p>                </div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <abbr title="InterventionImage">InterventionImage</abbr>
+                    
+    <abbr title="InterventionImage">InterventionImage</abbr>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getFile">getFile</a>()
@@ -289,9 +328,13 @@ external source.</p>                </div>
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method_buildPivotAttributes">
-        <div class="location">in <a href="../Dias/Model/ModelWithAttributes.html#method_buildPivotAttributes"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a> at line 23</div>
-        <code>                private    array
-    <strong>buildPivotAttributes</strong>(<a href="../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a> $attribute, mixed $value)</code>
+        <div class="location">in 
+    <a href="../Dias/Model/ModelWithAttributes.html#method_buildPivotAttributes"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a> at line 24</div>
+        <code>                private    
+    array
+    <strong>buildPivotAttributes</strong>(
+    <a href="../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a> $attribute, 
+    mixed $value)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -302,12 +345,14 @@ attribute type.</p>                                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a></td>
+                <td>
+    <a href="../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a></td>
                 <td>$attribute</td>
                 <td>The DIAS attribute</td>
             </tr>
                     <tr>
-                <td>mixed</td>
+                <td>
+    mixed</td>
                 <td>$value</td>
                 <td>The value that should be set in the pivot table
 attributes array</td>
@@ -319,7 +364,8 @@ attributes array</td>
 
                     <table class="table table-condensed">
         <tr>
-            <td>array</td>
+            <td>
+    array</td>
             <td>
 </td>
         </tr>
@@ -333,8 +379,10 @@ attributes array</td>
             </div>
                     <div class="method-item">
                     <h3 id="method_attributes">
-        <div class="location">in <a href="../Dias/Model/ModelWithAttributes.html#method_attributes"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a> at line 48</div>
-        <code>                    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr>
+        <div class="location">in 
+    <a href="../Dias/Model/ModelWithAttributes.html#method_attributes"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a> at line 48</div>
+        <code>                    
+    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr>
     <strong>attributes</strong>()</code>
     </h3>
     <div class="details">
@@ -346,7 +394,8 @@ attributes array</td>
 
                     <table class="table table-condensed">
         <tr>
-            <td><abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr></td>
+            <td>
+    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr></td>
             <td>
 </td>
         </tr>
@@ -360,9 +409,13 @@ attributes array</td>
             </div>
                     <div class="method-item">
                     <h3 id="method_attachDiasAttribute">
-        <div class="location">in <a href="../Dias/Model/ModelWithAttributes.html#method_attachDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a> at line 65</div>
-        <code>                    void
-    <strong>attachDiasAttribute</strong>(String $name, mixed $value)</code>
+        <div class="location">in 
+    <a href="../Dias/Model/ModelWithAttributes.html#method_attachDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a> at line 65</div>
+        <code>                    
+    void
+    <strong>attachDiasAttribute</strong>(
+    String $name, 
+    mixed $value)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -372,12 +425,14 @@ attributes array</td>
 
                     <table class="table table-condensed">
                     <tr>
-                <td>String</td>
+                <td>
+    String</td>
                 <td>$name</td>
                 <td>attribute name</td>
             </tr>
                     <tr>
-                <td>mixed</td>
+                <td>
+    mixed</td>
                 <td>$value</td>
                 <td>Attribute value (numeric, String or boolean)</td>
             </tr>
@@ -388,7 +443,8 @@ attributes array</td>
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td>
+    void</td>
             <td>
 </td>
         </tr>
@@ -402,9 +458,12 @@ attributes array</td>
             </div>
                     <div class="method-item">
                     <h3 id="method_getDiasAttribute">
-        <div class="location">in <a href="../Dias/Model/ModelWithAttributes.html#method_getDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a> at line 89</div>
-        <code>                    <a href="../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a>
-    <strong>getDiasAttribute</strong>(String $name)</code>
+        <div class="location">in 
+    <a href="../Dias/Model/ModelWithAttributes.html#method_getDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a> at line 86</div>
+        <code>                    
+    <a href="../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a>
+    <strong>getDiasAttribute</strong>(
+    String $name)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -416,7 +475,8 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td>String</td>
+                <td>
+    String</td>
                 <td>$name</td>
                 <td>attribute name</td>
             </tr>
@@ -427,7 +487,8 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td><a href="../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a></td>
+            <td>
+    <a href="../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a></td>
             <td>
 </td>
         </tr>
@@ -441,9 +502,12 @@ function!</p>            </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_detachDiasAttribute">
-        <div class="location">in <a href="../Dias/Model/ModelWithAttributes.html#method_detachDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a> at line 100</div>
-        <code>                    void
-    <strong>detachDiasAttribute</strong>(String $name)</code>
+        <div class="location">in 
+    <a href="../Dias/Model/ModelWithAttributes.html#method_detachDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a> at line 97</div>
+        <code>                    
+    void
+    <strong>detachDiasAttribute</strong>(
+    String $name)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -453,7 +517,8 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td>String</td>
+                <td>
+    String</td>
                 <td>$name</td>
                 <td>attribute name</td>
             </tr>
@@ -464,7 +529,8 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td>
+    void</td>
             <td>
 </td>
         </tr>
@@ -478,9 +544,13 @@ function!</p>            </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_updateDiasAttribute">
-        <div class="location">in <a href="../Dias/Model/ModelWithAttributes.html#method_updateDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a> at line 112</div>
+        <div class="location">in 
+    <a href="../Dias/Model/ModelWithAttributes.html#method_updateDiasAttribute"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a> at line 109</div>
         <code>                    
-    <strong>updateDiasAttribute</strong>(String $name, mixed $value)</code>
+    
+    <strong>updateDiasAttribute</strong>(
+    String $name, 
+    mixed $value)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -490,12 +560,14 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td>String</td>
+                <td>
+    String</td>
                 <td>$name</td>
                 <td>Name of the attribute to update</td>
             </tr>
                     <tr>
-                <td>mixed</td>
+                <td>
+    mixed</td>
                 <td>$value</td>
                 <td>Value of the new attribute (numeric, String or boolean)</td>
             </tr>
@@ -510,8 +582,9 @@ function!</p>            </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_boot">
-        <div class="location">at line 34</div>
+        <div class="location">at line 35</div>
         <code>        static            
+    
     <strong>boot</strong>()</code>
     </h3>
     <div class="details">
@@ -528,7 +601,8 @@ function!</p>            </div>
                     <div class="method-item">
                     <h3 id="method_createThumbnail">
         <div class="location">at line 97</div>
-        <code>                private    <abbr title="InterventionImage">InterventionImage</abbr>
+        <code>                private    
+    <abbr title="InterventionImage">InterventionImage</abbr>
     <strong>createThumbnail</strong>()</code>
     </h3>
     <div class="details">
@@ -540,7 +614,8 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td><abbr title="InterventionImage">InterventionImage</abbr></td>
+            <td>
+    <abbr title="InterventionImage">InterventionImage</abbr></td>
             <td>
 </td>
         </tr>
@@ -554,8 +629,9 @@ function!</p>            </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_transect">
-        <div class="location">at line 114</div>
-        <code>                    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
+        <div class="location">at line 113</div>
+        <code>                    
+    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
     <strong>transect</strong>()</code>
     </h3>
     <div class="details">
@@ -567,7 +643,8 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td><abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr></td>
+            <td>
+    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr></td>
             <td>
 </td>
         </tr>
@@ -581,8 +658,9 @@ function!</p>            </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_annotations">
-        <div class="location">at line 124</div>
-        <code>                    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
+        <div class="location">at line 123</div>
+        <code>                    
+    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
     <strong>annotations</strong>()</code>
     </h3>
     <div class="details">
@@ -594,7 +672,8 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td><abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr></td>
+            <td>
+    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr></td>
             <td>
 </td>
         </tr>
@@ -608,8 +687,9 @@ function!</p>            </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_projectIds">
-        <div class="location">at line 134</div>
-        <code>                    array
+        <div class="location">at line 133</div>
+        <code>                    
+    array
     <strong>projectIds</strong>()</code>
     </h3>
     <div class="details">
@@ -621,7 +701,8 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td>array</td>
+            <td>
+    array</td>
             <td>
 </td>
         </tr>
@@ -635,8 +716,9 @@ function!</p>            </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_getThumbPathAttribute">
-        <div class="location">at line 152</div>
-        <code>                    string
+        <div class="location">at line 150</div>
+        <code>                    
+    string
     <strong>getThumbPathAttribute</strong>()</code>
     </h3>
     <div class="details">
@@ -649,7 +731,8 @@ to the thumbnail image file of this image.</p>                                </
 
                     <table class="table table-condensed">
         <tr>
-            <td>string</td>
+            <td>
+    string</td>
             <td>
 </td>
         </tr>
@@ -663,8 +746,9 @@ to the thumbnail image file of this image.</p>                                </
             </div>
                     <div class="method-item">
                     <h3 id="method_getUrlAttribute">
-        <div class="location">at line 163</div>
-        <code>                    string
+        <div class="location">at line 161</div>
+        <code>                    
+    string
     <strong>getUrlAttribute</strong>()</code>
     </h3>
     <div class="details">
@@ -677,7 +761,8 @@ to the original image file.</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td>string</td>
+            <td>
+    string</td>
             <td>
 </td>
         </tr>
@@ -691,8 +776,9 @@ to the original image file.</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_getExif">
-        <div class="location">at line 174</div>
-        <code>                    array
+        <div class="location">at line 172</div>
+        <code>                    
+    array
     <strong>getExif</strong>()</code>
     </h3>
     <div class="details">
@@ -704,7 +790,8 @@ to the original image file.</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td>array</td>
+            <td>
+    array</td>
             <td>
 </td>
         </tr>
@@ -718,8 +805,9 @@ to the original image file.</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_getThumb">
-        <div class="location">at line 190</div>
-        <code>                    <abbr title="InterventionImage">InterventionImage</abbr>
+        <div class="location">at line 188</div>
+        <code>                    
+    <abbr title="InterventionImage">InterventionImage</abbr>
     <strong>getThumb</strong>()</code>
     </h3>
     <div class="details">
@@ -732,7 +820,8 @@ doesn't exist.</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td><abbr title="InterventionImage">InterventionImage</abbr></td>
+            <td>
+    <abbr title="InterventionImage">InterventionImage</abbr></td>
             <td>
 </td>
         </tr>
@@ -746,8 +835,9 @@ doesn't exist.</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_getFile">
-        <div class="location">at line 208</div>
-        <code>                    <abbr title="InterventionImage">InterventionImage</abbr>
+        <div class="location">at line 206</div>
+        <code>                    
+    <abbr title="InterventionImage">InterventionImage</abbr>
     <strong>getFile</strong>()</code>
     </h3>
     <div class="details">
@@ -760,7 +850,8 @@ external source.</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td><abbr title="InterventionImage">InterventionImage</abbr></td>
+            <td>
+    <abbr title="InterventionImage">InterventionImage</abbr></td>
             <td>
 </td>
         </tr>

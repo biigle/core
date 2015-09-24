@@ -12,6 +12,9 @@
         <script src="../../../../js/bootstrap.min.js"></script>
         <script src="../../../../js/typeahead.min.js"></script>
         <script src="../../../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     
     
     </head>
@@ -75,15 +78,17 @@
     </div>
 
     <p>    class
-    <strong>SettingsController</strong>        extends <a href="../../../../Dias/Http/Controllers/Views/Controller.html"><abbr title="Dias\Http\Controllers\Views\Controller">Controller</abbr></a></p>
+    <strong>SettingsController</strong>        extends <a href="../../../../Dias/Http/Controllers/Views/Controller.html"><abbr title="Dias\Http\Controllers\Views\Controller">Controller</abbr></a>
+</p>
 
     
             <h2>Traits</h2>
 
-        <div class="container-fluid underlined">
+        
+    <div class="container-fluid underlined">
                     <div class="row">
                 <div class="col-md-6">
-                                            <abbr title="Illuminate\Foundation\Bus\DispatchesCommands">Illuminate\Foundation\Bus\DispatchesCommands</abbr>
+                                            <abbr title="Illuminate\Foundation\Bus\DispatchesJobs">Illuminate\Foundation\Bus\DispatchesJobs</abbr>
                                     </div>
                 <div class="col-md-6">
                     
@@ -107,27 +112,23 @@
             <table class="table table-condensed">
                     <tr>
                 <td class="type" id="property_user">
-                                        protected                                        <a href="../../../../Dias/User.html"><abbr title="Dias\User">User</abbr></a>
+                                        protected                                        
+    <a href="../../../../Dias/User.html"><abbr title="Dias\User">User</abbr></a>
                 </td>
                 <td>$user</td>
                 <td class="last">The authenticated user.</td>
-                <td><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/AdvancedController.html#property_user"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></td>
+                <td><small>from&nbsp;
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#property_user"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></td>
             </tr>
                     <tr>
                 <td class="type" id="property_request">
-                                        protected                                        <abbr title="Illuminate\Http\Request">Request</abbr>
+                                        protected                                        
+    <abbr title="Illuminate\Http\Request">Request</abbr>
                 </td>
                 <td>$request</td>
                 <td class="last">The request.</td>
-                <td><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/AdvancedController.html#property_request"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></td>
-            </tr>
-                    <tr>
-                <td class="type" id="property_modules">
-                                        protected                                        <a href="../../../../Dias/Services/Modules.html"><abbr title="Dias\Services\Modules">Modules</abbr></a>
-                </td>
-                <td>$modules</td>
-                <td class="last">Te modules registry object.</td>
-                <td><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/Views/Controller.html#property_modules"><abbr title="Dias\Http\Controllers\Views\Controller">Controller</abbr></a></small></td>
+                <td><small>from&nbsp;
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#property_request"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></td>
             </tr>
             </table>
 
@@ -137,75 +138,140 @@
             <div class="container-fluid underlined">
                     <div class="row">
                 <div class="col-md-2 type">
-                    static&nbsp;boolean
+                    static&nbsp;
+    bool
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_isAutomatedRequest">isAutomatedRequest</a>(<abbr title="Illuminate\Http\Request">Request</abbr> $request)
+                    <a href="#method_isAutomatedRequest">isAutomatedRequest</a>(
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request)
                                             <p>Determines if the request was done by an automated script (with API
 token or ajax).</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/Controller.html#method_isAutomatedRequest"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    <abbr title="Illuminate\Http\Response">Response</abbr>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_buildFailedValidationResponse">buildFailedValidationResponse</a>(<abbr title="Illuminate\Http\Request">Request</abbr> $request, array $errors)
-                                            <p>Create the response for when a request fails validation.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/Controller.html#method_buildFailedValidationResponse"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a></small></div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../../../../Dias/Http/Controllers/Controller.html#method_isAutomatedRequest"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
                     
+    <abbr title="Illuminate\Http\Response">Response</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method___construct">__construct</a>(<abbr title="Illuminate\Contracts\Auth\Guard">Guard</abbr> $auth, <abbr title="Illuminate\Http\Request">Request</abbr> $request, <a href="../../../../Dias/Services/Modules.html"><abbr title="Dias\Services\Modules">Modules</abbr></a> $modules)
+                    <a href="#method_buildFailedValidationResponse">buildFailedValidationResponse</a>(
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request, 
+    array $errors)
+                                            <p>Create the response for when a request fails validation.</p>                </div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../../../../Dias/Http/Controllers/Controller.html#method_buildFailedValidationResponse"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method___construct">__construct</a>(
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request)
                                             <p>Creates a new AdvancedController instance.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/Views/Controller.html#method___construct"><abbr title="Dias\Http\Controllers\Views\Controller">Controller</abbr></a></small></div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method___construct"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    mixed
+                    
+    mixed
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_requireNotNull">requireNotNull</a>(mixed $thing)
+                    <a href="#method_requireNotNull">requireNotNull</a>(
+    mixed $thing)
                                             <p>Requires the thing to be not <code>null</code> or aborts with 404.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireNotNull"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireNotNull"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    
+    void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_requireCanSee">requireCanSee</a>(<a href="../../../../Dias/Contracts/BelongsToProjectContract.html"><abbr title="Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></a> $thing)
+                    <a href="#method_requireCanSee">requireCanSee</a>(
+    <abbr title="Dias\Http\Controllers\Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr> $thing)
                                             <p>Requires the requesting user to be able to see the thing.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireCanSee"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireCanSee"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    
+    void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_requireCanEdit">requireCanEdit</a>(<a href="../../../../Dias/Contracts/BelongsToProjectContract.html"><abbr title="Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></a> $thing)
+                    <a href="#method_requireCanEdit">requireCanEdit</a>(
+    <abbr title="Dias\Http\Controllers\Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr> $thing)
                                             <p>Requires the requesting user to be able to edit the thing.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireCanEdit"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireCanEdit"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    
+    void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_requireCanAdmin">requireCanAdmin</a>(<a href="../../../../Dias/Contracts/BelongsToProjectContract.html"><abbr title="Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></a> $thing)
+                    <a href="#method_requireCanAdmin">requireCanAdmin</a>(
+    <abbr title="Dias\Http\Controllers\Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr> $thing)
                                             <p>Requires the requesting user to be able to admin the thing.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireCanAdmin"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireCanAdmin"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <abbr title="Illuminate\Http\Response">Response</abbr>
+                    
+    
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_requireAdmin">requireAdmin</a>()
+                                            <p class="no-description">No description</p>
+                                    </div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireAdmin"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_index">index</a>()
-                                            <p>Show the application dashboard to the user.</p>                </div>
+                                            <p>Redirects to the profile settings.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_profile">profile</a>()
+                                            <p>Shows the profile settings.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_account">account</a>()
+                                            <p>Shows the account settings.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_tokens">tokens</a>()
+                                            <p>Shows the tokens settings.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
             </div>
@@ -216,9 +282,12 @@ token or ajax).</p>                </div>
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method_isAutomatedRequest">
-        <div class="location">in <a href="../../../../Dias/Http/Controllers/Controller.html#method_isAutomatedRequest"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a> at line 21</div>
-        <code>        static            boolean
-    <strong>isAutomatedRequest</strong>(<abbr title="Illuminate\Http\Request">Request</abbr> $request)</code>
+        <div class="location">in 
+    <a href="../../../../Dias/Http/Controllers/Controller.html#method_isAutomatedRequest"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a> at line 23</div>
+        <code>        static            
+    bool
+    <strong>isAutomatedRequest</strong>(
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -229,7 +298,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Illuminate\Http\Request">Request</abbr></td>
+                <td>
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr></td>
                 <td>$request</td>
                 <td>
 </td>
@@ -241,7 +311,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td>boolean</td>
+            <td>
+    bool</td>
             <td>
 </td>
         </tr>
@@ -255,9 +326,13 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_buildFailedValidationResponse">
-        <div class="location">in <a href="../../../../Dias/Http/Controllers/Controller.html#method_buildFailedValidationResponse"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a> at line 34</div>
-        <code>            protected        <abbr title="Illuminate\Http\Response">Response</abbr>
-    <strong>buildFailedValidationResponse</strong>(<abbr title="Illuminate\Http\Request">Request</abbr> $request, array $errors)</code>
+        <div class="location">in 
+    <a href="../../../../Dias/Http/Controllers/Controller.html#method_buildFailedValidationResponse"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a> at line 36</div>
+        <code>            protected        
+    <abbr title="Illuminate\Http\Response">Response</abbr>
+    <strong>buildFailedValidationResponse</strong>(
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request, 
+    array $errors)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -267,13 +342,15 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Illuminate\Http\Request">Request</abbr></td>
+                <td>
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr></td>
                 <td>$request</td>
                 <td>
 </td>
             </tr>
                     <tr>
-                <td>array</td>
+                <td>
+    array</td>
                 <td>$errors</td>
                 <td>
 </td>
@@ -285,7 +362,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td><abbr title="Illuminate\Http\Response">Response</abbr></td>
+            <td>
+    <abbr title="Illuminate\Http\Response">Response</abbr></td>
             <td>
 </td>
         </tr>
@@ -299,9 +377,12 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">in <a href="../../../../Dias/Http/Controllers/Views/Controller.html#method___construct"><abbr title="Dias\Http\Controllers\Views\Controller">Controller</abbr></a> at line 24</div>
+        <div class="location">in 
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method___construct"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a> at line 35</div>
         <code>                    
-    <strong>__construct</strong>(<abbr title="Illuminate\Contracts\Auth\Guard">Guard</abbr> $auth, <abbr title="Illuminate\Http\Request">Request</abbr> $request, <a href="../../../../Dias/Services/Modules.html"><abbr title="Dias\Services\Modules">Modules</abbr></a> $modules)</code>
+    
+    <strong>__construct</strong>(
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -311,20 +392,9 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><abbr title="Illuminate\Contracts\Auth\Guard">Guard</abbr></td>
-                <td>$auth</td>
                 <td>
-</td>
-            </tr>
-                    <tr>
-                <td><abbr title="Illuminate\Http\Request">Request</abbr></td>
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr></td>
                 <td>$request</td>
-                <td>
-</td>
-            </tr>
-                    <tr>
-                <td><a href="../../../../Dias/Services/Modules.html"><abbr title="Dias\Services\Modules">Modules</abbr></a></td>
-                <td>$modules</td>
                 <td>
 </td>
             </tr>
@@ -339,9 +409,12 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_requireNotNull">
-        <div class="location">in <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireNotNull"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a> at line 46</div>
-        <code>            protected        mixed
-    <strong>requireNotNull</strong>(mixed $thing)</code>
+        <div class="location">in 
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireNotNull"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a> at line 47</div>
+        <code>            protected        
+    mixed
+    <strong>requireNotNull</strong>(
+    mixed $thing)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -351,7 +424,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td>mixed</td>
+                <td>
+    mixed</td>
                 <td>$thing</td>
                 <td>
 </td>
@@ -363,7 +437,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td>mixed</td>
+            <td>
+    mixed</td>
             <td>the thing if it is not <code>null</code></td>
         </tr>
     </table>
@@ -376,9 +451,12 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_requireCanSee">
-        <div class="location">in <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireCanSee"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a> at line 62</div>
-        <code>            protected        void
-    <strong>requireCanSee</strong>(<a href="../../../../Dias/Contracts/BelongsToProjectContract.html"><abbr title="Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></a> $thing)</code>
+        <div class="location">in 
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireCanSee"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a> at line 62</div>
+        <code>            protected        
+    void
+    <strong>requireCanSee</strong>(
+    <abbr title="Dias\Http\Controllers\Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr> $thing)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -388,7 +466,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../../../Dias/Contracts/BelongsToProjectContract.html"><abbr title="Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></a></td>
+                <td>
+    <abbr title="Dias\Http\Controllers\Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></td>
                 <td>$thing</td>
                 <td>a thing that belongs to a project</td>
             </tr>
@@ -399,7 +478,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td>
+    void</td>
             <td>
 </td>
         </tr>
@@ -413,9 +493,12 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_requireCanEdit">
-        <div class="location">in <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireCanEdit"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a> at line 76</div>
-        <code>            protected        void
-    <strong>requireCanEdit</strong>(<a href="../../../../Dias/Contracts/BelongsToProjectContract.html"><abbr title="Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></a> $thing)</code>
+        <div class="location">in 
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireCanEdit"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a> at line 75</div>
+        <code>            protected        
+    void
+    <strong>requireCanEdit</strong>(
+    <abbr title="Dias\Http\Controllers\Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr> $thing)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -425,7 +508,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../../../Dias/Contracts/BelongsToProjectContract.html"><abbr title="Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></a></td>
+                <td>
+    <abbr title="Dias\Http\Controllers\Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></td>
                 <td>$thing</td>
                 <td>a thing that belongs to a project</td>
             </tr>
@@ -436,7 +520,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td>
+    void</td>
             <td>
 </td>
         </tr>
@@ -450,9 +535,12 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_requireCanAdmin">
-        <div class="location">in <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireCanAdmin"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a> at line 90</div>
-        <code>            protected        void
-    <strong>requireCanAdmin</strong>(<a href="../../../../Dias/Contracts/BelongsToProjectContract.html"><abbr title="Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></a> $thing)</code>
+        <div class="location">in 
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireCanAdmin"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a> at line 88</div>
+        <code>            protected        
+    void
+    <strong>requireCanAdmin</strong>(
+    <abbr title="Dias\Http\Controllers\Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr> $thing)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -462,7 +550,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../../../Dias/Contracts/BelongsToProjectContract.html"><abbr title="Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></a></td>
+                <td>
+    <abbr title="Dias\Http\Controllers\Dias\Contracts\BelongsToProjectContract">BelongsToProjectContract</abbr></td>
                 <td>$thing</td>
                 <td>a thing that belongs to a project</td>
             </tr>
@@ -473,7 +562,8 @@ token or ajax).</p>                                </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td>
+    void</td>
             <td>
 </td>
         </tr>
@@ -486,21 +576,127 @@ token or ajax).</p>                                </div>
 
             </div>
                     <div class="method-item">
+                    <h3 id="method_requireAdmin">
+        <div class="location">in 
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method_requireAdmin"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a> at line 95</div>
+        <code>            protected        
+    
+    <strong>requireAdmin</strong>()</code>
+    </h3>
+    <div class="details">
+                <div class="tags">
+            
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
                     <h3 id="method_index">
-        <div class="location">at line 10</div>
-        <code>                    <abbr title="Illuminate\Http\Response">Response</abbr>
+        <div class="location">at line 12</div>
+        <code>                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
     <strong>index</strong>()</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Show the application dashboard to the user.</p>                                </div>
+                                    <p>Redirects to the profile settings.</p>                                </div>
                 <div class="tags">
             
                             <h4>Return Value</h4>
 
                     <table class="table table-condensed">
         <tr>
-            <td><abbr title="Illuminate\Http\Response">Response</abbr></td>
+            <td>
+    <abbr title="Illuminate\Http\Response">Response</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_profile">
+        <div class="location">at line 22</div>
+        <code>                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
+    <strong>profile</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Shows the profile settings.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>
+    <abbr title="Illuminate\Http\Response">Response</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_account">
+        <div class="location">at line 34</div>
+        <code>                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
+    <strong>account</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Shows the account settings.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>
+    <abbr title="Illuminate\Http\Response">Response</abbr></td>
+            <td>
+</td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_tokens">
+        <div class="location">at line 47</div>
+        <code>                    
+    <abbr title="Illuminate\Http\Response">Response</abbr>
+    <strong>tokens</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Shows the tokens settings.</p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>
+    <abbr title="Illuminate\Http\Response">Response</abbr></td>
             <td>
 </td>
         </tr>

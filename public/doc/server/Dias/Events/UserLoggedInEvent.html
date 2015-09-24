@@ -12,6 +12,9 @@
         <script src="../../js/bootstrap.min.js"></script>
         <script src="../../js/typeahead.min.js"></script>
         <script src="../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     
     
     </head>
@@ -73,14 +76,16 @@
     </div>
 
     <p>    class
-    <strong>UserLoggedInEvent</strong>        extends <a href="../../Dias/Events/Event.html"><abbr title="Dias\Events\Event">Event</abbr></a></p>
+    <strong>UserLoggedInEvent</strong>        extends <a href="../../Dias/Events/Event.html"><abbr title="Dias\Events\Event">Event</abbr></a>
+</p>
 
             <div class="description">
             <p>This event will be created when a user was logged in.</p>                    </div>
     
             <h2>Traits</h2>
 
-        <div class="container-fluid underlined">
+        
+    <div class="container-fluid underlined">
                     <div class="row">
                 <div class="col-md-6">
                                             <abbr title="Illuminate\Queue\SerializesModels">Illuminate\Queue\SerializesModels</abbr>
@@ -98,15 +103,18 @@
             <table class="table table-condensed">
                     <tr>
                 <td class="type" id="property_time">
-                                                                                <abbr title="Carbon\Carbon\Carbon">Carbon</abbr>
+                                                                                
+    <abbr title="Carbon\Carbon\Carbon">Carbon</abbr>
                 </td>
                 <td>$time</td>
                 <td class="last">The time, the event was generated.</td>
-                <td><small>from&nbsp;<a href="../../Dias/Events/Event.html#property_time"><abbr title="Dias\Events\Event">Event</abbr></a></small></td>
+                <td><small>from&nbsp;
+    <a href="../../Dias/Events/Event.html#property_time"><abbr title="Dias\Events\Event">Event</abbr></a></small></td>
             </tr>
                     <tr>
                 <td class="type" id="property_user">
-                                                                                <a href="../../Dias/User.html"><abbr title="Dias\User">User</abbr></a>
+                                                                                
+    <a href="../../Dias/User.html"><abbr title="Dias\User">User</abbr></a>
                 </td>
                 <td>$user</td>
                 <td class="last">The user that was logged in.</td>
@@ -120,10 +128,12 @@
             <div class="container-fluid underlined">
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    
+    void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method___construct">__construct</a>(<a href="../../Dias/User.html"><abbr title="Dias\User">User</abbr></a> $user)
+                    <a href="#method___construct">__construct</a>(
+    <abbr title="Dias\Events\Dias\User">User</abbr> $user)
                                             <p class="no-description">No description</p>
                                     </div>
                 <div class="col-md-2"></div>
@@ -136,9 +146,11 @@
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">at line 25</div>
-        <code>                    void
-    <strong>__construct</strong>(<a href="../../Dias/User.html"><abbr title="Dias\User">User</abbr></a> $user)</code>
+        <div class="location">at line 26</div>
+        <code>                    
+    void
+    <strong>__construct</strong>(
+    <abbr title="Dias\Events\Dias\User">User</abbr> $user)</code>
     </h3>
     <div class="details">
                 <div class="tags">
@@ -146,7 +158,8 @@
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../Dias/User.html"><abbr title="Dias\User">User</abbr></a></td>
+                <td>
+    <abbr title="Dias\Events\Dias\User">User</abbr></td>
                 <td>$user</td>
                 <td>
 </td>
@@ -158,7 +171,8 @@
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td>
+    void</td>
             <td>
 </td>
         </tr>

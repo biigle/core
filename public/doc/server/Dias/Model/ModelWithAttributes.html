@@ -12,6 +12,9 @@
         <script src="../../js/bootstrap.min.js"></script>
         <script src="../../js/typeahead.min.js"></script>
         <script src="../../sami.js"></script>
+        <meta name="MobileOptimized" content="width">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     
     
     </head>
@@ -72,8 +75,9 @@
         <h1>ModelWithAttributes</h1>
     </div>
 
-    <p>abstract     class
-    <strong>ModelWithAttributes</strong>        extends <abbr title="Illuminate\Database\Eloquent\Model">Model</abbr></p>
+    <p>    class
+    <strong>ModelWithAttributes</strong>        extends <abbr title="Illuminate\Database\Eloquent\Model">Model</abbr>
+</p>
 
             <div class="description">
             <p>A model that can belong to an attribute.</p>                    </div>
@@ -86,17 +90,21 @@
             <div class="container-fluid underlined">
                     <div class="row">
                 <div class="col-md-2 type">
-                    array
+                    
+    array
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_buildPivotAttributes">buildPivotAttributes</a>(<a href="../../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a> $attribute, mixed $value)
+                    <a href="#method_buildPivotAttributes">buildPivotAttributes</a>(
+    <a href="../../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a> $attribute, 
+    mixed $value)
                                             <p>Determines the pivot table attributes array depending on the DIAS
 attribute type.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr>
+                    
+    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_attributes">attributes</a>()
@@ -105,38 +113,48 @@ attribute type.</p>                </div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    
+    void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_attachDiasAttribute">attachDiasAttribute</a>(String $name, mixed $value)
+                    <a href="#method_attachDiasAttribute">attachDiasAttribute</a>(
+    String $name, 
+    mixed $value)
                                             <p>Attaches an attribute to the model.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    <a href="../../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a>
+                    
+    <a href="../../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_getDiasAttribute">getDiasAttribute</a>(String $name)
+                    <a href="#method_getDiasAttribute">getDiasAttribute</a>(
+    String $name)
                                             <p>Returns a \Dias\Attribute of this model. Fails if this model doesn't
 have the attribute.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    void
+                    
+    void
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_detachDiasAttribute">detachDiasAttribute</a>(String $name)
+                    <a href="#method_detachDiasAttribute">detachDiasAttribute</a>(
+    String $name)
                                             <p>Detaches a \Dias\Attribute from this model.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
                     
+    
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_updateDiasAttribute">updateDiasAttribute</a>(String $name, mixed $value)
+                    <a href="#method_updateDiasAttribute">updateDiasAttribute</a>(
+    String $name, 
+    mixed $value)
                                             <p>Updates the value of an existing attribute of this model.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -148,9 +166,12 @@ have the attribute.</p>                </div>
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method_buildPivotAttributes">
-        <div class="location">at line 23</div>
-        <code>                private    array
-    <strong>buildPivotAttributes</strong>(<a href="../../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a> $attribute, mixed $value)</code>
+        <div class="location">at line 24</div>
+        <code>                private    
+    array
+    <strong>buildPivotAttributes</strong>(
+    <a href="../../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a> $attribute, 
+    mixed $value)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -161,12 +182,14 @@ attribute type.</p>                                </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td><a href="../../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a></td>
+                <td>
+    <a href="../../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a></td>
                 <td>$attribute</td>
                 <td>The DIAS attribute</td>
             </tr>
                     <tr>
-                <td>mixed</td>
+                <td>
+    mixed</td>
                 <td>$value</td>
                 <td>The value that should be set in the pivot table
 attributes array</td>
@@ -178,7 +201,8 @@ attributes array</td>
 
                     <table class="table table-condensed">
         <tr>
-            <td>array</td>
+            <td>
+    array</td>
             <td>
 </td>
         </tr>
@@ -193,7 +217,8 @@ attributes array</td>
                     <div class="method-item">
                     <h3 id="method_attributes">
         <div class="location">at line 48</div>
-        <code>                    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr>
+        <code>                    
+    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr>
     <strong>attributes</strong>()</code>
     </h3>
     <div class="details">
@@ -205,7 +230,8 @@ attributes array</td>
 
                     <table class="table table-condensed">
         <tr>
-            <td><abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr></td>
+            <td>
+    <abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr></td>
             <td>
 </td>
         </tr>
@@ -220,8 +246,11 @@ attributes array</td>
                     <div class="method-item">
                     <h3 id="method_attachDiasAttribute">
         <div class="location">at line 65</div>
-        <code>                    void
-    <strong>attachDiasAttribute</strong>(String $name, mixed $value)</code>
+        <code>                    
+    void
+    <strong>attachDiasAttribute</strong>(
+    String $name, 
+    mixed $value)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -231,12 +260,14 @@ attributes array</td>
 
                     <table class="table table-condensed">
                     <tr>
-                <td>String</td>
+                <td>
+    String</td>
                 <td>$name</td>
                 <td>attribute name</td>
             </tr>
                     <tr>
-                <td>mixed</td>
+                <td>
+    mixed</td>
                 <td>$value</td>
                 <td>Attribute value (numeric, String or boolean)</td>
             </tr>
@@ -247,7 +278,8 @@ attributes array</td>
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td>
+    void</td>
             <td>
 </td>
         </tr>
@@ -261,9 +293,11 @@ attributes array</td>
             </div>
                     <div class="method-item">
                     <h3 id="method_getDiasAttribute">
-        <div class="location">at line 89</div>
-        <code>                    <a href="../../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a>
-    <strong>getDiasAttribute</strong>(String $name)</code>
+        <div class="location">at line 86</div>
+        <code>                    
+    <a href="../../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a>
+    <strong>getDiasAttribute</strong>(
+    String $name)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -275,7 +309,8 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td>String</td>
+                <td>
+    String</td>
                 <td>$name</td>
                 <td>attribute name</td>
             </tr>
@@ -286,7 +321,8 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td><a href="../../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a></td>
+            <td>
+    <a href="../../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a></td>
             <td>
 </td>
         </tr>
@@ -300,9 +336,11 @@ function!</p>            </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_detachDiasAttribute">
-        <div class="location">at line 100</div>
-        <code>                    void
-    <strong>detachDiasAttribute</strong>(String $name)</code>
+        <div class="location">at line 97</div>
+        <code>                    
+    void
+    <strong>detachDiasAttribute</strong>(
+    String $name)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -312,7 +350,8 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td>String</td>
+                <td>
+    String</td>
                 <td>$name</td>
                 <td>attribute name</td>
             </tr>
@@ -323,7 +362,8 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
         <tr>
-            <td>void</td>
+            <td>
+    void</td>
             <td>
 </td>
         </tr>
@@ -337,9 +377,12 @@ function!</p>            </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_updateDiasAttribute">
-        <div class="location">at line 112</div>
+        <div class="location">at line 109</div>
         <code>                    
-    <strong>updateDiasAttribute</strong>(String $name, mixed $value)</code>
+    
+    <strong>updateDiasAttribute</strong>(
+    String $name, 
+    mixed $value)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -349,12 +392,14 @@ function!</p>            </div>
 
                     <table class="table table-condensed">
                     <tr>
-                <td>String</td>
+                <td>
+    String</td>
                 <td>$name</td>
                 <td>Name of the attribute to update</td>
             </tr>
                     <tr>
-                <td>mixed</td>
+                <td>
+    mixed</td>
                 <td>$value</td>
                 <td>Value of the new attribute (numeric, String or boolean)</td>
             </tr>
