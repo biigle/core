@@ -50,7 +50,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
                 'points' => [
                     ['x' => $point2->x, 'y' => $point2->y],
                     ['x' => $point1->x, 'y' => $point1->y],
-                ]
+                ],
             ]);
     }
 
@@ -136,14 +136,14 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
                 'points' => [
                     ['x' => '10', 'y' => '11'],
                     ['x' => '12', 'y' => '13'],
-                ]
+                ],
             ]);
         } else {
             $this->seeJson([
                 'points' => [
                     ['x' => 10, 'y' => 11],
                     ['x' => 12, 'y' => 13],
-                ]
+                ],
             ]);
         }
 

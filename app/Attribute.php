@@ -40,7 +40,7 @@ class Attribute extends Model
         'value' => 'required',
     ];
 
-/**
+    /**
      * Don't maintain timestamps for this model.
      *
      * @var bool

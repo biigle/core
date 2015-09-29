@@ -59,7 +59,7 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
                 'points' => [
                     ['x' => $point2->x, 'y' => $point2->y],
                     ['x' => $point1->x, 'y' => $point1->y],
-                ]
+                ],
             ]);
         // the labels should be fetched separately
         $this->assertNotContains('labels', $this->response->getContent());

@@ -59,19 +59,19 @@ Route::group(['namespace' => 'Views', 'middleware' => 'auth'], function ($router
     $router->get('admin', [
         'as' => 'admin',
         'middleware' => 'admin',
-        'uses' => 'AdminController@index'
+        'uses' => 'AdminController@index',
     ]);
 
     $router->get('admin/users', [
         'as' => 'admin-users',
         'middleware' => 'admin',
-        'uses' => 'AdminController@users'
+        'uses' => 'AdminController@users',
     ]);
 
     $router->get('admin/labels', [
         'as' => 'admin-labels',
         'middleware' => 'admin',
-        'uses' => 'AdminController@labels'
+        'uses' => 'AdminController@labels',
     ]);
 });
 

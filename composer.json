@@ -50,7 +50,7 @@
             "npm test"
         ],
         "fix": [
-            "php php-cs-fixer.phar --config-file='.php_cs' fix"
+            "php-cs-fixer --config-file='.php_cs' fix"
         ],
         "doc": [
             "rm -rf public/doc",

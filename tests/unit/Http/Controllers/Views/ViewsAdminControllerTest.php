@@ -23,13 +23,13 @@ class ViewsAdminControllerTest extends TestCase
 
     public function testUsersWhenNotLoggedIn()
     {
-        $this->visit("admin/users")->seePageIs('auth/login');
+        $this->visit('admin/users')->seePageIs('auth/login');
     }
 
     public function testUsersWhenNotAdmin()
     {
         $this->be(UserTest::create());
-        $this->get("admin/users")->assertResponseStatus(401);
+        $this->get('admin/users')->assertResponseStatus(401);
     }
 
     public function testUsersWhenLoggedIn()
@@ -37,18 +37,18 @@ class ViewsAdminControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Dias\Role::$admin);
         $this->be($admin);
-        $this->visit("admin/users")->assertResponseOk();
+        $this->visit('admin/users')->assertResponseOk();
     }
 
     public function testLabelsWhenNotLoggedIn()
     {
-        $this->visit("admin/labels")->seePageIs('auth/login');
+        $this->visit('admin/labels')->seePageIs('auth/login');
     }
 
     public function testLabelsWhenNotAdmin()
     {
         $this->be(UserTest::create());
-        $this->get("admin/labels")->assertResponseStatus(401);
+        $this->get('admin/labels')->assertResponseStatus(401);
     }
 
     public function testLabelsWhenLoggedIn()
@@ -56,6 +56,6 @@ class ViewsAdminControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Dias\Role::$admin);
         $this->be($admin);
-        $this->visit("admin/labels")->assertResponseOk();
+        $this->visit('admin/labels')->assertResponseOk();
     }
 }

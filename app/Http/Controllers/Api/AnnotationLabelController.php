@@ -101,7 +101,7 @@ class AnnotationLabelController extends Controller
         return response($annotationLabel, 201);
     }
 
-/**
+    /**
      * Updates the attributes of the specified annotation label.
      * 
      * @api {put} annotation-labels/:id Update a label
