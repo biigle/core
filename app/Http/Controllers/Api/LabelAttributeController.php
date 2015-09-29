@@ -29,7 +29,7 @@ class LabelAttributeController extends ModelWithAttributesController
 
     // API DOC FOR INHERITED METHODS
 
-    /*
+    /**
      * @api {get} labels/:id/attributes Get all attributes
      * @apiGroup Labels
      * @apiName IndexLabelAttributes
@@ -37,7 +37,7 @@ class LabelAttributeController extends ModelWithAttributesController
      * @apiPermission user
      */
 
-    /*
+    /**
      * @api {get} labels/:id/attributes/:name Get an attribute
      * @apiGroup Labels
      * @apiName ShowLabelAttributes
@@ -45,7 +45,7 @@ class LabelAttributeController extends ModelWithAttributesController
      * @apiPermission user
      */
 
-    /*
+    /**
      * @api {post} labels/:id/attributes Attach an attribute
      * @apiGroup Labels
      * @apiName StoreLabelAttributes
@@ -53,7 +53,7 @@ class LabelAttributeController extends ModelWithAttributesController
      * @apiUse storeAttributes
      */
 
-    /*
+    /**
      * @api {put} labels/:id/attributes/:name Update an attribute
      * @apiGroup Labels
      * @apiName UpdateLabelAttributes
@@ -61,7 +61,7 @@ class LabelAttributeController extends ModelWithAttributesController
      * @apiUse updateAttributes
      */
 
-    /*
+    /**
      * @api {delete} labels/:id/attributes/:name Detach an attribute
      * @apiGroup Labels
      * @apiName DestroyLabelAttributes

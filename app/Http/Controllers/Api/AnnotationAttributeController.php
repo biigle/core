@@ -16,7 +16,7 @@ class AnnotationAttributeController extends ModelWithAttributesController
 
     // API DOC FOR INHERITED METHODS
 
-    /*
+    /**
      * @api {get} annotations/:id/attributes Get all attributes
      * @apiGroup Annotations
      * @apiName IndexAnnotationAttributes
@@ -24,7 +24,7 @@ class AnnotationAttributeController extends ModelWithAttributesController
      * @apiUse indexAttributes
      */
 
-    /*
+    /**
      * @api {get} annotations/:id/attributes/:name Get an attribute
      * @apiGroup Annotations
      * @apiName ShowAnnotationAttributes
@@ -32,7 +32,7 @@ class AnnotationAttributeController extends ModelWithAttributesController
      * @apiUse showAttributes
      */
 
-    /*
+    /**
      * @api {post} annotations/:id/attributes Attach an attribute
      * @apiGroup Annotations
      * @apiName StoreAnnotationAttributes
@@ -40,7 +40,7 @@ class AnnotationAttributeController extends ModelWithAttributesController
      * @apiUse storeAttributes
      */
 
-    /*
+    /**
      * @api {put} annotations/:id/attributes/:name Update an attribute
      * @apiGroup Annotations
      * @apiName UpdateAnnotationAttributes
@@ -48,7 +48,7 @@ class AnnotationAttributeController extends ModelWithAttributesController
      * @apiUse updateAttributes
      */
 
-    /*
+    /**
      * @api {delete} annotations/:id/attributes/:name Detach an attribute
      * @apiGroup Annotations
      * @apiName DestroyAnnotationAttributes

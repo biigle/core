@@ -16,7 +16,7 @@ class TransectAttributeController extends ModelWithAttributesController
 
     // API DOC FOR INHERITED METHODS
 
-    /*
+    /**
      * @api {get} transects/:id/attributes Get all attributes
      * @apiGroup Transects
      * @apiName IndexTransectAttributes
@@ -24,7 +24,7 @@ class TransectAttributeController extends ModelWithAttributesController
      * @apiUse indexAttributes
      */
 
-    /*
+    /**
      * @api {get} transects/:id/attributes/:name Get an attribute
      * @apiGroup Transects
      * @apiName ShowTransectAttributes
@@ -32,7 +32,7 @@ class TransectAttributeController extends ModelWithAttributesController
      * @apiUse showAttributes
      */
 
-    /*
+    /**
      * @api {post} transects/:id/attributes Attach an attribute
      * @apiGroup Transects
      * @apiName StoreTransectAttributes
@@ -40,7 +40,7 @@ class TransectAttributeController extends ModelWithAttributesController
      * @apiUse storeAttributes
      */
 
-    /*
+    /**
      * @api {put} transects/:id/attributes/:name Update an attribute
      * @apiGroup Transects
      * @apiName UpdateTransectAttributes
@@ -48,7 +48,7 @@ class TransectAttributeController extends ModelWithAttributesController
      * @apiUse updateAttributes
      */
 
-    /*
+    /**
      * @api {delete} transects/:id/attributes/:name Detach an attribute
      * @apiGroup Transects
      * @apiName DestroyTransectAttributes

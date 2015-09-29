@@ -29,7 +29,7 @@ class UserAttributeController extends ModelWithAttributesController
 
     // API DOC FOR INHERITED METHODS
 
-    /*
+    /**
      * @api {get} users/:id/attributes Get all attributes
      * @apiGroup User
      * @apiName IndexUserAttributes
@@ -37,7 +37,7 @@ class UserAttributeController extends ModelWithAttributesController
      * @apiPermission user
      */
 
-    /*
+    /**
      * @api {get} users/:id/attributes/:name Get an attribute
      * @apiGroup User
      * @apiName ShowUserAttributes
@@ -45,7 +45,7 @@ class UserAttributeController extends ModelWithAttributesController
      * @apiPermission user
      */
 
-    /*
+    /**
      * @api {post} users/:id/attributes Attach an attribute
      * @apiGroup User
      * @apiName StoreUserAttributes
@@ -53,7 +53,7 @@ class UserAttributeController extends ModelWithAttributesController
      * @apiUse storeAttributes
      */
 
-    /*
+    /**
      * @api {put} users/:id/attributes/:name Update an attribute
      * @apiGroup User
      * @apiName UpdateUserAttributes
@@ -61,7 +61,7 @@ class UserAttributeController extends ModelWithAttributesController
      * @apiUse updateAttributes
      */
 
-    /*
+    /**
      * @api {delete} users/:id/attributes/:name Detach an attribute
      * @apiGroup User
      * @apiName DestroyUserAttributes

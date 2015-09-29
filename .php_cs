@@ -3,6 +3,8 @@ $finder = Symfony\Component\Finder\Finder::create()
     ->files()
     ->in([__DIR__.'/app', __DIR__.'/tests', __DIR__.'/config', __DIR__.'/database'])
     ->name('*.php')
+    // these have APIdoc comments without functions
+    ->notName('*AttributeController.php')
     ->ignoreDotFiles(true)
     ->ignoreVCS(true);
 

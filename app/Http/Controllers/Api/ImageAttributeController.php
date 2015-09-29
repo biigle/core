@@ -16,7 +16,7 @@ class ImageAttributeController extends ModelWithAttributesController
 
     // API DOC FOR INHERITED METHODS
 
-    /*
+    /**
      * @api {get} images/:id/attributes Get all attributes
      * @apiGroup Images
      * @apiName IndexImageAttributes
@@ -24,7 +24,7 @@ class ImageAttributeController extends ModelWithAttributesController
      * @apiUse indexAttributes
      */
 
-    /*
+    /**
      * @api {get} images/:id/attributes/:name Get an attribute
      * @apiGroup Images
      * @apiName ShowImageAttributes
@@ -32,7 +32,7 @@ class ImageAttributeController extends ModelWithAttributesController
      * @apiUse showAttributes
      */
 
-    /*
+    /**
      * @api {post} images/:id/attributes Attach an attribute
      * @apiGroup Images
      * @apiName StoreImageAttributes
@@ -40,7 +40,7 @@ class ImageAttributeController extends ModelWithAttributesController
      * @apiUse storeAttributes
      */
 
-    /*
+    /**
      * @api {put} images/:id/attributes/:name Update an attribute
      * @apiGroup Images
      * @apiName UpdateImageAttributes
@@ -48,7 +48,7 @@ class ImageAttributeController extends ModelWithAttributesController
      * @apiUse updateAttributes
      */
 
-    /*
+    /**
      * @api {delete} images/:id/attributes/:name Detach an attribute
      * @apiGroup Images
      * @apiName DestroyImageAttributes
