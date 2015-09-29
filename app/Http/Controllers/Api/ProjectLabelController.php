@@ -9,10 +9,12 @@ class ProjectLabelController extends Controller
     /**
      * Shows a list of all labels belonging to the project.
      *
-     * @api {get} labels Get all label categories of the project
+     * @api {get} projects/:id/labels Get all label categories of the project
      * @apiGroup Projects
-     * @apiName IndexLabels
+     * @apiName IndexProjectLabels
      * @apiPermission projectMember
+     *
+     * @apiParam {Number} id The project ID.
      *
      * @apiSuccessExample {json} Success response:
      * [

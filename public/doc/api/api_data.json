@@ -1167,32 +1167,6 @@
   },
   {
     "type": "get",
-    "url": "labels",
-    "title": "Get all label categories of the project",
-    "group": "Projects",
-    "name": "IndexLabels",
-    "permission": [
-      {
-        "name": "projectMember",
-        "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
-      }
-    ],
-    "success": {
-      "examples": [
-        {
-          "title": "Success response:",
-          "content": "[\n   {\n      \"aphia_id\": null,\n      \"id\": 1,\n      \"name\": \"Benthic Object\",\n      \"parent_id\": null,\n      \"project_id\": 1\n   },\n   {\n      \"aphia_id\": null,\n      \"id\": 2,\n      \"name\": \"Coral\",\n      \"parent_id\": 1,\n      \"project_id\": 1\n   }\n]",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "app/Http/Controllers/Api/ProjectLabelController.php",
-    "groupTitle": "Projects"
-  },
-  {
-    "type": "get",
     "url": "projects/my",
     "title": "Get all own projects",
     "group": "Projects",
@@ -1216,6 +1190,45 @@
     },
     "version": "0.0.0",
     "filename": "app/Http/Controllers/Api/ProjectController.php",
+    "groupTitle": "Projects"
+  },
+  {
+    "type": "get",
+    "url": "projects/:id/labels",
+    "title": "Get all label categories of the project",
+    "group": "Projects",
+    "name": "IndexProjectLabels",
+    "permission": [
+      {
+        "name": "projectMember",
+        "title": "Project member",
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The project ID.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "[\n   {\n      \"aphia_id\": null,\n      \"id\": 1,\n      \"name\": \"Benthic Object\",\n      \"parent_id\": null,\n      \"project_id\": 1\n   },\n   {\n      \"aphia_id\": null,\n      \"id\": 2,\n      \"name\": \"Coral\",\n      \"parent_id\": 1,\n      \"project_id\": 1\n   }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ProjectLabelController.php",
     "groupTitle": "Projects"
   },
   {
