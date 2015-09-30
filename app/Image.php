@@ -14,7 +14,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
 {
     /**
      * Validation rules for creating a new annotation in an image.
-     * 
+     *
      * @var array
      */
     public static $createAnnotationRules = [
@@ -24,7 +24,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * The absolute path to the image thumbnail storage directory.
-     * 
+     *
      * @var string
      */
     public static $thumbPath;
@@ -42,7 +42,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
      * Contains the array keys that should be included in the EXIF data
      * if the image. All other fields in the original EXIF array will be
      * ignored.
-     * 
+     *
      * @var array
      */
     private static $exifSubset = [
@@ -84,6 +84,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
     protected $visible = [
         'id',
         'transect',
+        'annotations',
         'exif',
         'width',
         'height',
@@ -91,7 +92,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * Create a new thumbnail image file.
-     * 
+     *
      * @return InterventionImage
      */
     private function createThumbnail()
@@ -107,7 +108,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * The transect, this image belongs to.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function transect()
@@ -117,7 +118,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * The annotations on this image.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function annotations()
@@ -127,7 +128,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
 
     /**
      * {@inheritdoc}
-     * 
+     *
      * @return array
      */
     public function projectIds()
@@ -144,7 +145,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
     /**
      * Adds the `thumbPath` attribute to the image model. The path points
      * to the thumbnail image file of this image.
-     * 
+     *
      * @return string
      */
     public function getThumbPathAttribute()
@@ -155,7 +156,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
     /**
      * Adds the `url` attribute to the image model. The url is the absolute path
      * to the original image file.
-     * 
+     *
      * @return string
      */
     public function getUrlAttribute()
@@ -166,7 +167,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
     /**
      * Returns a subset of the EXIF metadata of the image file.
      * The subset is defined in `$exifSubset`.
-     * 
+     *
      * @return array
      */
     public function getExif()
@@ -182,7 +183,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
     /**
      * Get the thumbnail image object. The thumbnail will be created if it
      * doesn't exist.
-     * 
+     *
      * @return InterventionImage
      */
     public function getThumb()
@@ -200,7 +201,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
     /**
      * Get the original image file object. The image my be fetched from an
      * external source.
-     * 
+     *
      * @return InterventionImage
      */
     public function getFile()

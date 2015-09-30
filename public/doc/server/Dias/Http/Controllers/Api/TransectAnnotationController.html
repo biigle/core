@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="robots" content="index, follow, all" />
-    <title>Dias\Http\Controllers\Api\UserAttributeController | BIIGLE DIAS Server Documentation</title>
+    <title>Dias\Http\Controllers\Api\TransectAnnotationController | BIIGLE DIAS Server Documentation</title>
 
             <link rel="stylesheet" type="text/css" href="../../../../css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="../../../../css/bootstrap-theme.min.css">
@@ -19,7 +19,7 @@
     
     </head>
 
-    <body id="class" data-name="class:Dias_Http_Controllers_Api_UserAttributeController" data-root-path="../../../../">
+    <body id="class" data-name="class:Dias_Http_Controllers_Api_TransectAnnotationController" data-root-path="../../../../">
             <div id="content">
         <div id="left-column">
                 <div id="control-panel">
@@ -68,17 +68,17 @@
                                         <li><a href="../../../../Dias/Http/Controllers.html">Controllers</a></li>
                                         <li><a href="../../../../Dias/Http/Controllers/Api.html">Api</a></li>
     
-                <li>UserAttributeController</li>
+                <li>TransectAnnotationController</li>
             </ol>
         </div>
                 <div id="page-content">
                 
     <div class="page-header">
-        <h1>UserAttributeController</h1>
+        <h1>TransectAnnotationController</h1>
     </div>
 
     <p>    class
-    <strong>UserAttributeController</strong>        extends <a href="../../../../Dias/Http/Controllers/Api/ModelWithAttributesController.html"><abbr title="Dias\Http\Controllers\Api\ModelWithAttributesController">ModelWithAttributesController</abbr></a>
+    <strong>TransectAnnotationController</strong>        extends <a href="../../../../Dias/Http/Controllers/Api/Controller.html"><abbr title="Dias\Http\Controllers\Api\Controller">Controller</abbr></a>
 </p>
 
     
@@ -169,9 +169,10 @@ token or ajax).</p>                </div>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method___construct">__construct</a>(
-    <abbr title="Dias\Http\Controllers\Api\Illuminate\Http\Request">Request</abbr> $request)
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request)
                                             <p>Creates a new AdvancedController instance.</p>                </div>
-                <div class="col-md-2"></div>
+                <div class="col-md-2"><small>from&nbsp;
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method___construct"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
@@ -236,76 +237,13 @@ token or ajax).</p>                </div>
                     <div class="row">
                 <div class="col-md-2 type">
                     
-    <a href="../../../../Dias/Model/ModelWithAttributes.html"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_getModel">getModel</a>(
-    int $id)
-                                            <p>Returns the ModelWithAttributes with the specified ID.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
     <abbr title="Illuminate\Http\Response">Response</abbr>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_index">index</a>(
     int $id)
-                                            <p>Shows all attributes of the specified model.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;
-    <a href="../../../../Dias/Http/Controllers/Api/ModelWithAttributesController.html#method_index"><abbr title="Dias\Http\Controllers\Api\ModelWithAttributesController">ModelWithAttributesController</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-    <abbr title="Dias\Http\Controllers\Api\Annotation">Annotation</abbr>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_show">show</a>(
-    int $modelId, 
-    String $name)
-                                            <p>Displays an attribute of the model.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;
-    <a href="../../../../Dias/Http/Controllers/Api/ModelWithAttributesController.html#method_show"><abbr title="Dias\Http\Controllers\Api\ModelWithAttributesController">ModelWithAttributesController</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-    <abbr title="Illuminate\Http\Response">Response</abbr>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_store">store</a>(
-    int $id)
-                                            <p>Attaches a new attribute to the specified model.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;
-    <a href="../../../../Dias/Http/Controllers/Api/ModelWithAttributesController.html#method_store"><abbr title="Dias\Http\Controllers\Api\ModelWithAttributesController">ModelWithAttributesController</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-    <abbr title="Illuminate\Http\Response">Response</abbr>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_update">update</a>(
-    int $id, 
-    String $name)
-                                            <p>Updates an attribute of the specified model.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;
-    <a href="../../../../Dias/Http/Controllers/Api/ModelWithAttributesController.html#method_update"><abbr title="Dias\Http\Controllers\Api\ModelWithAttributesController">ModelWithAttributesController</abbr></a></small></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-    <abbr title="Illuminate\Http\Response">Response</abbr>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_destroy">destroy</a>(
-    int $id, 
-    String $name)
-                                            <p>Detaches an attribute from the specified model.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;
-    <a href="../../../../Dias/Http/Controllers/Api/ModelWithAttributesController.html#method_destroy"><abbr title="Dias\Http\Controllers\Api\ModelWithAttributesController">ModelWithAttributesController</abbr></a></small></div>
+                                            <p>List all annotations of the specified transect.</p>                </div>
+                <div class="col-md-2"></div>
             </div>
             </div>
 
@@ -410,11 +348,12 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">at line 16</div>
+        <div class="location">in 
+    <a href="../../../../Dias/Http/Controllers/AdvancedController.html#method___construct"><abbr title="Dias\Http\Controllers\AdvancedController">AdvancedController</abbr></a> at line 35</div>
         <code>                    
     
     <strong>__construct</strong>(
-    <abbr title="Dias\Http\Controllers\Api\Illuminate\Http\Request">Request</abbr> $request)</code>
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -425,7 +364,7 @@ token or ajax).</p>                                </div>
                     <table class="table table-condensed">
                     <tr>
                 <td>
-    <abbr title="Dias\Http\Controllers\Api\Illuminate\Http\Request">Request</abbr></td>
+    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr></td>
                 <td>$request</td>
                 <td>
 </td>
@@ -625,50 +564,8 @@ token or ajax).</p>                                </div>
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_getModel">
-        <div class="location">at line 25</div>
-        <code>            protected        
-    <a href="../../../../Dias/Model/ModelWithAttributes.html"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a>
-    <strong>getModel</strong>(
-    int $id)</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Returns the ModelWithAttributes with the specified ID.</p>                                </div>
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td>
-    int</td>
-                <td>$id</td>
-                <td>ModelWithAttributes ID</td>
-            </tr>
-            </table>
-
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    <a href="../../../../Dias/Model/ModelWithAttributes.html"><abbr title="Dias\Model\ModelWithAttributes">ModelWithAttributes</abbr></a></td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
                     <h3 id="method_index">
-        <div class="location">in 
-    <a href="../../../../Dias/Http/Controllers/Api/ModelWithAttributesController.html#method_index"><abbr title="Dias\Http\Controllers\Api\ModelWithAttributesController">ModelWithAttributesController</abbr></a> at line 51</div>
+        <div class="location">at line 61</div>
         <code>                    
     <abbr title="Illuminate\Http\Response">Response</abbr>
     <strong>index</strong>(
@@ -676,7 +573,7 @@ token or ajax).</p>                                </div>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Shows all attributes of the specified model.</p>                                </div>
+                                    <p>List all annotations of the specified transect.</p>                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
@@ -685,196 +582,8 @@ token or ajax).</p>                                </div>
                 <td>
     int</td>
                 <td>$id</td>
-                <td>ModelWithAttributes ID</td>
-            </tr>
-            </table>
-
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    <abbr title="Illuminate\Http\Response">Response</abbr></td>
-            <td>
+                <td>
 </td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_show">
-        <div class="location">in 
-    <a href="../../../../Dias/Http/Controllers/Api/ModelWithAttributesController.html#method_show"><abbr title="Dias\Http\Controllers\Api\ModelWithAttributesController">ModelWithAttributesController</abbr></a> at line 81</div>
-        <code>                    
-    <abbr title="Dias\Http\Controllers\Api\Annotation">Annotation</abbr>
-    <strong>show</strong>(
-    int $modelId, 
-    String $name)</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Displays an attribute of the model.</p>                                </div>
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td>
-    int</td>
-                <td>$modelId</td>
-                <td>ID of the model</td>
-            </tr>
-                    <tr>
-                <td>
-    String</td>
-                <td>$name</td>
-                <td>name of the attribute</td>
-            </tr>
-            </table>
-
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    <abbr title="Dias\Http\Controllers\Api\Annotation">Annotation</abbr></td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_store">
-        <div class="location">in 
-    <a href="../../../../Dias/Http/Controllers/Api/ModelWithAttributesController.html#method_store"><abbr title="Dias\Http\Controllers\Api\ModelWithAttributesController">ModelWithAttributesController</abbr></a> at line 123</div>
-        <code>                    
-    <abbr title="Illuminate\Http\Response">Response</abbr>
-    <strong>store</strong>(
-    int $id)</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Attaches a new attribute to the specified model.</p>                                </div>
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td>
-    int</td>
-                <td>$id</td>
-                <td>Model ID</td>
-            </tr>
-            </table>
-
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    <abbr title="Illuminate\Http\Response">Response</abbr></td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_update">
-        <div class="location">in 
-    <a href="../../../../Dias/Http/Controllers/Api/ModelWithAttributesController.html#method_update"><abbr title="Dias\Http\Controllers\Api\ModelWithAttributesController">ModelWithAttributesController</abbr></a> at line 158</div>
-        <code>                    
-    <abbr title="Illuminate\Http\Response">Response</abbr>
-    <strong>update</strong>(
-    int $id, 
-    String $name)</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Updates an attribute of the specified model.</p>                                </div>
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td>
-    int</td>
-                <td>$id</td>
-                <td>Model ID</td>
-            </tr>
-                    <tr>
-                <td>
-    String</td>
-                <td>$name</td>
-                <td>Attribute name</td>
-            </tr>
-            </table>
-
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    <abbr title="Illuminate\Http\Response">Response</abbr></td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_destroy">
-        <div class="location">in 
-    <a href="../../../../Dias/Http/Controllers/Api/ModelWithAttributesController.html#method_destroy"><abbr title="Dias\Http\Controllers\Api\ModelWithAttributesController">ModelWithAttributesController</abbr></a> at line 190</div>
-        <code>                    
-    <abbr title="Illuminate\Http\Response">Response</abbr>
-    <strong>destroy</strong>(
-    int $id, 
-    String $name)</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Detaches an attribute from the specified model.</p>                                </div>
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td>
-    int</td>
-                <td>$id</td>
-                <td>Model ID</td>
-            </tr>
-                    <tr>
-                <td>
-    String</td>
-                <td>$name</td>
-                <td>Attribute name</td>
             </tr>
             </table>
 

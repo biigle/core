@@ -2595,6 +2595,46 @@
   },
   {
     "type": "get",
+    "url": "transects/:id/annotations",
+    "title": "Get all annotations",
+    "group": "Transects",
+    "name": "IndexTransectAnnotations",
+    "permission": [
+      {
+        "name": "projectMember",
+        "title": "Project member",
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+      }
+    ],
+    "description": "<p>Returns a list of all annotations of the transect.</p> ",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The transect ID.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "[\n     {\n         \"id\":1,\n         \"image_id\":1,\n         \"shape_id\":6,\n         \"created_at\":\"2015-09-30 07:51:12\",\n         \"updated_at\":\"2015-09-30 07:51:12\",\n         \"labels\": [\n             {\n                 \"id\":1,\n                 \"confidence\": 0.6,\n                 \"created_at\":\"2015-09-30 07:51:12\",\n                 \"updated_at\":\"2015-09-30 07:51:12\",\n                 \"label\": {\n                     \"id\":3,\n                     \"name\":\"Benthic Object\",\n                     \"parent_id\":2,\n                     \"aphia_id\":null,\n                     \"project_id\":null\n                 },\n                 \"user\": {\n                     \"id\":13,\n                     \"role_id\":2,\n                     \"name\":\"Gudrun Schinner\"\n                 }\n             }\n         ],\n         \"shape\": {\n             \"id\":6,\n             \"name\":\"Circle\"\n         },\n         \"points\": [\n             {\"x\":4,\"y\":8}\n         ]\n     }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/TransectAnnotationController.php",
+    "groupTitle": "Transects"
+  },
+  {
+    "type": "get",
     "url": "transects/:id/attributes",
     "title": "Get all attributes",
     "group": "Transects",
