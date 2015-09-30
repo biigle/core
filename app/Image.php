@@ -85,6 +85,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
         'id',
         'transect',
         'annotations',
+        'filename',
         'exif',
         'width',
         'height',

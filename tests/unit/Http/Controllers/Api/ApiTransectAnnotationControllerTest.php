@@ -26,14 +26,10 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
 
         // session cookie authentication
         $this->be($this->guest);
-        $r = $this->call('GET', '/api/v1/transects/'.$id.'/annotations');
-        // dd($r->getContent());
-        $this->assertResponseOk();
-        $this->assertStringStartsWith('[', $r->getContent());
-        $this->assertStringEndsWith(']', $r->getContent());
-
         $this->get('/api/v1/transects/'.$id.'/annotations')
             ->seeJson([
+                'id' => $image->id,
+                'filename' => $image->filename,
                 'id' => $annotation->id,
                 'image_id' => $image->id,
                 'shape_id' => $annotation->shape->id,
