@@ -85,18 +85,23 @@ class ImageTest extends ModelWithAttributesTest
         // remove previously created thumbnail
         File::delete($this->model->thumbPath);
 
-        // first try to load, then create
+        // create thumb
         InterventionImage::shouldReceive('make')
-            ->twice()
+            ->once()
             ->withAnyArgs()
+            ->passthru();
+
+        Response::shouldReceive('download')
+            ->once()
+            ->with($this->model->thumbPath)
             ->passthru();
 
         $thumb = $this->model->getThumb();
         $this->assertNotNull($thumb);
         $this->assertTrue(File::exists($this->model->thumbPath));
 
-        // now the thumb already exists, so only one call is required
-        InterventionImage::shouldReceive('make')
+        // now the thumb already exists, so only download call is required
+        Response::shouldReceive('download')
             ->once()
             ->with($this->model->thumbPath)
             ->passthru();
@@ -107,7 +112,7 @@ class ImageTest extends ModelWithAttributesTest
 
     public function testGetFile()
     {
-        InterventionImage::shouldReceive('make')
+        Response::shouldReceive('download')
             ->once()
             ->with($this->model->url)
             ->passthru();
@@ -118,7 +123,7 @@ class ImageTest extends ModelWithAttributesTest
         // error handling when the original file is not readable
         $this->model->filename = '';
 
-        InterventionImage::shouldReceive('make')
+        Response::shouldReceive('download')
             ->once()
             ->passthru();
 

@@ -5,7 +5,9 @@ namespace Dias;
 use Dias\Contracts\BelongsToProjectContract;
 use Dias\Model\ModelWithAttributes;
 use InterventionImage;
-use Intervention\Image\Exception\NotReadableException;
+use Response;
+use File;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
  * This model stores information on an image file in the file system.
@@ -98,7 +100,8 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
      */
     private function createThumbnail()
     {
-        return $this->getFile()
+        ini_set('memory_limit', '512M');
+        return InterventionImage::make($this->url)
             ->resize(180, 135, function ($constraint) {
                 // resize images proportionally
                 $constraint->aspectRatio();
@@ -173,7 +176,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
      */
     public function getExif()
     {
-        $exif = $this->getFile()->exif();
+        $exif = exif_read_data($this->url);
 
         // get only part of the exif data because other fields may contain
         // corrupted utf8 encoding, which will break json_encode()!
@@ -189,27 +192,26 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
      */
     public function getThumb()
     {
-        try {
-            $thumb = InterventionImage::make($this->thumbPath);
-        } catch (NotReadableException $e) {
-            // file doesn't exist
-            $thumb = $this->createThumbnail();
+        if (!File::exists($this->thumbPath)) {
+            $this->createThumbnail();
         }
 
-        return $thumb;
+        return Response::download($this->thumbPath);
     }
 
     /**
      * Get the original image file object. The image my be fetched from an
      * external source.
      *
-     * @return InterventionImage
+     * @return Response
      */
     public function getFile()
     {
         try {
-            return InterventionImage::make($this->url);
-        } catch (NotReadableException $e) {
+            // TODO download() doesn't work for external resources
+            // InterventionImage::make() does but is very memory expensive
+            return Response::download($this->url);
+        } catch (FileNotFoundException $e) {
             // source file not readable; nothing we can do about it
             abort(404, $e->getMessage());
         }

@@ -9,14 +9,14 @@ class ImageController extends Controller
 {
     /**
      * Shows the specified image.
-     * 
+     *
      * @api {get} images/:id Get image information
-     * @apiDescription Image information includes a subset of the image EXIF 
+     * @apiDescription Image information includes a subset of the image EXIF
      * data as well as the transect, the image belongs to.
      * @apiGroup Images
      * @apiName ShowImages
      * @apiPermission projectMember
-     * 
+     *
      * @apiParam {Number} id The image ID.
      * @apiSuccessExample {json} Success response:
      * {
@@ -65,22 +65,22 @@ class ImageController extends Controller
         $image = $this->requireNotNull(Image::with('transect')->find($id));
         $this->requireCanSee($image);
         $image->setAttribute('exif', $image->getExif());
-        $file = $image->getFile();
-        $image->setAttribute('width', $file->width());
-        $image->setAttribute('height', $file->height());
+        $size = getimagesize($image->url);
+        $image->setAttribute('width', $size[0]);
+        $image->setAttribute('height', $size[1]);
 
         return $image;
     }
 
     /**
      * Shows the specified image thumbnail file.
-     * 
+     *
      * @api {get} images/:id/thumb Get a thumbnail image
      * @apiGroup Images
      * @apiName ShowImageThumbs
      * @apiPermission projectMember
      * @apiDescription Responds with a JPG image thumbnail.
-     * 
+     *
      * @apiParam {Number} id The image ID.
      *
      * @param int $id image id
@@ -91,18 +91,18 @@ class ImageController extends Controller
         $image = $this->requireNotNull(Image::find($id));
         $this->requireCanSee($image);
 
-        return $image->getThumb()->response('jpg');
+        return $image->getThumb();
     }
 
     /**
      * Shows the specified image file.
-     * 
+     *
      * @api {get} images/:id/file Get an original image
      * @apiGroup Images
      * @apiName ShowImageFiles
      * @apiPermission projectMember
      * @apiDescription Responds with a JPG image of the original file.
-     * 
+     *
      * @apiParam {Number} id The image ID.
      *
      * @param int $id image id
@@ -113,6 +113,6 @@ class ImageController extends Controller
         $image = $this->requireNotNull(Image::find($id));
         $this->requireCanSee($image);
 
-        return $image->getFile()->response('jpg');
+        return $image->getFile();
     }
 }
