@@ -18,9 +18,9 @@ class ImageController extends Controller
         $image = $this->requireNotNull(Image::find($id));
         $this->requireCanSee($image);
         $image->setAttribute('exif', $image->getExif());
-        $file = $image->getFile();
-        $image->setAttribute('width', $file->width());
-        $image->setAttribute('height', $file->height());
+        $size = getimagesize($image->url);
+        $image->setAttribute('width', $size[0]);
+        $image->setAttribute('height', $size[1]);
 
         return view('transects::images.index')
             ->withImage($image);
