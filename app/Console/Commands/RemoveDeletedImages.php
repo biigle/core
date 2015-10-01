@@ -24,11 +24,11 @@ class RemoveDeletedImages extends Command
 
     /**
      * Removes all images no longer belonging to a transect.
-     * 
-     * These images are marked for deletion by having their `transect_id` 
+     *
+     * These images are marked for deletion by having their `transect_id`
      * attribute set to `null`. Like this the images and all their associated
      * files can be deleted in a regular cron job.
-     * 
+     *
      * @return void
      */
     public function handle()
@@ -38,8 +38,9 @@ class RemoveDeletedImages extends Command
                 if (File::exists($image->thumbPath)) {
                     File::delete($image->thumbPath);
                 }
-                $image->delete();
             }
         });
+
+        Image::whereNull('transect_id')->delete();
     }
 }
