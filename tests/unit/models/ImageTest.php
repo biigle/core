@@ -147,4 +147,11 @@ class ImageTest extends ModelWithAttributesTest
         $exif = $this->model->getExif();
         $this->assertEquals('image/jpeg', $exif['MimeType']);
     }
+
+    public function testGetSize()
+    {
+        $size = $this->model->getSize();
+        $this->assertEquals(640, $size[0]);
+        $this->assertEquals(480, $size[1]);
+    }
 }

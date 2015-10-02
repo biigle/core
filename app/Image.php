@@ -185,6 +185,16 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
     }
 
     /**
+     * Returns the image size as `[width, height]`
+     *
+     * @return array
+     */
+    public function getSize()
+    {
+        return getimagesize($this->url);
+    }
+
+    /**
      * Get the thumbnail image object. The thumbnail will be created if it
      * doesn't exist.
      *

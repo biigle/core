@@ -3,7 +3,6 @@
 namespace Dias\Http\Controllers\Api;
 
 use Dias\Image;
-use InterventionImage;
 
 class ImageController extends Controller
 {
@@ -65,7 +64,7 @@ class ImageController extends Controller
         $image = $this->requireNotNull(Image::with('transect')->find($id));
         $this->requireCanSee($image);
         $image->setAttribute('exif', $image->getExif());
-        $size = getimagesize($image->url);
+        $size = $image->getSize();
         $image->setAttribute('width', $size[0]);
         $image->setAttribute('height', $size[1]);
 
