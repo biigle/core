@@ -4,22 +4,21 @@ DISCOL Image Annotation Software
 
 ## Requirements
 
-- PHP 5.4+
-- PHP command line interface (`php5-cli`)
-- PHP mcrypt extension (`php5-mcrypt`)
-- PHP JSON extension (`php5-json`)
-- PHP PGSQL extension (`php5-pgsql`)
+See [here](http://laravel.com/docs/5.1#installation) for the server requirements of Laravel 5.1.
+
+Additionally:
+- PHP JSON extension
+- PHP PGSQL extension
 - PHP Fileinfo extension
 - PHP EXIF extension
 
-- PHP GD Library (>=2.0) (`php5-gd`)
+- PHP GD Library (>=2.0)
 - PostgreSQL
-- (Git)
 
 And for development/testing:
 
-- PHP cURL extension (`php5-curl`)
-- PHP SQLite extension (`php5-sqlite`)
+- PHP cURL extension
+- PHP SQLite extension
 
 - Node.js
 - gulp-cli
@@ -27,6 +26,7 @@ And for development/testing:
 - PhantomJS
 
 - SQLite
+- Git
 
 ## Installation
 
