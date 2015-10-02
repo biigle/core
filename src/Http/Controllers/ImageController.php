@@ -18,7 +18,7 @@ class ImageController extends Controller
         $image = $this->requireNotNull(Image::find($id));
         $this->requireCanSee($image);
         $image->setAttribute('exif', $image->getExif());
-        $size = getimagesize($image->url);
+        $size = $image->getSize();
         $image->setAttribute('width', $size[0]);
         $image->setAttribute('height', $size[1]);
 
