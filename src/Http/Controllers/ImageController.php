@@ -17,12 +17,14 @@ class ImageController extends Controller
     {
         $image = $this->requireNotNull(Image::find($id));
         $this->requireCanSee($image);
+        $exifKeys = ['DateTime', 'Model', 'ShutterSpeedValue', 'ApertureValue', 'Flash', 'GPS Latitude', 'GPS Longitude', 'GPS Altitude'];
         $image->setAttribute('exif', $image->getExif());
         $size = $image->getSize();
         $image->setAttribute('width', $size[0]);
         $image->setAttribute('height', $size[1]);
 
         return view('transects::images.index')
-            ->withImage($image);
+            ->withImage($image)
+            ->with('exifKeys', $exifKeys);
     }
 }
