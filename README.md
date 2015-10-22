@@ -66,4 +66,35 @@ Maybe set up the route cache? Cache the config?
 
 **Put all sensitive and secret stuff to `.env.php`!** You'll see where the `env()` helper is used in the config files.
 
-Set up the task scheduler by creating a cron job that calls `php artisan schedule:run` in the application root every minute.
+The application reqires a cron job for the scheduled commands and a supervised process for the daemon queue worker to run correctly.
+
+### Scheduled Commands
+
+The cron entry needs to look like this:
+
+```
+* * * * * php /path/to/artisan schedule:run 1>> /dev/null 2>&1
+```
+
+Read more in the [Laravel docs](http://laravel.com/docs/5.0/artisan#scheduling-artisan-commands).
+
+
+### Deamon Queue Worker
+
+The deamon queue worker is started with the following command:
+
+```
+php artisan queue:work --daemon --sleep=5 --tries=3
+```
+
+This command needs to be supervised (e.g. with [Supervisor](http://supervisord.org/)) so the queue worker will be restarted if the process should stop running.
+
+Also the queue worker needs to be restarted on every update of the application using the following command:
+
+```
+php artisan queue:restart
+```
+
+This may be included in a possible future deploy script.
+
+Read more in the [Laravel docs](http://laravel.com/docs/5.0/queues#daemon-queue-worker).
