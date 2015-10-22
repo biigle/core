@@ -17,8 +17,6 @@ class ImageTest extends ModelWithAttributesTest
         $this->assertNotNull($this->model->url);
         $this->assertNull($this->model->created_at);
         $this->assertNull($this->model->updated_at);
-
-        $this->assertNotNull(Image::$thumbPath);
     }
 
     public function testHiddenAttributes()
@@ -80,34 +78,30 @@ class ImageTest extends ModelWithAttributesTest
         $this->assertEmpty($this->model->fresh()->projectIds());
     }
 
-    public function testGetThumb()
+    public function testGetThumbNotThere()
     {
-        // remove previously created thumbnail
-        File::delete($this->model->thumbPath);
-
-        // create thumb
-        InterventionImage::shouldReceive('make')
+        File::shouldReceive('exists')
             ->once()
-            ->withAnyArgs()
-            ->passthru();
+            ->andReturn(false);
+
+        $response = $this->model->getThumb();
+        $this->assertStringEndsWith(config('thumbnails.empty_url'), $response->getTargetUrl());
+        $this->assertInstanceOf('\Illuminate\Http\RedirectResponse', $response);
+    }
+
+    public function testGetThumbIsThere()
+    {
+        File::shouldReceive('exists')
+            ->once()
+            ->andReturn(true);
 
         Response::shouldReceive('download')
             ->once()
             ->with($this->model->thumbPath)
-            ->passthru();
+            ->andReturn('abc');
 
-        $thumb = $this->model->getThumb();
-        $this->assertNotNull($thumb);
-        $this->assertTrue(File::exists($this->model->thumbPath));
-
-        // now the thumb already exists, so only download call is required
-        Response::shouldReceive('download')
-            ->once()
-            ->with($this->model->thumbPath)
-            ->passthru();
-
-        $thumb = $this->model->getThumb();
-        $this->assertNotNull($thumb);
+        $response = $this->model->getThumb();
+        $this->assertEquals('abc', $response);
     }
 
     public function testGetFile()

@@ -1,5 +1,7 @@
 <?php
 
+use Dias\Transect;
+
 class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
     protected $baseUrl = 'http://localhost';
@@ -14,17 +16,25 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         // activate sqlite foreign key integrity checks on SQLite
         if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
             DB::statement('PRAGMA foreign_keys = ON;');
+        } else {
+            // in case the real DB connection should be tested
+            Artisan::call('migrate:rollback');
         }
 
         Artisan::call('migrate');
+
+        // replace observer class with mock for regular tests
+        Transect::flushEventListeners();
+        // use builtin PHPUnit mock to disable the 'created' method
+        // because this would generate thumbnail images for each test
+        $mock = $this->getMockBuilder('Dias\Observers\TransectObserver')
+            ->setMethods(['created'])
+            ->getMock();
+        Transect::observe($mock);
     }
 
     public function tearDown()
     {
-        if (!(DB::connection() instanceof Illuminate\Database\SQLiteConnection)) {
-            Artisan::call('migrate:rollback');
-        }
-
         DB::disconnect();
     }
 

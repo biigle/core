@@ -1,6 +1,8 @@
 <?php
 
 use Dias\Image;
+use Dias\Transect;
+use Dias\Services\Thumbnails\InterventionImage;
 
 class ApiImageControllerTest extends ModelWithAttributesApiTest
 {
@@ -50,10 +52,16 @@ class ApiImageControllerTest extends ModelWithAttributesApiTest
 
     public function testShowThumb()
     {
-        $this->doTestApiRoute('GET', '/api/v1/images/1/thumb');
+        // generate thumbnail manually
+        InterventionImage::$width = 10;
+        InterventionImage::$height = 10;
+        InterventionImage::makeThumbnail($this->image);
+        $id = $this->image->id;
+
+        $this->doTestApiRoute('GET', "/api/v1/images/{$id}/thumb");
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/images/1/thumb', $this->user);
+        $this->callToken('GET', "/api/v1/images/{$id}/thumb", $this->user);
         $this->assertResponseStatus(401);
 
         $this->callToken('GET', '/api/v1/images/-1/thumb', $this->guest);
@@ -61,7 +69,7 @@ class ApiImageControllerTest extends ModelWithAttributesApiTest
 
         // session cookie authentication
         $this->be($this->guest);
-        $r = $this->call('GET', '/api/v1/images/1/thumb');
+        $r = $this->call('GET', "/api/v1/images/{$id}/thumb");
         $this->assertResponseOk();
         $this->assertEquals('image/jpeg', $r->headers->get('content-type'));
     }

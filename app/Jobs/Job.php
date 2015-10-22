@@ -2,7 +2,7 @@
 
 namespace Dias\Jobs;
 
-abstract class Command
+abstract class Job
 {
     //
 }

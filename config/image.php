@@ -15,9 +15,6 @@ return [
     |
     */
 
-    'driver' => 'gd',
-
-    // allow to open external images via URL
-    'allow_url_fopen' => true,
+    'driver' => 'gd'
 
 ];

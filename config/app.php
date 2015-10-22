@@ -145,6 +145,7 @@ return [
         'Dias\Providers\ConfigServiceProvider',
         'Dias\Providers\EventServiceProvider',
         'Dias\Providers\RouteServiceProvider',
+        'Dias\Providers\ThumbnailServiceProvider',
 
         /*
          * Additional Service Providers...

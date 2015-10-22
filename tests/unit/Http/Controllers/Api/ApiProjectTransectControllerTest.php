@@ -4,6 +4,7 @@ use Dias\MediaType;
 use Dias\Transect;
 use Dias\Role;
 use Dias\Image;
+use Dias\Services\Thumbnails\InterventionImage;
 
 class ApiProjectTransectControllerTest extends ApiTestCase
 {
@@ -123,7 +124,10 @@ class ApiProjectTransectControllerTest extends ApiTestCase
     {
         $id = $this->transect->id;
         $image = ImageTest::create(['transect_id' => $id]);
-        $image->getThumb();
+        // generate thumbnail manually
+        InterventionImage::$width = 10;
+        InterventionImage::$height = 10;
+        InterventionImage::makeThumbnail($image);
 
         $this->doTestApiRoute('DELETE', '/api/v1/projects/1/transects/'.$id);
 

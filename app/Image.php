@@ -4,7 +4,6 @@ namespace Dias;
 
 use Dias\Contracts\BelongsToProjectContract;
 use Dias\Model\ModelWithAttributes;
-use InterventionImage;
 use Response;
 use File;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
@@ -23,22 +22,6 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
         'shape_id' => 'required|exists:shapes,id',
         'points'   => 'required',
     ];
-
-    /**
-     * The absolute path to the image thumbnail storage directory.
-     *
-     * @var string
-     */
-    public static $thumbPath;
-
-    /**
-     * The model boot method.
-     */
-    public static function boot()
-    {
-        parent::boot();
-        self::$thumbPath = storage_path().'/thumbs';
-    }
 
     /**
      * Contains the array keys that should be included in the EXIF data
@@ -94,23 +77,6 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
     ];
 
     /**
-     * Create a new thumbnail image file.
-     *
-     * @return InterventionImage
-     */
-    private function createThumbnail()
-    {
-        ini_set('memory_limit', '512M');
-        return InterventionImage::make($this->url)
-            ->resize(180, 135, function ($constraint) {
-                // resize images proportionally
-                $constraint->aspectRatio();
-            })
-            ->encode('jpg')
-            ->save($this->thumbPath);
-    }
-
-    /**
      * The transect, this image belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -154,7 +120,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
      */
     public function getThumbPathAttribute()
     {
-        return self::$thumbPath.'/'.$this->id.'.jpg';
+        return config('thumbnails.storage').'/'.$this->id.'.jpg';
     }
 
     /**
@@ -198,12 +164,17 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
      * Get the thumbnail image object. The thumbnail will be created if it
      * doesn't exist.
      *
-     * @return InterventionImage
+     * @return Response
      */
     public function getThumb()
     {
         if (!File::exists($this->thumbPath)) {
-            $this->createThumbnail();
+            $emptyThumbnailUrl = config('thumbnails.empty_url');
+            // if it is not an absolute URL, prepend the URL to the public directory
+            if (!preg_match("/^https?\:\/\//", $emptyThumbnailUrl)) {
+                $emptyThumbnailUrl = asset($emptyThumbnailUrl);
+            }
+            return redirect($emptyThumbnailUrl);
         }
 
         return Response::download($this->thumbPath);
