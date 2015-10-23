@@ -75,7 +75,7 @@ class AuthenticateAPI
     {
         // request is valid if the user authenticates either with their session
         // cookie or with their API key
-        if ($this->isApiKeyRequest($request) && $this->authByKey($request)) {
+        if ($this->authByKey($request)) {
             return $next($request);
         } elseif ($this->auth->check()) {
             return $next($request);

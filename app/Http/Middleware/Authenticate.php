@@ -4,6 +4,7 @@ namespace Dias\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
+use Dias\Http\Controllers\Controller;
 
 class Authenticate
 {
@@ -37,7 +38,7 @@ class Authenticate
         // only users are allowed to visit this route. guests are redirected
         // to login
         if ($this->auth->guest()) {
-            if ($request->ajax()) {
+            if (Controller::isAutomatedRequest($request)) {
                 return response('Unauthorized.', 401);
             } else {
                 return redirect()->guest('/auth/login');
