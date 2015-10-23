@@ -76,7 +76,7 @@ The cron entry needs to look like this:
 * * * * * php /path/to/artisan schedule:run 1>> /dev/null 2>&1
 ```
 
-Read more in the [Laravel docs](http://laravel.com/docs/5.0/artisan#scheduling-artisan-commands).
+Read more in the [Laravel docs](http://laravel.com/docs/5.1/artisan#scheduling-artisan-commands).
 
 
 ### Deamon Queue Worker
@@ -97,4 +97,4 @@ php artisan queue:restart
 
 This may be included in a possible future deploy script.
 
-Read more in the [Laravel docs](http://laravel.com/docs/5.0/queues#daemon-queue-worker).
+Read more in the [Laravel docs](http://laravel.com/docs/5.1/queues#daemon-queue-worker).
