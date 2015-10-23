@@ -154,6 +154,7 @@ return [
         'Dias\Modules\Projects\ProjectsServiceProvider',
         'Dias\Modules\Transects\TransectsServiceProvider',
         'Dias\Modules\Annotations\AnnotationsServiceProvider',
+        'Dias\Modules\Copria\CopriaServiceProvider',
     ],
 
     /*
@@ -203,6 +204,7 @@ return [
         'View'      => 'Illuminate\Support\Facades\View',
 
         'InterventionImage' => 'Intervention\Image\Facades\Image',
+        'Copria' => 'Dias\Modules\Copria\Facades\Copria',
 
     ],
 

@@ -9,7 +9,8 @@
 		"intervention/image": "~2.1",
 		"dias/projects": "dev-master",
 		"dias/transects": "dev-master",
-		"dias/annotations": "dev-master"
+		"dias/annotations": "dev-master",
+        "dias/copria": "dev-master"
 	},
 	"require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -74,6 +75,10 @@
 		{
 			"type": "vcs",
 			"url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-annotations.git"
-		}
+		},
+        {
+            "type": "vcs",
+            "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-copria.git"
+        }
 	]
 }
