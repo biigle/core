@@ -142,7 +142,7 @@
             "source": {
                 "type": "git",
                 "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-copria.git",
-                "reference": "88d0ad0a740456da07f362692ec83565e66d06f4"
+                "reference": "eb87904d5a426f4d7922874dc0d2da86449a7d66"
             },
             "require": {
                 "guzzlehttp/guzzle": "6.1.*"
@@ -161,7 +161,7 @@
                     "php-cs-fixer --config-file='.php_cs' fix"
                 ]
             },
-            "time": "2015-10-23 08:33:07"
+            "time": "2015-10-23 13:21:46"
         },
         {
             "name": "dias/projects",
@@ -2851,12 +2851,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfPHP/Sami.git",
-                "reference": "5a468aa762c9426548af45b344a46083a54c52dc"
+                "reference": "0a526ff0d6e098f6dd07d2e131cb1487cbace112"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/Sami/zipball/1f381b7ba769d23f4789972409ef6709b1f4e902",
-                "reference": "5a468aa762c9426548af45b344a46083a54c52dc",
+                "url": "https://api.github.com/repos/FriendsOfPHP/Sami/zipball/0a526ff0d6e098f6dd07d2e131cb1487cbace112",
+                "reference": "0a526ff0d6e098f6dd07d2e131cb1487cbace112",
                 "shasum": ""
             },
             "require": {
@@ -2901,7 +2901,7 @@
             "keywords": [
                 "phpdoc"
             ],
-            "time": "2015-08-18 08:04:37"
+            "time": "2015-10-07 15:32:20"
         },
         {
             "name": "sebastian/comparator",

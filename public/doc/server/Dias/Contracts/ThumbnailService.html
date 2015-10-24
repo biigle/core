@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="robots" content="index, follow, all" />
-    <title>Dias\Observers\TransectObserver | BIIGLE DIAS Server Documentation</title>
+    <title>Dias\Contracts\ThumbnailService | BIIGLE DIAS Server Documentation</title>
 
             <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="../../css/bootstrap-theme.min.css">
@@ -19,7 +19,7 @@
     
     </head>
 
-    <body id="class" data-name="class:Dias_Observers_TransectObserver" data-root-path="../../">
+    <body id="class" data-name="class:Dias_Contracts_ThumbnailService" data-root-path="../../">
             <div id="content">
         <div id="left-column">
                 <div id="control-panel">
@@ -62,23 +62,25 @@
 
                         <div class="namespace-breadcrumbs">
             <ol class="breadcrumb">
-                <li><span class="label label-default">class</span></li>
+                <li><span class="label label-default">interface</span></li>
                                                             <li><a href="../../Dias.html">Dias</a></li>
-                                        <li><a href="../../Dias/Observers.html">Observers</a></li>
+                                        <li><a href="../../Dias/Contracts.html">Contracts</a></li>
     
-                <li>TransectObserver</li>
+                <li>ThumbnailService</li>
             </ol>
         </div>
                 <div id="page-content">
                 
     <div class="page-header">
-        <h1>TransectObserver</h1>
+        <h1>ThumbnailService</h1>
     </div>
 
-    <p>    class
-    <strong>TransectObserver</strong>
+    <p>    interface
+    <strong>ThumbnailService</strong>
 </p>
 
+            <div class="description">
+            <p>A service that generates thumbnail images for newly created transects.</p>                    </div>
     
     
     
@@ -89,23 +91,12 @@
                     <div class="row">
                 <div class="col-md-2 type">
                     
-    bool
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_creating">creating</a>(
-    <a href="../../Dias/Transect.html"><abbr title="Dias\Transect">Transect</abbr></a> $transect)
-                                            <p>A transect must not be created without having a creator.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
     
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_created">created</a>(
-    <abbr title="Copria\SubmittedJob">SubmittedJob</abbr> $transect)
-                                            <p>Dispatches the job to generate thumbnails for the transect</p>                </div>
+                    <a href="#method_generateThumbnails">generateThumbnails</a>(
+    <abbr title="Dias\Contracts\Dias\Transect">Transect</abbr> $transect)
+                                            <p>Generates the thumbnails images for the transect</p>                </div>
                 <div class="col-md-2"></div>
             </div>
             </div>
@@ -115,65 +106,27 @@
 
             <div id="method-details">
                     <div class="method-item">
-                    <h3 id="method_creating">
-        <div class="location">at line 17</div>
-        <code>                    
-    bool
-    <strong>creating</strong>(
-    <a href="../../Dias/Transect.html"><abbr title="Dias\Transect">Transect</abbr></a> $transect)</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>A transect must not be created without having a creator.</p>                                </div>
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td>
-    <a href="../../Dias/Transect.html"><abbr title="Dias\Transect">Transect</abbr></a></td>
-                <td>$transect</td>
-                <td></td>
-            </tr>
-            </table>
-
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    bool</td>
-            <td></td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_created">
-        <div class="location">at line 31</div>
+                    <h3 id="method_generateThumbnails">
+        <div class="location">at line 21</div>
         <code>                    
     
-    <strong>created</strong>(
-    <abbr title="Copria\SubmittedJob">SubmittedJob</abbr> $transect)</code>
+    <strong>generateThumbnails</strong>(
+    <abbr title="Dias\Contracts\Dias\Transect">Transect</abbr> $transect)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Dispatches the job to generate thumbnails for the transect</p>                                </div>
+                                    <p>Generates the thumbnails images for the transect</p>                    <p>The thumbnails are stored in the thumbnails storage directory. This function may operate
+asynchronous, so it is not guaranteed that the thumbnails ae immediately available
+one this function returned.</p>            </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
                 <td>
-    <abbr title="Copria\SubmittedJob">SubmittedJob</abbr></td>
+    <abbr title="Dias\Contracts\Dias\Transect">Transect</abbr></td>
                 <td>$transect</td>
-                <td>The created transect</td>
+                <td>The transect to generate the thumbnails for</td>
             </tr>
             </table>
 

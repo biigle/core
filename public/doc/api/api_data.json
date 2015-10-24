@@ -983,7 +983,7 @@
     "type": "get",
     "url": "images/:id",
     "title": "Get image information",
-    "description": "<p>Image information includes a subset of the image EXIF  data as well as the transect, the image belongs to.</p> ",
+    "description": "<p>Image information includes a subset of the image EXIF data as well as the transect, the image belongs to.</p> ",
     "group": "Images",
     "name": "ShowImages",
     "permission": [

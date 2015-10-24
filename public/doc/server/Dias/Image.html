@@ -97,15 +97,6 @@
                 <td></td>
             </tr>
                     <tr>
-                <td class="type" id="property_thumbPath">
-                    static                                                            
-    string
-                </td>
-                <td>$thumbPath</td>
-                <td class="last">The absolute path to the image thumbnail storage directory.</td>
-                <td></td>
-            </tr>
-                    <tr>
                 <td class="type" id="property_exifSubset">
                     static                                        private                    
     array
@@ -218,26 +209,6 @@ have the attribute.</p>                </div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
-                    static&nbsp;
-    
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_boot">boot</a>()
-                                            <p>The model boot method.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-    <abbr title="InterventionImage">InterventionImage</abbr>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_createThumbnail">createThumbnail</a>()
-                                            <p>Create a new thumbnail image file.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
                     
     <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
                 </div>
@@ -301,7 +272,17 @@ to the original image file.</p>                </div>
                     <div class="row">
                 <div class="col-md-2 type">
                     
-    <abbr title="InterventionImage">InterventionImage</abbr>
+    array
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_getSize">getSize</a>()
+                                            <p>Returns the image size as <code>[width, height]</code></p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+    <abbr title="Response">Response</abbr>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getThumb">getThumb</a>()
@@ -312,7 +293,7 @@ doesn't exist.</p>                </div>
                     <div class="row">
                 <div class="col-md-2 type">
                     
-    <abbr title="InterventionImage">InterventionImage</abbr>
+    <abbr title="Response">Response</abbr>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_getFile">getFile</a>()
@@ -366,8 +347,7 @@ attributes array</td>
         <tr>
             <td>
     array</td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -396,8 +376,7 @@ attributes array</td>
         <tr>
             <td>
     <abbr title="Illuminate\Database\Eloquent\Relations\BelongsToMany">BelongsToMany</abbr></td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -445,8 +424,7 @@ attributes array</td>
         <tr>
             <td>
     void</td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -489,8 +467,7 @@ function!</p>            </div>
         <tr>
             <td>
     <a href="../Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a></td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -531,8 +508,7 @@ function!</p>            </div>
         <tr>
             <td>
     void</td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -581,55 +557,8 @@ function!</p>            </div>
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_boot">
-        <div class="location">at line 35</div>
-        <code>        static            
-    
-    <strong>boot</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The model boot method.</p>                                </div>
-                <div class="tags">
-            
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_createThumbnail">
-        <div class="location">at line 99</div>
-        <code>                private    
-    <abbr title="InterventionImage">InterventionImage</abbr>
-    <strong>createThumbnail</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Create a new thumbnail image file.</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    <abbr title="InterventionImage">InterventionImage</abbr></td>
-            <td>
-</td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
                     <h3 id="method_transect">
-        <div class="location">at line 115</div>
+        <div class="location">at line 84</div>
         <code>                    
     <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
     <strong>transect</strong>()</code>
@@ -645,8 +574,7 @@ function!</p>            </div>
         <tr>
             <td>
     <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr></td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -658,7 +586,7 @@ function!</p>            </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_annotations">
-        <div class="location">at line 125</div>
+        <div class="location">at line 94</div>
         <code>                    
     <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
     <strong>annotations</strong>()</code>
@@ -674,8 +602,7 @@ function!</p>            </div>
         <tr>
             <td>
     <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr></td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -687,7 +614,7 @@ function!</p>            </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_projectIds">
-        <div class="location">at line 135</div>
+        <div class="location">at line 104</div>
         <code>                    
     array
     <strong>projectIds</strong>()</code>
@@ -703,8 +630,7 @@ function!</p>            </div>
         <tr>
             <td>
     array</td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -716,7 +642,7 @@ function!</p>            </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_getThumbPathAttribute">
-        <div class="location">at line 152</div>
+        <div class="location">at line 121</div>
         <code>                    
     string
     <strong>getThumbPathAttribute</strong>()</code>
@@ -733,8 +659,7 @@ to the thumbnail image file of this image.</p>                                </
         <tr>
             <td>
     string</td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -746,7 +671,7 @@ to the thumbnail image file of this image.</p>                                </
             </div>
                     <div class="method-item">
                     <h3 id="method_getUrlAttribute">
-        <div class="location">at line 163</div>
+        <div class="location">at line 132</div>
         <code>                    
     string
     <strong>getUrlAttribute</strong>()</code>
@@ -763,8 +688,7 @@ to the original image file.</p>                                </div>
         <tr>
             <td>
     string</td>
-            <td>
-</td>
+            <td></td>
         </tr>
     </table>
 
@@ -776,7 +700,7 @@ to the original image file.</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_getExif">
-        <div class="location">at line 174</div>
+        <div class="location">at line 143</div>
         <code>                    
     array
     <strong>getExif</strong>()</code>
@@ -792,8 +716,35 @@ to the original image file.</p>                                </div>
         <tr>
             <td>
     array</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_getSize">
+        <div class="location">at line 158</div>
+        <code>                    
+    array
+    <strong>getSize</strong>()</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Returns the image size as <code>[width, height]</code></p>                                </div>
+                <div class="tags">
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
             <td>
-</td>
+    array</td>
+            <td></td>
         </tr>
     </table>
 
@@ -805,9 +756,9 @@ to the original image file.</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_getThumb">
-        <div class="location">at line 190</div>
+        <div class="location">at line 169</div>
         <code>                    
-    <abbr title="InterventionImage">InterventionImage</abbr>
+    <abbr title="Response">Response</abbr>
     <strong>getThumb</strong>()</code>
     </h3>
     <div class="details">
@@ -821,9 +772,8 @@ doesn't exist.</p>                                </div>
                     <table class="table table-condensed">
         <tr>
             <td>
-    <abbr title="InterventionImage">InterventionImage</abbr></td>
-            <td>
-</td>
+    <abbr title="Response">Response</abbr></td>
+            <td></td>
         </tr>
     </table>
 
@@ -835,9 +785,9 @@ doesn't exist.</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_getFile">
-        <div class="location">at line 208</div>
+        <div class="location">at line 189</div>
         <code>                    
-    <abbr title="InterventionImage">InterventionImage</abbr>
+    <abbr title="Response">Response</abbr>
     <strong>getFile</strong>()</code>
     </h3>
     <div class="details">
@@ -851,9 +801,8 @@ external source.</p>                                </div>
                     <table class="table table-condensed">
         <tr>
             <td>
-    <abbr title="InterventionImage">InterventionImage</abbr></td>
-            <td>
-</td>
+    <abbr title="Response">Response</abbr></td>
+            <td></td>
         </tr>
     </table>
 

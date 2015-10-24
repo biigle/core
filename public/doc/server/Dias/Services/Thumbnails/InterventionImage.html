@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="robots" content="index, follow, all" />
-    <title>Dias\Http\Middleware\RequireAdmin | BIIGLE DIAS Server Documentation</title>
+    <title>Dias\Services\Thumbnails\InterventionImage | BIIGLE DIAS Server Documentation</title>
 
             <link rel="stylesheet" type="text/css" href="../../../css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="../../../css/bootstrap-theme.min.css">
@@ -19,7 +19,7 @@
     
     </head>
 
-    <body id="class" data-name="class:Dias_Http_Middleware_RequireAdmin" data-root-path="../../../">
+    <body id="class" data-name="class:Dias_Services_Thumbnails_InterventionImage" data-root-path="../../../">
             <div id="content">
         <div id="left-column">
                 <div id="control-panel">
@@ -64,37 +64,60 @@
             <ol class="breadcrumb">
                 <li><span class="label label-default">class</span></li>
                                                             <li><a href="../../../Dias.html">Dias</a></li>
-                                        <li><a href="../../../Dias/Http.html">Http</a></li>
-                                        <li><a href="../../../Dias/Http/Middleware.html">Middleware</a></li>
+                                        <li><a href="../../../Dias/Services.html">Services</a></li>
+                                        <li><a href="../../../Dias/Services/Thumbnails.html">Thumbnails</a></li>
     
-                <li>RequireAdmin</li>
+                <li>InterventionImage</li>
             </ol>
         </div>
                 <div id="page-content">
                 
     <div class="page-header">
-        <h1>RequireAdmin</h1>
+        <h1>InterventionImage</h1>
     </div>
 
     <p>    class
-    <strong>RequireAdmin</strong>
+    <strong>InterventionImage</strong>        implements
+        <a href="../../../Dias/Contracts/ThumbnailService.html"><abbr title="Dias\Contracts\ThumbnailService">ThumbnailService</abbr></a>
 </p>
 
             <div class="description">
-            <p>Middleware to reouire the global admin role for using the route.</p>                    </div>
+            <p>The default Dias thumbnails service using the InterventionImage package
+(http://image.intervention.io/)</p>                    </div>
     
     
+            <h2>Constants</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td>MEMORY_LIMIT</td>
+                <td class="last">
+                    <p><em>Memory limit to set during resizing the images.</em></p>
+                    <p></p>
+                </td>
+            </tr>
+            </table>
+
     
             <h2>Properties</h2>
 
             <table class="table table-condensed">
                     <tr>
-                <td class="type" id="property_auth">
-                                        protected                                        
-    <abbr title="Illuminate\Contracts\Auth\Guard">Guard</abbr>
+                <td class="type" id="property_width">
+                    static                                                            
+    int
                 </td>
-                <td>$auth</td>
-                <td class="last">The Guard implementation.</td>
+                <td>$width</td>
+                <td class="last">Maximum width to scale the thumbnails to.</td>
+                <td></td>
+            </tr>
+                    <tr>
+                <td class="type" id="property_height">
+                    static                                                            
+    int
+                </td>
+                <td>$height</td>
+                <td class="last">Maximum height to scale the thumbnails to.</td>
                 <td></td>
             </tr>
             </table>
@@ -105,25 +128,24 @@
             <div class="container-fluid underlined">
                     <div class="row">
                 <div class="col-md-2 type">
-                    
-    void
+                    static&nbsp;
+    
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method___construct">__construct</a>(
-    <abbr title="Dias\Http\Middleware\Illuminate\Contracts\Auth\Guard">Guard</abbr> $auth)
-                                            <p>Create a new filter instance.</p>                </div>
+                    <a href="#method_makeThumbnail">makeThumbnail</a>(
+    <abbr title="Dias\Services\Thumbnails\Dias\Image">Image</abbr> $image)
+                                            <p>Makes a thumbnail for a single image.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
                     
-    mixed
+    
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_handle">handle</a>(
-    <abbr title="Illuminate\Http\Request">Request</abbr> $request, 
-    <a target="_blank" href="http://php.net/Closure"><abbr title="Closure">Closure</abbr></a> $next)
-                                            <p>Handle an incoming request.</p>                </div>
+                    <a href="#method_generateThumbnails">generateThumbnails</a>(
+    <abbr title="Dias\Contracts\Dias\Transect">Transect</abbr> $transect)
+                                            <p>Generates the thumbnails images for the transect</p>                </div>
                 <div class="col-md-2"></div>
             </div>
             </div>
@@ -133,39 +155,29 @@
 
             <div id="method-details">
                     <div class="method-item">
-                    <h3 id="method___construct">
-        <div class="location">at line 26</div>
-        <code>                    
-    void
-    <strong>__construct</strong>(
-    <abbr title="Dias\Http\Middleware\Illuminate\Contracts\Auth\Guard">Guard</abbr> $auth)</code>
+                    <h3 id="method_makeThumbnail">
+        <div class="location">at line 44</div>
+        <code>        static            
+    
+    <strong>makeThumbnail</strong>(
+    <abbr title="Dias\Services\Thumbnails\Dias\Image">Image</abbr> $image)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Create a new filter instance.</p>                                </div>
+                                    <p>Makes a thumbnail for a single image.</p>                    <p>Must be public so it can be used as a callable.</p>            </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
                 <td>
-    <abbr title="Dias\Http\Middleware\Illuminate\Contracts\Auth\Guard">Guard</abbr></td>
-                <td>$auth</td>
+    <abbr title="Dias\Services\Thumbnails\Dias\Image">Image</abbr></td>
+                <td>$image</td>
                 <td></td>
             </tr>
             </table>
 
             
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    void</td>
-            <td></td>
-        </tr>
-    </table>
-
             
             
                     </div>
@@ -173,46 +185,31 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_handle">
-        <div class="location">at line 38</div>
+                    <h3 id="method_generateThumbnails">
+        <div class="location">at line 59</div>
         <code>                    
-    mixed
-    <strong>handle</strong>(
-    <abbr title="Illuminate\Http\Request">Request</abbr> $request, 
-    <a target="_blank" href="http://php.net/Closure"><abbr title="Closure">Closure</abbr></a> $next)</code>
+    
+    <strong>generateThumbnails</strong>(
+    <abbr title="Dias\Contracts\Dias\Transect">Transect</abbr> $transect)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Handle an incoming request.</p>                                </div>
+                                    <p>Generates the thumbnails images for the transect</p>                    <p>The thumbnails are stored in the thumbnails storage directory. This function may operate
+asynchronous, so it is not guaranteed that the thumbnails ae immediately available
+one this function returned.</p>            </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
                 <td>
-    <abbr title="Illuminate\Http\Request">Request</abbr></td>
-                <td>$request</td>
-                <td></td>
-            </tr>
-                    <tr>
-                <td>
-    <a target="_blank" href="http://php.net/Closure"><abbr title="Closure">Closure</abbr></a></td>
-                <td>$next</td>
-                <td></td>
+    <abbr title="Dias\Contracts\Dias\Transect">Transect</abbr></td>
+                <td>$transect</td>
+                <td>The transect to generate the thumbnails for</td>
             </tr>
             </table>
 
             
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    mixed</td>
-            <td></td>
-        </tr>
-    </table>
-
             
             
                     </div>
