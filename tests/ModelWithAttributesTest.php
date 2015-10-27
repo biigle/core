@@ -50,8 +50,7 @@ abstract class ModelWithAttributesTest extends ModelTestCase
         $this->assertEquals('my-test', $result->name);
 
         // model doesn't have this attribute
-        $this->setExpectedException('Illuminate\Database\Eloquent\ModelNotFoundException');
-        $this->model->getDiasAttribute('my-test123');
+        $this->assertNull($this->model->getDiasAttribute('my-test123'));
     }
 
     public function testDetachDiasAttribute()

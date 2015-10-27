@@ -85,16 +85,7 @@ abstract class ModelWithAttributesController extends Controller
             $this->requireCanSee($model);
         }
 
-        $attribute = null;
-
-        try {
-            $attribute = $model->getDiasAttribute($name);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            // attribute doesn't exist
-            $this->requireNotNull(null);
-        }
-
-        return $attribute;
+        return $this->requireNotNull($model->getDiasAttribute($name));
     }
 
     /**
@@ -168,12 +159,7 @@ abstract class ModelWithAttributesController extends Controller
             $this->requireCanAdmin($model);
         }
 
-        try {
-            $model->updateDiasAttribute($name, $this->request->input('value'));
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            // attribute doesn't exist
-            $this->requireNotNull(null);
-        }
+        $model->updateDiasAttribute($name, $this->request->input('value'));
     }
 
     /**

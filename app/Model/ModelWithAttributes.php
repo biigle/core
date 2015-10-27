@@ -85,7 +85,7 @@ abstract class ModelWithAttributes extends Model
      */
     public function getDiasAttribute($name)
     {
-        return $this->attributes()->whereName($name)->firstOrFail();
+        return $this->attributes()->whereName($name)->first();
     }
 
     /**
@@ -109,6 +109,10 @@ abstract class ModelWithAttributes extends Model
     public function updateDiasAttribute($name, $value)
     {
         $attribute = $this->getDiasAttribute($name);
+        if ($attribute === null) {
+            // model doesn't have this attribute
+            abort(404);
+        }
         $pivot = $this->buildPivotAttributes($attribute, $value);
         $this->attributes()->updateExistingPivot($attribute->id, $pivot);
     }
