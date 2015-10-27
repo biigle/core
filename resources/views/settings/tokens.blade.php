@@ -1,4 +1,5 @@
 @extends('settings.base')
+@inject('modules', 'Dias\Services\Modules')
 
 @section('title')Access tokens @stop
 
@@ -6,7 +7,7 @@
 <div class="panel panel-default">
     <div class="panel-heading">API token</div>
     <div class="panel-body">
-        <p class="text-muted">
+        <p>
             The API token can be used to authenticate external (automated) REST API requests. Learn more about the API in the <a href="{{url('doc/api/index.html')}}">documentation</a>.
         </p>
         @if ($generated)
@@ -40,19 +41,23 @@
             </p>
             <pre class="token-toggle hidden">{{$user->api_key}}</pre>
             <form class="" role="form" method="POST" action="{{ url('api/v1/users/my/token') }}">
-                <span class="help-block">By revoking your current token, all applications using it will losse the ability to access the BIIGLE DIAS API.</span>
+                <span class="help-block">By revoking your current token, all applications using it will loose the ability to access the BIIGLE DIAS API.</span>
                 <input type="hidden" name="_method" value="DELETE">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="submit" class="btn btn-danger" value="Revoke token">
             </form>
-<script type="text/javascript">
-function showToken() {
-    [].forEach.call(document.querySelectorAll('.token-toggle'), function(elm) {
-        elm.classList.toggle('hidden');
-    });
-}
-</script>
+            <script type="text/javascript">
+            function showToken() {
+                [].forEach.call(document.querySelectorAll('.token-toggle'), function(elm) {
+                    elm.classList.toggle('hidden');
+                });
+            }
+            </script>
         @endif
     </div>
 </div>
+@foreach ($modules->getMixins('settings.tokens') as $module => $nestedMixins)
+    @include($module.'::settings.tokens')
+@endforeach
+
 @endsection
