@@ -267,8 +267,12 @@ abstract class ModelWithAttributesApiTest extends ApiTestCase
             $user = $this->admin;
         }
 
+        $this->callToken('DELETE', $this->endpoint.'/nonexistant', $user);
+        $this->assertResponseStatus(404);
+
         $count = $this->model->attributes()->count();
         $this->callToken('DELETE', $this->endpoint.'/my-test', $user);
+        $this->assertResponseOk();
         $this->assertEquals($count - 1, $this->model->attributes()->count());
     }
 }

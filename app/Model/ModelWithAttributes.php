@@ -97,6 +97,10 @@ abstract class ModelWithAttributes extends Model
     public function detachDiasAttribute($name)
     {
         $attribute = $this->getDiasAttribute($name);
+        if ($attribute === null) {
+            // model doesn't have this attribute
+            abort(404);
+        }
         $this->attributes()->detach($attribute->id);
     }
 
