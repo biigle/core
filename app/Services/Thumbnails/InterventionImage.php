@@ -25,14 +25,14 @@ class InterventionImage implements ThumbnailService
      *
      * @var int
      */
-    static $width;
+    private static $width;
 
     /**
      * Maximum height to scale the thumbnails to.
      *
      * @var int
      */
-    static $height;
+    private static $height;
 
     /**
      * Makes a thumbnail for a single image.
@@ -67,7 +67,7 @@ class InterventionImage implements ThumbnailService
 
         // process the images, 100 at a time
         $transect->images()->chunk(100, function ($images) {
-            $images->map([self::class, 'makeThumbnail']);
+            $images->map([static::class, 'makeThumbnail']);
         });
 
         // restore default memory limit

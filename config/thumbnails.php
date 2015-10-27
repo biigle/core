@@ -24,9 +24,7 @@ return [
     /*
     | Image URL to use if a thumbnail was not yet generated.
     | Must be publicly accessible via HTTP(S).
-    | If it is a relative path not starting with 'http(s)://', it is assumed to be located in the
-    | public directory.
     */
-    'empty_url' => 'assets/images/empty-thumbnail.svg',
+    'empty_url' => asset('assets/images/empty-thumbnail.svg'),
 
 ];

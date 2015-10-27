@@ -169,12 +169,7 @@ class Image extends ModelWithAttributes implements BelongsToProjectContract
     public function getThumb()
     {
         if (!File::exists($this->thumbPath)) {
-            $emptyThumbnailUrl = config('thumbnails.empty_url');
-            // if it is not an absolute URL, prepend the URL to the public directory
-            if (!preg_match("/^https?\:\/\//", $emptyThumbnailUrl)) {
-                $emptyThumbnailUrl = asset($emptyThumbnailUrl);
-            }
-            return redirect($emptyThumbnailUrl);
+            return redirect(config('thumbnails.empty_url'));
         }
 
         return Response::download($this->thumbPath);
