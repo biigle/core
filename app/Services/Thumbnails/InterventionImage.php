@@ -25,14 +25,14 @@ class InterventionImage implements ThumbnailService
      *
      * @var int
      */
-    static $width;
+    public static $width;
 
     /**
      * Maximum height to scale the thumbnails to.
      *
      * @var int
      */
-    static $height;
+    public static $height;
 
     /**
      * Makes a thumbnail for a single image.
