@@ -155,6 +155,7 @@ return [
         'Dias\Modules\Transects\TransectsServiceProvider',
         'Dias\Modules\Annotations\AnnotationsServiceProvider',
         'Dias\Modules\Copria\CopriaServiceProvider',
+        'Dias\Modules\Copria\Thumbnails\CopriaThumbnailsServiceProvider',
     ],
 
     /*

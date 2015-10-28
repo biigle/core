@@ -1,8 +1,8 @@
 {
-	"name": "laravel/laravel",
-	"description": "The Laravel Framework.",
-	"keywords": ["framework", "laravel"],
-	"license": "MIT",
+	"name": "dias/core",
+	"description": "Core of the BIIGLE DIAS web application.",
+	"keywords": ["BIIGLE DIAS", "core"],
+	"license": "proprietary",
 	"type": "project",
 	"require": {
 		"laravel/framework": "5.1.*",
@@ -10,7 +10,8 @@
 		"dias/projects": "dev-master",
 		"dias/transects": "dev-master",
 		"dias/annotations": "dev-master",
-        "dias/copria": "dev-master"
+        "dias/copria": "dev-master",
+		"dias/copria-thumbnails": "dev-master"
 	},
 	"require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -79,6 +80,10 @@
         {
             "type": "vcs",
             "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-copria.git"
+        },
+        {
+            "type": "vcs",
+            "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-copria-thumbnails.git"
         }
 	]
 }

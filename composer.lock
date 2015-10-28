@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "15e4365d4ea58422f6503e4c5fad9243",
-    "content-hash": "4538a412e698b4c7f20adb0d687fe23e",
+    "hash": "c75099794fc5c6cb4af70f76f9c0ab61",
+    "content-hash": "caa407a9d995c2031b97df45b29455ca",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -167,6 +167,33 @@
                 ]
             },
             "time": "2015-10-27 12:44:55"
+        },
+        {
+            "name": "dias/copria-thumbnails",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-copria-thumbnails.git",
+                "reference": "f1ab4484ee03fce79c8c9780d743d84f2613d072"
+            },
+            "require": {
+                "dias/copria": "dev-master"
+            },
+            "require-dev": {
+                "mockery/mockery": "^0.9.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Dias\\Modules\\Copria\\Thumbnails\\": "src"
+                }
+            },
+            "scripts": {
+                "fix": [
+                    "php-cs-fixer --config-file='.php_cs' fix"
+                ]
+            },
+            "time": "2015-10-28 10:34:13"
         },
         {
             "name": "dias/projects",
@@ -3506,6 +3533,7 @@
         "dias/transects": 20,
         "dias/annotations": 20,
         "dias/copria": 20,
+        "dias/copria-thumbnails": 20,
         "sami/sami": 20,
         "mockery/mockery": 20
     },

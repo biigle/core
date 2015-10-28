@@ -1,16 +1,17 @@
 <?php
 
+use Dias\Services\Thumbnails\InterventionImage;
+
 class ServicesThumbnailsInterventionImageTest extends TestCase
 {
     public function testGenerateThumbnails()
     {
-        $service = app()->make('Dias\Contracts\ThumbnailService');
         $transect = TransectTest::create();
         $image = ImageTest::create();
         $transect->images()->save($image);
         File::delete($image->thumbPath);
 
-        $service->generateThumbnails($transect);
+        with(new InterventionImage)->generateThumbnails($transect);
 
         $this->assertTrue(File::exists($image->thumbPath));
         $size = getimagesize($image->thumbPath);
