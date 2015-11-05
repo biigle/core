@@ -41,7 +41,7 @@ angular.module('dias.ui.users').directive('userChooser', function () {
 
 			replace: true,
 
-			template: '<input type="text" data-ng-model="selected" data-typeahead="user.name for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
+			template: '<input type="text" data-ng-model="selected" data-uib-typeahead="user.name for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
 
 			controller: function ($scope, User) {
 				$scope.find = function (query) {

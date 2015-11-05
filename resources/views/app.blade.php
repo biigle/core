@@ -29,6 +29,7 @@
     </script>
     <script src="{{ asset('assets/scripts/angular.min.js') }}"></script>
     <script src="{{ asset('assets/scripts/angular-resource.min.js') }}"></script>
+    <script src="{{ asset('assets/scripts/angular-animate.min.js') }}"></script>
     <script src="{{ asset('assets/scripts/ui-bootstrap-tpls.min.js') }}"></script>
     <script src="{{ asset('assets/scripts/main.js') }}"></script>
     @yield('scripts')

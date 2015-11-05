@@ -37,5 +37,5 @@ angular.module('dias.ui.users', ['ui.bootstrap', 'dias.api']);
  * @namespace dias.ui
  * @description The DIAS UI AngularJS module.
  */
-angular.module('dias.ui', ['dias.ui.messages', 'dias.ui.users']);
+angular.module('dias.ui', ['ui.bootstrap', 'dias.ui.messages', 'dias.ui.users', 'ngAnimate']);
 
