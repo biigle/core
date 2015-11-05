@@ -1,22 +1,52 @@
 .transect-container {
-  position: absolute;
-  top: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  padding-top: 51px;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  -webkit-flex-flow: column;
-  -ms-flex-flow: column;
-  flex-flow: column; }
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin-top: 51px; }
+
+.transect-menubar {
+  width: 50px;
+  padding: 1em 0.5em; }
+
+.transect__progress {
+  height: 4px;
+  width: 100%;
+  position: absolute;
+  z-index: 1; }
+
+.transect__progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: #31B0D5;
+  transition: width 0.1s ease;
+  border-right: 1px solid rgba(255, 255, 255, 0.75);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+  border-bottom-right-radius: 3px; }
 
 .transect__images {
+  overflow-y: auto;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-align-content: flex-start;
+  -ms-flex-line-pack: start;
+  align-content: flex-start;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
   -webkit-flex: 2;
   -ms-flex: 2;
   flex: 2;
-  overflow-y: auto;
   padding: 0.4em; }
 
 .transect-figure {
@@ -43,20 +73,5 @@
     opacity: 0.75; }
     .transect-figure:hover a.info-link:hover {
       opacity: 1; }
-
-.transect__progress {
-  height: 4px;
-  width: 100%;
-  position: absolute;
-  z-index: 1; }
-
-.transect__progress-bar {
-  height: 100%;
-  width: 0%;
-  background-color: #31B0D5;
-  transition: width 0.1s ease;
-  border-right: 1px solid rgba(255, 255, 255, 0.75);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.75);
-  border-bottom-right-radius: 3px; }
 
 /*# sourceMappingURL=main.css.map */
