@@ -5,7 +5,7 @@
  * @memberOf dias.projects
  * @description Handles modification of the members of a project.
  */
-angular.module('dias.projects').controller('ProjectMembersController', function ($scope, Role, ProjectUser, msg, $modal) {
+angular.module('dias.projects').controller('ProjectMembersController', function ($scope, Role, ProjectUser, msg, $uibModal) {
 		"use strict";
 
 		var getUser = function (id) {
@@ -17,7 +17,7 @@ angular.module('dias.projects').controller('ProjectMembersController', function 
 		};
 
 		var confirmChangeOwnRole = function (userId, role) {
-			var modalInstance = $modal.open({
+			var modalInstance = $uibModal.open({
 				templateUrl: 'confirmChangeRoleModal.html',
 				size: 'sm'
 			});

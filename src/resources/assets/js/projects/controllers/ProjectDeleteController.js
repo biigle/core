@@ -7,35 +7,35 @@
  * @example
 
  */
-angular.module('dias.projects').controller('ProjectDeleteController', function ($scope, $modal, $attrs, msg) {
-		"use strict";
+angular.module('dias.projects').controller('ProjectDeleteController', function ($scope, $uibModal, $attrs, msg) {
+      "use strict";
 
-		var success = function () {
-			$scope.redirectToDashboard($attrs.successMsg);
-		};
+      var success = function () {
+         $scope.redirectToDashboard($attrs.successMsg);
+      };
 
-		var error = function () {
-			msg.danger($attrs.errorMsg);
-		};
+      var error = function () {
+         msg.danger($attrs.errorMsg);
+      };
 
-		$scope.submit = function () {
-			var modalInstance = $modal.open({
-				templateUrl: 'confirmDeleteModal.html',
-				size: 'sm',
-				controller: 'ProjectDeleteModalController',
-				scope: $scope
-			});
+      $scope.submit = function () {
+         var modalInstance = $uibModal.open({
+            templateUrl: 'confirmDeleteModal.html',
+            size: 'sm',
+            controller: 'ProjectDeleteModalController',
+            scope: $scope
+         });
 
-			modalInstance.result.then(function (result) {
-				switch (result) {
-					case 'success':
-						success();
-						break;
-					case 'error':
-						error();
-						break;
-				}
-			});
-		};
-	}
+         modalInstance.result.then(function (result) {
+            switch (result) {
+               case 'success':
+                  success();
+                  break;
+               case 'error':
+                  error();
+                  break;
+            }
+         });
+      };
+   }
 );

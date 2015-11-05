@@ -16,7 +16,7 @@
                     <div class="row">
                         <div class="col-xs-6">
                             <div class="input-group">
-                                <input type="text" class="form-control" id="new-label-parent" placeholder="Parent" data-ng-model="selected.label" data-typeahead="label.name for label in labels | filter:$viewValue | limitTo:10" data-typeahead-on-select="selectItem($item)" data-ng-disabled="!labels.length" title="Parent label" />
+                                <input type="text" class="form-control" id="new-label-parent" placeholder="Parent" data-ng-model="selected.label" data-uib-typeahead="label.name for label in labels | filter:$viewValue | limitTo:10" data-typeahead-on-select="selectItem($item)" data-ng-disabled="!labels.length" title="Parent label" />
                                 <span class="input-group-btn">
                                     <button class="btn btn-default" type="button" title="Clear parent" data-ng-click="selectItem(null)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                                 </span>
