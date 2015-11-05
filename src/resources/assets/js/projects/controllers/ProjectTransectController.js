@@ -6,11 +6,11 @@
  * @description Controller for a single transect in the transect list of the
  * project index page.
  */
-angular.module('dias.projects').controller('ProjectTransectController', function ($scope, $element, $modal, ProjectTransect, msg) {
+angular.module('dias.projects').controller('ProjectTransectController', function ($scope, $element, $uibModal, ProjectTransect, msg) {
 		"use strict";
 
 		var showConfirmationModal = function () {
-			var modalInstance = $modal.open({
+			var modalInstance = $uibModal.open({
 				templateUrl: 'confirmDeleteTransectModal.html',
 				size: 'sm'
 			});
