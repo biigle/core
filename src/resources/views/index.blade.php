@@ -43,7 +43,8 @@
     <script type="text/ng-template" id="infoPopover.html">
         <div>
             <p>
-                Transect <strong>{{ $transect->name }}</strong> ({{ $transect->images->count() }} images)
+                Transect <strong>{{ $transect->name }}</strong><br>
+                <small>{{ $transect->images->count() }} images</small>
             <p>
             <p>
                 Belongs to the projects
