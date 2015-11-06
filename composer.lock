@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c75099794fc5c6cb4af70f76f9c0ab61",
-    "content-hash": "caa407a9d995c2031b97df45b29455ca",
+    "hash": "7fd1797fbce1487690d8eb16afcf1e9d",
+    "content-hash": "f2767ba0f8eec5f0193d5a7ae98b9873",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -167,6 +167,31 @@
                 ]
             },
             "time": "2015-10-27 12:44:55"
+        },
+        {
+            "name": "dias/copria-color-sort",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-copria-color-sort.git",
+                "reference": "509ccb62232d3649b729cf27b9dc4fe40aaf7556"
+            },
+            "require": {
+                "dias/copria": "dev-master",
+                "dias/transects": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Dias\\Modules\\Copria\\ColorSort\\": "src"
+                }
+            },
+            "scripts": {
+                "fix": [
+                    "php-cs-fixer --config-file='.php_cs' fix"
+                ]
+            },
+            "time": "2015-11-06 07:57:18"
         },
         {
             "name": "dias/copria-thumbnails",
@@ -3534,6 +3559,7 @@
         "dias/annotations": 20,
         "dias/copria": 20,
         "dias/copria-thumbnails": 20,
+        "dias/copria-color-sort": 20,
         "sami/sami": 20,
         "mockery/mockery": 20
     },

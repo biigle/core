@@ -156,6 +156,7 @@ return [
         'Dias\Modules\Annotations\AnnotationsServiceProvider',
         'Dias\Modules\Copria\CopriaServiceProvider',
         'Dias\Modules\Copria\Thumbnails\CopriaThumbnailsServiceProvider',
+        'Dias\Modules\Copria\ColorSort\CopriaColorSortServiceProvider',
     ],
 
     /*

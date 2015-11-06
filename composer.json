@@ -11,7 +11,8 @@
 		"dias/transects": "dev-master",
 		"dias/annotations": "dev-master",
         "dias/copria": "dev-master",
-		"dias/copria-thumbnails": "dev-master"
+		"dias/copria-thumbnails": "dev-master",
+		"dias/copria-color-sort": "dev-master"
 	},
 	"require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -84,6 +85,10 @@
         {
             "type": "vcs",
             "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-copria-thumbnails.git"
+        },
+        {
+            "type": "vcs",
+            "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-copria-color-sort.git"
         }
 	]
 }
