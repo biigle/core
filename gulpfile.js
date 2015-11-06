@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 process.env.DISABLE_NOTIFIER = true;
 
 var gulp    = require('gulp');
@@ -11,7 +11,7 @@ elixir(function (mix) {
 	mix.sass('main.scss', 'public/assets/styles/main.css')
 	   .angular('resources/assets/js/transects/', 'public/assets/scripts', 'main.js');
     mix.sass('dashboard.scss', 'public/assets/styles/dashboard.css')
-       .angular('resources/assets/js/projects/', 'public/assets/scripts', 'projects.js');
+    mix.angular('resources/assets/js/projects/', 'public/assets/scripts', 'projects.js');
     mix.task('publish', 'public/assets/**/*');
 });
 
