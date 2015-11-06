@@ -2,6 +2,8 @@
 // 	z-index: 1;
 // }
 
+$transect-image-margin: 4px;
+
 .transect-container {
     $navbar-height: 51px;
     display: flex;
@@ -42,8 +44,7 @@
     align-content: flex-start;
     flex-wrap: wrap;
     flex: 2;
-	// image border width
-	padding: 0.4em;
+	padding: $transect-image-margin;
 }
 
 .transect-figure {
@@ -51,7 +52,7 @@
 	width: 180px;
 	display: inline-block;
     position: relative;
-    margin: 4px;
+    margin: $transect-image-margin;
     background-color: #eee;
 
 	img {
@@ -78,4 +79,10 @@
             opacity: 1;
         }
     }
+}
+
+.transect-info-popover__projects {
+    max-height: 50px;
+    overflow: auto;
+    padding-left: 1em;
 }

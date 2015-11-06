@@ -23,7 +23,7 @@
         <div class="transect__progress-bar" data-ng-style="progress()"></div>
     </div>
     <div class="transect-menubar">
-        <button class="btn btn-regular" data-popover-placement="right" data-uib-popover-template="'infoPopover.html'" data-popover-trigger="mouseenter" type="button">
+        <button class="btn btn-regular" data-popover-placement="right" data-uib-popover-template="'infoPopover.html'" type="button">
             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
         </button>
         @foreach ($modules->getMixins('transects.menubar') as $module => $nestedMixins)
@@ -43,17 +43,14 @@
     <script type="text/ng-template" id="infoPopover.html">
         <div>
             <p>
-                Transect <strong>{{ $transect->name }}</strong><br>
-                <small>{{ $transect->images->count() }} images</small>
-            <p>
-            <p>
-                Belongs to the projects
-                <ul>
-                    @foreach($transect->projects as $project)
-                        <li>{{ $project->name }}</li>
-                    @endforeach
-                </ul>
+                <strong>{{ $transect->name }}</strong>
+                <small>({{ $transect->images->count() }}&nbsp;images)</small>
             </p>
+            <ul class="transect-info-popover__projects">
+                @foreach($transect->projects as $project)
+                    <li>{{ $project->name }}</li>
+                @endforeach
+            </ul>
         </div>
     </script>
 </div>

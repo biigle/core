@@ -47,7 +47,7 @@
   -webkit-flex: 2;
   -ms-flex: 2;
   flex: 2;
-  padding: 0.4em; }
+  padding: 4px; }
 
 .transect-figure {
   height: 135px;
@@ -73,5 +73,10 @@
     opacity: 0.75; }
     .transect-figure:hover a.info-link:hover {
       opacity: 1; }
+
+.transect-info-popover__projects {
+  max-height: 50px;
+  overflow: auto;
+  padding-left: 1em; }
 
 /*# sourceMappingURL=main.css.map */
