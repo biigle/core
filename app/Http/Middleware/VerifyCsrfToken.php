@@ -9,6 +9,15 @@ use Illuminate\Session\TokenMismatchException;
 class VerifyCsrfToken extends BaseVerifier
 {
     /**
+     * Routes that should be excepted from Csrf protection
+     *
+     * @var array
+     */
+    protected $except = [
+        'api/v1/copria-color-sort-result/*'
+    ];
+
+    /**
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -26,7 +35,6 @@ class VerifyCsrfToken extends BaseVerifier
         try {
             return parent::handle($request, $next);
         } catch (TokenMismatchException $e) {
-            // if there is a token mismatch response with 403
             return response('Forbidden.', 403);
         }
     }

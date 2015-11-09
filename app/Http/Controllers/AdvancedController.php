@@ -29,7 +29,6 @@ abstract class AdvancedController extends BaseController
     /**
      * Creates a new AdvancedController instance.
      *
-     * @param Guard $auth
      * @param Request $request
      */
     public function __construct(Request $request)
