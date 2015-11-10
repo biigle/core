@@ -31,7 +31,7 @@
         @endforeach
     </div>
     <div class="transect__images" data-ng-controller="ImagesController">
-        <figure class="transect-figure" data-ng-repeat="id in images | limitTo: info.limit">
+        <figure class="transect-figure" data-ng-repeat="id in images.sequence | limitTo: images.limit">
             <img src="{{ asset(config('thumbnails.empty_url')) }}" data-lazy-image="{{ url('api/v1/images/') }}/@{{ id }}/thumb">
             @foreach ($modules->getMixins('transects') as $module => $nestedMixins)
                 @include($module.'::transects', ['mixins' => $nestedMixins])
