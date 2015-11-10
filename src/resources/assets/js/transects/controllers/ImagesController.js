@@ -75,7 +75,10 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
             return deferred.promise;
         };
 
+        // timeout to wait for all image objects to be present in the DOM
 		$timeout(initialize);
-        $scope.$on('transects.images.new-sequence', initialize);
+        $scope.$on('transects.images.new-sequence', function () {
+            $timeout(initialize);
+        });
 	}
 );
