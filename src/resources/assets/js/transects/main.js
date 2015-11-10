@@ -2,4 +2,4 @@
  * @namespace dias.transects
  * @description The DIAS transects module.
  */
-angular.module('dias.transects', ['dias.api', 'ui.bootstrap']);
+angular.module('dias.transects', ['dias.api', 'dias.ui']);
