@@ -6,7 +6,7 @@
  * @description Controller for displaying the huge amout of images of a
  * transect on a singe page.
  */
-angular.module('dias.transects').controller('ImagesController', function ($scope, TransectImage, $attrs, $element, $timeout, $q) {
+angular.module('dias.transects').controller('ImagesController', function ($scope, TransectImage, $element, $timeout, $q) {
 		"use strict";
 
 		var element = $element[0];
@@ -76,7 +76,7 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
         };
 
 		// array of all image ids of this transect
-		$scope.images = TransectImage.query({transect_id: $attrs.transectId}, function () {
+		$scope.images = TransectImage.query({transect_id: $scope.transectId}, function () {
             $scope.info.numberOfImages = $scope.images.length;
         });
 

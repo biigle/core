@@ -5,8 +5,10 @@
  * @memberOf dias.transects
  * @description Global controller for the transects page
  */
-angular.module('dias.transects').controller('TransectController', function ($scope) {
+angular.module('dias.transects').controller('TransectController', function ($scope, $attrs) {
 		"use strict";
+
+        $scope.transectId = $attrs.transectId;
 
         $scope.info = {
             // number of overall images

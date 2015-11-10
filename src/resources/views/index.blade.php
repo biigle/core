@@ -18,19 +18,19 @@
 @append
 
 @section('content')
-<div class="transect-container" data-ng-app="dias.transects" data-ng-controller="TransectController">
+<div class="transect-container" data-ng-app="dias.transects" data-ng-controller="TransectController" data-transect-id="{{ $transect->id }}">
     <div class="transect__progress">
         <div class="transect__progress-bar" data-ng-style="progress()"></div>
     </div>
     <div class="transect-menubar">
-        <button class="btn btn-regular" data-popover-placement="right" data-uib-popover-template="'infoPopover.html'" type="button">
+        <button class="btn btn-regular transect-menubar__item" data-popover-placement="right" data-uib-popover-template="'infoPopover.html'" type="button" title="Show transect information">
             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
         </button>
         @foreach ($modules->getMixins('transectsMenubar') as $module => $nestedMixins)
             @include($module.'::transectsMenubar')
         @endforeach
     </div>
-    <div class="transect__images" data-ng-controller="ImagesController" data-transect-id="{{ $transect->id }}">
+    <div class="transect__images" data-ng-controller="ImagesController">
         <figure class="transect-figure" data-ng-repeat="id in images | limitTo: info.limit">
             <img src="{{ asset(config('thumbnails.empty_url')) }}" data-lazy-image="{{ url('api/v1/images/') }}/@{{ id }}/thumb">
             @foreach ($modules->getMixins('transects') as $module => $nestedMixins)

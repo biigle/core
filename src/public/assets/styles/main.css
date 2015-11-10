@@ -12,8 +12,12 @@
   margin-top: 51px; }
 
 .transect-menubar {
-  width: 50px;
+  min-width: 50px;
   padding: 1em 0.5em; }
+
+.transect-menubar__item {
+  display: block;
+  margin-bottom: 1em; }
 
 .transect__progress {
   height: 4px;
