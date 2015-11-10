@@ -26,8 +26,8 @@
         <button class="btn btn-regular" data-popover-placement="right" data-uib-popover-template="'infoPopover.html'" type="button">
             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
         </button>
-        @foreach ($modules->getMixins('transects.menubar') as $module => $nestedMixins)
-            @include($module.'::transects.menubar')
+        @foreach ($modules->getMixins('transectsMenubar') as $module => $nestedMixins)
+            @include($module.'::transectsMenubar')
         @endforeach
     </div>
     <div class="transect__images" data-ng-controller="ImagesController" data-transect-id="{{ $transect->id }}">
