@@ -33,6 +33,8 @@ angular.module('dias.transects').controller('TransectController', function ($sco
         $scope.setImagesSequence = function (sequence) {
             // if sequence is null, reset
             $scope.images.sequence = sequence || $scope.images.ids;
+            // reset limit
+            $scope.images.limit = initialLimit;
             $scope.$broadcast('transects.images.new-sequence');
         };
 
