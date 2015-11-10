@@ -76,5 +76,6 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
         };
 
 		$timeout(initialize);
+        $scope.$on('transects.images.new-sequence', initialize);
 	}
 );
