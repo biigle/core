@@ -5802,6 +5802,26 @@ button.close {
 figcaption {
   text-align: center; }
 
+.glyphicon-spin {
+  -webkit-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear; }
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg); } }
+
+@keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg); } }
+
 @-webkit-keyframes fade-in {
   from {
     opacity: 0; }
@@ -5916,14 +5936,14 @@ figcaption {
   margin: 0 auto;
   position: fixed;
   top: 0;
-  width: 100%; }
+  width: 100%;
+  z-index: 1000; }
 
 .messages__message {
   text-align: center;
   -webkit-animation: scale-up 0.25s;
   animation: scale-up 0.25s;
   margin-bottom: 0;
-  position: relative;
-  z-index: 1000; }
+  position: relative; }
 
 /*# sourceMappingURL=main.css.map */
