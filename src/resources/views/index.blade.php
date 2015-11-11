@@ -23,7 +23,7 @@
         <div class="transect__progress-bar" data-ng-style="progress()"></div>
     </div>
     <div class="transect-menubar">
-        <button class="btn btn-regular transect-menubar__item" data-popover-placement="right" data-uib-popover-template="'infoPopover.html'" type="button" title="Show transect information">
+        <button class="btn btn-default transect-menubar__item" data-popover-placement="right" data-uib-popover-template="'infoPopover.html'" type="button" title="Show transect information">
             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
         </button>
         @foreach ($modules->getMixins('transectsMenubar') as $module => $nestedMixins)
