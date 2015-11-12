@@ -142,7 +142,8 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
         return Cache::remember('user-'.$this->id.'-can-see-projects-'.implode('-', $ids), 0.1, function () use ($ids) {
             return $this->isAdmin || $this->projects()
                 ->whereIn('id', $ids)
-                ->count() > 0;
+                ->select('id')
+                ->first() !== null;
         });
     }
 
@@ -159,7 +160,8 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
             return $this->isAdmin || $this->projects()
                 ->whereIn('id', $ids)
                 ->whereIn('project_role_id', [Role::$admin->id, Role::$editor->id])
-                ->count() > 0;
+                ->select('id')
+                ->first() !== null;
         });
     }
 
@@ -175,7 +177,8 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
             return $this->isAdmin || $this->projects()
                 ->whereIn('id', $ids)
                 ->where('project_role_id', Role::$admin->id)
-                ->count() > 0;
+                ->select('id')
+                ->first() !== null;
         });
     }
 
