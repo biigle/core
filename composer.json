@@ -6,13 +6,7 @@
 	"type": "project",
 	"require": {
 		"laravel/framework": "5.1.*",
-		"intervention/image": "~2.1",
-		"dias/projects": "dev-master",
-		"dias/transects": "dev-master",
-		"dias/annotations": "dev-master",
-        "dias/copria": "dev-master",
-		"dias/copria-thumbnails": "dev-master",
-		"dias/copria-color-sort": "dev-master"
+		"intervention/image": "~2.1"
 	},
 	"require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -64,31 +58,5 @@
 	},
 	"config": {
 		"preferred-install": "dist"
-	},
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-projects.git"
-		},
-		{
-			"type": "vcs",
-			"url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-transects.git"
-		},
-		{
-			"type": "vcs",
-			"url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-annotations.git"
-		},
-        {
-            "type": "vcs",
-            "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-copria.git"
-        },
-        {
-            "type": "vcs",
-            "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-copria-thumbnails.git"
-        },
-        {
-            "type": "vcs",
-            "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-copria-color-sort.git"
-        }
-	]
+	}
 }

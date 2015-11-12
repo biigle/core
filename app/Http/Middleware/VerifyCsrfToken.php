@@ -14,7 +14,6 @@ class VerifyCsrfToken extends BaseVerifier
      * @var array
      */
     protected $except = [
-        'api/v1/copria-color-sort-result/*'
     ];
 
     /**
