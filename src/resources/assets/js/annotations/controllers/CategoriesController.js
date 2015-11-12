@@ -10,7 +10,7 @@ angular.module('dias.annotations').controller('CategoriesController', function (
 
         // maximum number of allowed favourites
         var maxFavourites = 9;
-        var favouritesStorageKey = 'dias.annotations-label-favourites';
+        var favouritesStorageKey = 'dias.annotations.label-favourites';
 
         // saves the IDs of the favourites in localStorage
         var storeFavourites = function () {
@@ -25,6 +25,7 @@ angular.module('dias.annotations').controller('CategoriesController', function (
             if (window.localStorage[favouritesStorageKey]) {
                 var tmp = JSON.parse(window.localStorage[favouritesStorageKey]);
                 $scope.favourites = $scope.categories.filter(function (item) {
+                    // only take those categories as favourites that are available for this image
                     return tmp.indexOf(item.id) !== -1;
                 });
             }
