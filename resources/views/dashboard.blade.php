@@ -21,7 +21,7 @@
 		@forelse ($modules->getMixins('dashboard') as $module => $nestedMixins)
 			@include($module.'::dashboard', array('mixins' => $nestedMixins))
 		@empty
-			<p class="alert alert-info">
+			<p class="alert alert-info col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
 				You don't have any dashboard modules activated yet.
 			</p>
 		@endforelse
