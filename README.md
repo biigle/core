@@ -2,17 +2,14 @@
 
 Install the module:
 
-Add the following to your `composer.json`?
+Add the following to the repositories array of your `composer.json`:
 ```
-"repositories": [
-   {
-      "type": "vcs",
-      "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-projects.git"
-   }
-]
+{
+  "type": "vcs",
+  "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-projects.git"
+}
 ```
 
-1. Add `"dias/projects": "dev-master",` to the `require` section of your `composer.json`.
-2. Run `php composer.phar update dias/projects`.
-3. Add `'Dias\Modules\Projects\ProjectsServiceProvider'` to the `providers` array in `config/app.php`.
-4. Run `php artisan vendor:publish --provider="Dias\Modules\Projects\ProjectsServiceProvider" --tag="public" --force` to refresh the public assets of this package.
+1. Run `php composer.phar require dias/projects:dev-master`.
+2. Add `'Dias\Modules\Projects\ProjectsServiceProvider'` to the `providers` array in `config/app.php`.
+3. Run `php artisan projects:publish` to refresh the public assets of this package. Do this for every update of the package.

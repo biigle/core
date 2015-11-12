@@ -35,6 +35,21 @@ class ProjectsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton('command.projects.publish', function ($app) {
+            return new \Dias\Modules\Projects\Console\Commands\Publish();
+        });
+        $this->commands('command.projects.publish');
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [
+            'command.projects.publish',
+        ];
     }
 }
