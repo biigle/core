@@ -17,7 +17,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The annotation <strong>label</strong> ID (not the annotation ID).</p> "
@@ -47,7 +47,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The annotation ID.</p> "
@@ -80,14 +80,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -117,7 +117,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
@@ -153,7 +153,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The annotation ID.</p> "
@@ -185,7 +185,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The annotation ID.</p> "
@@ -234,14 +234,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The annotation ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -280,7 +280,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
@@ -289,14 +289,14 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
           },
           {
             "group": "Required arguments",
-            "type": "Mixed",
+            "type": "<p>Mixed</p> ",
             "optional": false,
             "field": "value",
             "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
@@ -339,7 +339,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The annotation ID.</p> "
@@ -348,14 +348,14 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "label_id",
             "description": "<p>The ID of the label category to attach to the annotation.</p> "
           },
           {
             "group": "Required arguments",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "confidence",
             "description": "<p>The level of confidence for this annotation label.</p> "
@@ -401,7 +401,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The image ID.</p> "
@@ -410,28 +410,28 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "shape_id",
             "description": "<p>ID of the shape of the new annotation.</p> "
           },
           {
             "group": "Required arguments",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "label_id",
             "description": "<p>ID of the initial category label of the new annotation.</p> "
           },
           {
             "group": "Required arguments",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "confidence",
             "description": "<p>Confidence of the initial annotation label of the new annotation.</p> "
           },
           {
             "group": "Required arguments",
-            "type": "Obejct[]",
+            "type": "<p>Obejct[]</p> ",
             "optional": false,
             "field": "points",
             "description": "<p>Array (JSON or as String) of the initial points of the annotation. Must contain at least one point.</p> "
@@ -482,7 +482,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The annotation ID.</p> "
@@ -491,7 +491,7 @@ define({ "api": [
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "Object[]",
+            "type": "<p>Object[]</p> ",
             "optional": false,
             "field": "points",
             "description": "<p>Array (JSON or as String) of new points of the annotation. The new points will replace the old points.</p> "
@@ -536,14 +536,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -552,7 +552,7 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "Mixed",
+            "type": "<p>Mixed</p> ",
             "optional": false,
             "field": "value",
             "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
@@ -586,7 +586,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The annotation <strong>label</strong> ID (not the annotation ID).</p> "
@@ -595,7 +595,7 @@ define({ "api": [
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "confidence",
             "description": "<p>The level of confidence for this annotation label.</p> "
@@ -633,7 +633,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The attribute ID.</p> "
@@ -689,7 +689,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The attribute ID.</p> "
@@ -728,14 +728,14 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The name of the new attribute.</p> "
           },
           {
             "group": "Required arguments",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "type",
             "description": "<p>One of <code>integer</code>, <code>double</code>, <code>string</code> or <code>boolean</code>.</p> "
@@ -777,14 +777,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -811,7 +811,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The image ID.</p> "
@@ -853,7 +853,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
@@ -892,14 +892,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The annotation ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -936,7 +936,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The image ID.</p> "
@@ -967,7 +967,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The image ID.</p> "
@@ -998,7 +998,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The image ID.</p> "
@@ -1040,7 +1040,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
@@ -1049,14 +1049,14 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
           },
           {
             "group": "Required arguments",
-            "type": "Mixed",
+            "type": "<p>Mixed</p> ",
             "optional": false,
             "field": "value",
             "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
@@ -1102,14 +1102,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -1118,7 +1118,7 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "Mixed",
+            "type": "<p>Mixed</p> ",
             "optional": false,
             "field": "value",
             "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
@@ -1155,14 +1155,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -1190,7 +1190,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The label ID.</p> "
@@ -1199,7 +1199,7 @@ define({ "api": [
         "Optional parameters": [
           {
             "group": "Optional parameters",
-            "type": "Boolean",
+            "type": "<p>Boolean</p> ",
             "optional": false,
             "field": "force",
             "description": "<p>Set this parameter to delete label categories with child labels.</p> "
@@ -1232,7 +1232,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
@@ -1298,14 +1298,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The annotation ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -1342,7 +1342,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The label ID.</p> "
@@ -1384,7 +1384,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
@@ -1393,14 +1393,14 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
           },
           {
             "group": "Required arguments",
-            "type": "Mixed",
+            "type": "<p>Mixed</p> ",
             "optional": false,
             "field": "value",
             "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
@@ -1444,7 +1444,7 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>Name of the new label category.</p> "
@@ -1453,21 +1453,21 @@ define({ "api": [
         "Optional arguments": [
           {
             "group": "Optional arguments",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "parent_id",
             "description": "<p>ID of the parent label category for ordering in a tree-like stricture.</p> "
           },
           {
             "group": "Optional arguments",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "aphia_id",
             "description": "<p>The <a href=\"http://www.marinespecies.org/\">WoRMS</a> AphiaID.</p> "
           },
           {
             "group": "Optional arguments",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "project_id",
             "description": "<p>ID of the project, this category should belong to. If this attribute is present, the category becomes a project specific category.</p> "
@@ -1509,14 +1509,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -1525,7 +1525,7 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "Mixed",
+            "type": "<p>Mixed</p> ",
             "optional": false,
             "field": "value",
             "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
@@ -1560,7 +1560,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The label ID.</p> "
@@ -1569,21 +1569,21 @@ define({ "api": [
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>Name of the label category.</p> "
           },
           {
             "group": "Attributes that can be updated",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "parent_id",
             "description": "<p>ID of the parent label category for ordering in a tree-like stricture.</p> "
           },
           {
             "group": "Attributes that can be updated",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "aphia_id",
             "description": "<p>The <a href=\"http://www.marinespecies.org/\">WoRMS</a> AphiaID.</p> "
@@ -1639,7 +1639,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The media type ID.</p> "
@@ -1679,14 +1679,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "pid",
             "description": "<p>ID of the project that should get the annotation.</p> "
           },
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "tid",
             "description": "<p>ID of the existing transect to attach to the project.</p> "
@@ -1716,14 +1716,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "pid",
             "description": "<p>The project ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "uid",
             "description": "<p>The user ID of the new member.</p> "
@@ -1732,7 +1732,7 @@ define({ "api": [
         "Required attributes": [
           {
             "group": "Required attributes",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "project_role_id",
             "description": "<p>The project role of the member.</p> "
@@ -1772,14 +1772,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -1807,14 +1807,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "pid",
             "description": "<p>The project ID, the transect should be detached from.</p> "
           },
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "tid",
             "description": "<p>The transect ID.</p> "
@@ -1823,7 +1823,7 @@ define({ "api": [
         "Optional parameters": [
           {
             "group": "Optional parameters",
-            "type": "Boolean",
+            "type": "<p>Boolean</p> ",
             "optional": false,
             "field": "force",
             "description": "<p>If the transect only belongs to a single project, set this parameter to delete it instead of detaching it. Otherwise the transect cannot be removed.</p> "
@@ -1854,14 +1854,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "pid",
             "description": "<p>The project ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "uid",
             "description": "<p>The user ID of the member.</p> "
@@ -1892,7 +1892,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The project ID.</p> "
@@ -1901,7 +1901,7 @@ define({ "api": [
         "Optional parameters": [
           {
             "group": "Optional parameters",
-            "type": "Boolean",
+            "type": "<p>Boolean</p> ",
             "optional": false,
             "field": "force",
             "description": "<p>Set this parameter to delete the project <strong>and</strong> all transects that belong only to this project.</p> "
@@ -1961,7 +1961,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
@@ -1997,7 +1997,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The project ID.</p> "
@@ -2036,7 +2036,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The project ID.</p> "
@@ -2075,7 +2075,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The project ID.</p> "
@@ -2117,14 +2117,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The annotation ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -2160,7 +2160,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The project ID.</p> "
@@ -2202,7 +2202,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
@@ -2211,14 +2211,14 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
           },
           {
             "group": "Required arguments",
-            "type": "Mixed",
+            "type": "<p>Mixed</p> ",
             "optional": false,
             "field": "value",
             "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
@@ -2262,14 +2262,14 @@ define({ "api": [
         "Required attributes": [
           {
             "group": "Required attributes",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>Name of the new project.</p> "
           },
           {
             "group": "Required attributes",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "description",
             "description": "<p>Description of the new project.</p> "
@@ -2302,14 +2302,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -2318,7 +2318,7 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "Mixed",
+            "type": "<p>Mixed</p> ",
             "optional": false,
             "field": "value",
             "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
@@ -2352,14 +2352,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "pid",
             "description": "<p>The project ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "uid",
             "description": "<p>The user ID of the project member.</p> "
@@ -2368,7 +2368,7 @@ define({ "api": [
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "project_role_id",
             "description": "<p>The project role of the member.</p> "
@@ -2398,7 +2398,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The project ID.</p> "
@@ -2407,14 +2407,14 @@ define({ "api": [
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>Name of the project.</p> "
           },
           {
             "group": "Attributes that can be updated",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "description",
             "description": "<p>Description of the project.</p> "
@@ -2470,7 +2470,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The user role ID.</p> "
@@ -2535,7 +2535,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The shape ID.</p> "
@@ -2577,14 +2577,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -2612,7 +2612,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The transect ID.</p> "
@@ -2654,7 +2654,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
@@ -2691,7 +2691,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The transect ID.</p> "
@@ -2733,14 +2733,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The annotation ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -2776,7 +2776,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The transect ID.</p> "
@@ -2815,7 +2815,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The project ID.</p> "
@@ -2824,28 +2824,28 @@ define({ "api": [
         "Required attributes": [
           {
             "group": "Required attributes",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The name of the new transect.</p> "
           },
           {
             "group": "Required attributes",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "url",
             "description": "<p>The base URL ot the image files. Can be a local path like <code>/vol/transects/1</code> or a remote path like <code>https://example.com/transects/1</code>.</p> "
           },
           {
             "group": "Required attributes",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "media_type_id",
             "description": "<p>The ID of the media type of the new transect.</p> "
           },
           {
             "group": "Required attributes",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "images",
             "description": "<p>List of image file names of the images that can be found at the base URL, formatted as comma separated values. With the base URL <code>/vol/transects/1</code> and the image <code>1.jpg</code>, the local file <code>/vol/transects/1/1.jpg</code> will be used.</p> "
@@ -2894,7 +2894,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
@@ -2903,14 +2903,14 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
           },
           {
             "group": "Required arguments",
-            "type": "Mixed",
+            "type": "<p>Mixed</p> ",
             "optional": false,
             "field": "value",
             "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
@@ -2956,14 +2956,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -2972,7 +2972,7 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "Mixed",
+            "type": "<p>Mixed</p> ",
             "optional": false,
             "field": "value",
             "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
@@ -3006,7 +3006,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The transect ID.</p> "
@@ -3015,7 +3015,7 @@ define({ "api": [
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>Name of the transect.</p> "
@@ -3048,14 +3048,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -3085,7 +3085,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
@@ -3124,14 +3124,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The annotation ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -3170,7 +3170,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
@@ -3179,14 +3179,14 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
           },
           {
             "group": "Required arguments",
-            "type": "Mixed",
+            "type": "<p>Mixed</p> ",
             "optional": false,
             "field": "value",
             "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
@@ -3232,14 +3232,14 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The model ID.</p> "
           },
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "name",
             "description": "<p>The attribute name.</p> "
@@ -3248,7 +3248,7 @@ define({ "api": [
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "Mixed",
+            "type": "<p>Mixed</p> ",
             "optional": false,
             "field": "value",
             "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
@@ -3319,7 +3319,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The user ID.</p> "
@@ -3350,7 +3350,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "pattern",
             "description": "<p>Part of the firstname or lastname of the user to search for.</p> "
@@ -3442,7 +3442,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The user ID.</p> "
@@ -3500,35 +3500,35 @@ define({ "api": [
         "Required parameters": [
           {
             "group": "Required parameters",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "email",
             "description": "<p>The email address of the new user. Must be unique for all users.</p> "
           },
           {
             "group": "Required parameters",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "password",
             "description": "<p>The password of the new user.</p> "
           },
           {
             "group": "Required parameters",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "password_confirmation",
             "description": "<p>The password of the new user again.</p> "
           },
           {
             "group": "Required parameters",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "firstname",
             "description": "<p>The firstname of the new user.</p> "
           },
           {
             "group": "Required parameters",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "lastname",
             "description": "<p>The lastname of the new user.</p> "
@@ -3575,28 +3575,28 @@ define({ "api": [
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "email",
-            "description": "<p>The new email address of the user. Must be unique for all users. If this parameter is set, an additional <code>old_password</code> needs to be present, containing the user&#39;s current password.</p> "
+            "description": "<p>The new email address of the user. Must be unique for all users. If this parameter is set, an additional <code>old_password</code> needs to be present, containing the user's current password.</p> "
           },
           {
             "group": "Attributes that can be updated",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "password",
             "description": "<p>The new password of the user. If this parameter is set, an additional <code>password_confirmation</code> parameter needs to be present, containing the same new password, as well as an <code>old_password</code> parameter, containing the old password.</p> "
           },
           {
             "group": "Attributes that can be updated",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "firstname",
             "description": "<p>The new firstname of the user.</p> "
           },
           {
             "group": "Attributes that can be updated",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "lastname",
             "description": "<p>The new lastname of the user.</p> "
@@ -3634,7 +3634,7 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "<p>Number</p> ",
             "optional": false,
             "field": "id",
             "description": "<p>The user ID.</p> "
@@ -3643,28 +3643,28 @@ define({ "api": [
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "email",
             "description": "<p>The new email address of the user. Must be unique for all users.</p> "
           },
           {
             "group": "Attributes that can be updated",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "password",
             "description": "<p>The new password of the user. If this parameter is set, an additional <code>password_confirmation</code> parameter needs to be present, containing the same new password.</p> "
           },
           {
             "group": "Attributes that can be updated",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "firstname",
             "description": "<p>The new firstname of the user.</p> "
           },
           {
             "group": "Attributes that can be updated",
-            "type": "String",
+            "type": "<p>String</p> ",
             "optional": false,
             "field": "lastname",
             "description": "<p>The new lastname of the user.</p> "
