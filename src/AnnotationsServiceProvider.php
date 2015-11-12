@@ -34,6 +34,21 @@ class AnnotationsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton('command.annotations.publish', function ($app) {
+            return new \Dias\Modules\Annotations\Console\Commands\Publish();
+        });
+        $this->commands('command.annotations.publish');
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [
+            'command.annotations.publish',
+        ];
     }
 }
