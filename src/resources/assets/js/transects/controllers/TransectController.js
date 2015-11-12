@@ -5,7 +5,7 @@
  * @memberOf dias.transects
  * @description Global controller for the transects page
  */
-angular.module('dias.transects').controller('TransectController', function ($scope, $attrs, TransectImage) {
+angular.module('dias.transects').controller('TransectController', function ($scope, $attrs, TransectImage, filterSubset) {
 		"use strict";
 
         // number of initially shown images
@@ -24,44 +24,6 @@ angular.module('dias.transects').controller('TransectController', function ($sco
             limit: initialLimit,
             // number of overall images
             length: undefined
-        };
-
-        // comparison function for array.sort() with numbers
-        var compareNumbers = function (a, b) {
-            return a - b;
-        };
-
-        // returns the ids array without the elements that are not present in $scope.images.ids
-        // assumes that $scope.images.ids is sorted
-        // doesn't change the ordering of elements in the ids array
-        var filterSubsetOfTransectIDs = function (ids) {
-            var transectIds = $scope.images.ids;
-            // clone the input array (so it isn't changed by sorting), then sort it
-            var sortedIds = ids.slice(0).sort(compareNumbers);
-            // here we will put all items of ids that are not present in transectIds
-            var notThere = [];
-            var i = 0, j = 0;
-            while (i < transectIds.length && j < sortedIds.length) {
-                if (transectIds[i] < sortedIds[j]) {
-                    i++;
-                } else if (transectIds[i] === sortedIds[j]) {
-                    i++;
-                    j++;
-                } else {
-                    notThere.push(sortedIds[j++]);
-                }
-            }
-            // ad possible missing items if sortedIds is longer than transectIds
-            while (j < sortedIds.length) {
-                notThere.push(sortedIds[j++]);
-            }
-
-            // now remove all elements from ids that are not in transectIds
-            // we do it this way because the notThere array will probably always be very small
-            for (i = 0; i < notThere.length; i++) {
-                // we can assume that indexOf is never <0
-                ids.splice(ids.indexOf(notThere[i]), 1);
-            }
         };
 
         $scope.progress = function () {
@@ -89,7 +51,7 @@ angular.module('dias.transects').controller('TransectController', function ($sco
                 $scope.images.sequence = sequence;
                 // take only those IDs that actually belong to the transect
                 // (e.g. when IDs are taken from local storage but the transect has changed)
-                filterSubsetOfTransectIDs($scope.images.sequence);
+                filterSubset($scope.images.sequence, $scope.images.ids, true);
             }
 
             window.localStorage[imagesLocalStorageKey] = JSON.stringify($scope.images.sequence);
@@ -101,14 +63,16 @@ angular.module('dias.transects').controller('TransectController', function ($sco
         // array of all image ids of this transect
         $scope.images.ids = TransectImage.query({transect_id: $scope.transectId}, function (ids) {
             // sort the IDs, we'll need this for the later subset-check of new image seuqences
-            $scope.images.ids.sort(compareNumbers);
+            $scope.images.ids.sort(function (a, b) {
+                return a - b;
+            });
             $scope.images.length = ids.length;
 
             if (window.localStorage[imagesLocalStorageKey]) {
                 $scope.images.sequence = JSON.parse(window.localStorage[imagesLocalStorageKey]);
                 // check if all images loaded from storage are still there in the transect.
                 // some of them may have been deleted in the meantime.
-                filterSubsetOfTransectIDs($scope.images.sequence);
+                filterSubset($scope.images.sequence, $scope.images.ids, true);
             } else {
                 $scope.images.sequence = ids;
             }
