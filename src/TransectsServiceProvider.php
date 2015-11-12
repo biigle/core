@@ -36,6 +36,21 @@ class TransectsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton('command.transects.publish', function ($app) {
+            return new \Dias\Modules\Transects\Console\Commands\Publish();
+        });
+        $this->commands('command.transects.publish');
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [
+            'command.transects.publish',
+        ];
     }
 }
