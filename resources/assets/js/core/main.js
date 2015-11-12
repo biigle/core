@@ -34,8 +34,14 @@ angular.element(document).ready(function () {
 angular.module('dias.ui.users', ['ui.bootstrap', 'dias.api']);
 
 /**
+ * @namespace dias.ui.utils
+ * @description The DIAS utils UI AngularJS module.
+ */
+angular.module('dias.ui.utils', []);
+
+/**
  * @namespace dias.ui
  * @description The DIAS UI AngularJS module.
  */
-angular.module('dias.ui', ['ui.bootstrap', 'dias.ui.messages', 'dias.ui.users', 'ngAnimate']);
+angular.module('dias.ui', ['ui.bootstrap', 'dias.ui.messages', 'dias.ui.users', 'dias.ui.utils', 'ngAnimate']);
 
