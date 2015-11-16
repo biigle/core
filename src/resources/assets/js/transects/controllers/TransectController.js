@@ -5,7 +5,7 @@
  * @memberOf dias.transects
  * @description Global controller for the transects page
  */
-angular.module('dias.transects').controller('TransectController', function ($scope, $attrs, TransectImage, filterSubset) {
+angular.module('dias.transects').controller('TransectController', function ($scope, $attrs, TRANSECT_IMAGES, filterSubset) {
 		"use strict";
 
         // number of initially shown images
@@ -16,15 +16,25 @@ angular.module('dias.transects').controller('TransectController', function ($sco
         $scope.transectId = $attrs.transectId;
 
         $scope.images = {
-            // all image IDs of the transect in arbirtary ordering
-            ids: [],
+            // all image IDs of the transect in ascending order
+            ids: TRANSECT_IMAGES,
             // the currently displayed ordering of images (as array of image IDs)
             sequence: [],
             // number of currently shown images
             limit: initialLimit,
             // number of overall images
-            length: undefined
+            length: TRANSECT_IMAGES.length
         };
+
+        // check for a stored image sorting sequence
+        if (window.localStorage[imagesLocalStorageKey]) {
+            $scope.images.sequence = JSON.parse(window.localStorage[imagesLocalStorageKey]);
+            // check if all images loaded from storage are still there in the transect.
+            // some of them may have been deleted in the meantime.
+            filterSubset($scope.images.sequence, $scope.images.ids, true);
+        } else {
+            $scope.images.sequence = $scope.images.ids;
+        }
 
         $scope.progress = function () {
             return {
@@ -59,23 +69,5 @@ angular.module('dias.transects').controller('TransectController', function ($sco
             $scope.images.limit = initialLimit;
             $scope.$broadcast('transects.images.new-sequence');
         };
-
-        // array of all image ids of this transect
-        $scope.images.ids = TransectImage.query({transect_id: $scope.transectId}, function (ids) {
-            // sort the IDs, we'll need this for the later subset-check of new image seuqences
-            $scope.images.ids.sort(function (a, b) {
-                return a - b;
-            });
-            $scope.images.length = ids.length;
-
-            if (window.localStorage[imagesLocalStorageKey]) {
-                $scope.images.sequence = JSON.parse(window.localStorage[imagesLocalStorageKey]);
-                // check if all images loaded from storage are still there in the transect.
-                // some of them may have been deleted in the meantime.
-                filterSubset($scope.images.sequence, $scope.images.ids, true);
-            } else {
-                $scope.images.sequence = ids;
-            }
-        });
 	}
 );

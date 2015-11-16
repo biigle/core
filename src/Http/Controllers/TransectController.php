@@ -32,7 +32,7 @@ class TransectController extends Controller
     public function index($id)
     {
         $transect = $this->requireNotNull(
-            Transect::with('projects')->find($id)
+            Transect::with('projects', 'images')->find($id)
         );
         $this->requireCanSee($transect);
 
