@@ -6,6 +6,8 @@ use Dias\Contracts\BelongsToProjectContract;
 use Dias\Model\ModelWithAttributes;
 use Dias\Image;
 use Cache;
+use Dias\Jobs\GenerateThumbnails;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
  * A transect is a collection of images. Transects belong to one or many
@@ -13,6 +15,9 @@ use Cache;
  */
 class Transect extends ModelWithAttributes implements BelongsToProjectContract
 {
+
+    use DispatchesJobs;
+
     /**
      * Validation rules for creating a new transect.
      *
@@ -104,6 +109,10 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract
             $image->transect()->associate($this);
             $image->save();
         }
+
+        // it's important that this is done *after* all images were added
+        // otherwise not all thumbnails will be generated
+        $this->dispatch(new GenerateThumbnails($this));
     }
 
     /**

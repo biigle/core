@@ -100,24 +100,14 @@ class TransectTest extends ModelWithAttributesTest
 
     public function testCreateImages()
     {
+        // create images should dispatch the job to generate thumbnails after all images were
+        // created
+        $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
+
         $this->assertEmpty($this->model->images);
         $this->model->createImages(['1.jpg']);
         $this->model = $this->model->fresh();
         $this->assertNotEmpty($this->model->images);
         $this->assertEquals('1.jpg', $this->model->images()->first()->filename);
-    }
-
-    public function testPushThumbnailQueueOnCreated()
-    {
-        $this->model = static::make();
-        Transect::flushEventListeners();
-        // re-attach actual observer without mocked 'create method'
-        Transect::observe(new Dias\Observers\TransectObserver());
-        // once a transect was created, it should automatically queue the
-        // generate thumbnails command
-        Queue::shouldReceive('push')
-            ->once()
-            ->with(Mockery::type('Dias\Jobs\GenerateThumbnails'));
-        $this->model->save();
     }
 }

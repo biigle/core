@@ -75,6 +75,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         $count = $this->project->transects()->count();
         $imageCount = Image::all()->count();
+        $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
 
         $r = $this->callAjax('POST', '/api/v1/projects/'.$id.'/transects', [
             '_token' => Session::token(),

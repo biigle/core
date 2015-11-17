@@ -3,8 +3,6 @@
 namespace Dias\Observers;
 
 use Exception;
-use Dias\Jobs\GenerateThumbnails;
-use Queue;
 
 class TransectObserver
 {
@@ -21,15 +19,5 @@ class TransectObserver
         }
 
         return true;
-    }
-
-    /**
-     * Dispatches the job to generate thumbnails for the transect
-     *
-     * @param \Copria\SubmittedJob $transect The created transect
-     */
-    public function created($transect)
-    {
-        Queue::push(new GenerateThumbnails($transect));
     }
 }
