@@ -24,8 +24,9 @@ angular.module('dias.annotations').controller('CanvasController', function ($sco
 			// workaround, so the function is called *after* the angular digest
 			// and *after* the foldout was rendered
 			$timeout(function() {
+                // this needs to be wrapped in an extra function since updateSize accepts arguments
 				map.updateSize();
-			}, 0, false);
+			}, 50, false);
 		};
 
 		$scope.$on('sidebar.foldout.open', updateSize);
