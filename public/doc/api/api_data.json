@@ -2606,7 +2606,7 @@
         "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
       }
     ],
-    "description": "<p>Returns a list of all annotations of the transect.</p> ",
+    "description": "<p>Returns a list of all images that have annotations, along with detailed information on all annotations.</p> ",
     "parameter": {
       "fields": {
         "Parameter": [

@@ -309,7 +309,6 @@
             
             {"type": "Class", "fromName": "Dias\\Observers", "fromLink": "Dias/Observers.html", "link": "Dias/Observers/TransectObserver.html", "name": "Dias\\Observers\\TransectObserver", "doc": "&quot;&quot;"},
                                                         {"type": "Method", "fromName": "Dias\\Observers\\TransectObserver", "fromLink": "Dias/Observers/TransectObserver.html", "link": "Dias/Observers/TransectObserver.html#method_creating", "name": "Dias\\Observers\\TransectObserver::creating", "doc": "&quot;A transect must not be created without having a creator.&quot;"},
-                    {"type": "Method", "fromName": "Dias\\Observers\\TransectObserver", "fromLink": "Dias/Observers/TransectObserver.html", "link": "Dias/Observers/TransectObserver.html#method_created", "name": "Dias\\Observers\\TransectObserver::created", "doc": "&quot;Dispatches the job to generate thumbnails for the transect&quot;"},
             
             {"type": "Class", "fromName": "Dias\\Observers", "fromLink": "Dias/Observers.html", "link": "Dias/Observers/UserObserver.html", "name": "Dias\\Observers\\UserObserver", "doc": "&quot;&quot;"},
                                                         {"type": "Method", "fromName": "Dias\\Observers\\UserObserver", "fromLink": "Dias/Observers/UserObserver.html", "link": "Dias/Observers/UserObserver.html#method_creating", "name": "Dias\\Observers\\UserObserver::creating", "doc": "&quot;A user gets the global role &#039;editor&#039; by default.&quot;"},
