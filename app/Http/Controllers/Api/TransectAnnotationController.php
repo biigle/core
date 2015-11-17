@@ -13,7 +13,7 @@ class TransectAnnotationController extends Controller
      * @apiGroup Transects
      * @apiName IndexTransectAnnotations
      * @apiPermission projectMember
-     * @apiDescription Returns a list of all annotations of the transect.
+     * @apiDescription Returns a list of all images that have annotations, along with detailed information on all annotations.
      *
      * @apiParam {Number} id The transect ID.
      *
@@ -71,6 +71,12 @@ class TransectAnnotationController extends Controller
 
         return $transect->images()
                 ->with('annotations.labels', 'annotations.shape', 'annotations.points')
+                // take only the images having annotations
+                ->whereExists(function ($query) {
+                    $query->select(\DB::raw(1))
+                        ->from('annotations')
+                        ->whereRaw('annotations.image_id = images.id');
+                })
                 ->get();
     }
 }

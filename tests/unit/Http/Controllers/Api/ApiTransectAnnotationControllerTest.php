@@ -14,6 +14,7 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
         $annotation = AnnotationTest::create(['image_id' => $image->id])->fresh();
         $point = AnnotationPointTest::create(['annotation_id' => $annotation->id])->fresh();
         $label = AnnotationLabelTest::create(['annotation_id' => $annotation->id])->fresh();
+        $image2 = ImageTest::create(['transect_id' => $id, 'filename' => 'b.jpg'])->fresh();
 
         $this->doTestApiRoute('GET', '/api/v1/transects/'.$id.'/annotations');
 
@@ -43,6 +44,10 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
                 'name' => $annotation->shape->name,
                 'x' => $point->x,
                 'y' => $point->y
+            ])
+            // don't include the images without any annotations
+            ->dontSeeJson([
+                'id' => $image2->id
             ]);
     }
 }
