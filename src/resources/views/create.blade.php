@@ -49,9 +49,6 @@
 				@endif
 			</div>
 
-			<p class="alert alert-info ng-cloak" data-ng-if="submitted">
-				<strong>Just a moment, please!</strong> Large transects may take a few seconds to process.
-			</p>
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 			<a href="{{ URL::previous() }}" class="btn btn-link" data-ng-disabled="submitted">Cancel</a>
 			<input type="submit" class="btn btn-success pull-right" value="Create" data-ng-disabled="submitted">
