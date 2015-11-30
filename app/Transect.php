@@ -104,11 +104,10 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract
     public function createImages($filenames)
     {
         foreach ($filenames as $filename) {
-            $image = new Image;
-            $image->filename = $filename;
-            $image->transect()->associate($this);
-            $image->save();
+            $images[] = ['filename' => $filename, 'transect_id' => $this->id];
         }
+
+        Image::insert($images);
 
         // it's important that this is done *after* all images were added
         // otherwise not all thumbnails will be generated
