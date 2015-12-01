@@ -34,7 +34,7 @@ class RemoveDeletedImages extends Command
     public function handle()
     {
         Image::whereNull('transect_id')->chunk(100, function ($images) {
-            event('images.cleanup', $images->pluck('id')->all());
+            event('images.cleanup', [$images->pluck('id')->all()]);
             foreach ($images as $image) {
                 if (File::exists($image->thumbPath)) {
                     File::delete($image->thumbPath);
