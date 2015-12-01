@@ -35,13 +35,21 @@ class UpdateUserActivity
      */
     public function handle($request, Closure $next)
     {
-        $response = $next($request);
+        return $next($request);
+    }
 
+    /**
+     * Perform any final actions for the request lifecycle.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Symfony\Component\HttpFoundation\Response  $response
+     * @return void
+     */
+    public function terminate($request, $response)
+    {
         if ($user = $this->auth->user()) {
             $user->login_at = new Carbon;
             $user->save();
         }
-
-        return $response;
     }
 }
