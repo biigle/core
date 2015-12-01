@@ -34,6 +34,7 @@ class RemoveDeletedImages extends Command
     public function handle()
     {
         Image::whereNull('transect_id')->chunk(100, function ($images) {
+            event('images.cleanup', $images->pluck('id')->all());
             foreach ($images as $image) {
                 if (File::exists($image->thumbPath)) {
                     File::delete($image->thumbPath);
@@ -41,6 +42,8 @@ class RemoveDeletedImages extends Command
             }
         });
 
+        // never delete items inside of chunk()
+        // http://blog.krucas.lt/2015/11/database-chunk-delete/
         Image::whereNull('transect_id')->delete();
     }
 }
