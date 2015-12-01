@@ -18,6 +18,7 @@ class Kernel extends HttpKernel
         'Illuminate\Session\Middleware\StartSession',
         'Illuminate\View\Middleware\ShareErrorsFromSession',
         'Dias\Http\Middleware\VerifyCsrfToken',
+        'Dias\Http\Middleware\UpdateUserActivity',
     ];
 
     /**

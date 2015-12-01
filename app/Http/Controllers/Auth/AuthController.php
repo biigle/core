@@ -4,11 +4,11 @@ namespace Dias\Http\Controllers\Auth;
 
 use Dias\Http\Controllers\Controller;
 use Dias\User;
-use Dias\Events\UserLoggedInEvent;
 use Auth;
 use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
 
 class AuthController extends Controller
 {
@@ -23,8 +23,7 @@ class AuthController extends Controller
     |
     */
 
-    // disable default trait and implement own authentication
-    use AuthenticatesUsers;
+    use AuthenticatesUsers, ThrottlesLogins;
 
     /**
      * Create a new authentication controller instance.
@@ -34,8 +33,7 @@ class AuthController extends Controller
     {
         $this->middleware('guest', ['except' => 'getLogout']);
 
-        // The post register / login redirect path.
-        $this->redirectTo = route('home');
+        $this->redirectPath = route('home');
     }
 
     /**
@@ -65,42 +63,5 @@ class AuthController extends Controller
         $user->save();
 
         return $user;
-    }
-
-    /**
-     * Handle a login request to the application.
-     * Overwrites the trait to show a custom error response.
-     *
-     * @param  Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function postLogin(Request $request)
-    {
-        $this->validate($request, User::$authRules);
-
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials, $request->has('remember'))) {
-            event(new UserLoggedInEvent(Auth::user()));
-
-            return redirect()->intended($this->redirectPath());
-        }
-
-        return redirect('/auth/login')
-            ->withInput($request->only('email', 'remember'))
-            ->withErrors(['email' => trans('auth.failed')]);
-    }
-
-    /**
-     * Log the user out of the application.
-     * Overwrites the trait to redirect to the `home` route.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function getLogout()
-    {
-        Auth::logout();
-
-        return redirect()->route('home');
     }
 }
