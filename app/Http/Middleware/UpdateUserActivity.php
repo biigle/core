@@ -27,7 +27,7 @@ class UpdateUserActivity
     }
 
     /**
-     * Handle an incoming request.
+     * Handle an outgoing response.
      *
      * @param  Request  $request
      * @param  Closure  $next
@@ -35,11 +35,13 @@ class UpdateUserActivity
      */
     public function handle($request, Closure $next)
     {
+        $response = $next($request);
+
         if ($user = $this->auth->user()) {
             $user->login_at = new Carbon;
             $user->save();
         }
 
-        return $next($request);
+        return $response;
     }
 }

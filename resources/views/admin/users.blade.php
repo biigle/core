@@ -8,7 +8,7 @@
         <tr>
             <th>Name</th>
             <th>Email</th>
-            <th>Last login</th>
+            <th>Last activity</th>
         </tr>
     </thead>
     <tbody>
