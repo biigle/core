@@ -16,7 +16,7 @@ class TransectController extends Controller
      */
     public function create()
     {
-        $project = $this->requireNotNull(Project::find($this->request->input('project')));
+        $project = Project::findOrFail($this->request->input('project'));
         $this->requireCanEdit($project);
 
         return view('transects::create')
@@ -31,9 +31,7 @@ class TransectController extends Controller
      */
     public function index($id)
     {
-        $transect = $this->requireNotNull(
-            Transect::with('projects', 'images')->find($id)
-        );
+        $transect = Transect::with('projects', 'images')->findOrFail($id);
         $this->requireCanSee($transect);
 
         return view('transects::index')

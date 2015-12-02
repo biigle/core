@@ -15,7 +15,7 @@ class ImageController extends Controller
      */
     public function index($id)
     {
-        $image = $this->requireNotNull(Image::find($id));
+        $image = Image::findOrFail($id);
         $this->requireCanSee($image);
         $exifKeys = ['DateTime', 'Model', 'ShutterSpeedValue', 'ApertureValue', 'Flash', 'GPS Latitude', 'GPS Longitude', 'GPS Altitude'];
         $image->setAttribute('exif', $image->getExif());
