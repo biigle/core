@@ -60,7 +60,7 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
-        $project = $this->requireNotNull(Project::find($id));
+        $project = Project::findOrFail($id);
         $this->requireCanSee($project);
 
         return $project;
@@ -84,7 +84,7 @@ class ProjectController extends Controller
      */
     public function update($id)
     {
-        $project = $this->requireNotNull(Project::find($id));
+        $project = Project::findOrFail($id);
         $this->requireCanAdmin($project);
 
         $this->validate($this->request, Project::$updateRules);
@@ -154,7 +154,7 @@ class ProjectController extends Controller
      */
     public function destroy($id)
     {
-        $project = $this->requireNotNull(Project::find($id));
+        $project = Project::findOrFail($id);
         $this->requireCanAdmin($project);
 
         try {

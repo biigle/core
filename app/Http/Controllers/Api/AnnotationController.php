@@ -31,9 +31,9 @@ class AnnotationController extends Controller
      */
     public function show($id)
     {
-        $annotation = $this->requireNotNull(Annotation::with(['points' => function ($query) {
+        $annotation = Annotation::with(['points' => function ($query) {
             $query->orderBy('index', 'asc');
-        }])->find($id));
+        }])->findOrFail($id);
         $this->requireCanSee($annotation);
 
         // image will be fetched by requireCanSee but shouldn't be returned
@@ -67,7 +67,7 @@ class AnnotationController extends Controller
      */
     public function update($id)
     {
-        $annotation = $this->requireNotNull(Annotation::with('points')->find($id));
+        $annotation = Annotation::with('points')->findOrFail($id);
         $this->requireCanEdit($annotation);
 
         // from a JSON request, the array may already be decoded
@@ -95,7 +95,7 @@ class AnnotationController extends Controller
      */
     public function destroy($id)
     {
-        $annotation = $this->requireNotNull(Annotation::find($id));
+        $annotation = Annotation::findOrFail($id);
         $this->requireCanEdit($annotation);
 
         $annotation->delete();

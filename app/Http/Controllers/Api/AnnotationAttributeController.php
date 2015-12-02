@@ -6,13 +6,7 @@ use Dias\Annotation;
 
 class AnnotationAttributeController extends ModelWithAttributesController
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function getModel($id)
-    {
-        return Annotation::find($id);
-    }
+    protected $model = Annotation::class;
 
     // API DOC FOR INHERITED METHODS
 

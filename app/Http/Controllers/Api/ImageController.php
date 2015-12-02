@@ -61,7 +61,7 @@ class ImageController extends Controller
      */
     public function show($id)
     {
-        $image = $this->requireNotNull(Image::with('transect')->find($id));
+        $image = Image::with('transect')->findOrFail($id);
         $this->requireCanSee($image);
         $image->setAttribute('exif', $image->getExif());
         $size = $image->getSize();
@@ -87,7 +87,7 @@ class ImageController extends Controller
      */
     public function showThumb($id)
     {
-        $image = $this->requireNotNull(Image::find($id));
+        $image = Image::findOrFail($id);
         $this->requireCanSee($image);
 
         return $image->getThumb();
@@ -109,7 +109,7 @@ class ImageController extends Controller
      */
     public function showFile($id)
     {
-        $image = $this->requireNotNull(Image::find($id));
+        $image = Image::findOrFail($id);
         $this->requireCanSee($image);
 
         return $image->getFile();

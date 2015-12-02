@@ -38,7 +38,7 @@ class ImageAnnotationController extends Controller
      */
     public function index($id)
     {
-        $image = $this->requireNotNull(Image::find($id));
+        $image = Image::findOrFail($id);
         $this->requireCanSee($image);
 
         return $image->annotations()->with(['points' => function ($query) {
@@ -95,7 +95,7 @@ class ImageAnnotationController extends Controller
      */
     public function store($id)
     {
-        $image = $this->requireNotNull(Image::find($id));
+        $image = Image::findOrFail($id);
         $this->requireCanEdit($image);
 
         $this->validate($this->request, Image::$createAnnotationRules);

@@ -9,12 +9,12 @@ class AnnotationLabelController extends Controller
 {
     /**
      * Shows all labels of the specified annotation.
-     * 
+     *
      * @api {get} annotations/:id/labels Get all labels
      * @apiGroup Annotations
      * @apiName IndexAnnotationLabels
      * @apiPermission projectMember
-     * 
+     *
      * @apiParam {Number} id The annotation ID.
      * @apiSuccessExample {json} Success response:
      * [
@@ -42,7 +42,7 @@ class AnnotationLabelController extends Controller
      */
     public function index($id)
     {
-        $annotation = $this->requireNotNull(Annotation::find($id));
+        $annotation = Annotation::findOrFail($id);
         $this->requireCanSee($annotation);
 
         return $annotation->labels;
@@ -50,12 +50,12 @@ class AnnotationLabelController extends Controller
 
     /**
      * Creates a new label for the specified annotation.
-     * 
+     *
      * @api {post} annotations/:id/labels Attach a new label
      * @apiGroup Annotations
      * @apiName StoreAnnotationLabels
      * @apiPermission projectEditor
-     * 
+     *
      * @apiParam {Number} id The annotation ID.
      * @apiParam (Required arguments) {Number} label_id The ID of the label category to attach to the annotation.
      * @apiParam (Required arguments) {Number} confidence The level of confidence for this annotation label.
@@ -87,7 +87,7 @@ class AnnotationLabelController extends Controller
     public function store($id)
     {
         $this->validate($this->request, Annotation::$attachLabelRules);
-        $annotation = $this->requireNotNull(Annotation::find($id));
+        $annotation = Annotation::findOrFail($id);
         $this->requireCanEdit($annotation);
 
         $labelId = $this->request->input('label_id');
@@ -103,12 +103,12 @@ class AnnotationLabelController extends Controller
 
     /**
      * Updates the attributes of the specified annotation label.
-     * 
+     *
      * @api {put} annotation-labels/:id Update a label
      * @apiGroup Annotations
      * @apiName UpdateAnnotationLabels
      * @apiPermission projectEditor
-     * 
+     *
      * @apiParam {Number} id The annotation **label** ID (not the annotation ID).
      * @apiParam (Attributes that can be updated) {Number} confidence The level of confidence for this annotation label.
      * @apiParamExample {String} Request example:
@@ -118,7 +118,7 @@ class AnnotationLabelController extends Controller
      */
     public function update($id)
     {
-        $annotationLabel = $this->requireNotNull(AnnotationLabel::find($id));
+        $annotationLabel = AnnotationLabel::findOrFail($id);
         $this->requireCanEdit($annotationLabel);
 
         $annotationLabel->confidence = $this->request->input(
@@ -131,12 +131,12 @@ class AnnotationLabelController extends Controller
 
     /**
      * Deletes the specified annotation label.
-     * 
+     *
      * @api {delete} annotation-labels/:id Delete a label
      * @apiGroup Annotations
      * @apiName DeleteAnnotationLabels
      * @apiPermission projectEditor
-     * 
+     *
      * @apiParam {Number} id The annotation **label** ID (not the annotation ID).
      *
      * @param int  $id
@@ -144,7 +144,7 @@ class AnnotationLabelController extends Controller
      */
     public function destroy($id)
     {
-        $annotationLabel = $this->requireNotNull(AnnotationLabel::find($id));
+        $annotationLabel = AnnotationLabel::findOrFail($id);
         $this->requireCanEdit($annotationLabel);
 
         $annotationLabel->delete();

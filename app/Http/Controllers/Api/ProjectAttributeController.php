@@ -6,13 +6,7 @@ use Dias\Project;
 
 class ProjectAttributeController extends ModelWithAttributesController
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function getModel($id)
-    {
-        return Project::find($id);
-    }
+    protected $model = Project::class;
 
     // API DOC FOR INHERITED METHODS
 

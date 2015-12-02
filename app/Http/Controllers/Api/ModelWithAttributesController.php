@@ -26,7 +26,9 @@ abstract class ModelWithAttributesController extends Controller
      * @param int $id ModelWithAttributes ID
      * @return \Dias\Model\ModelWithAttributes
      */
-    abstract protected function getModel($id);
+    protected function findOrFail($id) {
+        return call_user_func([$this->model, 'findOrFail'], $id);
+    }
 
     /**
      * Shows all attributes of the specified model.
@@ -50,7 +52,7 @@ abstract class ModelWithAttributesController extends Controller
      */
     public function index($id)
     {
-        $model = $this->requireNotNull($this->getModel($id));
+        $model = $this->findOrFail($id);
         if ($model instanceof BelongsToProjectContract) {
             $this->requireCanSee($model);
         }
@@ -80,12 +82,18 @@ abstract class ModelWithAttributesController extends Controller
      */
     public function show($modelId, $name)
     {
-        $model = $this->requireNotNull($this->getModel($modelId));
+        $model = $this->findOrFail($modelId);
         if ($model instanceof BelongsToProjectContract) {
             $this->requireCanSee($model);
         }
 
-        return $this->requireNotNull($model->getDiasAttribute($name));
+        $attribute = $model->getDiasAttribute($name);
+
+        if ($attribute === null) {
+            abort(404);
+        }
+
+        return $attribute;
     }
 
     /**
@@ -114,7 +122,7 @@ abstract class ModelWithAttributesController extends Controller
     public function store($id)
     {
         $this->validate($this->request, Attribute::$attachRules);
-        $model = $this->requireNotNull($this->getModel($id));
+        $model = $this->findOrFail($id);
         if ($model instanceof BelongsToProjectContract) {
             $this->requireCanEdit($model);
         }
@@ -149,7 +157,7 @@ abstract class ModelWithAttributesController extends Controller
     public function update($id, $name)
     {
         $this->validate($this->request, Attribute::$updateRules);
-        $model = $this->requireNotNull($this->getModel($id));
+        $model = $this->findOrFail($id);
 
         if ($model instanceof BelongsToProjectContract) {
             $this->requireCanEdit($model);
@@ -175,7 +183,7 @@ abstract class ModelWithAttributesController extends Controller
      */
     public function destroy($id, $name)
     {
-        $model = $this->requireNotNull($this->getModel($id));
+        $model = $this->findOrFail($id);
 
         if ($model instanceof BelongsToProjectContract) {
             $this->requireCanEdit($model);

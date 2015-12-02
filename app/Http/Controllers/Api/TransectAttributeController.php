@@ -6,13 +6,7 @@ use Dias\Transect;
 
 class TransectAttributeController extends ModelWithAttributesController
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function getModel($id)
-    {
-        return Transect::find($id);
-    }
+    protected $model = Transect::class;
 
     // API DOC FOR INHERITED METHODS
 

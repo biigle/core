@@ -38,21 +38,6 @@ abstract class AdvancedController extends BaseController
     }
 
     /**
-     * Requires the thing to be not `null` or aborts with 404.
-     *
-     * @param mixed $thing
-     * @return mixed the thing if it is not `null`
-     */
-    protected function requireNotNull($thing)
-    {
-        if ($thing === null) {
-            abort(404, 'The element does not exist.');
-        }
-
-        return $thing;
-    }
-
-    /**
      * Requires the requesting user to be able to see the thing.
      *
      * @param BelongsToProject $thing a thing that belongs to a project

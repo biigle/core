@@ -37,7 +37,7 @@ class ProjectUserController extends Controller
      */
     public function index($projectId)
     {
-        $project = $this->requireNotNull(Project::find($projectId));
+        $project = Project::findOrFail($projectId);
         $this->requireCanSee($project);
 
         return $project->users;
@@ -62,7 +62,7 @@ class ProjectUserController extends Controller
      */
     public function update($projectId, $userId)
     {
-        $project = $this->requireNotNull(Project::find($projectId));
+        $project = Project::findOrFail($projectId);
         $this->requireCanAdmin($project);
 
         $role = Role::find($this->request->input('project_role_id'));
@@ -98,7 +98,7 @@ class ProjectUserController extends Controller
      */
     public function attach($projectId, $userId)
     {
-        $project = $this->requireNotNull(Project::find($projectId));
+        $project = Project::findOrFail($projectId);
         $this->requireCanAdmin($project);
 
         $user = User::find($userId);
@@ -133,7 +133,7 @@ class ProjectUserController extends Controller
      */
     public function destroy($projectId, $userId)
     {
-        $project = $this->requireNotNull(Project::find($projectId));
+        $project = Project::findOrFail($projectId);
 
         // the user is only allowed to do this if they are admin or want to
         // remove themselves

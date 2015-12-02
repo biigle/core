@@ -25,7 +25,7 @@ class TransectImageController extends Controller
      */
     public function index($id)
     {
-        $transect = $this->requireNotNull(Transect::find($id));
+        $transect = Transect::findOrFail($id);
         $this->requireCanSee($transect);
 
         return $transect->images()->select('id')->lists('id');

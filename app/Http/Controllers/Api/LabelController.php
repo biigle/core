@@ -64,7 +64,7 @@ class LabelController extends Controller
      */
     public function show($id)
     {
-        return $this->requireNotNull(Label::whereNull('project_id')->find($id));
+        return Label::whereNull('project_id')->findOrFail($id);
     }
 
     /**
@@ -138,7 +138,7 @@ class LabelController extends Controller
     public function update($id)
     {
         $this->validate($this->request, Label::$updateRules);
-        $label = $this->requireNotNull(Label::find($id));
+        $label = Label::findOrFail($id);
 
         if ($label->project_id === null) {
             $this->requireAdmin();
@@ -172,7 +172,7 @@ class LabelController extends Controller
      */
     public function destroy($id)
     {
-        $label = $this->requireNotNull(Label::find($id));
+        $label = Label::findOrFail($id);
 
         if ($label->project_id === null) {
             $this->requireAdmin();

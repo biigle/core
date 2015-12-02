@@ -19,13 +19,7 @@ class LabelAttributeController extends ModelWithAttributesController
         $this->middleware('admin', ['except' => ['index', 'show']]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getModel($id)
-    {
-        return Label::find($id);
-    }
+    protected $model = Label::class;
 
     // API DOC FOR INHERITED METHODS
 

@@ -6,13 +6,7 @@ use Dias\Image;
 
 class ImageAttributeController extends ModelWithAttributesController
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function getModel($id)
-    {
-        return Image::find($id);
-    }
+    protected $model = Image::class;
 
     // API DOC FOR INHERITED METHODS
 

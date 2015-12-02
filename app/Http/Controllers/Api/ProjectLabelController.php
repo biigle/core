@@ -39,7 +39,7 @@ class ProjectLabelController extends Controller
      */
     public function index($id)
     {
-        $project = $this->requireNotNull(Project::find($id));
+        $project = Project::findOrFail($id);
         $this->requireCanSee($project);
 
         return $project->labels;

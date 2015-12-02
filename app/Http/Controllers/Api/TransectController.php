@@ -8,12 +8,12 @@ class TransectController extends Controller
 {
     /**
      * Displays the specified transect.
-     * 
+     *
      * @api {get} transects/:id Get a transect
      * @apiGroup Transects
      * @apiName ShowTransects
      * @apiPermission projectMember
-     * 
+     *
      * @apiParam {Number} id The transect ID.
      *
      * @apiSuccessExample {json} Success response:
@@ -32,7 +32,7 @@ class TransectController extends Controller
      */
     public function show($id)
     {
-        $transect = $this->requireNotNull(Transect::find($id));
+        $transect = Transect::findOrFail($id);
         $this->requireCanSee($transect);
 
         return $transect;
@@ -40,14 +40,14 @@ class TransectController extends Controller
 
     /**
      * Updates the attributes of the specified transect.
-     * 
+     *
      * @api {put} transects/:id Update a transect
      * @apiGroup Transects
      * @apiName UpdateTransects
      * @apiPermission projectAdmin
-     * 
+     *
      * @apiParam {Number} id The transect ID.
-     * 
+     *
      * @apiParam (Attributes that can be updated) {String} name Name of the transect.
      *
      * @param  int  $id
@@ -55,7 +55,7 @@ class TransectController extends Controller
      */
     public function update($id)
     {
-        $transect = $this->requireNotNull(Transect::find($id));
+        $transect = Transect::findOrFail($id);
         $this->requireCanAdmin($transect);
         $transect->name = $this->request->input('name', $transect->name);
         $transect->save();

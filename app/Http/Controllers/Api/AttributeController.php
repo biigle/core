@@ -65,7 +65,7 @@ class AttributeController extends Controller
      */
     public function show($id)
     {
-        return $this->requireNotNull(Attribute::find($id));
+        return Attribute::findOrFail($id);
     }
 
     /**
@@ -120,7 +120,7 @@ class AttributeController extends Controller
      */
     public function destroy($id)
     {
-        $attribute = $this->requireNotNull(Attribute::find($id));
+        $attribute = Attribute::findOrFail($id);
 
         try {
             $attribute->delete();

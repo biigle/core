@@ -36,7 +36,7 @@ class ProjectTransectController extends Controller
      */
     public function index($id)
     {
-        $project = $this->requireNotNull(Project::find($id));
+        $project = Project::findOrFail($id);
         $this->requireCanSee($project);
 
         return $project->transects;
@@ -79,7 +79,7 @@ class ProjectTransectController extends Controller
      */
     public function store($id)
     {
-        $project = $this->requireNotNull(Project::find($id));
+        $project = Project::findOrFail($id);
         $this->requireCanAdmin($project);
         $this->validate($this->request, Transect::$createRules);
 
@@ -140,9 +140,9 @@ class ProjectTransectController extends Controller
     {
         // user must be able to admin the transect *and* the project it should
         // be attached to
-        $transect = $this->requireNotNull(Transect::find($transectId));
+        $transect = Transect::findOrFail($transectId);
         $this->requireCanAdmin($transect);
-        $project = $this->requireNotNull(Project::find($projectId));
+        $project = Project::findOrFail($projectId);
         $this->requireCanAdmin($project);
 
         $project->addTransectId($transect->id);
@@ -170,9 +170,9 @@ class ProjectTransectController extends Controller
      */
     public function destroy($projectId, $transectId)
     {
-        $transect = $this->requireNotNull(Transect::find($transectId));
+        $transect = Transect::findOrFail($transectId);
         $this->requireCanAdmin($transect);
-        $project = $this->requireNotNull(Project::find($projectId));
+        $project = Project::findOrFail($projectId);
 
         $project->removeTransectId($transectId, $this->request->has('force'));
 

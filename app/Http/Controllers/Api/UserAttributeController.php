@@ -19,13 +19,7 @@ class UserAttributeController extends ModelWithAttributesController
         $this->middleware('admin', ['except' => ['index', 'show']]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function getModel($id)
-    {
-        return User::find($id);
-    }
+    protected $model = User::class;
 
     // API DOC FOR INHERITED METHODS
 

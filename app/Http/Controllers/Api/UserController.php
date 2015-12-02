@@ -127,7 +127,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        return $this->requireNotNull(User::find($id));
+        return User::findOrFail($id);
     }
 
     /**
@@ -187,7 +187,7 @@ class UserController extends Controller
 
         $request = $this->request;
 
-        $user = $this->requireNotNull(User::find($id));
+        $user = User::findOrFail($id);
         $this->validate($request, $user->updateRules());
 
         if ($request->has('password')) {
@@ -323,7 +323,7 @@ class UserController extends Controller
             abort(400, 'The own user cannot be deleted using this endpoint.');
         }
 
-        $user = $this->requireNotNull(User::find($id));
+        $user = User::findOrFail($id);
         $user->delete();
 
         return response('Deleted.', 200);
