@@ -25,7 +25,7 @@ class ProjectController extends Controller
      */
     public function index($id)
     {
-        $project = $this->requireNotNull(Project::find($id));
+        $project = Project::findOrFail($id);
         $this->requireCanSee($project);
 
         return view('projects::index')
