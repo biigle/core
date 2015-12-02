@@ -15,7 +15,7 @@ class AnnotationController extends Controller
      */
     public function index($id)
     {
-        $image = $this->requireNotNull(Image::find($id));
+        $image = Image::findOrFail($id);
         $this->requireCanSee($image);
 
         if ($this->user->isAdmin) {
