@@ -14,6 +14,7 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
         var initialLimit = 20;
 
         var imagesLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.images';
+        var orderingLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.ordering';
 
         var ordering = [];
 
@@ -22,7 +23,7 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
         // number of currently shown images
         this.limit = initialLimit;
 
-        // check for a stored image sorting sequence
+        // check for a stored image sequence
         if (window.localStorage[imagesLocalStorageKey]) {
             _this.sequence = JSON.parse(window.localStorage[imagesLocalStorageKey]);
             // check if all images loaded from storage are still there in the transect.
@@ -32,12 +33,16 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
             angular.copy(TRANSECT_IMAGES, _this.sequence);
         }
 
+        // check for a stored image ordering
+        if (window.localStorage[orderingLocalStorageKey]) {
+            ordering = JSON.parse(window.localStorage[orderingLocalStorageKey]);
+        }
+
         // number of overall images
         this.length = this.sequence.length;
 
         var updateSequence = function () {
             if (ordering.length === 0) {
-                // reset, no filtering needed
                 angular.copy(TRANSECT_IMAGES, _this.sequence);
             } else {
                 angular.copy(ordering, _this.sequence);
@@ -67,6 +72,7 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
             // reset limit
             _this.limit = initialLimit;
             $rootScope.$broadcast('transects.images.new-ordering');
+            window.localStorage[orderingLocalStorageKey] = JSON.stringify(ordering);
         };
 
         this.toggleFilter = function (id) {
