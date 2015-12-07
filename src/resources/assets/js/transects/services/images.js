@@ -5,7 +5,7 @@
  * @memberOf dias.transects
  * @description Service managing the list of images to display
  */
-angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSECT_IMAGES, filterSubset, flags) {
+angular.module('dias.transects').service('images', function ($rootScope, TRANSECT_ID, TRANSECT_IMAGES, filterSubset, flags) {
         "use strict";
 
         var _this = this;
@@ -63,11 +63,15 @@ angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSE
             updateSequence();
             // reset limit
             _this.limit = initialLimit;
+            $rootScope.$broadcast('transects.images.new-ordering');
         };
 
         this.toggleFilter = function (id) {
             flags.toggleFilter(id);
             updateSequence();
+            // reset limit
+            _this.limit = initialLimit;
+            $rootScope.$broadcast('transects.images.new-filtering');
         };
 
         this.advance = function (step) {

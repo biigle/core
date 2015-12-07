@@ -17,9 +17,6 @@ angular.module('dias.transects').controller('TransectController', function ($sco
         };
 
         // set the ordering of the displayed images
-        $scope.setImagesSequence = function (sequence) {
-            images.reorder(sequence);
-            $scope.$broadcast('transects.images.new-sequence');
-        };
+        $scope.setImagesSequence = images.reorder;
 	}
 );
