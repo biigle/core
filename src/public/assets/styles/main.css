@@ -82,15 +82,16 @@
   position: absolute;
   top: 0;
   left: 0;
-  padding-left: 5px; }
+  padding: 5px 0 0 5px; }
   .transect-figure__flags .figure-flag {
     display: inline-block;
-    top: -1px;
-    color: red;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: red;
+    box-shadow: 0 0 2px black;
     position: relative;
-    vertical-align: top;
-    z-index: 1000;
-    cursor: default; }
+    z-index: 1000; }
 
 .transect-info-popover__projects {
   max-height: 50px;

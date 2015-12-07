@@ -90,17 +90,18 @@ $transect-image-margin: 4px;
     position: absolute;
     top: 0;
     left: 0;
-    padding-left: 5px;
+    padding: 5px 0 0 5px;
 
     .figure-flag {
         display: inline-block;
-        top: -1px;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
         // default flag color
-        color: red;
+        background-color: red;
+        box-shadow: 0 0 2px black;
         position: relative;
-        vertical-align: top;
         z-index: 1000;
-        cursor: default;
     }
 }
 
