@@ -55,7 +55,7 @@ angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSE
         };
 
         this.progress = function () {
-            return _this.length ? Math.min(_this.limit / _this.length, 1) : 0;
+            return length > 0 ? Math.min(_this.limit / length, 1) : 0;
         };
 
         this.reorder = function (ids) {
