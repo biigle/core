@@ -29,13 +29,16 @@
         <button class="btn btn-default transect-menubar__item" data-popover-placement="right" data-uib-popover-template="'infoPopover.html'" type="button" title="Show transect information">
             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
         </button>
+        <button class="btn btn-default transect-menubar__item" data-popover-placement="right" data-uib-popover-template="'settingsPopover.html'" type="button" title="Show settings">
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+        </button>
         @foreach ($modules->getMixins('transectsMenubar') as $module => $nestedMixins)
             @include($module.'::transectsMenubar')
         @endforeach
     </div>
     <div class="transect__images" data-ng-controller="ImagesController">
         <figure class="transect-figure" data-ng-repeat="id in images.sequence | limitTo: images.limit">
-            <div class="transect-figure__flags">
+            <div class="transect-figure__flags" data-ng-if="settings.show_flags">
                 <span class="figure-flag" data-ng-repeat="flag in getFlagsFor(id) track by $index" title="@{{flag.title}}" data-ng-class="flag.name"></span>
             </div>
             <img src="{{ asset(config('thumbnails.empty_url')) }}" data-lazy-image="{{ url('api/v1/images/') }}/@{{ id }}/thumb">
@@ -57,6 +60,22 @@
                     <li>{{ $project->name }}</li>
                 @endforeach
             </ul>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="settingsPopover.html">
+        <div class="transect-settings-popover">
+            <div>
+                <span class="settings-label">
+                    Flags&nbsp;<span class="glyphicon glyphicon-question-sign help-icon" aria-hidden="true" title="Flags mark images with special properties, e.g. those having annotations."></span>
+                </span>
+                <span class="settings-control">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default" data-ng-class="{active: settings.show_flags}" data-ng-click="setSettings('show_flags', true)">Show</button>
+                        <button type="button" class="btn btn-default" data-ng-class="{active: !settings.show_flags}" data-ng-click="setSettings('show_flags', false)">Hide</button>
+                    </div>
+                </span>
+            </div>
         </div>
     </script>
 </div>

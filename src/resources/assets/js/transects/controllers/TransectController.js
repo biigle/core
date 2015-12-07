@@ -12,6 +12,7 @@ angular.module('dias.transects').controller('TransectController', function ($sco
         var initialLimit = 20;
 
         var imagesLocalStorageKey = 'dias.transects.' + $attrs.transectId + '.images';
+        var settingsLocalStorageKey = 'dias.transects.settings';
 
         $scope.transectId = $attrs.transectId;
 
@@ -29,6 +30,19 @@ angular.module('dias.transects').controller('TransectController', function ($sco
             // the flag and as additional class for the flag element
             flags: {}
         };
+
+        // client-side (default) settings for all transect index pages
+        $scope.settings = {
+            show_flags: true
+        };
+
+        // extend/override default settings with local ones
+        if (window.localStorage[settingsLocalStorageKey]) {
+            angular.extend(
+                $scope.settings,
+                JSON.parse(window.localStorage[settingsLocalStorageKey])
+            );
+        }
 
         // check for a stored image sorting sequence
         if (window.localStorage[imagesLocalStorageKey]) {
@@ -97,6 +111,11 @@ angular.module('dias.transects').controller('TransectController', function ($sco
             }
 
             return output;
+        };
+
+        $scope.setSettings = function (key, value) {
+            $scope.settings[key] = value;
+            window.localStorage[settingsLocalStorageKey] = JSON.stringify($scope.settings);
         };
 	}
 );

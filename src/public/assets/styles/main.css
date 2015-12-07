@@ -98,4 +98,10 @@
   overflow: auto;
   padding-left: 1em; }
 
+.transect-settings-popover .settings-label {
+  padding-right: 0.5em; }
+
+.transect-settings-popover .help-icon {
+  cursor: help; }
+
 /*# sourceMappingURL=main.css.map */
