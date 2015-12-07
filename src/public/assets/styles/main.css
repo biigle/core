@@ -78,6 +78,20 @@
     .transect-figure:hover a.info-link:hover {
       opacity: 1; }
 
+.transect-figure__flags {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding-left: 5px; }
+  .transect-figure__flags .figure-flag {
+    display: inline-block;
+    top: -1px;
+    color: red;
+    position: relative;
+    vertical-align: top;
+    z-index: 1000;
+    cursor: default; }
+
 .transect-info-popover__projects {
   max-height: 50px;
   overflow: auto;

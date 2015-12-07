@@ -23,7 +23,11 @@ angular.module('dias.transects').controller('TransectController', function ($sco
             // number of currently shown images
             limit: initialLimit,
             // number of overall images
-            length: TRANSECT_IMAGES.length
+            length: TRANSECT_IMAGES.length,
+            // flags to mark special images consisting of the image IDs to mark, a title
+            // as description for the flag element and a flag name that will be used to identify
+            // the flag and as additional class for the flag element
+            flags: {}
         };
 
         // check for a stored image sorting sequence
@@ -45,6 +49,7 @@ angular.module('dias.transects').controller('TransectController', function ($sco
             };
         };
 
+        // set the ordering of the displayed images
         $scope.setImagesSequence = function (sequence) {
             // TODO distinguish between the image sequence (ordering) and filtering.
             // while one sequence should replace the other (like it is now), an image
@@ -68,6 +73,30 @@ angular.module('dias.transects').controller('TransectController', function ($sco
             // reset limit
             $scope.images.limit = initialLimit;
             $scope.$broadcast('transects.images.new-sequence');
+        };
+
+        $scope.addImageFlags = function (name, ids, title) {
+            $scope.images.flags[name] = {
+                name: name,
+                ids: ids,
+                title: title
+            };
+        };
+
+        $scope.removeImageFlags = function (name) {
+            delete $scope.images.flags[name];
+        };
+
+        $scope.getFlagsFor = function (id) {
+            var output = [];
+            var flags = $scope.images.flags;
+            for (var name in flags) {
+                if (flags[name].ids.indexOf(id) !== -1) {
+                    output.push(flags[name]);
+                }
+            }
+
+            return output;
         };
 	}
 );

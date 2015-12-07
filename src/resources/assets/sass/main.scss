@@ -86,6 +86,24 @@ $transect-image-margin: 4px;
     }
 }
 
+.transect-figure__flags {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-left: 5px;
+
+    .figure-flag {
+        display: inline-block;
+        top: -1px;
+        // default flag color
+        color: red;
+        position: relative;
+        vertical-align: top;
+        z-index: 1000;
+        cursor: default;
+    }
+}
+
 .transect-info-popover__projects {
     max-height: 50px;
     overflow: auto;
