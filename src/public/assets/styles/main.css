@@ -101,7 +101,19 @@
 .transect-settings-popover .settings-label {
   padding-right: 0.5em; }
 
-.transect-settings-popover .help-icon {
+.help-icon {
   cursor: help; }
+
+.transect-filter-popover .filter-list {
+  margin-top: 1em; }
+
+.transect-filter-popover .filter-item {
+  cursor: pointer;
+  padding: 0.5em 1em; }
+  .transect-filter-popover .filter-item:hover {
+    background-color: #eee; }
+  .transect-filter-popover .filter-item.active {
+    background-color: #337ab7;
+    color: white; }
 
 /*# sourceMappingURL=main.css.map */

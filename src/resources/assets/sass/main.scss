@@ -115,8 +115,29 @@ $transect-image-margin: 4px;
     .settings-label {
         padding-right: 0.5em;
     }
+}
 
-    .help-icon {
-        cursor: help;
+.help-icon {
+    cursor: help;
+}
+
+.transect-filter-popover {
+
+    .filter-list {
+        margin-top: 1em;
+    }
+
+    .filter-item {
+        cursor: pointer;
+        padding: 0.5em 1em;
+
+        &:hover {
+            background-color: #eee;
+        }
+
+        &.active {
+            background-color: #337ab7;
+            color: white;
+        }
     }
 }

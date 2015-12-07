@@ -6,7 +6,7 @@
  * @description Controller for displaying the huge amout of images of a
  * transect on a singe page.
  */
-angular.module('dias.transects').controller('ImagesController', function ($scope, $element, $timeout, $q) {
+angular.module('dias.transects').controller('ImagesController', function ($scope, $element, $timeout, $q, images) {
 		"use strict";
 
 		var element = $element[0];
@@ -30,7 +30,7 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
 
 		var checkLowerBound = function () {
 			if (needsNewStep()) {
-				$scope.images.limit += step;
+                images.advance(step);
 				$scope.$apply();
 			}
 		};
@@ -39,7 +39,7 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
 		// uses $timeout to wait for DOM rendering, then checks again
 		var initialize = function () {
 			if (needsNewStep()) {
-				$scope.images.limit += step;
+				images.advance(step);
 				timeoutPromise = $timeout(initialize, 500);
 			} else {
 				// viewport is full, now switch to event listeners for loading
@@ -74,6 +74,8 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
             if (currentlyLoading === 0) maybeLoadNext();
             return deferred.promise;
         };
+
+        $scope.images = images;
 
         // timeout to wait for all image objects to be present in the DOM
 		$timeout(initialize);
