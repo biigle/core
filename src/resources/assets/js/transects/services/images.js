@@ -21,8 +21,6 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
         this.sequence = [];
         // number of currently shown images
         this.limit = initialLimit;
-        // number of overall images
-        var length = TRANSECT_IMAGES.length;
 
         // check for a stored image sorting sequence
         if (window.localStorage[imagesLocalStorageKey]) {
@@ -33,6 +31,9 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
         } else {
             angular.copy(TRANSECT_IMAGES, _this.sequence);
         }
+
+        // number of overall images
+        this.length = this.sequence.length;
 
         var updateSequence = function () {
             if (ordering.length === 0) {
@@ -51,11 +52,13 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
                 filterSubset(_this.sequence, filters[i]);
             }
 
+            _this.length = _this.sequence.length;
+
             window.localStorage[imagesLocalStorageKey] = JSON.stringify(_this.sequence);
         };
 
         this.progress = function () {
-            return length > 0 ? Math.min(_this.limit / length, 1) : 0;
+            return _this.length > 0 ? Math.min(_this.limit / _this.length, 1) : 0;
         };
 
         this.reorder = function (ids) {

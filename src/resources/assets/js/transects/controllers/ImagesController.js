@@ -38,7 +38,7 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
 		// attempts to fill the current viewport with images
 		// uses $timeout to wait for DOM rendering, then checks again
 		var initialize = function () {
-			if (needsNewStep()) {
+			if (needsNewStep() && images.limit <= images.length) {
 				images.advance(step);
 				timeoutPromise = $timeout(initialize, 500);
 			} else {
@@ -55,7 +55,6 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
                 currentlyLoading++;
                 loadStack.pop().resolve();
             }
-            // console.log(loadStack.length);
         };
 
         // returns a promise that gets resolved when the image should load
@@ -80,10 +79,14 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
         // timeout to wait for all image objects to be present in the DOM
 		$timeout(initialize);
         $scope.$on('transects.images.new-ordering', function () {
+            loadStack.length = 0;
+            currentlyLoading = 0;
             $timeout(initialize);
         });
 
         $scope.$on('transects.images.new-filtering', function () {
+            loadStack.length = 0;
+            currentlyLoading = 0;
             $timeout(initialize);
         });
 	}
