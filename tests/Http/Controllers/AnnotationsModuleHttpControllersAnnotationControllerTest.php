@@ -2,7 +2,7 @@
 
 use Dias\Role;
 
-class AnnotationControllerTest extends TestCase {
+class AnnotationsModuleHttpControllersAnnotationControllerTest extends TestCase {
 
    public function testIndex() {
       $project = ProjectTest::create();
