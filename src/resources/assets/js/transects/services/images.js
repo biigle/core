@@ -42,9 +42,11 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
         this.length = this.sequence.length;
 
         var updateSequence = function () {
+            var shouldStore = false;
             if (ordering.length === 0) {
                 angular.copy(TRANSECT_IMAGES, _this.sequence);
             } else {
+                shouldStore = true;
                 angular.copy(ordering, _this.sequence);
                 // take only those IDs that actually belong to the transect
                 // (e.g. when IDs are taken from local storage but the transect has changed)
@@ -54,12 +56,18 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
             var filters = flags.getActiveFilters();
 
             for (var i = 0; i < filters.length; i++) {
+                shouldStore = true;
                 filterSubset(_this.sequence, filters[i]);
             }
 
             _this.length = _this.sequence.length;
 
-            window.localStorage[imagesLocalStorageKey] = JSON.stringify(_this.sequence);
+            if (shouldStore) {
+                window.localStorage[imagesLocalStorageKey] = JSON.stringify(_this.sequence);
+            } else {
+                // if there is no special ordering or filtering, the sequence shouldn't be stored
+                window.localStorage.removeItem(imagesLocalStorageKey);
+            }
         };
 
         this.progress = function () {
@@ -68,11 +76,17 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
 
         this.reorder = function (ids) {
             ordering = Array.isArray(ids) ? ids : [];
+            if (ordering.length > 0) {
+                window.localStorage[orderingLocalStorageKey] = JSON.stringify(ordering);
+            } else {
+                // dont save the ordering if it equals the TRANSECT_IMAGES
+                window.localStorage.removeItem(orderingLocalStorageKey);
+            }
+
             updateSequence();
             // reset limit
             _this.limit = initialLimit;
             $rootScope.$broadcast('transects.images.new-ordering');
-            window.localStorage[orderingLocalStorageKey] = JSON.stringify(ordering);
         };
 
         this.toggleFilter = function (id) {
