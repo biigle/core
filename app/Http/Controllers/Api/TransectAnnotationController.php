@@ -70,13 +70,9 @@ class TransectAnnotationController extends Controller
         $this->requireCanSee($transect);
 
         return $transect->images()
-                ->with('annotations.labels', 'annotations.shape', 'annotations.points')
                 // take only the images having annotations
-                ->whereExists(function ($query) {
-                    $query->select(\DB::raw(1))
-                        ->from('annotations')
-                        ->whereRaw('annotations.image_id = images.id');
-                })
+                ->has('annotations')
+                ->with('annotations.labels', 'annotations.shape', 'annotations.points')
                 ->get();
     }
 }
