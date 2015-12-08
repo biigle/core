@@ -3,6 +3,7 @@
 // }
 
 $transect-image-margin: 4px;
+$transect-image-padding: 0.5em;
 
 .transect-container {
     $navbar-height: 51px;
@@ -67,8 +68,8 @@ $transect-image-margin: 4px;
 
     & a.info-link {
         position: absolute;
-        top: 0.5em;
-        right: 0.5em;
+        top: $transect-image-padding;
+        right: $transect-image-padding;
         color: white;
         padding: 0.3em 0.5em;
         background-color: rgba(0, 0, 0, 0.5);
@@ -90,19 +91,23 @@ $transect-image-margin: 4px;
     position: absolute;
     top: 0;
     left: 0;
-    padding: 5px 0 0 5px;
+    padding-top: $transect-image-padding;
 
     .figure-flag {
-        display: inline-block;
-        width: 15px;
-        height: 15px;
-        border-radius: 50%;
-        // default flag color
-        background-color: red;
-        box-shadow: 0 0 2px black;
         position: relative;
         z-index: 1000;
+        margin-left: $transect-image-padding;
     }
+}
+
+.figure-flag {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    // default flag color
+    background-color: red;
+    border: 2px solid white;
 }
 
 .transect-info-popover__projects {
