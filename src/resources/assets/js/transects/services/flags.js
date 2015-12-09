@@ -66,6 +66,8 @@ angular.module('dias.transects').service('flags', function (TRANSECT_ID, TRANSEC
         };
 
         this.toggleFilter = function (id) {
+            if (!flags.hasOwnProperty(id)) return;
+
             if (filterIsActive(id)) {
                 flags[id].activeFilter = false;
                 activeFilters.splice(activeFilters.indexOf(id), 1);
