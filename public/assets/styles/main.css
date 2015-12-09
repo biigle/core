@@ -5698,6 +5698,8 @@ figcaption {
   .btn-inverse .badge {
     color: #222;
     background-color: #9d9d9d; }
+  .btn-inverse.active, .btn-inverse:active, .btn-inverse:hover, .btn-inverse:focus, .btn-inverse.focus {
+    color: white; }
 
 .messages.container-fluid {
   margin: 0 auto;

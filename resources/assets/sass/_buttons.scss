@@ -1,3 +1,7 @@
 .btn-inverse {
 	@include button-variant($navbar-inverse-color, $navbar-inverse-bg, $navbar-inverse-border);
+
+    &.active, &:active, &:hover, &:focus, &.focus {
+        color: white;
+    }
 }
