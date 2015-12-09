@@ -86,8 +86,8 @@
     </script>
 
     <script type="text/ng-template" id="filterPopover.html">
-        <div class="transect-filter-popover">
-            <strong>Filter</strong>
+        <div class="transect-filter-popover" data-ng-controller="FilterController">
+            <strong>Filter</strong> <small><span data-ng-bind="currentNoImages">2</span> of <span data-ng-bind="totalNoImages">4</span> images</small>
             <ul class="list-group filter-list">
                 @foreach ($modules->getMixins('transectsFilters') as $module => $nestedMixins)
                     @include($module.'::transectsFilters')
