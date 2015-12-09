@@ -5,24 +5,27 @@
  * @memberOf dias.annotations
  * @description Controller for the sidebar
  */
-angular.module('dias.annotations').controller('SidebarController', function ($scope, $rootScope, mapAnnotations) {
+angular.module('dias.annotations').controller('SidebarController', function ($scope, $rootScope, mapAnnotations, REMEMBER_FOLDOUTS) {
 		"use strict";
 
         var foldoutStorageKey = 'dias.annotations.sidebar-foldout';
 
-		// the currently opened sidebar-'extension' is remembered through localStorage
-		$scope.foldout = window.localStorage[foldoutStorageKey] || '';
-        if ($scope.foldout) {
-            $rootScope.$broadcast('sidebar.foldout.open');
-        }
+        $scope.foldout = '';
 
 		$scope.openFoldout = function (name) {
-			$scope.foldout = window.localStorage[foldoutStorageKey] = name;
-			$rootScope.$broadcast('sidebar.foldout.open');
+            // only permanently store the state if it should be remembered
+            if (REMEMBER_FOLDOUTS.indexOf(name) >= 0) {
+                window.localStorage[foldoutStorageKey] = name;
+            } else {
+                window.localStorage.removeItem(foldoutStorageKey);
+            }
+            $scope.foldout = name;
+			$rootScope.$broadcast('sidebar.foldout.open', name);
 		};
 
 		$scope.closeFoldout = function () {
-			$scope.foldout = window.localStorage[foldoutStorageKey] = '';
+            window.localStorage.removeItem(foldoutStorageKey);
+			$scope.foldout = '';
 			$rootScope.$broadcast('sidebar.foldout.close');
 		};
 
@@ -55,5 +58,10 @@ angular.module('dias.annotations').controller('SidebarController', function ($sc
                     break;
             }
         });
+
+        // the currently opened sidebar-'extension' is remembered through localStorage
+        if (window.localStorage[foldoutStorageKey]) {
+            $scope.openFoldout(window.localStorage[foldoutStorageKey]);
+        }
 	}
 );

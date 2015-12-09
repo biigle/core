@@ -125,16 +125,24 @@ html, body {
 .sidebar__controls {
   padding-bottom: 1em; }
 
-.sidebar__permanent, .sidebar__categories {
+.sidebar__permanent, .sidebar__foldout {
   width: 360px;
   border-left: 1px solid #090909;
   padding: 1em; }
 
-.sidebar__categories {
+.sidebar__foldout {
   display: none;
   overflow-y: auto; }
-  .open.sidebar__categories {
+  .open.sidebar__foldout {
     display: block; }
+
+.sidebar__foldout.open {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-flow: column nowrap;
+  -ms-flex-flow: column nowrap;
+  flex-flow: column nowrap; }
 
 .sidebar__minimap {
   background-image: url(../images/noise.png);
@@ -186,14 +194,6 @@ html, body {
   .label-list__item .close {
     color: white;
     text-shadow: none; }
-
-.sidebar__categories.open {
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-flow: column nowrap;
-  -ms-flex-flow: column nowrap;
-  flex-flow: column nowrap; }
 
 .categories-search {
   margin-bottom: 1em; }

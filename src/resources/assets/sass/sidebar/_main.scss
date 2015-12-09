@@ -34,9 +34,14 @@
 	}
 }
 
-.sidebar__categories {
-	@extend %foldout;
-	@extend %sidebar-panel;
+.sidebar__foldout {
+    @extend %foldout;
+    @extend %sidebar-panel;
+}
+
+.sidebar__foldout.open {
+    display: flex;
+    flex-flow: column nowrap;
 }
 
 .sidebar__minimap {

@@ -1,4 +1,4 @@
-<div class="sidebar__categories" data-ng-class="{open:(foldout=='categories')}" data-ng-controller="CategoriesController">
+<div class="sidebar__foldout" data-ng-class="{open:(foldout=='categories')}" data-ng-controller="CategoriesController">
     <div class="categories-search">
         <input class="form-control" type="text" data-ng-model="searchCategory" data-uib-typeahead="category.name for category in categories | filter:$viewValue | limitTo:10" data-typeahead-on-select="selectItem($item)" placeholder="Find category" />
 
