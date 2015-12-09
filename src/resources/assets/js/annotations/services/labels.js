@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service for annotation labels to provide some convenience functions.
  */
-angular.module('dias.annotations').service('labels', function (AnnotationLabel, Label, ProjectLabel, Project, msg, $q) {
+angular.module('dias.annotations').service('labels', function (AnnotationLabel, Label, ProjectLabel, Project, msg, $q, PROJECT_IDS) {
         "use strict";
 
         var selectedLabel;
@@ -15,28 +15,6 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
 
         // this promise is resolved when all labels were loaded
         this.promise = null;
-
-        this.setProjectIds = function (ids) {
-            var deferred = $q.defer();
-            this.promise = deferred.promise;
-            // -1 bcause of global labels
-            var finished = -1;
-
-            // check if all labels are there. if yes, resolve
-            var maybeResolve = function () {
-                if (++finished === ids.length) {
-                    deferred.resolve(labels);
-                }
-            };
-
-            labels[null] = Label.query(maybeResolve);
-
-            ids.forEach(function (id) {
-                Project.get({id: id}, function (project) {
-                    labels[project.name] = ProjectLabel.query({project_id: id}, maybeResolve);
-                });
-            });
-        };
 
         this.fetchForAnnotation = function (annotation) {
             if (!annotation) return;
@@ -125,5 +103,28 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
         this.getCurrentConfidence = function () {
             return currentConfidence;
         };
+
+        // init
+        (function (_this) {
+            var deferred = $q.defer();
+            _this.promise = deferred.promise;
+            // -1 because of global labels
+            var finished = -1;
+
+            // check if all labels are there. if yes, resolve
+            var maybeResolve = function () {
+                if (++finished === PROJECT_IDS.length) {
+                    deferred.resolve(labels);
+                }
+            };
+
+            labels[null] = Label.query(maybeResolve);
+
+            PROJECT_IDS.forEach(function (id) {
+                Project.get({id: id}, function (project) {
+                    labels[project.name] = ProjectLabel.query({project_id: id}, maybeResolve);
+                });
+            });
+        })(this);
     }
 );

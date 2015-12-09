@@ -5,16 +5,11 @@
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
  */
-angular.module('dias.annotations').controller('AnnotatorController', function ($scope, $attrs, images, urlParams, msg, labels) {
+angular.module('dias.annotations').controller('AnnotatorController', function ($scope, images, urlParams, msg, IMAGE_ID) {
         "use strict";
 
         $scope.images = images;
         $scope.imageLoading = true;
-        $scope.editMode = !!$attrs.editMode;
-        // don't parse an empty string
-        $scope.projectIds = $attrs.projectIds ? $attrs.projectIds.split(',') : [];
-
-        labels.setProjectIds($scope.projectIds);
 
         // the current canvas viewport, synced with the URL parameters
         $scope.viewport = {
@@ -103,8 +98,8 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
         document.addEventListener('keydown', handleKeyEvents);
 
         // initialize the images service
-        images.init($attrs.transectId);
+        images.init();
         // display the first image
-        loadImage($attrs.imageId).then(pushState);
+        loadImage(IMAGE_ID).then(pushState);
     }
 );

@@ -1,19 +1,32 @@
 @extends('app')
+@inject('modules', 'Dias\Services\Modules')
 
 @section('title') Annotate @stop
 
 @section('scripts')
 <script src="{{ asset('vendor/annotations/scripts/ol.js') }}"></script>
 <script src="{{ asset('vendor/annotations/scripts/main.js') }}"></script>
+<script type="text/javascript">
+    angular.module('dias.annotations').constant('IMAGE_ID', {{$image->id}});
+    angular.module('dias.annotations').constant('EDIT_MODE', {{$editMode ? 'true' : 'false'}});
+    angular.module('dias.annotations').constant('PROJECT_IDS', [{{$projectIds}}]);
+    angular.module('dias.annotations').constant('TRANSECT_ID', {{$image->transect->id}});
+</script>
+@foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
+    @include($module.'::annotationsScripts', ['mixins' => $nestedMixins])
+@endforeach
 @append
 
 @section('styles')
 <link href="{{ asset('vendor/annotations/styles/ol.css') }}" rel="stylesheet">
 <link href="{{ asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
+@foreach ($modules->getMixins('annotationsStyles') as $module => $nestedMixins)
+    @include($module.'::annotationsStyles', ['mixins' => $nestedMixins])
+@endforeach
 @append
 
 @section('content')
-<div class="annotator__container" data-ng-app="dias.annotations" data-ng-controller="AnnotatorController" data-image-id="{{ $image->id }}" data-transect-id="{{ $image->transect->id }}" data-edit-mode="{{ $editMode }}" data-project-ids="{{ $projectIds }}">
+<div class="annotator__container" data-ng-app="dias.annotations" data-ng-controller="AnnotatorController">
 	<div id="canvas" class="annotator__canvas" data-ng-controller="CanvasController">
 		<div class="canvas__loader" data-ng-class="{active:imageLoading}"></div>
 		@if ($editMode)

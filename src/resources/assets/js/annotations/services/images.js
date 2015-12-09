@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Manages (pre-)loading of the images to annotate.
  */
-angular.module('dias.annotations').service('images', function (TransectImage, URL, $q, filterSubset) {
+angular.module('dias.annotations').service('images', function (TransectImage, URL, $q, filterSubset, TRANSECT_ID) {
 		"use strict";
 
 		var _this = this;
@@ -95,13 +95,13 @@ angular.module('dias.annotations').service('images', function (TransectImage, UR
 		 * Initializes the service for a given transect. Returns a promise that
 		 * is resolved, when the service is initialized.
 		 */
-		this.init = function (transectId) {
-			imageIds = TransectImage.query({transect_id: transectId}, function () {
+		this.init = function () {
+			imageIds = TransectImage.query({transect_id: TRANSECT_ID}, function () {
                 // look for a sequence of image IDs in local storage.
                 // this sequence is produces by the transect index page when the images are
                 // sorted or filtered. we want to reflect the same ordering or filtering here
                 // in the annotator
-                var storedSequence = window.localStorage['dias.transects.' + transectId + '.images'];
+                var storedSequence = window.localStorage['dias.transects.' + TRANSECT_ID + '.images'];
                 if (storedSequence) {
                     storedSequence = JSON.parse(storedSequence);
                     // if there is such a stored sequence, filter out any image IDs that do not
