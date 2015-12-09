@@ -1,7 +1,3 @@
-// .navbar, .messages {
-// 	z-index: 1;
-// }
-
 $transect-image-margin: 4px;
 $transect-image-padding: 0.5em;
 
@@ -64,6 +60,7 @@ $transect-image-padding: 0.5em;
 	img {
 		width: 100%;
 		height: 100%;
+        border-radius: 4px;
 	}
 
     & a.info-link {
