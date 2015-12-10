@@ -14,7 +14,8 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         });
         var annotationLayer = new ol.layer.Vector({
             source: annotationSource,
-            style: styles.features
+            style: styles.features,
+            zIndex: 100
         });
 
 		// select interaction working on "singleclick"
