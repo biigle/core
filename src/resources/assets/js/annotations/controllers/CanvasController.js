@@ -5,17 +5,27 @@
  * @memberOf dias.annotations
  * @description Main controller for the annotation canvas element
  */
-angular.module('dias.annotations').controller('CanvasController', function ($scope, mapImage, mapAnnotations, map, $timeout) {
+angular.module('dias.annotations').controller('CanvasController', function ($scope, mapImage, mapAnnotations, map, $timeout, debounce) {
 		"use strict";
+
+        var mapView = map.getView();
 
 		// update the URL parameters
 		map.on('moveend', function(e) {
-			var view = map.getView();
-			$scope.$emit('canvas.moveend', {
-				center: view.getCenter(),
-				zoom: view.getZoom()
-			});
+            var emit = function () {
+                $scope.$emit('canvas.moveend', {
+                    center: mapView.getCenter(),
+                    zoom: mapView.getZoom()
+                });
+            };
+
+            // dont update immediately but wait for possible new changes
+            debounce(emit, 500, 'annotator.canvas.moveend');
 		});
+
+        map.on('change:view', function () {
+            mapView = map.getView();
+        });
 
 		mapImage.init($scope);
 		mapAnnotations.init($scope);

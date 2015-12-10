@@ -19,6 +19,7 @@ angular.module('dias.annotations').controller('MinimapController', function ($sc
 		});
 
         var mapSize = map.getSize();
+        var mapView = map.getView();
 
 		// get the same layers than the map
 		minimap.addLayer(mapImage.getLayer());
@@ -41,15 +42,21 @@ angular.module('dias.annotations').controller('MinimapController', function ($sc
 
 		// move the viewport rectangle on the minimap
 		var refreshViewport = function () {
-			viewport.setGeometry(ol.geom.Polygon.fromExtent(
-                map.getView().calculateExtent(mapSize)
-            ));
+			viewport.setGeometry(ol.geom.Polygon.fromExtent(mapView.calculateExtent(mapSize)));
 		};
+
+        map.on('change:size', function () {
+            mapSize = map.getSize();
+        });
+
+        map.on('change:view', function () {
+            mapView = map.getView();
+        });
 
 		map.on('postcompose', refreshViewport);
 
 		var dragViewport = function (e) {
-			map.getView().setCenter(e.coordinate);
+			mapView.setCenter(e.coordinate);
 		};
 
 		minimap.on('pointerdrag', dragViewport);
