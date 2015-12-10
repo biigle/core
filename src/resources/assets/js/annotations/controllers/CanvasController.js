@@ -20,7 +20,7 @@ angular.module('dias.annotations').controller('CanvasController', function ($sco
             };
 
             // dont update immediately but wait for possible new changes
-            debounce(emit, 500, 'annotator.canvas.moveend');
+            debounce(emit, 100, 'annotator.canvas.moveend');
 		});
 
         map.on('change:view', function () {
