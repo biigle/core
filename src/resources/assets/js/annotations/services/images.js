@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Manages (pre-)loading of the images to annotate.
  */
-angular.module('dias.annotations').service('images', function (TransectImage, URL, $q, filterSubset, TRANSECT_ID) {
+angular.module('dias.annotations').service('images', function ($rootScope, TransectImage, URL, $q, filterSubset, TRANSECT_ID) {
 		"use strict";
 
 		var _this = this;
@@ -87,6 +87,8 @@ angular.module('dias.annotations').service('images', function (TransectImage, UR
 				};
 				img.src = URL + "/api/v1/images/" + id + "/file";
 			}
+
+            $rootScope.$broadcast('image.fetching', img);
 
 			return deferred.promise;
 		};
