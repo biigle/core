@@ -19,7 +19,8 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
 		// select interaction working on "singleclick"
 		var select = new ol.interaction.Select({
-			style: styles.highlight
+			style: styles.highlight,
+            layers: [annotationLayer]
 		});
 
 		var selectedFeatures = select.getFeatures();
@@ -171,7 +172,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			map.removeInteraction(draw);
 			map.removeInteraction(modify);
             select.setActive(true);
-			// non't select the last drawn point
+			// don't select the last drawn point
 			selectedFeatures.clear();
 		};
 
