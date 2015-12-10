@@ -102,6 +102,10 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 					// radius is the x value of the second point of the circle
 					geometry = new ol.geom.Circle(points[0], points[1][0]);
 					break;
+                // unsupported shapes are ignored
+                default:
+                    console.error('Unknown annotation shape: ' + annotation.shape);
+                    return;
 			}
 
 			var feature = new ol.Feature({ geometry: geometry });

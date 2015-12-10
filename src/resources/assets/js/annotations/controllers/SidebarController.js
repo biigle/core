@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Controller for the sidebar
  */
-angular.module('dias.annotations').controller('SidebarController', function ($scope, $rootScope, mapAnnotations, REMEMBER_FOLDOUTS) {
+angular.module('dias.annotations').controller('SidebarController', function ($scope, $rootScope, mapAnnotations) {
 		"use strict";
 
         var foldoutStorageKey = 'dias.annotations.sidebar-foldout';
@@ -13,12 +13,7 @@ angular.module('dias.annotations').controller('SidebarController', function ($sc
         $scope.foldout = '';
 
 		$scope.openFoldout = function (name) {
-            // only permanently store the state if it should be remembered
-            if (REMEMBER_FOLDOUTS.indexOf(name) >= 0) {
-                window.localStorage[foldoutStorageKey] = name;
-            } else {
-                window.localStorage.removeItem(foldoutStorageKey);
-            }
+            window.localStorage[foldoutStorageKey] = name;
             $scope.foldout = name;
 			$rootScope.$broadcast('sidebar.foldout.open', name);
 		};

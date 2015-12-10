@@ -5,10 +5,8 @@
  * @memberOf dias.annotations
  * @description Controller for the sidebar label categories foldout
  */
-angular.module('dias.annotations').controller('CategoriesController', function ($scope, labels, REMEMBER_FOLDOUTS) {
+angular.module('dias.annotations').controller('CategoriesController', function ($scope, labels) {
         "use strict";
-
-        REMEMBER_FOLDOUTS.push('categories');
 
         // maximum number of allowed favourites
         var maxFavourites = 9;
