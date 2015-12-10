@@ -8,13 +8,14 @@
 angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles) {
 		"use strict";
 
-		var featureOverlay = new ol.FeatureOverlay({
-			style: styles.features
-		});
-
-		var features = new ol.Collection();
-
-		featureOverlay.setFeatures(features);
+        var annotationFeatures = new ol.Collection();
+        var annotationSource = new ol.source.Vector({
+            features: annotationFeatures
+        });
+        var annotationLayer = new ol.layer.Vector({
+            source: annotationSource,
+            style: styles.features
+        });
 
 		// select interaction working on "singleclick"
 		var select = new ol.interaction.Select({
@@ -24,7 +25,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		var selectedFeatures = select.getFeatures();
 
 		var modify = new ol.interaction.Modify({
-			features: featureOverlay.getFeatures(),
+			features: annotationFeatures,
 			// the SHIFT key must be pressed to delete vertices, so
 			// that new vertices can be drawn at the same position
 			// of existing vertices
@@ -105,12 +106,12 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			var feature = new ol.Feature({ geometry: geometry });
 			feature.on('change', handleGeometryChange);
 			feature.annotation = annotation;
-			features.push(feature);
+            annotationSource.addFeature(feature);
 		};
 
 		var refreshAnnotations = function (e, image) {
 			// clear features of previous image
-			features.clear();
+            annotationSource.clear();
 			selectedFeatures.clear();
 
 			annotations.query({id: image._id}).$promise.then(function () {
@@ -130,14 +131,15 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
 			// if the feature couldn't be saved, remove it again
 			e.feature.annotation.$promise.catch(function () {
-				features.remove(e.feature);
+                annotationSource.removeFeature(e.feature);
 			});
 
 			e.feature.on('change', handleGeometryChange);
 		};
 
 		this.init = function (scope) {
-			featureOverlay.setMap(map);
+            map.addLayer(annotationLayer);
+			// featureOverlay.setMap(map);
 			map.addInteraction(select);
 			scope.$on('image.shown', refreshAnnotations);
 
@@ -155,7 +157,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
 			type = type || 'Point';
 			draw = new ol.interaction.Draw({
-				features: features,
+                source: annotationSource,
 				type: type,
 				style: styles.editing
 			});
@@ -176,7 +178,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		this.deleteSelected = function () {
 			selectedFeatures.forEach(function (feature) {
 				annotations.delete(feature.annotation).then(function () {
-					features.remove(feature);
+					annotationSource.removeFeature(feature);
 					selectedFeatures.remove(feature);
 				});
 			});
@@ -184,7 +186,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
 		this.select = function (id) {
 			var feature;
-			features.forEach(function (f) {
+			annotationSource.forEachFeature(function (f) {
 				if (f.annotation.id === id) {
 					feature = f;
 				}
@@ -197,9 +199,9 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         // fits the view to the given feature
         this.fit = function (id) {
-            features.forEach(function (f) {
+            annotationSource.forEachFeature(function (f) {
                 if (f.annotation.id === id) {
-                    map.getView().fitGeometry(f.getGeometry(), map.getSize());
+                    map.getView().fit(f.getGeometry(), map.getSize());
                 }
             });
         };

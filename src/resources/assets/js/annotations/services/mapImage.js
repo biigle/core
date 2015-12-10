@@ -54,7 +54,7 @@ angular.module('dias.annotations').service('mapImage', function (map) {
 
 				// if zoom is not initialized, fit the view to the image extent
 				if (zoom === undefined) {
-					map.getView().fitExtent(extent, map.getSize());
+					map.getView().fit(extent, map.getSize());
 				}
 			});
 		};
@@ -66,5 +66,9 @@ angular.module('dias.annotations').service('mapImage', function (map) {
 		this.getProjection = function () {
 			return projection;
 		};
+
+        this.getLayer = function () {
+            return imageLayer;
+        };
 	}
 );
