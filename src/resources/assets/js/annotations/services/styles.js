@@ -8,31 +8,34 @@
 angular.module('dias.annotations').service('styles', function () {
 		"use strict";
 
-		var white = [255, 255, 255, 1];
-		var blue = [0, 153, 255, 1];
-		var orange = '#ff5e00';
+        this.colors = {
+            white: [255, 255, 255, 1],
+            blue: [0, 153, 255, 1],
+            orange: '#ff5e00'
+        };
+
 		var width = 3;
 
 		this.features = [
 			new ol.style.Style({
 				stroke: new ol.style.Stroke({
-					color: white,
+					color: this.colors.white,
 					width: 5
 				}),
 				image: new ol.style.Circle({
 					radius: 6,
 					fill: new ol.style.Fill({
-						color: blue
+						color: this.colors.blue
 					}),
 					stroke: new ol.style.Stroke({
-						color: white,
+						color: this.colors.white,
 						width: 2
 					})
 				})
 			}),
 			new ol.style.Style({
 				stroke: new ol.style.Stroke({
-					color: blue,
+					color: this.colors.blue,
 					width: 3
 				})
 			})
@@ -41,23 +44,23 @@ angular.module('dias.annotations').service('styles', function () {
 		this.highlight = [
 			new ol.style.Style({
 				stroke: new ol.style.Stroke({
-					color: white,
+					color: this.colors.white,
 					width: 6
 				}),
 				image: new ol.style.Circle({
 					radius: 6,
 					fill: new ol.style.Fill({
-						color: orange
+						color: this.colors.orange
 					}),
 					stroke: new ol.style.Stroke({
-						color: white,
+						color: this.colors.white,
 						width: 3
 					})
 				})
 			}),
 			new ol.style.Style({
 				stroke: new ol.style.Stroke({
-					color: orange,
+					color: this.colors.orange,
 					width: 3
 				})
 			})
@@ -66,16 +69,16 @@ angular.module('dias.annotations').service('styles', function () {
 		this.editing = [
 			new ol.style.Style({
 				stroke: new ol.style.Stroke({
-					color: white,
+					color: this.colors.white,
 					width: 5
 				}),
 				image: new ol.style.Circle({
 					radius: 6,
 					fill: new ol.style.Fill({
-						color: blue
+						color: this.colors.blue
 					}),
 					stroke: new ol.style.Stroke({
-						color: white,
+						color: this.colors.white,
 						width: 2,
 						lineDash: [3]
 					})
@@ -83,7 +86,7 @@ angular.module('dias.annotations').service('styles', function () {
 			}),
 			new ol.style.Style({
 				stroke: new ol.style.Stroke({
-					color: blue,
+					color: this.colors.blue,
 					width: 3,
 					lineDash: [5]
 				})
@@ -93,13 +96,13 @@ angular.module('dias.annotations').service('styles', function () {
 		this.viewport = [
 			new ol.style.Style({
 				stroke: new ol.style.Stroke({
-					color: blue,
+					color: this.colors.blue,
 					width: 3
 				}),
 			}),
 			new ol.style.Style({
 				stroke: new ol.style.Stroke({
-					color: white,
+					color: this.colors.white,
 					width: 1
 				})
 			})
