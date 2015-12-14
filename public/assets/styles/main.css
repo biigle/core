@@ -5705,7 +5705,9 @@ figcaption {
   margin: 0 auto;
   position: fixed;
   top: 0;
-  width: 100%; }
+  width: 100%;
+  z-index: 1000;
+  pointer-events: none; }
 
 .messages__message {
   text-align: center;
@@ -5713,6 +5715,6 @@ figcaption {
   animation: scale-up 0.25s;
   margin-bottom: 0;
   position: relative;
-  z-index: 1000; }
+  pointer-events: all; }
 
 /*# sourceMappingURL=main.css.map */
