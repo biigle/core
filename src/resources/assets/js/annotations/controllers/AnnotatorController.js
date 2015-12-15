@@ -44,7 +44,7 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
         // show the next image and create a new history entry
         $scope.nextImage = function () {
             startLoading();
-            images.next()
+            return images.next()
                   .then(finishLoading)
                   .then(pushState)
                   .catch(msg.responseError);
@@ -53,7 +53,7 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
         // show the previous image and create a new history entry
         $scope.prevImage = function () {
             startLoading();
-            images.prev()
+            return images.prev()
                   .then(finishLoading)
                   .then(pushState)
                   .catch(msg.responseError);

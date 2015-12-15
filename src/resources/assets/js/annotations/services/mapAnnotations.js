@@ -21,7 +21,9 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		// select interaction working on "singleclick"
 		var select = new ol.interaction.Select({
 			style: styles.highlight,
-            layers: [annotationLayer]
+            layers: [annotationLayer],
+            // enable selecting multiple overlapping features at once
+            multi: true
 		});
 
 		var selectedFeatures = select.getFeatures();
@@ -141,11 +143,12 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			});
 
 			e.feature.on('change', handleGeometryChange);
+
+            return e.feature.annotation.$promise;
 		};
 
 		this.init = function (scope) {
             map.addLayer(annotationLayer);
-			// featureOverlay.setMap(map);
 			map.addInteraction(select);
 			scope.$on('image.shown', refreshAnnotations);
 
@@ -207,7 +210,16 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         this.fit = function (id) {
             annotationSource.forEachFeature(function (f) {
                 if (f.annotation.id === id) {
-                    map.getView().fit(f.getGeometry(), map.getSize());
+                    // animate fit
+                    var view = map.getView();
+                    var pan = ol.animation.pan({
+                        source: view.getCenter()
+                    });
+                    var zoom = ol.animation.zoom({
+                        resolution: view.getResolution()
+                    });
+                    map.beforeRender(pan, zoom);
+                    view.fit(f.getGeometry(), map.getSize());
                 }
             });
         };
@@ -219,5 +231,11 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		this.getSelectedFeatures = function () {
 			return selectedFeatures;
 		};
+
+        // manually add a new feature (not through the draw interaction)
+        this.addFeature = function (feature) {
+            annotationSource.addFeature(feature);
+            return handleNewFeature({feature: feature});
+        };
 	}
 );

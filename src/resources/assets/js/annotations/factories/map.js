@@ -10,6 +10,7 @@ angular.module('dias.annotations').factory('map', function () {
 
 		var map = new ol.Map({
 			target: 'canvas',
+            renderer: 'canvas',
 			controls: [
 				new ol.control.Zoom(),
 				new ol.control.ZoomToExtent(),
