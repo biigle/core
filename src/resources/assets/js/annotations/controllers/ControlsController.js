@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Controller for the sidebar control buttons
  */
-angular.module('dias.annotations').controller('ControlsController', function ($scope, mapAnnotations, labels, msg, $attrs) {
+angular.module('dias.annotations').controller('ControlsController', function ($scope, mapAnnotations, labels, msg, $attrs, keyboard) {
 		"use strict";
 
 		var drawing = false;
@@ -29,30 +29,35 @@ angular.module('dias.annotations').controller('ControlsController', function ($s
 			}
 		};
 
-        $scope.$on('keypress', function (e, keyEvent) {
-            // deselect drawing tool on escape
-            if (keyEvent.keyCode === 27) {
-                $scope.selectShape(null);
-                return;
-            }
-            var charCode = (keyEvent.which) ? keyEvent.which : keyEvent.keyCode;
-            switch (String.fromCharCode(charCode).toLowerCase()) {
-                case 'a':
-                    $scope.selectShape('Point');
-                    break;
-                case 's':
-                    $scope.selectShape('Rectangle');
-                    break;
-                case 'd':
-                    $scope.selectShape('Circle');
-                    break;
-                case 'f':
-                    $scope.selectShape('LineString');
-                    break;
-                case 'g':
-                    $scope.selectShape('Polygon');
-                    break;
-            }
+        // deselect drawing tool on escape
+        keyboard.on(27, function () {
+            $scope.selectShape(null);
+            $scope.$apply();
+        });
+
+        keyboard.on('a', function () {
+            $scope.selectShape('Point');
+            $scope.$apply();
+        });
+
+        keyboard.on('s', function () {
+            $scope.selectShape('Rectangle');
+            $scope.$apply();
+        });
+
+        keyboard.on('d', function () {
+            $scope.selectShape('Circle');
+            $scope.$apply();
+        });
+
+        keyboard.on('f', function () {
+            $scope.selectShape('LineString');
+            $scope.$apply();
+        });
+
+        keyboard.on('g', function () {
+            $scope.selectShape('Polygon');
+            $scope.$apply();
         });
 	}
 );

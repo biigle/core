@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
  */
-angular.module('dias.annotations').controller('AnnotatorController', function ($scope, images, urlParams, msg, IMAGE_ID) {
+angular.module('dias.annotations').controller('AnnotatorController', function ($scope, images, urlParams, msg, IMAGE_ID, keyboard) {
         "use strict";
 
         $scope.images = images;
@@ -41,22 +41,6 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
                          .catch(msg.responseError);
         };
 
-        var handleKeyEvents = function (e) {
-            switch (e.keyCode) {
-                case 37:
-                    $scope.prevImage();
-                    break;
-                case 39:
-                case 32:
-                    $scope.nextImage();
-                    break;
-                default:
-                    $scope.$apply(function () {
-                        $scope.$broadcast('keypress', e);
-                    });
-            }
-        };
-
         // show the next image and create a new history entry
         $scope.nextImage = function () {
             startLoading();
@@ -87,6 +71,21 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
             });
         });
 
+        keyboard.on(37, function () {
+            $scope.prevImage();
+            $scope.$apply();
+        });
+
+        keyboard.on(39, function () {
+            $scope.nextImage();
+            $scope.$apply();
+        });
+
+        keyboard.on(32, function () {
+            $scope.nextImage();
+            $scope.$apply();
+        });
+
         // listen to the browser "back" button
         window.onpopstate = function(e) {
             var state = e.state;
@@ -94,8 +93,6 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
                 loadImage(state.slug);
             }
         };
-
-        document.addEventListener('keydown', handleKeyEvents);
 
         // initialize the images service
         images.init();

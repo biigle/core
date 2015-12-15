@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Controller for the sidebar label categories foldout
  */
-angular.module('dias.annotations').controller('CategoriesController', function ($scope, labels) {
+angular.module('dias.annotations').controller('CategoriesController', function ($scope, labels, keyboard) {
         "use strict";
 
         // maximum number of allowed favourites
@@ -28,6 +28,12 @@ angular.module('dias.annotations').controller('CategoriesController', function (
                     // only take those categories as favourites that are available for this image
                     return tmp.indexOf(item.id) !== -1;
                 });
+            }
+        };
+
+        var chooseFavourite = function (index) {
+            if (index >= 0 && index < $scope.favourites.length) {
+                $scope.selectItem($scope.favourites[index]);
             }
         };
 
@@ -70,13 +76,49 @@ angular.module('dias.annotations').controller('CategoriesController', function (
             return $scope.favourites.length < maxFavourites;
         };
 
-        // select favourites on numbers 1-9
-        $scope.$on('keypress', function (e, keyEvent) {
-            var charCode = (keyEvent.which) ? keyEvent.which : keyEvent.keyCode;
-            var number = parseInt(String.fromCharCode(charCode));
-            if (!isNaN(number) && number > 0 && number <= $scope.favourites.length) {
-                $scope.selectItem($scope.favourites[number - 1]);
-            }
+        keyboard.on('1', function () {
+            chooseFavourite(0);
+            $scope.$apply();
+        });
+
+        keyboard.on('2', function () {
+            chooseFavourite(1);
+            $scope.$apply();
+        });
+
+        keyboard.on('3', function () {
+            chooseFavourite(2);
+            $scope.$apply();
+        });
+
+        keyboard.on('4', function () {
+            chooseFavourite(3);
+            $scope.$apply();
+        });
+
+        keyboard.on('5', function () {
+            chooseFavourite(4);
+            $scope.$apply();
+        });
+
+        keyboard.on('6', function () {
+            chooseFavourite(5);
+            $scope.$apply();
+        });
+
+        keyboard.on('7', function () {
+            chooseFavourite(6);
+            $scope.$apply();
+        });
+
+        keyboard.on('8', function () {
+            chooseFavourite(7);
+            $scope.$apply();
+        });
+
+        keyboard.on('9', function () {
+            chooseFavourite(8);
+            $scope.$apply();
         });
     }
 );
