@@ -2,6 +2,7 @@
 <div class="annotator__sidebar" data-ng-controller="SidebarController">
     @if ($editMode)
 	   @include('annotations::index.sidebar.categories')
+       @include('annotations::index.sidebar.settings')
        @foreach ($modules->getMixins('annotationsSidebarFoldouts') as $module => $nestedMixins)
             @include($module.'::annotationsSidebarFoldouts')
         @endforeach

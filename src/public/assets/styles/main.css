@@ -239,6 +239,15 @@ html, body {
     color: white;
     font-weight: bold; }
 
+.settings-foldout h4:first-child {
+  margin-top: 0; }
+
+.settings-foldout label {
+  display: block; }
+
+.settings-foldout__item {
+  margin-bottom: 1em; }
+
 .annotator__canvas {
   position: relative; }
 

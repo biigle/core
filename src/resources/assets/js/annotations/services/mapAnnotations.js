@@ -237,5 +237,9 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             annotationSource.addFeature(feature);
             return handleNewFeature({feature: feature});
         };
+
+        this.setOpacity = function (opacity) {
+            annotationLayer.setOpacity(opacity);
+        };
 	}
 );
