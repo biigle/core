@@ -24,10 +24,12 @@ class AdminController extends Controller
      */
     public function users()
     {
+        $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at')
+            ->orderBy('login_at', 'desc')
+            ->get();
+
         return view('admin.users')
-            ->withUsers(
-                User::select('id', 'firstname', 'lastname', 'email', 'login_at')->get()
-            );
+            ->with('users', $users);
     }
 
     /**
