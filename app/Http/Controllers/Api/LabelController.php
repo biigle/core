@@ -2,9 +2,8 @@
 
 namespace Dias\Http\Controllers\Api;
 
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Http\Request;
 use Dias\Label;
+use Illuminate\Database\QueryException;
 
 class LabelController extends Controller
 {
@@ -184,7 +183,11 @@ class LabelController extends Controller
             abort(400, 'The label has child labels. Add the "force" parameter to delete the label and all its child labels.');
         }
 
-        $label->delete();
+        try {
+            $label->delete();
+        } catch (QueryException $e) {
+            abort(400, "You can't delete a label that is still in use.");
+        }
 
         return response('Deleted.', 200);
     }

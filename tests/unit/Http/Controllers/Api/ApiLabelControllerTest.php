@@ -246,4 +246,19 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $this->callToken('DELETE', '/api/v1/labels/'.$label->id, $this->admin);
         $this->assertResponseOk();
     }
+
+    public function testDestroyStillInUse()
+    {
+        $label = LabelTest::create();
+        $annotation = AnnotationTest::create();
+        AnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'label_id' => $label->id
+        ]);
+
+        $this->callToken('DELETE', '/api/v1/labels/'.$label->id, $this->globalAdmin);
+        // you can't delete a label that is still in use
+        $this->assertResponseStatus(400);
+        $this->assertNotNull($label->fresh());
+    }
 }
