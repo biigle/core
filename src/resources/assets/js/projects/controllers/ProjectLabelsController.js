@@ -57,7 +57,7 @@ angular.module('dias.projects').controller('ProjectLabelsController', function (
                     $scope.selectItem(null);
                 }
                 refreshLabels();
-            });
+            }, msg.responseError);
         };
 
         $scope.addLabel = function () {
