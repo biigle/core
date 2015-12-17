@@ -149,9 +149,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
         $annotation = $this->image->annotations->first();
         $this->assertNotNull($annotation);
-
         $this->assertEquals(2, $annotation->points()->count());
-
         $this->assertEquals(1, $annotation->labels()->count());
     }
 }

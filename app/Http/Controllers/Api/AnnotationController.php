@@ -31,9 +31,7 @@ class AnnotationController extends Controller
      */
     public function show($id)
     {
-        $annotation = Annotation::with(['points' => function ($query) {
-            $query->orderBy('index', 'asc');
-        }])->findOrFail($id);
+        $annotation = Annotation::with('points')->findOrFail($id);
         $this->requireCanSee($annotation);
 
         // image will be fetched by requireCanSee but shouldn't be returned

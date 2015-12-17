@@ -41,9 +41,7 @@ class ImageAnnotationController extends Controller
         $image = Image::findOrFail($id);
         $this->requireCanSee($image);
 
-        return $image->annotations()->with(['points' => function ($query) {
-            $query->orderBy('index', 'asc');
-        }])->get();
+        return $image->annotations()->with('points')->get();
     }
 
     /**
@@ -122,6 +120,7 @@ class ImageAnnotationController extends Controller
         $annotation = new Annotation;
         $annotation->shape()->associate($shape);
         $annotation->image()->associate($image);
+        // TODO validate points here
         $annotation->save();
 
         $annotation->addPoints($points);
@@ -131,8 +130,8 @@ class ImageAnnotationController extends Controller
             $this->user
         );
 
-        return Annotation::with(['points' => function ($query) {
-            $query->orderBy('index', 'asc');
-        }])->find($annotation->id);
+        $annotation->load('points');
+
+        return $annotation;
     }
 }

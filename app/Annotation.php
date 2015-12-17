@@ -69,7 +69,7 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
      */
     public function points()
     {
-        return $this->hasMany('Dias\AnnotationPoint');
+        return $this->hasMany('Dias\AnnotationPoint')->orderBy('index', 'asc');
     }
 
     /**
