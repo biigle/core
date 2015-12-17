@@ -56,7 +56,7 @@ class ImageAnnotationController extends Controller
      *
      * @apiParam (Required arguments) {Number} shape_id ID of the shape of the new annotation.
      * @apiParam (Required arguments) {Number} label_id ID of the initial category label of the new annotation.
-     * @apiParam (Required arguments) {Number} confidence Confidence of the initial annotation label of the new annotation.
+     * @apiParam (Required arguments) {Number} confidence Confidence of the initial annotation label of the new annotation. Must be a value between 0 and 1.
      * @apiParam (Required arguments) {Object[]} points Array (JSON or as String) of the initial points of the annotation. Must contain at least one point. The interpretation of the points of the different shapes is as follows:
      * **Point:** The first point is the center of the annotation point.
      * **Rectangle:** The first four points are the vertices of the rectangle (in the given order).

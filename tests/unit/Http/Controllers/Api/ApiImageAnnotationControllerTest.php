@@ -116,6 +116,30 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
                 '_token' => Session::token(),
                 'shape_id' => \Dias\Shape::$pointId,
                 'label_id' => $this->labelRoot->id,
+                'confidence' => 2
+            ]
+        );
+        // confidence must be between 0 and 1
+        $this->assertResponseStatus(422);
+
+        $this->callAjax('POST',
+            '/api/v1/images/'.$this->image->id.'/annotations',
+            [
+                '_token' => Session::token(),
+                'shape_id' => \Dias\Shape::$pointId,
+                'label_id' => $this->labelRoot->id,
+                'confidence' => -1
+            ]
+        );
+        // confidence must be between 0 and 1
+        $this->assertResponseStatus(422);
+
+        $this->callAjax('POST',
+            '/api/v1/images/'.$this->image->id.'/annotations',
+            [
+                '_token' => Session::token(),
+                'shape_id' => \Dias\Shape::$pointId,
+                'label_id' => $this->labelRoot->id,
                 'confidence' => 0.5,
                 'points' => '[]',
             ]

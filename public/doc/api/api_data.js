@@ -427,7 +427,7 @@ define({ "api": [
             "type": "<p>Number</p> ",
             "optional": false,
             "field": "confidence",
-            "description": "<p>Confidence of the initial annotation label of the new annotation.</p> "
+            "description": "<p>Confidence of the initial annotation label of the new annotation. Must be a value between 0 and 1.</p> "
           },
           {
             "group": "Required arguments",

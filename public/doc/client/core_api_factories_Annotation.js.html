@@ -74,37 +74,29 @@ var annotation = Annotation.add({
       { x: 10, y: 20 }
    ]
 });
- * 
+ *
  */
 angular.module('dias.api').factory('Annotation', function ($resource, URL) {
 	"use strict";
 
-	return $resource(URL + '/api/v1/:endpoint/:id/:slug',
+	return $resource(URL + '/api/v1/annotations/:id',
 		{ id: '@id'	},
 		{
-			get: {
-				method: 'GET',
-				params: { endpoint: 'annotations' }
-			},
 			save: {
-				method: 'PUT',
-				params: { endpoint: 'annotations' }
-			},
-			delete: {
-				method: 'DELETE',
-				params: { endpoint: 'annotations' }
+				method: 'PUT'
 			},
 			query: {
 				method: 'GET',
-				params: { endpoint: 'images', slug: 'annotations' },
+                url: URL + '/api/v1/images/:id/annotations',
 				isArray: true
 			},
 			add: {
 				method: 'POST',
-				params: { endpoint: 'images', slug: 'annotations' }
+				url: URL + '/api/v1/images/:id/annotations',
 			}
 		});
-});</code></pre>
+});
+</code></pre>
         </article>
     </section>
 
