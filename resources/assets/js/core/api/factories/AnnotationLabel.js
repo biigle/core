@@ -29,31 +29,31 @@ var labels = AnnotationLabel.query({annotation_id: 1}, function () {
 });
 // or directly
 AnnotationLabel.delete({id: 1});
- * 
+ *
  */
 angular.module('dias.api').factory('AnnotationLabel', function ($resource, URL) {
 	"use strict";
 
-	return $resource(URL + '/api/v1/:prefix/:annotation_id/:suffix/:id', {
+	return $resource(URL + '/api/v1/annotation-labels/:id', {
 			id: '@id',
 			annotation_id: '@annotation_id'
 		}, {
 			query: {
 				method: 'GET',
-				params: { prefix: 'annotations', suffix: 'labels' },
+                url: URL + '/api/v1/annotations/:annotation_id/labels',
 				isArray: true
 			},
 			attach: {
 				method: 'POST',
-				params: { prefix: 'annotations', suffix: 'labels' }
+				url: URL + '/api/v1/annotations/:annotation_id/labels',
 			},
 			save: {
 				method: 'PUT',
-				params: { prefix: 'annotation-labels', annotation_id: null, suffix: null }
+                params: {annotation_id: null}
 			},
-			delete: {
-				method: 'DELETE',
-				params: { prefix: 'annotation-labels', annotation_id: null, suffix: null }
-			}
+            delete: {
+                method: 'DELETE',
+                params: {annotation_id: null}
+            }
 	});
 });

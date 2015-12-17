@@ -28,5 +28,5 @@ angular.module('dias.api').factory('Transect', function ($resource, URL) {
 		{
 			save: { method: 'PUT' }
 		}
-		);
+	);
 });
