@@ -63,13 +63,23 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
     }
 
     /**
-     * The points, this annotation consists of.
+     * The points, this annotation consists of, ordered by index
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function points()
     {
         return $this->hasMany('Dias\AnnotationPoint')->orderBy('index', 'asc');
+    }
+
+    /**
+     * The points, this annotation consists of, *not* ordered by index
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function unorderedPoints()
+    {
+        return $this->hasMany('Dias\AnnotationPoint');
     }
 
     /**
@@ -103,7 +113,7 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
         $point = new AnnotationPoint;
         $point->x = intval($x);
         $point->y = intval($y);
-        $index = $this->points()->max('index');
+        $index = $this->unorderedPoints()->max('index');
         // the new point gets the next higher index
         $point->index = ($index === null) ? 0 : $index + 1;
 
