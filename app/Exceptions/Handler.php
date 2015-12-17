@@ -18,7 +18,27 @@ class Handler extends ExceptionHandler
      */
     protected $dontReport = [
         'Symfony\Component\HttpKernel\Exception\HttpException',
+        'Illuminate\Database\Eloquent\ModelNotFoundException'
     ];
+
+    private function renderJsonResponse(Exception $e)
+    {
+        $status = $this->isHttpException($e) ? $e->getStatusCode() : 500;
+
+        if (config('app.debug')) {
+            $message = $e->getMessage();
+        } else {
+            switch ($status) {
+                case 404:
+                    $message = 'Sorry, the page you are looking for could not be found.';
+                    break;
+                default:
+                    $message = 'Whoops, looks like something went wrong.';
+            }
+        }
+
+        return new JsonResponse(['message' => $message], $status);
+    }
 
     /**
      * Report or log an exception.
@@ -48,9 +68,7 @@ class Handler extends ExceptionHandler
 
         // use JsonResponse if this was an automated request
         if (Controller::isAutomatedRequest($request)) {
-            $status = $this->isHttpException($e) ? $e->getStatusCode() : 500;
-
-            return new JsonResponse(['message' => $e->getMessage()], $status);
+            return $this->renderJsonResponse($e);
         } elseif ($this->isHttpException($e)) {
             return $this->renderHttpException($e);
         } else {
