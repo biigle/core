@@ -1982,7 +1982,7 @@ define({ "api": [
   {
     "type": "get",
     "url": "projects/:id/labels",
-    "title": "Get all label categories of the project",
+    "title": "Get all label categories",
     "group": "Projects",
     "name": "IndexProjectLabels",
     "permission": [
