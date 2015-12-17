@@ -431,10 +431,10 @@ define({ "api": [
           },
           {
             "group": "Required arguments",
-            "type": "<p>Obejct[]</p> ",
+            "type": "<p>Object[]</p> ",
             "optional": false,
             "field": "points",
-            "description": "<p>Array (JSON or as String) of the initial points of the annotation. Must contain at least one point.</p> "
+            "description": "<p>Array (JSON or as String) of the initial points of the annotation. Must contain at least one point. The interpretation of the points of the different shapes is as follows: <strong>Point:</strong> The first point is the center of the annotation point. <strong>Rectangle:</strong> The first four points are the vertices of the rectangle (in the given order). <strong>Polygon:</strong> Like rectangle with three or more vertices. <strong>LineString:</strong> Like rectangle with two or more vertices. <strong>Circle:</strong> The first point is the center of the circle. The x-coordinate of the second point is the radius of the circle. The y-coordinate of the second point is ignored.</p> "
           }
         ]
       },
@@ -1673,7 +1673,7 @@ define({ "api": [
         "description": "<p>The authenticated user needs to be admin of the project.</p> "
       }
     ],
-    "description": "<p>This endpoint attaches an existing transect to another existing project. The transect then will belong to multiple projects. The user performing this poeration needs to be project admin in both the project, the transect initially belongs to, and the project, the transect should be attached to.</p> ",
+    "description": "<p>This endpoint attaches an existing transect to another existing project. The transect then will belong to multiple projects. The user performing this operation needs to be project admin in both the project, the transect initially belongs to, and the project, the transect should be attached to.</p> ",
     "parameter": {
       "fields": {
         "Parameter": [

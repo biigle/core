@@ -127,7 +127,7 @@ class ProjectTransectController extends Controller
      * @apiGroup Projects
      * @apiName AttachProjectTransects
      * @apiPermission projectAdmin
-     * @apiDescription This endpoint attaches an existing transect to another existing project. The transect then will belong to multiple projects. The user performing this poeration needs to be project admin in both the project, the transect initially belongs to, and the project, the transect should be attached to.
+     * @apiDescription This endpoint attaches an existing transect to another existing project. The transect then will belong to multiple projects. The user performing this operation needs to be project admin in both the project, the transect initially belongs to, and the project, the transect should be attached to.
      *
      * @apiParam {Number} pid ID of the project that should get the annotation.
      * @apiParam {Number} tid ID of the existing transect to attach to the project.
