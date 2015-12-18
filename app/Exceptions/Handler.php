@@ -27,13 +27,15 @@ class Handler extends ExceptionHandler
 
         if (config('app.debug')) {
             $message = $e->getMessage();
+        } else if ($status >= 500) {
+            $message = 'Whoops, looks like something went wrong.';
         } else {
             switch ($status) {
                 case 404:
                     $message = 'Sorry, the page you are looking for could not be found.';
                     break;
                 default:
-                    $message = 'Whoops, looks like something went wrong.';
+                    $message = $e->getMessage();
             }
         }
 
