@@ -15,6 +15,9 @@ angular.module('dias.annotations').controller('SettingsController', function ($s
         // may be extended by child controllers
         $scope.settings = {};
 
+        // may be extended by child controllers but will not be permanently stored
+        $scope.volatileSettings = {};
+
         var storeSettings = function () {
             var settings = angular.copy($scope.settings);
             for (var key in settings) {
@@ -55,6 +58,14 @@ angular.module('dias.annotations').controller('SettingsController', function ($s
             if (!$scope.settings.hasOwnProperty(key)) {
                 $scope.setSettings(key, value);
             }
+        };
+
+        $scope.setVolatileSettings = function (key, value) {
+            $scope.volatileSettings[key] = value;
+        };
+
+        $scope.getVolatileSettings = function (key) {
+            return $scope.volatileSettings[key];
         };
 
         $scope.$watch('settings', storeSettingsDebounced, true);
