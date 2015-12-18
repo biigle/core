@@ -9,6 +9,7 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 		"use strict";
 
 		var annotations;
+        var promise;
 
 		var resolveShapeName = function (annotation) {
 			annotation.shape = shapes.getName(annotation.shape_id);
@@ -22,7 +23,8 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 
 		this.query = function (params) {
 			annotations = Annotation.query(params);
-			annotations.$promise.then(function (a) {
+            promise = annotations.$promise;
+			promise.then(function (a) {
 				a.forEach(resolveShapeName);
 			});
 			return annotations;
@@ -49,7 +51,7 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 			var index = annotations.indexOf(annotation);
 			if (index > -1) {
 				return annotation.$delete(function () {
-					// update the index since the annotations list may have been 
+					// update the index since the annotations list may have been
 					// modified in the meantime
 					index = annotations.indexOf(annotation);
 					annotations.splice(index, 1);
@@ -64,5 +66,9 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 		this.current = function () {
 			return annotations;
 		};
+
+        this.getPromise = function () {
+            return promise;
+        };
 	}
 );

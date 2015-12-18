@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles) {
+angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval) {
 		"use strict";
 
         var annotationFeatures = new ol.Collection();
@@ -40,6 +40,22 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
 		// drawing interaction
 		var draw;
+
+        // index of the currently selected annotation (during cycling through annotations)
+        // in the annotationFeatures collection
+        var currentAnnotation = 0;
+
+        var _this = this;
+
+        var selectAndShowAnnotation = function (annotation) {
+            _this.clearSelection();
+            if (annotation) {
+                selectedFeatures.push(annotation);
+                map.getView().fit(annotation.getGeometry(), map.getSize(), {
+                    padding: [50, 50, 50, 50]
+                });
+            }
+        };
 
 		// convert a point array to a point object
 		// re-invert the y axis
@@ -120,7 +136,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		var refreshAnnotations = function (e, image) {
 			// clear features of previous image
             annotationSource.clear();
-			selectedFeatures.clear();
+			_this.clearSelection();
 
 			annotations.query({id: image._id}).$promise.then(function () {
 				annotations.forEach(createFeature);
@@ -181,7 +197,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			map.removeInteraction(modify);
             select.setActive(true);
 			// don't select the last drawn point
-			selectedFeatures.clear();
+			_this.clearSelection();
 		};
 
 		this.deleteSelected = function () {
@@ -240,6 +256,68 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         this.setOpacity = function (opacity) {
             annotationLayer.setOpacity(opacity);
+        };
+
+        this.cycleNext = function () {
+            currentAnnotation = (currentAnnotation + 1) % annotationFeatures.getLength();
+            _this.jumpToCurrent();
+        };
+
+        this.hasNext = function () {
+            return (currentAnnotation + 1) < annotationFeatures.getLength();
+        };
+
+        this.cyclePrevious = function () {
+            // we want no negative index here
+            currentAnnotation = (currentAnnotation + annotationFeatures.getLength() - 1) % annotationFeatures.getLength();
+            _this.jumpToCurrent();
+        };
+
+        this.hasPrevious = function () {
+            return currentAnnotation > 0;
+        };
+
+        this.jumpToCurrent = function () {
+            // only jump once the annotations were loaded
+            annotations.getPromise().then(function () {
+                selectAndShowAnnotation(annotationFeatures.item(currentAnnotation));
+            });
+        };
+
+        this.jumpToFirst = function () {
+            currentAnnotation = 0;
+            _this.jumpToCurrent();
+        };
+
+        this.jumpToLast = function () {
+            annotations.getPromise().then(function () {
+                // wait for the new annotations to be loaded
+                if (annotationFeatures.getLength() !== 0) {
+                    currentAnnotation = annotationFeatures.getLength() - 1;
+                }
+                _this.jumpToCurrent();
+            });
+        };
+
+        // flicker the highlighted annotation to signal an error
+        this.flicker = function (count) {
+            var annotation = selectedFeatures.item(0);
+            if (!annotation) return;
+            count = count || 3;
+
+            var toggle = function () {
+                if (selectedFeatures.getLength() > 0) {
+                    selectedFeatures.clear();
+                } else {
+                    selectedFeatures.push(annotation);
+                }
+            };
+            // number of repeats must be even, otherwise the layer would stay onvisible
+            $interval(toggle, 100, count * 2);
+        };
+
+        this.getCurrent = function () {
+            return annotationFeatures.item(currentAnnotation).annotation;
         };
 	}
 );
