@@ -1,6 +1,7 @@
 <?php
 
 use Dias\Annotation;
+use Dias\Shape;
 
 class AnnotationTest extends ModelWithAttributesTest
 {
@@ -96,6 +97,60 @@ class AnnotationTest extends ModelWithAttributesTest
         $this->assertEquals(1, $this->model->points()->count());
         $this->model->addPoints([(object) ['x' => 10, 'y' => 10]]);
         $this->assertEquals(2, $this->model->points()->count());
+    }
+
+    public function testValidatePointsProperty()
+    {
+        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
+        $this->setExpectedException('Exception');
+        $this->model->validatePoints([['x' => 10, 'z' => 10]]);
+    }
+
+    public function testValidatePointsNumeric()
+    {
+        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
+        $this->setExpectedException('Exception');
+        $this->model->validatePoints([['x' => 'ab', 'y' => 10]]);
+    }
+
+    public function testValidatePointsPoint()
+    {
+        $this->model->shape_id = Shape::$pointId;
+        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
+        $this->setExpectedException('Exception');
+        $this->model->validatePoints([['x' => 10, 'y' => 10], ['x' => 20, 'y' => 20]]);
+    }
+
+    public function testValidatePointsCircle()
+    {
+        $this->model->shape_id = Shape::$circleId;
+        $this->model->validatePoints([['x' => 10, 'y' => 10], ['x' => 20, 'y' => 20]]);
+        $this->setExpectedException('Exception');
+        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
+    }
+
+    public function testValidatePointsRectangle()
+    {
+        $this->model->shape_id = Shape::$rectangleId;
+        $this->model->validatePoints([['x' => 10, 'y' => 10], ['x' => 20, 'y' => 20], ['x' => 10, 'y' => 10], ['x' => 20, 'y' => 20]]);
+        $this->setExpectedException('Exception');
+        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
+    }
+
+    public function testValidatePointsLine()
+    {
+        $this->model->shape_id = Shape::$lineId;
+        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
+        $this->setExpectedException('Exception');
+        $this->model->validatePoints([]);
+    }
+
+    public function testValidatePointsPolygon()
+    {
+        $this->model->shape_id = Shape::$polygonId;
+        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
+        $this->setExpectedException('Exception');
+        $this->model->validatePoints([]);
     }
 
     public function testRefreshPoints()

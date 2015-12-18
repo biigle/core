@@ -3,6 +3,7 @@
 namespace Dias\Http\Controllers\Api;
 
 use Dias\Annotation;
+use Exception;
 
 class AnnotationController extends Controller
 {
@@ -49,7 +50,7 @@ class AnnotationController extends Controller
      * @apiPermission projectEditor
      *
      * @apiParam {Number} id The annotation ID.
-     * @apiParam (Attributes that can be updated) {Object[]} points Array (JSON or as String) of new points of the annotation. The new points will replace the old points.
+     * @apiParam (Attributes that can be updated) {Object[]} points Array (JSON or as String) of new points of the annotation. The new points will replace the old points. See the "Create a new annotation" endpoint for how the points are interpreted for different shapes.
      * @apiParamExample {json} Request example (JSON):
      * {
      *    "points": [
@@ -73,6 +74,14 @@ class AnnotationController extends Controller
 
         if (is_string($points)) {
             $points = json_decode($points);
+        }
+
+        try {
+            $annotation->validatePoints($points);
+        } catch (Exception $e) {
+            return $this->buildFailedValidationResponse($this->request, [
+                'points' => [$e->getMessage()]
+            ]);
         }
 
         $annotation->refreshPoints($points);

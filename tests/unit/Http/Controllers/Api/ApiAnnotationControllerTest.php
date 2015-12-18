@@ -93,6 +93,19 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
         $this->assertEquals(15, $points[0]['y']);
     }
 
+    public function testUpdateValidatePoints()
+    {
+        $id = $this->annotation->id;
+        $this->annotation->shape_id = Dias\Shape::$pointId;
+        $this->annotation->save();
+
+        $this->callToken('PUT', $this->getEndpoint().'/'.$id, $this->admin, [
+            'points' => '[{"x":10, "y":15}, {"x": 100, "y": 200}]',
+        ]);
+        // invalid number of points
+        $this->assertResponseStatus(422);
+    }
+
     public function testDestroy()
     {
         $id = $this->annotation->id;

@@ -6,6 +6,7 @@ use Dias\Image;
 use Dias\Shape;
 use Dias\Label;
 use Dias\Annotation;
+use Exception;
 
 class ImageAnnotationController extends Controller
 {
@@ -60,13 +61,13 @@ class ImageAnnotationController extends Controller
      * @apiParam (Required arguments) {Object[]} points Array (JSON or as String) of the initial points of the annotation. Must contain at least one point. The interpretation of the points of the different shapes is as follows:
      * **Point:** The first point is the center of the annotation point.
      * **Rectangle:** The first four points are the vertices of the rectangle (in the given order).
-     * **Polygon:** Like rectangle with three or more vertices.
-     * **LineString:** Like rectangle with two or more vertices.
+     * **Polygon:** Like rectangle with one or more vertices.
+     * **LineString:** Like rectangle with one or more vertices.
      * **Circle:** The first point is the center of the circle. The x-coordinate of the second point is the radius of the circle. The y-coordinate of the second point is ignored.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
-     *    "shape_id": 1,
+     *    "shape_id": 3,
      *    "label_id": 1,
      *    "confidence": 0.75,
      *    "points": [
@@ -113,14 +114,18 @@ class ImageAnnotationController extends Controller
             $points = json_decode($points);
         }
 
-        if (empty($points)) {
-            abort(400, 'Annotation must be initialized with at least one point.');
-        }
-
         $annotation = new Annotation;
         $annotation->shape()->associate($shape);
         $annotation->image()->associate($image);
-        // TODO validate points here
+
+        try {
+            $annotation->validatePoints($points);
+        } catch (Exception $e) {
+            return $this->buildFailedValidationResponse($this->request, [
+                'points' => [$e->getMessage()]
+            ]);
+        }
+
         $annotation->save();
 
         $annotation->addPoints($points);

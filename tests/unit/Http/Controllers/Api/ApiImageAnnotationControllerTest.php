@@ -145,35 +145,45 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             ]
         );
         // at least one point required
-        $this->assertResponseStatus(400);
+        $this->assertResponseStatus(422);
 
         $this->post('/api/v1/images/'.$this->image->id.'/annotations', [
             '_token' => Session::token(),
             'shape_id' => \Dias\Shape::$pointId,
             'label_id' => $this->labelRoot->id,
             'confidence' => 0.5,
-            'points' => '[{"x":10,"y":11},{"x":12,"y":13}]',
+            'points' => '[{"x":10,"y":11}]',
         ]);
 
         if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
             $this->seeJson([
                 'points' => [
                     ['x' => '10', 'y' => '11'],
-                    ['x' => '12', 'y' => '13'],
                 ],
             ]);
         } else {
             $this->seeJson([
                 'points' => [
                     ['x' => 10, 'y' => 11],
-                    ['x' => 12, 'y' => 13],
                 ],
             ]);
         }
 
         $annotation = $this->image->annotations->first();
         $this->assertNotNull($annotation);
-        $this->assertEquals(2, $annotation->points()->count());
+        $this->assertEquals(1, $annotation->points()->count());
         $this->assertEquals(1, $annotation->labels()->count());
+    }
+
+    public function testStoreValidatePoints()
+    {
+        $this->callToken('POST', '/api/v1/images/'.$this->image->id.'/annotations', $this->editor, [
+            'shape_id' => \Dias\Shape::$pointId,
+            'label_id' => $this->labelRoot->id,
+            'confidence' => 0.5,
+            'points' => '[{"x":10,"y":11},{"x":12,"y":13}]',
+        ]);
+        // invalid number of points
+        $this->assertResponseStatus(422);
     }
 }

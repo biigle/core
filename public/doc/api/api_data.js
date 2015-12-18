@@ -434,14 +434,14 @@ define({ "api": [
             "type": "<p>Object[]</p> ",
             "optional": false,
             "field": "points",
-            "description": "<p>Array (JSON or as String) of the initial points of the annotation. Must contain at least one point. The interpretation of the points of the different shapes is as follows: <strong>Point:</strong> The first point is the center of the annotation point. <strong>Rectangle:</strong> The first four points are the vertices of the rectangle (in the given order). <strong>Polygon:</strong> Like rectangle with three or more vertices. <strong>LineString:</strong> Like rectangle with two or more vertices. <strong>Circle:</strong> The first point is the center of the circle. The x-coordinate of the second point is the radius of the circle. The y-coordinate of the second point is ignored.</p> "
+            "description": "<p>Array (JSON or as String) of the initial points of the annotation. Must contain at least one point. The interpretation of the points of the different shapes is as follows: <strong>Point:</strong> The first point is the center of the annotation point. <strong>Rectangle:</strong> The first four points are the vertices of the rectangle (in the given order). <strong>Polygon:</strong> Like rectangle with one or more vertices. <strong>LineString:</strong> Like rectangle with one or more vertices. <strong>Circle:</strong> The first point is the center of the circle. The x-coordinate of the second point is the radius of the circle. The y-coordinate of the second point is ignored.</p> "
           }
         ]
       },
       "examples": [
         {
           "title": "Request example (JSON):",
-          "content": "{\n   \"shape_id\": 1,\n   \"label_id\": 1,\n   \"confidence\": 0.75,\n   \"points\": [\n      {\"x\": 10, \"y\": 11},\n      {\"x\": 20, \"y\": 21}\n   ]\n}",
+          "content": "{\n   \"shape_id\": 3,\n   \"label_id\": 1,\n   \"confidence\": 0.75,\n   \"points\": [\n      {\"x\": 10, \"y\": 11},\n      {\"x\": 20, \"y\": 21}\n   ]\n}",
           "type": "JSON"
         },
         {
@@ -494,7 +494,7 @@ define({ "api": [
             "type": "<p>Object[]</p> ",
             "optional": false,
             "field": "points",
-            "description": "<p>Array (JSON or as String) of new points of the annotation. The new points will replace the old points.</p> "
+            "description": "<p>Array (JSON or as String) of new points of the annotation. The new points will replace the old points. See the &quot;Create a new annotation&quot; endpoint for how the points are interpreted for different shapes.</p> "
           }
         ]
       },

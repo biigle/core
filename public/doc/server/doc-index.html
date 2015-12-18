@@ -491,7 +491,7 @@ for example. Another type coud be images from a moving camera.</dd><dt><a href="
                     <dd>This namespace is applied to the controller routes in your routes file.</dd>        </dl><h2 id="letterP">P</h2>
         <dl id="index"><dt>
     <a href="Dias/Annotation.html#method_points"><abbr title="Dias\Annotation">Annotation</abbr>::points</a>() &mdash; <em>Method in class <a href="Dias/Annotation.html"><abbr title="Dias\Annotation">Annotation</abbr></a></em></dt>
-                    <dd>The points, this annotation consists of.</dd><dt>
+                    <dd>The points, this annotation consists of, ordered by index</dd><dt>
     <a href="Dias/Annotation.html#method_projectIds"><abbr title="Dias\Annotation">Annotation</abbr>::projectIds</a>() &mdash; <em>Method in class <a href="Dias/Annotation.html"><abbr title="Dias\Annotation">Annotation</abbr></a></em></dt>
                     <dd>Returns an array of project IDs this model (indirectly) belongs to.</dd><dt>
     <a href="Dias/AnnotationLabel.html#method_projectIds"><abbr title="Dias\AnnotationLabel">AnnotationLabel</abbr>::projectIds</a>() &mdash; <em>Method in class <a href="Dias/AnnotationLabel.html"><abbr title="Dias\AnnotationLabel">AnnotationLabel</abbr></a></em></dt>
@@ -536,6 +536,8 @@ response.</dd><dt>
         <dl id="index"><dt>
     <a href="Dias/Annotation.html#method_refreshPoints"><abbr title="Dias\Annotation">Annotation</abbr>::refreshPoints</a>() &mdash; <em>Method in class <a href="Dias/Annotation.html"><abbr title="Dias\Annotation">Annotation</abbr></a></em></dt>
                     <dd>Replaces the current points with the given ones.</dd><dt><a href="Dias/Console/Commands/RemoveDeletedImages.html"><abbr title="Dias\Console\Commands\RemoveDeletedImages">RemoveDeletedImages</abbr></a> &mdash; <em>Class in namespace <a href="Dias/Console/Commands.html">Dias\Console\Commands</a></em></dt>
+                    <dd></dd><dt>
+    <a href="Dias/Exceptions/Handler.html#method_renderJsonResponse"><abbr title="Dias\Exceptions\Handler">Handler</abbr>::renderJsonResponse</a>() &mdash; <em>Method in class <a href="Dias/Exceptions/Handler.html"><abbr title="Dias\Exceptions\Handler">Handler</abbr></a></em></dt>
                     <dd></dd><dt>
     <a href="Dias/Exceptions/Handler.html#method_report"><abbr title="Dias\Exceptions\Handler">Handler</abbr>::report</a>() &mdash; <em>Method in class <a href="Dias/Exceptions/Handler.html"><abbr title="Dias\Exceptions\Handler">Handler</abbr></a></em></dt>
                     <dd>Report or log an exception.</dd><dt>
@@ -688,6 +690,8 @@ application config.</dd><dt>$
                     <dd>A transect is a collection of images. Transects belong to one or many
 projects.</dd>        </dl><h2 id="letterU">U</h2>
         <dl id="index"><dt>
+    <a href="Dias/Annotation.html#method_unorderedPoints"><abbr title="Dias\Annotation">Annotation</abbr>::unorderedPoints</a>() &mdash; <em>Method in class <a href="Dias/Annotation.html"><abbr title="Dias\Annotation">Annotation</abbr></a></em></dt>
+                    <dd>The points, this annotation consists of, <em>not</em> ordered by index</dd><dt>
     <a href="Dias/AnnotationLabel.html#method_user"><abbr title="Dias\AnnotationLabel">AnnotationLabel</abbr>::user</a>() &mdash; <em>Method in class <a href="Dias/AnnotationLabel.html"><abbr title="Dias\AnnotationLabel">AnnotationLabel</abbr></a></em></dt>
                     <dd>The user who created this annotation label.</dd><dt>$
     <a href="Dias/Attribute.html#property_updateRules"><abbr title="Dias\Attribute">Attribute</abbr></a> &mdash; <em>Property in class <a href="Dias/Attribute.html"><abbr title="Dias\Attribute">Attribute</abbr></a></em></dt>
@@ -730,7 +734,9 @@ projects.</dd>        </dl><h2 id="letterU">U</h2>
                     <dd>A user.</dd><dt>
     <a href="Dias/User.html#method_updateRules"><abbr title="Dias\User">User</abbr>::updateRules</a>() &mdash; <em>Method in class <a href="Dias/User.html"><abbr title="Dias\User">User</abbr></a></em></dt>
                     <dd>Returns the validation rules for updating the attributes of this user.</dd>        </dl><h2 id="letterV">V</h2>
-        <dl id="index"><dt>$
+        <dl id="index"><dt>
+    <a href="Dias/Annotation.html#method_validatePoints"><abbr title="Dias\Annotation">Annotation</abbr>::validatePoints</a>() &mdash; <em>Method in class <a href="Dias/Annotation.html"><abbr title="Dias\Annotation">Annotation</abbr></a></em></dt>
+                    <dd>Validates a points array for the shape of this annotation</dd><dt>$
     <a href="Dias/AnnotationPoint.html#property_visible"><abbr title="Dias\AnnotationPoint">AnnotationPoint</abbr></a> &mdash; <em>Property in class <a href="Dias/AnnotationPoint.html"><abbr title="Dias\AnnotationPoint">AnnotationPoint</abbr></a></em></dt>
                     <dd>The attributes included in the model's JSON form.</dd><dt>
     <a href="Dias/Http/Controllers/Auth/AuthController.html#method_validator"><abbr title="Dias\Http\Controllers\Auth\AuthController">AuthController</abbr>::validator</a>() &mdash; <em>Method in class <a href="Dias/Http/Controllers/Auth/AuthController.html"><abbr title="Dias\Http\Controllers\Auth\AuthController">AuthController</abbr></a></em></dt>

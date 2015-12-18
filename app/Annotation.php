@@ -5,6 +5,8 @@ namespace Dias;
 use Dias\Contracts\BelongsToProjectContract;
 use Dias\Model\ModelWithAttributes;
 use Illuminate\Database\QueryException;
+use Exception;
+use Dias\Shape;
 
 /**
  * An annotation is a region of an image that can be labeled by the users.
@@ -41,6 +43,62 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
         // don't display info from the pivot table
         'pivot',
     ];
+
+    /**
+     * Validates a points array for the shape of this annotation
+     *
+     * @param array $points Points array (a point may be an array or an object with 'x' and 'y')
+     * @throws Exception If the points array is invalid
+     */
+    public function validatePoints(array $points)
+    {
+        $valid = true;
+        foreach ($points as $point) {
+            if (is_array($point)) {
+                if (!array_key_exists('x', $point) || !array_key_exists('y', $point)) {
+                    $valid = false;
+                    break;
+                }
+
+                if (!is_numeric($point['x']) || !is_numeric($point['y'])) {
+                    $valid = false;
+                    break;
+                }
+            } else {
+                if (!property_exists($point, 'x') || !property_exists($point, 'y')) {
+                    $valid = false;
+                    break;
+                }
+
+                if (!is_numeric($point->x) || !is_numeric($point->y)) {
+                    $valid = false;
+                    break;
+                }
+            }
+        }
+
+        if (!$valid) {
+            throw new Exception("Malformed point object. It needs a 'x' and a 'y' property with numeric values.");
+        }
+
+        switch ($this->shape_id) {
+            case Shape::$pointId:
+                $valid = sizeof($points) === 1;
+                break;
+            case Shape::$circleId:
+                $valid = sizeof($points) === 2;
+                break;
+            case Shape::$rectangleId:
+                $valid = sizeof($points) === 4;
+                break;
+            default:
+                $valid = sizeof($points) > 0;
+        }
+
+        if (!$valid) {
+            throw new Exception('Invalid number of points for shape '.$this->shape->name.'!');
+        }
+    }
 
     /**
      * The image, this annotation belongs to.
