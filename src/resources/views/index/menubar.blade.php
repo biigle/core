@@ -6,7 +6,7 @@
         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
     </button>
     @if (!empty($modules->getMixins('transectsFilters')))
-        <button class="btn btn-default transect-menubar__item" data-popover-placement="right" data-uib-popover-template="'filterPopover.html'" type="button" title="Filter images" data-ng-class="{'btn-info':flags.hasActiveFilters()}">
+        <button class="btn btn-default transect-menubar__item" data-popover-placement="right" data-uib-popover-template="'filterPopover.html'" type="button" title="Filter images" data-ng-class="{'btn-info':flags.hasActiveFilters()||flags.hasActiveNegateFilters()}">
             <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
         </button>
     @endif
@@ -48,7 +48,7 @@
 <script type="text/ng-template" id="filterPopover.html">
     <div class="transect-filter-popover" data-ng-controller="FilterController">
         <strong>Filter</strong> <small><span data-ng-bind="currentNoImages">2</span> of <span data-ng-bind="totalNoImages">4</span> images</small>
-        <ul class="list-group filter-list">
+        <ul class="list-unstyled filter-list">
             @foreach ($modules->getMixins('transectsFilters') as $module => $nestedMixins)
                 @include($module.'::transectsFilters')
             @endforeach

@@ -5,7 +5,7 @@
  * @memberOf dias.transects
  * @description Service managing the list of images to display
  */
-angular.module('dias.transects').service('images', function ($rootScope, TRANSECT_ID, TRANSECT_IMAGES, filterSubset, flags) {
+angular.module('dias.transects').service('images', function ($rootScope, TRANSECT_ID, TRANSECT_IMAGES, filterSubset, filterExclude, flags) {
         "use strict";
 
         var _this = this;
@@ -60,6 +60,15 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
                 filterSubset(_this.sequence, filters[i]);
             }
 
+
+            filters = flags.getActiveNegateFilters();
+
+            for (i = 0; i < filters.length; i++) {
+                shouldStore = true;
+                filterExclude(_this.sequence, filters[i]);
+            }
+
+
             _this.length = _this.sequence.length;
 
             if (shouldStore) {
@@ -68,6 +77,13 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
                 // if there is no special ordering or filtering, the sequence shouldn't be stored
                 window.localStorage.removeItem(imagesLocalStorageKey);
             }
+        };
+
+        var updateFiltering = function () {
+            updateSequence();
+            // reset limit
+            _this.limit = initialLimit;
+            $rootScope.$broadcast('transects.images.new-filtering');
         };
 
         this.progress = function () {
@@ -91,10 +107,12 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
 
         this.toggleFilter = function (id) {
             flags.toggleFilter(id);
-            updateSequence();
-            // reset limit
-            _this.limit = initialLimit;
-            $rootScope.$broadcast('transects.images.new-filtering');
+            updateFiltering();
+        };
+
+        this.toggleNegateFilter = function (id) {
+            flags.toggleNegateFilter(id);
+            updateFiltering();
         };
 
         this.advance = function (step) {

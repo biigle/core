@@ -9,6 +9,7 @@ angular.module('dias.transects').service('flags', function (TRANSECT_ID, TRANSEC
         "use strict";
 
         var activeFiltersLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.active_filters';
+        var activeNegateFiltersLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.active_negate_filters';
 
         var _this = this;
         var flags = {};
@@ -22,6 +23,13 @@ angular.module('dias.transects').service('flags', function (TRANSECT_ID, TRANSEC
         // check for a stored active filters
         if (window.localStorage[activeFiltersLocalStorageKey]) {
             activeFilters = JSON.parse(window.localStorage[activeFiltersLocalStorageKey]);
+        }
+
+        var activeNegateFilters = [];
+
+        // check for a stored active negate filters
+        if (window.localStorage[activeNegateFiltersLocalStorageKey]) {
+            activeNegateFilters = JSON.parse(window.localStorage[activeNegateFiltersLocalStorageKey]);
         }
 
         var getFlagsOfImage = function (id) {
@@ -45,6 +53,38 @@ angular.module('dias.transects').service('flags', function (TRANSECT_ID, TRANSEC
             return activeFilters.indexOf(id) !== -1;
         };
 
+        var negateFilterIsActive = function (id) {
+            return activeNegateFilters.indexOf(id) !== -1;
+        };
+
+        var activateFilter = function (id) {
+            flags[id].activeFilter = true;
+            activeFilters.push(id);
+            window.localStorage[activeFiltersLocalStorageKey] = JSON.stringify(activeFilters);
+        };
+
+        var deactivateFilter = function (id) {
+            var index = activeFilters.indexOf(id);
+            if (index === -1) return;
+            flags[id].activeFilter = false;
+            activeFilters.splice(index, 1);
+            window.localStorage[activeFiltersLocalStorageKey] = JSON.stringify(activeFilters);
+        };
+
+        var activateNegateFilter = function (id) {
+            flags[id].activeNegateFilter = true;
+            activeNegateFilters.push(id);
+            window.localStorage[activeNegateFiltersLocalStorageKey] = JSON.stringify(activeNegateFilters);
+        };
+
+        var deactivateNegateFilter = function (id) {
+            var index = activeNegateFilters.indexOf(id);
+            if (index === -1) return;
+            flags[id].activeNegateFilter = false;
+            activeNegateFilters.splice(index, 1);
+            window.localStorage[activeNegateFiltersLocalStorageKey] = JSON.stringify(activeNegateFilters);
+        };
+
         /**
          * id: Unique identifier of the flag. Will be added as class of the flag element for each element
          * ids: IDs of the images to be flagged
@@ -55,7 +95,8 @@ angular.module('dias.transects').service('flags', function (TRANSECT_ID, TRANSEC
                 cssClass: id,
                 ids: ids,
                 title: title,
-                activeFilter: filterIsActive(id)
+                activeFilter: filterIsActive(id),
+                activeNegateFilter: negateFilterIsActive(id)
             };
             renewCache();
         };
@@ -69,14 +110,23 @@ angular.module('dias.transects').service('flags', function (TRANSECT_ID, TRANSEC
             if (!flags.hasOwnProperty(id)) return;
 
             if (filterIsActive(id)) {
-                flags[id].activeFilter = false;
-                activeFilters.splice(activeFilters.indexOf(id), 1);
+                deactivateFilter(id);
             } else {
-                flags[id].activeFilter = true;
-                activeFilters.push(id);
+                activateFilter(id);
             }
 
-            window.localStorage[activeFiltersLocalStorageKey] = JSON.stringify(activeFilters);
+            deactivateNegateFilter(id);
+        };
+
+        this.toggleNegateFilter = function (id) {
+            if (!flags.hasOwnProperty(id)) return;
+
+            if (negateFilterIsActive(id)) {
+                deactivateNegateFilter(id);
+            } else {
+                activateNegateFilter(id);
+            }
+            deactivateFilter(id);
         };
 
         this.getActiveFilters = function () {
@@ -90,6 +140,19 @@ angular.module('dias.transects').service('flags', function (TRANSECT_ID, TRANSEC
 
         this.hasActiveFilters = function () {
             return activeFilters.length > 0;
+        };
+
+        this.getActiveNegateFilters = function () {
+            var filters = [];
+            for (var i = 0; i < activeNegateFilters.length; i++) {
+                filters.push(flags[activeNegateFilters[i]].ids);
+            }
+
+            return filters;
+        };
+
+        this.hasActiveNegateFilters = function () {
+            return activeNegateFilters.length > 0;
         };
     }
 );

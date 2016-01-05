@@ -108,16 +108,10 @@
 .help-icon {
   cursor: help; }
 
-.transect-filter-popover .filter-list {
+.transect-filter-popover .filter-list li {
   margin-top: 1em; }
 
-.transect-filter-popover .filter-item {
-  cursor: pointer;
-  padding: 0.5em 1em; }
-  .transect-filter-popover .filter-item:hover {
-    background-color: #eee; }
-  .transect-filter-popover .filter-item.active {
-    background-color: #337ab7;
-    color: white; }
+.transect-filter-popover .figure-flag {
+  vertical-align: middle; }
 
 /*# sourceMappingURL=main.css.map */
