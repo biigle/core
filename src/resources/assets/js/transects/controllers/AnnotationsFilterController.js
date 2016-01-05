@@ -14,6 +14,10 @@ angular.module('dias.transects').controller('AnnotationsFilterController', funct
             images.toggleFilter(flagId);
         };
 
+        $scope.toggleNegateFilter = function () {
+            images.toggleNegateFilter(flagId);
+        };
+
         $scope.flag = flags.list[flagId];
     }
 );
