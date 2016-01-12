@@ -3,6 +3,8 @@
 namespace Dias\Http\Controllers\Api;
 
 use Dias\Transect;
+use Dias\Annotation;
+use Illuminate\Http\JsonResponse;
 
 class TransectAnnotationController extends Controller
 {
@@ -69,10 +71,21 @@ class TransectAnnotationController extends Controller
         $transect = Transect::findOrFail($id);
         $this->requireCanSee($transect);
 
-        return $transect->images()
-                // take only the images having annotations
-                ->has('annotations')
-                ->with('annotations.labels', 'annotations.shape', 'annotations.points')
-                ->get();
+        // With lots of images and lots of annotations this query can return LOTS of
+        // items. We'll then run into memory issues if we try to process them all as
+        // Eloquent models. Do these workarounds to prevent that.
+        $images = $transect->images()->has('annotations')->get()->toArray();
+
+        foreach ($images as &$image) {
+            $image['annotations'] = [];
+
+            Annotation::with('labels', 'shape', 'points')
+                ->where('image_id', $image['id'])
+                ->chunk(500, function ($annotations) use (&$image) {
+                    $image['annotations'] = array_merge($image['annotations'], $annotations->toArray());
+                });
+        }
+
+        return new JsonResponse($images);
     }
 }
