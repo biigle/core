@@ -21,11 +21,13 @@ class AnnotationLabel extends Model implements BelongsToProjectContract
         'label_id',
         'user_id',
         'annotation_id',
+        'created_at',
+        'updated_at'
     ];
 
     /**
      * The annotation, this annotation label belongs to.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function annotation()
@@ -35,7 +37,7 @@ class AnnotationLabel extends Model implements BelongsToProjectContract
 
     /**
      * The label, this annotation label belongs to.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function label()
@@ -45,7 +47,7 @@ class AnnotationLabel extends Model implements BelongsToProjectContract
 
     /**
      * The user who created this annotation label.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()

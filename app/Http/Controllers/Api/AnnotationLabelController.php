@@ -21,8 +21,6 @@ class AnnotationLabelController extends Controller
      *    {
      *       "id": 1,
      *       "confidence": 0.5,
-     *       "created_at": "2015-04-28 09:50:28",
-     *       "updated_at": "2015-04-28 09:50:28",
      *       "label": {
      *          "id": 2,
      *          "name": "Coral",
@@ -66,8 +64,6 @@ class AnnotationLabelController extends Controller
      * {
      *    "id": 1,
      *    "confidence": 0.5,
-     *    "created_at": "2015-04-28 09:50:28",
-     *    "updated_at": "2015-04-28 09:50:28",
      *    "label": {
      *       "id": 2,
      *       "name": "Coral",

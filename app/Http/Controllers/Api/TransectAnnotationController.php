@@ -29,14 +29,10 @@ class TransectAnnotationController extends Controller
      *                 "id":1,
      *                 "image_id":1,
      *                 "shape_id":6,
-     *                 "created_at":"2015-09-30 07:51:12",
-     *                 "updated_at":"2015-09-30 07:51:12",
      *                 "labels": [
      *                    {
      *                       "id":1,
      *                       "confidence": 0.6,
-     *                       "created_at":"2015-09-30 07:51:12",
-     *                       "updated_at":"2015-09-30 07:51:12",
      *                       "label": {
      *                          "id":3,
      *                          "name":"Benthic Object",
@@ -74,18 +70,29 @@ class TransectAnnotationController extends Controller
         // With lots of images and lots of annotations this query can return LOTS of
         // items. We'll then run into memory issues if we try to process them all as
         // Eloquent models. Do these workarounds to prevent that.
-        $images = $transect->images()->has('annotations')->get()->toArray();
+        $images = $transect->images()->has('annotations')->get();
+        // assemble the JSON string instead of storing all Eloquent modely or arrays
+        $imagesJson = '[';
 
-        foreach ($images as &$image) {
-            $image['annotations'] = [];
+        foreach ($images as $image) {
+            // get the image model as JSON object and add the annotations array (remove the '}')
+            $imageJson = substr($image->toJson(), 0, -1).',"annotations":[';
 
             Annotation::with('labels', 'shape', 'points')
                 ->where('image_id', $image['id'])
-                ->chunk(500, function ($annotations) use (&$image) {
-                    $image['annotations'] = array_merge($image['annotations'], $annotations->toArray());
+                // omit timestamps to reduce response size
+                ->select('annotations.id', 'annotations.image_id', 'annotations.shape_id')
+                ->chunk(500, function ($annotations) use (&$imageJson) {
+                    // append to the annotations array string (remove the '[]')
+                    $imageJson .= substr($annotations->toJson(), 1, -1);
                 });
+            // finish the annotations array string and image object
+            $imagesJson .= $imageJson.']},';
         }
 
-        return new JsonResponse($images);
+        // finish the images array (remove the last comma)
+        $imagesJson = substr($imagesJson, 0, -1).']';
+
+        return response($imagesJson)->header('Content-Type', 'application/json');
     }
 }
