@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: controller: MessagesController</title>
+    <title>JSDoc: Source: core/ui/utils/factories/filterExclude.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,130 +17,59 @@
 
 <div id="main">
 
-    <h1 class="page-title">controller: MessagesController</h1>
+    <h1 class="page-title">Source: core/ui/utils/factories/filterExclude.js</h1>
 
     
 
 
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @namespace dias.ui.utils
+ * @ngdoc factory
+ * @name filterExclude
+ * @memberOf dias.ui.utils
+ * @description Provides a function that removes all numbers of the first argument array (in place!) that are not present in the second argument array. Accepts a third argument boolean as to whether the second argument array is already sorted.
+ */
+angular.module('dias.ui.utils').factory('filterExclude', function () {
+        "use strict";
+        // comparison function for array.sort() with numbers
+        var compareNumbers = function (a, b) {
+            return a - b;
+        };
 
-<section>
+        // returns the array containing only elements that are not present in superset
+        // assumes that superset is sorted if sorted evaluates to true
+        // doesn't change the ordering of elements in the subset array
+        var filterExclude = function (subset, superset, sorted) {
+            if (!sorted) {
+                // clone array so sorting doesn't affect original
+                superset = superset.slice(0).sort(compareNumbers);
+            }
+            // clone the input array (so it isn't changed by sorting), then sort it
+            var sortedSubset = subset.slice(0).sort(compareNumbers);
+            var i = 0, j = 0;
+            while (i &lt; superset.length &amp;&amp; j &lt; sortedSubset.length) {
+                if (superset[i] &lt; sortedSubset[j]) {
+                    i++;
+                } else if (superset[i] === sortedSubset[j]) {
+                    // remove tha value that is both in subset and superset
+                    subset.splice(subset.indexOf(sortedSubset[j]), 1);
+                    i++;
+                    j++;
+                } else {
+                    j++;
+                }
+            }
+        };
 
-<header>
-    <h2>
-        <span class="ancestors"><a href="dias.ui.html">.ui</a><a href="dias.ui.messages.html">.messages</a>.</span>
-    
-    MessagesController
-    </h2>
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-
-    
-        
-<dt>
-    
-    
-      <a href="core_ui_messages_controller_MessagesController.js.html#line1" class="name-link"><h4 class="name" id="MessagesController">MessagesController<span class="signature">()</span><span class="type-signature"></span></h4></a>
-    
-
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Handles the live display of user feedback messages via JS</p>
-    </div>
-    
-
-    
-
-    
-
-    
-
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <!-- commented out by Allen Kim
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="core_ui_messages_controller_MessagesController.js.html">core/ui/messages/controller/MessagesController.js</a>, <a href="core_ui_messages_controller_MessagesController.js.html#line1">line 1</a>
-    </li></ul></dd>
-    -->
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-    
-    </div>
-
-    
-
-    
-
-    <!--
-    
-    -->
-
-    
-
-     
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+        return filterExclude;
+    }
+);
+</code></pre>
+        </article>
+    </section>
 
 
 
