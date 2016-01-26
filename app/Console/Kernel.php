@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         'Dias\Console\Commands\RemoveDeletedImages',
+        'Dias\Console\Commands\NewUser',
     ];
 
     /**
