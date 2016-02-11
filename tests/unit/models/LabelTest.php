@@ -80,4 +80,11 @@ class LabelTest extends ModelWithAttributesTest
         $child->save();
         $this->assertTrue($parent->hasChildren);
     }
+
+    public function testSetColorAttribute()
+    {
+        $label = self::create();
+        $label->color = '#aabbcc';
+        $this->assertEquals('aabbcc', $label->color);
+    }
 }

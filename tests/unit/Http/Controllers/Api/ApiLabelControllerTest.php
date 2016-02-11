@@ -109,16 +109,16 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         // still malformed color
         $this->assertResponseStatus(422);
 
-        // session cookie authentication
-        $this->be($this->globalAdmin);
         $count = Label::all()->count();
-        $this->call('POST', '/api/v1/labels', [
-            '_token' => Session::token(),
+        $this->callToken('POST', '/api/v1/labels', $this->globalAdmin, [
             'name' => 'Sea Cucumber',
-            'color' => '0099ff',
+            'color' => '#0099ff',
         ]);
+        // colors with hash are ok, too
         $this->assertResponseOk();
         $this->assertEquals($count + 1, Label::all()->count());
+
+        $this->be($this->globalAdmin);
 
         $this->callAjax('POST', '/api/v1/labels', [
             '_token' => Session::token(),
@@ -142,6 +142,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $this->assertEquals('Baby Sea Cucumber', $label->name);
         $this->assertEquals(1234, $label->aphia_id);
         $this->assertEquals(1, $label->parent->id);
+        $this->assertEquals('0099ff', $label->color);
 
         $this->assertStringStartsWith('{', $r->getContent());
         $this->assertStringEndsWith('}', $r->getContent());

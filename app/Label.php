@@ -24,7 +24,7 @@ class Label extends ModelWithAttributes
         'parent_id' => 'integer|exists:labels,id',
         'aphia_id' => 'integer',
         'project_id' => 'integer|exists:projects,id',
-        'color' => 'required|string|size:6|regex:/^[A-Fa-f0-9]+$/',
+        'color' => 'required|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
     ];
 
     /**
@@ -35,7 +35,7 @@ class Label extends ModelWithAttributes
     public static $updateRules = [
         'parent_id' => 'integer|exists:labels,id',
         'aphia_id' => 'integer',
-        'color' => 'string|size:6|regex:/^[A-Fa-f0-9]+$/',
+        'color' => 'string|regex:/^\#?[A-Fa-f0-9]{6}$/',
     ];
 
     /**
@@ -95,5 +95,15 @@ class Label extends ModelWithAttributes
     public function getHasChildrenAttribute()
     {
         return $this->children()->first() !== null;
+    }
+
+    /**
+     * Remove the optional '#' from a hexadecimal color
+     *
+     * @param string $value The color
+     */
+    public function setColorAttribute($value)
+    {
+        $this->attributes['color'] = ($value[0] === '#') ? substr($value, 1) : $value;
     }
 }
