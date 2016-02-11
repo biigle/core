@@ -165,7 +165,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success response:",
-          "content": "[\n   {\n      \"id\": 1,\n      \"confidence\": 0.5,\n      \"label\": {\n         \"id\": 2,\n         \"name\": \"Coral\",\n         \"parent_id\": 1,\n         \"aphia_id\": null\n      },\n      \"user\": {\n         \"id\": 1,\n         \"role_id\": 2,\n         \"name\": \"Joe User\"\n      }\n   }\n]",
+          "content": "[\n   {\n      \"id\": 1,\n      \"confidence\": 0.5,\n      \"label\": {\n         \"id\": 2,\n         \"name\": \"Coral\",\n         \"parent_id\": 1,\n         \"aphia_id\": null,\n         \"color\": \"0099ff\"\n      },\n      \"user\": {\n         \"id\": 1,\n         \"role_id\": 2,\n         \"name\": \"Joe User\"\n      }\n   }\n]",
           "type": "json"
         }
       ]
@@ -374,7 +374,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success response:",
-          "content": "{\n   \"id\": 1,\n   \"confidence\": 0.5,\n   \"label\": {\n      \"id\": 2,\n      \"name\": \"Coral\",\n      \"parent_id\": 1,\n      \"aphia_id\": null\n   },\n   \"user\": {\n      \"id\": 1,\n      \"role_id\": 2,\n      \"name\": \"Joe User\"\n   }\n}",
+          "content": "{\n   \"id\": 1,\n   \"confidence\": 0.5,\n   \"label\": {\n      \"id\": 2,\n      \"name\": \"Coral\",\n      \"parent_id\": 1,\n      \"aphia_id\": null,\n      \"color\": \"0099ff\"\n   },\n   \"user\": {\n      \"id\": 1,\n      \"role_id\": 2,\n      \"name\": \"Joe User\"\n   }\n}",
           "type": "json"
         }
       ]
@@ -1268,7 +1268,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success response:",
-          "content": "[\n   {\n      \"aphia_id\": null,\n      \"id\": 1,\n      \"name\": \"Benthic Object\",\n      \"parent_id\": null\n   },\n   {\n      \"aphia_id\": null,\n      \"id\": 2,\n      \"name\": \"Coral\",\n      \"parent_id\": 1\n   }\n]",
+          "content": "[\n   {\n      \"aphia_id\": null,\n      \"id\": 1,\n      \"name\": \"Benthic Object\",\n      \"parent_id\": null,\n      \"color\": \"0099ff\"\n   },\n   {\n      \"aphia_id\": null,\n      \"id\": 2,\n      \"name\": \"Coral\",\n      \"parent_id\": 1,\n      \"color\": \"9900ff\"\n   }\n]",
           "type": "json"
         }
       ]
@@ -1354,7 +1354,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success response:",
-          "content": "{\n   \"aphia_id\": null,\n   \"id\": 1,\n   \"name\": \"Benthic Object\",\n   \"parent_id\": null\n}",
+          "content": "{\n   \"aphia_id\": null,\n   \"id\": 1,\n   \"name\": \"Benthic Object\",\n   \"parent_id\": null,\n   \"color\": \"0099ff\"\n}",
           "type": "json"
         }
       ]
@@ -1448,6 +1448,13 @@ define({ "api": [
             "optional": false,
             "field": "name",
             "description": "<p>Name of the new label category.</p> "
+          },
+          {
+            "group": "Required arguments",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "color",
+            "description": "<p>Color of the new label category.</p> "
           }
         ],
         "Optional arguments": [
@@ -1479,7 +1486,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success response:",
-          "content": "{\n   \"id\": 4,\n   \"name\": \"Sea Cucumber\",\n   \"parent_id\": 1,\n   \"aphia_id\": 1234,\n   \"project_id\": null\n}",
+          "content": "{\n   \"id\": 4,\n   \"name\": \"Sea Cucumber\",\n   \"parent_id\": 1,\n   \"aphia_id\": 1234,\n   \"project_id\": null,\n   \"color\": \"0099ff\"\n}",
           "type": "json"
         }
       ]
@@ -1573,6 +1580,13 @@ define({ "api": [
             "optional": false,
             "field": "name",
             "description": "<p>Name of the label category.</p> "
+          },
+          {
+            "group": "Attributes that can be updated",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "color",
+            "description": "<p>Color of the label category.</p> "
           },
           {
             "group": "Attributes that can be updated",
@@ -2009,7 +2023,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success response:",
-          "content": "[\n   {\n      \"aphia_id\": null,\n      \"id\": 1,\n      \"name\": \"Benthic Object\",\n      \"parent_id\": null,\n      \"project_id\": 1\n   },\n   {\n      \"aphia_id\": null,\n      \"id\": 2,\n      \"name\": \"Coral\",\n      \"parent_id\": 1,\n      \"project_id\": 1\n   }\n]",
+          "content": "[\n   {\n      \"aphia_id\": null,\n      \"id\": 1,\n      \"name\": \"Benthic Object\",\n      \"parent_id\": null,\n      \"project_id\": 1,\n      \"color\": \"0099ff\"\n   },\n   {\n      \"aphia_id\": null,\n      \"id\": 2,\n      \"name\": \"Coral\",\n      \"parent_id\": 1,\n      \"project_id\": 1,\n      \"color\": \"9900ff\"\n   }\n]",
           "type": "json"
         }
       ]
@@ -2624,7 +2638,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success response:",
-          "content": "[\n    {\n        \"id\":1,\n        \"filename\":\"image.jpg\",\n        \"annotations\": [\n            {\n                \"id\":1,\n                \"image_id\":1,\n                \"shape_id\":6,\n                \"labels\": [\n                   {\n                      \"id\":1,\n                      \"confidence\": 0.6,\n                      \"label\": {\n                         \"id\":3,\n                         \"name\":\"Benthic Object\",\n                         \"parent_id\":2,\n                         \"aphia_id\":null,\n                         \"project_id\":null\n                      },\n                      \"user\": {\n                         \"id\":13,\n                         \"role_id\":2,\n                         \"name\":\"Gudrun Schinner\"\n                      }\n                   }\n                ],\n                \"shape\": {\n                   \"id\":6,\n                   \"name\":\"Circle\"\n                },\n                \"points\": [\n                   {\"x\":4,\"y\":8}\n                ]\n            }\n        ]\n    }\n]",
+          "content": "[\n    {\n        \"id\":1,\n        \"filename\":\"image.jpg\",\n        \"annotations\": [\n            {\n                \"id\":1,\n                \"image_id\":1,\n                \"shape_id\":6,\n                \"labels\": [\n                   {\n                      \"id\":1,\n                      \"confidence\": 0.6,\n                      \"label\": {\n                         \"id\":3,\n                         \"name\":\"Benthic Object\",\n                         \"parent_id\":2,\n                         \"aphia_id\":null,\n                         \"project_id\":null,\n                         \"color\": \"0099ff\"\n                      },\n                      \"user\": {\n                         \"id\":13,\n                         \"role_id\":2,\n                         \"name\":\"Gudrun Schinner\"\n                      }\n                   }\n                ],\n                \"shape\": {\n                   \"id\":6,\n                   \"name\":\"Circle\"\n                },\n                \"points\": [\n                   {\"x\":4,\"y\":8}\n                ]\n            }\n        ]\n    }\n]",
           "type": "json"
         }
       ]
