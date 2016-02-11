@@ -25,7 +25,8 @@ class AnnotationLabelController extends Controller
      *          "id": 2,
      *          "name": "Coral",
      *          "parent_id": 1,
-     *          "aphia_id": null
+     *          "aphia_id": null,
+     *          "color": "0099ff"
      *       },
      *       "user": {
      *          "id": 1,
@@ -68,7 +69,8 @@ class AnnotationLabelController extends Controller
      *       "id": 2,
      *       "name": "Coral",
      *       "parent_id": 1,
-     *       "aphia_id": null
+     *       "aphia_id": null,
+     *       "color": "0099ff"
      *    },
      *    "user": {
      *       "id": 1,

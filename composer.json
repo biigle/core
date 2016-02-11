@@ -12,7 +12,8 @@
         "fzaninotto/faker": "~1.4",
 		"phpunit/phpunit": "~4.0",
 		"sami/sami": "dev-master",
-		"mockery/mockery": "dev-master"
+		"mockery/mockery": "dev-master",
+        "doctrine/dbal": "2.5.*"
 	},
 	"autoload": {
 		"classmap": [

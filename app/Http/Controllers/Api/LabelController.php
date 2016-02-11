@@ -22,13 +22,15 @@ class LabelController extends Controller
      *       "aphia_id": null,
      *       "id": 1,
      *       "name": "Benthic Object",
-     *       "parent_id": null
+     *       "parent_id": null,
+     *       "color": "0099ff"
      *    },
      *    {
      *       "aphia_id": null,
      *       "id": 2,
      *       "name": "Coral",
-     *       "parent_id": 1
+     *       "parent_id": 1,
+     *       "color": "9900ff"
      *    }
      * ]
      *
@@ -55,7 +57,8 @@ class LabelController extends Controller
      *    "aphia_id": null,
      *    "id": 1,
      *    "name": "Benthic Object",
-     *    "parent_id": null
+     *    "parent_id": null,
+     *    "color": "0099ff"
      * }
      *
      * @param  int  $id
@@ -76,6 +79,7 @@ class LabelController extends Controller
      * @apiPermission adminOrProjectAdmin
      *
      * @apiParam (Required arguments) {String} name Name of the new label category.
+     * @apiParam (Required arguments) {String} color Color of the new label category.
      *
      * @apiParam (Optional arguments) {Number} parent_id ID of the parent label category for ordering in a tree-like stricture.
      * @apiParam (Optional arguments) {Number} aphia_id The [WoRMS](http://www.marinespecies.org/) AphiaID.
@@ -87,7 +91,8 @@ class LabelController extends Controller
      *    "name": "Sea Cucumber",
      *    "parent_id": 1,
      *    "aphia_id": 1234,
-     *    "project_id": null
+     *    "project_id": null,
+     *    "color": "0099ff"
      * }
      *
      * @return Label
@@ -108,6 +113,7 @@ class LabelController extends Controller
         $label->aphia_id = $this->request->input('aphia_id');
         $label->project_id = $this->request->input('project_id');
         $label->parent_id = $this->request->input('parent_id');
+        $label->color = $this->request->input('color');
 
         $label->save();
         // the parent object shouldn't be returned
@@ -128,6 +134,7 @@ class LabelController extends Controller
      * @apiParam {Number} id The label ID.
      *
      * @apiParam (Attributes that can be updated) {String} name Name of the label category.
+     * @apiParam (Attributes that can be updated) {String} color Color of the label category.
      * @apiParam (Attributes that can be updated) {Number} parent_id ID of the parent label category for ordering in a tree-like stricture.
      * @apiParam (Attributes that can be updated) {Number} aphia_id The [WoRMS](http://www.marinespecies.org/) AphiaID.
      *
@@ -148,6 +155,7 @@ class LabelController extends Controller
         $label->name = $this->request->input('name', $label->name);
         $label->aphia_id = $this->request->input('aphia_id', $label->aphia_id);
         $label->parent_id = $this->request->input('parent_id', $label->parent_id);
+        $label->color = $this->request->input('color', $label->color);
 
         $label->save();
     }

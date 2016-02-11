@@ -23,14 +23,16 @@ class ProjectLabelController extends Controller
      *       "id": 1,
      *       "name": "Benthic Object",
      *       "parent_id": null,
-     *       "project_id": 1
+     *       "project_id": 1,
+     *       "color": "0099ff"
      *    },
      *    {
      *       "aphia_id": null,
      *       "id": 2,
      *       "name": "Coral",
      *       "parent_id": 1,
-     *       "project_id": 1
+     *       "project_id": 1,
+     *       "color": "9900ff"
      *    }
      * ]
      *

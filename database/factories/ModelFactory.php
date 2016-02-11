@@ -60,6 +60,7 @@ $factory->define(Dias\Image::class, function ($faker) {
 $factory->define(Dias\Label::class, function ($faker) {
     return [
         'name' => str_random(10),
+        'color' => '0099ff',
         'parent_id' => null,
         'project_id' => null,
         'aphia_id' => null,

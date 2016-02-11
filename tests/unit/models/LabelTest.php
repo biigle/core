@@ -12,6 +12,7 @@ class LabelTest extends ModelWithAttributesTest
     public function testAttributes()
     {
         $this->assertNotNull($this->model->name);
+        $this->assertNotNull($this->model->color);
         $this->assertNull($this->model->created_at);
         $this->assertNull($this->model->updated_at);
     }
@@ -19,6 +20,13 @@ class LabelTest extends ModelWithAttributesTest
     public function testNameRequired()
     {
         $this->model->name = null;
+        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->model->save();
+    }
+
+    public function testColorRequired()
+    {
+        $this->model->color = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
         $this->model->save();
     }

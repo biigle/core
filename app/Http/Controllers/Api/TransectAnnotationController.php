@@ -38,7 +38,8 @@ class TransectAnnotationController extends Controller
      *                          "name":"Benthic Object",
      *                          "parent_id":2,
      *                          "aphia_id":null,
-     *                          "project_id":null
+     *                          "project_id":null,
+     *                          "color": "0099ff"
      *                       },
      *                       "user": {
      *                          "id":13,

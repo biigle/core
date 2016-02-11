@@ -24,6 +24,7 @@ class Label extends ModelWithAttributes
         'parent_id' => 'integer|exists:labels,id',
         'aphia_id' => 'integer',
         'project_id' => 'integer|exists:projects,id',
+        'color' => 'required|string|size:6|regex:/^[A-Fa-f0-9]+$/',
     ];
 
     /**
@@ -34,6 +35,7 @@ class Label extends ModelWithAttributes
     public static $updateRules = [
         'parent_id' => 'integer|exists:labels,id',
         'aphia_id' => 'integer',
+        'color' => 'string|size:6|regex:/^[A-Fa-f0-9]+$/',
     ];
 
     /**

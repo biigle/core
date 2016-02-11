@@ -78,12 +78,35 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         // api key authentication
         $this->callToken('POST', '/api/v1/labels', $this->admin, [
             'name' => 'Sea Cucumber',
+            'color' => '0099ff',
         ]);
         // only global admins have access
         $this->assertResponseStatus(401);
 
-        $this->callToken('POST', '/api/v1/labels', $this->globalAdmin);
-        // missing arguments
+        $this->callToken('POST', '/api/v1/labels', $this->globalAdmin, [
+            'name' => 'Sea Cucumber',
+        ]);
+        // missing color
+        $this->assertResponseStatus(422);
+
+        $this->callToken('POST', '/api/v1/labels', $this->globalAdmin, [
+            'color' => '0099ff',
+        ]);
+        // missing name
+        $this->assertResponseStatus(422);
+
+        $this->callToken('POST', '/api/v1/labels', $this->globalAdmin, [
+            'name' => 'Sea Cucumber',
+            'color' => '00wwff',
+        ]);
+        // malformed color
+        $this->assertResponseStatus(422);
+
+        $this->callToken('POST', '/api/v1/labels', $this->globalAdmin, [
+            'name' => 'Sea Cucumber',
+            'color' => '0099fff',
+        ]);
+        // still malformed color
         $this->assertResponseStatus(422);
 
         // session cookie authentication
@@ -92,6 +115,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $this->call('POST', '/api/v1/labels', [
             '_token' => Session::token(),
             'name' => 'Sea Cucumber',
+            'color' => '0099ff',
         ]);
         $this->assertResponseOk();
         $this->assertEquals($count + 1, Label::all()->count());
@@ -100,6 +124,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
             '_token' => Session::token(),
             'name' => 'Stone',
             'parent_id' => 99999,
+            'color' => '0099ff',
         ]);
         // parent label does not exist
         $this->assertResponseStatus(422);
@@ -109,6 +134,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
             'name' => 'Baby Sea Cucumber',
             'aphia_id' => 1234,
             'parent_id' => 1,
+            'color' => '0099ff',
         ]);
         $this->assertResponseOk();
         $this->assertEquals($count + 2, Label::all()->count());
@@ -127,6 +153,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $this->callToken('POST', '/api/v1/labels', $this->user, [
             'name' => 'test123',
             'project_id' => $this->project->id,
+            'color' => '0099ff',
         ]);
         // only project admins have access
         $this->assertResponseStatus(401);
@@ -134,6 +161,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $this->callToken('POST', '/api/v1/labels', $this->admin, [
             'name' => 'test123',
             'project_id' => 9999,
+            'color' => '0099ff',
         ]);
         // project does not exist
         $this->assertResponseStatus(422);
@@ -143,6 +171,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
             '_token' => Session::token(),
             'name' => 'test123',
             'project_id' => $this->project->id,
+            'color' => '0099ff',
         ]);
         $this->assertResponseOk();
 
@@ -178,6 +207,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
             'name' => 'random name abc',
             'parent_id' => 1,
             'aphia_id' => 2,
+            'color' => 'aabbcc',
         ]);
 
         $this->assertResponseOk();
@@ -185,6 +215,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $this->assertEquals('random name abc', $label->name);
         $this->assertEquals(1, $label->parent->id);
         $this->assertEquals(2, $label->aphia_id);
+        $this->assertEquals('aabbcc', $label->color);
     }
 
     public function testUpdateProjectSpecific()
