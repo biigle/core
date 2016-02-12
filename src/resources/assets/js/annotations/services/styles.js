@@ -14,97 +14,128 @@ angular.module('dias.annotations').service('styles', function () {
             orange: '#ff5e00'
         };
 
-		var width = 3;
+        var defaultCircleRadius = 6;
+        var defaultStrokeWidth = 3;
 
-		this.features = [
-			new ol.style.Style({
-				stroke: new ol.style.Stroke({
-					color: this.colors.white,
-					width: 5
-				}),
-				image: new ol.style.Circle({
-					radius: 6,
-					fill: new ol.style.Fill({
-						color: this.colors.blue
-					}),
-					stroke: new ol.style.Stroke({
-						color: this.colors.white,
-						width: 2
-					})
-				})
-			}),
-			new ol.style.Style({
-				stroke: new ol.style.Stroke({
-					color: this.colors.blue,
-					width: 3
-				})
-			})
-		];
+        var defaultStrokeOutline = new ol.style.Stroke({
+            color: this.colors.white,
+            width: 5
+        });
+
+        var selectedStrokeOutline = new ol.style.Stroke({
+            color: this.colors.white,
+            width: 6
+        });
+
+        var defaultStroke = new ol.style.Stroke({
+            color: this.colors.blue,
+            width: defaultStrokeWidth
+        });
+
+        var selectedStroke = new ol.style.Stroke({
+            color: this.colors.orange,
+            width: defaultStrokeWidth
+        });
+
+        var defaultCircleFill = new ol.style.Fill({
+            color: this.colors.blue
+        });
+
+        var selectedCircleFill = new ol.style.Fill({
+            color: this.colors.orange
+        });
+
+        var defaultCircleStroke = new ol.style.Stroke({
+            color: this.colors.white,
+            width: 2
+        });
+
+        var selectedCircleStroke = new ol.style.Stroke({
+            color: this.colors.white,
+            width: defaultStrokeWidth
+        });
+
+        var editingCircleStroke = new ol.style.Stroke({
+            color: this.colors.white,
+            width: 2,
+            lineDash: [3]
+        });
+
+        var editingStroke = new ol.style.Stroke({
+            color: this.colors.blue,
+            width: defaultStrokeWidth,
+            lineDash: [5]
+        });
+
+        var defaultFill = new ol.style.Fill({
+            color: this.colors.blue
+        });
+
+        var selectedFill = new ol.style.Fill({
+            color: this.colors.orange
+        });
+
+		this.features = function (feature) {
+            var color = feature.color ? ('#' + feature.color) : this.colors.blue;
+            return [
+                new ol.style.Style({
+                    stroke: defaultStrokeOutline,
+                    image: new ol.style.Circle({
+                        radius: defaultCircleRadius,
+                        fill: new ol.style.Fill({
+                            color: color
+                        }),
+                        stroke: defaultCircleStroke
+                    })
+                }),
+                new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: color,
+                        width: 3
+                    })
+                })
+            ];
+        };
 
 		this.highlight = [
 			new ol.style.Style({
-				stroke: new ol.style.Stroke({
-					color: this.colors.white,
-					width: 6
-				}),
+				stroke: selectedStrokeOutline,
 				image: new ol.style.Circle({
-					radius: 6,
-					fill: new ol.style.Fill({
-						color: this.colors.orange
-					}),
-					stroke: new ol.style.Stroke({
-						color: this.colors.white,
-						width: 3
-					})
-				})
+					radius: defaultCircleRadius,
+					fill: selectedCircleFill,
+					stroke: selectedCircleStroke
+				}),
+                zIndex: 200
 			}),
 			new ol.style.Style({
-				stroke: new ol.style.Stroke({
-					color: this.colors.orange,
-					width: 3
-				})
+				stroke: selectedStroke,
+                zIndex: 200
 			})
 		];
 
 		this.editing = [
 			new ol.style.Style({
-				stroke: new ol.style.Stroke({
-					color: this.colors.white,
-					width: 5
-				}),
+				stroke: defaultStrokeOutline,
 				image: new ol.style.Circle({
-					radius: 6,
-					fill: new ol.style.Fill({
-						color: this.colors.blue
-					}),
-					stroke: new ol.style.Stroke({
-						color: this.colors.white,
-						width: 2,
-						lineDash: [3]
-					})
+					radius: defaultCircleRadius,
+					fill: defaultCircleFill,
+					stroke: editingCircleStroke
 				})
 			}),
 			new ol.style.Style({
-				stroke: new ol.style.Stroke({
-					color: this.colors.blue,
-					width: 3,
-					lineDash: [5]
-				})
+				stroke: editingStroke
 			})
 		];
 
 		this.viewport = [
 			new ol.style.Style({
-				stroke: new ol.style.Stroke({
-					color: this.colors.blue,
-					width: 3
-				}),
+				stroke: defaultStroke,
 			}),
 			new ol.style.Style({
 				stroke: new ol.style.Stroke({
-					color: this.colors.white,
-					width: 1
-				})
+                    color: this.colors.white,
+                    width: 1
+                })
 			})
 		];
 	}

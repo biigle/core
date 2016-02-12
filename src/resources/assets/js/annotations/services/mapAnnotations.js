@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval) {
+angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval, labels) {
 		"use strict";
 
         var annotationFeatures = new ol.Collection();
@@ -128,8 +128,11 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			}
 
 			var feature = new ol.Feature({ geometry: geometry });
+            feature.annotation = annotation;
+            if (annotation.labels && annotation.labels.length > 0) {
+                feature.color = annotation.labels[0].label.color;
+            }
 			feature.on('change', handleGeometryChange);
-			feature.annotation = annotation;
             annotationSource.addFeature(feature);
 		};
 
@@ -146,11 +149,16 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		var handleNewFeature = function (e) {
 			var geometry = e.feature.getGeometry();
 			var coordinates = getCoordinates(geometry);
+            var label = labels.getSelected();
+
+            e.feature.color = label.color;
 
 			e.feature.annotation = annotations.add({
 				id: images.getCurrentId(),
 				shape: geometry.getType(),
-				points: coordinates.map(convertFromOLPoint)
+				points: coordinates.map(convertFromOLPoint),
+                label_id: label.id,
+                confidence: labels.getCurrentConfidence()
 			});
 
 			// if the feature couldn't be saved, remove it again

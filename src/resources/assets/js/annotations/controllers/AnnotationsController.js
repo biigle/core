@@ -10,12 +10,6 @@ angular.module('dias.annotations').controller('AnnotationsController', function 
 
 		$scope.selectedFeatures = mapAnnotations.getSelectedFeatures().getArray();
 
-		$scope.$watchCollection('selectedFeatures', function (features) {
-			features.forEach(function (feature) {
-				labels.fetchForAnnotation(feature.annotation);
-			});
-		});
-
 		var refreshAnnotations = function () {
 			$scope.annotations = annotations.current();
 		};

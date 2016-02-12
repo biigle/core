@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service the annotations to make them available in multiple controllers.
  */
-angular.module('dias.annotations').service('annotations', function (Annotation, shapes, labels, msg) {
+angular.module('dias.annotations').service('annotations', function (Annotation, shapes, msg) {
 		"use strict";
 
 		var annotations;
@@ -34,9 +34,6 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 			if (!params.shape_id && params.shape) {
 				params.shape_id = shapes.getId(params.shape);
 			}
-			var label = labels.getSelected();
-			params.label_id = label.id;
-			params.confidence = labels.getCurrentConfidence();
 			var annotation = Annotation.add(params);
 			annotation.$promise
 			          .then(resolveShapeName)
