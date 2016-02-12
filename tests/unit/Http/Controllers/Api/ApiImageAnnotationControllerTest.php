@@ -182,6 +182,14 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             ]);
         }
 
+        $this->seeJson([
+            'name' => $this->labelRoot->name
+        ]);
+
+        $this->seeJson([
+            'color' => $this->labelRoot->color
+        ]);
+
         $annotation = $this->image->annotations->first();
         $this->assertNotNull($annotation);
         $this->assertEquals(1, $annotation->points()->count());
