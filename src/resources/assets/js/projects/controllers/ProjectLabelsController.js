@@ -10,6 +10,8 @@
 angular.module('dias.projects').controller('ProjectLabelsController', function ($scope, ProjectLabel, Label, msg) {
 		"use strict";
 
+        var defaultLabelColor = '#0099ff';
+
         var buildTree = function (label) {
             var parent = label.parent_id;
             if ($scope.categoriesTree[parent]) {
@@ -32,12 +34,17 @@ angular.module('dias.projects').controller('ProjectLabelsController', function (
         $scope.newLabel = {
             parent_id: null,
             name: null,
-            project_id: $scope.projectId
+            project_id: $scope.projectId,
+            color: defaultLabelColor
         };
 
         // currently selected label
         $scope.selected = {
             label: null
+        };
+
+        $scope.resetColor = function () {
+            $scope.newLabel.color = defaultLabelColor;
         };
 
         $scope.edit = function () {

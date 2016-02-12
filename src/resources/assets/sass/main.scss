@@ -40,16 +40,8 @@
 .project-label-category-item {
     cursor: pointer;
 
-    & > .item .item__name:before {
-        content: '▹ ';
-    }
-
-    &.expandable > .item .item__name:before {
-        content: '▸ ';
-    }
-
-    &.expandable.open > .item .item__name:before {
-        content: '▾ ';
+    &.expandable > .item .item__name {
+        text-decoration: underline;
     }
 
     & > .project-label-category-subtree {
@@ -63,5 +55,14 @@
 
     &.selected > .item .item__name {
         font-weight: bold;
+    }
+
+    .item__color {
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        border-radius: 50%;
+        border: 2px solid white;
+        vertical-align: middle;
     }
 }
