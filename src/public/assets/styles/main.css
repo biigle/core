@@ -1,4 +1,3 @@
-@charset "UTF-8";
 html, body {
   height: 100%; }
 
@@ -220,24 +219,27 @@ html, body {
   padding-left: 19px;
   padding-top: 0.5em;
   cursor: pointer; }
-  .label-category-item > .item__name:before {
-    content: '▹ '; }
-  .label-category-item > .item__name:hover {
+  .label-category-item > .item:hover {
     color: white; }
-  .label-category-item.expandable > .item__name:before {
-    content: '▸ '; }
-  .label-category-item.expandable.open > .item__name {
+  .label-category-item.expandable > .item .item__name {
+    text-decoration: underline; }
+  .label-category-item.expandable.open > .item {
     color: white; }
-    .label-category-item.expandable.open > .item__name:before {
-      content: '▾ '; }
   .label-category-item > .label-category-subtree {
     max-height: 0;
     overflow: hidden; }
   .label-category-item.open > .label-category-subtree {
     max-height: none; }
-  .label-category-item.selected > .item__name {
+  .label-category-item.selected > .item {
     color: white;
     font-weight: bold; }
+  .label-category-item .item__color {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    border-radius: 50%;
+    border: 2px solid #eee;
+    vertical-align: middle; }
 
 .settings-foldout h4:first-child {
   margin-top: 0; }

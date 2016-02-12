@@ -30,26 +30,16 @@
 	padding-top: 0.5em;
 	cursor: pointer;
 
-	& > .item__name {
-        &:before {
-            content: '▹ ';
-        }
-
-        &:hover {
-    		color: white;
-    	}
+	& > .item:hover {
+    	color: white;
     }
 
-	&.expandable > .item__name:before {
-		content: '▸ ';
-	}
+	&.expandable > .item .item__name {
+        text-decoration: underline;
+    }
 
-	&.expandable.open > .item__name {
+	&.expandable.open > .item {
         color: white;
-
-        &:before {
-            content: '▾ ';
-        }
     }
 
 	& > .label-category-subtree {
@@ -61,8 +51,17 @@
 		max-height: none;
 	}
 
-	&.selected > .item__name {
+	&.selected > .item {
 		color: white;
 		font-weight: bold;
 	}
+
+    .item__color {
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        border-radius: 50%;
+        border: 2px solid #eee;
+        vertical-align: middle;
+    }
 }

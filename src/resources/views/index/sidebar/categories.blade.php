@@ -21,8 +21,8 @@
 </div>
 
 <script type="text/ng-template" id="label-item.html">
-    <div class="item__name" data-ng-click="selectItem(item)">
-        @{{item.name}} <span class="glyphicon glyphicon-star-empty pull-right" aria-hidden="true" title="Select as favourite" data-ng-click="toggleFavourite($event, item)" data-ng-if="favouritesLeft() && !isFavourite(item)"></span><span class="glyphicon glyphicon-star pull-right" aria-hidden="true" title="Remove as favourite" data-ng-click="toggleFavourite($event, item)" data-ng-if="isFavourite(item)"></span>
+    <div class="item" data-ng-click="selectItem(item)">
+        <span class="item__color" data-ng-style="{'background-color': '#' + item.color}"></span> <span class="item__name">@{{item.name}}</span> <span class="glyphicon glyphicon-star-empty pull-right" aria-hidden="true" title="Select as favourite" data-ng-click="toggleFavourite($event, item)" data-ng-if="favouritesLeft() && !isFavourite(item)"></span><span class="glyphicon glyphicon-star pull-right" aria-hidden="true" title="Remove as favourite" data-ng-click="toggleFavourite($event, item)" data-ng-if="isFavourite(item)"></span>
     </div>
 </script>
 
