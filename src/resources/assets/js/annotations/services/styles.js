@@ -8,6 +8,8 @@
 angular.module('dias.annotations').service('styles', function () {
 		"use strict";
 
+        var _this = this;
+
         this.colors = {
             white: [255, 255, 255, 1],
             blue: [0, 153, 255, 1],
@@ -76,7 +78,7 @@ angular.module('dias.annotations').service('styles', function () {
         });
 
 		this.features = function (feature) {
-            var color = feature.color ? ('#' + feature.color) : this.colors.blue;
+            var color = feature.color ? ('#' + feature.color) : _this.colors.blue;
             return [
                 new ol.style.Style({
                     stroke: defaultStrokeOutline,

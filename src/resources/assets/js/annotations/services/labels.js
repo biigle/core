@@ -49,7 +49,7 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
             // use index to see if the label exists for the annotation
             var index = annotation.labels.indexOf(label);
             if (index > -1) {
-                return label.$delete(function () {
+                return AnnotationLabel.delete({id: label.id}, function () {
                     // update the index since the label list may have been modified
                     // in the meantime
                     index = annotation.labels.indexOf(label);
