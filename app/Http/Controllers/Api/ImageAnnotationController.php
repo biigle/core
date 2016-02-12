@@ -110,25 +110,6 @@ class ImageAnnotationController extends Controller
      *    "updated_at": "2015-02-18 11:45:00",
      *    "points": [
      *       {"x": 100, "y": 200}
-     *    ],
-     *    "labels": [
-     *       {
-     *          "confidence": 1,
-     *          "id": 1,
-     *          "label": {
-     *             "aphia_id": null,
-     *             "color": "bada55",
-     *             "id": 3,
-     *             "name": "My label",
-     *             "parent_id": null,
-     *             "project_id": null
-     *          },
-     *          "user": {
-     *             "id": 4,
-     *             "name": "Graham Hahn",
-     *             "role_id": 2
-     *          }
-     *       }
      *    ]
      * }
      *
@@ -173,7 +154,7 @@ class ImageAnnotationController extends Controller
             $this->user
         );
 
-        $annotation->load('points', 'labels');
+        $annotation->load('points');
 
         return $annotation;
     }
