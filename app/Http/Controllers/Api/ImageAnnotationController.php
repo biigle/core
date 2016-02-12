@@ -30,6 +30,25 @@ class ImageAnnotationController extends Controller
      *       "updated_at": "2015-02-18 11:45:00",
      *       "points": [
      *          {"x": 100, "y": 200}
+     *       ],
+     *       "labels": [
+     *          {
+     *             "confidence": 1,
+     *             "id": 1,
+     *             "label": {
+     *                "aphia_id": null,
+     *                "color": "bada55",
+     *                "id": 3,
+     *                "name": "My label",
+     *                "parent_id": null,
+     *                "project_id": null
+     *             },
+     *             "user": {
+     *                "id": 4,
+     *                "name": "Graham Hahn",
+     *                "role_id": 2
+     *             }
+     *          }
      *       ]
      *    }
      * ]
@@ -42,7 +61,7 @@ class ImageAnnotationController extends Controller
         $image = Image::findOrFail($id);
         $this->requireCanSee($image);
 
-        return $image->annotations()->with('points')->get();
+        return $image->annotations()->with('points', 'labels')->get();
     }
 
     /**

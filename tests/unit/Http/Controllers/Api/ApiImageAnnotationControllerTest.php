@@ -26,6 +26,13 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             'index' => 0,
         ])->fresh();
 
+        $label = LabelTest::create([
+            'name' => 'My label',
+            'color' => 'bada55',
+        ]);
+
+        $annotation->addLabel($label->id, 1.0, $this->editor);
+
         $this->doTestApiRoute('GET',
             '/api/v1/images/'.$this->image->id.'/annotations'
         );
@@ -51,6 +58,12 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
                     ['x' => $point2->x, 'y' => $point2->y],
                     ['x' => $point1->x, 'y' => $point1->y],
                 ],
+            ])
+            ->seeJson([
+                'color' => 'bada55',
+            ])
+            ->seeJson([
+                'name' => 'My label',
             ]);
     }
 

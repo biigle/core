@@ -79,7 +79,7 @@ class LabelController extends Controller
      * @apiPermission adminOrProjectAdmin
      *
      * @apiParam (Required arguments) {String} name Name of the new label category.
-     * @apiParam (Required arguments) {String} color Color of the new label category.
+     * @apiParam (Required arguments) {String} color Color of the new label category as exadecimal string (like `bada55`). May have an optional `#` prefix.
      *
      * @apiParam (Optional arguments) {Number} parent_id ID of the parent label category for ordering in a tree-like stricture.
      * @apiParam (Optional arguments) {Number} aphia_id The [WoRMS](http://www.marinespecies.org/) AphiaID.

@@ -32,7 +32,7 @@ angular.module('dias.admin').controller('AdminLabelsController', function ($scop
         $scope.newLabel = {
             parent_id: null,
             name: null,
-            project_id: $scope.projectId,
+            project_id: null,
             color: defaultLabelColor
         };
 
