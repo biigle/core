@@ -823,7 +823,7 @@
       "examples": [
         {
           "title": "Success response:",
-          "content": "[\n   {\n      \"created_at\": \"2015-02-18 11:45:00\",\n      \"id\": 1,\n      \"image_id\": 1,\n      \"shape_id\": 1,\n      \"updated_at\": \"2015-02-18 11:45:00\",\n      \"points\": [\n         {\"x\": 100, \"y\": 200}\n      ]\n   }\n]",
+          "content": "[\n   {\n      \"created_at\": \"2015-02-18 11:45:00\",\n      \"id\": 1,\n      \"image_id\": 1,\n      \"shape_id\": 1,\n      \"updated_at\": \"2015-02-18 11:45:00\",\n      \"points\": [\n         {\"x\": 100, \"y\": 200}\n      ],\n      \"labels\": [\n         {\n            \"confidence\": 1,\n            \"id\": 1,\n            \"label\": {\n               \"aphia_id\": null,\n               \"color\": \"bada55\",\n               \"id\": 3,\n               \"name\": \"My label\",\n               \"parent_id\": null,\n               \"project_id\": null\n            },\n            \"user\": {\n               \"id\": 4,\n               \"name\": \"Graham Hahn\",\n               \"role_id\": 2\n            }\n         }\n      ]\n   }\n]",
           "type": "json"
         }
       ]
@@ -1454,7 +1454,7 @@
             "type": "<p>String</p> ",
             "optional": false,
             "field": "color",
-            "description": "<p>Color of the new label category.</p> "
+            "description": "<p>Color of the new label category as exadecimal string (like <code>bada55</code>). May have an optional <code>#</code> prefix.</p> "
           }
         ],
         "Optional arguments": [
