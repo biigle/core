@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Controller for the sidebar
  */
-angular.module('dias.annotations').controller('SidebarController', function ($scope, $rootScope, mapAnnotations, keyboard) {
+angular.module('dias.annotations').controller('SidebarController', function ($scope, $rootScope) {
 		"use strict";
 
         var foldoutStorageKey = 'dias.annotations.sidebar-foldout';
@@ -32,25 +32,8 @@ angular.module('dias.annotations').controller('SidebarController', function ($sc
 			}
 		};
 
-		$scope.deleteSelectedAnnotations = function () {
-            if (mapAnnotations.getSelectedFeatures().getLength() > 0 && confirm('Are you sure you want to delete all selected annotations?')) {
-                mapAnnotations.deleteSelected();
-            }
-        };
-
         $rootScope.$on('sidebar.foldout.do-open', function (e, name) {
             $scope.openFoldout(name);
-        });
-
-        keyboard.on(9, function (e) {
-            e.preventDefault();
-            $scope.toggleFoldout('categories');
-            $scope.$apply();
-        });
-
-        keyboard.on(46, function (e) {
-            $scope.deleteSelectedAnnotations();
-            $scope.$apply();
         });
 
         // the currently opened sidebar-'extension' is remembered through localStorage

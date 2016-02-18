@@ -43,7 +43,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         // index of the currently selected annotation (during cycling through annotations)
         // in the annotationFeatures collection
-        var currentAnnotation = 0;
+        var currentAnnotationIndex = 0;
 
         var _this = this;
 
@@ -267,33 +267,33 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         };
 
         this.cycleNext = function () {
-            currentAnnotation = (currentAnnotation + 1) % annotationFeatures.getLength();
+            currentAnnotationIndex = (currentAnnotationIndex + 1) % annotationFeatures.getLength();
             _this.jumpToCurrent();
         };
 
         this.hasNext = function () {
-            return (currentAnnotation + 1) < annotationFeatures.getLength();
+            return (currentAnnotationIndex + 1) < annotationFeatures.getLength();
         };
 
         this.cyclePrevious = function () {
             // we want no negative index here
-            currentAnnotation = (currentAnnotation + annotationFeatures.getLength() - 1) % annotationFeatures.getLength();
+            currentAnnotationIndex = (currentAnnotationIndex + annotationFeatures.getLength() - 1) % annotationFeatures.getLength();
             _this.jumpToCurrent();
         };
 
         this.hasPrevious = function () {
-            return currentAnnotation > 0;
+            return currentAnnotationIndex > 0;
         };
 
         this.jumpToCurrent = function () {
             // only jump once the annotations were loaded
             annotations.getPromise().then(function () {
-                selectAndShowAnnotation(annotationFeatures.item(currentAnnotation));
+                selectAndShowAnnotation(annotationFeatures.item(currentAnnotationIndex));
             });
         };
 
         this.jumpToFirst = function () {
-            currentAnnotation = 0;
+            currentAnnotationIndex = 0;
             _this.jumpToCurrent();
         };
 
@@ -301,7 +301,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             annotations.getPromise().then(function () {
                 // wait for the new annotations to be loaded
                 if (annotationFeatures.getLength() !== 0) {
-                    currentAnnotation = annotationFeatures.getLength() - 1;
+                    currentAnnotationIndex = annotationFeatures.getLength() - 1;
                 }
                 _this.jumpToCurrent();
             });
@@ -325,7 +325,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         };
 
         this.getCurrent = function () {
-            return annotationFeatures.item(currentAnnotation).annotation;
+            return annotationFeatures.item(currentAnnotationIndex).annotation;
         };
 	}
 );
