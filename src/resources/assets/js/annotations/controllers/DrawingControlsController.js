@@ -9,13 +9,12 @@ angular.module('dias.annotations').controller('DrawingControlsController', funct
 		"use strict";
 
 		$scope.selectShape = function (name) {
-			if (!labels.hasSelected()) {
-                $scope.$emit('sidebar.foldout.do-open', 'categories');
-				msg.info($attrs.selectCategory);
-				return;
-			}
-
             if (name !== null && $scope.selectedShape() !== name) {
+                if (!labels.hasSelected()) {
+                    $scope.$emit('sidebar.foldout.do-open', 'categories');
+                    msg.info($attrs.selectCategory);
+                    return;
+                }
 				mapAnnotations.startDrawing(name);
 			} else {
                 mapAnnotations.finishDrawing();
