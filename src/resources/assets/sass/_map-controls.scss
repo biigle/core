@@ -6,8 +6,9 @@
     // on top of the map canvas
     z-index: 1;
     background-color: rgba(255, 255, 255, 0.4);
-    padding: 4px;
+    padding: 1px;
     border-radius: 4px;
+    transition: all 0.25s ease;
 
     &:hover {
         background-color: rgba(255, 255, 255, 0.6);
@@ -56,37 +57,46 @@
     line-height: inherit;
 }
 
-.drawing-controls-container {
+.controls-bar {
     position: absolute;
     bottom: 0.5em;
     width: 100%;
     display: flex;
     justify-content: center;
-}
+    color: white;
 
-.drawing-controls {
-    @extend %ol-control;
+    .btn-group {
+        @extend %ol-control;
 
-    .btn {
-        padding: 0;
-        border-radius: 2px;
-        background-color: rgba(0, 60, 136, 0.5);
+        margin-right: 0.5em;
 
-        &:not(:last-child) {
-            margin-right: 2px;
-        }
+        .btn {
+            border-radius: 2px;
+            transition: background-color 0.25s ease;
+            background-color: rgba(0, 60, 136, 0.5);
 
-        &:hover, &.active {
-            background-color: rgba(0, 60, 136, 0.7);
+            &:not(:last-child) {
+                margin-right: 2px;
+            }
+
+            &:hover, &.active {
+                color: white;
+                background-color: rgba(0, 60, 136, 0.7);
+            }
+
+            &:focus {
+                color: white;
+            }
         }
     }
 }
 
-.selected-label-container {
+.selected-label {
     @extend %ol-control;
     position: absolute;
     right: 0.5em;
     bottom: 0.5em;
     color: #333;
+    padding: 0.5em 1em;
     font-weight: bold;
 }

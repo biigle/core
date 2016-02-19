@@ -38,8 +38,18 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			}
 		});
 
+        modify.setActive(false);
+
+        var translate = new ol.interaction.Translate({
+            features: selectedFeatures
+        });
+
+        translate.setActive(false);
+
 		// drawing interaction
 		var draw;
+        // type/shape of the drawing interaction
+        var drawingType;
 
         // index of the currently selected annotation (during cycling through annotations)
         // in the annotationFeatures collection
@@ -174,6 +184,8 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		this.init = function (scope) {
             map.addLayer(annotationLayer);
 			map.addInteraction(select);
+            map.addInteraction(translate);
+            map.addInteraction(modify);
 			scope.$on('image.shown', refreshAnnotations);
 
 			selectedFeatures.on('change:length', function () {
@@ -187,26 +199,50 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
 		this.startDrawing = function (type) {
             select.setActive(false);
+            modify.setActive(true);
+            _this.finishMoving();
+            // allow only one draw interaction at a time
+            map.removeInteraction(draw);
 
-			type = type || 'Point';
+			drawingType = type || 'Point';
 			draw = new ol.interaction.Draw({
                 source: annotationSource,
-				type: type,
+				type: drawingType,
 				style: styles.editing
 			});
 
-			map.addInteraction(modify);
 			map.addInteraction(draw);
 			draw.on('drawend', handleNewFeature);
 		};
 
 		this.finishDrawing = function () {
 			map.removeInteraction(draw);
-			map.removeInteraction(modify);
+            draw.setActive(false);
+            drawingType = undefined;
             select.setActive(true);
+            modify.setActive(false);
 			// don't select the last drawn point
 			_this.clearSelection();
 		};
+
+        this.isDrawing = function () {
+            return draw && draw.getActive();
+        };
+
+        this.startMoving = function () {
+            if (_this.isDrawing()) {
+                _this.finishDrawing();
+            }
+            translate.setActive(true);
+        };
+
+        this.finishMoving = function () {
+            translate.setActive(false);
+        };
+
+        this.isMoving = function () {
+            return translate.getActive();
+        };
 
 		this.deleteSelected = function () {
 			selectedFeatures.forEach(function (feature) {
@@ -255,6 +291,10 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		this.getSelectedFeatures = function () {
 			return selectedFeatures;
 		};
+
+        this.getSelectedDrawingType = function () {
+            return drawingType;
+        };
 
         // manually add a new feature (not through the draw interaction)
         this.addFeature = function (feature) {

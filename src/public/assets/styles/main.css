@@ -65,16 +65,13 @@ html, body {
     background-size: contain; }
 
 .icon {
-  min-height: 20px;
-  min-width: 20px;
+  min-height: 18px;
+  min-width: 18px;
   display: inline-block;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 20px 20px;
-  vertical-align: middle; }
-  .icon.btn {
-    min-width: 34px;
-    min-height: 34px; }
+  background-size: 18px 18px;
+  margin-bottom: -3px; }
   .icon.icon-point {
     background-image: url(../images/point.svg); }
   .icon.icon-rectangle {
@@ -253,12 +250,13 @@ html, body {
 .annotator__canvas {
   position: relative; }
 
-.confidence-control, .drawing-controls, .selected-label-container {
+.confidence-control, .controls-bar .btn-group, .selected-label {
   z-index: 1;
   background-color: rgba(255, 255, 255, 0.4);
-  padding: 4px;
-  border-radius: 4px; }
-  .confidence-control:hover, .drawing-controls:hover, .selected-label-container:hover {
+  padding: 1px;
+  border-radius: 4px;
+  transition: all 0.25s ease; }
+  .confidence-control:hover, .controls-bar .btn-group:hover, .selected-label:hover {
     background-color: rgba(255, 255, 255, 0.6); }
 
 .confidence-control {
@@ -287,7 +285,7 @@ html, body {
   font-size: 100%;
   line-height: inherit; }
 
-.drawing-controls-container {
+.controls-bar {
   position: absolute;
   bottom: 0.5em;
   width: 100%;
@@ -296,22 +294,28 @@ html, body {
   display: flex;
   -webkit-justify-content: center;
   -ms-flex-pack: center;
-  justify-content: center; }
+  justify-content: center;
+  color: white; }
+  .controls-bar .btn-group {
+    margin-right: 0.5em; }
+    .controls-bar .btn-group .btn {
+      border-radius: 2px;
+      transition: background-color 0.25s ease;
+      background-color: rgba(0, 60, 136, 0.5); }
+      .controls-bar .btn-group .btn:not(:last-child) {
+        margin-right: 2px; }
+      .controls-bar .btn-group .btn:hover, .controls-bar .btn-group .btn.active {
+        color: white;
+        background-color: rgba(0, 60, 136, 0.7); }
+      .controls-bar .btn-group .btn:focus {
+        color: white; }
 
-.drawing-controls .btn {
-  padding: 0;
-  border-radius: 2px;
-  background-color: rgba(0, 60, 136, 0.5); }
-  .drawing-controls .btn:not(:last-child) {
-    margin-right: 2px; }
-  .drawing-controls .btn:hover, .drawing-controls .btn.active {
-    background-color: rgba(0, 60, 136, 0.7); }
-
-.selected-label-container {
+.selected-label {
   position: absolute;
   right: 0.5em;
   bottom: 0.5em;
   color: #333;
+  padding: 0.5em 1em;
   font-weight: bold; }
 
 .ol-zoom-extent button, .ol-full-screen button.ol-full-screen-false {

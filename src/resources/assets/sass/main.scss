@@ -66,18 +66,13 @@ html, body {
 }
 
 .icon {
-    min-height: 20px;
-    min-width: 20px;
+    min-height: 18px;
+    min-width: 18px;
     display: inline-block;
     background-position: center;
     background-repeat: no-repeat;
-    background-size: 20px 20px;
-    vertical-align: middle;
-
-    &.btn {
-        min-width: 34px;
-        min-height: 34px;
-    }
+    background-size: 18px 18px;
+    margin-bottom: -3px;
 
     &.icon-point {
         background-image: url(../images/point.svg);

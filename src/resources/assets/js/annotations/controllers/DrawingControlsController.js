@@ -1,14 +1,12 @@
 /**
  * @namespace dias.annotations
  * @ngdoc controller
- * @name ControlsController
+ * @name DrawingControlsController
  * @memberOf dias.annotations
- * @description Controller for the sidebar control buttons
+ * @description Controller for the controls bar drawing butons
  */
-angular.module('dias.annotations').controller('ControlsController', function ($scope, mapAnnotations, labels, msg, $attrs, keyboard) {
+angular.module('dias.annotations').controller('DrawingControlsController', function ($scope, mapAnnotations, labels, msg, $attrs, keyboard) {
 		"use strict";
-
-		var drawing = false;
 
 		$scope.selectShape = function (name) {
 			if (!labels.hasSelected()) {
@@ -17,17 +15,14 @@ angular.module('dias.annotations').controller('ControlsController', function ($s
 				return;
 			}
 
-			mapAnnotations.finishDrawing();
-
-			if (name === null || (drawing && $scope.selectedShape === name)) {
-				$scope.selectedShape = '';
-				drawing = false;
-			} else {
-				$scope.selectedShape = name;
+            if (name !== null && $scope.selectedShape() !== name) {
 				mapAnnotations.startDrawing(name);
-				drawing = true;
-			}
+			} else {
+                mapAnnotations.finishDrawing();
+            }
 		};
+
+        $scope.selectedShape = mapAnnotations.getSelectedDrawingType;
 
         // deselect drawing tool on escape
         keyboard.on(27, function () {

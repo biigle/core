@@ -12,9 +12,4 @@
             @include($module.'::annotationsSidebarControls')
         @endforeach
 	</div>
-	@if ($editMode)
-        <div class="pull-right">
-            <button class="btn btn-inverse" data-ng-click="deleteSelectedAnnotations()" title="Delete selected annotations 𝗗𝗲𝗹" data-ng-controller="SidebarDeleteSelectedAnnotationsController"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
-        </div>
-	@endif
 </div>

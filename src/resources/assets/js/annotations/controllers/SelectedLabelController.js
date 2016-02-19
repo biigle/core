@@ -9,5 +9,7 @@ angular.module('dias.annotations').controller('SelectedLabelController', functio
 		"use strict";
 
         $scope.getSelectedLabel = labels.getSelected;
+
+        $scope.hasSelectedLabel = labels.hasSelected;
 	}
 );
