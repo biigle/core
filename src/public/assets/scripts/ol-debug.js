@@ -1,6 +1,6 @@
 // OpenLayers 3. See http://openlayers.org/
 // License: https://raw.githubusercontent.com/openlayers/ol3/master/LICENSE.md
-// Version: v3.11.2-2-gac2fe00
+// Version: v3.11.2-3-gabc106d
 
 (function (root, factory) {
   if (typeof exports === "object") {
@@ -110952,17 +110952,26 @@ ol.interaction.Draw = function(options) {
         var second = coordinates[1];
         var third = coordinates[2];
 
+        /*
+         * ---a_vec--->
+         * ------------
+         * |          |
+         * 1          2        |
+         * |          | intersection_vec
+         * ------<3>---        v
+         */
+
         if (third === undefined) {
           rectangle.setCoordinates([[first, second]]);
         } else {
-          // vector from first to third
+          // vector from first to second
           var a_vec = [second[0] - first[0], second[1] - first[1]];
           // perpendicular vector to a_vec
           var b_vec = [-1 * a_vec[1], a_vec[0]];
 
           // helper
           var tmp = a_vec[0] / a_vec[1];
-          // compute the intersection of the two lines
+          // compute the intersection parameter of the two lines
           // going from second in b_vec direction
           // and from third in a_vec direction
           var x = (third[0] + tmp * (second[1] - third[1]) - second[0]) / (b_vec[0] - b_vec[1] * tmp);
@@ -110971,8 +110980,8 @@ ol.interaction.Draw = function(options) {
           var intersection_vec = [x * b_vec[0], x * b_vec[1]];
 
           rectangle.setCoordinates([[
-            first,
-            second,
+            [first[0] - intersection_vec[0], first[1] - intersection_vec[1]],
+            [second[0] - intersection_vec[0], second[1] - intersection_vec[1]],
             [second[0] + intersection_vec[0], second[1] + intersection_vec[1]],
             [first[0] + intersection_vec[0], first[1] + intersection_vec[1]]
           ]]);
