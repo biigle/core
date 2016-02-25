@@ -55,7 +55,12 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         // in the annotationFeatures collection
         var currentAnnotationIndex = 0;
 
+        var lastDrawnFeature;
+
         var _this = this;
+
+        // scope of the CanvasController
+        var _scope;
 
         var selectAndShowAnnotation = function (annotation) {
             _this.clearSelection();
@@ -150,6 +155,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			// clear features of previous image
             annotationSource.clear();
 			_this.clearSelection();
+            lastDrawnFeature = null;
 
 			annotations.query({id: image._id}).$promise.then(function () {
 				annotations.forEach(createFeature);
@@ -178,23 +184,39 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
 			e.feature.on('change', handleGeometryChange);
 
+            lastDrawnFeature = e.feature;
+
             return e.feature.annotation.$promise;
 		};
 
+        var removeFeature = function (feature) {
+            if (feature === lastDrawnFeature) {
+                lastDrawnFeature = null;
+            }
+
+            annotations.delete(feature.annotation).then(function () {
+                annotationSource.removeFeature(feature);
+                selectedFeatures.remove(feature);
+            });
+        };
+
 		this.init = function (scope) {
+            _scope = scope;
             map.addLayer(annotationLayer);
 			map.addInteraction(select);
             map.addInteraction(translate);
             map.addInteraction(modify);
 			scope.$on('image.shown', refreshAnnotations);
 
-			selectedFeatures.on('change:length', function () {
-				// if not already digesting, digest
-				if (!scope.$$phase) {
-					// propagate new selections through the angular application
-					scope.$apply();
-				}
-			});
+            var apply = function () {
+                // if not already digesting, digest
+                if (!scope.$$phase) {
+                    // propagate new selections through the angular application
+                    scope.$apply();
+                }
+            };
+
+			selectedFeatures.on('change:length', apply);
 		};
 
 		this.startDrawing = function (type) {
@@ -213,6 +235,9 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
 			map.addInteraction(draw);
 			draw.on('drawend', handleNewFeature);
+            draw.on('drawend', function (e) {
+                _scope.$broadcast('annotations.drawn', e.feature);
+            });
 		};
 
 		this.finishDrawing = function () {
@@ -244,13 +269,16 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             return translate.getActive();
         };
 
+        this.hasDrawnAnnotation = function () {
+            return !!lastDrawnFeature;
+        };
+
+        this.deleteLastDrawnAnnotation = function () {
+            removeFeature(lastDrawnFeature);
+        };
+
 		this.deleteSelected = function () {
-			selectedFeatures.forEach(function (feature) {
-				annotations.delete(feature.annotation).then(function () {
-					annotationSource.removeFeature(feature);
-					selectedFeatures.remove(feature);
-				});
-			});
+			selectedFeatures.forEach(removeFeature);
 		};
 
 		this.select = function (id) {
@@ -265,6 +293,10 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 				selectedFeatures.push(feature);
 			}
 		};
+
+        this.hasSelectedFeatures = function () {
+            return selectedFeatures.getLength() > 0;
+        };
 
         // fits the view to the given feature
         this.fit = function (id) {

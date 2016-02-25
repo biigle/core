@@ -8,13 +8,13 @@
 angular.module('dias.annotations').controller('AnnotationsController', function ($scope, mapAnnotations, labels, annotations, shapes) {
 		"use strict";
 
-		$scope.selectedFeatures = mapAnnotations.getSelectedFeatures().getArray();
+        var selectedFeatures = mapAnnotations.getSelectedFeatures();
+
+		$scope.selectedFeatures = selectedFeatures.getArray();
 
 		var refreshAnnotations = function () {
 			$scope.annotations = annotations.current();
 		};
-
-		var selectedFeatures = mapAnnotations.getSelectedFeatures();
 
 		$scope.annotations = [];
 
