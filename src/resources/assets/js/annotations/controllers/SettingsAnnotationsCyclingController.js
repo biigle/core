@@ -1,11 +1,11 @@
 /**
  * @namespace dias.annotations
  * @ngdoc controller
- * @name AnnotationsCyclingController
+ * @name SettingsAnnotationsCyclingController
  * @memberOf dias.annotations
- * @description Controller for the background segmentation ROI opacity settings
+ * @description Controller cycling through annotations
  */
-angular.module('dias.annotations').controller('AnnotationsCyclingController', function ($scope, mapAnnotations, labels, keyboard) {
+angular.module('dias.annotations').controller('SettingsAnnotationsCyclingController', function ($scope, mapAnnotations, labels, keyboard) {
         "use strict";
 
         // flag to prevent cycling while a new image is loading
@@ -107,7 +107,7 @@ angular.module('dias.annotations').controller('AnnotationsCyclingController', fu
                 keyboard.off(32, nextAnnotation);
                 keyboard.off(13, attachLabel);
                 keyboard.off(27, stopCycling);
-                mapAnnotations.clearSelected();
+                mapAnnotations.clearSelection();
             }
         });
 
