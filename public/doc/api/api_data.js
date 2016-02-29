@@ -1454,7 +1454,7 @@ define({ "api": [
             "type": "<p>String</p> ",
             "optional": false,
             "field": "color",
-            "description": "<p>Color of the new label category as exadecimal string (like <code>bada55</code>). May have an optional <code>#</code> prefix.</p> "
+            "description": "<p>Color of the new label category as hexadecimal string (like <code>bada55</code>). May have an optional <code>#</code> prefix.</p> "
           }
         ],
         "Optional arguments": [
@@ -1486,7 +1486,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success response:",
-          "content": "{\n   \"id\": 4,\n   \"name\": \"Sea Cucumber\",\n   \"parent_id\": 1,\n   \"aphia_id\": 1234,\n   \"project_id\": null,\n   \"color\": \"0099ff\"\n}",
+          "content": "{\n   \"id\": 4,\n   \"name\": \"Sea Cucumber\",\n   \"parent_id\": 1,\n   \"aphia_id\": 1234,\n   \"project_id\": null,\n   \"color\": \"bada55\"\n}",
           "type": "json"
         }
       ]
