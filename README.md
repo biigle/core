@@ -30,9 +30,9 @@ And for development/testing:
 
 ## Installation
 
-1. Clone this repository.
-2. Run `composer install` ([get composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx)).
-4. Copy `.env.example` to `.env` and populate it with your database credentials. Then run `php artisan key:generate` to generate an encryption key.
+0. Get [Composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx)
+1. Run `composer create-project dias/core --repository='{"type": "vcs", "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias.git"}' dias`. For development you should not remove the VCS history when asked by Composer.
+4. Populate the `.env` file with your database credentials.
 5. Set up the database tables with `php artisan migrate`.
 6. Run a local development server with `php artisan serve`. Alternatively you can use `php -S localhost:8000 -t public/` to mimic a production server.
 

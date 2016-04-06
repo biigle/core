@@ -5,10 +5,16 @@
 	"license": "proprietary",
 	"type": "project",
 	"require": {
+        "ext-json": "*",
+        "ext-pgsql": "*",
+        "ext-gd": "*",
+        "ext-exif": "*",
 		"laravel/framework": "5.1.*",
 		"intervention/image": "~2.1"
 	},
 	"require-dev": {
+        "ext-curl": "*",
+        "ext-sqlite3": "*",
         "fzaninotto/faker": "~1.4",
 		"phpunit/phpunit": "~4.0",
 		"sami/sami": "dev-master",
