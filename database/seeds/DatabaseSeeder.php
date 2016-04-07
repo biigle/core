@@ -14,13 +14,13 @@ class DatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        $this->call('LabelTableSeeder');
-        $this->call('UserTableSeeder');
-        $this->call('TransectTableSeeder');
+        // $this->call('UserTableSeeder');
+        // $this->call('LabelTableSeeder');
+        // $this->call('TransectTableSeeder');
 
-        $this->call('ProjectTableSeeder');
-        $this->call('ImageTableSeeder');
-        $this->call('AnnotationTableSeeder');
-        $this->call('AnnotationPointTableSeeder');
+        // $this->call('ProjectTableSeeder');
+        // $this->call('ImageTableSeeder');
+        // $this->call('AnnotationTableSeeder');
+        // $this->call('AnnotationPointTableSeeder');
     }
 }
