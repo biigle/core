@@ -3,6 +3,9 @@
 /node_modules
 /bower_components
 /tmp
+/.vagrant
+Homestead.yaml
+Vagrantfile
 
 .env
 *.sublime-*

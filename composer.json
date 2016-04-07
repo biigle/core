@@ -19,7 +19,8 @@
 		"phpunit/phpunit": "~4.0",
 		"sami/sami": "dev-master",
 		"mockery/mockery": "dev-master",
-        "doctrine/dbal": "2.5.*"
+        "doctrine/dbal": "2.5.*",
+		"laravel/homestead": "^3.0"
 	},
 	"autoload": {
 		"classmap": [
