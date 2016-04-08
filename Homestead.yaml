@@ -9,7 +9,7 @@ provider: virtualbox
 folders:
     - map: "."
       to: "/home/vagrant/dias"
-    - map: "./images"
+    - map: "./storage/images"
       to: "/home/vagrant/images"
 
 sites:
