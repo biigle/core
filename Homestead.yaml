@@ -9,12 +9,18 @@ provider: virtualbox
 folders:
     - map: "."
       to: "/home/vagrant/dias"
-    - map: "./storage/images"
-      to: "/home/vagrant/images"
 
 sites:
     - map: homestead.app
       to: "/home/vagrant/dias/public"
+      # Run the sheduler of the application.
+      # Scheduled commands are defined in Dias\Console\Kernel
+      schedule: "true"
 
 databases:
     - homestead
+
+variables:
+    # Override the .env configuration to show detailed error pages in the browser.
+    - key: "APP_DEBUG"
+      value: "true"
