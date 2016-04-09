@@ -17,10 +17,15 @@ sites:
       # Scheduled commands are defined in Dias\Console\Kernel
       schedule: "true"
 
-databases:
-    - homestead
-
 variables:
     # Override the .env configuration to show detailed error pages in the browser.
     - key: "APP_DEBUG"
       value: "true"
+
+ports:
+    # use default 8000, Copria listens on 8001
+    - send: 8000
+      to: 80
+    # forward the port the Copria box might be listening on
+    # - send: 8001
+    #   to: 8001
