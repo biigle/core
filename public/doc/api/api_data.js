@@ -3309,6 +3309,19 @@ define({ "api": [
         "description": "<p>The user needs to be authenticated.</p> "
       }
     ],
+    "parameter": {
+      "fields": {
+        "Required parameters": [
+          {
+            "group": "Required parameters",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "password",
+            "description": "<p>The password of the user.</p> "
+          }
+        ]
+      }
+    },
     "description": "<p>This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.</p> ",
     "version": "0.0.0",
     "filename": "app/Http/Controllers/Api/UserController.php",

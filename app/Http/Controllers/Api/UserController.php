@@ -228,6 +228,8 @@ class UserController extends Controller
     public function updateOwn()
     {
         $request = $this->request;
+        // save origin so the settings view can highlight the right form fields
+        $request->session()->flash('origin', $request->input('_origin'));
 
         $user = $this->user;
         $this->validate($request, $user->updateRules());
@@ -254,8 +256,7 @@ class UserController extends Controller
 
         if (!static::isAutomatedRequest($request)) {
             return redirect()->back()
-                ->with('saved', $wasDirty)
-                ->with('_origin', $request->input('_origin'));
+                ->with('saved', $wasDirty);
         }
     }
 
@@ -336,6 +337,7 @@ class UserController extends Controller
      * @apiGroup Users
      * @apiName DestroyOwnUser
      * @apiPermission user
+     * @apiParam (Required parameters) {String} password The password of the user.
      * @apiDescription This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.
      *
      * @return \Illuminate\Http\Response
@@ -343,6 +345,14 @@ class UserController extends Controller
     public function destroyOwn()
     {
         $user = $this->user;
+        $request = $this->request;
+
+        $this->validate($request, User::$deleteRules);
+
+        if (!Hash::check($request->input('password'), $user->password)) {
+            $errors = ['password' => [trans('validation.custom.password')]];
+            return $this->buildFailedValidationResponse($request, $errors);
+        }
 
         try {
             $user->checkCanBeDeleted();

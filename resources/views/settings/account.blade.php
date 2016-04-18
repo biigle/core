@@ -3,6 +3,7 @@
 @section('title')Account settings @stop
 
 @section('settings-content')
+<?php $origin = session('origin') ?>
 <div class="panel panel-default">
     <div class="panel-heading">Change password</div>
     <div class="panel-body">
@@ -16,10 +17,10 @@
                 @endif
             </div>
 
-            <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
+            <div class="form-group{{ $errors->has('password') && $origin === 'password' ? ' has-error' : '' }}">
                 <label for="password">New password</label>
                 <input type="password" class="form-control" name="password" id="password">
-                @if($errors->has('password'))
+                @if($errors->has('password') && $origin === 'password')
                     <span class="help-block">{{ $errors->first('password') }}</span>
                 @endif
             </div>
@@ -83,7 +84,6 @@
 <div class="panel panel-danger">
     <div class="panel-heading">
         Delete account
-        <button class="btn btn-xs btn-default pull-right" title="Unlock delete button" onclick="document.getElementById('delete-button').classList.remove('disabled')">Unlock</button>
     </div>
     <div class="panel-body">
         <p class="text-danger">
@@ -93,11 +93,20 @@
         <form role="form" method="POST" action="{{ url('api/v1/users/my') }}">
             <input type="hidden" name="_method" value="DELETE">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
+
+            <div class="form-group{{ $errors->has('password') && $origin === null ? ' has-error' : '' }}">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" name="password" id="password">
+                @if($errors->has('password') && $origin === null)
+                    <span class="help-block">{{ $errors->first('password') }}</span>
+                @endif
+            </div>
+
             <div class="form-group{{ $errors->has('submit') ? ' has-error' : '' }}">
                 @if($errors->has('submit'))
                     <span class="help-block alert alert-danger">{{ $errors->first('submit') }}</span>
                 @endif
-                <input type="submit" class="btn btn-danger disabled" id="delete-button" value="Delete your account">
+                <input type="submit" class="btn btn-danger" id="delete-button" value="Delete your account">
             </div>
         </form>
     </div>

@@ -138,9 +138,11 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         $this->callAjax('PUT', '/api/v1/users/my', [
             '_token' => Session::token(),
             'password' => 'hacked!!',
+            '_origin' => 'password',
         ]);
         // no password confirmation
         $this->assertResponseStatus(422);
+        $this->assertSessionHas('origin', 'password');
 
         // ajax call to get the correct response status
         $this->callAjax('PUT', '/api/v1/users/my', [
@@ -174,8 +176,10 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new@email.me',
+            '_origin' => 'email'
         ]);
         $this->assertResponseOk();
+        $this->assertSessionHas('origin', 'email');
 
         $user = $this->guest->fresh();
         $this->assertTrue(Hash::check('newpassword', $user->password));
@@ -269,6 +273,11 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
 
     public function testDestroyOwn()
     {
+        $this->guest->password = bcrypt('guest-password');
+        $this->guest->save();
+        $this->editor->password = bcrypt('editor-password');
+        $this->guest->save();
+
         $this->doTestApiRoute('DELETE', '/api/v1/users/my');
 
         // api key authentication is not allowed for this route
@@ -276,10 +285,26 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         $this->assertResponseStatus(401);
 
         $this->be($this->guest);
+        // ajax call to get the correct response status
+        $this->callAjax('DELETE', '/api/v1/users/my', [
+            '_token' => Session::token(),
+        ]);
+        // no password provided
+        $this->assertResponseStatus(422);
+
+        // ajax call to get the correct response status
+        $this->callAjax('DELETE', '/api/v1/users/my', [
+            '_token' => Session::token(),
+            'password' => 'wrong-password'
+        ]);
+        // wrong password provided
+        $this->assertResponseStatus(422);
+
         $this->assertNotNull($this->guest->fresh());
         // ajax call to get the correct response status
         $this->callAjax('DELETE', '/api/v1/users/my', [
             '_token' => Session::token(),
+            'password' => 'guest-password'
         ]);
         $this->assertResponseOk();
         $this->assertNull($this->guest->fresh());
@@ -287,6 +312,7 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         $this->be($this->editor);
         $this->call('DELETE', '/api/v1/users/my', [
             '_token' => Session::token(),
+            'password' => 'editor-password'
         ]);
         $this->assertRedirectedTo('auth/login');
         $this->assertNull(Auth::user());

@@ -50,6 +50,15 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
     ];
 
     /**
+     * Validation rules for deleting the own user.
+     *
+     * @var array
+     */
+    public static $deleteRules = [
+        'password'  => 'required|min:8',
+    ];
+
+    /**
      * The attributes included in the model's JSON form. All other are hidden.
      *
      * @var array
