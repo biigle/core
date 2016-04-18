@@ -1,0 +1,28 @@
+---
+ip: "192.168.10.10"
+memory: 1024
+cpus: 1
+hostname: dias
+name: dias
+provider: virtualbox
+
+folders:
+    - map: "."
+      to: "/home/vagrant/dias"
+
+sites:
+    - map: homestead.app
+      to: "/home/vagrant/dias/public"
+      # Run the sheduler of the application.
+      # Scheduled commands are defined in Dias\Console\Kernel
+      schedule: "true"
+
+variables:
+    # Override the .env configuration to show detailed error pages in the browser.
+    - key: "APP_DEBUG"
+      value: "true"
+
+ports:
+    # use default 8000, Copria listens on 8001
+    - send: 8000
+      to: 80
