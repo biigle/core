@@ -234,6 +234,9 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
 
     public function testDestroy()
     {
+        $this->globalAdmin->password = bcrypt('globalAdmin-password');
+        $this->globalAdmin->save();
+
         $id = $this->guest->id;
         $this->doTestApiRoute('DELETE', '/api/v1/users/'.$id);
 
@@ -255,9 +258,23 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         // the own user cannot be deleted via this route
         $this->assertResponseStatus(400);
 
+        $this->callAjax('DELETE', '/api/v1/users/'.$id, [
+            '_token' => Session::token(),
+        ]);
+        // admin password is required
+        $this->assertResponseStatus(422);
+
+        $this->callAjax('DELETE', '/api/v1/users/'.$id, [
+            '_token' => Session::token(),
+            'password' => 'wrong-password',
+        ]);
+        // admin password is wrong
+        $this->assertResponseStatus(422);
+
         $this->assertNotNull($this->guest->fresh());
         $this->call('DELETE', '/api/v1/users/'.$id, [
             '_token' => Session::token(),
+            'password' => 'globalAdmin-password',
         ]);
         $this->assertResponseOk();
         $this->assertNull($this->guest->fresh());
@@ -266,6 +283,7 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         $this->project->removeUserId($this->project->creator->id);
         $this->call('DELETE', '/api/v1/users/'.$this->admin->id, [
             '_token' => Session::token(),
+            'password' => 'globalAdmin-password',
         ]);
         // last remaining admin of a project mustn't be deleted
         $this->assertResponseStatus(400);

@@ -50,7 +50,7 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
     ];
 
     /**
-     * Validation rules for deleting the own user.
+     * Validation rules for deleting a user.
      *
      * @var array
      */

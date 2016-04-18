@@ -311,6 +311,7 @@ class UserController extends Controller
      * @apiGroup Users
      * @apiName DestroyUsers
      * @apiPermission admin
+     * @apiParam (Required parameters) {String} password The password of the global administrator.
      * @apiDescription This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.
      *
      * @apiParam {Number} id The user ID.
@@ -322,6 +323,15 @@ class UserController extends Controller
     {
         if ($id == $this->user->id) {
             abort(400, 'The own user cannot be deleted using this endpoint.');
+        }
+
+        $request = $this->request;
+
+        $this->validate($request, User::$deleteRules);
+
+        if (!Hash::check($request->input('password'), $this->user->password)) {
+            $errors = ['password' => [trans('validation.custom.password')]];
+            return $this->buildFailedValidationResponse($request, $errors);
         }
 
         $user = User::findOrFail($id);
