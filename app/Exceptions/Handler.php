@@ -7,7 +7,12 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Dias\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Session\TokenMismatchException;
 
 class Handler extends ExceptionHandler
 {
@@ -17,29 +22,36 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        'Symfony\Component\HttpKernel\Exception\HttpException',
-        'Illuminate\Database\Eloquent\ModelNotFoundException'
+        AuthorizationException::class,
+        HttpException::class,
+        ModelNotFoundException::class,
+        ValidationException::class,
     ];
 
     private function renderJsonResponse(Exception $e)
     {
-        $status = $this->isHttpException($e) ? $e->getStatusCode() : 500;
-
-        if (config('app.debug')) {
-            $message = $e->getMessage();
-        } else if ($status >= 500) {
-            $message = 'Whoops, looks like something went wrong.';
-        } else {
-            switch ($status) {
-                case 404:
-                    $message = 'Sorry, the page you are looking for could not be found.';
-                    break;
-                default:
-                    $message = $e->getMessage();
-            }
+        if ($e instanceof HttpResponseException) {
+            return $e->getResponse();
+        } elseif ($e instanceof ModelNotFoundException) {
+            $e = new NotFoundHttpException($e->getMessage(), $e);
+        } elseif ($e instanceof AuthorizationException) {
+            $e = new HttpException(403, $e->getMessage());
+        } elseif ($e instanceof ValidationException && $e->getResponse()) {
+            return $e->getResponse();
         }
 
-        return new JsonResponse(['message' => $message], $status);
+        $status = $this->isHttpException($e) ? $e->getStatusCode() : 500;
+
+        $response = ['message' => $e->getMessage()];
+
+        if (config('app.debug')) {
+            $response['trace'] = $e->getTraceAsString();
+        } elseif ($status >= 500) {
+            // don't disclose server errors if not in debug mode
+            $response['message'] = 'Whoops, looks like something went wrong.';
+        }
+
+        return response()->json($response, $status);
     }
 
     /**
@@ -52,7 +64,7 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $e)
     {
-        return parent::report($e);
+        parent::report($e);
     }
 
     /**
@@ -64,15 +76,13 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        if ($e instanceof ModelNotFoundException) {
-            $e = new NotFoundHttpException();
+        if ($e instanceof TokenMismatchException) {
+            $e = new AccessDeniedHttpException();
         }
 
         // use JsonResponse if this was an automated request
         if (Controller::isAutomatedRequest($request)) {
             return $this->renderJsonResponse($e);
-        } elseif ($this->isHttpException($e)) {
-            return $this->renderHttpException($e);
         } else {
             return parent::render($request, $e);
         }

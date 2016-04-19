@@ -1,7 +1,7 @@
 {
+  "private": true,
   "devDependencies": {
-    "gulp": "^3.8.8",
-    "laravel-elixir": "~3.2.8",
+    "gulp": "^3.9.1",
     "karma": "~0.12.31",
     "jasmine-core": "~2.2.0",
     "karma-jasmine": "~0.3.5",
@@ -11,6 +11,9 @@
     "gulp-shell": "~0.3.0",
     "jsdoc": "~3.3.0-beta1",
     "gulp-apidoc": "~0.1.2"
+  },
+  "dependencies": {
+    "laravel-elixir": "^5.0.0"
   },
   "scripts": {
     "test": "karma start karma.conf.js --single-run"

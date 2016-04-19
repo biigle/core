@@ -88,7 +88,7 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
         ]);
         $this->assertResponseOk();
 
-        $this->assertEquals(2, $this->annotation->points()->count());
+        $this->assertEquals(2, $this->annotation->unorderedPoints()->count());
         $points = $this->annotation->points()->get()->toArray();
         $this->assertEquals(15, $points[0]['y']);
     }

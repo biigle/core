@@ -2,13 +2,11 @@
 
 namespace Dias\Http\Controllers\Auth;
 
-use Dias\Http\Controllers\Controller;
 use Dias\User;
-use Auth;
 use Validator;
-use Illuminate\Http\Request;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Dias\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
+use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
 class AuthController extends Controller
 {
@@ -23,17 +21,23 @@ class AuthController extends Controller
     |
     */
 
-    use AuthenticatesUsers, ThrottlesLogins;
+    use AuthenticatesAndRegistersUsers, ThrottlesLogins;
+
+    /**
+     * Where to redirect users after login / registration.
+     *
+     * @var string
+     */
+    protected $redirectTo = '/';
 
     /**
      * Create a new authentication controller instance.
+     *
      * @return void
      */
     public function __construct()
     {
-        $this->middleware('guest', ['except' => 'getLogout']);
-
-        $this->redirectPath = route('home');
+        $this->middleware($this->guestMiddleware(), ['except' => 'logout']);
     }
 
     /**
@@ -42,7 +46,7 @@ class AuthController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    public function validator(array $data)
+    protected function validator(array $data)
     {
         return Validator::make($data, User::$registerRules);
     }
@@ -53,7 +57,7 @@ class AuthController extends Controller
      * @param  array  $data
      * @return User
      */
-    public function create(array $data)
+    protected function create(array $data)
     {
         $user = new User;
         $user->firstname = $data['firstname'];

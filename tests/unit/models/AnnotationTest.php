@@ -33,17 +33,17 @@ class AnnotationTest extends ModelWithAttributesTest
 
     public function testPoints()
     {
-        $this->assertEquals(0, $this->model->points()->count());
+        $this->assertEquals(0, $this->model->unorderedPoints()->count());
         AnnotationPointTest::create([
             'annotation_id' => $this->model->id,
             'index' => 0,
         ]);
-        $this->assertEquals(1, $this->model->points()->count());
+        $this->assertEquals(1, $this->model->unorderedPoints()->count());
         AnnotationPointTest::create([
             'annotation_id' => $this->model->id,
             'index' => 1,
         ]);
-        $this->assertEquals(2, $this->model->points()->count());
+        $this->assertEquals(2, $this->model->unorderedPoints()->count());
     }
 
     public function testLabels()
@@ -78,25 +78,25 @@ class AnnotationTest extends ModelWithAttributesTest
 
     public function testAddPoint()
     {
-        $this->assertEquals(0, $this->model->points()->count());
+        $this->assertEquals(0, $this->model->unorderedPoints()->count());
         // float will be converted to int
         $point = $this->model->addPoint(10.5, 10.22);
         $this->assertEquals($this->model->id, $point->annotation->id);
-        $this->assertEquals(1, $this->model->points()->count());
+        $this->assertEquals(1, $this->model->unorderedPoints()->count());
         $this->assertEquals(0, $point->index);
         // the next point should get the next highest index
         $point = $this->model->addPoint(20, 20);
-        $this->assertEquals(2, $this->model->points()->count());
+        $this->assertEquals(2, $this->model->unorderedPoints()->count());
         $this->assertEquals(1, $point->index);
     }
 
     public function testAddPoints()
     {
-        $this->assertEquals(0, $this->model->points()->count());
+        $this->assertEquals(0, $this->model->unorderedPoints()->count());
         $this->model->addPoints([['x' => 10, 'y' => 10]]);
-        $this->assertEquals(1, $this->model->points()->count());
+        $this->assertEquals(1, $this->model->unorderedPoints()->count());
         $this->model->addPoints([(object) ['x' => 10, 'y' => 10]]);
-        $this->assertEquals(2, $this->model->points()->count());
+        $this->assertEquals(2, $this->model->unorderedPoints()->count());
     }
 
     public function testValidatePointsProperty()
@@ -156,14 +156,14 @@ class AnnotationTest extends ModelWithAttributesTest
     public function testRefreshPoints()
     {
         $this->model->addPoints([['x' => 10, 'y' => 10], ['x' => 20, 'y' => 20]]);
-        $this->assertEquals(2, $this->model->points()->count());
+        $this->assertEquals(2, $this->model->unorderedPoints()->count());
         $this->model->refreshPoints([['x' => 100, 'y' => 100], ['x' => 200, 'y' => 200]]);
-        $this->assertEquals(2, $this->model->points()->count());
+        $this->assertEquals(2, $this->model->unorderedPoints()->count());
         $points = $this->model->points->toArray();
         $this->assertEquals(100, $points[0]['x']);
         $this->assertEquals(200, $points[1]['x']);
         $this->model->refreshPoints([]);
-        $this->assertEquals(2, $this->model->points()->count());
+        $this->assertEquals(2, $this->model->unorderedPoints()->count());
     }
 
     public function testAddLabel()

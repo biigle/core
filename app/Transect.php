@@ -136,7 +136,7 @@ class Transect extends ModelWithAttributes implements BelongsToProjectContract
          * calls per *single* page.
          */
         return Cache::remember('transect-'.$this->id.'pids', 0.5, function () {
-            return $this->projects()->lists('id')->all();
+            return $this->projects()->pluck('id')->all();
         });
     }
 }

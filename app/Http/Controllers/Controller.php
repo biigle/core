@@ -5,13 +5,15 @@ namespace Dias\Http\Controllers;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Auth\Access\AuthorizesResources;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Dias\Http\Middleware\AuthenticateAPI;
 
-abstract class Controller extends BaseController
+class Controller extends BaseController
 {
-    use DispatchesJobs, ValidatesRequests;
+    use AuthorizesRequests, AuthorizesResources, DispatchesJobs, ValidatesRequests;
 
     /**
      * Determines if the request was done by an automated script (with API

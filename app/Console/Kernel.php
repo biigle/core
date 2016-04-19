@@ -13,8 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        'Dias\Console\Commands\RemoveDeletedImages',
-        'Dias\Console\Commands\NewUser',
+        Commands\RemoveDeletedImages::class,
+        Commands\NewUser::class,
     ];
 
     /**

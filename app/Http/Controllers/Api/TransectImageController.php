@@ -28,6 +28,6 @@ class TransectImageController extends Controller
         $transect = Transect::findOrFail($id);
         $this->requireCanSee($transect);
 
-        return $transect->images()->select('id')->lists('id');
+        return $transect->images()->select('id')->pluck('id');
     }
 }

@@ -13,14 +13,14 @@
 
 // PUBLIC ROUTES --------------------------------------------------------------
 
-Route::group(['namespace' => 'Auth'], function ($router) {
+$router->group(['namespace' => 'Auth'], function ($router) {
     $router->controllers([
         'auth' => 'AuthController',
         'password' => 'PasswordController',
     ]);
 });
 
-Route::group(['namespace' => 'Views', 'prefix' => 'documentation'], function ($router) {
+$router->group(['namespace' => 'Views', 'prefix' => 'documentation'], function ($router) {
     // route name must be different from the 'doc' directory name of the static
     // files in the public directory
     $router->get('/', [
@@ -33,7 +33,7 @@ Route::group(['namespace' => 'Views', 'prefix' => 'documentation'], function ($r
 
 // PROTECTED ROUTES -----------------------------------------------------------
 
-Route::group(['namespace' => 'Views', 'middleware' => 'auth'], function ($router) {
+$router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($router) {
     $router->get('/', [
         'as'   => 'home',
         'uses' => 'DashboardController@index',
@@ -75,7 +75,7 @@ Route::group(['namespace' => 'Views', 'middleware' => 'auth'], function ($router
     ]);
 });
 
-Route::group([
+$router->group([
     'prefix' => 'api/v1',
     'namespace' => 'Api',
     'middleware' => 'auth.api',

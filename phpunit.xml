@@ -7,23 +7,31 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         stopOnFailure="false"
-         syntaxCheck="false">
+         stopOnFailure="false">
     <testsuites>
         <testsuite name="Application Test Suite">
-            <directory>./tests/</directory>
+            <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./app</directory>
+            <exclude>
+                <file>./app/Http/routes.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
     <php>
         <env name="APP_ENV" value="testing"/>
-        <env name="DB_DRIVER" value="sqlite"/>
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="QUEUE_DRIVER" value="sync"/>
         <!-- for testing the real database connection only! -->
-        <!-- <env name="DB_DRIVER" value="pgsql"/> -->
+        <!-- <env name="DB_CONNECTION" value="pgsql"/> -->
+        <!-- <env name="DB_DATABASE" value="dias-local"/> -->
         <env name="DB_HOST" value="localhost"/>
-        <env name="DB_DATABASE" value="dias-local"/>
         <env name="DB_USERNAME" value="postgres"/>
         <env name="DB_PASSWORD" value="postgres"/>
     </php>

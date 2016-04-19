@@ -3,18 +3,11 @@
 namespace Dias\Http\Middleware;
 
 use Closure;
-use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Support\Facades\Auth;
 use Dias\User;
 
 class AuthenticateAPI
 {
-    /**
-     * The Guard implementation.
-     *
-     * @var Guard
-     */
-    protected $auth;
-
     /**
      * Determines if the request contains an API key in its header.
      *
@@ -26,17 +19,6 @@ class AuthenticateAPI
         $key = $request->header('x-auth-token');
 
         return (boolean) $key;
-    }
-
-    /**
-     * Create a new filter instance.
-     *
-     * @param  Guard  $auth
-     * @return void
-     */
-    public function __construct(Guard $auth)
-    {
-        $this->auth = $auth;
     }
 
     /**
@@ -59,7 +41,7 @@ class AuthenticateAPI
         }
 
         // like a manual auth->once()
-        $this->auth->setUser($user);
+        Auth::setUser($user);
 
         return true;
     }
@@ -71,13 +53,11 @@ class AuthenticateAPI
      * @param  Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next, $guard = null)
     {
         // request is valid if the user authenticates either with their session
         // cookie or with their API key
-        if ($this->authByKey($request)) {
-            return $next($request);
-        } elseif ($this->auth->check()) {
+        if ($this->authByKey($request) || Auth::guard($guard)->check()) {
             return $next($request);
         }
 

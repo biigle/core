@@ -1,9 +1,21 @@
 <?php
 
-return array(
+return [
 
-	'failed'   => 'These credentials do not match our records.',
-	'forgotpw' => 'Forgot password?',
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication Language Lines
+    |--------------------------------------------------------------------------
+    |
+    | The following language lines are used during authentication for various
+    | messages that we need to display to the user. You are free to modify
+    | these language lines according to your application's requirements.
+    |
+    */
+
+    'failed' => 'These credentials do not match our records.',
+    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    'forgotpw' => 'Forgot password?',
 	'register' => 'Register',
 	'pw_reset_link' => 'Click here to reset your password:',
 	'pw_reset_subject' => 'Your Password Reset Link',
@@ -12,4 +24,4 @@ return array(
 	'reset_pw_help' => 'Please enter your email address and your new password.',
 	'remember_me' => 'Keep me logged in'
 
-);
+];

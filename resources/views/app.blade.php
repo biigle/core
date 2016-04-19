@@ -25,7 +25,7 @@
     @yield('content')
 
     <script type="text/javascript">
-        window.$diasBaseUrl = '{{ url() }}';
+        window.$diasBaseUrl = '{{ url('/') }}';
     </script>
     <script src="{{ asset('assets/scripts/angular.min.js') }}"></script>
     <script src="{{ asset('assets/scripts/angular-resource.min.js') }}"></script>

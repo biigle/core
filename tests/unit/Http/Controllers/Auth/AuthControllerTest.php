@@ -48,6 +48,8 @@ class AuthControllerTest extends TestCase
 
     public function testLoginFail()
     {
+        $this->visit('auth/login');
+
         // user doesn't exist
         $response = $this->call('POST', '/auth/login', [
             '_token'   => Session::getToken(),
@@ -55,7 +57,7 @@ class AuthControllerTest extends TestCase
             'password' => 'example123',
         ]);
 
-        $this->assertRedirectedTo('/auth/login');
+        $this->assertRedirectedTo('auth/login');
     }
 
     public function testLoginSuccess()

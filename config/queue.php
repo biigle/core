@@ -12,7 +12,7 @@ return [
     | syntax for each one. Here you may set the default queue driver.
     |
     | Supported: "null", "sync", "database", "beanstalkd",
-    |            "sqs", "iron", "redis"
+    |            "sqs", "redis"
     |
     */
 
@@ -42,6 +42,29 @@ return [
             'expire' => 60,
         ],
 
+        'beanstalkd' => [
+            'driver' => 'beanstalkd',
+            'host' => 'localhost',
+            'queue' => 'default',
+            'ttr' => 60,
+        ],
+
+        'sqs' => [
+            'driver' => 'sqs',
+            'key' => 'your-public-key',
+            'secret' => 'your-secret-key',
+            'prefix' => 'https://sqs.us-east-1.amazonaws.com/your-account-id',
+            'queue' => 'your-queue-name',
+            'region' => 'us-east-1',
+        ],
+
+        'redis' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+            'queue' => 'default',
+            'expire' => 60,
+        ],
+
     ],
 
     /*
@@ -56,7 +79,8 @@ return [
     */
 
     'failed' => [
-        'database' => env('DB_DRIVER', 'pgsql'), 'table' => 'failed_jobs',
+        'database' => env('DB_CONNECTION', 'pgsql'),
+        'table' => 'failed_jobs',
     ],
 
 ];

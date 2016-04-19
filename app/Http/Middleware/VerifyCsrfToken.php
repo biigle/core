@@ -4,17 +4,28 @@ namespace Dias\Http\Middleware;
 
 use Closure;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as BaseVerifier;
-use Illuminate\Session\TokenMismatchException;
 
 class VerifyCsrfToken extends BaseVerifier
 {
     /**
-     * Routes that should be excepted from Csrf protection
+     * The URIs that should be excluded from CSRF verification.
      *
      * @var array
      */
     protected $except = [
+        //
     ];
+
+    /**
+     * Determine if the application is running unit tests.
+     *
+     * @return bool
+     */
+    protected function runningUnitTests()
+    {
+        // we want to have csrf verification enabled in tests!
+        return false;
+    }
 
     /**
      * Handle an incoming request.
@@ -31,10 +42,6 @@ class VerifyCsrfToken extends BaseVerifier
             return $next($request);
         }
 
-        try {
-            return parent::handle($request, $next);
-        } catch (TokenMismatchException $e) {
-            return response('Forbidden.', 403);
-        }
+        return parent::handle($request, $next);
     }
 }

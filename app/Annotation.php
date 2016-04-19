@@ -208,7 +208,7 @@ class Annotation extends ModelWithAttributes implements BelongsToProjectContract
         if (empty($points)) {
             return;
         }
-        $this->points()->delete();
+        $this->unorderedPoints()->delete();
         $this->addPoints($points);
     }
 

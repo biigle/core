@@ -32,8 +32,8 @@ class AuthPasswordControllerTest extends TestCase
     public function testGetReset()
     {
         // token must be provided
-        $this->get('password/reset')->assertResponseStatus(404);
-        $this->get('password/reset/'.str_random(40))->assertResponseOk();
+        $this->get('password/reset')->assertViewMissing('token');
+        $this->get('password/reset/'.str_random(40))->assertViewHas('token');
     }
 
     public function testPostReset()

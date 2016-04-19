@@ -3,7 +3,18 @@ process.env.DISABLE_NOTIFIER = true;
 
 var gulp    = require('gulp');
 var elixir  = require('laravel-elixir');
-var angular = require('laravel-elixir-angular');
+var angular = require('laravel-elixir-angular')
+
+/*
+ |--------------------------------------------------------------------------
+ | Elixir Asset Management
+ |--------------------------------------------------------------------------
+ |
+ | Elixir provides a clean, fluent API for defining some basic Gulp tasks
+ | for your Laravel application. By default, we are compiling the Sass
+ | file for our application, as well as publishing vendor resources.
+ |
+ */
 
 elixir(function (mix) {
 	mix.sass('main.scss', 'public/assets/styles/main.css')
@@ -28,3 +39,4 @@ gulp.task('apidoc', function (cb) {
 		dest: 'public/doc/api'
 	}, cb);
 });
+
