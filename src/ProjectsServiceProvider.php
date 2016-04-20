@@ -3,6 +3,7 @@
 namespace Dias\Modules\Projects;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Routing\Router;
 use Dias\Services\Modules;
 
 class ProjectsServiceProvider extends ServiceProvider
@@ -10,9 +11,12 @@ class ProjectsServiceProvider extends ServiceProvider
     /**
      * Bootstrap the application events.
      *
+     * @param  \Dias\Services\Modules  $modules
+     * @param  \Illuminate\Routing\Router  $router
+     *
      * @return void
      */
-    public function boot(Modules $modules)
+    public function boot(Modules $modules, Router $router)
     {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'projects');
         $this->loadTranslationsFrom(__DIR__.'/resources/lang', 'projects');
@@ -21,7 +25,12 @@ class ProjectsServiceProvider extends ServiceProvider
             __DIR__.'/public/assets' => public_path('vendor/projects'),
         ], 'public');
 
-        include __DIR__.'/Http/routes.php';
+        $router->group([
+            'namespace' => 'Dias\Modules\Projects\Http\Controllers',
+            'middleware' => 'web',
+        ], function ($router) {
+            require __DIR__.'/Http/routes.php';
+        });
 
         $modules->addMixin('projects', 'dashboard');
         $modules->addMixin('projects', 'adminMenu');
