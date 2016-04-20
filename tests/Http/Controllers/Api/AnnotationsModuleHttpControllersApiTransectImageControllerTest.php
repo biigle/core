@@ -22,8 +22,14 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
         $this->callToken('GET', '/api/v1/transects/'.$id.'/images/having-annotations', $this->guest);
         $this->assertResponseOk();
 
+        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+            $expect = ["{$image->id}"];
+        } else {
+            $expect = [$image->id];
+        }
+
         $this->be($this->guest);
         $this->get('/api/v1/transects/'.$id.'/images/having-annotations')
-            ->seeJsonEquals([$image->id]);
+            ->seeJsonEquals($expect);
     }
 }
