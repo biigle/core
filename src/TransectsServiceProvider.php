@@ -3,6 +3,7 @@
 namespace Dias\Modules\Transects;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Routing\Router;
 use Dias\Services\Modules;
 
 class TransectsServiceProvider extends ServiceProvider
@@ -10,9 +11,12 @@ class TransectsServiceProvider extends ServiceProvider
     /**
      * Bootstrap the application events.
      *
+     * @param  \Dias\Services\Modules  $modules
+     * @param  \Illuminate\Routing\Router  $router
+     *
      * @return void
      */
-    public function boot(Modules $modules)
+    public function boot(Modules $modules, Router $router)
     {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'transects');
 
@@ -20,7 +24,12 @@ class TransectsServiceProvider extends ServiceProvider
             __DIR__.'/public/assets' => public_path('vendor/transects'),
         ], 'public');
 
-        include __DIR__.'/Http/routes.php';
+        $router->group([
+            'namespace' => 'Dias\Modules\Transects\Http\Controllers',
+            'middleware' => 'web',
+        ], function ($router) {
+            require __DIR__.'/Http/routes.php';
+        });
 
         $modules->addMixin('transects', 'dashboard.projects');
         $modules->addMixin('transects', 'dashboardStyles');
