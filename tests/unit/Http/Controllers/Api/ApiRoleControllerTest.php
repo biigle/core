@@ -8,32 +8,24 @@ class ApiRoleControllerTest extends ApiTestCase
     {
         $this->doTestApiRoute('GET', '/api/v1/roles');
 
-// api key authentication
-        $this->callToken('GET', '/api/v1/roles', $this->user());
+        $this->beUser();
+        $this->get('/api/v1/roles');
+        $content = $this->response->getContent();
         $this->assertResponseOk();
-
-        // session cookie authentication
-        $this->be($this->user());
-        $r = $this->call('GET', '/api/v1/roles');
-        $this->assertResponseOk();
-        $this->assertStringStartsWith('[', $r->getContent());
-        $this->assertStringEndsWith(']', $r->getContent());
+        $this->assertStringStartsWith('[', $content);
+        $this->assertStringEndsWith(']', $content);
     }
 
     public function testShow()
     {
         $this->doTestApiRoute('GET', '/api/v1/roles/'.Role::$admin->id);
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/roles/'.Role::$admin->id, $this->user());
+        $this->beUser();
+        $this->get('/api/v1/roles/'.Role::$admin->id);
+        $content = $this->response->getContent();
         $this->assertResponseOk();
-
-        // session cookie authentication
-        $this->be($this->user());
-        $r = $this->call('GET', '/api/v1/roles/'.Role::$admin->id);
-        $this->assertResponseOk();
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
-        $this->assertContains('admin', $r->getContent());
+        $this->assertStringStartsWith('{', $content);
+        $this->assertStringEndsWith('}', $content);
+        $this->assertContains('admin', $content);
     }
 }

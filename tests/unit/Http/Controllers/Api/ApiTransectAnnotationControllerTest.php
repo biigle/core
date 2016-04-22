@@ -16,12 +16,9 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
 
         $this->doTestApiRoute('GET', '/api/v1/transects/'.$id.'/annotations');
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/transects/'.$id.'/annotations', $this->user());
+        $this->beUser();
+        $this->get('/api/v1/transects/'.$id.'/annotations');
         $this->assertResponseStatus(401);
-
-        $this->callToken('GET', '/api/v1/transects/'.$id.'/annotations', $this->guest());
-        $this->assertResponseOk();
 
         $expect = [
             'id' => $image->id,
@@ -52,8 +49,7 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
             $expect['y'] = "{$expect['y']}";
         }
 
-        // session cookie authentication
-        $this->be($this->guest());
+        $this->beGuest();
         $this->get('/api/v1/transects/'.$id.'/annotations')
             ->seeJson($expect)
             // don't include the images without any annotations

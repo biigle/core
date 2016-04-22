@@ -12,18 +12,15 @@ class ApiTransectImageControllerTest extends ApiTestCase
 
         $this->doTestApiRoute('GET', '/api/v1/transects/'.$id.'/images');
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/transects/'.$id.'/images', $this->user());
+        $this->beUser();
+        $this->get('/api/v1/transects/'.$id.'/images');
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/transects/'.$id.'/images', $this->guest());
+        $this->beGuest();
+        $this->get('/api/v1/transects/'.$id.'/images');
+        $content = $this->response->getContent();
         $this->assertResponseOk();
-
-        // session cookie authentication
-        $this->be($this->guest());
-        $r = $this->call('GET', '/api/v1/transects/'.$id.'/images');
-        $this->assertResponseOk();
-        $this->assertStringStartsWith('[', $r->getContent());
-        $this->assertStringEndsWith(']', $r->getContent());
+        $this->assertStringStartsWith('[', $content);
+        $this->assertStringEndsWith(']', $content);
     }
 }

@@ -33,21 +33,23 @@ class ApiImageControllerTest extends ModelWithAttributesApiTest
         $this->doTestApiRoute('GET', '/api/v1/images/1');
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/images/1', $this->user());
+        $this->beUser();
+        $this->get('/api/v1/images/1');
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/images/-1', $this->guest());
+        $this->beGuest();
+        $this->get('/api/v1/images/-1');
         $this->assertResponseStatus(404);
 
-        // session cookie authentication
-        $this->be($this->guest());
-        $r = $this->call('GET', '/api/v1/images/1');
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
-        $this->assertContains('"transect"', $r->getContent());
-        $this->assertContains('"exif"', $r->getContent());
-        $this->assertContains('"width"', $r->getContent());
-        $this->assertContains('"height"', $r->getContent());
+        $this->get('/api/v1/images/1');
+        $this->assertResponseOk();
+        $content = $this->response->getContent();
+        $this->assertStringStartsWith('{', $content);
+        $this->assertStringEndsWith('}', $content);
+        $this->assertContains('"transect"', $content);
+        $this->assertContains('"exif"', $content);
+        $this->assertContains('"width"', $content);
+        $this->assertContains('"height"', $content);
     }
 
     public function testShowThumb()
@@ -60,35 +62,33 @@ class ApiImageControllerTest extends ModelWithAttributesApiTest
 
         $this->doTestApiRoute('GET', "/api/v1/images/{$id}/thumb");
 
-        // api key authentication
-        $this->callToken('GET', "/api/v1/images/{$id}/thumb", $this->user());
+        $this->beUser();
+        $this->get("/api/v1/images/{$id}/thumb");
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/images/-1/thumb', $this->guest());
+        $this->beGuest();
+        $this->get('/api/v1/images/-1/thumb');
         $this->assertResponseStatus(404);
 
-        // session cookie authentication
-        $this->be($this->guest());
-        $r = $this->call('GET', "/api/v1/images/{$id}/thumb");
+        $this->get("/api/v1/images/{$id}/thumb");
         $this->assertResponseOk();
-        $this->assertEquals('image/jpeg', $r->headers->get('content-type'));
+        $this->assertEquals('image/jpeg', $this->response->headers->get('content-type'));
     }
 
     public function testShowFile()
     {
         $this->doTestApiRoute('GET', '/api/v1/images/1/file');
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/images/1/file', $this->user());
+        $this->beUser();
+        $this->get('/api/v1/images/1/file');
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/images/-1/file', $this->guest());
+        $this->beGuest();
+        $this->get('/api/v1/images/-1/file');
         $this->assertResponseStatus(404);
 
-        // session cookie authentication
-        $this->be($this->guest());
-        $r = $this->call('GET', '/api/v1/images/1/file');
+        $r = $this->get('/api/v1/images/1/file');
         $this->assertResponseOk();
-        $this->assertEquals('image/jpeg', $r->headers->get('content-type'));
+        $this->assertEquals('image/jpeg', $this->response->headers->get('content-type'));
     }
 }

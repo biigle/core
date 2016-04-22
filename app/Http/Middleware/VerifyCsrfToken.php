@@ -17,17 +17,6 @@ class VerifyCsrfToken extends BaseVerifier
     ];
 
     /**
-     * Determine if the application is running unit tests.
-     *
-     * @return bool
-     */
-    protected function runningUnitTests()
-    {
-        // we want to have csrf verification enabled in tests!
-        return false;
-    }
-
-    /**
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request

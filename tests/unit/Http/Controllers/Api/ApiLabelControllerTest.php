@@ -18,15 +18,12 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
     {
         $this->doTestApiRoute('GET', '/api/v1/labels/');
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/labels/', $this->user());
+        $this->beUser();
+        $this->get('/api/v1/labels');
         $this->assertResponseOk();
-
-        // session cookie authentication
-        $this->be($this->user());
-        $r = $this->call('GET', '/api/v1/labels');
-        $this->assertStringStartsWith('[{', $r->getContent());
-        $this->assertStringEndsWith('}]', $r->getContent());
+        $content = $this->response->getContent();
+        $this->assertStringStartsWith('[{', $content);
+        $this->assertStringEndsWith('}]', $content);
     }
 
     public function testIndexNotProjectLabels()
@@ -35,9 +32,10 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $project = ProjectTest::create();
         $label = LabelTest::create(['project_id' => $project->id, 'name' => 'test123']);
 
-        $this->be($this->user());
-        $r = $this->call('GET', '/api/v1/labels');
-        $this->assertNotContains('test123', $r->getContent());
+        $this->beUser();
+        $this->get('/api/v1/labels');
+        $content = $this->response->getContent();
+        $this->assertNotContains('test123', $content);
     }
 
     public function testShow()
@@ -45,19 +43,17 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $label = LabelTest::create();
         $this->doTestApiRoute('GET', '/api/v1/labels/'.$label->id);
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/labels/99999', $this->user());
+        $this->beUser();
+        $this->get('/api/v1/labels/99999');
         $this->assertResponseStatus(404);
 
-        $this->callToken('GET', '/api/v1/labels/'.$label->id, $this->user());
+        $this->beUser();
+        $this->get('/api/v1/labels/'.$label->id);
+        $content = $this->response->getContent();
         $this->assertResponseOk();
-
-        // session cookie authentication
-        $this->be($this->user());
-        $r = $this->call('GET', '/api/v1/labels/'.$label->id);
         // response should not be an empty array
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
+        $this->assertStringStartsWith('{', $content);
+        $this->assertStringEndsWith('}', $content);
     }
 
     public function testShowNotProjectLabels()
@@ -66,8 +62,8 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $project = ProjectTest::create();
         $label = LabelTest::create(['project_id' => $project->id, 'name' => 'test123']);
 
-        $this->be($this->user());
-        $this->call('GET', '/api/v1/labels/'.$label->id);
+        $this->beUser();
+        $this->get('/api/v1/labels/'.$label->id);
         $this->assertResponseStatus(404);
     }
 
@@ -75,34 +71,35 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
     {
         $this->doTestApiRoute('POST', '/api/v1/labels');
 
-        // api key authentication
-        $this->callToken('POST', '/api/v1/labels', $this->admin(), [
+        $this->beAdmin();
+        $this->post('/api/v1/labels', [
             'name' => 'Sea Cucumber',
             'color' => '0099ff',
         ]);
         // only global admins have access
         $this->assertResponseStatus(401);
 
-        $this->callToken('POST', '/api/v1/labels', $this->globalAdmin(), [
+        $this->beGlobalAdmin();
+        $this->json('POST', '/api/v1/labels', [
             'name' => 'Sea Cucumber',
         ]);
         // missing color
         $this->assertResponseStatus(422);
 
-        $this->callToken('POST', '/api/v1/labels', $this->globalAdmin(), [
+        $this->json('POST', '/api/v1/labels', [
             'color' => '0099ff',
         ]);
         // missing name
         $this->assertResponseStatus(422);
 
-        $this->callToken('POST', '/api/v1/labels', $this->globalAdmin(), [
+        $this->json('POST', '/api/v1/labels', [
             'name' => 'Sea Cucumber',
             'color' => '00wwff',
         ]);
         // malformed color
         $this->assertResponseStatus(422);
 
-        $this->callToken('POST', '/api/v1/labels', $this->globalAdmin(), [
+        $this->json('POST', '/api/v1/labels', [
             'name' => 'Sea Cucumber',
             'color' => '0099fff',
         ]);
@@ -110,7 +107,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $this->assertResponseStatus(422);
 
         $count = Label::all()->count();
-        $this->callToken('POST', '/api/v1/labels', $this->globalAdmin(), [
+        $this->post('/api/v1/labels', [
             'name' => 'Sea Cucumber',
             'color' => '#0099ff',
         ]);
@@ -118,10 +115,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $this->assertResponseOk();
         $this->assertEquals($count + 1, Label::all()->count());
 
-        $this->be($this->globalAdmin());
-
-        $this->callAjax('POST', '/api/v1/labels', [
-            '_token' => Session::token(),
+        $this->json('POST', '/api/v1/labels', [
             'name' => 'Stone',
             'parent_id' => 99999,
             'color' => '0099ff',
@@ -129,13 +123,13 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         // parent label does not exist
         $this->assertResponseStatus(422);
 
-        $r = $this->call('POST', '/api/v1/labels', [
-            '_token' => Session::token(),
+        $this->post('/api/v1/labels', [
             'name' => 'Baby Sea Cucumber',
             'aphia_id' => 1234,
             'parent_id' => 1,
             'color' => '0099ff',
         ]);
+        $content = $this->response->getContent();
         $this->assertResponseOk();
         $this->assertEquals($count + 2, Label::all()->count());
         $label = Label::find(Label::max('id'));
@@ -144,14 +138,15 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         $this->assertEquals(1, $label->parent->id);
         $this->assertEquals('0099ff', $label->color);
 
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
-        $this->assertNotContains('"parent":{', $r->getContent());
+        $this->assertStringStartsWith('{', $content);
+        $this->assertStringEndsWith('}', $content);
+        $this->assertNotContains('"parent":{', $content);
     }
 
     public function testStoreProjectSpecific()
     {
-        $this->callToken('POST', '/api/v1/labels', $this->user(), [
+        $this->beUser();
+        $this->post('/api/v1/labels', [
             'name' => 'test123',
             'project_id' => $this->project()->id,
             'color' => '0099ff',
@@ -159,7 +154,8 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         // only project admins have access
         $this->assertResponseStatus(401);
 
-        $this->callToken('POST', '/api/v1/labels', $this->admin(), [
+        $this->beAdmin();
+        $this->json('POST', '/api/v1/labels', [
             'name' => 'test123',
             'project_id' => 9999,
             'color' => '0099ff',
@@ -167,9 +163,7 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
         // project does not exist
         $this->assertResponseStatus(422);
 
-        $this->be($this->admin());
-        $this->call('POST', '/api/v1/labels', [
-            '_token' => Session::token(),
+        $this->post('/api/v1/labels', [
             'name' => 'test123',
             'project_id' => $this->project()->id,
             'color' => '0099ff',
@@ -185,26 +179,24 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
 
         $this->doTestApiRoute('PUT', '/api/v1/labels/'.$label->id);
 
-        // api key authentication
-        $this->callToken('PUT', '/api/v1/labels/'.$label->id, $this->admin());
+        $this->beAdmin();
+        $this->put('/api/v1/labels/'.$label->id);
         // only global admins have access
         $this->assertResponseStatus(401);
 
-        $this->callToken('PUT', '/api/v1/labels/'.$label->id, $this->globalAdmin());
+        $this->beGlobalAdmin();
+        $this->put('/api/v1/labels/'.$label->id);
         $this->assertResponseOk();
 
-        $this->callToken('PUT', '/api/v1/labels/'.$label->id, $this->globalAdmin(), ['parent_id' => 9999]);
+        $this->json('PUT', '/api/v1/labels/'.$label->id, ['parent_id' => 9999]);
         // parent label dos not exist
         $this->assertResponseStatus(422);
 
-        // session cookie authentication
-        $this->be($this->globalAdmin());
         $this->assertNotEquals('random name abc', $label->name);
         $this->assertNull($label->parent);
         $this->assertNull($label->aphia_id);
 
-        $this->call('PUT', '/api/v1/labels/'.$label->id, [
-            '_token' => Session::token(),
+        $this->put('/api/v1/labels/'.$label->id, [
             'name' => 'random name abc',
             'parent_id' => 1,
             'aphia_id' => 2,
@@ -223,11 +215,13 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
     {
         $label = LabelTest::create(['project_id' => $this->project()->id]);
 
-        $this->callToken('PUT', '/api/v1/labels/'.$label->id, $this->user());
+        $this->beUser();
+        $this->put('/api/v1/labels/'.$label->id);
         // only project admins have access
         $this->assertResponseStatus(401);
 
-        $this->callToken('PUT', '/api/v1/labels/'.$label->id, $this->admin());
+        $this->beAdmin();
+        $this->put('/api/v1/labels/'.$label->id);
         $this->assertResponseOk();
     }
 
@@ -237,29 +231,25 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
 
         $this->doTestApiRoute('DELETE', '/api/v1/labels/'.$label->id);
 
-        // api key authentication
-        $this->callToken('DELETE', '/api/v1/labels/'.$label->id, $this->admin());
+        $this->beAdmin();
+        $this->delete('/api/v1/labels/'.$label->id);
         // only global admins have access
         $this->assertResponseStatus(401);
 
         $this->assertNotNull($label->fresh());
-        $this->callToken('DELETE', '/api/v1/labels/'.$label->id, $this->globalAdmin());
+        $this->beGlobalAdmin();
+        $this->delete('/api/v1/labels/'.$label->id);
         $this->assertResponseOk();
         $this->assertNull($label->fresh());
 
         $parent = LabelTest::create();
         $label = LabelTest::create(['parent_id' => $parent->id]);
 
-        // session cookie authentication
-        $this->be($this->globalAdmin());
-        $this->call('DELETE', '/api/v1/labels/'.$parent->id, [
-            '_token' => Session::token(),
-        ]);
+        $this->delete('/api/v1/labels/'.$parent->id);
         // deleting a label with children without the 'force' argument fails
         $this->assertResponseStatus(400);
 
-        $this->call('DELETE', '/api/v1/labels/'.$parent->id, [
-            '_token' => Session::token(),
+        $this->delete('/api/v1/labels/'.$parent->id, [
             'force' => 'abcd',
         ]);
         $this->assertResponseOk();
@@ -271,11 +261,13 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
     {
         $label = LabelTest::create(['project_id' => $this->project()->id]);
 
-        $this->callToken('DELETE', '/api/v1/labels/'.$label->id, $this->user());
+        $this->beUser();
+        $this->delete('/api/v1/labels/'.$label->id);
         // only project admins have access
         $this->assertResponseStatus(401);
 
-        $this->callToken('DELETE', '/api/v1/labels/'.$label->id, $this->admin());
+        $this->beAdmin();
+        $this->delete('/api/v1/labels/'.$label->id);
         $this->assertResponseOk();
     }
 
@@ -288,7 +280,8 @@ class ApiLabelControllerTest extends ModelWithAttributesApiTest
             'label_id' => $label->id
         ]);
 
-        $this->callToken('DELETE', '/api/v1/labels/'.$label->id, $this->globalAdmin());
+        $this->beGlobalAdmin();
+        $this->delete('/api/v1/labels/'.$label->id);
         // you can't delete a label that is still in use
         $this->assertResponseStatus(400);
         $this->assertNotNull($label->fresh());

@@ -20,7 +20,6 @@ class ApiTestCase extends TestCase
     private function newUser($role = null)
     {
         $user = UserTest::make();
-        $user->generateApiKey();
         $user->role()->associate($role ? $role : Role::$editor);
         $user->save();
 
@@ -65,6 +64,11 @@ class ApiTestCase extends TestCase
         return $this->admin = $this->newProjectUser(Role::$admin);
     }
 
+    protected function beAdmin()
+    {
+        $this->be($this->admin());
+    }
+
     protected function editor()
     {
         if ($this->editor) {
@@ -72,6 +76,11 @@ class ApiTestCase extends TestCase
         }
 
         return $this->editor = $this->newProjectUser(Role::$editor);
+    }
+
+    protected function beEditor()
+    {
+        $this->be($this->editor());
     }
 
     protected function guest()
@@ -83,6 +92,11 @@ class ApiTestCase extends TestCase
         return $this->guest = $this->newProjectUser(Role::$guest);
     }
 
+    protected function beGuest()
+    {
+        $this->be($this->guest());
+    }
+
     protected function user()
     {
         if ($this->user) {
@@ -92,6 +106,11 @@ class ApiTestCase extends TestCase
         return $this->user = $this->newUser();
     }
 
+    protected function beUser()
+    {
+        $this->be($this->user());
+    }
+
     protected function globalAdmin()
     {
         if ($this->globalAdmin) {
@@ -99,6 +118,11 @@ class ApiTestCase extends TestCase
         }
 
         return $this->globalAdmin = $this->newUser(Role::$admin);
+    }
+
+    protected function beGlobalAdmin()
+    {
+        $this->be($this->globalAdmin());
     }
 
     protected function labelRoot()
@@ -125,30 +149,10 @@ class ApiTestCase extends TestCase
     /*
      * Simulates an AJAX request.
      */
-    protected function callAjax($method, $uri, $params = [])
+    protected function ajax($method, $uri, $params = [])
     {
         return $this->call($method, $uri, $params, [], [], [
             'HTTP_X-Requested-With' => 'XMLHttpRequest',
-        ]);
-    }
-
-    /*
-     * Simulates an JSON request.
-     */
-    protected function callJSON($method, $uri, $params = [])
-    {
-        return $this->call($method, $uri, $params, [], [], [
-            'HTTP_Content-Type' => 'application/json',
-        ]);
-    }
-
-    /*
-     * Performs a call with API token authorization.
-     */
-    protected function callToken($method, $uri, $user, $params = [])
-    {
-        return $this->call($method, $uri, $params, [], [], [
-            'HTTP_X-Auth-Token' => $user->api_key,
         ]);
     }
 
@@ -158,15 +162,6 @@ class ApiTestCase extends TestCase
     protected function doTestApiRoute($method, $uri)
     {
         $this->call($method, $uri);
-        if ($method === 'GET') {
-            $this->assertResponseStatus(401);
-        } else {
-            // token mismatch
-            $this->assertResponseStatus(403);
-
-            $this->call($method, $uri, ['_token' => Session::token()]);
-            // route exists (otherwise 404)
-            $this->assertResponseStatus(401);
-        }
+        $this->assertResponseStatus(401);
     }
 }

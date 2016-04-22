@@ -38,20 +38,12 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
         );
 
         // api key authentication
-        $this->callToken('GET',
-            '/api/v1/images/'.$this->image->id.'/annotations',
-            $this->user()
-        );
+        $this->beUser();
+        $this->get('/api/v1/images/'.$this->image->id.'/annotations');
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET',
-            '/api/v1/images/'.$this->image->id.'/annotations',
-            $this->guest()
-        );
-        $this->assertResponseOk();
-
         // session cookie authentication
-        $this->be($this->guest());
+        $this->beGuest();
         $this->get('/api/v1/images/'.$this->image->id.'/annotations')
             ->seeJson([
                 'points' => [
@@ -65,103 +57,69 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             ->seeJson([
                 'name' => 'My label',
             ]);
+        $this->assertResponseOk();
     }
 
     public function testStore()
     {
-        $this->doTestApiRoute('POST',
-            '/api/v1/images/'.$this->image->id.'/annotations'
-        );
+        $this->doTestApiRoute('POST', '/api/v1/images/'.$this->image->id.'/annotations');
 
-        // api key authentication
-        $this->callToken('POST',
-            '/api/v1/images/'.$this->image->id.'/annotations',
-            $this->guest()
-        );
+        $this->beGuest();
+        $this->post('/api/v1/images/'.$this->image->id.'/annotations');
         $this->assertResponseStatus(401);
 
-        $this->callToken('POST',
-            '/api/v1/images/'.$this->image->id.'/annotations',
-            $this->editor()
-        );
+        $this->beEditor();
+        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations');
         // missing arguments
         $this->assertResponseStatus(422);
 
-        // session cookie authentication
-        $this->be($this->editor());
-
-        $this->callAjax('POST',
-            '/api/v1/images/'.$this->image->id.'/annotations',
-            [
-                '_token' => Session::token(),
-                'shape_id' => 99999,
-                'points' => '',
-            ]
-        );
+        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
+            'shape_id' => 99999,
+            'points' => '',
+        ]);
         // shape does not exist
         $this->assertResponseStatus(422);
 
-        $this->callAjax('POST',
-            '/api/v1/images/'.$this->image->id.'/annotations',
-            [
-                '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::$lineId,
-                'label_id' => 99999,
-            ]
-        );
+        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
+            'shape_id' => \Dias\Shape::$lineId,
+            'label_id' => 99999,
+        ]);
         // label is required
         $this->assertResponseStatus(422);
 
-        $this->callAjax('POST',
-            '/api/v1/images/'.$this->image->id.'/annotations',
-            [
-                '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::$pointId,
-                'label_id' => $this->labelRoot()->id,
-            ]
-        );
+        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
+            'shape_id' => \Dias\Shape::$pointId,
+            'label_id' => $this->labelRoot()->id,
+        ]);
         // confidence required
         $this->assertResponseStatus(422);
 
-        $this->callAjax('POST',
-            '/api/v1/images/'.$this->image->id.'/annotations',
-            [
-                '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::$pointId,
-                'label_id' => $this->labelRoot()->id,
-                'confidence' => 2
-            ]
-        );
+        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
+            'shape_id' => \Dias\Shape::$pointId,
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 2
+        ]);
         // confidence must be between 0 and 1
         $this->assertResponseStatus(422);
 
-        $this->callAjax('POST',
-            '/api/v1/images/'.$this->image->id.'/annotations',
-            [
-                '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::$pointId,
-                'label_id' => $this->labelRoot()->id,
-                'confidence' => -1
-            ]
-        );
+        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
+            'shape_id' => \Dias\Shape::$pointId,
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => -1
+        ]);
         // confidence must be between 0 and 1
         $this->assertResponseStatus(422);
 
-        $this->callAjax('POST',
-            '/api/v1/images/'.$this->image->id.'/annotations',
-            [
-                '_token' => Session::token(),
-                'shape_id' => \Dias\Shape::$pointId,
-                'label_id' => $this->labelRoot()->id,
-                'confidence' => 0.5,
-                'points' => '[]',
-            ]
-        );
+        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
+            'shape_id' => \Dias\Shape::$pointId,
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => '[]',
+        ]);
         // at least one point required
         $this->assertResponseStatus(422);
 
         $this->post('/api/v1/images/'.$this->image->id.'/annotations', [
-            '_token' => Session::token(),
             'shape_id' => \Dias\Shape::$pointId,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
@@ -198,7 +156,8 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
     public function testStoreValidatePoints()
     {
-        $this->callToken('POST', '/api/v1/images/'.$this->image->id.'/annotations', $this->editor(), [
+        $this->beEditor();
+        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
             'shape_id' => \Dias\Shape::$pointId,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,

@@ -8,17 +8,15 @@ class ApiProjectLabelControllerTest extends ApiTestCase
     {
         $this->doTestApiRoute('GET', "/api/v1/projects/{$this->project()->id}/labels/");
 
-        // api key authentication
-        $this->callToken('GET', "/api/v1/projects/{$this->project()->id}/labels/", $this->user());
+        $this->beUser();
+        $this->get("/api/v1/projects/{$this->project()->id}/labels/");
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', "/api/v1/projects/{$this->project()->id}/labels/", $this->guest());
+        $this->beGuest();
+        $this->get("/api/v1/projects/{$this->project()->id}/labels/");
+        $content = $this->response->getContent();
         $this->assertResponseOk();
-
-        // session cookie authentication
-        $this->be($this->guest());
-        $r = $this->call('GET', "/api/v1/projects/{$this->project()->id}/labels/");
-        $this->assertStringStartsWith('[', $r->getContent());
-        $this->assertStringEndsWith(']', $r->getContent());
+        $this->assertStringStartsWith('[', $content);
+        $this->assertStringEndsWith(']', $content);
     }
 }

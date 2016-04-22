@@ -8,33 +8,28 @@ class ApiAttributeControllerTest extends ApiTestCase
     {
         $this->doTestApiRoute('GET', '/api/v1/attributes');
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/attributes', $this->user());
-        $this->assertResponseOk();
-
         // session cookie authentication
-        $this->be($this->user());
-        $r = $this->call('GET', '/api/v1/attributes');
-        $this->assertStringStartsWith('[', $r->getContent());
-        $this->assertStringEndsWith(']', $r->getContent());
+        $this->beUser();
+        $this->get('/api/v1/attributes');
+        $this->assertResponseOk();
+        $content = $this->response->getContent();
+        $this->assertStringStartsWith('[', $content);
+        $this->assertStringEndsWith(']', $content);
     }
 
     public function testShow()
     {
         $this->doTestApiRoute('GET', '/api/v1/attributes/1');
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/attributes/1', $this->user());
-        $this->assertResponseOk();
-
-        $r = $this->callToken('GET', '/api/v1/attributes/-1', $this->user());
+        $this->beUser();
+        $this->get('/api/v1/attributes/-1');
         $this->assertResponseStatus(404);
 
-        // session cookie authentication
-        $this->be($this->user());
-        $r = $this->call('GET', '/api/v1/attributes/1');
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
+        $this->get('/api/v1/attributes/1');
+        $this->assertResponseOk();
+        $content = $this->response->getContent();
+        $this->assertStringStartsWith('{', $content);
+        $this->assertStringEndsWith('}', $content);
     }
 
     public function testStore()
@@ -42,14 +37,16 @@ class ApiAttributeControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', '/api/v1/attributes');
 
         // only global admins can create new attributes
-        $this->callToken('POST', '/api/v1/attributes', $this->admin());
+        $this->beAdmin();
+        $this->post('/api/v1/attributes');
         $this->assertResponseStatus(401);
 
         // missing arguments
-        $this->callToken('POST', '/api/v1/attributes', $this->globalAdmin());
+        $this->beGlobalAdmin();
+        $this->json('POST', '/api/v1/attributes');
         $this->assertResponseStatus(422);
 
-        $this->callToken('POST', '/api/v1/attributes', $this->globalAdmin(), [
+        $this->json('POST', '/api/v1/attributes', [
             'name' => 'expert name',
             'type' => 'boolean',
         ]);
@@ -57,27 +54,24 @@ class ApiAttributeControllerTest extends ApiTestCase
         $this->assertResponseStatus(422);
 
         // enum data type is not supported in SQLite
-        $this->callToken('POST', '/api/v1/attributes', $this->globalAdmin(), [
+        $this->json('POST', '/api/v1/attributes', [
             'name' => 'expert',
             'type' => 'own',
         ]);
         // unsupported type
         $this->assertResponseStatus(422);
 
-        // session cookie authentication
-        $this->be($this->globalAdmin());
         $count = Attribute::all()->count();
-        $r = $this->call('POST', '/api/v1/attributes', [
-            '_token' => Session::token(),
+        $this->post('/api/v1/attributes', [
             'name' => 'expert',
             'type' => 'boolean',
         ]);
+        $content = $this->response->getContent();
         $this->assertEquals($count + 1, Attribute::all()->count());
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
+        $this->assertStringStartsWith('{', $content);
+        $this->assertStringEndsWith('}', $content);
 
-        $this->callAjax('POST', '/api/v1/attributes', [
-            '_token' => Session::token(),
+        $this->json('POST', '/api/v1/attributes', [
             'name' => 'expert',
             'type' => 'boolean',
         ]);
@@ -93,19 +87,17 @@ class ApiAttributeControllerTest extends ApiTestCase
         $this->doTestApiRoute('DELETE', '/api/v1/attributes/'.$id);
 
         // only global admins can delete attributes
-        $this->callToken('DELETE', '/api/v1/attributes/'.$id, $this->admin());
+        $this->beAdmin();
+        $this->delete('/api/v1/attributes/'.$id);
         $this->assertResponseStatus(401);
 
         $this->assertNotNull($attribute->fresh());
-        $this->callToken('DELETE', '/api/v1/attributes/'.$id, $this->globalAdmin());
+        $this->beGlobalAdmin();
+        $this->delete('/api/v1/attributes/'.$id);
         $this->assertResponseOk();
         $this->assertNull($attribute->fresh());
 
-        // session cookie authentication
-        $this->be($this->globalAdmin());
-        $this->call('DELETE', '/api/v1/attributes/'.$id, [
-            '_token' => Session::token(),
-        ]);
+        $this->delete('/api/v1/attributes/'.$id);
         // the attribute doesn't exist any more
         $this->assertResponseStatus(404);
 
@@ -113,9 +105,7 @@ class ApiAttributeControllerTest extends ApiTestCase
         $project = ProjectTest::create();
         $project->attributes()->save($attribute);
 
-        $this->call('DELETE', '/api/v1/attributes/'.$attribute->id, [
-            '_token' => Session::token(),
-        ]);
+        $this->delete('/api/v1/attributes/'.$attribute->id);
         // attributes in use may not be deleted
         $this->assertResponseStatus(400);
     }

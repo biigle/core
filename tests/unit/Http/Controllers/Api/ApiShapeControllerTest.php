@@ -8,32 +8,24 @@ class ApiShapeControllerTest extends ApiTestCase
     {
         $this->doTestApiRoute('GET', '/api/v1/shapes');
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/shapes', $this->admin());
+        $this->beUser();
+        $this->get('/api/v1/shapes');
+        $content = $this->response->getContent();
         $this->assertResponseOk();
-
-        // session cookie authentication
-        $this->be($this->user());
-        $r = $this->call('GET', '/api/v1/shapes');
-        $this->assertResponseOk();
-        $this->assertStringStartsWith('[', $r->getContent());
-        $this->assertStringEndsWith(']', $r->getContent());
+        $this->assertStringStartsWith('[', $content);
+        $this->assertStringEndsWith(']', $content);
     }
 
     public function testShow()
     {
         $this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::$circleId);
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/shapes/'.Shape::$circleId, $this->admin());
+        $this->beUser();
+        $this->get('/api/v1/shapes/'.Shape::$circleId);
+        $content = $this->response->getContent();
         $this->assertResponseOk();
-
-        // session cookie authentication
-        $this->be($this->user());
-        $r = $this->call('GET', '/api/v1/shapes/'.Shape::$circleId);
-        $this->assertResponseOk();
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
-        $this->assertContains('Circle', $r->getContent());
+        $this->assertStringStartsWith('{', $content);
+        $this->assertStringEndsWith('}', $content);
+        $this->assertContains('Circle', $content);
     }
 }

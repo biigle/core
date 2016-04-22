@@ -38,22 +38,20 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
         ])->fresh();
         $this->doTestApiRoute('GET', $this->getEndpoint().'/'.$id);
 
-        // api key authentication
-        $this->callToken('GET', $this->getEndpoint().'/'.$id, $this->admin());
+        $this->beEditor();
+        $this->get($this->getEndpoint().'/'.$id);
         $this->assertResponseOk();
 
-        // permissions
-        $this->callToken('GET', $this->getEndpoint().'/'.$id, $this->editor());
+        $this->beGuest();
+        $this->get($this->getEndpoint().'/'.$id);
         $this->assertResponseOk();
 
-        $this->callToken('GET', $this->getEndpoint().'/'.$id, $this->guest());
-        $this->assertResponseOk();
-
-        $this->callToken('GET', $this->getEndpoint().'/'.$id, $this->user());
+        $this->beUser();
+        $this->get($this->getEndpoint().'/'.$id);
         $this->assertResponseStatus(401);
 
         // session cookie authentication
-        $this->be($this->admin());
+        $this->beAdmin();
         $this->get($this->getEndpoint().'/'.$id)
             ->seeJson([
                 'points' => [
@@ -75,7 +73,8 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
 
         $this->doTestApiRoute('PUT', $this->getEndpoint().'/'.$id);
 
-        $this->callToken('PUT', $this->getEndpoint().'/'.$id, $this->user());
+        $this->beUser();
+        $this->put($this->getEndpoint().'/'.$id);
         $this->assertResponseStatus(401);
 
         $this->annotation->addPoint(10, 10);
@@ -83,7 +82,8 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
         $this->assertEquals(10, $points[0]['y']);
 
         // api key authentication
-        $this->callToken('PUT', $this->getEndpoint().'/'.$id, $this->admin(), [
+        $this->beAdmin();
+        $this->put($this->getEndpoint().'/'.$id, [
             'points' => '[{"x":10, "y":15}, {"x": 100, "y": 200}]',
         ]);
         $this->assertResponseOk();
@@ -99,7 +99,8 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
         $this->annotation->shape_id = Dias\Shape::$pointId;
         $this->annotation->save();
 
-        $this->callToken('PUT', $this->getEndpoint().'/'.$id, $this->admin(), [
+        $this->beAdmin();
+        $this->json('PUT', $this->getEndpoint().'/'.$id, [
             'points' => '[{"x":10, "y":15}, {"x": 100, "y": 200}]',
         ]);
         // invalid number of points
@@ -112,13 +113,14 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
 
         $this->doTestApiRoute('DELETE', $this->getEndpoint().'/'.$id);
 
-        $this->callToken('DELETE', $this->getEndpoint().'/'.$id, $this->user());
+        $this->beUser();
+        $this->delete($this->getEndpoint().'/'.$id);
         $this->assertResponseStatus(401);
 
         $this->assertNotNull($this->annotation->fresh());
 
-        // api key authentication
-        $this->callToken('DELETE', $this->getEndpoint().'/'.$id, $this->admin());
+        $this->beAdmin();
+        $this->delete($this->getEndpoint().'/'.$id);
         $this->assertResponseOk();
 
         $this->assertNull($this->annotation->fresh());
@@ -127,21 +129,21 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
         $this->project()->addTransectId($this->annotation->image->transect->id);
         $id = $this->annotation->id;
 
-        // permissions
-        $this->callToken('DELETE', $this->getEndpoint().'/'.$id, $this->user());
+        $this->beUser();
+        $this->delete($this->getEndpoint().'/'.$id);
         $this->assertResponseStatus(401);
 
-        $this->callToken('DELETE', $this->getEndpoint().'/'.$id, $this->guest());
+        $this->beGuest();
+        $this->delete($this->getEndpoint().'/'.$id);
         $this->assertResponseStatus(401);
 
-        $this->callToken('DELETE', $this->getEndpoint().'/'.$id, $this->editor());
+        $this->beEditor();
+        $this->delete($this->getEndpoint().'/'.$id);
         $this->assertResponseOk();
 
-        // session cookie authentication
-
         // admin could delete but the annotation was already deleted
-        $this->be($this->admin());
-        $this->call('DELETE', $this->getEndpoint().'/'.$id, [
+        $this->beAdmin();
+        $this->delete($this->getEndpoint().'/'.$id, [
             '_token' => Session::token(),
         ]);
         $this->assertResponseStatus(404);

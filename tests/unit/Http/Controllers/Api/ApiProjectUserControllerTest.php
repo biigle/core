@@ -7,26 +7,24 @@ class ApiProjectUserControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
-        $this->doTestApiRoute('GET', '/api/v1/projects/1/users');
-
-        // api key authentication
-        $this->callToken('GET', '/api/v1/projects/1/users', $this->admin());
-        $this->assertResponseOk();
+        $id = $this->project()->id;
+        $this->doTestApiRoute('GET', "/api/v1/projects/{$id}/users");
 
         // the user doesn't belong to this project
-        $this->callToken('GET', '/api/v1/projects/1/users', $this->user());
+        $this->beUser();
+        $this->get("/api/v1/projects/{$id}/users");
         $this->assertResponseStatus(401);
 
-        // session cookie authentication
-        $this->be($this->admin());
-        $r = $this->call('GET', '/api/v1/projects/1/users');
+        $this->beAdmin();
+        $this->get("/api/v1/projects/{$id}/users");
+        $content = $this->response->getContent();
         $this->assertResponseOk();
 
-        $this->assertStringStartsWith('[', $r->getContent());
-        $this->assertStringEndsWith(']', $r->getContent());
-        $this->assertContains('"name":"'.$this->admin()->name.'"', $r->getContent());
-        $this->assertContains('project_role_id', $r->getContent());
-        $this->assertNotContains('pivot', $r->getContent());
+        $this->assertStringStartsWith('[', $content);
+        $this->assertStringEndsWith(']', $content);
+        $this->assertContains('"name":"'.$this->admin()->name.'"', $content);
+        $this->assertContains('project_role_id', $content);
+        $this->assertNotContains('pivot', $content);
     }
 
     public function testUpdate()
@@ -40,54 +38,41 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $this->doTestApiRoute('PUT', "/api/v1/projects/{$id}/users/1");
 
         // non-admins are not allowed to modify users
-        $this->callToken('PUT', "/api/v1/projects/{$id}/users/1", $this->user());
+        $this->beUser();
+        $this->put("/api/v1/projects/{$id}/users/1");
         $this->assertResponseStatus(401);
 
-        $this->callToken('PUT', "/api/v1/projects/{$id}/users/5", $this->editor());
+        $this->beEditor();
+        $this->put("/api/v1/projects/{$id}/users/5");
         $this->assertResponseStatus(401);
 
-        // api key authentication
         // user doesn't exist
-        $this->callToken('PUT', "/api/v1/projects/{$id}/users/5", $this->admin());
+        $this->beAdmin();
+        $this->put("/api/v1/projects/{$id}/users/5");
         $this->assertResponseStatus(400);
 
-        // session cookie authentication
-        $this->be($this->admin());
         // missing arguments
-        $this->call('PUT', "/api/v1/projects/{$id}/users/".$this->editor()->id,
-            [
-                '_token' => Session::token(),
-            ]
-        );
+        $this->put("/api/v1/projects/{$id}/users/".$this->editor()->id);
         $this->assertResponseStatus(400);
 
         // role does not exist
-        $this->call('PUT', "/api/v1/projects/{$id}/users/".$this->editor()->id,
-            [
-                '_token' => Session::token(),
-                'project_role_id' => 100,
-            ]
-        );
+        $this->put("/api/v1/projects/{$id}/users/".$this->editor()->id, [
+            'project_role_id' => 100,
+        ]);
         $this->assertResponseStatus(400);
 
-        // last admin cannot be removed (ajax request gets json response)
-        $r = $this->callAjax('PUT', "/api/v1/projects/{$id}/users/".$this->admin()->id,
-            [
-                '_token' => Session::token(),
-                'project_role_id' => Role::$guest->id,
-            ]
-        );
+        // last admin cannot be removed
+        $this->json('PUT', "/api/v1/projects/{$id}/users/".$this->admin()->id, [
+            'project_role_id' => Role::$guest->id,
+        ]);
         $this->assertResponseStatus(400);
-        $this->assertStringStartsWith('{"message":"The last admin of '.$this->project()->name.' cannot be removed.', $r->getContent());
+        $this->assertStringStartsWith('{"message":"The last admin of '.$this->project()->name.' cannot be removed.', $this->response->getContent());
 
         $this->assertEquals(2, $this->project()->users()->find($this->editor()->id)->project_role_id);
 
-        $this->call('PUT', "/api/v1/projects/{$id}/users/".$this->editor()->id,
-            [
-                '_token' => Session::token(),
-                'project_role_id' => Role::$guest->id,
-            ]
-        );
+        $this->put("/api/v1/projects/{$id}/users/".$this->editor()->id, [
+            'project_role_id' => Role::$guest->id,
+        ]);
 
         $this->assertResponseOk();
         $this->assertEquals(3, $this->project()->users()->find($this->editor()->id)->project_role_id);
@@ -99,30 +84,28 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $id = $this->user()->id;
         $this->doTestApiRoute('POST', "/api/v1/projects/{$pid}/users/{$id}");
 
-        $this->callToken('POST', "/api/v1/projects/{$pid}/users/{$id}", $this->user());
+        $this->beUser();
+        $this->post("/api/v1/projects/{$pid}/users/{$id}");
         $this->assertResponseStatus(401);
 
-        // api key authentication
         // missing arguments
-        $this->callToken('POST', "/api/v1/projects/{$pid}/users/{$id}", $this->admin());
+        $this->beAdmin();
+        $this->post("/api/v1/projects/{$pid}/users/{$id}");
         $this->assertResponseStatus(400);
 
         // non-admins are not allowed to add users
-        $this->callToken('POST', "/api/v1/projects/{$pid}/users/{$id}", $this->editor());
+        $this->beEditor();
+        $this->post("/api/v1/projects/{$pid}/users/{$id}");
         $this->assertResponseStatus(401);
 
         $this->assertNull($this->project()->fresh()->users()->find($id));
 
-        // session cookie authentication
-        $this->be($this->admin());
+        $this->beAdmin();
         // missing arguments
-        $this->call('POST', "/api/v1/projects/{$pid}/users/{$id}", [
-            '_token' => Session::token(),
-        ]);
+        $this->post("/api/v1/projects/{$pid}/users/{$id}");
         $this->assertResponseStatus(400);
 
-        $this->call('POST', "/api/v1/projects/{$pid}/users/{$id}", [
-            '_token' => Session::token(),
+        $this->post("/api/v1/projects/{$pid}/users/{$id}", [
             'project_role_id' => 2,
         ]);
 
@@ -143,14 +126,14 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $this->doTestApiRoute('DELETE', '/api/v1/projects/1/users/1');
 
         // non-admins are not allowed to delete other users
-        $this->callToken('DELETE', '/api/v1/projects/1/users/'.$this->admin()->id, $this->editor());
+        $this->beEditor();
+        $this->delete('/api/v1/projects/1/users/'.$this->admin()->id);
         $this->assertResponseStatus(401);
 
         // but they can delete themselves
         $this->assertNotNull($this->project()->fresh()->users()->find($this->editor()->id));
 
-        $this->callToken('DELETE', '/api/v1/projects/1/users/'.$this->editor()->id, $this->editor());
-
+        $this->delete('/api/v1/projects/1/users/'.$this->editor()->id);
         $this->assertResponseOk();
         $this->assertNull($this->project()->fresh()->users()->find($this->editor()->id));
 
@@ -159,20 +142,15 @@ class ApiProjectUserControllerTest extends ApiTestCase
         // admins can delete anyone
         $this->assertNotNull($this->project()->fresh()->users()->find($this->editor()->id));
 
-        $this->callToken('DELETE', '/api/v1/projects/1/users/'.$this->editor()->id, $this->admin());
-
+        $this->beAdmin();
+        $this->delete('/api/v1/projects/1/users/'.$this->editor()->id);
         $this->assertResponseOk();
         $this->assertNull($this->project()->fresh()->users()->find($this->editor()->id));
 
         $this->project()->addUserId($this->editor()->id, Role::$editor->id);
 
-// session cookie authentication
-        $this->be($this->admin());
-
         // but admins cannot delete themselves if they are the only admin left
-        $this->call('DELETE', '/api/v1/projects/1/users/'.$this->admin()->id, [
-            '_token' => Session::token(),
-        ]);
+        $this->delete('/api/v1/projects/1/users/'.$this->admin()->id);
         $this->assertResponseStatus(400);
     }
 }

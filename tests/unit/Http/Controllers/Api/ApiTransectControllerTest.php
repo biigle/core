@@ -29,19 +29,16 @@ class ApiTransectControllerTest extends ModelWithAttributesApiTest
         $id = $this->transect->id;
         $this->doTestApiRoute('GET', '/api/v1/transects/'.$id);
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/transects/'.$id, $this->user());
+        $this->beUser();
+        $this->get('/api/v1/transects/'.$id);
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/transects/'.$id, $this->guest());
+        $this->beGuest();
+        $this->get('/api/v1/transects/'.$id);
+        $content = $this->response->getContent();
         $this->assertResponseOk();
-
-        // session cookie authentication
-        $this->be($this->guest());
-        $r = $this->call('GET', '/api/v1/transects/'.$id);
-        $this->assertResponseOk();
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
+        $this->assertStringStartsWith('{', $content);
+        $this->assertStringEndsWith('}', $content);
     }
 
     public function testUpdate()
@@ -49,18 +46,17 @@ class ApiTransectControllerTest extends ModelWithAttributesApiTest
         $id = $this->transect->id;
         $this->doTestApiRoute('PUT', '/api/v1/transects/'.$id);
 
-        // api key authentication
-        $this->callToken('PUT', '/api/v1/transects/'.$id, $this->guest());
+        $this->beGuest();
+        $this->put('/api/v1/transects/'.$id);
         $this->assertResponseStatus(401);
 
-        $this->callToken('PUT', '/api/v1/transects/'.$id, $this->editor());
+        $this->beEditor();
+        $this->put('/api/v1/transects/'.$id);
         $this->assertResponseStatus(401);
 
-        // session cookie authentication
-        $this->be($this->admin());
+        $this->beAdmin();
         $this->assertNotEquals('the new transect', $this->transect->fresh()->name);
-        $this->call('PUT', '/api/v1/transects/'.$id, [
-            '_token' => Session::token(),
+        $this->put('/api/v1/transects/'.$id, [
             'name' => 'the new transect',
         ]);
         $this->assertResponseOk();

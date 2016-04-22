@@ -17,72 +17,57 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
 
     public function testIndex()
     {
-        $this->call('GET', '/api/v1/projects');
+        $this->get('/api/v1/projects');
         $this->assertResponseStatus(405);
 
         $this->doTestApiRoute('GET', '/api/v1/projects/my');
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/projects/my', $this->admin());
+        $this->beAdmin();
+        $this->get('/api/v1/projects/my');
+        $content = $this->response->getContent();
         $this->assertResponseOk();
-
-        // session cookie authentication
-        $this->be($this->admin());
-        $r = $this->call('GET', '/api/v1/projects/my');
-        $this->assertResponseOk();
-
-        $this->assertStringStartsWith('[', $r->getContent());
-        $this->assertStringEndsWith(']', $r->getContent());
-        $this->assertContains('"description":"', $r->getContent());
-        $this->assertNotContains('pivot', $r->getContent());
+        $this->assertStringStartsWith('[', $content);
+        $this->assertStringEndsWith(']', $content);
+        $this->assertContains('"description":"', $content);
+        $this->assertNotContains('pivot', $content);
     }
 
     public function testShow()
     {
         $this->doTestApiRoute('GET', '/api/v1/projects/1');
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/projects/1', $this->admin());
-        $this->assertResponseOk();
-
-        $this->callToken('GET', '/api/v1/projects/1', $this->user());
+        $this->beUser();
+        $this->get('/api/v1/projects/1');
         $this->assertResponseStatus(401);
 
-        // session cookie authentication
-        $this->be($this->admin());
-        $this->call('GET', '/api/v1/projects/999');
+        $this->beAdmin();
+        $this->get('/api/v1/projects/999');
         $this->assertResponseStatus(404);
 
-        $r = $this->call('GET', '/api/v1/projects/1');
+        $this->get('/api/v1/projects/1');
+        $content = $this->response->getContent();
         $this->assertResponseOk();
 
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
-        $this->assertContains('"description":"', $r->getContent());
-        $this->assertNotContains('pivot', $r->getContent());
+        $this->assertStringStartsWith('{', $content);
+        $this->assertStringEndsWith('}', $content);
+        $this->assertContains('"description":"', $content);
+        $this->assertNotContains('pivot', $content);
     }
 
     public function testUpdate()
     {
         $this->doTestApiRoute('PUT', '/api/v1/projects/1');
 
-        // api key authentication
-        $this->callToken('PUT', '/api/v1/projects/1', $this->admin());
-        $this->assertResponseOk();
-
         // non-admins are not allowed to update
-        $this->callToken('PUT', '/api/v1/projects/1', $this->editor());
+        $this->beEditor();
+        $this->put('/api/v1/projects/1');
         $this->assertResponseStatus(401);
 
-        // session cookie authentication
-        $this->be($this->admin());
-        $this->call('PUT', '/api/v1/projects/999', [
-            '_token' => Session::token(),
-        ]);
+        $this->beAdmin();
+        $this->put('/api/v1/projects/999');
         $this->assertResponseStatus(404);
 
-        $this->callAjax('PUT', '/api/v1/projects/1', [
-            '_token' => Session::token(),
+        $this->json('PUT', '/api/v1/projects/1', [
             'name' => 'my test',
             'description' => 'this is my test',
             'creator_id' => 5,
@@ -99,72 +84,52 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
     {
         $this->doTestApiRoute('POST', '/api/v1/projects');
 
-        // api key authentication
         // creating an empty project is an error
-        $this->callToken('POST', '/api/v1/projects', $this->admin());
+        $this->beAdmin();
+        $this->json('POST', '/api/v1/projects');
         $this->assertResponseStatus(422);
 
         $this->assertNull(Project::find(2));
 
-        $r = $this->callToken('POST', '/api/v1/projects', $this->admin(), [
+        $this->json('POST', '/api/v1/projects', [
             'name' => 'test project',
             'description' => 'my test project',
         ]);
 
         $this->assertResponseOk();
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
-        $this->assertContains('"name":"test project"', $r->getContent());
+        $content = $this->response->getContent();
+        $this->assertStringStartsWith('{', $content);
+        $this->assertStringEndsWith('}', $content);
+        $this->assertContains('"name":"test project"', $content);
         $this->assertNotNull(Project::find(2));
-
-        // session cookie authentication
-        $this->be($this->admin());
-        $this->assertNull(Project::find(3));
-
-        $r = $this->callAjax('POST', '/api/v1/projects', [
-            '_token' => Session::token(),
-            'name' => 'other test project',
-            'description' => 'my other test project',
-        ]);
-
-        $this->assertResponseOk();
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
-        $this->assertContains('"name":"other test project"', $r->getContent());
-        $this->assertNotNull(Project::find(3));
     }
 
     public function testDestroy()
     {
+        $id = $this->project()->id;
         // create transect
         $this->transect();
 
-        $this->doTestApiRoute('DELETE', '/api/v1/projects/1');
+        $this->doTestApiRoute('DELETE', "/api/v1/projects/{$id}");
 
         // non-admins are not allowed to delete the project
-        $this->callToken('DELETE', '/api/v1/projects/1', $this->editor());
+        $this->beEditor();
+        $this->json('DELETE', "/api/v1/projects/{$id}");
         $this->assertResponseStatus(401);
 
-        // do manual logout because the previously logged in editor would persist
-        Auth::logout();
-
         // project still has a transect belonging only to this project
+        $this->beAdmin();
         $this->assertNotNull($this->project()->fresh());
-        $this->callToken('DELETE', '/api/v1/projects/1', $this->admin());
+        $this->json('DELETE', "/api/v1/projects/{$id}");
         $this->assertResponseStatus(400);
 
         $this->assertNotNull($this->project()->fresh());
-        $this->callToken('DELETE', '/api/v1/projects/1', $this->admin(), [
-            'force' => 'true',
-        ]);
+        $this->json('DELETE', "/api/v1/projects/{$id}", ['force' => 'true']);
         $this->assertResponseOk();
         $this->assertNull($this->project()->fresh());
 
         // already deleted projects can't be re-deleted
-        $this->be($this->admin());
-        $this->call('DELETE', '/api/v1/projects/1', [
-            '_token' => Session::token(),
-        ]);
+        $this->delete("/api/v1/projects/{$id}");
         $this->assertResponseStatus(404);
     }
 }

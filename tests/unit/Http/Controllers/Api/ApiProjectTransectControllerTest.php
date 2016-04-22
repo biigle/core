@@ -21,21 +21,18 @@ class ApiProjectTransectControllerTest extends ApiTestCase
     {
         $this->doTestApiRoute('GET', '/api/v1/projects/1/transects');
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/projects/1/transects', $this->user());
+        $this->beUser();
+        $this->get('/api/v1/projects/1/transects');
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/projects/1/transects', $this->guest());
-        $this->assertResponseOk();
-
-        // session cookie authentication
-        $this->be($this->guest());
-        $r = $this->call('GET', '/api/v1/projects/1/transects');
+        $this->beGuest();
+        $this->get('/api/v1/projects/1/transects');
+        $content = $this->response->getContent();
         $this->assertResponseOk();
         // response should not be an empty array
-        $this->assertStringStartsWith('[{', $r->getContent());
-        $this->assertStringEndsWith('}]', $r->getContent());
-        $this->assertNotContains('pivot', $r->getContent());
+        $this->assertStringStartsWith('[{', $content);
+        $this->assertStringEndsWith('}]', $content);
+        $this->assertNotContains('pivot', $content);
     }
 
     public function testStore()
@@ -43,18 +40,16 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         $id = $this->project()->id;
         $this->doTestApiRoute('POST', '/api/v1/projects/'.$id.'/transects');
 
-        // api key authentication
-        $this->callToken('POST', '/api/v1/projects/'.$id.'/transects', $this->editor());
+        $this->beEditor();
+        $this->post('/api/v1/projects/'.$id.'/transects');
         $this->assertResponseStatus(401);
 
-        $this->callToken('POST', '/api/v1/projects/'.$id.'/transects', $this->admin());
+        $this->beAdmin();
+        $this->json('POST', '/api/v1/projects/'.$id.'/transects');
         // mssing arguments
         $this->assertResponseStatus(422);
 
-        // session cookie authentication
-        $this->be($this->admin());
-        $this->callAjax('POST', '/api/v1/projects/'.$id.'/transects', [
-            '_token' => Session::token(),
+        $this->json('POST', '/api/v1/projects/'.$id.'/transects', [
             'name' => 'my transect no. 1',
             'url' => 'random',
             'media_type_id' => 99999,
@@ -63,8 +58,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         // media type does not exist
         $this->assertResponseStatus(422);
 
-        $this->callAjax('POST', '/api/v1/projects/'.$id.'/transects', [
-            '_token' => Session::token(),
+        $this->json('POST', '/api/v1/projects/'.$id.'/transects', [
             'name' => 'my transect no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
@@ -77,8 +71,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         $imageCount = Image::all()->count();
         $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
 
-        $r = $this->callAjax('POST', '/api/v1/projects/'.$id.'/transects', [
-            '_token' => Session::token(),
+        $this->json('POST', '/api/v1/projects/'.$id.'/transects', [
             'name' => 'my transect no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
@@ -86,12 +79,13 @@ class ApiProjectTransectControllerTest extends ApiTestCase
             'images' => '1.jpg, , 2.jpg, , ,',
         ]);
         $this->assertResponseOk();
+        $content = $this->response->getContent();
         $this->assertEquals($count + 1, $this->project()->transects()->count());
         $this->assertEquals($imageCount + 2, Image::all()->count());
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
+        $this->assertStringStartsWith('{', $content);
+        $this->assertStringEndsWith('}', $content);
 
-        $id = json_decode($r->getContent())->id;
+        $id = json_decode($content)->id;
         $transect = Transect::find($id);
         $this->assertEquals('1.jpg', $transect->images()->first()->filename);
     }
@@ -106,17 +100,15 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         $this->doTestApiRoute('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid);
 
-        // api key authentication
-        $this->callToken('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid, $this->admin());
+        $this->beAdmin();
+        $this->post('/api/v1/projects/'.$pid.'/transects/'.$tid);
         $this->assertResponseStatus(401);
 
         $secondProject->addUserId($this->admin()->id, Role::$admin->id);
         Cache::flush();
 
-        // session cookie authentication
-        $this->be($this->admin());
         $this->assertEmpty($secondProject->fresh()->transects);
-        $this->call('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid, ['_token' => Session::token()]);
+        $this->post('/api/v1/projects/'.$pid.'/transects/'.$tid);
         $this->assertResponseOk();
         $this->assertNotEmpty($secondProject->fresh()->transects);
     }
@@ -132,24 +124,24 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         $this->doTestApiRoute('DELETE', '/api/v1/projects/1/transects/'.$id);
 
-        // api key authentication
-        $this->callToken('DELETE', '/api/v1/projects/1/transects/'.$id, $this->user());
+        $this->beUser();
+        $this->delete('/api/v1/projects/1/transects/'.$id);
         $this->assertResponseStatus(401);
 
-        $this->callToken('DELETE', '/api/v1/projects/1/transects/'.$id, $this->guest());
+        $this->beGuest();
+        $this->delete('/api/v1/projects/1/transects/'.$id);
         $this->assertResponseStatus(401);
 
-        $this->callToken('DELETE', '/api/v1/projects/1/transects/'.$id, $this->editor());
+        $this->beEditor();
+        $this->delete('/api/v1/projects/1/transects/'.$id);
         $this->assertResponseStatus(401);
 
-        $this->callToken('DELETE', '/api/v1/projects/1/transects/'.$id, $this->admin());
+        $this->beAdmin();
+        $this->delete('/api/v1/projects/1/transects/'.$id);
         // trying to delete withour force
         $this->assertResponseStatus(400);
 
-        // session cookie authentication
-        $this->be($this->admin());
-        $this->call('DELETE', '/api/v1/projects/1/transects/'.$id, [
-            '_token' => Session::token(),
+        $this->delete('/api/v1/projects/1/transects/'.$id, [
             'force' => 'abc',
         ]);
         // deleting with force succeeds

@@ -17,57 +17,67 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/annotations/1/labels');
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/annotations/1/labels', $this->user());
+        $this->beUser();
+        $this->get('/api/v1/annotations/1/labels');
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/annotations/1/labels', $this->guest());
+        $this->beGuest();
+        $this->get('/api/v1/annotations/1/labels');
         $this->assertResponseOk();
 
-        $this->be($this->guest());
-        $r = $this->call('GET', '/api/v1/annotations/1/labels', [
-            '_token' => Session::token(),
-        ]);
+        $this->beGuest();
+        $this->get('/api/v1/annotations/1/labels');
 
         $this->assertResponseOk();
-        $this->assertStringStartsWith('[{', $r->getContent());
-        $this->assertStringEndsWith('}]', $r->getContent());
+        $content = $this->response->getContent();
+        $this->assertStringStartsWith('[{', $content);
+        $this->assertStringEndsWith('}]', $content);
     }
 
     public function testStore()
     {
         $this->doTestApiRoute('POST', '/api/v1/annotations/1/labels');
 
-        // api key authentication
         // missing arguments
-        $this->callToken('POST', '/api/v1/annotations/1/labels', $this->editor());
+        $this->beEditor();
+        $this->json('POST', '/api/v1/annotations/1/labels');
         $this->assertResponseStatus(422);
 
         $this->assertEquals(0, $this->annotation->labels()->count());
 
-        $this->callToken('POST', '/api/v1/annotations/1/labels', $this->user(), ['label_id' => $this->labelRoot()->id, 'confidence' => 0.1]
-        );
+        $this->beUser();
+        $this->post('/api/v1/annotations/1/labels', [
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.1
+        ]);
         $this->assertResponseStatus(401);
 
-        $this->callToken('POST', '/api/v1/annotations/1/labels', $this->guest(), ['label_id' => $this->labelRoot()->id, 'confidence' => 0.1]
-        );
+        $this->beGuest();
+        $this->post('/api/v1/annotations/1/labels', [
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.1
+        ]);
         $this->assertResponseStatus(401);
 
-        $this->callToken('POST', '/api/v1/annotations/1/labels', $this->editor(), ['label_id' => $this->labelRoot()->id, 'confidence' => 0.1]
-        );
+        $this->beEditor();
+        $this->post('/api/v1/annotations/1/labels', [
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.1
+        ]);
         $this->assertResponseStatus(201);
         $this->assertEquals(1, $this->annotation->labels()->count());
 
-        $r = $this->callToken('POST', '/api/v1/annotations/1/labels', $this->admin(), ['label_id' => $this->labelRoot()->id, 'confidence' => 0.1]
-        );
+        $this->beAdmin();
+        $this->json('POST', '/api/v1/annotations/1/labels', [
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.1
+        ]);
         $this->assertResponseStatus(201);
         $this->assertEquals(2, $this->annotation->labels()->count());
-        $this->assertStringStartsWith('{', $r->getContent());
-        $this->assertStringEndsWith('}', $r->getContent());
+        $this->assertStringStartsWith('{', $this->response->getContent());
+        $this->assertStringEndsWith('}', $this->response->getContent());
 
-        // session cookie authentication
-        $this->be($this->admin());
-        $this->call('POST', '/api/v1/annotations/1/labels', [
-            '_token' => Session::token(),
+        $this->post('/api/v1/annotations/1/labels', [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1,
         ]);
@@ -83,23 +93,25 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
 
         $this->doTestApiRoute('PUT', '/api/v1/annotation-labels/'.$id);
 
-        // api key authentication
-        $this->callToken('PUT', '/api/v1/annotation-labels/'.$id, $this->user());
+        $this->beUser();
+        $this->put('/api/v1/annotation-labels/'.$id);
         $this->assertResponseStatus(401);
 
-        $this->callToken('PUT', '/api/v1/annotation-labels/'.$id, $this->guest());
+        $this->beGuest();
+        $this->put('/api/v1/annotation-labels/'.$id);
         $this->assertResponseStatus(401);
 
-        $this->callToken('PUT', '/api/v1/annotation-labels/'.$id, $this->editor());
+        $this->beEditor();
+        $this->put('/api/v1/annotation-labels/'.$id);
         $this->assertResponseOk();
 
-        $this->callToken('PUT', '/api/v1/annotation-labels/'.$id, $this->admin());
+        $this->beAdmin();
+        $this->put('/api/v1/annotation-labels/'.$id);
         $this->assertResponseOk();
 
-        // session cookie authentication
         $this->assertEquals(0.5, $annotationLabel->fresh()->confidence);
-        $this->be($this->editor());
-        $this->call('PUT', '/api/v1/annotation-labels/'.$id, [
+        $this->beEditor();
+        $this->put('/api/v1/annotation-labels/'.$id, [
             '_token' => Session::token(),
             'confidence' => 0.1,
         ]);
@@ -114,15 +126,17 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
 
         $this->doTestApiRoute('DELETE', '/api/v1/annotation-labels/'.$id);
 
-        // api key authentication
-        $this->callToken('DELETE', '/api/v1/annotation-labels/'.$id, $this->user());
+        $this->beUser();
+        $this->delete('/api/v1/annotation-labels/'.$id);
         $this->assertResponseStatus(401);
 
-        $this->callToken('DELETE', '/api/v1/annotation-labels/'.$id, $this->guest());
+        $this->beGuest();
+        $this->delete('/api/v1/annotation-labels/'.$id);
         $this->assertResponseStatus(401);
 
         $this->assertNotNull($this->annotation->labels()->first());
-        $this->callToken('DELETE', '/api/v1/annotation-labels/'.$id, $this->editor());
+        $this->beEditor();
+        $this->delete('/api/v1/annotation-labels/'.$id);
         $this->assertResponseOk();
         $this->assertNull($this->annotation->labels()->first());
 
@@ -130,11 +144,8 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
         $this->assertNotNull($this->annotation->labels()->first());
         $id = $annotationLabel->id;
 
-        // session cookie authentication
-        $this->be($this->admin());
-        $this->call('DELETE', '/api/v1/annotation-labels/'.$id, [
-            '_token' => Session::token(),
-        ]);
+        $this->beAdmin();
+        $this->delete('/api/v1/annotation-labels/'.$id);
         $this->assertResponseOk();
         $this->assertNull($this->annotation->labels()->first());
     }

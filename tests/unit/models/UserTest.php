@@ -80,9 +80,9 @@ class UserTest extends ModelWithAttributesTest
 
     public function testHiddenAttributes()
     {
-        // API key mustn't show up in the JSON
-        $this->model->generateAPIKey();
-        $jsonUser = json_decode((string) $this->model);
+        // API tokens mustn't show up in the JSON
+        ApiTokenTest::create(['owner_id' => $this->model->id]);
+        $jsonUser = json_decode((string) $this->model->fresh());
         $this->assertObjectNotHasAttribute('firstname', $jsonUser);
         $this->assertObjectNotHasAttribute('lastname', $jsonUser);
         $this->assertObjectNotHasAttribute('password', $jsonUser);
@@ -91,14 +91,14 @@ class UserTest extends ModelWithAttributesTest
         $this->assertObjectNotHasAttribute('created_at', $jsonUser);
         $this->assertObjectNotHasAttribute('updated_at', $jsonUser);
         $this->assertObjectNotHasAttribute('login_at', $jsonUser);
-        $this->assertObjectNotHasAttribute('api_key', $jsonUser);
+        $this->assertObjectNotHasAttribute('api_tokens', $jsonUser);
     }
 
-    public function testApiKey()
+    public function testApiTokens()
     {
-        $this->assertNull($this->model->api_key);
-        $key = $this->model->generateApiKey();
-        $this->assertNotNull($this->model->api_key);
+        $this->assertEmpty($this->model->apiTokens()->get());
+        ApiTokenTest::create(['owner_id' => $this->model->id]);
+        $this->assertNotEmpty($this->model->apiTokens()->get());
     }
 
     public function testCanSeeOneOfProjects()
