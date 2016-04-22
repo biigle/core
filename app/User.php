@@ -96,20 +96,6 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
     }
 
     /**
-     * Generates a random string to use as an API key. The key will be stored in
-     * the `api_key` attribute of the user.
-     *
-     * @return string
-     */
-    public function generateApiKey()
-    {
-        $key = str_random(32);
-        $this->api_key = $key;
-
-        return $key;
-    }
-
-    /**
      * The projects, this user is a member of.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -122,11 +108,21 @@ class User extends ModelWithAttributes implements AuthenticatableContract, CanRe
     /**
      * The global role of this user.
      *
-     * @return Role
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function role()
     {
         return $this->belongsTo('Dias\Role');
+    }
+
+    /**
+     * Api tokens of this user
+     *
+     * @return @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function apiTokens()
+    {
+        return $this->hasMany('Dias\ApiToken', 'owner_id');
     }
 
     /**

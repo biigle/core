@@ -185,8 +185,8 @@ $router->group([
     $router->put('users/my', 'UserController@updateOwn');
     $router->delete('users/my', 'UserController@destroyOwn');
 
-    $router->post('users/my/token', 'UserController@storeOwnToken');
-    $router->delete('users/my/token', 'UserController@destroyOwnToken');
+    // $router->post('users/my/token', 'UserController@storeOwnToken');
+    // $router->delete('users/my/token', 'UserController@destroyOwnToken');
 
     $router->resource('users', 'UserController', [
         'only' => ['index', 'show', 'update', 'store', 'destroy'],

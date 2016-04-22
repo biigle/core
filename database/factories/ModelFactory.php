@@ -104,3 +104,11 @@ $factory->define(Dias\Attribute::class, function ($faker) {
         'type' => $faker->randomElement(['integer', 'double', 'string', 'boolean']),
     ];
 });
+
+$factory->define(Dias\ApiToken::class, function ($faker) {
+    return [
+        'owner_id' => factory(Dias\User::class)->create()->id,
+        'purpose' => $faker->sentence(),
+        'hash' => bcrypt(str_random(10)),
+    ];
+});

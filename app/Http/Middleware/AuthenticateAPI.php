@@ -3,6 +3,7 @@
 namespace Dias\Http\Middleware;
 
 use Closure;
+use Hash;
 use Illuminate\Support\Facades\Auth;
 use Dias\User;
 
@@ -16,9 +17,7 @@ class AuthenticateAPI
      */
     public static function isApiKeyRequest($request)
     {
-        $key = $request->header('x-auth-token');
-
-        return (boolean) $key;
+        return (boolean) $request->getUser();
     }
 
     /**
@@ -33,17 +32,27 @@ class AuthenticateAPI
             return false;
         }
 
-        $key = $request->header('x-auth-token');
-        $user = User::whereApiKey($key)->first();
+        $email = $request->getUser();
+        $token = $request->getPassword();
+
+        $user = User::where('email', $email)->with('apiTokens')->first();
 
         if (!$user) {
             return false;
         }
 
-        // like a manual auth->once()
-        Auth::setUser($user);
+        $hashes = $user->apiTokens->pluck('hash');
 
-        return true;
+        foreach ($hashes as $hash) {
+            if (Hash::check($token, $hash)) {
+                // like a manual auth->once()
+                Auth::setUser($user);
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
