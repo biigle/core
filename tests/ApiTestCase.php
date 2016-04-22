@@ -5,53 +5,121 @@ use Dias\Label;
 
 class ApiTestCase extends TestCase
 {
-    protected $project;
-    protected $admin;
-    protected $editor;
-    protected $guest;
-    protected $user;
+    private $project;
+    private $transect;
+    private $admin;
+    private $editor;
+    private $guest;
+    private $user;
 
-    protected $globalAdmin;
+    private $globalAdmin;
 
-    protected $labelRoot;
-    protected $labelChild;
+    private $labelRoot;
+    private $labelChild;
 
-    public function setUp()
-    {
-        parent::setUp();
-
-        $this->project = ProjectTest::create();
-        $transect = TransectTest::create();
-        $this->project->addTransectId($transect->id);
-
-        $this->admin = $this->newProjectUser(Role::$admin->id);
-        $this->editor = $this->newProjectUser(Role::$editor->id);
-        $this->guest = $this->newProjectUser(Role::$guest->id);
-
-        $this->user = $this->newProjectUser(Role::$guest->id);
-        $this->project->removeUserId($this->user->id);
-
-        $this->globalAdmin = $this->newProjectUser(Role::$guest->id);
-        $this->project->removeUserId($this->user->id);
-        $this->globalAdmin->role()->associate(Role::$admin);
-        $this->globalAdmin->save();
-
-        $this->labelRoot = LabelTest::create(['name' => 'Test Root']);
-
-        $this->labelChild = LabelTest::create([
-            'name' => 'Test Child',
-            'parent_id' => $this->labelRoot->id,
-        ]);
-    }
-
-    private function newProjectUser($roleId)
+    private function newUser($role = null)
     {
         $user = UserTest::make();
         $user->generateApiKey();
+        $user->role()->associate($role ? $role : Role::$editor);
         $user->save();
-        $this->project->addUserId($user->id, $roleId);
 
         return $user;
+    }
+
+    private function newProjectUser($role)
+    {
+        $user = $this->newUser();
+        $this->project()->addUserId($user->id, $role->id);
+
+        return $user;
+    }
+
+    protected function project()
+    {
+        if ($this->project) {
+            return $this->project;
+        }
+
+        return $this->project = ProjectTest::create();
+    }
+
+    protected function transect()
+    {
+        if ($this->transect) {
+            return $this->transect;
+        }
+
+        $this->transect = TransectTest::create();
+        $this->project()->addTransectId($this->transect->id);
+
+        return $this->transect;
+    }
+
+    protected function admin()
+    {
+        if ($this->admin) {
+            return $this->admin;
+        }
+
+        return $this->admin = $this->newProjectUser(Role::$admin);
+    }
+
+    protected function editor()
+    {
+        if ($this->editor) {
+            return $this->editor;
+        }
+
+        return $this->editor = $this->newProjectUser(Role::$editor);
+    }
+
+    protected function guest()
+    {
+        if ($this->guest) {
+            return $this->guest;
+        }
+
+        return $this->guest = $this->newProjectUser(Role::$guest);
+    }
+
+    protected function user()
+    {
+        if ($this->user) {
+            return $this->user;
+        }
+
+        return $this->user = $this->newUser();
+    }
+
+    protected function globalAdmin()
+    {
+        if ($this->globalAdmin) {
+            return $this->globalAdmin;
+        }
+
+        return $this->globalAdmin = $this->newUser(Role::$admin);
+    }
+
+    protected function labelRoot()
+    {
+        if ($this->labelRoot) {
+            return $this->labelRoot;
+        }
+
+        return $this->labelRoot = LabelTest::create(['name' => 'Test Root']);
+    }
+
+    protected function labelChild()
+    {
+        if ($this->labelChild) {
+            return $this->labelChild;
+        }
+
+        return $this->labelChild = LabelTest::create([
+            'name' => 'Test Child',
+            'parent_id' => $this->labelRoot()->id,
+        ]);
     }
 
     /*

@@ -21,11 +21,11 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         $this->doTestApiRoute('GET', '/api/v1/users');
 
         // everybody can do this
-        $this->callToken('GET', '/api/v1/users', $this->guest);
+        $this->callToken('GET', '/api/v1/users', $this->guest());
         $this->assertResponseOk();
 
         // session cookie authentication
-        $this->be($this->guest);
+        $this->be($this->guest());
         $r = $this->call('GET', '/api/v1/users');
         $this->assertResponseOk();
         $this->assertStringStartsWith('[', $r->getContent());
@@ -34,13 +34,13 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/users/'.$this->guest->id);
+        $this->doTestApiRoute('GET', '/api/v1/users/'.$this->guest()->id);
 
-        $this->callToken('GET', '/api/v1/users/'.$this->guest->id, $this->guest);
+        $this->callToken('GET', '/api/v1/users/'.$this->guest()->id, $this->guest());
         $this->assertResponseOk();
 
-        $this->be($this->globalAdmin);
-        $r = $this->call('GET', '/api/v1/users/'.$this->guest->id);
+        $this->be($this->globalAdmin());
+        $r = $this->call('GET', '/api/v1/users/'.$this->guest()->id);
         $this->assertResponseOk();
         $this->assertStringStartsWith('{', $r->getContent());
         $this->assertStringEndsWith('}', $r->getContent());
@@ -50,10 +50,10 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
     {
         $this->doTestApiRoute('GET', '/api/v1/users/my');
 
-        $this->callToken('GET', '/api/v1/users/my', $this->guest);
+        $this->callToken('GET', '/api/v1/users/my', $this->guest());
         $this->assertResponseOk();
 
-        $this->be($this->globalAdmin);
+        $this->be($this->globalAdmin());
         $r = $this->call('GET', '/api/v1/users/my');
         $this->assertResponseOk();
         $this->assertStringStartsWith('{', $r->getContent());
@@ -62,36 +62,36 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
 
     public function testUpdate()
     {
-        $this->doTestApiRoute('PUT', '/api/v1/users/'.$this->guest->id);
+        $this->doTestApiRoute('PUT', '/api/v1/users/'.$this->guest()->id);
         // api key authentication is not allowed for this route
-        $this->callToken('PUT', '/api/v1/users/'.$this->guest->id, $this->guest);
+        $this->callToken('PUT', '/api/v1/users/'.$this->guest()->id, $this->guest());
         $this->assertResponseStatus(401);
 
-        $this->callToken('PUT', '/api/v1/users/'.$this->guest->id, $this->globalAdmin);
+        $this->callToken('PUT', '/api/v1/users/'.$this->guest()->id, $this->globalAdmin());
         $this->assertResponseStatus(401);
 
-        $this->be($this->guest);
-        $this->call('PUT', '/api/v1/users/'.$this->guest->id, [
+        $this->be($this->guest());
+        $this->call('PUT', '/api/v1/users/'.$this->guest()->id, [
             '_token' => Session::token(),
         ]);
         $this->assertResponseStatus(401);
 
-        $this->be($this->editor);
-        $this->call('PUT', '/api/v1/users/'.$this->guest->id, [
+        $this->be($this->editor());
+        $this->call('PUT', '/api/v1/users/'.$this->guest()->id, [
             '_token' => Session::token(),
         ]);
         $this->assertResponseStatus(401);
 
-        $this->be($this->globalAdmin);
+        $this->be($this->globalAdmin());
 
-        $this->call('PUT', '/api/v1/users/'.$this->globalAdmin->id, [
+        $this->call('PUT', '/api/v1/users/'.$this->globalAdmin()->id, [
             '_token' => Session::token(),
         ]);
         // the own user cannot be updated via this route
         $this->assertResponseStatus(400);
 
         // ajax call to get the correct response status
-        $this->callAjax('PUT', '/api/v1/users/'.$this->guest->id, [
+        $this->callAjax('PUT', '/api/v1/users/'.$this->guest()->id, [
             '_token' => Session::token(),
             'password' => 'hacked!!',
         ]);
@@ -99,14 +99,14 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         $this->assertResponseStatus(422);
 
         // ajax call to get the correct response status
-        $this->callAjax('PUT', '/api/v1/users/'.$this->guest->id, [
+        $this->callAjax('PUT', '/api/v1/users/'.$this->guest()->id, [
             '_token' => Session::token(),
             'email' => 'no-mail',
         ]);
         // invalid email format
         $this->assertResponseStatus(422);
 
-        $this->call('PUT', '/api/v1/users/'.$this->guest->id, [
+        $this->call('PUT', '/api/v1/users/'.$this->guest()->id, [
             '_token' => Session::token(),
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
@@ -116,7 +116,7 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         ]);
         $this->assertResponseOk();
 
-        $user = $this->guest->fresh();
+        $user = $this->guest()->fresh();
         $this->assertTrue(Hash::check('newpassword', $user->password));
         $this->assertEquals('jack', $user->firstname);
         $this->assertEquals('jackson', $user->lastname);
@@ -125,15 +125,15 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
 
     public function testUpdateOwn()
     {
-        $this->guest->password = bcrypt('guest-password');
-        $this->guest->save();
+        $this->guest()->password = bcrypt('guest-password');
+        $this->guest()->save();
 
         $this->doTestApiRoute('PUT', '/api/v1/users/my');
         // api key authentication is not allowed for this route
-        $this->callToken('PUT', '/api/v1/users/my', $this->guest);
+        $this->callToken('PUT', '/api/v1/users/my', $this->guest());
         $this->assertResponseStatus(401);
 
-        $this->be($this->guest);
+        $this->be($this->guest());
         // ajax call to get the correct response status
         $this->callAjax('PUT', '/api/v1/users/my', [
             '_token' => Session::token(),
@@ -181,7 +181,7 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         $this->assertResponseOk();
         $this->assertSessionHas('origin', 'email');
 
-        $user = $this->guest->fresh();
+        $user = $this->guest()->fresh();
         $this->assertTrue(Hash::check('newpassword', $user->password));
         $this->assertEquals('jack', $user->firstname);
         $this->assertEquals('jackson', $user->lastname);
@@ -193,16 +193,16 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         $this->doTestApiRoute('POST', '/api/v1/users');
 
         // api key authentication is not allowed for this route
-        $this->callToken('POST', '/api/v1/users', $this->globalAdmin);
+        $this->callToken('POST', '/api/v1/users', $this->globalAdmin());
         $this->assertResponseStatus(401);
 
-        $this->be($this->admin);
+        $this->be($this->admin());
         $this->call('POST', '/api/v1/users', [
             '_token' => Session::token(),
         ]);
         $this->assertResponseStatus(401);
 
-        $this->be($this->globalAdmin);
+        $this->be($this->globalAdmin());
         // ajax call to get the correct response status
         $this->callAjax('POST', '/api/v1/users', [
             '_token' => Session::token(),
@@ -234,25 +234,25 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
 
     public function testDestroy()
     {
-        $this->globalAdmin->password = bcrypt('globalAdmin-password');
-        $this->globalAdmin->save();
+        $this->globalAdmin()->password = bcrypt('globalAdmin-password');
+        $this->globalAdmin()->save();
 
-        $id = $this->guest->id;
+        $id = $this->guest()->id;
         $this->doTestApiRoute('DELETE', '/api/v1/users/'.$id);
 
         // api key authentication is not allowed for this route
-        $this->callToken('DELETE', '/api/v1/users/'.$id, $this->globalAdmin);
+        $this->callToken('DELETE', '/api/v1/users/'.$id, $this->globalAdmin());
         $this->assertResponseStatus(401);
 
-        $this->be($this->admin);
+        $this->be($this->admin());
         $this->call('DELETE', '/api/v1/users/'.$id, [
             '_token' => Session::token(),
         ]);
         $this->assertResponseStatus(401);
 
-        $this->be($this->globalAdmin);
+        $this->be($this->globalAdmin());
 
-        $this->call('DELETE', '/api/v1/users/'.$this->globalAdmin->id, [
+        $this->call('DELETE', '/api/v1/users/'.$this->globalAdmin()->id, [
             '_token' => Session::token(),
         ]);
         // the own user cannot be deleted via this route
@@ -271,17 +271,17 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         // admin password is wrong
         $this->assertResponseStatus(422);
 
-        $this->assertNotNull($this->guest->fresh());
+        $this->assertNotNull($this->guest()->fresh());
         $this->call('DELETE', '/api/v1/users/'.$id, [
             '_token' => Session::token(),
             'password' => 'globalAdmin-password',
         ]);
         $this->assertResponseOk();
-        $this->assertNull($this->guest->fresh());
+        $this->assertNull($this->guest()->fresh());
 
         // remove creator, so admin is the last remaining admin of the project
-        $this->project->removeUserId($this->project->creator->id);
-        $this->call('DELETE', '/api/v1/users/'.$this->admin->id, [
+        $this->project()->removeUserId($this->project()->creator->id);
+        $this->call('DELETE', '/api/v1/users/'.$this->admin()->id, [
             '_token' => Session::token(),
             'password' => 'globalAdmin-password',
         ]);
@@ -291,18 +291,18 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
 
     public function testDestroyOwn()
     {
-        $this->guest->password = bcrypt('guest-password');
-        $this->guest->save();
-        $this->editor->password = bcrypt('editor-password');
-        $this->guest->save();
+        $this->guest()->password = bcrypt('guest-password');
+        $this->guest()->save();
+        $this->editor()->password = bcrypt('editor-password');
+        $this->guest()->save();
 
         $this->doTestApiRoute('DELETE', '/api/v1/users/my');
 
         // api key authentication is not allowed for this route
-        $this->callToken('DELETE', '/api/v1/users/my', $this->guest);
+        $this->callToken('DELETE', '/api/v1/users/my', $this->guest());
         $this->assertResponseStatus(401);
 
-        $this->be($this->guest);
+        $this->be($this->guest());
         // ajax call to get the correct response status
         $this->callAjax('DELETE', '/api/v1/users/my', [
             '_token' => Session::token(),
@@ -318,16 +318,16 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         // wrong password provided
         $this->assertResponseStatus(422);
 
-        $this->assertNotNull($this->guest->fresh());
+        $this->assertNotNull($this->guest()->fresh());
         // ajax call to get the correct response status
         $this->callAjax('DELETE', '/api/v1/users/my', [
             '_token' => Session::token(),
             'password' => 'guest-password'
         ]);
         $this->assertResponseOk();
-        $this->assertNull($this->guest->fresh());
+        $this->assertNull($this->guest()->fresh());
 
-        $this->be($this->editor);
+        $this->be($this->editor());
         $this->call('DELETE', '/api/v1/users/my', [
             '_token' => Session::token(),
             'password' => 'editor-password'
@@ -341,9 +341,9 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         // deleted user doesn't have permission any more
         $this->assertResponseStatus(401);
 
-        $this->be($this->admin);
+        $this->be($this->admin());
         // make admin the only admin
-        $this->project->creator->delete();
+        $this->project()->creator->delete();
         $this->visit('settings/profile');
         $this->call('DELETE', '/api/v1/users/my', [
             '_token' => Session::token(),
@@ -361,13 +361,13 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
 
         $this->doTestApiRoute('GET', '/api/v1/users/find/a');
 
-        $r = $this->callToken('GET', '/api/v1/users/find/a', $this->guest);
+        $r = $this->callToken('GET', '/api/v1/users/find/a', $this->guest());
         $this->assertResponseOk();
 
         $this->assertContains('"name":"abc def"', $r->getContent());
         $this->assertContains('"name":"abc ghi"', $r->getContent());
 
-        $this->be($this->guest);
+        $this->be($this->guest());
         $r = $this->call('GET', '/api/v1/users/find/d', [
             '_token' => Session::token(),
         ]);
@@ -381,19 +381,19 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
     {
         $this->doTestApiRoute('POST', '/api/v1/users/my/token');
 
-        $this->callToken('POST', '/api/v1/users/my/token', $this->user);
+        $this->callToken('POST', '/api/v1/users/my/token', $this->user());
         // api key authentication is not allowed for this route
         $this->assertResponseStatus(401);
 
-        $this->be($this->user);
-        $this->user->api_key = null;
+        $this->be($this->user());
+        $this->user()->api_key = null;
 
         $this->callAjax('POST', '/api/v1/users/my/token', [
             '_token' => Session::token(),
         ]);
         $this->assertResponseOk();
-        $this->assertNotNull($this->user->api_key);
-        $key = $this->user->api_key;
+        $this->assertNotNull($this->user()->api_key);
+        $key = $this->user()->api_key;
 
         $r = $this->call('POST', '/api/v1/users/my/token', [
             '_token' => Session::token(),
@@ -401,32 +401,32 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
         $this->assertResponseStatus(302);
         // redirect to settings tokens page for form requests
         $this->assertContains('settings/tokens', $r->getContent());
-        $this->assertNotEquals($key, $this->user->api_key);
+        $this->assertNotEquals($key, $this->user()->api_key);
     }
 
     public function testDestroyOwnToken()
     {
         $this->doTestApiRoute('DELETE', '/api/v1/users/my/token');
 
-        $this->callToken('DELETE', '/api/v1/users/my/token', $this->user);
+        $this->callToken('DELETE', '/api/v1/users/my/token', $this->user());
         // api key authentication is not allowed for this route
         $this->assertResponseStatus(401);
 
-        $this->be($this->user);
-        $this->user->generateApiKey();
+        $this->be($this->user());
+        $this->user()->generateApiKey();
         $this->callAjax('DELETE', '/api/v1/users/my/token', [
             '_token' => Session::token(),
         ]);
         $this->assertResponseOk();
-        $this->assertNull($this->user->api_key);
+        $this->assertNull($this->user()->api_key);
 
-        $this->user->generateApiKey();
+        $this->user()->generateApiKey();
         $r = $this->call('DELETE', '/api/v1/users/my/token', [
             '_token' => Session::token(),
         ]);
         $this->assertResponseStatus(302);
         // redirect to settings tokens page for form requests
         $this->assertContains('settings/tokens', $r->getContent());
-        $this->assertNull($this->user->api_key);
+        $this->assertNull($this->user()->api_key);
     }
 }

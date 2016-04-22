@@ -12,7 +12,7 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
 
     protected function getModel()
     {
-        return $this->project;
+        return $this->project();
     }
 
     public function testIndex()
@@ -23,11 +23,11 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
         $this->doTestApiRoute('GET', '/api/v1/projects/my');
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/projects/my', $this->admin);
+        $this->callToken('GET', '/api/v1/projects/my', $this->admin());
         $this->assertResponseOk();
 
         // session cookie authentication
-        $this->be($this->admin);
+        $this->be($this->admin());
         $r = $this->call('GET', '/api/v1/projects/my');
         $this->assertResponseOk();
 
@@ -42,14 +42,14 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
         $this->doTestApiRoute('GET', '/api/v1/projects/1');
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/projects/1', $this->admin);
+        $this->callToken('GET', '/api/v1/projects/1', $this->admin());
         $this->assertResponseOk();
 
-        $this->callToken('GET', '/api/v1/projects/1', $this->user);
+        $this->callToken('GET', '/api/v1/projects/1', $this->user());
         $this->assertResponseStatus(401);
 
         // session cookie authentication
-        $this->be($this->admin);
+        $this->be($this->admin());
         $this->call('GET', '/api/v1/projects/999');
         $this->assertResponseStatus(404);
 
@@ -67,15 +67,15 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
         $this->doTestApiRoute('PUT', '/api/v1/projects/1');
 
         // api key authentication
-        $this->callToken('PUT', '/api/v1/projects/1', $this->admin);
+        $this->callToken('PUT', '/api/v1/projects/1', $this->admin());
         $this->assertResponseOk();
 
         // non-admins are not allowed to update
-        $this->callToken('PUT', '/api/v1/projects/1', $this->editor);
+        $this->callToken('PUT', '/api/v1/projects/1', $this->editor());
         $this->assertResponseStatus(401);
 
         // session cookie authentication
-        $this->be($this->admin);
+        $this->be($this->admin());
         $this->call('PUT', '/api/v1/projects/999', [
             '_token' => Session::token(),
         ]);
@@ -89,10 +89,10 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
         ]);
         $this->assertResponseOk();
 
-        $this->project = $this->project->fresh();
-        $this->assertEquals('my test', $this->project->name);
-        $this->assertEquals('this is my test', $this->project->description);
-        $this->assertNotEquals(5, $this->project->creator_id);
+        $project = $this->project()->fresh();
+        $this->assertEquals('my test', $project->name);
+        $this->assertEquals('this is my test', $project->description);
+        $this->assertNotEquals(5, $project->creator_id);
     }
 
     public function testStore()
@@ -101,12 +101,12 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
 
         // api key authentication
         // creating an empty project is an error
-        $this->callToken('POST', '/api/v1/projects', $this->admin);
+        $this->callToken('POST', '/api/v1/projects', $this->admin());
         $this->assertResponseStatus(422);
 
         $this->assertNull(Project::find(2));
 
-        $r = $this->callToken('POST', '/api/v1/projects', $this->admin, [
+        $r = $this->callToken('POST', '/api/v1/projects', $this->admin(), [
             'name' => 'test project',
             'description' => 'my test project',
         ]);
@@ -118,7 +118,7 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
         $this->assertNotNull(Project::find(2));
 
         // session cookie authentication
-        $this->be($this->admin);
+        $this->be($this->admin());
         $this->assertNull(Project::find(3));
 
         $r = $this->callAjax('POST', '/api/v1/projects', [
@@ -136,29 +136,32 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
 
     public function testDestroy()
     {
+        // create transect
+        $this->transect();
+
         $this->doTestApiRoute('DELETE', '/api/v1/projects/1');
 
         // non-admins are not allowed to delete the project
-        $this->callToken('DELETE', '/api/v1/projects/1', $this->editor);
+        $this->callToken('DELETE', '/api/v1/projects/1', $this->editor());
         $this->assertResponseStatus(401);
 
         // do manual logout because the previously logged in editor would persist
         Auth::logout();
 
         // project still has a transect belonging only to this project
-        $this->assertNotNull($this->project->fresh());
-        $this->callToken('DELETE', '/api/v1/projects/1', $this->admin);
+        $this->assertNotNull($this->project()->fresh());
+        $this->callToken('DELETE', '/api/v1/projects/1', $this->admin());
         $this->assertResponseStatus(400);
 
-        $this->assertNotNull($this->project->fresh());
-        $this->callToken('DELETE', '/api/v1/projects/1', $this->admin, [
+        $this->assertNotNull($this->project()->fresh());
+        $this->callToken('DELETE', '/api/v1/projects/1', $this->admin(), [
             'force' => 'true',
         ]);
         $this->assertResponseOk();
-        $this->assertNull($this->project->fresh());
+        $this->assertNull($this->project()->fresh());
 
         // already deleted projects can't be re-deleted
-        $this->be($this->admin);
+        $this->be($this->admin());
         $this->call('DELETE', '/api/v1/projects/1', [
             '_token' => Session::token(),
         ]);

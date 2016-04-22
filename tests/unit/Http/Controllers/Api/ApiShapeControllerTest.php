@@ -9,11 +9,11 @@ class ApiShapeControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/shapes');
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/shapes', $this->admin);
+        $this->callToken('GET', '/api/v1/shapes', $this->admin());
         $this->assertResponseOk();
 
         // session cookie authentication
-        $this->be($this->user);
+        $this->be($this->user());
         $r = $this->call('GET', '/api/v1/shapes');
         $this->assertResponseOk();
         $this->assertStringStartsWith('[', $r->getContent());
@@ -25,11 +25,11 @@ class ApiShapeControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::$circleId);
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/shapes/'.Shape::$circleId, $this->admin);
+        $this->callToken('GET', '/api/v1/shapes/'.Shape::$circleId, $this->admin());
         $this->assertResponseOk();
 
         // session cookie authentication
-        $this->be($this->user);
+        $this->be($this->user());
         $r = $this->call('GET', '/api/v1/shapes/'.Shape::$circleId);
         $this->assertResponseOk();
         $this->assertStringStartsWith('{', $r->getContent());

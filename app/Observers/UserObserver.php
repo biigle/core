@@ -8,12 +8,16 @@ class UserObserver
 {
     /**
      * A user gets the global role 'editor' by default.
+     *
      * @param \Dias\User $user
+     *
      * @return bool
      */
     public function creating($user)
     {
-        $user->role_id = Role::$editor->id;
+        if ($user->role_id === null) {
+            $user->role_id = Role::$editor->id;
+        }
 
         return true;
     }
@@ -26,6 +30,7 @@ class UserObserver
      * be deleted.
      *
      * @param \Dias\User $user
+     *
      * @return bool
      */
     public function deleting($user)

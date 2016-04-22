@@ -14,7 +14,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->transect = TransectTest::create();
-        $this->project->addTransectId($this->transect->id);
+        $this->project()->addTransectId($this->transect->id);
     }
 
     public function testIndex()
@@ -22,14 +22,14 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/projects/1/transects');
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/projects/1/transects', $this->user);
+        $this->callToken('GET', '/api/v1/projects/1/transects', $this->user());
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/projects/1/transects', $this->guest);
+        $this->callToken('GET', '/api/v1/projects/1/transects', $this->guest());
         $this->assertResponseOk();
 
         // session cookie authentication
-        $this->be($this->guest);
+        $this->be($this->guest());
         $r = $this->call('GET', '/api/v1/projects/1/transects');
         $this->assertResponseOk();
         // response should not be an empty array
@@ -40,19 +40,19 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
     public function testStore()
     {
-        $id = $this->project->id;
+        $id = $this->project()->id;
         $this->doTestApiRoute('POST', '/api/v1/projects/'.$id.'/transects');
 
         // api key authentication
-        $this->callToken('POST', '/api/v1/projects/'.$id.'/transects', $this->editor);
+        $this->callToken('POST', '/api/v1/projects/'.$id.'/transects', $this->editor());
         $this->assertResponseStatus(401);
 
-        $this->callToken('POST', '/api/v1/projects/'.$id.'/transects', $this->admin);
+        $this->callToken('POST', '/api/v1/projects/'.$id.'/transects', $this->admin());
         // mssing arguments
         $this->assertResponseStatus(422);
 
         // session cookie authentication
-        $this->be($this->admin);
+        $this->be($this->admin());
         $this->callAjax('POST', '/api/v1/projects/'.$id.'/transects', [
             '_token' => Session::token(),
             'name' => 'my transect no. 1',
@@ -73,7 +73,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         // images array is empty
         $this->assertResponseStatus(422);
 
-        $count = $this->project->transects()->count();
+        $count = $this->project()->transects()->count();
         $imageCount = Image::all()->count();
         $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
 
@@ -86,7 +86,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
             'images' => '1.jpg, , 2.jpg, , ,',
         ]);
         $this->assertResponseOk();
-        $this->assertEquals($count + 1, $this->project->transects()->count());
+        $this->assertEquals($count + 1, $this->project()->transects()->count());
         $this->assertEquals($imageCount + 2, Image::all()->count());
         $this->assertStringStartsWith('{', $r->getContent());
         $this->assertStringEndsWith('}', $r->getContent());
@@ -102,19 +102,19 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         $secondProject = ProjectTest::create();
         $pid = $secondProject->id;
-        // $secondProject->addUserId($this->admin->id, Role::$admin->id);
+        // $secondProject->addUserId($this->admin()->id, Role::$admin->id);
 
         $this->doTestApiRoute('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid);
 
         // api key authentication
-        $this->callToken('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid, $this->admin);
+        $this->callToken('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid, $this->admin());
         $this->assertResponseStatus(401);
 
-        $secondProject->addUserId($this->admin->id, Role::$admin->id);
+        $secondProject->addUserId($this->admin()->id, Role::$admin->id);
         Cache::flush();
 
         // session cookie authentication
-        $this->be($this->admin);
+        $this->be($this->admin());
         $this->assertEmpty($secondProject->fresh()->transects);
         $this->call('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid, ['_token' => Session::token()]);
         $this->assertResponseOk();
@@ -133,21 +133,21 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         $this->doTestApiRoute('DELETE', '/api/v1/projects/1/transects/'.$id);
 
         // api key authentication
-        $this->callToken('DELETE', '/api/v1/projects/1/transects/'.$id, $this->user);
+        $this->callToken('DELETE', '/api/v1/projects/1/transects/'.$id, $this->user());
         $this->assertResponseStatus(401);
 
-        $this->callToken('DELETE', '/api/v1/projects/1/transects/'.$id, $this->guest);
+        $this->callToken('DELETE', '/api/v1/projects/1/transects/'.$id, $this->guest());
         $this->assertResponseStatus(401);
 
-        $this->callToken('DELETE', '/api/v1/projects/1/transects/'.$id, $this->editor);
+        $this->callToken('DELETE', '/api/v1/projects/1/transects/'.$id, $this->editor());
         $this->assertResponseStatus(401);
 
-        $this->callToken('DELETE', '/api/v1/projects/1/transects/'.$id, $this->admin);
+        $this->callToken('DELETE', '/api/v1/projects/1/transects/'.$id, $this->admin());
         // trying to delete withour force
         $this->assertResponseStatus(400);
 
         // session cookie authentication
-        $this->be($this->admin);
+        $this->be($this->admin());
         $this->call('DELETE', '/api/v1/projects/1/transects/'.$id, [
             '_token' => Session::token(),
             'force' => 'abc',

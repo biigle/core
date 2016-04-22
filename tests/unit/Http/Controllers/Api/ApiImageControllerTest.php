@@ -14,7 +14,7 @@ class ApiImageControllerTest extends ModelWithAttributesApiTest
     protected function getModel()
     {
         $model = ImageTest::create();
-        $this->project->addTransectId($model->transect->id);
+        $this->project()->addTransectId($model->transect->id);
 
         return $model;
     }
@@ -25,7 +25,7 @@ class ApiImageControllerTest extends ModelWithAttributesApiTest
     {
         parent::setUp();
         $this->image = ImageTest::create();
-        $this->project->addTransectId($this->image->transect->id);
+        $this->project()->addTransectId($this->image->transect->id);
     }
 
     public function testShow()
@@ -33,14 +33,14 @@ class ApiImageControllerTest extends ModelWithAttributesApiTest
         $this->doTestApiRoute('GET', '/api/v1/images/1');
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/images/1', $this->user);
+        $this->callToken('GET', '/api/v1/images/1', $this->user());
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/images/-1', $this->guest);
+        $this->callToken('GET', '/api/v1/images/-1', $this->guest());
         $this->assertResponseStatus(404);
 
         // session cookie authentication
-        $this->be($this->guest);
+        $this->be($this->guest());
         $r = $this->call('GET', '/api/v1/images/1');
         $this->assertStringStartsWith('{', $r->getContent());
         $this->assertStringEndsWith('}', $r->getContent());
@@ -61,14 +61,14 @@ class ApiImageControllerTest extends ModelWithAttributesApiTest
         $this->doTestApiRoute('GET', "/api/v1/images/{$id}/thumb");
 
         // api key authentication
-        $this->callToken('GET', "/api/v1/images/{$id}/thumb", $this->user);
+        $this->callToken('GET', "/api/v1/images/{$id}/thumb", $this->user());
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/images/-1/thumb', $this->guest);
+        $this->callToken('GET', '/api/v1/images/-1/thumb', $this->guest());
         $this->assertResponseStatus(404);
 
         // session cookie authentication
-        $this->be($this->guest);
+        $this->be($this->guest());
         $r = $this->call('GET', "/api/v1/images/{$id}/thumb");
         $this->assertResponseOk();
         $this->assertEquals('image/jpeg', $r->headers->get('content-type'));
@@ -79,14 +79,14 @@ class ApiImageControllerTest extends ModelWithAttributesApiTest
         $this->doTestApiRoute('GET', '/api/v1/images/1/file');
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/images/1/file', $this->user);
+        $this->callToken('GET', '/api/v1/images/1/file', $this->user());
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/images/-1/file', $this->guest);
+        $this->callToken('GET', '/api/v1/images/-1/file', $this->guest());
         $this->assertResponseStatus(404);
 
         // session cookie authentication
-        $this->be($this->guest);
+        $this->be($this->guest());
         $r = $this->call('GET', '/api/v1/images/1/file');
         $this->assertResponseOk();
         $this->assertEquals('image/jpeg', $r->headers->get('content-type'));

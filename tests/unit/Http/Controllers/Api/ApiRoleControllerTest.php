@@ -9,11 +9,11 @@ class ApiRoleControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/roles');
 
 // api key authentication
-        $this->callToken('GET', '/api/v1/roles', $this->user);
+        $this->callToken('GET', '/api/v1/roles', $this->user());
         $this->assertResponseOk();
 
         // session cookie authentication
-        $this->be($this->user);
+        $this->be($this->user());
         $r = $this->call('GET', '/api/v1/roles');
         $this->assertResponseOk();
         $this->assertStringStartsWith('[', $r->getContent());
@@ -25,11 +25,11 @@ class ApiRoleControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/roles/'.Role::$admin->id);
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/roles/'.Role::$admin->id, $this->user);
+        $this->callToken('GET', '/api/v1/roles/'.Role::$admin->id, $this->user());
         $this->assertResponseOk();
 
         // session cookie authentication
-        $this->be($this->user);
+        $this->be($this->user());
         $r = $this->call('GET', '/api/v1/roles/'.Role::$admin->id);
         $this->assertResponseOk();
         $this->assertStringStartsWith('{', $r->getContent());

@@ -6,7 +6,7 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
     {
         $transect = TransectTest::create();
         $id = $transect->id;
-        $this->project->addTransectId($id);
+        $this->project()->addTransectId($id);
 
         $image = ImageTest::create(['transect_id' => $id]);
         $annotation = AnnotationTest::create(['image_id' => $image->id]);
@@ -17,10 +17,10 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/transects/'.$id.'/annotations');
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/transects/'.$id.'/annotations', $this->user);
+        $this->callToken('GET', '/api/v1/transects/'.$id.'/annotations', $this->user());
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/transects/'.$id.'/annotations', $this->guest);
+        $this->callToken('GET', '/api/v1/transects/'.$id.'/annotations', $this->guest());
         $this->assertResponseOk();
 
         $expect = [
@@ -53,7 +53,7 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
         }
 
         // session cookie authentication
-        $this->be($this->guest);
+        $this->be($this->guest());
         $this->get('/api/v1/transects/'.$id.'/annotations')
             ->seeJson($expect)
             // don't include the images without any annotations

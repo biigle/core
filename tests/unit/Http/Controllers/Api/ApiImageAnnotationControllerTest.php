@@ -8,7 +8,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->image = ImageTest::create();
-        $this->project->addTransectId($this->image->transect->id);
+        $this->project()->addTransectId($this->image->transect->id);
     }
 
     public function testIndex()
@@ -31,7 +31,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             'color' => 'bada55',
         ]);
 
-        $annotation->addLabel($label->id, 1.0, $this->editor);
+        $annotation->addLabel($label->id, 1.0, $this->editor());
 
         $this->doTestApiRoute('GET',
             '/api/v1/images/'.$this->image->id.'/annotations'
@@ -40,18 +40,18 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
         // api key authentication
         $this->callToken('GET',
             '/api/v1/images/'.$this->image->id.'/annotations',
-            $this->user
+            $this->user()
         );
         $this->assertResponseStatus(401);
 
         $this->callToken('GET',
             '/api/v1/images/'.$this->image->id.'/annotations',
-            $this->guest
+            $this->guest()
         );
         $this->assertResponseOk();
 
         // session cookie authentication
-        $this->be($this->guest);
+        $this->be($this->guest());
         $this->get('/api/v1/images/'.$this->image->id.'/annotations')
             ->seeJson([
                 'points' => [
@@ -76,19 +76,19 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
         // api key authentication
         $this->callToken('POST',
             '/api/v1/images/'.$this->image->id.'/annotations',
-            $this->guest
+            $this->guest()
         );
         $this->assertResponseStatus(401);
 
         $this->callToken('POST',
             '/api/v1/images/'.$this->image->id.'/annotations',
-            $this->editor
+            $this->editor()
         );
         // missing arguments
         $this->assertResponseStatus(422);
 
         // session cookie authentication
-        $this->be($this->editor);
+        $this->be($this->editor());
 
         $this->callAjax('POST',
             '/api/v1/images/'.$this->image->id.'/annotations',
@@ -117,7 +117,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             [
                 '_token' => Session::token(),
                 'shape_id' => \Dias\Shape::$pointId,
-                'label_id' => $this->labelRoot->id,
+                'label_id' => $this->labelRoot()->id,
             ]
         );
         // confidence required
@@ -128,7 +128,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             [
                 '_token' => Session::token(),
                 'shape_id' => \Dias\Shape::$pointId,
-                'label_id' => $this->labelRoot->id,
+                'label_id' => $this->labelRoot()->id,
                 'confidence' => 2
             ]
         );
@@ -140,7 +140,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             [
                 '_token' => Session::token(),
                 'shape_id' => \Dias\Shape::$pointId,
-                'label_id' => $this->labelRoot->id,
+                'label_id' => $this->labelRoot()->id,
                 'confidence' => -1
             ]
         );
@@ -152,7 +152,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             [
                 '_token' => Session::token(),
                 'shape_id' => \Dias\Shape::$pointId,
-                'label_id' => $this->labelRoot->id,
+                'label_id' => $this->labelRoot()->id,
                 'confidence' => 0.5,
                 'points' => '[]',
             ]
@@ -163,7 +163,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
         $this->post('/api/v1/images/'.$this->image->id.'/annotations', [
             '_token' => Session::token(),
             'shape_id' => \Dias\Shape::$pointId,
-            'label_id' => $this->labelRoot->id,
+            'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => '[{"x":10,"y":11}]',
         ]);
@@ -183,11 +183,11 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
         }
 
         $this->seeJson([
-            'name' => $this->labelRoot->name
+            'name' => $this->labelRoot()->name
         ]);
 
         $this->seeJson([
-            'color' => $this->labelRoot->color
+            'color' => $this->labelRoot()->color
         ]);
 
         $annotation = $this->image->annotations->first();
@@ -198,9 +198,9 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
     public function testStoreValidatePoints()
     {
-        $this->callToken('POST', '/api/v1/images/'.$this->image->id.'/annotations', $this->editor, [
+        $this->callToken('POST', '/api/v1/images/'.$this->image->id.'/annotations', $this->editor(), [
             'shape_id' => \Dias\Shape::$pointId,
-            'label_id' => $this->labelRoot->id,
+            'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => '[{"x":10,"y":11},{"x":12,"y":13}]',
         ]);

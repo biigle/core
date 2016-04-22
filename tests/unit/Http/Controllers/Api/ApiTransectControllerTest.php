@@ -10,7 +10,7 @@ class ApiTransectControllerTest extends ModelWithAttributesApiTest
     protected function getModel()
     {
         $model = TransectTest::create();
-        $this->project->addTransectId($model->id);
+        $this->project()->addTransectId($model->id);
 
         return $model;
     }
@@ -21,7 +21,7 @@ class ApiTransectControllerTest extends ModelWithAttributesApiTest
     {
         parent::setUp();
         $this->transect = TransectTest::create();
-        $this->project->addTransectId($this->transect->id);
+        $this->project()->addTransectId($this->transect->id);
     }
 
     public function testShow()
@@ -30,14 +30,14 @@ class ApiTransectControllerTest extends ModelWithAttributesApiTest
         $this->doTestApiRoute('GET', '/api/v1/transects/'.$id);
 
         // api key authentication
-        $this->callToken('GET', '/api/v1/transects/'.$id, $this->user);
+        $this->callToken('GET', '/api/v1/transects/'.$id, $this->user());
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/transects/'.$id, $this->guest);
+        $this->callToken('GET', '/api/v1/transects/'.$id, $this->guest());
         $this->assertResponseOk();
 
         // session cookie authentication
-        $this->be($this->guest);
+        $this->be($this->guest());
         $r = $this->call('GET', '/api/v1/transects/'.$id);
         $this->assertResponseOk();
         $this->assertStringStartsWith('{', $r->getContent());
@@ -50,14 +50,14 @@ class ApiTransectControllerTest extends ModelWithAttributesApiTest
         $this->doTestApiRoute('PUT', '/api/v1/transects/'.$id);
 
         // api key authentication
-        $this->callToken('PUT', '/api/v1/transects/'.$id, $this->guest);
+        $this->callToken('PUT', '/api/v1/transects/'.$id, $this->guest());
         $this->assertResponseStatus(401);
 
-        $this->callToken('PUT', '/api/v1/transects/'.$id, $this->editor);
+        $this->callToken('PUT', '/api/v1/transects/'.$id, $this->editor());
         $this->assertResponseStatus(401);
 
         // session cookie authentication
-        $this->be($this->admin);
+        $this->be($this->admin());
         $this->assertNotEquals('the new transect', $this->transect->fresh()->name);
         $this->call('PUT', '/api/v1/transects/'.$id, [
             '_token' => Session::token(),
