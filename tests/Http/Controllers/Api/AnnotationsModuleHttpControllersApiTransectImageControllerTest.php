@@ -5,21 +5,21 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
     public function testIndexHavingAnnotations() {
         $transect = TransectTest::create();
         $id = $transect->id;
-        $this->project->addTransectId($id);
+        $this->project()->addTransectId($id);
 
-        // call fresh() so the IDs and numbers get strings if SQLite is used for testing
-        // so the assertions below work
-        $image = ImageTest::create(['transect_id' => $id])->fresh();
-        $annotation = AnnotationTest::create(['image_id' => $image->id])->fresh();
-        $image2 = ImageTest::create(['transect_id' => $id, 'filename' => 'b.jpg'])->fresh();
+        $image = ImageTest::create(['transect_id' => $id]);
+        AnnotationTest::create(['image_id' => $image->id]);
+        // this image shouldn't appear
+        ImageTest::create(['transect_id' => $id, 'filename' => 'b.jpg']);
 
-        $this->doTestApiRoute('GET', '/api/v1/transects/'.$id.'/images/having-annotations');
+        $this->doTestApiRoute('GET', "/api/v1/transects/{$id}/images/having-annotations");
 
-        // api key authentication
-        $this->callToken('GET', '/api/v1/transects/'.$id.'/images/having-annotations', $this->user);
+        $this->beUser();
+        $this->get("/api/v1/transects/{$id}/images/having-annotations");
         $this->assertResponseStatus(401);
 
-        $this->callToken('GET', '/api/v1/transects/'.$id.'/images/having-annotations', $this->guest);
+        $this->beGuest();
+        $this->get("/api/v1/transects/{$id}/images/having-annotations");
         $this->assertResponseOk();
 
         if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
@@ -28,8 +28,7 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
             $expect = [$image->id];
         }
 
-        $this->be($this->guest);
-        $this->get('/api/v1/transects/'.$id.'/images/having-annotations')
+        $this->get("/api/v1/transects/{$id}/images/having-annotations")
             ->seeJsonEquals($expect);
     }
 }
