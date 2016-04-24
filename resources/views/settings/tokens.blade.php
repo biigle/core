@@ -5,55 +5,82 @@
 
 @section('settings-content')
 <div class="panel panel-default">
-    <div class="panel-heading">API token</div>
+    <div class="panel-heading">API tokens</div>
     <div class="panel-body">
         <p>
-            The API token can be used to authenticate external (automated) REST API requests. Learn more about the API in the <a href="{{url('doc/api/index.html')}}">documentation</a>.
+            An API token can be used to authenticate external (automated) REST API requests. Learn more about the API in the <a href="{{url('doc/api/index.html')}}">documentation</a>.
         </p>
-        @if ($generated)
+        @if ($token)
             <div class="alert alert-success" role="alert">
-                Your API token was successfully generated.
+                <p>
+                    Your API token was generated. It will be shown only this one time! Store it in your application and be sure not to disclose it to third parties.
+                </p>
+                <p>
+                    <strong><pre class="text-success">{{$token->token}}</pre></strong>
+                </p>
             </div>
         @endif
         @if ($deleted)
-            <div class="alert alert-success" role="alert">
+            <div class="alert alert-warning" role="alert">
                 Your API token was successfully revoked.
             </div>
         @endif
-        @if ($user->api_key === null)
+
+        <h4>Your tokens</h4>
+
+
+        @if ($tokens->isEmpty())
             <p>
-                You currently have no API token. Generate a new one to use the API.
+                You currently have no API tokens. Generate a new one to use the API.
             </p>
-            <form class="" role="form" method="POST" action="{{ url('api/v1/users/my/token') }}">
-                <input type="hidden" name="_method" value="POST">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="submit" class="btn btn-success" value="Generate token">
-            </form>
         @else
-            <p class="text-muted">
-                The token serves both as username and password so take care of who can access it!
-            </p>
-            <p class="token-toggle">
-                <button class="btn btn-warning" onclick="showToken()">Show token</button>
-            </p>
-            <p class="token-toggle hidden">
-                <strong>Your token</strong>
-            </p>
-            <pre class="token-toggle hidden">{{$user->api_key}}</pre>
-            <form class="" role="form" method="POST" action="{{ url('api/v1/users/my/token') }}">
-                <span class="help-block">By revoking your current token, all applications using it will loose the ability to access the BIIGLE DIAS API.</span>
-                <input type="hidden" name="_method" value="DELETE">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="submit" class="btn btn-danger" value="Revoke token">
-            </form>
-            <script type="text/javascript">
-            function showToken() {
-                [].forEach.call(document.querySelectorAll('.token-toggle'), function(elm) {
-                    elm.classList.toggle('hidden');
-                });
-            }
-            </script>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Purpose</th>
+                        <th>Created</th>
+                        <th>Used</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($tokens as $t)
+                        <tr @if($token && $token->id === $t->id)class="success"@endif>
+                            <td>{{$t->purpose}}</td>
+                            <td>
+                                <time datetime="{{$t->created_at->toAtomString()}}" title="{{$t->created_at->toDateTimeString()}}">
+                                    {{$t->created_at->diffForHumans()}}
+                                </time>
+                            </td>
+                            <td>
+                                <time datetime="{{$t->updated_at->toAtomString()}}" title="{{$t->updated_at->toDateTimeString()}}">{{$t->updated_at->diffForHumans()}}</time>
+                                <form class="pull-right" method="POST" action="{{ url('api/v1/api-tokens/'.$t->id) }}" onsubmit="return confirm('Do you really want to revoke the token?')">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="close" title="Revoke this token"><span aria-hidden="true">&times;</span></button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         @endif
+
+        <h4>New token</h4>
+
+        <form class="form-inline" role="form" method="POST" action="{{ url('api/v1/api-tokens') }}">
+            <div class="form-group{{ $errors->has('purpose') ? ' has-error' : '' }}">
+                <label class="sr-only" for="purpose">Purpose of the token</label>
+                <input type="text" class="form-control" name="purpose" id="purpose" value="{{ $user->purpose }}" placeholder="Purpose of the token">
+            </div>
+            <input type="hidden" name="_method" value="POST">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <input type="submit" class="btn btn-success" value="Generate">
+            @if($errors->has('purpose'))
+                <div class="has-error">
+                    <span class="help-block">{{ $errors->first('purpose') }}</span>
+                </div>
+            @endif
+        </form>
     </div>
 </div>
 @foreach ($modules->getMixins('settings.tokens') as $module => $nestedMixins)

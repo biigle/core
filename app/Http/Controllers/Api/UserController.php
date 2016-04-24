@@ -384,46 +384,4 @@ class UserController extends Controller
 
         return redirect('auth/login');
     }
-
-    // /**
-    //  * Generates a new API token.
-    //  *
-    //  * @api {post} users/my/token Generate a new API token
-    //  * @apiDescription This action is allowed only by session cookie authentication.
-    //  * @apiGroup Users
-    //  * @apiName StoreOwnTokenUsers
-    //  * @apiPermission user
-    //  *
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function storeOwnToken()
-    // {
-    //     $this->user->generateApiKey();
-    //     $this->user->save();
-
-    //     if (!static::isAutomatedRequest($this->request)) {
-    //         return redirect()->route('settings-tokens')->with('generated', true);
-    //     }
-    // }
-
-    // /**
-    //  * Generates a new API token.
-    //  *
-    //  * @api {delete} users/my/token Revoke an API token
-    //  * @apiDescription This action is allowed only by session cookie authentication.
-    //  * @apiGroup Users
-    //  * @apiName DestroyOwnTokenUsers
-    //  * @apiPermission user
-    //  *
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function destroyOwnToken()
-    // {
-    //     $this->user->api_key = null;
-    //     $this->user->save();
-
-    //     if (!static::isAutomatedRequest($this->request)) {
-    //         return redirect()->route('settings-tokens')->with('deleted', true);
-    //     }
-    // }
 }

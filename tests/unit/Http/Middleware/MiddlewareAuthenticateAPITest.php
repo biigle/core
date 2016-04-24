@@ -58,4 +58,21 @@ class MiddlewareAuthenticateAPITest extends TestCase
         ]);
         $this->assertResponseOk();
     }
+
+    public function testTouchToken()
+    {
+        $token = ApiTokenTest::create(['hash' => bcrypt('test_token')]);
+        $token->updated_at = Carbon\Carbon::now(-5);
+        $token->save();
+
+        $this->assertEquals($token->updated_at, $token->fresh()->updated_at);
+
+        $this->call('GET', '/api/v1/users', [], [], [], [
+            'PHP_AUTH_USER' => $token->owner->email,
+            'PHP_AUTH_PW' => 'test_token',
+        ]);
+        $this->assertResponseOk();
+
+        $this->assertNotEquals($token->updated_at, $token->fresh()->updated_at);
+    }
 }

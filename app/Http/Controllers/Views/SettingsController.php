@@ -48,7 +48,8 @@ class SettingsController extends Controller
     {
         return view('settings.tokens')
             ->withUser($this->user)
-            ->withGenerated(session('generated'))
+            ->withTokens($this->user->apiTokens()->orderBy('updated_at', 'desc')->get())
+            ->withToken(session('token'))
             ->withDeleted(session('deleted'));
     }
 }

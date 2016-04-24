@@ -33,7 +33,7 @@ class AuthenticateAPI
         }
 
         $email = $request->getUser();
-        $token = $request->getPassword();
+        $proposedToken = $request->getPassword();
 
         $user = User::where('email', $email)->with('apiTokens')->first();
 
@@ -41,10 +41,12 @@ class AuthenticateAPI
             return false;
         }
 
-        $hashes = $user->apiTokens->pluck('hash');
+        $tokens = $user->apiTokens;
 
-        foreach ($hashes as $hash) {
-            if (Hash::check($token, $hash)) {
+        foreach ($tokens as $token) {
+            if (Hash::check($proposedToken, $token->hash)) {
+                // set the updated_at attribute
+                $token->touch();
                 // like a manual auth->once()
                 Auth::setUser($user);
 
