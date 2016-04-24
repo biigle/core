@@ -9,7 +9,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -17,10 +17,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The annotation <strong>label</strong> ID (not the annotation ID).</p> "
+            "description": "<p>The annotation <strong>label</strong> ID (not the annotation ID).</p>"
           }
         ]
       }
@@ -39,7 +39,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -47,10 +47,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The annotation ID.</p> "
+            "description": "<p>The annotation ID.</p>"
           }
         ]
       }
@@ -69,7 +69,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -80,17 +80,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ]
       }
@@ -106,7 +106,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -117,10 +117,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           }
         ]
       }
@@ -145,7 +145,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -153,10 +153,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The annotation ID.</p> "
+            "description": "<p>The annotation ID.</p>"
           }
         ]
       }
@@ -185,10 +185,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The annotation ID.</p> "
+            "description": "<p>The annotation ID.</p>"
           }
         ]
       }
@@ -197,7 +197,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "success": {
@@ -223,7 +223,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -234,17 +234,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The annotation ID.</p> "
+            "description": "<p>The annotation ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ]
       }
@@ -269,7 +269,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -280,26 +280,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           },
           {
             "group": "Required arguments",
-            "type": "<p>Mixed</p> ",
+            "type": "Mixed",
             "optional": false,
             "field": "value",
-            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p>"
           }
         ]
       },
@@ -331,7 +331,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -339,26 +339,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The annotation ID.</p> "
+            "description": "<p>The annotation ID.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "label_id",
-            "description": "<p>The ID of the label category to attach to the annotation.</p> "
+            "description": "<p>The ID of the label category to attach to the annotation.</p>"
           },
           {
             "group": "Required arguments",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "confidence",
-            "description": "<p>The level of confidence for this annotation label.</p> "
+            "description": "<p>The level of confidence for this annotation label.</p>"
           }
         ]
       },
@@ -393,7 +393,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -401,40 +401,40 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The image ID.</p> "
+            "description": "<p>The image ID.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "shape_id",
-            "description": "<p>ID of the shape of the new annotation.</p> "
+            "description": "<p>ID of the shape of the new annotation.</p>"
           },
           {
             "group": "Required arguments",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "label_id",
-            "description": "<p>ID of the initial category label of the new annotation.</p> "
+            "description": "<p>ID of the initial category label of the new annotation.</p>"
           },
           {
             "group": "Required arguments",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "confidence",
-            "description": "<p>Confidence of the initial annotation label of the new annotation. Must be a value between 0 and 1.</p> "
+            "description": "<p>Confidence of the initial annotation label of the new annotation. Must be a value between 0 and 1.</p>"
           },
           {
             "group": "Required arguments",
-            "type": "<p>Object[]</p> ",
+            "type": "Object[]",
             "optional": false,
             "field": "points",
-            "description": "<p>Array (JSON or as String) of the initial points of the annotation. Must contain at least one point. The interpretation of the points of the different shapes is as follows: <strong>Point:</strong> The first point is the center of the annotation point. <strong>Rectangle:</strong> The first four points are the vertices of the rectangle (in the given order). <strong>Polygon:</strong> Like rectangle with one or more vertices. <strong>LineString:</strong> Like rectangle with one or more vertices. <strong>Circle:</strong> The first point is the center of the circle. The x-coordinate of the second point is the radius of the circle. The y-coordinate of the second point is ignored.</p> "
+            "description": "<p>Array (JSON or as String) of the initial points of the annotation. Must contain at least one point. The interpretation of the points of the different shapes is as follows: <strong>Point:</strong> The first point is the center of the annotation point. <strong>Rectangle:</strong> The first four points are the vertices of the rectangle (in the given order). <strong>Polygon:</strong> Like rectangle with one or more vertices. <strong>LineString:</strong> Like rectangle with one or more vertices. <strong>Circle:</strong> The first point is the center of the circle. The x-coordinate of the second point is the radius of the circle. The y-coordinate of the second point is ignored.</p>"
           }
         ]
       },
@@ -474,7 +474,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -482,19 +482,19 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The annotation ID.</p> "
+            "description": "<p>The annotation ID.</p>"
           }
         ],
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "<p>Object[]</p> ",
+            "type": "Object[]",
             "optional": false,
             "field": "points",
-            "description": "<p>Array (JSON or as String) of new points of the annotation. The new points will replace the old points. See the &quot;Create a new annotation&quot; endpoint for how the points are interpreted for different shapes.</p> "
+            "description": "<p>Array (JSON or as String) of new points of the annotation. The new points will replace the old points. See the &quot;Create a new annotation&quot; endpoint for how the points are interpreted for different shapes.</p>"
           }
         ]
       },
@@ -525,7 +525,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -536,26 +536,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>Mixed</p> ",
+            "type": "Mixed",
             "optional": false,
             "field": "value",
-            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p>"
           }
         ]
       },
@@ -578,7 +578,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -586,19 +586,19 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The annotation <strong>label</strong> ID (not the annotation ID).</p> "
+            "description": "<p>The annotation <strong>label</strong> ID (not the annotation ID).</p>"
           }
         ],
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "confidence",
-            "description": "<p>The level of confidence for this annotation label.</p> "
+            "description": "<p>The level of confidence for this annotation label.</p>"
           }
         ]
       },
@@ -616,6 +616,111 @@
   },
   {
     "type": "delete",
+    "url": "api-tokens/:id",
+    "title": "Delete an API token",
+    "group": "ApiTokens",
+    "name": "DestroyApiTokens",
+    "permission": [
+      {
+        "name": "user",
+        "title": "Authenticated user",
+        "description": "<p>The user needs to be authenticated.</p>"
+      }
+    ],
+    "description": "<p>A user can only destroy their own API tokens</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The API token ID</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ApiTokenController.php",
+    "groupTitle": "ApiTokens"
+  },
+  {
+    "type": "get",
+    "url": "api-tokens",
+    "title": "Get all API tokens",
+    "group": "ApiTokens",
+    "name": "IndexApiTokens",
+    "permission": [
+      {
+        "name": "user",
+        "title": "Authenticated user",
+        "description": "<p>The user needs to be authenticated.</p>"
+      }
+    ],
+    "description": "<p>A user can only see their own API tokens</p>",
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "[\n   {\n      \"id\": 1,\n      \"created_at\": \"2016-04-24 09:52:05\",\n      \"updated_at\": \"2016-04-24 09:52:05\",\n      \"owner_id\": 1,\n      \"purpose\": \"My custom Python script\"\n   }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ApiTokenController.php",
+    "groupTitle": "ApiTokens"
+  },
+  {
+    "type": "post",
+    "url": "api-tokens",
+    "title": "Create a new API token",
+    "group": "ApiTokens",
+    "name": "StoreApiTokens",
+    "permission": [
+      {
+        "name": "user",
+        "title": "Authenticated user",
+        "description": "<p>The user needs to be authenticated.</p>"
+      }
+    ],
+    "description": "<p>This action is allowed only by session cookie authentication. The token of the response is displayed only this single time!</p>",
+    "parameter": {
+      "fields": {
+        "Required parameters": [
+          {
+            "group": "Required parameters",
+            "type": "String",
+            "optional": false,
+            "field": "purpose",
+            "description": "<p>A short description of the purpose of the new token</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request example:",
+          "content": "purpose: 'Token for my custom Python script'",
+          "type": "String"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success response:",
+          "content": "{\n   \"id\": 1,\n   \"created_at\": \"2016-04-24 09:52:05\",\n   \"updated_at\": \"2016-04-24 09:52:05\",\n   \"owner_id\": 1,\n   \"purpose\": \"Token for my custom Python script\",\n   \"token\": \"KMrUSYbdHxZKImInd3vcI8F8fzZ0Gx6H\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ApiTokenController.php",
+    "groupTitle": "ApiTokens"
+  },
+  {
+    "type": "delete",
     "url": "attributes/:id",
     "title": "Delete an attribute",
     "group": "Attributes",
@@ -624,19 +729,19 @@
       {
         "name": "admin",
         "title": "Authenticated admin",
-        "description": "<p>The user needs to be global admin.</p> "
+        "description": "<p>The user needs to be global admin.</p>"
       }
     ],
-    "description": "<p>If an attribute is still in use, it cannot be deleted.</p> ",
+    "description": "<p>If an attribute is still in use, it cannot be deleted.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The attribute ID.</p> "
+            "description": "<p>The attribute ID.</p>"
           }
         ]
       }
@@ -655,7 +760,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "success": {
@@ -681,7 +786,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "parameter": {
@@ -689,10 +794,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The attribute ID.</p> "
+            "description": "<p>The attribute ID.</p>"
           }
         ]
       }
@@ -720,7 +825,7 @@
       {
         "name": "admin",
         "title": "Authenticated admin",
-        "description": "<p>The user needs to be global admin.</p> "
+        "description": "<p>The user needs to be global admin.</p>"
       }
     ],
     "parameter": {
@@ -728,17 +833,17 @@
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The name of the new attribute.</p> "
+            "description": "<p>The name of the new attribute.</p>"
           },
           {
             "group": "Required arguments",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "type",
-            "description": "<p>One of <code>integer</code>, <code>double</code>, <code>string</code> or <code>boolean</code>.</p> "
+            "description": "<p>One of <code>integer</code>, <code>double</code>, <code>string</code> or <code>boolean</code>.</p>"
           }
         ]
       }
@@ -766,7 +871,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -777,17 +882,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ]
       }
@@ -803,7 +908,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -811,10 +916,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The image ID.</p> "
+            "description": "<p>The image ID.</p>"
           }
         ]
       }
@@ -842,7 +947,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -853,10 +958,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           }
         ]
       }
@@ -881,7 +986,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -892,17 +997,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The annotation ID.</p> "
+            "description": "<p>The annotation ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ]
       }
@@ -927,19 +1032,19 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
-    "description": "<p>Responds with a JPG image of the original file.</p> ",
+    "description": "<p>Responds with a JPG image of the original file.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The image ID.</p> "
+            "description": "<p>The image ID.</p>"
           }
         ]
       }
@@ -958,19 +1063,19 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
-    "description": "<p>Responds with a JPG image thumbnail.</p> ",
+    "description": "<p>Responds with a JPG image thumbnail.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The image ID.</p> "
+            "description": "<p>The image ID.</p>"
           }
         ]
       }
@@ -983,14 +1088,14 @@
     "type": "get",
     "url": "images/:id",
     "title": "Get image information",
-    "description": "<p>Image information includes a subset of the image EXIF data as well as the transect, the image belongs to.</p> ",
+    "description": "<p>Image information includes a subset of the image EXIF data as well as the transect, the image belongs to.</p>",
     "group": "Images",
     "name": "ShowImages",
     "permission": [
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -998,10 +1103,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The image ID.</p> "
+            "description": "<p>The image ID.</p>"
           }
         ]
       }
@@ -1029,7 +1134,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -1040,26 +1145,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           },
           {
             "group": "Required arguments",
-            "type": "<p>Mixed</p> ",
+            "type": "Mixed",
             "optional": false,
             "field": "value",
-            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p>"
           }
         ]
       },
@@ -1091,7 +1196,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -1102,26 +1207,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>Mixed</p> ",
+            "type": "Mixed",
             "optional": false,
             "field": "value",
-            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p>"
           }
         ]
       },
@@ -1144,7 +1249,7 @@
       {
         "name": "admin",
         "title": "Authenticated admin",
-        "description": "<p>The user needs to be global admin.</p> "
+        "description": "<p>The user needs to be global admin.</p>"
       }
     ],
     "version": "0.0.0",
@@ -1155,17 +1260,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ]
       }
@@ -1181,28 +1286,28 @@
       {
         "name": "adminOrProjectAdmin",
         "title": "Global admin or project admin",
-        "description": "<p>The authenticated user needs to be global admin or admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be global admin or admin of the project.</p>"
       }
     ],
-    "description": "<p>If a label category is still attached to an annotation, it cannot be removed. Also, if a label category has child labels, the <code>force</code> argument is required. Project specific label categories can only be deleted by project admins. Global categories can only be deleted by global admins.</p> ",
+    "description": "<p>If a label category is still attached to an annotation, it cannot be removed. Also, if a label category has child labels, the <code>force</code> argument is required. Project specific label categories can only be deleted by project admins. Global categories can only be deleted by global admins.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The label ID.</p> "
+            "description": "<p>The label ID.</p>"
           }
         ],
         "Optional parameters": [
           {
             "group": "Optional parameters",
-            "type": "<p>Boolean</p> ",
+            "type": "Boolean",
             "optional": false,
             "field": "force",
-            "description": "<p>Set this parameter to delete label categories with child labels.</p> "
+            "description": "<p>Set this parameter to delete label categories with child labels.</p>"
           }
         ]
       }
@@ -1221,7 +1326,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "version": "0.0.0",
@@ -1232,10 +1337,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           }
         ]
       }
@@ -1254,14 +1359,14 @@
     "type": "get",
     "url": "labels",
     "title": "Get all label categories",
-    "description": "<p>This does not include project specific label categories.</p> ",
+    "description": "<p>This does not include project specific label categories.</p>",
     "group": "Labels",
     "name": "IndexLabels",
     "permission": [
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "success": {
@@ -1287,7 +1392,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "version": "0.0.0",
@@ -1298,17 +1403,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The annotation ID.</p> "
+            "description": "<p>The annotation ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ]
       }
@@ -1327,14 +1432,14 @@
     "type": "get",
     "url": "labels/:id",
     "title": "Get a label category",
-    "description": "<p>This does not include project specific label categories.</p> ",
+    "description": "<p>This does not include project specific label categories.</p>",
     "group": "Labels",
     "name": "ShowLabels",
     "permission": [
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "parameter": {
@@ -1342,10 +1447,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The label ID.</p> "
+            "description": "<p>The label ID.</p>"
           }
         ]
       }
@@ -1373,7 +1478,7 @@
       {
         "name": "admin",
         "title": "Authenticated admin",
-        "description": "<p>The user needs to be global admin.</p> "
+        "description": "<p>The user needs to be global admin.</p>"
       }
     ],
     "version": "0.0.0",
@@ -1384,26 +1489,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           },
           {
             "group": "Required arguments",
-            "type": "<p>Mixed</p> ",
+            "type": "Mixed",
             "optional": false,
             "field": "value",
-            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p>"
           }
         ]
       },
@@ -1429,14 +1534,14 @@
     "type": "post",
     "url": "labels",
     "title": "Create a new (project specific) label category",
-    "description": "<p>Project specific label categories can only be created by project admins. Global categories can only be created by global admins.</p> ",
+    "description": "<p>Project specific label categories can only be created by project admins. Global categories can only be created by global admins.</p>",
     "group": "Labels",
     "name": "StoreLabels",
     "permission": [
       {
         "name": "adminOrProjectAdmin",
         "title": "Global admin or project admin",
-        "description": "<p>The authenticated user needs to be global admin or admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be global admin or admin of the project.</p>"
       }
     ],
     "parameter": {
@@ -1444,40 +1549,40 @@
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the new label category.</p> "
+            "description": "<p>Name of the new label category.</p>"
           },
           {
             "group": "Required arguments",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "color",
-            "description": "<p>Color of the new label category as hexadecimal string (like <code>bada55</code>). May have an optional <code>#</code> prefix.</p> "
+            "description": "<p>Color of the new label category as hexadecimal string (like <code>bada55</code>). May have an optional <code>#</code> prefix.</p>"
           }
         ],
         "Optional arguments": [
           {
             "group": "Optional arguments",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "parent_id",
-            "description": "<p>ID of the parent label category for ordering in a tree-like stricture.</p> "
+            "description": "<p>ID of the parent label category for ordering in a tree-like stricture.</p>"
           },
           {
             "group": "Optional arguments",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "aphia_id",
-            "description": "<p>The <a href=\"http://www.marinespecies.org/\">WoRMS</a> AphiaID.</p> "
+            "description": "<p>The <a href=\"http://www.marinespecies.org/\">WoRMS</a> AphiaID.</p>"
           },
           {
             "group": "Optional arguments",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "project_id",
-            "description": "<p>ID of the project, this category should belong to. If this attribute is present, the category becomes a project specific category.</p> "
+            "description": "<p>ID of the project, this category should belong to. If this attribute is present, the category becomes a project specific category.</p>"
           }
         ]
       }
@@ -1505,7 +1610,7 @@
       {
         "name": "admin",
         "title": "Authenticated admin",
-        "description": "<p>The user needs to be global admin.</p> "
+        "description": "<p>The user needs to be global admin.</p>"
       }
     ],
     "version": "0.0.0",
@@ -1516,26 +1621,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>Mixed</p> ",
+            "type": "Mixed",
             "optional": false,
             "field": "value",
-            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p>"
           }
         ]
       },
@@ -1552,14 +1657,14 @@
     "type": "put",
     "url": "labels/:id",
     "title": "Update a label category",
-    "description": "<p>Project specific label categories can only be updated by project admins. Global categories can only be updated by global admins.</p> ",
+    "description": "<p>Project specific label categories can only be updated by project admins. Global categories can only be updated by global admins.</p>",
     "group": "Labels",
     "name": "UpdateLabels",
     "permission": [
       {
         "name": "adminOrProjectAdmin",
         "title": "Global admin or project admin",
-        "description": "<p>The authenticated user needs to be global admin or admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be global admin or admin of the project.</p>"
       }
     ],
     "parameter": {
@@ -1567,40 +1672,40 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The label ID.</p> "
+            "description": "<p>The label ID.</p>"
           }
         ],
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the label category.</p> "
+            "description": "<p>Name of the label category.</p>"
           },
           {
             "group": "Attributes that can be updated",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "color",
-            "description": "<p>Color of the label category.</p> "
+            "description": "<p>Color of the label category.</p>"
           },
           {
             "group": "Attributes that can be updated",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "parent_id",
-            "description": "<p>ID of the parent label category for ordering in a tree-like stricture.</p> "
+            "description": "<p>ID of the parent label category for ordering in a tree-like stricture.</p>"
           },
           {
             "group": "Attributes that can be updated",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "aphia_id",
-            "description": "<p>The <a href=\"http://www.marinespecies.org/\">WoRMS</a> AphiaID.</p> "
+            "description": "<p>The <a href=\"http://www.marinespecies.org/\">WoRMS</a> AphiaID.</p>"
           }
         ]
       }
@@ -1619,7 +1724,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "success": {
@@ -1645,7 +1750,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "parameter": {
@@ -1653,10 +1758,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The media type ID.</p> "
+            "description": "<p>The media type ID.</p>"
           }
         ]
       }
@@ -1684,26 +1789,26 @@
       {
         "name": "projectAdmin",
         "title": "Project admin",
-        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be admin of the project.</p>"
       }
     ],
-    "description": "<p>This endpoint attaches an existing transect to another existing project. The transect then will belong to multiple projects. The user performing this operation needs to be project admin in both the project, the transect initially belongs to, and the project, the transect should be attached to.</p> ",
+    "description": "<p>This endpoint attaches an existing transect to another existing project. The transect then will belong to multiple projects. The user performing this operation needs to be project admin in both the project, the transect initially belongs to, and the project, the transect should be attached to.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "pid",
-            "description": "<p>ID of the project that should get the annotation.</p> "
+            "description": "<p>ID of the project that should get the annotation.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "tid",
-            "description": "<p>ID of the existing transect to attach to the project.</p> "
+            "description": "<p>ID of the existing transect to attach to the project.</p>"
           }
         ]
       }
@@ -1722,7 +1827,7 @@
       {
         "name": "projectAdmin",
         "title": "Project admin",
-        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be admin of the project.</p>"
       }
     ],
     "parameter": {
@@ -1730,26 +1835,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "pid",
-            "description": "<p>The project ID.</p> "
+            "description": "<p>The project ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "uid",
-            "description": "<p>The user ID of the new member.</p> "
+            "description": "<p>The user ID of the new member.</p>"
           }
         ],
         "Required attributes": [
           {
             "group": "Required attributes",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "project_role_id",
-            "description": "<p>The project role of the member.</p> "
+            "description": "<p>The project role of the member.</p>"
           }
         ]
       },
@@ -1775,7 +1880,7 @@
       {
         "name": "projectAdmin",
         "title": "Project admin",
-        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be admin of the project.</p>"
       }
     ],
     "version": "0.0.0",
@@ -1786,17 +1891,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ]
       }
@@ -1812,35 +1917,35 @@
       {
         "name": "projectAdmin",
         "title": "Project admin",
-        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be admin of the project.</p>"
       }
     ],
-    "description": "<p>Detaches a transect from a project. The transect will no longer belong to the project it was detached from. If the transect belongs only to a single project, it cannot be detached but should be deleted. Use the <code>force</code> parameter to delete a transect belonging only to one project.</p> ",
+    "description": "<p>Detaches a transect from a project. The transect will no longer belong to the project it was detached from. If the transect belongs only to a single project, it cannot be detached but should be deleted. Use the <code>force</code> parameter to delete a transect belonging only to one project.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "pid",
-            "description": "<p>The project ID, the transect should be detached from.</p> "
+            "description": "<p>The project ID, the transect should be detached from.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "tid",
-            "description": "<p>The transect ID.</p> "
+            "description": "<p>The transect ID.</p>"
           }
         ],
         "Optional parameters": [
           {
             "group": "Optional parameters",
-            "type": "<p>Boolean</p> ",
+            "type": "Boolean",
             "optional": false,
             "field": "force",
-            "description": "<p>If the transect only belongs to a single project, set this parameter to delete it instead of detaching it. Otherwise the transect cannot be removed.</p> "
+            "description": "<p>If the transect only belongs to a single project, set this parameter to delete it instead of detaching it. Otherwise the transect cannot be removed.</p>"
           }
         ]
       }
@@ -1859,26 +1964,26 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
-    "description": "<p>A project member can remove themselves. Only a project admin can remove members other than themselves.</p> <p><strong>The only remaining admin of a project is not allowed to remove themselves.</strong> The admin role should be passed over to another project user or the project should be deleted.</p> ",
+    "description": "<p>A project member can remove themselves. Only a project admin can remove members other than themselves.</p> <p><strong>The only remaining admin of a project is not allowed to remove themselves.</strong> The admin role should be passed over to another project user or the project should be deleted.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "pid",
-            "description": "<p>The project ID.</p> "
+            "description": "<p>The project ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "uid",
-            "description": "<p>The user ID of the member.</p> "
+            "description": "<p>The user ID of the member.</p>"
           }
         ]
       }
@@ -1897,28 +2002,28 @@
       {
         "name": "projectAdmin",
         "title": "Project admin",
-        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be admin of the project.</p>"
       }
     ],
-    "description": "<p>A project cannot be deleted if it contains any transects that belong <strong>only</strong> to this project. To delete the project <strong>and</strong> these transects, use the <code>force</code> parameter.</p> ",
+    "description": "<p>A project cannot be deleted if it contains any transects that belong <strong>only</strong> to this project. To delete the project <strong>and</strong> these transects, use the <code>force</code> parameter.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The project ID.</p> "
+            "description": "<p>The project ID.</p>"
           }
         ],
         "Optional parameters": [
           {
             "group": "Optional parameters",
-            "type": "<p>Boolean</p> ",
+            "type": "Boolean",
             "optional": false,
             "field": "force",
-            "description": "<p>Set this parameter to delete the project <strong>and</strong> all transects that belong only to this project.</p> "
+            "description": "<p>Set this parameter to delete the project <strong>and</strong> all transects that belong only to this project.</p>"
           }
         ]
       }
@@ -1937,10 +2042,10 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
-    "description": "<p>Returns a list of all projects, the requesting user is a member of.</p> ",
+    "description": "<p>Returns a list of all projects, the requesting user is a member of.</p>",
     "success": {
       "examples": [
         {
@@ -1964,7 +2069,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -1975,10 +2080,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           }
         ]
       }
@@ -2003,7 +2108,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -2011,10 +2116,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The project ID.</p> "
+            "description": "<p>The project ID.</p>"
           }
         ]
       }
@@ -2042,7 +2147,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -2050,10 +2155,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The project ID.</p> "
+            "description": "<p>The project ID.</p>"
           }
         ]
       }
@@ -2081,7 +2186,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -2089,10 +2194,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The project ID.</p> "
+            "description": "<p>The project ID.</p>"
           }
         ]
       }
@@ -2120,7 +2225,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -2131,17 +2236,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The annotation ID.</p> "
+            "description": "<p>The annotation ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ]
       }
@@ -2166,7 +2271,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -2174,10 +2279,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The project ID.</p> "
+            "description": "<p>The project ID.</p>"
           }
         ]
       }
@@ -2205,7 +2310,7 @@
       {
         "name": "projectAdmin",
         "title": "Project admin",
-        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be admin of the project.</p>"
       }
     ],
     "version": "0.0.0",
@@ -2216,26 +2321,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           },
           {
             "group": "Required arguments",
-            "type": "<p>Mixed</p> ",
+            "type": "Mixed",
             "optional": false,
             "field": "value",
-            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p>"
           }
         ]
       },
@@ -2267,26 +2372,26 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
-    "description": "<p>The user creating a new project will automatically become project admin.</p> ",
+    "description": "<p>The user creating a new project will automatically become project admin.</p>",
     "parameter": {
       "fields": {
         "Required attributes": [
           {
             "group": "Required attributes",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the new project.</p> "
+            "description": "<p>Name of the new project.</p>"
           },
           {
             "group": "Required attributes",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Description of the new project.</p> "
+            "description": "<p>Description of the new project.</p>"
           }
         ]
       }
@@ -2305,7 +2410,7 @@
       {
         "name": "projectAdmin",
         "title": "Project admin",
-        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be admin of the project.</p>"
       }
     ],
     "version": "0.0.0",
@@ -2316,26 +2421,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>Mixed</p> ",
+            "type": "Mixed",
             "optional": false,
             "field": "value",
-            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p>"
           }
         ]
       },
@@ -2358,7 +2463,7 @@
       {
         "name": "projectAdmin",
         "title": "Project admin",
-        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be admin of the project.</p>"
       }
     ],
     "parameter": {
@@ -2366,26 +2471,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "pid",
-            "description": "<p>The project ID.</p> "
+            "description": "<p>The project ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "uid",
-            "description": "<p>The user ID of the project member.</p> "
+            "description": "<p>The user ID of the project member.</p>"
           }
         ],
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "project_role_id",
-            "description": "<p>The project role of the member.</p> "
+            "description": "<p>The project role of the member.</p>"
           }
         ]
       }
@@ -2404,7 +2509,7 @@
       {
         "name": "projectAdmin",
         "title": "Project admin",
-        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be admin of the project.</p>"
       }
     ],
     "parameter": {
@@ -2412,26 +2517,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The project ID.</p> "
+            "description": "<p>The project ID.</p>"
           }
         ],
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the project.</p> "
+            "description": "<p>Name of the project.</p>"
           },
           {
             "group": "Attributes that can be updated",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Description of the project.</p> "
+            "description": "<p>Description of the project.</p>"
           }
         ]
       }
@@ -2450,7 +2555,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "success": {
@@ -2476,7 +2581,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "parameter": {
@@ -2484,10 +2589,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The user role ID.</p> "
+            "description": "<p>The user role ID.</p>"
           }
         ]
       }
@@ -2515,7 +2620,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "success": {
@@ -2541,7 +2646,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "parameter": {
@@ -2549,10 +2654,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The shape ID.</p> "
+            "description": "<p>The shape ID.</p>"
           }
         ]
       }
@@ -2580,7 +2685,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -2591,17 +2696,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ]
       }
@@ -2617,19 +2722,19 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
-    "description": "<p>Returns a list of all images that have annotations, along with detailed information on all annotations.</p> ",
+    "description": "<p>Returns a list of all images that have annotations, along with detailed information on all annotations.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The transect ID.</p> "
+            "description": "<p>The transect ID.</p>"
           }
         ]
       }
@@ -2657,7 +2762,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -2668,10 +2773,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           }
         ]
       }
@@ -2696,19 +2801,19 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
-    "description": "<p>Returns a list of all image IDs of the transect.</p> ",
+    "description": "<p>Returns a list of all image IDs of the transect.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The transect ID.</p> "
+            "description": "<p>The transect ID.</p>"
           }
         ]
       }
@@ -2736,7 +2841,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -2747,17 +2852,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The annotation ID.</p> "
+            "description": "<p>The annotation ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ]
       }
@@ -2782,7 +2887,7 @@
       {
         "name": "projectMember",
         "title": "Project member",
-        "description": "<p>The authenticated user needs to be member of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be member of a project containing this element.</p>"
       }
     ],
     "parameter": {
@@ -2790,10 +2895,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The transect ID.</p> "
+            "description": "<p>The transect ID.</p>"
           }
         ]
       }
@@ -2821,7 +2926,7 @@
       {
         "name": "projectAdmin",
         "title": "Project admin",
-        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be admin of the project.</p>"
       }
     ],
     "parameter": {
@@ -2829,40 +2934,40 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The project ID.</p> "
+            "description": "<p>The project ID.</p>"
           }
         ],
         "Required attributes": [
           {
             "group": "Required attributes",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The name of the new transect.</p> "
+            "description": "<p>The name of the new transect.</p>"
           },
           {
             "group": "Required attributes",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "url",
-            "description": "<p>The base URL ot the image files. Can be a local path like <code>/vol/transects/1</code> or a remote path like <code>https://example.com/transects/1</code>.</p> "
+            "description": "<p>The base URL ot the image files. Can be a local path like <code>/vol/transects/1</code> or a remote path like <code>https://example.com/transects/1</code>.</p>"
           },
           {
             "group": "Required attributes",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "media_type_id",
-            "description": "<p>The ID of the media type of the new transect.</p> "
+            "description": "<p>The ID of the media type of the new transect.</p>"
           },
           {
             "group": "Required attributes",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "images",
-            "description": "<p>List of image file names of the images that can be found at the base URL, formatted as comma separated values. With the base URL <code>/vol/transects/1</code> and the image <code>1.jpg</code>, the local file <code>/vol/transects/1/1.jpg</code> will be used.</p> "
+            "description": "<p>List of image file names of the images that can be found at the base URL, formatted as comma separated values. With the base URL <code>/vol/transects/1</code> and the image <code>1.jpg</code>, the local file <code>/vol/transects/1/1.jpg</code> will be used.</p>"
           }
         ]
       },
@@ -2897,7 +3002,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -2908,26 +3013,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           },
           {
             "group": "Required arguments",
-            "type": "<p>Mixed</p> ",
+            "type": "Mixed",
             "optional": false,
             "field": "value",
-            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p>"
           }
         ]
       },
@@ -2959,7 +3064,7 @@
       {
         "name": "projectEditor",
         "title": "Project editor",
-        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p> "
+        "description": "<p>The authenticated user needs to be editor or admin of a project containing this element.</p>"
       }
     ],
     "version": "0.0.0",
@@ -2970,26 +3075,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>Mixed</p> ",
+            "type": "Mixed",
             "optional": false,
             "field": "value",
-            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p>"
           }
         ]
       },
@@ -3012,7 +3117,7 @@
       {
         "name": "projectAdmin",
         "title": "Project admin",
-        "description": "<p>The authenticated user needs to be admin of the project.</p> "
+        "description": "<p>The authenticated user needs to be admin of the project.</p>"
       }
     ],
     "parameter": {
@@ -3020,19 +3125,19 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The transect ID.</p> "
+            "description": "<p>The transect ID.</p>"
           }
         ],
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the transect.</p> "
+            "description": "<p>Name of the transect.</p>"
           }
         ]
       }
@@ -3051,7 +3156,7 @@
       {
         "name": "admin",
         "title": "Authenticated admin",
-        "description": "<p>The user needs to be global admin.</p> "
+        "description": "<p>The user needs to be global admin.</p>"
       }
     ],
     "version": "0.0.0",
@@ -3062,17 +3167,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ]
       }
@@ -3088,7 +3193,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "version": "0.0.0",
@@ -3099,10 +3204,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           }
         ]
       }
@@ -3127,7 +3232,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "version": "0.0.0",
@@ -3138,17 +3243,17 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The annotation ID.</p> "
+            "description": "<p>The annotation ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ]
       }
@@ -3173,7 +3278,7 @@
       {
         "name": "admin",
         "title": "Authenticated admin",
-        "description": "<p>The user needs to be global admin.</p> "
+        "description": "<p>The user needs to be global admin.</p>"
       }
     ],
     "version": "0.0.0",
@@ -3184,26 +3289,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           },
           {
             "group": "Required arguments",
-            "type": "<p>Mixed</p> ",
+            "type": "Mixed",
             "optional": false,
             "field": "value",
-            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p>"
           }
         ]
       },
@@ -3235,7 +3340,7 @@
       {
         "name": "admin",
         "title": "Authenticated admin",
-        "description": "<p>The user needs to be global admin.</p> "
+        "description": "<p>The user needs to be global admin.</p>"
       }
     ],
     "version": "0.0.0",
@@ -3246,26 +3351,26 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The model ID.</p> "
+            "description": "<p>The model ID.</p>"
           },
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>The attribute name.</p> "
+            "description": "<p>The attribute name.</p>"
           }
         ],
         "Required arguments": [
           {
             "group": "Required arguments",
-            "type": "<p>Mixed</p> ",
+            "type": "Mixed",
             "optional": false,
             "field": "value",
-            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p> "
+            "description": "<p>The attribute value, either <code>Integer</code>, <code>Double</code>, <code>String</code> or <code>Boolean</code>, depending on the type of the attribute.</p>"
           }
         ]
       },
@@ -3280,24 +3385,6 @@
   },
   {
     "type": "delete",
-    "url": "users/my/token",
-    "title": "Revoke an API token",
-    "description": "<p>This action is allowed only by session cookie authentication.</p> ",
-    "group": "Users",
-    "name": "DestroyOwnTokenUsers",
-    "permission": [
-      {
-        "name": "user",
-        "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
-      }
-    ],
-    "version": "0.0.0",
-    "filename": "app/Http/Controllers/Api/UserController.php",
-    "groupTitle": "Users"
-  },
-  {
-    "type": "delete",
     "url": "users/my",
     "title": "Delete the own user",
     "group": "Users",
@@ -3306,7 +3393,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "parameter": {
@@ -3314,15 +3401,15 @@
         "Required parameters": [
           {
             "group": "Required parameters",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "password",
-            "description": "<p>The password of the user.</p> "
+            "description": "<p>The password of the user.</p>"
           }
         ]
       }
     },
-    "description": "<p>This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.</p> ",
+    "description": "<p>This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.</p>",
     "version": "0.0.0",
     "filename": "app/Http/Controllers/Api/UserController.php",
     "groupTitle": "Users"
@@ -3337,7 +3424,7 @@
       {
         "name": "admin",
         "title": "Authenticated admin",
-        "description": "<p>The user needs to be global admin.</p> "
+        "description": "<p>The user needs to be global admin.</p>"
       }
     ],
     "parameter": {
@@ -3345,24 +3432,24 @@
         "Required parameters": [
           {
             "group": "Required parameters",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "password",
-            "description": "<p>The password of the global administrator.</p> "
+            "description": "<p>The password of the global administrator.</p>"
           }
         ],
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The user ID.</p> "
+            "description": "<p>The user ID.</p>"
           }
         ]
       }
     },
-    "description": "<p>This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.</p> ",
+    "description": "<p>This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.</p>",
     "version": "0.0.0",
     "filename": "app/Http/Controllers/Api/UserController.php",
     "groupTitle": "Users"
@@ -3377,19 +3464,19 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
-    "description": "<p>Searches for a user with firstname or lastname like <code>pattern</code> and returns the first 10 matches.</p> ",
+    "description": "<p>Searches for a user with firstname or lastname like <code>pattern</code> and returns the first 10 matches.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "pattern",
-            "description": "<p>Part of the firstname or lastname of the user to search for.</p> "
+            "description": "<p>Part of the firstname or lastname of the user to search for.</p>"
           }
         ]
       }
@@ -3417,7 +3504,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "success": {
@@ -3443,10 +3530,10 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
-    "description": "<p>Returns the user making the request.</p> ",
+    "description": "<p>Returns the user making the request.</p>",
     "success": {
       "examples": [
         {
@@ -3470,7 +3557,7 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
     "parameter": {
@@ -3478,10 +3565,10 @@
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The user ID.</p> "
+            "description": "<p>The user ID.</p>"
           }
         ]
       }
@@ -3501,24 +3588,6 @@
   },
   {
     "type": "post",
-    "url": "users/my/token",
-    "title": "Generate a new API token",
-    "description": "<p>This action is allowed only by session cookie authentication.</p> ",
-    "group": "Users",
-    "name": "StoreOwnTokenUsers",
-    "permission": [
-      {
-        "name": "user",
-        "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
-      }
-    ],
-    "version": "0.0.0",
-    "filename": "app/Http/Controllers/Api/UserController.php",
-    "groupTitle": "Users"
-  },
-  {
-    "type": "post",
     "url": "users",
     "title": "Create a new user",
     "group": "Users",
@@ -3527,47 +3596,47 @@
       {
         "name": "admin",
         "title": "Authenticated admin",
-        "description": "<p>The user needs to be global admin.</p> "
+        "description": "<p>The user needs to be global admin.</p>"
       }
     ],
-    "description": "<p>This action is allowed only by session cookie authentication. A new user gets the global role <code>editor</code> by default.</p> ",
+    "description": "<p>This action is allowed only by session cookie authentication. A new user gets the global role <code>editor</code> by default.</p>",
     "parameter": {
       "fields": {
         "Required parameters": [
           {
             "group": "Required parameters",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "email",
-            "description": "<p>The email address of the new user. Must be unique for all users.</p> "
+            "description": "<p>The email address of the new user. Must be unique for all users.</p>"
           },
           {
             "group": "Required parameters",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "password",
-            "description": "<p>The password of the new user.</p> "
+            "description": "<p>The password of the new user.</p>"
           },
           {
             "group": "Required parameters",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "password_confirmation",
-            "description": "<p>The password of the new user again.</p> "
+            "description": "<p>The password of the new user again.</p>"
           },
           {
             "group": "Required parameters",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "firstname",
-            "description": "<p>The firstname of the new user.</p> "
+            "description": "<p>The firstname of the new user.</p>"
           },
           {
             "group": "Required parameters",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "lastname",
-            "description": "<p>The lastname of the new user.</p> "
+            "description": "<p>The lastname of the new user.</p>"
           }
         ]
       },
@@ -3602,40 +3671,40 @@
       {
         "name": "user",
         "title": "Authenticated user",
-        "description": "<p>The user needs to be authenticated.</p> "
+        "description": "<p>The user needs to be authenticated.</p>"
       }
     ],
-    "description": "<p>This action is allowed only by session cookie authentication.</p> ",
+    "description": "<p>This action is allowed only by session cookie authentication.</p>",
     "parameter": {
       "fields": {
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "email",
-            "description": "<p>The new email address of the user. Must be unique for all users. If this parameter is set, an additional <code>old_password</code> needs to be present, containing the user's current password.</p> "
+            "description": "<p>The new email address of the user. Must be unique for all users. If this parameter is set, an additional <code>old_password</code> needs to be present, containing the user's current password.</p>"
           },
           {
             "group": "Attributes that can be updated",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "password",
-            "description": "<p>The new password of the user. If this parameter is set, an additional <code>password_confirmation</code> parameter needs to be present, containing the same new password, as well as an <code>old_password</code> parameter, containing the old password.</p> "
+            "description": "<p>The new password of the user. If this parameter is set, an additional <code>password_confirmation</code> parameter needs to be present, containing the same new password, as well as an <code>old_password</code> parameter, containing the old password.</p>"
           },
           {
             "group": "Attributes that can be updated",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "firstname",
-            "description": "<p>The new firstname of the user.</p> "
+            "description": "<p>The new firstname of the user.</p>"
           },
           {
             "group": "Attributes that can be updated",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "lastname",
-            "description": "<p>The new lastname of the user.</p> "
+            "description": "<p>The new lastname of the user.</p>"
           }
         ]
       },
@@ -3661,49 +3730,49 @@
       {
         "name": "admin",
         "title": "Authenticated admin",
-        "description": "<p>The user needs to be global admin.</p> "
+        "description": "<p>The user needs to be global admin.</p>"
       }
     ],
-    "description": "<p>This action is allowed only by session cookie authentication.</p> ",
+    "description": "<p>This action is allowed only by session cookie authentication.</p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>The user ID.</p> "
+            "description": "<p>The user ID.</p>"
           }
         ],
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "email",
-            "description": "<p>The new email address of the user. Must be unique for all users.</p> "
+            "description": "<p>The new email address of the user. Must be unique for all users.</p>"
           },
           {
             "group": "Attributes that can be updated",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "password",
-            "description": "<p>The new password of the user. If this parameter is set, an additional <code>password_confirmation</code> parameter needs to be present, containing the same new password.</p> "
+            "description": "<p>The new password of the user. If this parameter is set, an additional <code>password_confirmation</code> parameter needs to be present, containing the same new password.</p>"
           },
           {
             "group": "Attributes that can be updated",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "firstname",
-            "description": "<p>The new firstname of the user.</p> "
+            "description": "<p>The new firstname of the user.</p>"
           },
           {
             "group": "Attributes that can be updated",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "lastname",
-            "description": "<p>The new lastname of the user.</p> "
+            "description": "<p>The new lastname of the user.</p>"
           }
         ]
       },

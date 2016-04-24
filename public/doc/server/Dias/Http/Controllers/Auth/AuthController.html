@@ -88,7 +88,7 @@
     <div class="container-fluid underlined">
                     <div class="row">
                 <div class="col-md-6">
-                                            <abbr title="Illuminate\Foundation\Auth\AuthenticatesUsers">Illuminate\Foundation\Auth\AuthenticatesUsers</abbr>
+                                            <abbr title="Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers">AuthenticatesAndRegistersUsers</abbr>
                                     </div>
                 <div class="col-md-6">
                     
@@ -96,7 +96,7 @@
             </div>
                     <div class="row">
                 <div class="col-md-6">
-                                            <abbr title="Illuminate\Foundation\Auth\ThrottlesLogins">Illuminate\Foundation\Auth\ThrottlesLogins</abbr>
+                                            <abbr title="Illuminate\Foundation\Auth\ThrottlesLogins">ThrottlesLogins</abbr>
                                     </div>
                 <div class="col-md-6">
                     
@@ -104,7 +104,7 @@
             </div>
                     <div class="row">
                 <div class="col-md-6">
-                                            <abbr title="Illuminate\Foundation\Bus\DispatchesJobs">Illuminate\Foundation\Bus\DispatchesJobs</abbr>
+                                            <abbr title="Illuminate\Foundation\Auth\Access\AuthorizesRequests">AuthorizesRequests</abbr>
                                     </div>
                 <div class="col-md-6">
                     
@@ -112,7 +112,23 @@
             </div>
                     <div class="row">
                 <div class="col-md-6">
-                                            <abbr title="Illuminate\Foundation\Validation\ValidatesRequests">Illuminate\Foundation\Validation\ValidatesRequests</abbr>
+                                            <abbr title="Illuminate\Foundation\Auth\Access\AuthorizesResources">AuthorizesResources</abbr>
+                                    </div>
+                <div class="col-md-6">
+                    
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <abbr title="Illuminate\Foundation\Bus\DispatchesJobs">DispatchesJobs</abbr>
+                                    </div>
+                <div class="col-md-6">
+                    
+                </div>
+            </div>
+                    <div class="row">
+                <div class="col-md-6">
+                                            <abbr title="Illuminate\Foundation\Validation\ValidatesRequests">ValidatesRequests</abbr>
                                     </div>
                 <div class="col-md-6">
                     
@@ -121,6 +137,20 @@
             </div>
     
     
+            <h2>Properties</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td class="type" id="property_redirectTo">
+                                        protected                                        
+    string
+                </td>
+                <td>$redirectTo</td>
+                <td class="last">Where to redirect users after login / registration.</td>
+                <td></td>
+            </tr>
+            </table>
+
     
             <h2>Methods</h2>
 
@@ -132,11 +162,10 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_isAutomatedRequest">isAutomatedRequest</a>(
-    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request)
+    <abbr title="Illuminate\Http\Request">Request</abbr> $request)
                                             <p>Determines if the request was done by an automated script (with API
 token or ajax).</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;
-    <a href="../../../../Dias/Http/Controllers/Controller.html#method_isAutomatedRequest"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a></small></div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/Controller.html#method_isAutomatedRequest"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
@@ -145,11 +174,10 @@ token or ajax).</p>                </div>
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_buildFailedValidationResponse">buildFailedValidationResponse</a>(
-    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request, 
+    <abbr title="Illuminate\Http\Request">Request</abbr> $request, 
     array $errors)
                                             <p>Create the response for when a request fails validation.</p>                </div>
-                <div class="col-md-2"><small>from&nbsp;
-    <a href="../../../../Dias/Http/Controllers/Controller.html#method_buildFailedValidationResponse"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a></small></div>
+                <div class="col-md-2"><small>from&nbsp;<a href="../../../../Dias/Http/Controllers/Controller.html#method_buildFailedValidationResponse"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a></small></div>
             </div>
                     <div class="row">
                 <div class="col-md-2 type">
@@ -191,12 +219,11 @@ token or ajax).</p>                </div>
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method_isAutomatedRequest">
-        <div class="location">in 
-    <a href="../../../../Dias/Http/Controllers/Controller.html#method_isAutomatedRequest"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a> at line 23</div>
+        <div class="location">in <a href="../../../../Dias/Http/Controllers/Controller.html#method_isAutomatedRequest"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a> at line         line 25</div>
         <code>        static            
     bool
     <strong>isAutomatedRequest</strong>(
-    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request)</code>
+    <abbr title="Illuminate\Http\Request">Request</abbr> $request)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -208,7 +235,7 @@ token or ajax).</p>                                </div>
                     <table class="table table-condensed">
                     <tr>
                 <td>
-    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr></td>
+    <abbr title="Illuminate\Http\Request">Request</abbr></td>
                 <td>$request</td>
                 <td></td>
             </tr>
@@ -233,12 +260,11 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_buildFailedValidationResponse">
-        <div class="location">in 
-    <a href="../../../../Dias/Http/Controllers/Controller.html#method_buildFailedValidationResponse"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a> at line 36</div>
+        <div class="location">in <a href="../../../../Dias/Http/Controllers/Controller.html#method_buildFailedValidationResponse"><abbr title="Dias\Http\Controllers\Controller">Controller</abbr></a> at line         line 38</div>
         <code>            protected        
     <abbr title="Illuminate\Http\Response">Response</abbr>
     <strong>buildFailedValidationResponse</strong>(
-    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr> $request, 
+    <abbr title="Illuminate\Http\Request">Request</abbr> $request, 
     array $errors)</code>
     </h3>
     <div class="details">
@@ -250,7 +276,7 @@ token or ajax).</p>                                </div>
                     <table class="table table-condensed">
                     <tr>
                 <td>
-    <abbr title="Dias\Http\Controllers\Illuminate\Http\Request">Request</abbr></td>
+    <abbr title="Illuminate\Http\Request">Request</abbr></td>
                 <td>$request</td>
                 <td></td>
             </tr>
@@ -281,7 +307,7 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method___construct">
-        <div class="location">at line 32</div>
+        <div class="location">at line         line 38</div>
         <code>                    
     void
     <strong>__construct</strong>()</code>
@@ -309,8 +335,8 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_validator">
-        <div class="location">at line 45</div>
-        <code>                    
+        <div class="location">at line         line 49</div>
+        <code>            protected        
     <abbr title="Illuminate\Contracts\Validation\Validator">Validator</abbr>
     <strong>validator</strong>(
     array $data)</code>
@@ -349,8 +375,8 @@ token or ajax).</p>                                </div>
             </div>
                     <div class="method-item">
                     <h3 id="method_create">
-        <div class="location">at line 56</div>
-        <code>                    
+        <div class="location">at line         line 60</div>
+        <code>            protected        
     <a href="../../../../Dias/User.html"><abbr title="Dias\User">User</abbr></a>
     <strong>create</strong>(
     array $data)</code>

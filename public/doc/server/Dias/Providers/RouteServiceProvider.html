@@ -91,7 +91,7 @@
     string
                 </td>
                 <td>$namespace</td>
-                <td class="last">This namespace is applied to the controller routes in your routes file.</td>
+                <td class="last">This namespace is applied to your controller routes.</td>
                 <td></td>
             </tr>
             </table>
@@ -107,7 +107,7 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_boot">boot</a>(
-    <abbr title="Dias\Providers\Illuminate\Routing\Router">Router</abbr> $router)
+    <abbr title="Illuminate\Routing\Router">Router</abbr> $router)
                                             <p>Define your route model bindings, pattern filters, etc.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
@@ -118,8 +118,19 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_map">map</a>(
-    <abbr title="Dias\Providers\Illuminate\Routing\Router">Router</abbr> $router)
+    <abbr title="Illuminate\Routing\Router">Router</abbr> $router)
                                             <p>Define the routes for the application.</p>                </div>
+                <div class="col-md-2"></div>
+            </div>
+                    <div class="row">
+                <div class="col-md-2 type">
+                    
+    void
+                </div>
+                <div class="col-md-8 type">
+                    <a href="#method_mapWebRoutes">mapWebRoutes</a>(
+    <abbr title="Illuminate\Routing\Router">Router</abbr> $router)
+                                            <p>Define the "web" routes for the application.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
             </div>
@@ -130,11 +141,11 @@
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method_boot">
-        <div class="location">at line 25</div>
+        <div class="location">at line         line 25</div>
         <code>                    
     void
     <strong>boot</strong>(
-    <abbr title="Dias\Providers\Illuminate\Routing\Router">Router</abbr> $router)</code>
+    <abbr title="Illuminate\Routing\Router">Router</abbr> $router)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -145,7 +156,7 @@
                     <table class="table table-condensed">
                     <tr>
                 <td>
-    <abbr title="Dias\Providers\Illuminate\Routing\Router">Router</abbr></td>
+    <abbr title="Illuminate\Routing\Router">Router</abbr></td>
                 <td>$router</td>
                 <td></td>
             </tr>
@@ -170,11 +181,11 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_map">
-        <div class="location">at line 38</div>
+        <div class="location">at line         line 38</div>
         <code>                    
     void
     <strong>map</strong>(
-    <abbr title="Dias\Providers\Illuminate\Routing\Router">Router</abbr> $router)</code>
+    <abbr title="Illuminate\Routing\Router">Router</abbr> $router)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
@@ -185,7 +196,47 @@
                     <table class="table table-condensed">
                     <tr>
                 <td>
-    <abbr title="Dias\Providers\Illuminate\Routing\Router">Router</abbr></td>
+    <abbr title="Illuminate\Routing\Router">Router</abbr></td>
+                <td>$router</td>
+                <td></td>
+            </tr>
+            </table>
+
+            
+                            <h4>Return Value</h4>
+
+                    <table class="table table-condensed">
+        <tr>
+            <td>
+    void</td>
+            <td></td>
+        </tr>
+    </table>
+
+            
+            
+                    </div>
+    </div>
+
+            </div>
+                    <div class="method-item">
+                    <h3 id="method_mapWebRoutes">
+        <div class="location">at line         line 53</div>
+        <code>            protected        
+    void
+    <strong>mapWebRoutes</strong>(
+    <abbr title="Illuminate\Routing\Router">Router</abbr> $router)</code>
+    </h3>
+    <div class="details">
+                    <div class="method-description">
+                                    <p>Define the "web" routes for the application.</p>                    <p>These routes all receive session state, CSRF protection, etc.</p>            </div>
+                <div class="tags">
+                            <h4>Parameters</h4>
+
+                    <table class="table table-condensed">
+                    <tr>
+                <td>
+    <abbr title="Illuminate\Routing\Router">Router</abbr></td>
                 <td>$router</td>
                 <td></td>
             </tr>

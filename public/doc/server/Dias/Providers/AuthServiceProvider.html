@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="robots" content="index, follow, all" />
-    <title>Dias\Providers\BusServiceProvider | BIIGLE DIAS Server Documentation</title>
+    <title>Dias\Providers\AuthServiceProvider | BIIGLE DIAS Server Documentation</title>
 
             <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="../../css/bootstrap-theme.min.css">
@@ -19,7 +19,7 @@
     
     </head>
 
-    <body id="class" data-name="class:Dias_Providers_BusServiceProvider" data-root-path="../../">
+    <body id="class" data-name="class:Dias_Providers_AuthServiceProvider" data-root-path="../../">
             <div id="content">
         <div id="left-column">
                 <div id="control-panel">
@@ -66,22 +66,36 @@
                                                             <li><a href="../../Dias.html">Dias</a></li>
                                         <li><a href="../../Dias/Providers.html">Providers</a></li>
     
-                <li>BusServiceProvider</li>
+                <li>AuthServiceProvider</li>
             </ol>
         </div>
                 <div id="page-content">
                 
     <div class="page-header">
-        <h1>BusServiceProvider</h1>
+        <h1>AuthServiceProvider</h1>
     </div>
 
     <p>    class
-    <strong>BusServiceProvider</strong>        extends <abbr title="Illuminate\Support\ServiceProvider">ServiceProvider</abbr>
+    <strong>AuthServiceProvider</strong>        extends <abbr title="Illuminate\Foundation\Support\Providers\AuthServiceProvider">AuthServiceProvider</abbr>
 </p>
 
     
     
     
+            <h2>Properties</h2>
+
+            <table class="table table-condensed">
+                    <tr>
+                <td class="type" id="property_policies">
+                                        protected                                        
+    array
+                </td>
+                <td>$policies</td>
+                <td class="last">The policy mappings for the application.</td>
+                <td></td>
+            </tr>
+            </table>
+
     
             <h2>Methods</h2>
 
@@ -93,18 +107,8 @@
                 </div>
                 <div class="col-md-8 type">
                     <a href="#method_boot">boot</a>(
-    <abbr title="Dias\Providers\Illuminate\Bus\Dispatcher">Dispatcher</abbr> $dispatcher)
-                                            <p>Bootstrap any application services.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-    void
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_register">register</a>()
-                                            <p>Register any application services.</p>                </div>
+    <abbr title="Illuminate\Contracts\Auth\Access\Gate">Gate</abbr> $gate)
+                                            <p>Register any application authentication / authorization services.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
             </div>
@@ -115,55 +119,27 @@
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method_boot">
-        <div class="location">at line 16</div>
+        <div class="location">at line         line 25</div>
         <code>                    
     void
     <strong>boot</strong>(
-    <abbr title="Dias\Providers\Illuminate\Bus\Dispatcher">Dispatcher</abbr> $dispatcher)</code>
+    <abbr title="Illuminate\Contracts\Auth\Access\Gate">Gate</abbr> $gate)</code>
     </h3>
     <div class="details">
                     <div class="method-description">
-                                    <p>Bootstrap any application services.</p>                                </div>
+                                    <p>Register any application authentication / authorization services.</p>                                </div>
                 <div class="tags">
                             <h4>Parameters</h4>
 
                     <table class="table table-condensed">
                     <tr>
                 <td>
-    <abbr title="Dias\Providers\Illuminate\Bus\Dispatcher">Dispatcher</abbr></td>
-                <td>$dispatcher</td>
+    <abbr title="Illuminate\Contracts\Auth\Access\Gate">Gate</abbr></td>
+                <td>$gate</td>
                 <td></td>
             </tr>
             </table>
 
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    void</td>
-            <td></td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_register">
-        <div class="location">at line 30</div>
-        <code>                    
-    void
-    <strong>register</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Register any application services.</p>                                </div>
-                <div class="tags">
             
                             <h4>Return Value</h4>
 
