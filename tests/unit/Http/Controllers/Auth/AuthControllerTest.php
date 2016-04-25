@@ -63,6 +63,14 @@ class AuthControllerTest extends TestCase
         $this->assertRedirectedTo('/');
     }
 
+    public function testLogout()
+    {
+        $this->be(UserTest::create());
+        $this->seeIsAuthenticated();
+        $this->get('/auth/logout');
+        $this->dontSeeIsAuthenticated();
+    }
+
     // public function testRegisterRoute()
     // {
     //     $this->get('/auth/register');
