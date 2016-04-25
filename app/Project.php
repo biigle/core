@@ -2,11 +2,11 @@
 
 namespace Dias;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Dias\Model\ModelWithAttributes;
 use Dias\Contracts\BelongsToProjectContract;
 
-class Project extends ModelWithAttributes implements BelongsToProjectContract
+class Project extends Model implements BelongsToProjectContract
 {
     /**
      * Validation rules for creating a new project.

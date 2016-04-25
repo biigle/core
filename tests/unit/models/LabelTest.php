@@ -2,7 +2,7 @@
 
 use Dias\Label;
 
-class LabelTest extends ModelWithAttributesTest
+class LabelTest extends ModelTestCase
 {
     /**
      * The model class this class will test.

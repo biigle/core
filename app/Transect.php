@@ -2,8 +2,8 @@
 
 namespace Dias;
 
+use Illuminate\Database\Eloquent\Model;
 use Dias\Contracts\BelongsToProjectContract;
-use Dias\Model\ModelWithAttributes;
 use Dias\Image;
 use Cache;
 use Dias\Jobs\GenerateThumbnails;
@@ -13,7 +13,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
  * A transect is a collection of images. Transects belong to one or many
  * projects.
  */
-class Transect extends ModelWithAttributes implements BelongsToProjectContract
+class Transect extends Model implements BelongsToProjectContract
 {
 
     use DispatchesJobs;

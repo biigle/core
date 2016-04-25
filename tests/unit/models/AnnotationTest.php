@@ -3,7 +3,7 @@
 use Dias\Annotation;
 use Dias\Shape;
 
-class AnnotationTest extends ModelWithAttributesTest
+class AnnotationTest extends ModelTestCase
 {
     /**
      * The model class this class will test.

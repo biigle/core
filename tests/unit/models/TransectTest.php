@@ -2,7 +2,7 @@
 
 use Dias\Transect;
 
-class TransectTest extends ModelWithAttributesTest
+class TransectTest extends ModelTestCase
 {
     /**
      * The model class this class will test.

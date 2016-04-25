@@ -2,7 +2,7 @@
 
 use Dias\Image;
 
-class ImageTest extends ModelWithAttributesTest
+class ImageTest extends ModelTestCase
 {
     /**
      * The model class this class will test.

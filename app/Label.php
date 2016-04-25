@@ -2,7 +2,7 @@
 
 namespace Dias;
 
-use Dias\Model\ModelWithAttributes;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Annotations on an image can have multiple labels. A label is e.g. the
@@ -12,7 +12,7 @@ use Dias\Model\ModelWithAttributes;
  *
  * Labels can be ordered in a tree-like structure.
  */
-class Label extends ModelWithAttributes
+class Label extends Model
 {
     /**
      * Validation rules for creating a new label.

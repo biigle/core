@@ -2,7 +2,7 @@
 
 use Dias\User;
 
-class ApiUserControllerTest extends ModelWithAttributesApiTest
+class ApiUserControllerTest extends ApiTestCase
 {
     private function callToken($verb, $route, $user)
     {
@@ -15,18 +15,6 @@ class ApiUserControllerTest extends ModelWithAttributesApiTest
             'PHP_AUTH_USER' => $user->email,
             'PHP_AUTH_PW' => 'test_token',
         ]);
-    }
-
-    protected function getEndpoint()
-    {
-        return '/api/v1/users';
-    }
-
-    protected function getModel()
-    {
-        $model = UserTest::create();
-
-        return $model;
     }
 
     public function testIndex()

@@ -1,26 +1,14 @@
 <?php
 
-class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
+class ApiAnnotationControllerTest extends ApiTestCase
 {
-    protected function getEndpoint()
-    {
-        return '/api/v1/annotations';
-    }
-
-    protected function getModel()
-    {
-        $annotation = AnnotationTest::create();
-        $this->project()->addTransectId($annotation->image->transect->id);
-
-        return $annotation;
-    }
-
     private $annotation;
 
     public function setUp()
     {
         parent::setUp();
-        $this->annotation = $this->getModel();
+        $this->annotation = AnnotationTest::create();
+        $this->project()->addTransectId($this->annotation->image->transect->id);
     }
 
     public function testShow()
@@ -36,23 +24,23 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
             'annotation_id' => $id,
             'index' => 0,
         ])->fresh();
-        $this->doTestApiRoute('GET', $this->getEndpoint().'/'.$id);
+        $this->doTestApiRoute('GET', "api/v1/annotations/{$id}");
 
         $this->beEditor();
-        $this->get($this->getEndpoint().'/'.$id);
+        $this->get("api/v1/annotations/{$id}");
         $this->assertResponseOk();
 
         $this->beGuest();
-        $this->get($this->getEndpoint().'/'.$id);
+        $this->get("api/v1/annotations/{$id}");
         $this->assertResponseOk();
 
         $this->beUser();
-        $this->get($this->getEndpoint().'/'.$id);
+        $this->get("api/v1/annotations/{$id}");
         $this->assertResponseStatus(401);
 
         // session cookie authentication
         $this->beAdmin();
-        $this->get($this->getEndpoint().'/'.$id)
+        $this->get("api/v1/annotations/{$id}")
             ->seeJson([
                 'points' => [
                     ['x' => $point2->x, 'y' => $point2->y],
@@ -71,10 +59,10 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
     {
         $id = $this->annotation->id;
 
-        $this->doTestApiRoute('PUT', $this->getEndpoint().'/'.$id);
+        $this->doTestApiRoute('PUT', "api/v1/annotations/{$id}");
 
         $this->beUser();
-        $this->put($this->getEndpoint().'/'.$id);
+        $this->put("api/v1/annotations/{$id}");
         $this->assertResponseStatus(401);
 
         $this->annotation->addPoint(10, 10);
@@ -83,7 +71,7 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
 
         // api key authentication
         $this->beAdmin();
-        $this->put($this->getEndpoint().'/'.$id, [
+        $this->put("api/v1/annotations/{$id}", [
             'points' => '[{"x":10, "y":15}, {"x": 100, "y": 200}]',
         ]);
         $this->assertResponseOk();
@@ -100,7 +88,7 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
         $this->annotation->save();
 
         $this->beAdmin();
-        $this->json('PUT', $this->getEndpoint().'/'.$id, [
+        $this->json('PUT', "api/v1/annotations/{$id}", [
             'points' => '[{"x":10, "y":15}, {"x": 100, "y": 200}]',
         ]);
         // invalid number of points
@@ -111,16 +99,16 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
     {
         $id = $this->annotation->id;
 
-        $this->doTestApiRoute('DELETE', $this->getEndpoint().'/'.$id);
+        $this->doTestApiRoute('DELETE', "api/v1/annotations/{$id}");
 
         $this->beUser();
-        $this->delete($this->getEndpoint().'/'.$id);
+        $this->delete("api/v1/annotations/{$id}");
         $this->assertResponseStatus(401);
 
         $this->assertNotNull($this->annotation->fresh());
 
         $this->beAdmin();
-        $this->delete($this->getEndpoint().'/'.$id);
+        $this->delete("api/v1/annotations/{$id}");
         $this->assertResponseOk();
 
         $this->assertNull($this->annotation->fresh());
@@ -130,20 +118,20 @@ class ApiAnnotationControllerTest extends ModelWithAttributesApiTest
         $id = $this->annotation->id;
 
         $this->beUser();
-        $this->delete($this->getEndpoint().'/'.$id);
+        $this->delete("api/v1/annotations/{$id}");
         $this->assertResponseStatus(401);
 
         $this->beGuest();
-        $this->delete($this->getEndpoint().'/'.$id);
+        $this->delete("api/v1/annotations/{$id}");
         $this->assertResponseStatus(401);
 
         $this->beEditor();
-        $this->delete($this->getEndpoint().'/'.$id);
+        $this->delete("api/v1/annotations/{$id}");
         $this->assertResponseOk();
 
         // admin could delete but the annotation was already deleted
         $this->beAdmin();
-        $this->delete($this->getEndpoint().'/'.$id, [
+        $this->delete("api/v1/annotations/{$id}", [
             '_token' => Session::token(),
         ]);
         $this->assertResponseStatus(404);

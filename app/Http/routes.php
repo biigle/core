@@ -84,20 +84,12 @@ $router->group([
         'only' => ['show', 'update', 'destroy'],
     ]);
 
-    $router->resource('annotations.attributes', 'AnnotationAttributeController', [
-        'only' => ['index', 'show', 'store', 'update', 'destroy'],
-    ]);
-
     $router->resource('annotations.labels', 'AnnotationLabelController', [
         'only' => ['index', 'store'],
     ]);
 
     $router->resource('annotation-labels', 'AnnotationLabelController', [
         'only' => ['update', 'destroy'],
-    ]);
-
-    $router->resource('attributes', 'AttributeController', [
-        'only' => ['index', 'show', 'store', 'destroy'],
     ]);
 
     $router->get('images/{id}/thumb', 'ImageController@showThumb');
@@ -110,15 +102,7 @@ $router->group([
         'only' => ['index', 'store'],
     ]);
 
-    $router->resource('images.attributes', 'ImageAttributeController', [
-        'only' => ['index', 'show', 'store', 'update', 'destroy'],
-    ]);
-
     $router->resource('labels', 'LabelController', [
-        'only' => ['index', 'show', 'store', 'update', 'destroy'],
-    ]);
-
-    $router->resource('labels.attributes', 'LabelAttributeController', [
         'only' => ['index', 'show', 'store', 'update', 'destroy'],
     ]);
 
@@ -129,10 +113,6 @@ $router->group([
     $router->get('projects/my', 'ProjectController@index');
     $router->resource('projects', 'ProjectController', [
         'only' => ['show', 'update', 'store', 'destroy'],
-    ]);
-
-    $router->resource('projects.attributes', 'ProjectAttributeController', [
-        'only' => ['index', 'show', 'store', 'update', 'destroy'],
     ]);
 
     $router->resource('projects.labels', 'ProjectLabelController', [
@@ -167,10 +147,6 @@ $router->group([
         'only' => ['show', 'update'],
     ]);
 
-    $router->resource('transects.attributes', 'TransectAttributeController', [
-        'only' => ['index', 'show', 'store', 'update', 'destroy'],
-    ]);
-
     $router->resource('transects.images', 'TransectImageController', [
         'only' => ['index'],
     ]);
@@ -191,9 +167,5 @@ $router->group([
 
     $router->resource('users', 'UserController', [
         'only' => ['index', 'show', 'update', 'store', 'destroy'],
-    ]);
-
-    $router->resource('users.attributes', 'UserAttributeController', [
-        'only' => ['index', 'show', 'store', 'update', 'destroy'],
     ]);
 });

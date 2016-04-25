@@ -3,7 +3,7 @@
 use Dias\User;
 use Dias\Role;
 
-class UserTest extends ModelWithAttributesTest
+class UserTest extends ModelTestCase
 {
     /**
      * The model class this class will test.

@@ -2,8 +2,8 @@
 
 namespace Dias;
 
+use Illuminate\Database\Eloquent\Model;
 use Dias\Contracts\BelongsToProjectContract;
-use Dias\Model\ModelWithAttributes;
 use Response;
 use File;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 /**
  * This model stores information on an image file in the file system.
  */
-class Image extends ModelWithAttributes implements BelongsToProjectContract
+class Image extends Model implements BelongsToProjectContract
 {
     /**
      * Validation rules for creating a new annotation in an image.

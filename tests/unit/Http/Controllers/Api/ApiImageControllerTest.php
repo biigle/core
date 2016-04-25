@@ -4,20 +4,8 @@ use Dias\Image;
 use Dias\Transect;
 use Dias\Services\Thumbnails\InterventionImage;
 
-class ApiImageControllerTest extends ModelWithAttributesApiTest
+class ApiImageControllerTest extends ApiTestCase
 {
-    protected function getEndpoint()
-    {
-        return '/api/v1/images';
-    }
-
-    protected function getModel()
-    {
-        $model = ImageTest::create();
-        $this->project()->addTransectId($model->transect->id);
-
-        return $model;
-    }
 
     private $image;
 

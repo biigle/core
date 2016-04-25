@@ -3,17 +3,8 @@
 use Dias\Project;
 use Dias\Role;
 
-class ApiProjectControllerTest extends ModelWithAttributesApiTest
+class ApiProjectControllerTest extends ApiTestCase
 {
-    protected function getEndpoint()
-    {
-        return '/api/v1/projects';
-    }
-
-    protected function getModel()
-    {
-        return $this->project();
-    }
 
     public function testIndex()
     {
@@ -34,17 +25,19 @@ class ApiProjectControllerTest extends ModelWithAttributesApiTest
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/projects/1');
+        // create project
+        $id = $this->project()->id;
+        $this->doTestApiRoute('GET', "/api/v1/projects/{$id}");
 
         $this->beUser();
-        $this->get('/api/v1/projects/1');
+        $this->get("/api/v1/projects/{$id}");
         $this->assertResponseStatus(401);
 
         $this->beAdmin();
         $this->get('/api/v1/projects/999');
         $this->assertResponseStatus(404);
 
-        $this->get('/api/v1/projects/1');
+        $this->get("/api/v1/projects/{$id}");
         $content = $this->response->getContent();
         $this->assertResponseOk();
 

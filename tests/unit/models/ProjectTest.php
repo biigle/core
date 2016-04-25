@@ -4,7 +4,7 @@ use Dias\Project;
 use Dias\Role;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class ProjectTest extends ModelWithAttributesTest
+class ProjectTest extends ModelTestCase
 {
     /**
      * The model class this class will test.

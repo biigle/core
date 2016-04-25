@@ -2,20 +2,13 @@
 
 use Dias\Label;
 
-class ApiLabelControllerTest extends ModelWithAttributesApiTest
+class ApiLabelControllerTest extends ApiTestCase
 {
-    protected function getEndpoint()
-    {
-        return '/api/v1/labels';
-    }
-
-    protected function getModel()
-    {
-        return LabelTest::create();
-    }
 
     public function testIndex()
     {
+        // create a label
+        $this->labelRoot();
         $this->doTestApiRoute('GET', '/api/v1/labels/');
 
         $this->beUser();
