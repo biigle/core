@@ -17,6 +17,7 @@ class TransectTest extends ModelTestCase
         $this->assertNotNull($this->model->creator_id);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
+        // $this->assertNotNull($this->model->attrs);
     }
 
     public function testNameRequired()
@@ -109,5 +110,12 @@ class TransectTest extends ModelTestCase
         $this->model = $this->model->fresh();
         $this->assertNotEmpty($this->model->images);
         $this->assertEquals('1.jpg', $this->model->images()->first()->filename);
+    }
+
+    public function testCastsAttrs()
+    {
+        $this->model->attrs = [1, 2, 3];
+        $this->model->save();
+        $this->assertEquals([1, 2, 3], $this->model->fresh()->attrs);
     }
 }

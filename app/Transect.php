@@ -37,6 +37,16 @@ class Transect extends Model implements BelongsToProjectContract
      */
     protected $hidden = [
         'pivot',
+        'attrs',
+    ];
+
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'attrs' => 'array',
     ];
 
     /**
