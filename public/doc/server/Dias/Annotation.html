@@ -114,6 +114,15 @@
                 <td class="last">The attributes excluded from the model's JSON form.</td>
                 <td></td>
             </tr>
+                    <tr>
+                <td class="type" id="property_casts">
+                                        protected                                        
+    array
+                </td>
+                <td>$casts</td>
+                <td class="last">The attributes that should be casted to native types.</td>
+                <td></td>
+            </tr>
             </table>
 
     
@@ -157,26 +166,6 @@
     <abbr title="Illuminate\Database\Eloquent\Relations\HasMany">HasMany</abbr>
                 </div>
                 <div class="col-md-8 type">
-                    <a href="#method_points">points</a>()
-                                            <p>The points, this annotation consists of, ordered by index</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-    <abbr title="Illuminate\Database\Eloquent\Relations\HasMany">HasMany</abbr>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_unorderedPoints">unorderedPoints</a>()
-                                            <p>The points, this annotation consists of, <em>not</em> ordered by index</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-    <abbr title="Illuminate\Database\Eloquent\Relations\HasMany">HasMany</abbr>
-                </div>
-                <div class="col-md-8 type">
                     <a href="#method_labels">labels</a>()
                                             <p>The labels, this annotation got assigned by the users.</p>                </div>
                 <div class="col-md-2"></div>
@@ -189,40 +178,6 @@
                 <div class="col-md-8 type">
                     <a href="#method_projectIds">projectIds</a>()
                                             <p>Returns an array of project IDs this model (indirectly) belongs to.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-    <a href="../Dias/AnnotationPoint.html"><abbr title="Dias\AnnotationPoint">AnnotationPoint</abbr></a>
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_addPoint">addPoint</a>(
-    int $x, 
-    int $y)
-                                            <p>Adds a new point to this annotation.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-    
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_addPoints">addPoints</a>(
-    array $points)
-                                            <p>Adds an array of points to this annotation.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
-    
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_refreshPoints">refreshPoints</a>(
-    array $points)
-                                            <p>Replaces the current points with the given ones.</p>                </div>
                 <div class="col-md-2"></div>
             </div>
                     <div class="row">
@@ -246,7 +201,7 @@
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method_validatePoints">
-        <div class="location">at line         line 53</div>
+        <div class="location">at line         line 62</div>
         <code>                    
     
     <strong>validatePoints</strong>(
@@ -285,7 +240,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_image">
-        <div class="location">at line         line 108</div>
+        <div class="location">at line         line 99</div>
         <code>                    
     <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
     <strong>image</strong>()</code>
@@ -313,7 +268,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_shape">
-        <div class="location">at line         line 118</div>
+        <div class="location">at line         line 109</div>
         <code>                    
     <abbr title="Illuminate\Database\Eloquent\Relations\BelongsTo">BelongsTo</abbr>
     <strong>shape</strong>()</code>
@@ -340,64 +295,8 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_points">
-        <div class="location">at line         line 128</div>
-        <code>                    
-    <abbr title="Illuminate\Database\Eloquent\Relations\HasMany">HasMany</abbr>
-    <strong>points</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The points, this annotation consists of, ordered by index</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    <abbr title="Illuminate\Database\Eloquent\Relations\HasMany">HasMany</abbr></td>
-            <td></td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_unorderedPoints">
-        <div class="location">at line         line 138</div>
-        <code>                    
-    <abbr title="Illuminate\Database\Eloquent\Relations\HasMany">HasMany</abbr>
-    <strong>unorderedPoints</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>The points, this annotation consists of, <em>not</em> ordered by index</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    <abbr title="Illuminate\Database\Eloquent\Relations\HasMany">HasMany</abbr></td>
-            <td></td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
                     <h3 id="method_labels">
-        <div class="location">at line         line 148</div>
+        <div class="location">at line         line 119</div>
         <code>                    
     <abbr title="Illuminate\Database\Eloquent\Relations\HasMany">HasMany</abbr>
     <strong>labels</strong>()</code>
@@ -425,7 +324,7 @@
             </div>
                     <div class="method-item">
                     <h3 id="method_projectIds">
-        <div class="location">at line         line 157</div>
+        <div class="location">at line         line 128</div>
         <code>                    
     array
     <strong>projectIds</strong>()</code>
@@ -452,116 +351,8 @@
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_addPoint">
-        <div class="location">at line         line 169</div>
-        <code>                    
-    <a href="../Dias/AnnotationPoint.html"><abbr title="Dias\AnnotationPoint">AnnotationPoint</abbr></a>
-    <strong>addPoint</strong>(
-    int $x, 
-    int $y)</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Adds a new point to this annotation.</p>                                </div>
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td>
-    int</td>
-                <td>$x</td>
-                <td>x position of the point</td>
-            </tr>
-                    <tr>
-                <td>
-    int</td>
-                <td>$y</td>
-                <td>y position of the point</td>
-            </tr>
-            </table>
-
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    <a href="../Dias/AnnotationPoint.html"><abbr title="Dias\AnnotationPoint">AnnotationPoint</abbr></a></td>
-            <td></td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_addPoints">
-        <div class="location">at line         line 188</div>
-        <code>                    
-    
-    <strong>addPoints</strong>(
-    array $points)</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Adds an array of points to this annotation.</p>                    <p>A point may be an associative array <code>['x'=&gt;10, 'y'=&gt;10]</code> or an object
-<code>{x =&gt; 10, y =&gt; 10}</code>.</p>            </div>
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td>
-    array</td>
-                <td>$points</td>
-                <td>array of point arrays or objects</td>
-            </tr>
-            </table>
-
-            
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
-                    <h3 id="method_refreshPoints">
-        <div class="location">at line         line 206</div>
-        <code>                    
-    
-    <strong>refreshPoints</strong>(
-    array $points)</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Replaces the current points with the given ones.</p>                    <p>Does nothing if the given array is empty.</p>            </div>
-                <div class="tags">
-                            <h4>Parameters</h4>
-
-                    <table class="table table-condensed">
-                    <tr>
-                <td>
-    array</td>
-                <td>$points</td>
-                <td>array of point arrays or objects</td>
-            </tr>
-            </table>
-
-            
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
                     <h3 id="method_addLabel">
-        <div class="location">at line         line 223</div>
+        <div class="location">at line         line 141</div>
         <code>                    
     <a href="../Dias/AnnotationLabel.html"><abbr title="Dias\AnnotationLabel">AnnotationLabel</abbr></a>
     <strong>addLabel</strong>(

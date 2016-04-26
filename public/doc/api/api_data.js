@@ -128,7 +128,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success response:",
-          "content": "{\n   \"id\":1,\n   \"image_id\":1,\n   \"shape_id\":1,\n   \"created_at\":\"2015-02-13 11:59:23\",\n   \"updated_at\":\"2015-02-13 11:59:23\",\n   \"points\": [\n       {\"x\": 100, \"y\": 200}\n   ]\n}",
+          "content": "{\n   \"id\":1,\n   \"image_id\":1,\n   \"shape_id\":1,\n   \"created_at\":\"2015-02-13 11:59:23\",\n   \"updated_at\":\"2015-02-13 11:59:23\",\n   \"points\": [100, 100]\n}",
           "type": "json"
         }
       ]
@@ -247,22 +247,22 @@ define({ "api": [
           },
           {
             "group": "Required arguments",
-            "type": "Object[]",
+            "type": "Number[]",
             "optional": false,
             "field": "points",
-            "description": "<p>Array (JSON or as String) of the initial points of the annotation. Must contain at least one point. The interpretation of the points of the different shapes is as follows: <strong>Point:</strong> The first point is the center of the annotation point. <strong>Rectangle:</strong> The first four points are the vertices of the rectangle (in the given order). <strong>Polygon:</strong> Like rectangle with one or more vertices. <strong>LineString:</strong> Like rectangle with one or more vertices. <strong>Circle:</strong> The first point is the center of the circle. The x-coordinate of the second point is the radius of the circle. The y-coordinate of the second point is ignored.</p>"
+            "description": "<p>Array (JSON or as String) of the initial points of the annotation. Must contain at least one point. The points array is interpreted as alternating x and y coordinates like this <code>[x1, y1, x2, y2...]</code>. The interpretation of the points of the different shapes is as follows: <strong>Point:</strong> The first point is the center of the annotation point. <strong>Rectangle:</strong> The first four points are the vertices of the rectangle (in the given order). <strong>Polygon:</strong> Like rectangle with one or more vertices. <strong>LineString:</strong> Like rectangle with one or more vertices. <strong>Circle:</strong> The first point is the center of the circle. The third value of the points array is the radius of the circle. A valid points array of a circle might look like this: <code>[10, 10, 5]</code>.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Request example (JSON):",
-          "content": "{\n   \"shape_id\": 3,\n   \"label_id\": 1,\n   \"confidence\": 0.75,\n   \"points\": [\n      {\"x\": 10, \"y\": 11},\n      {\"x\": 20, \"y\": 21}\n   ]\n}",
+          "content": "{\n   \"shape_id\": 3,\n   \"label_id\": 1,\n   \"confidence\": 0.75,\n   \"points\": [10, 11, 20, 21]\n}",
           "type": "JSON"
         },
         {
           "title": "Request example (String):",
-          "content": "shape_id: 1\nlabel_id: 1\nconfidence: 0.75\npoints: '[{\"x\":10,\"y\":11},{\"x\":20,\"y\":21}]'",
+          "content": "shape_id: 3\nlabel_id: 1\nconfidence: 0.75\npoints: '[10, 11, 20, 21]'",
           "type": "String"
         }
       ]
@@ -271,7 +271,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success response:",
-          "content": "{\n   \"created_at\": \"2015-02-18 11:45:00\",\n   \"id\": 1,\n   \"image_id\": 1,\n   \"shape_id\": 1,\n   \"updated_at\": \"2015-02-18 11:45:00\",\n   \"points\": [\n      {\"x\": 100, \"y\": 200}\n   ],\n   \"labels\": [\n      {\n         \"confidence\": 1,\n         \"id\": 1,\n         \"label\": {\n            \"aphia_id\": null,\n            \"color\": \"bada55\",\n            \"id\": 3,\n            \"name\": \"My label\",\n            \"parent_id\": null,\n            \"project_id\": null\n         },\n         \"user\": {\n            \"id\": 4,\n            \"name\": \"Graham Hahn\",\n            \"role_id\": 2\n         }\n      }\n   ]\n}",
+          "content": "{\n   \"created_at\": \"2015-02-18 11:45:00\",\n   \"id\": 1,\n   \"image_id\": 1,\n   \"shape_id\": 3,\n   \"updated_at\": \"2015-02-18 11:45:00\",\n   \"points\": [10, 11, 20, 21],\n   \"labels\": [\n      {\n         \"confidence\": 1,\n         \"id\": 1,\n         \"label\": {\n            \"aphia_id\": null,\n            \"color\": \"bada55\",\n            \"id\": 3,\n            \"name\": \"My label\",\n            \"parent_id\": null,\n            \"project_id\": null\n         },\n         \"user\": {\n            \"id\": 4,\n            \"name\": \"Graham Hahn\",\n            \"role_id\": 2\n         }\n      }\n   ]\n}",
           "type": "json"
         }
       ]
@@ -307,7 +307,7 @@ define({ "api": [
         "Attributes that can be updated": [
           {
             "group": "Attributes that can be updated",
-            "type": "Object[]",
+            "type": "Number[]",
             "optional": false,
             "field": "points",
             "description": "<p>Array (JSON or as String) of new points of the annotation. The new points will replace the old points. See the &quot;Create a new annotation&quot; endpoint for how the points are interpreted for different shapes.</p>"
@@ -317,12 +317,12 @@ define({ "api": [
       "examples": [
         {
           "title": "Request example (JSON):",
-          "content": "{\n   \"points\": [\n      {\"x\": 10, \"y\": 11},\n      {\"x\": 20, \"y\": 21}\n   ]\n}",
+          "content": "{\n   \"points\": [10, 11, 20, 21]\n}",
           "type": "json"
         },
         {
           "title": "Request example (String):",
-          "content": "points: '[{\"x\":10,\"y\":11},{\"x\":20,\"y\":21}]'",
+          "content": "points: '[10, 11, 20, 21]'",
           "type": "String"
         }
       ]
@@ -512,7 +512,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success response:",
-          "content": "[\n   {\n      \"created_at\": \"2015-02-18 11:45:00\",\n      \"id\": 1,\n      \"image_id\": 1,\n      \"shape_id\": 1,\n      \"updated_at\": \"2015-02-18 11:45:00\",\n      \"points\": [\n         {\"x\": 100, \"y\": 200}\n      ],\n      \"labels\": [\n         {\n            \"confidence\": 1,\n            \"id\": 1,\n            \"label\": {\n               \"aphia_id\": null,\n               \"color\": \"bada55\",\n               \"id\": 3,\n               \"name\": \"My label\",\n               \"parent_id\": null,\n               \"project_id\": null\n            },\n            \"user\": {\n               \"id\": 4,\n               \"name\": \"Graham Hahn\",\n               \"role_id\": 2\n            }\n         }\n      ]\n   }\n]",
+          "content": "[\n   {\n      \"created_at\": \"2015-02-18 11:45:00\",\n      \"id\": 1,\n      \"image_id\": 1,\n      \"shape_id\": 1,\n      \"updated_at\": \"2015-02-18 11:45:00\",\n      \"points\": [100, 200],\n      \"labels\": [\n         {\n            \"confidence\": 1,\n            \"id\": 1,\n            \"label\": {\n               \"aphia_id\": null,\n               \"color\": \"bada55\",\n               \"id\": 3,\n               \"name\": \"My label\",\n               \"parent_id\": null,\n               \"project_id\": null\n            },\n            \"user\": {\n               \"id\": 4,\n               \"name\": \"Graham Hahn\",\n               \"role_id\": 2\n            }\n         }\n      ]\n   }\n]",
           "type": "json"
         }
       ]
@@ -1616,7 +1616,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success response:",
-          "content": "[\n    {\n        \"id\":1,\n        \"filename\":\"image.jpg\",\n        \"annotations\": [\n            {\n                \"id\":1,\n                \"image_id\":1,\n                \"shape_id\":6,\n                \"labels\": [\n                   {\n                      \"id\":1,\n                      \"confidence\": 0.6,\n                      \"label\": {\n                         \"id\":3,\n                         \"name\":\"Benthic Object\",\n                         \"parent_id\":2,\n                         \"aphia_id\":null,\n                         \"project_id\":null,\n                         \"color\": \"0099ff\"\n                      },\n                      \"user\": {\n                         \"id\":13,\n                         \"role_id\":2,\n                         \"name\":\"Gudrun Schinner\"\n                      }\n                   }\n                ],\n                \"shape\": {\n                   \"id\":6,\n                   \"name\":\"Circle\"\n                },\n                \"points\": [\n                   {\"x\":4,\"y\":8}\n                ]\n            }\n        ]\n    }\n]",
+          "content": "[\n    {\n        \"id\":1,\n        \"filename\":\"image.jpg\",\n        \"annotations\": [\n            {\n                \"id\":1,\n                \"image_id\":1,\n                \"shape_id\":6,\n                \"labels\": [\n                   {\n                      \"id\":1,\n                      \"confidence\": 0.6,\n                      \"label\": {\n                         \"id\":3,\n                         \"name\":\"Benthic Object\",\n                         \"parent_id\":2,\n                         \"aphia_id\":null,\n                         \"project_id\":null,\n                         \"color\": \"0099ff\"\n                      },\n                      \"user\": {\n                         \"id\":13,\n                         \"role_id\":2,\n                         \"name\":\"Gudrun Schinner\"\n                      }\n                   }\n                ],\n                \"shape\": {\n                   \"id\":6,\n                   \"name\":\"Circle\"\n                },\n                \"points\": [4, 8]\n            }\n        ]\n    }\n]",
           "type": "json"
         }
       ]
