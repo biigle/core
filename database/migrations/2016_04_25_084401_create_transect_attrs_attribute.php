@@ -27,7 +27,7 @@ class CreateTransectAttrsAttribute extends Migration
     public function down()
     {
         Schema::table('transects', function ($table) {
-            $table->drop('attrs');
+            $table->dropColumn('attrs');
         });
     }
 }
