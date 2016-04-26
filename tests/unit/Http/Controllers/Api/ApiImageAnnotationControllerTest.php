@@ -13,18 +13,10 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
     public function testIndex()
     {
-        $annotation = AnnotationTest::create(['image_id' => $this->image->id]);
-
-        // test ordering of points, too
-        // use fresh() so numbers get strings in SQLite and stay numbers in Postgres
-        $point1 = AnnotationPointTest::create([
-            'annotation_id' => $annotation->id,
-            'index' => 1,
-        ])->fresh();
-        $point2 = AnnotationPointTest::create([
-            'annotation_id' => $annotation->id,
-            'index' => 0,
-        ])->fresh();
+        $annotation = AnnotationTest::create([
+            'image_id' => $this->image->id,
+            'points' => [10, 20, 30, 40],
+        ]);
 
         $label = LabelTest::create([
             'name' => 'My label',
@@ -33,68 +25,55 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
         $annotation->addLabel($label->id, 1.0, $this->editor());
 
-        $this->doTestApiRoute('GET',
-            '/api/v1/images/'.$this->image->id.'/annotations'
-        );
+        $this->doTestApiRoute('GET',"/api/v1/images/{$this->image->id}/annotations");
 
-        // api key authentication
         $this->beUser();
-        $this->get('/api/v1/images/'.$this->image->id.'/annotations');
+        $this->get("/api/v1/images/{$this->image->id}/annotations");
         $this->assertResponseStatus(401);
 
-        // session cookie authentication
         $this->beGuest();
-        $this->get('/api/v1/images/'.$this->image->id.'/annotations')
-            ->seeJson([
-                'points' => [
-                    ['x' => $point2->x, 'y' => $point2->y],
-                    ['x' => $point1->x, 'y' => $point1->y],
-                ],
-            ])
-            ->seeJson([
-                'color' => 'bada55',
-            ])
-            ->seeJson([
-                'name' => 'My label',
-            ]);
+        $this->get("/api/v1/images/{$this->image->id}/annotations")
+            ->seeJson(['points' => [10, 20, 30, 40]])
+            ->seeJson(['color' => 'bada55'])
+            ->seeJson(['name' => 'My label']);
         $this->assertResponseOk();
     }
 
     public function testStore()
     {
-        $this->doTestApiRoute('POST', '/api/v1/images/'.$this->image->id.'/annotations');
+        $this->doTestApiRoute('POST', "/api/v1/images/{$this->image->id}/annotations");
 
         $this->beGuest();
-        $this->post('/api/v1/images/'.$this->image->id.'/annotations');
+        $this->post("/api/v1/images/{$this->image->id}/annotations");
         $this->assertResponseStatus(401);
 
         $this->beEditor();
-        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations');
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations");
         // missing arguments
         $this->assertResponseStatus(422);
 
-        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => 99999,
             'points' => '',
         ]);
         // shape does not exist
         $this->assertResponseStatus(422);
 
-        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$lineId,
             'label_id' => 99999,
         ]);
         // label is required
         $this->assertResponseStatus(422);
 
-        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$pointId,
             'label_id' => $this->labelRoot()->id,
         ]);
         // confidence required
         $this->assertResponseStatus(422);
 
-        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$pointId,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 2
@@ -102,7 +81,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
         // confidence must be between 0 and 1
         $this->assertResponseStatus(422);
 
-        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$pointId,
             'label_id' => $this->labelRoot()->id,
             'confidence' => -1
@@ -110,7 +89,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
         // confidence must be between 0 and 1
         $this->assertResponseStatus(422);
 
-        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$pointId,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
@@ -119,49 +98,31 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
         // at least one point required
         $this->assertResponseStatus(422);
 
-        $this->post('/api/v1/images/'.$this->image->id.'/annotations', [
+        $this->post("/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$pointId,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
-            'points' => '[{"x":10,"y":11}]',
+            'points' => '[10, 11]',
         ]);
 
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
-            $this->seeJson([
-                'points' => [
-                    ['x' => '10', 'y' => '11'],
-                ],
-            ]);
-        } else {
-            $this->seeJson([
-                'points' => [
-                    ['x' => 10, 'y' => 11],
-                ],
-            ]);
-        }
-
-        $this->seeJson([
-            'name' => $this->labelRoot()->name
-        ]);
-
-        $this->seeJson([
-            'color' => $this->labelRoot()->color
-        ]);
+        $this->seeJson(['points' => [10, 11]]);
+        $this->seeJson(['name' => $this->labelRoot()->name]);
+        $this->seeJson(['color' => $this->labelRoot()->color]);
 
         $annotation = $this->image->annotations->first();
         $this->assertNotNull($annotation);
-        $this->assertEquals(1, $annotation->unorderedPoints()->count());
+        $this->assertEquals(2, sizeof($annotation->points));
         $this->assertEquals(1, $annotation->labels()->count());
     }
 
     public function testStoreValidatePoints()
     {
         $this->beEditor();
-        $this->json('POST', '/api/v1/images/'.$this->image->id.'/annotations', [
+        $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$pointId,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
-            'points' => '[{"x":10,"y":11},{"x":12,"y":13}]',
+            'points' => '[10, 11, 12, 13]',
         ]);
         // invalid number of points
         $this->assertResponseStatus(422);

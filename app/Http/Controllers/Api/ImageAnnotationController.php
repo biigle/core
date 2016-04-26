@@ -28,9 +28,7 @@ class ImageAnnotationController extends Controller
      *       "image_id": 1,
      *       "shape_id": 1,
      *       "updated_at": "2015-02-18 11:45:00",
-     *       "points": [
-     *          {"x": 100, "y": 200}
-     *       ],
+     *       "points": [100, 200],
      *       "labels": [
      *          {
      *             "confidence": 1,
@@ -61,7 +59,7 @@ class ImageAnnotationController extends Controller
         $image = Image::findOrFail($id);
         $this->requireCanSee($image);
 
-        return $image->annotations()->with('points', 'labels')->get();
+        return $image->annotations()->with('labels')->get();
     }
 
     /**
@@ -77,40 +75,35 @@ class ImageAnnotationController extends Controller
      * @apiParam (Required arguments) {Number} shape_id ID of the shape of the new annotation.
      * @apiParam (Required arguments) {Number} label_id ID of the initial category label of the new annotation.
      * @apiParam (Required arguments) {Number} confidence Confidence of the initial annotation label of the new annotation. Must be a value between 0 and 1.
-     * @apiParam (Required arguments) {Object[]} points Array (JSON or as String) of the initial points of the annotation. Must contain at least one point. The interpretation of the points of the different shapes is as follows:
+     * @apiParam (Required arguments) {Number[]} points Array (JSON or as String) of the initial points of the annotation. Must contain at least one point. The points array is interpreted as alternating x and y coordinates like this `[x1, y1, x2, y2...]`. The interpretation of the points of the different shapes is as follows:
      * **Point:** The first point is the center of the annotation point.
      * **Rectangle:** The first four points are the vertices of the rectangle (in the given order).
      * **Polygon:** Like rectangle with one or more vertices.
      * **LineString:** Like rectangle with one or more vertices.
-     * **Circle:** The first point is the center of the circle. The x-coordinate of the second point is the radius of the circle. The y-coordinate of the second point is ignored.
+     * **Circle:** The first point is the center of the circle. The third value of the points array is the radius of the circle. A valid points array of a circle might look like this: `[10, 10, 5]`.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
      *    "shape_id": 3,
      *    "label_id": 1,
      *    "confidence": 0.75,
-     *    "points": [
-     *       {"x": 10, "y": 11},
-     *       {"x": 20, "y": 21}
-     *    ]
+     *    "points": [10, 11, 20, 21]
      * }
      *
      * @apiParamExample {String} Request example (String):
-     * shape_id: 1
+     * shape_id: 3
      * label_id: 1
      * confidence: 0.75
-     * points: '[{"x":10,"y":11},{"x":20,"y":21}]'
+     * points: '[10, 11, 20, 21]'
      *
      * @apiSuccessExample {json} Success response:
      * {
      *    "created_at": "2015-02-18 11:45:00",
      *    "id": 1,
      *    "image_id": 1,
-     *    "shape_id": 1,
+     *    "shape_id": 3,
      *    "updated_at": "2015-02-18 11:45:00",
-     *    "points": [
-     *       {"x": 100, "y": 200}
-     *    ],
+     *    "points": [10, 11, 20, 21],
      *    "labels": [
      *       {
      *          "confidence": 1,
@@ -164,16 +157,16 @@ class ImageAnnotationController extends Controller
             ]);
         }
 
+        $annotation->points = $points;
         $annotation->save();
 
-        $annotation->addPoints($points);
         $annotation->addLabel(
             $this->request->input('label_id'),
             $this->request->input('confidence'),
             $this->user
         );
 
-        $annotation->load('points', 'labels');
+        $annotation->load('labels');
 
         return $annotation;
     }

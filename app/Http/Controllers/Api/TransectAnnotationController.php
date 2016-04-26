@@ -52,9 +52,7 @@ class TransectAnnotationController extends Controller
      *                    "id":6,
      *                    "name":"Circle"
      *                 },
-     *                 "points": [
-     *                    {"x":4,"y":8}
-     *                 ]
+     *                 "points": [4, 8]
      *             }
      *         ]
      *     }
@@ -79,10 +77,10 @@ class TransectAnnotationController extends Controller
             // get the image model as JSON object and add the annotations array (remove the '}')
             $imageJson = substr($image->toJson(), 0, -1).',"annotations":[';
 
-            Annotation::with('labels', 'shape', 'points')
+            Annotation::with('labels', 'shape')
                 ->where('image_id', $image['id'])
                 // omit timestamps to reduce response size
-                ->select('annotations.id', 'annotations.image_id', 'annotations.shape_id')
+                ->select('annotations.id', 'annotations.image_id', 'annotations.shape_id', 'annotations.points')
                 ->chunk(500, function ($annotations) use (&$imageJson) {
                     // append to the annotations array string (remove the '[]')
                     $imageJson .= substr($annotations->toJson(), 1, -1);

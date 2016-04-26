@@ -9,15 +9,17 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
         $this->project()->addTransectId($id);
 
         $image = ImageTest::create(['transect_id' => $id]);
-        $annotation = AnnotationTest::create(['image_id' => $image->id]);
-        $point = AnnotationPointTest::create(['annotation_id' => $annotation->id]);
+        $annotation = AnnotationTest::create([
+            'image_id' => $image->id,
+            'points' => [10, 20],
+        ]);
         $label = AnnotationLabelTest::create(['annotation_id' => $annotation->id]);
         $image2 = ImageTest::create(['transect_id' => $id, 'filename' => 'b.jpg']);
 
-        $this->doTestApiRoute('GET', '/api/v1/transects/'.$id.'/annotations');
+        $this->doTestApiRoute('GET', "/api/v1/transects/{$id}/annotations");
 
         $this->beUser();
-        $this->get('/api/v1/transects/'.$id.'/annotations');
+        $this->get("/api/v1/transects/{$id}/annotations");
         $this->assertResponseStatus(401);
 
         $expect = [
@@ -34,8 +36,7 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
             'name' => $label->user->name,
             'id' => $annotation->shape->id,
             'name' => $annotation->shape->name,
-            'x' => $point->x,
-            'y' => $point->y,
+            'points' => [10, 20],
         ];
 
         $dontExpect = ['id' => $image2->id];
@@ -45,12 +46,10 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
         if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
             $expect['image_id'] = "{$expect['image_id']}";
             $expect['shape_id'] = "{$expect['shape_id']}";
-            $expect['x'] = "{$expect['x']}";
-            $expect['y'] = "{$expect['y']}";
         }
 
         $this->beGuest();
-        $this->get('/api/v1/transects/'.$id.'/annotations')
+        $this->get("/api/v1/transects/{$id}/annotations")
             ->seeJson($expect)
             // don't include the images without any annotations
             ->dontSeeJson($dontExpect);

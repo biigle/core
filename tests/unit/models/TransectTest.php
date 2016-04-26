@@ -17,7 +17,6 @@ class TransectTest extends ModelTestCase
         $this->assertNotNull($this->model->creator_id);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
-        // $this->assertNotNull($this->model->attrs);
     }
 
     public function testNameRequired()

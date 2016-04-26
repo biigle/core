@@ -31,19 +31,12 @@ class AnnotationTest extends ModelTestCase
         $this->model->shape()->delete();
     }
 
-    public function testPoints()
+    public function testCastPoints()
     {
-        $this->assertEquals(0, $this->model->unorderedPoints()->count());
-        AnnotationPointTest::create([
-            'annotation_id' => $this->model->id,
-            'index' => 0,
-        ]);
-        $this->assertEquals(1, $this->model->unorderedPoints()->count());
-        AnnotationPointTest::create([
-            'annotation_id' => $this->model->id,
-            'index' => 1,
-        ]);
-        $this->assertEquals(2, $this->model->unorderedPoints()->count());
+        $annotation = static::make();
+        $annotation->points = [1, 2, 3, 4];
+        $annotation->save();
+        $this->assertEquals([1, 2, 3, 4], $annotation->fresh()->points);
     }
 
     public function testLabels()
@@ -76,94 +69,50 @@ class AnnotationTest extends ModelTestCase
         $this->assertEquals($project->id, $ids[0]);
     }
 
-    public function testAddPoint()
+    public function testValidatePointsInteger()
     {
-        $this->assertEquals(0, $this->model->unorderedPoints()->count());
-        // float will be converted to int
-        $point = $this->model->addPoint(10.5, 10.22);
-        $this->assertEquals($this->model->id, $point->annotation->id);
-        $this->assertEquals(1, $this->model->unorderedPoints()->count());
-        $this->assertEquals(0, $point->index);
-        // the next point should get the next highest index
-        $point = $this->model->addPoint(20, 20);
-        $this->assertEquals(2, $this->model->unorderedPoints()->count());
-        $this->assertEquals(1, $point->index);
-    }
-
-    public function testAddPoints()
-    {
-        $this->assertEquals(0, $this->model->unorderedPoints()->count());
-        $this->model->addPoints([['x' => 10, 'y' => 10]]);
-        $this->assertEquals(1, $this->model->unorderedPoints()->count());
-        $this->model->addPoints([(object) ['x' => 10, 'y' => 10]]);
-        $this->assertEquals(2, $this->model->unorderedPoints()->count());
-    }
-
-    public function testValidatePointsProperty()
-    {
-        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
         $this->setExpectedException('Exception');
-        $this->model->validatePoints([['x' => 10, 'z' => 10]]);
-    }
-
-    public function testValidatePointsNumeric()
-    {
-        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
-        $this->setExpectedException('Exception');
-        $this->model->validatePoints([['x' => 'ab', 'y' => 10]]);
+        $this->model->validatePoints([10, 'a']);
     }
 
     public function testValidatePointsPoint()
     {
         $this->model->shape_id = Shape::$pointId;
-        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
+        $this->model->validatePoints([10, 10]);
         $this->setExpectedException('Exception');
-        $this->model->validatePoints([['x' => 10, 'y' => 10], ['x' => 20, 'y' => 20]]);
+        $this->model->validatePoints([10, 10, 20, 20]);
     }
 
     public function testValidatePointsCircle()
     {
         $this->model->shape_id = Shape::$circleId;
-        $this->model->validatePoints([['x' => 10, 'y' => 10], ['x' => 20, 'y' => 20]]);
+        $this->model->validatePoints([10, 10, 20]);
         $this->setExpectedException('Exception');
-        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
+        $this->model->validatePoints([10, 10]);
     }
 
     public function testValidatePointsRectangle()
     {
         $this->model->shape_id = Shape::$rectangleId;
-        $this->model->validatePoints([['x' => 10, 'y' => 10], ['x' => 20, 'y' => 20], ['x' => 10, 'y' => 10], ['x' => 20, 'y' => 20]]);
+        $this->model->validatePoints([10, 10, 10, 20, 20, 20, 20, 10]);
         $this->setExpectedException('Exception');
-        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
+        $this->model->validatePoints([10, 10]);
     }
 
     public function testValidatePointsLine()
     {
         $this->model->shape_id = Shape::$lineId;
-        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
+        $this->model->validatePoints([10, 10]);
         $this->setExpectedException('Exception');
-        $this->model->validatePoints([]);
+        $this->model->validatePoints([10]);
     }
 
     public function testValidatePointsPolygon()
     {
         $this->model->shape_id = Shape::$polygonId;
-        $this->model->validatePoints([['x' => 10, 'y' => 10]]);
+        $this->model->validatePoints([10, 10]);
         $this->setExpectedException('Exception');
-        $this->model->validatePoints([]);
-    }
-
-    public function testRefreshPoints()
-    {
-        $this->model->addPoints([['x' => 10, 'y' => 10], ['x' => 20, 'y' => 20]]);
-        $this->assertEquals(2, $this->model->unorderedPoints()->count());
-        $this->model->refreshPoints([['x' => 100, 'y' => 100], ['x' => 200, 'y' => 200]]);
-        $this->assertEquals(2, $this->model->unorderedPoints()->count());
-        $points = $this->model->points->toArray();
-        $this->assertEquals(100, $points[0]['x']);
-        $this->assertEquals(200, $points[1]['x']);
-        $this->model->refreshPoints([]);
-        $this->assertEquals(2, $this->model->unorderedPoints()->count());
+        $this->model->validatePoints([10]);
     }
 
     public function testAddLabel()

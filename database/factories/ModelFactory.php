@@ -46,7 +46,7 @@ $factory->define(Dias\Transect::class, function ($faker) {
         'name' => $faker->sentence(),
         'media_type_id' => factory(Dias\MediaType::class)->create()->id,
         'creator_id' => factory(Dias\User::class)->create()->id,
-        'url' => base_path().'/tests/files',
+        'url' => base_path('tests/files'),
     ];
 });
 
@@ -77,15 +77,7 @@ $factory->define(Dias\Annotation::class, function ($faker) {
     return [
         'image_id' => factory(Dias\Image::class)->create()->id,
         'shape_id' => factory(Dias\Shape::class)->create()->id,
-    ];
-});
-
-$factory->define(Dias\AnnotationPoint::class, function ($faker) {
-    return [
-        'annotation_id' => factory(Dias\Annotation::class)->create()->id,
-        'index' => 0,
-        'x' => $faker->randomDigit(),
-        'y' => $faker->randomDigit(),
+        'points' => '[0, 0]',
     ];
 });
 

@@ -14,16 +14,8 @@ class ApiAnnotationControllerTest extends ApiTestCase
     public function testShow()
     {
         $id = $this->annotation->id;
-        // test ordering of points, too
-        // use fresh() so numbers get strings in SQLite and stay numbers in Postgres
-        $point1 = AnnotationPointTest::create([
-            'annotation_id' => $id,
-            'index' => 1,
-        ])->fresh();
-        $point2 = AnnotationPointTest::create([
-            'annotation_id' => $id,
-            'index' => 0,
-        ])->fresh();
+        $this->annotation->points = [10, 10, 20, 20];
+        $this->annotation->save();
         $this->doTestApiRoute('GET', "api/v1/annotations/{$id}");
 
         $this->beEditor();
@@ -38,15 +30,9 @@ class ApiAnnotationControllerTest extends ApiTestCase
         $this->get("api/v1/annotations/{$id}");
         $this->assertResponseStatus(401);
 
-        // session cookie authentication
         $this->beAdmin();
         $this->get("api/v1/annotations/{$id}")
-            ->seeJson([
-                'points' => [
-                    ['x' => $point2->x, 'y' => $point2->y],
-                    ['x' => $point1->x, 'y' => $point1->y],
-                ],
-            ]);
+            ->seeJson(['points' => [10, 10, 20, 20]]);
         // the labels should be fetched separately
         $this->assertNotContains('labels', $this->response->getContent());
         // image and transect objects from projectIds() call shouldn't be
@@ -65,20 +51,25 @@ class ApiAnnotationControllerTest extends ApiTestCase
         $this->put("api/v1/annotations/{$id}");
         $this->assertResponseStatus(401);
 
-        $this->annotation->addPoint(10, 10);
-        $points = $this->annotation->points()->get()->toArray();
-        $this->assertEquals(10, $points[0]['y']);
+        $this->annotation->points = [10, 10];
+        $this->annotation->save();
 
-        // api key authentication
         $this->beAdmin();
-        $this->put("api/v1/annotations/{$id}", [
-            'points' => '[{"x":10, "y":15}, {"x": 100, "y": 200}]',
-        ]);
+        $this->put("api/v1/annotations/{$id}", ['points' => '[10, 15, 100, 200]']);
         $this->assertResponseOk();
 
-        $this->assertEquals(2, $this->annotation->unorderedPoints()->count());
-        $points = $this->annotation->points()->get()->toArray();
-        $this->assertEquals(15, $points[0]['y']);
+        $this->annotation = $this->annotation->fresh();
+
+        $this->assertEquals(4, sizeof($this->annotation->points));
+        $this->assertEquals(15, $this->annotation->points[1]);
+
+        $this->json('PUT', "api/v1/annotations/{$id}", ['points' => [20, 25]]);
+        $this->assertResponseOk();
+
+        $this->annotation = $this->annotation->fresh();
+
+        $this->assertEquals(2, sizeof($this->annotation->points));
+        $this->assertEquals(25, $this->annotation->points[1]);
     }
 
     public function testUpdateValidatePoints()
@@ -88,9 +79,7 @@ class ApiAnnotationControllerTest extends ApiTestCase
         $this->annotation->save();
 
         $this->beAdmin();
-        $this->json('PUT', "api/v1/annotations/{$id}", [
-            'points' => '[{"x":10, "y":15}, {"x": 100, "y": 200}]',
-        ]);
+        $this->json('PUT', "api/v1/annotations/{$id}", ['points' => [10, 15, 100, 200]]);
         // invalid number of points
         $this->assertResponseStatus(422);
     }

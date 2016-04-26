@@ -22,9 +22,7 @@ class AnnotationController extends Controller
      *    "shape_id":1,
      *    "created_at":"2015-02-13 11:59:23",
      *    "updated_at":"2015-02-13 11:59:23",
-     *    "points": [
-     *        {"x": 100, "y": 200}
-     *    ]
+     *    "points": [100, 100]
      * }
      *
      * @param  int  $id
@@ -32,7 +30,7 @@ class AnnotationController extends Controller
      */
     public function show($id)
     {
-        $annotation = Annotation::with('points')->findOrFail($id);
+        $annotation = Annotation::findOrFail($id);
         $this->requireCanSee($annotation);
 
         // image will be fetched by requireCanSee but shouldn't be returned
@@ -50,23 +48,20 @@ class AnnotationController extends Controller
      * @apiPermission projectEditor
      *
      * @apiParam {Number} id The annotation ID.
-     * @apiParam (Attributes that can be updated) {Object[]} points Array (JSON or as String) of new points of the annotation. The new points will replace the old points. See the "Create a new annotation" endpoint for how the points are interpreted for different shapes.
+     * @apiParam (Attributes that can be updated) {Number[]} points Array (JSON or as String) of new points of the annotation. The new points will replace the old points. See the "Create a new annotation" endpoint for how the points are interpreted for different shapes.
      * @apiParamExample {json} Request example (JSON):
      * {
-     *    "points": [
-     *       {"x": 10, "y": 11},
-     *       {"x": 20, "y": 21}
-     *    ]
+     *    "points": [10, 11, 20, 21]
      * }
      * @apiParamExample {String} Request example (String):
-     * points: '[{"x":10,"y":11},{"x":20,"y":21}]'
+     * points: '[10, 11, 20, 21]'
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update($id)
     {
-        $annotation = Annotation::with('points')->findOrFail($id);
+        $annotation = Annotation::findOrFail($id);
         $this->requireCanEdit($annotation);
 
         // from a JSON request, the array may already be decoded
@@ -84,7 +79,8 @@ class AnnotationController extends Controller
             ]);
         }
 
-        $annotation->refreshPoints($points);
+        $annotation->points = $points;
+        $annotation->save();
     }
 
     /**
