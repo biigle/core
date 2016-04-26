@@ -13,12 +13,12 @@ var annotation = Annotation.get({id: 123}, function () {
 
 // saving an annotation (updating the annotation points)
 var annotation = Annotation.get({id: 1}, function () {
-   annotation.points = [{x: 10, y: 10}];
+   annotation.points = [10, 10];
    annotation.$save();
 });
 // or directly
 Annotation.save({
-   id: 1, points: [{x: 10, y: 10}]
+   id: 1, points: [10, 10]
 });
 
 // deleting an annotation
@@ -43,9 +43,7 @@ var annotation = Annotation.add({
    shape_id: 1,
    label_id: 1,
    confidence: 0.5
-   points: [
-      { x: 10, y: 20 }
-   ]
+   points: [10, 20]
 });
  *
  */
