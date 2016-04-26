@@ -32,8 +32,8 @@ class FixUsersUniqueConstraints extends Migration
     public function down()
     {
         Schema::table('users', function ($table) {
-            $table->dropUnique('email');
-            $table->dropUnique('api_key');
+            $table->dropUnique('users_email_unique');
+            $table->dropUnique('users_api_key_unique');
             $table->unique('email', 'api_key');
         });
     }
