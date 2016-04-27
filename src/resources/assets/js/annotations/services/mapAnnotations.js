@@ -72,41 +72,43 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             }
         };
 
-		// convert a point array to a point object
-		// re-invert the y axis
-		var convertFromOLPoint = function (point) {
-			return {x: point[0], y: images.currentImage.height - point[1]};
-		};
-
-		// convert a point object to a point array
-		// invert the y axis
-		var convertToOLPoint = function (point) {
-			return [point.x, images.currentImage.height - point.y];
-		};
+        // invert all y coordinates
+        var convertFromOLPoint = function (point, index) {
+            return (index % 2 === 1) ? (images.currentImage.height - point) : point;
+        };
 
 		// assembles the coordinate arrays depending on the geometry type
 		// so they have a unified format
 		var getCoordinates = function (geometry) {
+            var coordinates;
 			switch (geometry.getType()) {
 				case 'Circle':
 					// radius is the x value of the second point of the circle
-					return [geometry.getCenter(), [geometry.getRadius(), 0]];
+					coordinates = [geometry.getCenter(), [geometry.getRadius()]];
+                    break;
 				case 'Polygon':
 				case 'Rectangle':
-					return geometry.getCoordinates()[0];
+					coordinates = geometry.getCoordinates()[0];
+                    break;
 				case 'Point':
-					return [geometry.getCoordinates()];
+					coordinates = [geometry.getCoordinates()];
+                    break;
 				default:
-					return geometry.getCoordinates();
+					coordinates = geometry.getCoordinates();
 			}
+
+            // merge the individual point arrays to a single array
+            // round the coordinates to integers
+            return [].concat.apply([], coordinates)
+                .map(Math.round)
+                .map(convertFromOLPoint);
 		};
 
 		// saves the updated geometry of an annotation feature
 		var handleGeometryChange = function (e) {
 			var feature = e.target;
 			var save = function () {
-				var coordinates = getCoordinates(feature.getGeometry());
-				feature.annotation.points = coordinates.map(convertFromOLPoint);
+				feature.annotation.points = getCoordinates(feature.getGeometry());
 				feature.annotation.$save();
 			};
 			// this event is rapidly fired, so wait until the firing stops
@@ -116,25 +118,36 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
 		var createFeature = function (annotation) {
 			var geometry;
-			var points = annotation.points.map(convertToOLPoint);
+			var points = annotation.points;
+            var newPoints = [];
+            var height = images.currentImage.height;
+            // convert points array to OL points
+            for (var i = 0; i < points.length; i += 2) {
+                newPoints.push([
+                    points[i],
+                    // invert the y axis to OL coordinates
+                    // circles have no fourth point so we take 0
+                    height - (points[i + 1] || 0)
+                ]);
+            }
 
 			switch (annotation.shape) {
 				case 'Point':
-					geometry = new ol.geom.Point(points[0]);
+					geometry = new ol.geom.Point(newPoints[0]);
 					break;
 				case 'Rectangle':
-					geometry = new ol.geom.Rectangle([ points ]);
+					geometry = new ol.geom.Rectangle([ newPoints ]);
 					break;
 				case 'Polygon':
 					// example: https://github.com/openlayers/ol3/blob/master/examples/geojson.js#L126
-					geometry = new ol.geom.Polygon([ points ]);
+					geometry = new ol.geom.Polygon([ newPoints ]);
 					break;
 				case 'LineString':
-					geometry = new ol.geom.LineString(points);
+					geometry = new ol.geom.LineString(newPoints);
 					break;
 				case 'Circle':
 					// radius is the x value of the second point of the circle
-					geometry = new ol.geom.Circle(points[0], points[1][0]);
+					geometry = new ol.geom.Circle(newPoints[0], newPoints[1][0]);
 					break;
                 // unsupported shapes are ignored
                 default:
@@ -164,7 +177,6 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
 		var handleNewFeature = function (e) {
 			var geometry = e.feature.getGeometry();
-			var coordinates = getCoordinates(geometry);
             var label = labels.getSelected();
 
             e.feature.color = label.color;
@@ -172,7 +184,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			e.feature.annotation = annotations.add({
 				id: images.getCurrentId(),
 				shape: geometry.getType(),
-				points: coordinates.map(convertFromOLPoint),
+				points: getCoordinates(geometry),
                 label_id: label.id,
                 confidence: labels.getCurrentConfidence()
 			});
