@@ -14,6 +14,23 @@ class Initialize extends Migration
      */
     public function up()
     {
+
+        /*
+        | The roles users can have. For example a user can be 'admin' in one
+        | project and 'guest' un another. Roles are not restricted to projects,
+        | so a user can have a 'global' role, too.
+        */
+        Schema::create('roles', function (Blueprint $table) {
+            $table->increments('id');
+            // roles are primarily searched by name, so do index
+            $table->string('name', 128)->index();
+
+            // each role should be unique
+            $table->unique('name');
+
+            // NO timestamps
+        });
+
         /*
         | The user. Each user belongs to one or many projects and has one role
         | for each project. A user can be creator of different objects
@@ -67,22 +84,6 @@ class Initialize extends Migration
             $table->string('purpose');
             // hashing uses bcrypt so the token hash is always 60 chars long
             $table->string('hash', 60);
-        });
-
-        /*
-        | The roles users can have. For example a user can be 'admin' in one
-        | project and 'guest' un another. Roles are not restricted to projects,
-        | so a user can have a 'global' role, too.
-        */
-        Schema::create('roles', function (Blueprint $table) {
-            $table->increments('id');
-            // roles are primarily searched by name, so do index
-            $table->string('name', 128)->index();
-
-            // each role should be unique
-            $table->unique('name');
-
-            // NO timestamps
         });
 
         /*
