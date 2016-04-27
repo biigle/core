@@ -29,11 +29,6 @@ class PopulateRequiredRows extends Migration
             ['name' => 'Circle'],
             ['name' => 'Rectangle'],
         ]);
-
-        //TODO attributes?
-        DB::table('attributes')->insert([
-            ['name' => 'bad_quality', 'type' => 'boolean'],
-        ]);
     }
 
     /**

@@ -30,14 +30,43 @@ class Initialize extends Migration
             // the global user role
             $table->integer('role_id')->unsigned();
 
-            $table->string('api_key', 32)->nullable()->index();
+            $table->foreign('role_id')
+                  ->references('id')
+                  ->on('roles')
+                  // dont delete role if it is in use
+                  ->onDelete('restrict');
+
             // token for the "stay logged in" session
             $table->rememberToken();
             $table->timestamps();
             $table->timestamp('login_at')->nullable();
 
             // email and key are used for authentication and must be unique
-            $table->unique('email', 'api_key');
+            $table->unique('email');
+        });
+
+        /*
+         | Users are allowed to create multiple API tokens. These tokens act just like
+         | passwords. Each token is intended to be used with only one external
+         | application, so users are able to disallow connections for each individual
+         | external application by deleting individual tokens. Previously there was only
+         | one token which would have affected *all* connected applications if deleted.
+         */
+        Schema::create('api_tokens', function (Blueprint $table) {
+            $table->increments('id');
+            $table->timestamps();
+
+            // the user, this token belongs to
+            $table->integer('owner_id')->unsigned();
+            $table->foreign('owner_id')
+                  ->references('id')
+                  ->on('users')
+                  // delete tokens of a user if they are deleted
+                  ->onDelete('cascade');
+
+            $table->string('purpose');
+            // hashing uses bcrypt so the token hash is always 60 chars long
+            $table->string('hash', 60);
         });
 
         /*
@@ -135,6 +164,10 @@ class Initialize extends Migration
             $table->increments('id');
             $table->string('name', 512);
 
+            // don't call it "attributes" because Eloquent models already have an
+            // "attributes" variable!
+            $table->json('attrs')->nullable();
+
             // which kind of data is stored in this transect?
             $table->integer('media_type_id')->unsigned();
             $table->foreign('media_type_id')
@@ -214,6 +247,8 @@ class Initialize extends Migration
             // labels are primarily searched by name, so do index
             $table->string('name', 512)->index();
 
+            $table->string('color', 6)->default('0099ff');
+
             // parent label. if the parent is deleted, ask the user if all
             // children should be deleted as well
             $table->integer('parent_id')->unsigned()->nullable();
@@ -224,6 +259,14 @@ class Initialize extends Migration
 
             // id for the World Register of Marine Species (WoRMS)
             $table->integer('aphia_id')->nullable();
+
+            // labels can be project specific or global (project_id is null)
+            $table->integer('project_id')->unsigned()->nullable();
+            $table->foreign('project_id')
+                  ->references('id')
+                  ->on('projects')
+                  // delete project specific labels when the project is deleted
+                  ->onDelete('cascade');
 
             // NO timestamps
         });
@@ -245,6 +288,7 @@ class Initialize extends Migration
         */
         Schema::create('annotations', function (Blueprint $table) {
             $table->increments('id');
+            $table->json('points')->default('[]');
 
             // annotations are primarily searched by image, so do index
             $table->integer('image_id')->unsigned()->index();
@@ -262,34 +306,6 @@ class Initialize extends Migration
                   ->onDelete('restrict');
 
             $table->timestamps();
-        });
-
-        /*
-        | Each annotation consists of one or multiple points (e.g. two points of
-        | a line). Each point belongs to a single annotation.
-        */
-        Schema::create('annotation_points', function (Blueprint $table) {
-            $table->increments('id');
-
-            // points are primarily searched by annotation, so do index
-            $table->integer('annotation_id')->unsigned()->index();
-            $table->foreign('annotation_id')
-                  ->references('id')
-                  ->on('annotations')
-                  // delete all points of a deleted annotation
-                  ->onDelete('cascade');
-
-            // for e.g. polygons the ordering of the points is essential, so the
-            // polygon can be correctly reconstructed
-            $table->integer('index');
-
-            // point index must be unique for each annotation
-            $table->unique(['annotation_id', 'index']);
-
-            $table->integer('x');
-            $table->integer('y');
-
-            // NO timestamps
         });
 
         /*
@@ -342,7 +358,6 @@ class Initialize extends Migration
     public function down()
     {
         Schema::drop('annotation_labels');
-        Schema::drop('annotation_points');
         Schema::drop('annotations');
         Schema::drop('shapes');
         Schema::drop('labels');
@@ -353,6 +368,7 @@ class Initialize extends Migration
         Schema::drop('project_user');
         Schema::drop('projects');
         Schema::drop('roles');
+        Schema::drop('api_tokens');
         Schema::drop('users');
     }
 }
