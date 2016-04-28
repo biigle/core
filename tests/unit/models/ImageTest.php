@@ -59,7 +59,7 @@ class ImageTest extends ModelTestCase
         $annotation = AnnotationTest::create(['image_id' => $this->model->id]);
         AnnotationTest::create(['image_id' => $this->model->id]);
         $this->assertEquals(2, $this->model->annotations()->count());
-        $this->assertEquals($annotation->id, $this->model->annotations()->first()->id);
+        $this->assertNotNull($this->model->annotations()->find($annotation->id));
     }
 
     public function testProjectIds()
