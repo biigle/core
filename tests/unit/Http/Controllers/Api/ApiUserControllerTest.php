@@ -1,6 +1,7 @@
 <?php
 
 use Dias\User;
+use Dias\Role;
 
 class ApiUserControllerTest extends ApiTestCase
 {
@@ -78,6 +79,8 @@ class ApiUserControllerTest extends ApiTestCase
         $this->put('/api/v1/users/'.$this->guest()->id);
         $this->assertResponseStatus(401);
 
+        $this->globalAdmin()->password = bcrypt('adminpassword');
+        $this->globalAdmin()->save();
         $this->beGlobalAdmin();
 
         $this->put('/api/v1/users/'.$this->globalAdmin()->id);
@@ -90,6 +93,38 @@ class ApiUserControllerTest extends ApiTestCase
         ]);
         // no password confirmation
         $this->assertResponseStatus(422);
+
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'password' => '',
+            'password_confirmation' => '',
+        ]);
+        // password must not be empty if it is present
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+        ]);
+        // changing the email requires the admin password
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+            'auth_password' => 'wrongpassword',
+        ]);
+        // wrong password
+        $this->assertResponseStatus(422);
+
+        $this->assertFalse(Hash::check('newpassword', $this->guest()->fresh()->password));
+
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+            'auth_password' => 'adminpassword',
+        ]);
+        $this->assertResponseOk();
+        $this->assertTrue(Hash::check('newpassword', $this->guest()->fresh()->password));
 
         // ajax call to get the correct response status
         $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
@@ -105,26 +140,62 @@ class ApiUserControllerTest extends ApiTestCase
         $this->assertResponseStatus(422);
 
         $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
-            'password' => '',
-            'password_confirmation' => '',
+            'email' => 'new@email.me',
         ]);
-        // email must not be empty if it is present
+        // changing the email requires the admin password
         $this->assertResponseStatus(422);
 
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'email' => 'new@email.me',
+            'auth_password' => 'wrongpassword',
+        ]);
+        // wrong password
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'email' => 'new@email.me',
+            'auth_password' => 'adminpassword',
+        ]);
+        $this->assertResponseOk();
+        $this->assertEquals('new@email.me', $this->guest()->fresh()->email);
+
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'role_id' => 999,
+            'auth_password' => 'adminpassword',
+        ]);
+        // role does not exist
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'role_id' => Role::$admin->id,
+        ]);
+        // changing the role requires the admin password
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'role_id' => Role::$admin->id,
+            'auth_password' => 'wrongpassword',
+        ]);
+        // wrong password
+        $this->assertResponseStatus(422);
+
+        $this->assertEquals(Role::$editor->id, $this->guest()->fresh()->role_id);
+
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'role_id' => Role::$admin->id,
+            'auth_password' => 'adminpassword',
+        ]);
+        $this->assertResponseOk();
+        $this->assertEquals(Role::$admin->id, $this->guest()->fresh()->role_id);
+
         $this->put('/api/v1/users/'.$this->guest()->id, [
-            'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
             'lastname' => 'jackson',
-            'email' => 'new@email.me',
         ]);
         $this->assertResponseOk();
 
-        $user = $this->guest()->fresh();
-        $this->assertTrue(Hash::check('newpassword', $user->password));
-        $this->assertEquals('jack', $user->firstname);
-        $this->assertEquals('jackson', $user->lastname);
-        $this->assertEquals('new@email.me', $user->email);
+        $this->assertEquals('jack', $this->guest()->fresh()->firstname);
+        $this->assertEquals('jackson', $this->guest()->fresh()->lastname);
     }
 
     public function testUpdateOwn()
@@ -158,20 +229,20 @@ class ApiUserControllerTest extends ApiTestCase
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
         ]);
-        // no old password provided
+        // no auth password provided
         $this->assertResponseStatus(422);
 
         $this->json('PUT', '/api/v1/users/my', [
             'email' => 'new@email.me',
         ]);
-        // no old password provided either
+        // no auth password provided either
         $this->assertResponseStatus(422);
 
         // ajax call to get the correct response status
         $this->json('PUT', '/api/v1/users/my', [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
-            'old_password' => 'guest-password',
+            'auth_password' => 'guest-password',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new@email.me',
@@ -219,15 +290,47 @@ class ApiUserControllerTest extends ApiTestCase
             'lastname' => 'jackson',
             'email' => 'new@email.me',
         ]);
-        $content = $this->response->getContent();
         $this->assertResponseOk();
-        $this->assertStringStartsWith('{', $content);
-        $this->assertStringEndsWith('}', $content);
 
         $newUser = User::find(User::max('id'));
         $this->assertEquals('jack', $newUser->firstname);
         $this->assertEquals('jackson', $newUser->lastname);
         $this->assertEquals('new@email.me', $newUser->email);
+        $this->assertEquals(Role::$editor->id, $newUser->role_id);
+
+        $this->json('POST', '/api/v1/users', [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+            'firstname' => 'jack',
+            'lastname' => 'jackson',
+            'email' => 'new@email.me',
+        ]);
+        // email has already been taken
+        $this->assertResponseStatus(422);
+
+        $this->json('POST', '/api/v1/users', [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+            'firstname' => 'jack',
+            'lastname' => 'jackson',
+            'email' => 'new2@email.me',
+            'role_id' => 999
+        ]);
+        // role does not exist
+        $this->assertResponseStatus(422);
+
+        $this->json('POST', '/api/v1/users', [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+            'firstname' => 'jack',
+            'lastname' => 'jackson',
+            'email' => 'new2@email.me',
+            'role_id' => Role::$admin->id,
+        ]);
+        $this->assertResponseOk();
+
+        $newUser = User::find(User::max('id'));
+        $this->assertEquals(Role::$admin->id, $newUser->role_id);
     }
 
     public function testDestroy()

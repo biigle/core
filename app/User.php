@@ -42,11 +42,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      *
      * @var array
      */
-    public static $registerRules = [
-        'email'     => 'required|email|unique:users|max:255',
-        'password'  => 'required|min:8|confirmed',
+    public static $createRules = [
+        'email' => 'required|email|unique:users|max:255',
+        'password' => 'required|min:8|confirmed',
         'firstname' => 'required|alpha|max:127',
-        'lastname'  => 'required|alpha|max:127',
+        'lastname' => 'required|alpha|max:127',
+        'role_id' => 'exists:roles,id',
     ];
 
     /**
@@ -88,10 +89,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         return [
             // ignore the email of this user
-            'email'     => 'filled|email|unique:users,email,'.$this->id.'|max:255',
-            'password'  => 'filled|min:8|confirmed',
+            'email' => "filled|email|unique:users,email,{$this->id}|max:255",
+            'password' => 'filled|min:8|confirmed',
             'firstname' => 'alpha|max:127',
-            'lastname'  => 'alpha|max:127',
+            'lastname' => 'alpha|max:127',
+            'role_id' => 'exists:roles,id',
+            'auth_password' => 'required_with:role_id,password,email'
         ];
     }
 

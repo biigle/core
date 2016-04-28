@@ -168,6 +168,7 @@ class UserController extends Controller
      * @apiParam (Attributes that can be updated) {String} password The new password of the user. If this parameter is set, an additional `password_confirmation` parameter needs to be present, containing the same new password.
      * @apiParam (Attributes that can be updated) {String} firstname The new firstname of the user.
      * @apiParam (Attributes that can be updated) {String} lastname The new lastname of the user.
+     * @apiParam (Attributes that can be updated) {Number} role_id Global role of the user. If the role should be changed, an additional `auth_password` field is required, containing the password of the global administrator that requests the change.
      *
      * @apiParamExample {String} Request example:
      * email: 'new@example.com'
@@ -175,6 +176,8 @@ class UserController extends Controller
      * password_confirmation: 'TotallySecure'
      * firstname: 'New'
      * lastname: 'Name'
+     * role_id: 1
+     * auth_password: 'password123'
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -195,6 +198,15 @@ class UserController extends Controller
             $user->password = bcrypt($request->input('password'));
         }
 
+        if ($request->has('role_id') || $request->has('email') || $request->has('password')) {
+            if (!Hash::check($request->input('auth_password'), $this->user->password)) {
+                $errors = ['auth_password' => [trans('validation.custom.password')]];
+                return $this->buildFailedValidationResponse($request, $errors);
+            }
+
+        }
+
+        $user->role_id = $request->input('role_id', $user->role_id);
         $user->firstname = $request->input('firstname', $user->firstname);
         $user->lastname = $request->input('lastname', $user->lastname);
         $user->email = $request->input('email', $user->email);
@@ -211,8 +223,8 @@ class UserController extends Controller
      * @apiDescription This action is allowed only by session cookie authentication.
      *
      *
-     * @apiParam (Attributes that can be updated) {String} email The new email address of the user. Must be unique for all users. If this parameter is set, an additional `old_password` needs to be present, containing the user's current password.
-     * @apiParam (Attributes that can be updated) {String} password The new password of the user. If this parameter is set, an additional `password_confirmation` parameter needs to be present, containing the same new password, as well as an `old_password` parameter, containing the old password.
+     * @apiParam (Attributes that can be updated) {String} email The new email address of the user. Must be unique for all users. If this parameter is set, an additional `auth_password` needs to be present, containing the user's current password.
+     * @apiParam (Attributes that can be updated) {String} password The new password of the user. If this parameter is set, an additional `password_confirmation` parameter needs to be present, containing the same new password, as well as an `auth_password` parameter, containing the old password.
      * @apiParam (Attributes that can be updated) {String} firstname The new firstname of the user.
      * @apiParam (Attributes that can be updated) {String} lastname The new lastname of the user.
      *
@@ -237,8 +249,8 @@ class UserController extends Controller
         // confirm change of credentials with old password
         if ($request->has('password') || $request->has('email')) {
             // the user has to provide their old password to set a new one
-            if (!Hash::check($request->input('old_password'), $user->password)) {
-                $errors = ['old_password' => [trans('validation.custom.old_password')]];
+            if (!Hash::check($request->input('auth_password'), $user->password)) {
+                $errors = ['auth_password' => [trans('validation.custom.password')]];
 
                 return $this->buildFailedValidationResponse($request, $errors);
             }
@@ -274,6 +286,7 @@ class UserController extends Controller
      * @apiParam (Required parameters) {String} password_confirmation The password of the new user again.
      * @apiParam (Required parameters) {String} firstname The firstname of the new user.
      * @apiParam (Required parameters) {String} lastname The lastname of the new user.
+     * @apiParam (Optional parameters) {Number} role_id ID of the role of the new user. Default is the ID of the "editor" role.
      *
      * @apiParamExample {String} Request example:
      * email: 'new@example.com'
@@ -293,11 +306,12 @@ class UserController extends Controller
      */
     public function store()
     {
-        $this->validate($this->request, User::$registerRules);
+        $this->validate($this->request, User::$createRules);
         $user = new User;
         $user->firstname = $this->request->input('firstname');
         $user->lastname = $this->request->input('lastname');
         $user->email = $this->request->input('email');
+        $user->role_id = $this->request->input('role_id');
         $user->password = bcrypt($this->request->input('password'));
         $user->save();
 

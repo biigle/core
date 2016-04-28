@@ -43,7 +43,7 @@ class Controller extends BaseController
 
         return redirect()
             ->to($this->getRedirectUrl())
-            ->withInput($request->except('password', 'password_confirmation', 'old_password'))
+            ->withInput($request->except('password', 'password_confirmation', 'auth_password'))
             ->withErrors($errors);
     }
 }

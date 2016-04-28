@@ -9,11 +9,11 @@
     <div class="panel-body">
         <form class="" role="form" method="POST" action="{{ url('api/v1/users/my') }}">
 
-            <div class="form-group{{ $errors->has('old_password') && $origin === 'password'  ? ' has-error' : '' }}">
-                <label for="old_password">Old password</label>
-                <input type="password" class="form-control" name="old_password" id="old_password">
-                @if($errors->has('old_password') && $origin === 'password')
-                    <span class="help-block">{{ $errors->first('old_password') }}</span>
+            <div class="form-group{{ $errors->has('auth_password') && $origin === 'password'  ? ' has-error' : '' }}">
+                <label for="auth_password">Old password</label>
+                <input type="password" class="form-control" name="auth_password" id="auth_password">
+                @if($errors->has('auth_password') && $origin === 'password')
+                    <span class="help-block">{{ $errors->first('auth_password') }}</span>
                 @endif
             </div>
 
@@ -51,11 +51,11 @@
     <div class="panel-heading">Change email</div>
     <div class="panel-body">
         <form class="" role="form" method="POST" action="{{ url('api/v1/users/my') }}">
-            <div class="form-group{{ $errors->has('old_password') && $origin === 'email' ? ' has-error' : '' }}">
-                <label for="old_password">Old password</label>
-                <input type="password" class="form-control" name="old_password" id="old_password">
-                @if($errors->has('old_password') && $origin === 'email')
-                    <span class="help-block">{{ $errors->first('old_password') }}</span>
+            <div class="form-group{{ $errors->has('auth_password') && $origin === 'email' ? ' has-error' : '' }}">
+                <label for="auth_password">Password</label>
+                <input type="password" class="form-control" name="auth_password" id="auth_password">
+                @if($errors->has('auth_password') && $origin === 'email')
+                    <span class="help-block">{{ $errors->first('auth_password') }}</span>
                 @endif
             </div>
 

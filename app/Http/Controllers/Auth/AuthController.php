@@ -48,7 +48,7 @@ class AuthController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, User::$registerRules);
+        return Validator::make($data, User::$createRules);
     }
 
     /**

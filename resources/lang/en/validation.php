@@ -95,7 +95,6 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
-        'old_password' => 'Incorrect old password.',
         'password' => 'Incorrect password.',
     ],
 
