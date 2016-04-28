@@ -30,10 +30,10 @@
         <env name="QUEUE_DRIVER" value="sync"/>
         <!-- for testing the real database connection only! -->
         <!-- <env name="DB_CONNECTION" value="pgsql"/> -->
-        <!-- <env name="DB_DATABASE" value="dias-local"/> -->
+        <!-- <env name="DB_DATABASE" value="homestead"/> -->
         <env name="DB_HOST" value="localhost"/>
-        <env name="DB_USERNAME" value="postgres"/>
-        <env name="DB_PASSWORD" value="postgres"/>
+        <env name="DB_USERNAME" value="homestead"/>
+        <env name="DB_PASSWORD" value="secret"/>
     </php>
     <listeners>
         <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
