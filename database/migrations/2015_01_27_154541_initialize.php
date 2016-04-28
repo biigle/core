@@ -368,8 +368,8 @@ class Initialize extends Migration
         Schema::drop('media_types');
         Schema::drop('project_user');
         Schema::drop('projects');
-        Schema::drop('roles');
         Schema::drop('api_tokens');
         Schema::drop('users');
+        Schema::drop('roles');
     }
 }
