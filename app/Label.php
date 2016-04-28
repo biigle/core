@@ -35,7 +35,7 @@ class Label extends Model
     public static $updateRules = [
         'parent_id' => 'integer|exists:labels,id',
         'aphia_id' => 'integer',
-        'color' => 'string|regex:/^\#?[A-Fa-f0-9]{6}$/',
+        'color' => 'filled|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
     ];
 
     /**

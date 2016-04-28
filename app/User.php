@@ -87,9 +87,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function updateRules()
     {
         return [
-            // ignore the email of this
-            'email'     => 'email|unique:users,email,'.$this->id.'|max:255',
-            'password'  => 'min:8|confirmed',
+            // ignore the email of this user
+            'email'     => 'filled|email|unique:users,email,'.$this->id.'|max:255',
+            'password'  => 'filled|min:8|confirmed',
             'firstname' => 'alpha|max:127',
             'lastname'  => 'alpha|max:127',
         ];

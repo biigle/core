@@ -61,6 +61,18 @@ class ApiProjectControllerTest extends ApiTestCase
         $this->assertResponseStatus(404);
 
         $this->json('PUT', '/api/v1/projects/1', [
+            'name' => '',
+        ]);
+        // name must not be empty if it is present
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', '/api/v1/projects/1', [
+            'description' => '',
+        ]);
+        // description must not be empty if it is present
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', '/api/v1/projects/1', [
             'name' => 'my test',
             'description' => 'this is my test',
             'creator_id' => 5,

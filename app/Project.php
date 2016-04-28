@@ -24,8 +24,8 @@ class Project extends Model implements BelongsToProjectContract
      * @var array
      */
     public static $updateRules = [
-        'name'        => 'min:2|max:512',
-        'description' => 'min:2',
+        'name'        => 'filled|min:2|max:512',
+        'description' => 'filled|min:2',
     ];
 
     /**

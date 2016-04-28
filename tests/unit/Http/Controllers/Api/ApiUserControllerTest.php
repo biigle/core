@@ -98,6 +98,19 @@ class ApiUserControllerTest extends ApiTestCase
         // invalid email format
         $this->assertResponseStatus(422);
 
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'email' => '',
+        ]);
+        // email must not be empty if it is present
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'password' => '',
+            'password_confirmation' => '',
+        ]);
+        // email must not be empty if it is present
+        $this->assertResponseStatus(422);
+
         $this->put('/api/v1/users/'.$this->guest()->id, [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',

@@ -185,6 +185,10 @@ class ApiLabelControllerTest extends ApiTestCase
         // parent label dos not exist
         $this->assertResponseStatus(422);
 
+        $this->json('PUT', '/api/v1/labels/'.$label->id, ['color' => '']);
+        // color must not be emtpy if it is present
+        $this->assertResponseStatus(422);
+
         $this->assertNotEquals('random name abc', $label->name);
         $this->assertNull($label->parent);
         $this->assertNull($label->aphia_id);
