@@ -56,30 +56,37 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         'uses' => 'SettingsController@tokens',
     ]);
 
-    $router->get('admin', [
-        'as' => 'admin',
-        'middleware' => 'admin',
-        'uses' => 'AdminController@index',
-    ]);
+    $router->group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'admin'], function ($router) {
 
-    $router->get('admin/users', [
-        'as' => 'admin-users',
-        'middleware' => 'admin',
-        'uses' => 'AdminController@users',
-    ]);
+        $router->get('/', [
+            'as' => 'admin',
+            'uses' => 'IndexController@get',
+        ]);
 
-    $router->get('admin/labels', [
-        'as' => 'admin-labels',
-        'middleware' => 'admin',
-        'uses' => 'AdminController@labels',
-    ]);
+        $router->get('users', [
+            'as' => 'admin-users',
+            'uses' => 'UsersController@get',
+        ]);
+
+        $router->get('users/new', [
+            'as' => 'admin-users-new',
+            'uses' => 'UsersController@new',
+        ]);
+
+        $router->get('users/edit/{id}', [
+            'as' => 'admin-users-edit',
+            'uses' => 'UsersController@edit',
+        ]);
+
+        $router->get('labels', [
+            'as' => 'admin-labels',
+            'uses' => 'LabelsController@get',
+        ]);
+    });
+
 });
 
-$router->group([
-    'prefix' => 'api/v1',
-    'namespace' => 'Api',
-    'middleware' => 'auth.api',
-    ], function ($router) {
+$router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'auth.api'], function ($router) {
     $router->resource('annotations', 'AnnotationController', [
         'only' => ['show', 'update', 'destroy'],
     ]);
