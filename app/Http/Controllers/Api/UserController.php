@@ -208,7 +208,7 @@ class UserController extends Controller
         $this->validate($request, $user->updateRules());
 
         if ($request->has('password')) {
-            // global admins do not need to provide the old password to set a new
+            // global admins do not need to provide the old password to set a new one
             $user->password = bcrypt($request->input('password'));
         }
 
@@ -300,7 +300,6 @@ class UserController extends Controller
      * @apiParam (Required parameters) {String} password_confirmation The password of the new user again.
      * @apiParam (Required parameters) {String} firstname The firstname of the new user.
      * @apiParam (Required parameters) {String} lastname The lastname of the new user.
-     * @apiParam (Optional parameters) {Number} role_id ID of the role of the new user. Default is the ID of the "editor" role.
      *
      * @apiParamExample {String} Request example:
      * email: 'new@example.com'
@@ -324,16 +323,32 @@ class UserController extends Controller
      */
     public function store()
     {
+        /*
+         * DON'T allow setting the role through this route. The role may only be changed
+         * by the update route with admin password confirmation.
+         * Else, an attacker might exploit an active session of an admin and create their
+         * own admin account. Once they have an admin account and know the password, they
+         * can wreak havoc.
+         */
+
         $this->validate($this->request, User::$createRules);
         $user = new User;
         $user->firstname = $this->request->input('firstname');
         $user->lastname = $this->request->input('lastname');
         $user->email = $this->request->input('email');
-        $user->role_id = $this->request->input('role_id');
         $user->password = bcrypt($this->request->input('password'));
         $user->save();
 
-        return $user;
+        if (static::isAutomatedRequest($this->request)) {
+            return $user;
+        }
+
+        if ($this->request->has('_redirect')) {
+            return redirect($this->request->input('_redirect'))
+                ->with('newUser', $user);
+        }
+        return redirect()->back()
+            ->with('newUser', $user);
     }
 
     /**

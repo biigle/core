@@ -283,7 +283,7 @@ class ApiUserControllerTest extends ApiTestCase
         // no password confirmation
         $this->assertResponseStatus(422);
 
-        $this->post('/api/v1/users', [
+        $this->json('POST', '/api/v1/users', [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
@@ -307,30 +307,6 @@ class ApiUserControllerTest extends ApiTestCase
         ]);
         // email has already been taken
         $this->assertResponseStatus(422);
-
-        $this->json('POST', '/api/v1/users', [
-            'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
-            'firstname' => 'jack',
-            'lastname' => 'jackson',
-            'email' => 'new2@email.me',
-            'role_id' => 999
-        ]);
-        // role does not exist
-        $this->assertResponseStatus(422);
-
-        $this->json('POST', '/api/v1/users', [
-            'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
-            'firstname' => 'jack',
-            'lastname' => 'jackson',
-            'email' => 'new2@email.me',
-            'role_id' => Role::$admin->id,
-        ]);
-        $this->assertResponseOk();
-
-        $newUser = User::find(User::max('id'));
-        $this->assertEquals(Role::$admin->id, $newUser->role_id);
     }
 
     public function testDestroy()
