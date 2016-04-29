@@ -81,6 +81,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     ];
 
     /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['created_at', 'updated_at', 'login_at'];
+
+    /**
      * Returns the validation rules for updating the attributes of this user.
      *
      * @return array

@@ -22,6 +22,14 @@ class UserTest extends ModelTestCase
         $this->assertNotNull($this->model->updated_at);
     }
 
+    public function testCastsLoginAt()
+    {
+        $this->be($this->model);
+        // make sure the login_at attribute is populated
+        $this->visit('/');
+        $this->assertTrue($this->model->login_at instanceof \Carbon\Carbon);
+    }
+
     public function testFirstnameRequired()
     {
         $this->model->firstname = null;
