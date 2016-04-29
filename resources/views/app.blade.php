@@ -8,7 +8,7 @@
     <title>@yield('title')</title>
 
     <link href="{{ asset('assets/styles/main.css') }}" rel="stylesheet">
-    @yield('styles')
+    @stack('styles')
 </head>
 <body>
 @if(auth()->check())
@@ -25,6 +25,6 @@
     <script src="{{ asset('assets/scripts/angular-animate.min.js') }}"></script>
     <script src="{{ asset('assets/scripts/ui-bootstrap-tpls.min.js') }}"></script>
     <script src="{{ asset('assets/scripts/main.js') }}"></script>
-    @yield('scripts')
+    @stack('scripts')
 </body>
 </html>

@@ -1,13 +1,13 @@
 @extends('app')
 @inject('modules', 'Dias\Services\Modules')
 
-@section('styles')
+@push('styles')
 <link href="{{ asset('assets/styles/admin.css') }}" rel="stylesheet">
-@append
+@endpush
 
-@section('scripts')
+@push('scripts')
 <script src="{{ asset('assets/scripts/admin.js') }}"></script>
-@append
+@endpush
 
 @section('content')
 <div class="container" data-ng-app="dias.admin">

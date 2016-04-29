@@ -2,11 +2,11 @@
 
 @section('title'){{ trans('dias.titles.login') }}@stop
 
-@section('scripts')
+@push('scripts')
     <script type="text/javascript">
         angular.module('dias.ui.collapse', ['ui.bootstrap.collapse', 'ngAnimate']);
     </script>
-@append
+@endpush
 
 @section('content')
 <div class="container">

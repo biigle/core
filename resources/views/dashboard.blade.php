@@ -3,17 +3,17 @@
 
 @section('title'){{ trans('dias.titles.dashboard') }}@stop
 
-@section('styles')
+@push('styles')
 	@foreach ($modules->getMixins('dashboardStyles') as $module => $nestedMixins)
 		@include($module.'::dashboardStyles')
 	@endforeach
-@append
+@endpush
 
-@section('scripts')
+@push('scripts')
 	@foreach ($modules->getMixins('dashboardScripts') as $module => $nestedMixins)
 		@include($module.'::dashboardScripts')
 	@endforeach
-@append
+@endpush
 
 @section('content')
 <div class="container">

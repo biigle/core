@@ -123,17 +123,17 @@ $modules->addMixin('transects', 'dashboard.projects');
 				Until now we have only talked about registering <em>one</em> area for view mixins per page. There are use cases, though, where you'd want or are even required to have multiple of those areas on one page. Let's take a look at one of the situations where multiple areas for view mixins are necessary.
 			</p>
 			<p>
-				Having the example of the project box mixins containing transect thumbnail mixins still in mind, think about what whould happen if we tried to add a custom style to the transect thumbnails. "Of course", you'd say, "there is the <a href="{{ route('documentation').'/using-custom-assets-in-packages#publishing-css' }}"><code>styles</code> section</a> we can append our CSS to." But the downside of this approach is: the custom <code>style</code> tag is appended <em>each time</em> the mixin is included. While this is fine for the project box mixin that is included only once, it becomes a problem with nested mixins like the transect thumbnails that are included multiple times. So for each project box on the dashboard, one custom style tag woul be appended to the page. There is a better way to do this.
+				Having the example of the project box mixins containing transect thumbnail mixins still in mind, think about what whould happen if we tried to add a custom style to the transect thumbnails. "Of course", you'd say, "there is the <a href="{{ route('documentation').'/using-custom-assets-in-packages#publishing-css' }}"><code>styles</code> stack</a> we can append our CSS to." But the downside of this approach is: the custom <code>style</code> tag is appended <em>each time</em> the mixin is included. While this is fine for the project box mixin that is included only once, it becomes a problem with nested mixins like the transect thumbnails that are included multiple times. So for each project box on the dashboard, one custom style tag woul be appended to the page. There is a better way to do this.
 			</p>
 			<p>
 				In fact there is nothing preventing us to implement a separate "style" mixin and add it to the dashboard. That's exactly what is already provided by the dashboard, looking like this:
 			</p>
 <pre>
-&#64;section('styles')
+&#64;push('styles')
    &#64;foreach ($modules->getMixins('dashboardStyles') as $module => $nestedMixins)
       &#64;include($module.'::dashboardStyles')
    &#64;endforeach
-&#64;append
+&#64;endpush
 </pre>
 			<p>
 				Any mixin registered for <code>dashboardStyles</code> will be appended once to the <code>styles</code> section of the dashboard. Since nested mixins don't make any sense in this case, they are not passed on to the first level mixin.

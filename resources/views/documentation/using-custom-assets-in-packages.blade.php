@@ -48,11 +48,11 @@
 				To add custom JavaScript to a view, we need to add to the scripts section of the base <code>app</code> template. The scripts are usually located at the bottom of a page body so if we wanted to use the default assets already in the <code>content</code> section of the template it wouldn't work. To append our JavaScript to the scripts section, add the following to the <code>index.blade.php</code> template of our <code>quotes</code> package:
 			</p>
 <pre>
-&#64;section('scripts')
+&#64;push('scripts')
 &lt;script type="text/javascript"&gt;
    // your script goes here
 &lt;/script&gt;
-&#64;append
+&#64;endpush
 </pre>
 			<p>
 				Looking at the HTML of the rendered page, you'll notice that the new <code>script</code> tag is already appended at the right position following all default scripts. So let's populate the tag with the following script:
@@ -120,12 +120,12 @@ $this->publishes([
 				We tell <code>artisan</code> to publish <strong>only</strong> the assets of our package so it doesn't overwrite the assets (e.g. configuration files) of other packages. It would do so because we used the <code>force</code> flag, since we want the files to be replaced during developing the JavaScript application. From now on you always have to run this command again after any changes to the JavaScript application, otherwise the public files wouldn't be refreshed.
 			</p>
 			<p>
-				Our JavaScript is now publicly available so let's re-populate the <code>scripts</code> section of the view template and everything should be back working again:
+				Our JavaScript is now publicly available so let's re-populate the <code>scripts</code> stack of the view template and everything should be back working again:
 			</p>
 <pre>
-&#64;section('scripts')
+&#64;push('scripts')
 &lt;script src="@{{ asset('vendor/quotes/scripts/main.js') }}"&gt;&lt;/script&gt;
-&#64;append
+&#64;endpush
 </pre>
 			<p>
 				The <code>asset</code> helper function is a convenient way to generate URLs to files located in the <code>public</code> directory of the application.
@@ -166,7 +166,7 @@ Route::get('quotes/new', array(
 <pre>
 /**
  * Returns a new inspiring quote.
- * 
+ *
  * @return \Illuminate\Http\Response
  */
 public function quote()
@@ -218,9 +218,9 @@ blockquote {
 				Then add the new asset to the <code>styles</code> section of the view template:
 			</p>
 <pre>
-&#64;section('styles')
+&#64;push('styles')
 &lt;link href="@{{ asset('vendor/quotes/styles/main.css') }}" rel="stylesheet"&gt;
-&#64;append
+&#64;endpush
 </pre>
 			<p>
 				Publish the assets (the command stays the same) and reload the page. Stylish, isn't it?
@@ -231,7 +231,7 @@ blockquote {
 			<p>
 				Congratulations! Now you know (almost) anything there is to know about developing custom packages for DIAS. What's still left is how you can implement your views so they can be extended yet by others. You have done it yourself, implementing the dashboard view mixin. There are a few things to keep in mind when registering your own areas for view mixins but we'll cover that in another tutorial.
 			</p>
-			
+
 			<p>
 				<a href="{{ route('documentation') }}" class="btn btn-default" title="Back to the documentation center"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> back</a>
 			</p>
