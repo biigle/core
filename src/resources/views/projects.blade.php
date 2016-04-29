@@ -1,6 +1,6 @@
-@section('scripts')
+@push('scripts')
 <script src="{{ asset('vendor/transects/scripts/projects.js') }}"></script>
-@append
+@endpush
 
 <div class="col-sm-6 col-lg-4">
 	<div class="panel panel-default" data-ng-controller="ProjectTransectsController" data-ng-class="{'panel-warning': editing}">
