@@ -3,7 +3,7 @@
 
 @section('title') Annotate @stop
 
-@section('scripts')
+@push('scripts')
 <script src="{{ asset('vendor/annotations/scripts/ol.js') }}"></script>
 <script src="{{ asset('vendor/annotations/scripts/main.js') }}"></script>
 <script type="text/javascript">
@@ -15,15 +15,15 @@
 @foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
     @include($module.'::annotationsScripts', ['mixins' => $nestedMixins])
 @endforeach
-@append
+@endpush
 
-@section('styles')
+@push('styles')
 <link href="{{ asset('vendor/annotations/styles/ol.css') }}" rel="stylesheet">
 <link href="{{ asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
 @foreach ($modules->getMixins('annotationsStyles') as $module => $nestedMixins)
     @include($module.'::annotationsStyles', ['mixins' => $nestedMixins])
 @endforeach
-@append
+@endpush
 
 @section('content')
 <div class="annotator__container" data-ng-app="dias.annotations" data-ng-controller="AnnotatorController">
