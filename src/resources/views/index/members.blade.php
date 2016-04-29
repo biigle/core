@@ -29,7 +29,7 @@
 					<tr class="project__user ng-cloak" data-ng-repeat="user in users | filter: {project_role_id: roles.{{ $role }}} as {{ $role }}s">
 						<td data-project-member="" draggable="@{{editing}}" data-ng-class="{'bg-danger': removing}">
 							<span data-ng-if="!removing">
-								<span data-ng-bind="user.name"></span>
+								<span data-ng-bind="user.firstname"></span> <span data-ng-bind="user.lastname"></span>
 								@if($isAdmin)
 									<button data-ng-if="editing" type="button" class="close ng-cloak" aria-label="Close" title="Remove this user" data-ng-click="startRemove()"><span aria-hidden="true">&times;</span></button>
 								@endif
