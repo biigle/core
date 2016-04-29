@@ -11,7 +11,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-menu-hamburger"></i> <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li class="dropdown-header">
-                            Signed in as <strong>{{ auth()->user()->name }}</strong>
+                            Signed in as <strong>{{ auth()->user()->firstname }} {{ auth()->user()->lastname }}</strong>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li>

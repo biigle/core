@@ -22,12 +22,14 @@ class ProjectUserController extends Controller
      * [
      *    {
      *       "id": 1,
-     *       "name": "Joe User",
+     *       "firstname": "Joe",
+     *       "firstname": "User",
      *       "project_role_id": 1
      *    },
      *    {
      *       "id": 2,
-     *       "name": "Jane User",
+     *       "firstname": "Jane",
+     *       "firstname": "User",
      *       "project_role_id": 2
      *    }
      * ]

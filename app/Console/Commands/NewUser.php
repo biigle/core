@@ -42,6 +42,6 @@ class NewUser extends Command
 
         $u->password = bcrypt($password);
         $u->save();
-        $this->info("<comment>{$u->name}</comment> was successfully created!");
+        $this->info("<comment>{$u->firstname} {$u->lastname}</comment> was successfully created!");
     }
 }

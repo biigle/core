@@ -44,7 +44,8 @@ class TransectAnnotationController extends Controller
      *                       "user": {
      *                          "id":13,
      *                          "role_id":2,
-     *                          "name":"Gudrun Schinner"
+     *                          "firstname":"Gudrun",
+     *                          "lastname":"Schinner"
      *                       }
      *                    }
      *                 ],

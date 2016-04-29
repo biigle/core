@@ -60,24 +60,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     ];
 
     /**
-     * The attributes included in the model's JSON form. All other are hidden.
+     * The attributes hidden from the model's JSON form.
      *
      * @var array
      */
-    protected $visible = [
-        'id',
-        'name',
-        'role_id',
-        'project_role_id',
-    ];
-
-    /**
-     * Attribute accessors that should be added to the JSON form.
-     *
-     * @var array
-     */
-    protected $appends = [
-        'name',
+    protected $hidden = [
+        'password',
+        'remember_token',
+        'pivot',
     ];
 
     /**
@@ -195,15 +185,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
                 ->select('id')
                 ->first() !== null;
         });
-    }
-
-    /**
-     * Returns the full name of this user.
-     * @return string
-     */
-    public function getNameAttribute()
-    {
-        return $this->firstname.' '.$this->lastname;
     }
 
     /**

@@ -139,7 +139,7 @@ class ProjectTest extends ModelTestCase
         $this->model->addUserId($user->id, Role::$editor->id);
         $user = $this->model->users()->find($user->id);
         $this->assertNotNull($user);
-        $this->assertEquals(Role::$editor->id, $user->role_id);
+        $this->assertEquals(Role::$editor->id, $user->project_role_id);
 
         // a user can only be added once regardless the role
         $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');

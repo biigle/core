@@ -455,14 +455,16 @@ class ApiUserControllerTest extends ApiTestCase
         $content = $this->response->getContent();
         $this->assertResponseOk();
 
-        $this->assertContains('"name":"abc def"', $content);
-        $this->assertContains('"name":"abc ghi"', $content);
+        $this->assertContains('"firstname":"abc"', $content);
+        $this->assertContains('"lastname":"def"', $content);
+        $this->assertContains('"lastname":"ghi"', $content);
 
         $this->get('/api/v1/users/find/d');
         $content = $this->response->getContent();
         $this->assertResponseOk();
 
-        $this->assertContains('"name":"abc def"', $content);
-        $this->assertNotContains('"name":"abc ghi"', $content);
+        $this->assertContains('"firstname":"abc"', $content);
+        $this->assertContains('"lastname":"def"', $content);
+        $this->assertNotContains('"lastname":"ghi"', $content);
     }
 }

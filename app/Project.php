@@ -59,6 +59,7 @@ class Project extends Model implements BelongsToProjectContract
     public function users()
     {
         return $this->belongsToMany('Dias\User')
+            ->select('id', 'firstname', 'lastname')
             ->withPivot('project_role_id as project_role_id');
     }
 

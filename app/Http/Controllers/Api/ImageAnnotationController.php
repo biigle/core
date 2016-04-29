@@ -43,7 +43,8 @@ class ImageAnnotationController extends Controller
      *             },
      *             "user": {
      *                "id": 4,
-     *                "name": "Graham Hahn",
+     *                "firstname": "Graham",
+     *                "lastname": "Hahn",
      *                "role_id": 2
      *             }
      *          }
@@ -118,7 +119,8 @@ class ImageAnnotationController extends Controller
      *          },
      *          "user": {
      *             "id": 4,
-     *             "name": "Graham Hahn",
+     *             "firstname": "Graham",
+     *             "lastname": "Hahn",
      *             "role_id": 2
      *          }
      *       }

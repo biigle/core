@@ -52,7 +52,8 @@ class AnnotationLabel extends Model implements BelongsToProjectContract
      */
     public function user()
     {
-        return $this->belongsTo('Dias\User');
+        return $this->belongsTo('Dias\User')
+            ->select('id', 'firstname', 'lastname', 'role_id');
     }
 
     /**

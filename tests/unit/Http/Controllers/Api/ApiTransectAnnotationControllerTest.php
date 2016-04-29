@@ -33,13 +33,17 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
             'id' => $label->label->id,
             'name' => $label->label->name,
             'id' => $label->user->id,
-            'name' => $label->user->name,
+            'firstname' => $label->user->firstname,
+            'lastname' => $label->user->lastname,
             'id' => $annotation->shape->id,
             'name' => $annotation->shape->name,
             'points' => [10, 20],
         ];
 
-        $dontExpect = ['id' => $image2->id];
+        $dontExpect = [
+            'id' => $image2->id,
+            'email' => $label->user->email
+        ];
 
         // SQLite converts integers to string
         // Eloquent does convert IDs back but not the IDs of relations or other integers

@@ -49,12 +49,14 @@ class UserController extends Controller
      * [
      *    {
      *       "id": 1,
-     *       "name": "Joe User",
+     *       "firstname": "Joe",
+     *       "lastname": "User",
      *       "role_id": 2
      *    },
      *    {
      *       "id": 2,
-     *       "name": "Jane User",
+     *       "firstname": "Jane",
+     *       "lastname": "User",
      *       "role_id": 2
      *    }
      * ]
@@ -70,7 +72,8 @@ class UserController extends Controller
             $operator = 'like';
         }
 
-        return User::where('firstname', $operator, '%'.$pattern.'%')
+        return User::select('id', 'firstname', 'lastname', 'role_id')
+            ->where('firstname', $operator, '%'.$pattern.'%')
             ->orWhere('lastname', $operator, '%'.$pattern.'%')
             ->take(10)
             ->get();
@@ -88,12 +91,14 @@ class UserController extends Controller
      * [
      *    {
      *       "id": 1,
-     *       "name": "Joe User",
+     *       "firstname": "Joe",
+     *       "lastname": "User",
      *       "role_id": 2
      *    },
      *    {
      *       "id": 2,
-     *       "name": "Jane User",
+     *       "firstname": "Jane",
+     *       "lastname": "User",
      *       "role_id": 2
      *    }
      * ]
@@ -102,7 +107,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::all();
+        return User::select('id', 'firstname', 'lastname', 'role_id')->get();
     }
 
     /**
@@ -118,7 +123,8 @@ class UserController extends Controller
      * @apiSuccessExample {json} Success response:
      * {
      *    "id": 1,
-     *    "name": "Joe User",
+     *    "firstname": "Joe",
+     *    "lastname": "User",
      *    "role_id": 2
      * }
      *
@@ -127,7 +133,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        return User::findOrFail($id);
+        return User::select('id', 'firstname', 'lastname', 'role_id')->findOrFail($id);
     }
 
     /**
@@ -142,8 +148,16 @@ class UserController extends Controller
      * @apiSuccessExample {json} Success response:
      * {
      *    "id": 1,
-     *    "name": "Joe User",
-     *    "role_id": 2
+     *    "firstname": "Joe",
+     *    "lastname": "User",
+     *    "email": "joe@user.com",
+     *    "role_id": 2,
+     *    "created_at": "2016-04-29 07:20:33",
+     *    "updated_at": "2016-04-29 07:20:33",
+     *    "role": {
+     *       "id": 2,
+     *       "name": "editor"
+     *    }
      * }
      *
      * @return User
@@ -298,8 +312,12 @@ class UserController extends Controller
      * @apiSuccessExample {json} Success response:
      * {
      *    "id": 2,
-     *    "name": "Joe User",
-     *    "role_id": 2
+     *    "firstname": "Joe",
+     *    "lastname": "User",
+     *    "email": "joe@user.com",
+     *    "role_id": 2,
+     *    "created_at": "2016-04-29 07:38:51",
+     *    "updated_at"; "2016-04-29 07:38:51"
      * }
      *
      * @return User

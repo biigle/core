@@ -14,7 +14,6 @@ class UserTest extends ModelTestCase
     {
         $this->assertNotNull($this->model->firstname);
         $this->assertNotNull($this->model->lastname);
-        $this->assertNotNull($this->model->name);
         $this->assertNotNull($this->model->password);
         $this->assertNotNull($this->model->email);
         $this->assertNotNull($this->model->role_id);
@@ -26,7 +25,7 @@ class UserTest extends ModelTestCase
     {
         $this->be($this->model);
         // make sure the login_at attribute is populated
-        $this->visit('/');
+        $this->get('/');
         $this->assertTrue($this->model->login_at instanceof \Carbon\Carbon);
     }
 
@@ -91,14 +90,8 @@ class UserTest extends ModelTestCase
         // API tokens mustn't show up in the JSON
         ApiTokenTest::create(['owner_id' => $this->model->id]);
         $jsonUser = json_decode((string) $this->model->fresh());
-        $this->assertObjectNotHasAttribute('firstname', $jsonUser);
-        $this->assertObjectNotHasAttribute('lastname', $jsonUser);
         $this->assertObjectNotHasAttribute('password', $jsonUser);
-        $this->assertObjectNotHasAttribute('email', $jsonUser);
         $this->assertObjectNotHasAttribute('remember_token', $jsonUser);
-        $this->assertObjectNotHasAttribute('created_at', $jsonUser);
-        $this->assertObjectNotHasAttribute('updated_at', $jsonUser);
-        $this->assertObjectNotHasAttribute('login_at', $jsonUser);
         $this->assertObjectNotHasAttribute('api_tokens', $jsonUser);
     }
 

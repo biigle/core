@@ -31,7 +31,8 @@ class AnnotationLabelController extends Controller
      *       "user": {
      *          "id": 1,
      *          "role_id": 2,
-     *          "name": "Joe User"
+     *          "firstname": "Joe",
+     *          "lastname": "User"
      *       }
      *    }
      * ]
@@ -75,7 +76,8 @@ class AnnotationLabelController extends Controller
      *    "user": {
      *       "id": 1,
      *       "role_id": 2,
-     *       "name": "Joe User"
+     *       "firstname": "Joe",
+     *       "lastname": "User"
      *    }
      * }
      *
