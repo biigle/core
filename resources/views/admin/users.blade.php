@@ -14,7 +14,7 @@
     <tbody>
         @foreach ($users as $user)
             <tr>
-                <td>{{$user->name}}</td>
+                <td>{{$user->firstname}} {{$user->lastname}}</td>
                 <td><a href="mailto:{{$user->email}}">{{$user->email}}</a></td>
                 <td>{{$user->login_at}}</td>
             </tr>
