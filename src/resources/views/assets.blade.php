@@ -1,7 +1,7 @@
-@section('styles')
+@push('styles')
 <link href="{{ asset('vendor/projects/styles/main.css') }}" rel="stylesheet">
-@append
+@endpush
 
-@section('scripts')
+@push('scripts')
 <script src="{{ asset('vendor/projects/scripts/main.js') }}"></script>
-@append
+@endpush
