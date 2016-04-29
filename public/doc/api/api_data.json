@@ -89,7 +89,7 @@
       "examples": [
         {
           "title": "Success response:",
-          "content": "[\n   {\n      \"id\": 1,\n      \"confidence\": 0.5,\n      \"label\": {\n         \"id\": 2,\n         \"name\": \"Coral\",\n         \"parent_id\": 1,\n         \"aphia_id\": null,\n         \"color\": \"0099ff\"\n      },\n      \"user\": {\n         \"id\": 1,\n         \"role_id\": 2,\n         \"name\": \"Joe User\"\n      }\n   }\n]",
+          "content": "[\n   {\n      \"id\": 1,\n      \"confidence\": 0.5,\n      \"label\": {\n         \"id\": 2,\n         \"name\": \"Coral\",\n         \"parent_id\": 1,\n         \"aphia_id\": null,\n         \"color\": \"0099ff\"\n      },\n      \"user\": {\n         \"id\": 1,\n         \"role_id\": 2,\n         \"firstname\": \"Joe\",\n         \"lastname\": \"User\"\n      }\n   }\n]",
           "type": "json"
         }
       ]
@@ -190,7 +190,7 @@
       "examples": [
         {
           "title": "Success response:",
-          "content": "{\n   \"id\": 1,\n   \"confidence\": 0.5,\n   \"label\": {\n      \"id\": 2,\n      \"name\": \"Coral\",\n      \"parent_id\": 1,\n      \"aphia_id\": null,\n      \"color\": \"0099ff\"\n   },\n   \"user\": {\n      \"id\": 1,\n      \"role_id\": 2,\n      \"name\": \"Joe User\"\n   }\n}",
+          "content": "{\n   \"id\": 1,\n   \"confidence\": 0.5,\n   \"label\": {\n      \"id\": 2,\n      \"name\": \"Coral\",\n      \"parent_id\": 1,\n      \"aphia_id\": null,\n      \"color\": \"0099ff\"\n   },\n   \"user\": {\n      \"id\": 1,\n      \"role_id\": 2,\n      \"firstname\": \"Joe\",\n      \"lastname\": \"User\"\n   }\n}",
           "type": "json"
         }
       ]
@@ -271,7 +271,7 @@
       "examples": [
         {
           "title": "Success response:",
-          "content": "{\n   \"created_at\": \"2015-02-18 11:45:00\",\n   \"id\": 1,\n   \"image_id\": 1,\n   \"shape_id\": 3,\n   \"updated_at\": \"2015-02-18 11:45:00\",\n   \"points\": [10, 11, 20, 21],\n   \"labels\": [\n      {\n         \"confidence\": 1,\n         \"id\": 1,\n         \"label\": {\n            \"aphia_id\": null,\n            \"color\": \"bada55\",\n            \"id\": 3,\n            \"name\": \"My label\",\n            \"parent_id\": null,\n            \"project_id\": null\n         },\n         \"user\": {\n            \"id\": 4,\n            \"name\": \"Graham Hahn\",\n            \"role_id\": 2\n         }\n      }\n   ]\n}",
+          "content": "{\n   \"created_at\": \"2015-02-18 11:45:00\",\n   \"id\": 1,\n   \"image_id\": 1,\n   \"shape_id\": 3,\n   \"updated_at\": \"2015-02-18 11:45:00\",\n   \"points\": [10, 11, 20, 21],\n   \"labels\": [\n      {\n         \"confidence\": 1,\n         \"id\": 1,\n         \"label\": {\n            \"aphia_id\": null,\n            \"color\": \"bada55\",\n            \"id\": 3,\n            \"name\": \"My label\",\n            \"parent_id\": null,\n            \"project_id\": null\n         },\n         \"user\": {\n            \"id\": 4,\n            \"firstname\": \"Graham\",\n            \"lastname\": \"Hahn\",\n            \"role_id\": 2\n         }\n      }\n   ]\n}",
           "type": "json"
         }
       ]
@@ -512,7 +512,7 @@
       "examples": [
         {
           "title": "Success response:",
-          "content": "[\n   {\n      \"created_at\": \"2015-02-18 11:45:00\",\n      \"id\": 1,\n      \"image_id\": 1,\n      \"shape_id\": 1,\n      \"updated_at\": \"2015-02-18 11:45:00\",\n      \"points\": [100, 200],\n      \"labels\": [\n         {\n            \"confidence\": 1,\n            \"id\": 1,\n            \"label\": {\n               \"aphia_id\": null,\n               \"color\": \"bada55\",\n               \"id\": 3,\n               \"name\": \"My label\",\n               \"parent_id\": null,\n               \"project_id\": null\n            },\n            \"user\": {\n               \"id\": 4,\n               \"name\": \"Graham Hahn\",\n               \"role_id\": 2\n            }\n         }\n      ]\n   }\n]",
+          "content": "[\n   {\n      \"created_at\": \"2015-02-18 11:45:00\",\n      \"id\": 1,\n      \"image_id\": 1,\n      \"shape_id\": 1,\n      \"updated_at\": \"2015-02-18 11:45:00\",\n      \"points\": [100, 200],\n      \"labels\": [\n         {\n            \"confidence\": 1,\n            \"id\": 1,\n            \"label\": {\n               \"aphia_id\": null,\n               \"color\": \"bada55\",\n               \"id\": 3,\n               \"name\": \"My label\",\n               \"parent_id\": null,\n               \"project_id\": null\n            },\n            \"user\": {\n               \"id\": 4,\n               \"firstname\": \"Graham\",\n               \"lastname\": \"Hahn\",\n               \"role_id\": 2\n            }\n         }\n      ]\n   }\n]",
           "type": "json"
         }
       ]
@@ -1277,7 +1277,7 @@
       "examples": [
         {
           "title": "Success response:",
-          "content": "[\n   {\n      \"id\": 1,\n      \"name\": \"Joe User\",\n      \"project_role_id\": 1\n   },\n   {\n      \"id\": 2,\n      \"name\": \"Jane User\",\n      \"project_role_id\": 2\n   }\n]",
+          "content": "[\n   {\n      \"id\": 1,\n      \"firstname\": \"Joe\",\n      \"firstname\": \"User\",\n      \"project_role_id\": 1\n   },\n   {\n      \"id\": 2,\n      \"firstname\": \"Jane\",\n      \"firstname\": \"User\",\n      \"project_role_id\": 2\n   }\n]",
           "type": "json"
         }
       ]
@@ -1616,7 +1616,7 @@
       "examples": [
         {
           "title": "Success response:",
-          "content": "[\n    {\n        \"id\":1,\n        \"filename\":\"image.jpg\",\n        \"annotations\": [\n            {\n                \"id\":1,\n                \"image_id\":1,\n                \"shape_id\":6,\n                \"labels\": [\n                   {\n                      \"id\":1,\n                      \"confidence\": 0.6,\n                      \"label\": {\n                         \"id\":3,\n                         \"name\":\"Benthic Object\",\n                         \"parent_id\":2,\n                         \"aphia_id\":null,\n                         \"project_id\":null,\n                         \"color\": \"0099ff\"\n                      },\n                      \"user\": {\n                         \"id\":13,\n                         \"role_id\":2,\n                         \"name\":\"Gudrun Schinner\"\n                      }\n                   }\n                ],\n                \"shape\": {\n                   \"id\":6,\n                   \"name\":\"Circle\"\n                },\n                \"points\": [4, 8]\n            }\n        ]\n    }\n]",
+          "content": "[\n    {\n        \"id\":1,\n        \"filename\":\"image.jpg\",\n        \"annotations\": [\n            {\n                \"id\":1,\n                \"image_id\":1,\n                \"shape_id\":6,\n                \"labels\": [\n                   {\n                      \"id\":1,\n                      \"confidence\": 0.6,\n                      \"label\": {\n                         \"id\":3,\n                         \"name\":\"Benthic Object\",\n                         \"parent_id\":2,\n                         \"aphia_id\":null,\n                         \"project_id\":null,\n                         \"color\": \"0099ff\"\n                      },\n                      \"user\": {\n                         \"id\":13,\n                         \"role_id\":2,\n                         \"firstname\":\"Gudrun\",\n                         \"lastname\":\"Schinner\"\n                      }\n                   }\n                ],\n                \"shape\": {\n                   \"id\":6,\n                   \"name\":\"Circle\"\n                },\n                \"points\": [4, 8]\n            }\n        ]\n    }\n]",
           "type": "json"
         }
       ]
@@ -1921,7 +1921,7 @@
       "examples": [
         {
           "title": "Success response:",
-          "content": "[\n   {\n      \"id\": 1,\n      \"name\": \"Joe User\",\n      \"role_id\": 2\n   },\n   {\n      \"id\": 2,\n      \"name\": \"Jane User\",\n      \"role_id\": 2\n   }\n]",
+          "content": "[\n   {\n      \"id\": 1,\n      \"firstname\": \"Joe\",\n      \"lastname\": \"User\",\n      \"role_id\": 2\n   },\n   {\n      \"id\": 2,\n      \"firstname\": \"Jane\",\n      \"lastname\": \"User\",\n      \"role_id\": 2\n   }\n]",
           "type": "json"
         }
       ]
@@ -1947,7 +1947,7 @@
       "examples": [
         {
           "title": "Success response:",
-          "content": "[\n   {\n      \"id\": 1,\n      \"name\": \"Joe User\",\n      \"role_id\": 2\n   },\n   {\n      \"id\": 2,\n      \"name\": \"Jane User\",\n      \"role_id\": 2\n   }\n]",
+          "content": "[\n   {\n      \"id\": 1,\n      \"firstname\": \"Joe\",\n      \"lastname\": \"User\",\n      \"role_id\": 2\n   },\n   {\n      \"id\": 2,\n      \"firstname\": \"Jane\",\n      \"lastname\": \"User\",\n      \"role_id\": 2\n   }\n]",
           "type": "json"
         }
       ]
@@ -1974,7 +1974,7 @@
       "examples": [
         {
           "title": "Success response:",
-          "content": "{\n   \"id\": 1,\n   \"name\": \"Joe User\",\n   \"role_id\": 2\n}",
+          "content": "{\n   \"id\": 1,\n   \"firstname\": \"Joe\",\n   \"lastname\": \"User\",\n   \"email\": \"joe@user.com\",\n   \"role_id\": 2,\n   \"created_at\": \"2016-04-29 07:20:33\",\n   \"updated_at\": \"2016-04-29 07:20:33\",\n   \"role\": {\n      \"id\": 2,\n      \"name\": \"editor\"\n   }\n}",
           "type": "json"
         }
       ]
@@ -2013,7 +2013,7 @@
       "examples": [
         {
           "title": "Success response:",
-          "content": "{\n   \"id\": 1,\n   \"name\": \"Joe User\",\n   \"role_id\": 2\n}",
+          "content": "{\n   \"id\": 1,\n   \"firstname\": \"Joe\",\n   \"lastname\": \"User\",\n   \"role_id\": 2\n}",
           "type": "json"
         }
       ]
@@ -2074,6 +2074,15 @@
             "field": "lastname",
             "description": "<p>The lastname of the new user.</p>"
           }
+        ],
+        "Optional parameters": [
+          {
+            "group": "Optional parameters",
+            "type": "Number",
+            "optional": false,
+            "field": "role_id",
+            "description": "<p>ID of the role of the new user. Default is the ID of the &quot;editor&quot; role.</p>"
+          }
         ]
       },
       "examples": [
@@ -2088,7 +2097,7 @@
       "examples": [
         {
           "title": "Success response:",
-          "content": "{\n   \"id\": 2,\n   \"name\": \"Joe User\",\n   \"role_id\": 2\n}",
+          "content": "{\n   \"id\": 2,\n   \"firstname\": \"Joe\",\n   \"lastname\": \"User\",\n   \"email\": \"joe@user.com\",\n   \"role_id\": 2,\n   \"created_at\": \"2016-04-29 07:38:51\",\n   \"updated_at\"; \"2016-04-29 07:38:51\"\n}",
           "type": "json"
         }
       ]
@@ -2119,14 +2128,14 @@
             "type": "String",
             "optional": false,
             "field": "email",
-            "description": "<p>The new email address of the user. Must be unique for all users. If this parameter is set, an additional <code>old_password</code> needs to be present, containing the user's current password.</p>"
+            "description": "<p>The new email address of the user. Must be unique for all users. If this parameter is set, an additional <code>auth_password</code> needs to be present, containing the user's current password.</p>"
           },
           {
             "group": "Attributes that can be updated",
             "type": "String",
             "optional": false,
             "field": "password",
-            "description": "<p>The new password of the user. If this parameter is set, an additional <code>password_confirmation</code> parameter needs to be present, containing the same new password, as well as an <code>old_password</code> parameter, containing the old password.</p>"
+            "description": "<p>The new password of the user. If this parameter is set, an additional <code>password_confirmation</code> parameter needs to be present, containing the same new password, as well as an <code>auth_password</code> parameter, containing the old password.</p>"
           },
           {
             "group": "Attributes that can be updated",
@@ -2209,13 +2218,20 @@
             "optional": false,
             "field": "lastname",
             "description": "<p>The new lastname of the user.</p>"
+          },
+          {
+            "group": "Attributes that can be updated",
+            "type": "Number",
+            "optional": false,
+            "field": "role_id",
+            "description": "<p>Global role of the user. If the role should be changed, an additional <code>auth_password</code> field is required, containing the password of the global administrator that requests the change.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Request example:",
-          "content": "email: 'new@example.com'\npassword: 'TotallySecure'\npassword_confirmation: 'TotallySecure'\nfirstname: 'New'\nlastname: 'Name'",
+          "content": "email: 'new@example.com'\npassword: 'TotallySecure'\npassword_confirmation: 'TotallySecure'\nfirstname: 'New'\nlastname: 'Name'\nrole_id: 1\nauth_password: 'password123'",
           "type": "String"
         }
       ]

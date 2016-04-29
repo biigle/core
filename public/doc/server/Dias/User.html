@@ -127,11 +127,11 @@
                 <td></td>
             </tr>
                     <tr>
-                <td class="type" id="property_registerRules">
+                <td class="type" id="property_createRules">
                     static                                                            
     array
                 </td>
-                <td>$registerRules</td>
+                <td>$createRules</td>
                 <td class="last">Validation rules for registering a new user.</td>
                 <td></td>
             </tr>
@@ -145,21 +145,21 @@
                 <td></td>
             </tr>
                     <tr>
-                <td class="type" id="property_visible">
+                <td class="type" id="property_hidden">
                                         protected                                        
     array
                 </td>
-                <td>$visible</td>
-                <td class="last">The attributes included in the model's JSON form. All other are hidden.</td>
+                <td>$hidden</td>
+                <td class="last">The attributes hidden from the model's JSON form.</td>
                 <td></td>
             </tr>
                     <tr>
-                <td class="type" id="property_appends">
+                <td class="type" id="property_dates">
                                         protected                                        
     array
                 </td>
-                <td>$appends</td>
-                <td class="last">Attribute accessors that should be added to the JSON form.</td>
+                <td>$dates</td>
+                <td class="last">The attributes that should be mutated to dates.</td>
                 <td></td>
             </tr>
             </table>
@@ -256,16 +256,6 @@ projects.</p>                </div>
                     <div class="row">
                 <div class="col-md-2 type">
                     
-    string
-                </div>
-                <div class="col-md-8 type">
-                    <a href="#method_getNameAttribute">getNameAttribute</a>()
-                                            <p>Returns the full name of this user.</p>                </div>
-                <div class="col-md-2"></div>
-            </div>
-                    <div class="row">
-                <div class="col-md-2 type">
-                    
     
                 </div>
                 <div class="col-md-8 type">
@@ -281,7 +271,7 @@ projects.</p>                </div>
             <div id="method-details">
                     <div class="method-item">
                     <h3 id="method_updateRules">
-        <div class="location">at line         line 87</div>
+        <div class="location">at line         line 85</div>
         <code>                    
     array
     <strong>updateRules</strong>()</code>
@@ -542,36 +532,8 @@ projects.</p>                                </div>
 
             </div>
                     <div class="method-item">
-                    <h3 id="method_getNameAttribute">
-        <div class="location">at line         line 194</div>
-        <code>                    
-    string
-    <strong>getNameAttribute</strong>()</code>
-    </h3>
-    <div class="details">
-                    <div class="method-description">
-                                    <p>Returns the full name of this user.</p>                                </div>
-                <div class="tags">
-            
-                            <h4>Return Value</h4>
-
-                    <table class="table table-condensed">
-        <tr>
-            <td>
-    string</td>
-            <td></td>
-        </tr>
-    </table>
-
-            
-            
-                    </div>
-    </div>
-
-            </div>
-                    <div class="method-item">
                     <h3 id="method_checkCanBeDeleted">
-        <div class="location">at line         line 203</div>
+        <div class="location">at line         line 194</div>
         <code>                    
     
     <strong>checkCanBeDeleted</strong>()</code>
