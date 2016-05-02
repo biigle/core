@@ -41,9 +41,13 @@ angular.module('dias.ui.users').directive('userChooser', function () {
 
 			replace: true,
 
-			template: '<input type="text" data-ng-model="selected" data-uib-typeahead="user.name for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
+			template: '<input type="text" data-ng-model="selected" data-uib-typeahead="name(user) for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
 
 			controller: function ($scope, User) {
+                $scope.name = function (user) {
+                    return user ? (user.firstname + ' ' + user.lastname) : '';
+                };
+
 				$scope.find = function (query) {
 					return User.find({query: query}).$promise;
 				};
