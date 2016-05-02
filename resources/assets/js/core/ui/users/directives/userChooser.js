@@ -45,7 +45,11 @@ angular.module('dias.ui.users').directive('userChooser', function () {
 
 			controller: function ($scope, User) {
                 $scope.name = function (user) {
-                    return user ? (user.firstname + ' ' + user.lastname) : '';
+                    if (user && user.firstname && user.lastname) {
+                        return user.firstname + ' ' + user.lastname;
+                    }
+
+                    return '';
                 };
 
 				$scope.find = function (query) {
