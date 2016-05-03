@@ -10,7 +10,7 @@ angular.module('dias.annotations').controller('SettingsAnnotationsCyclingControl
 
         // flag to prevent cycling while a new image is loading
         var loading = false;
-
+        // identifier for this cycling variant (there are others, too)
         var cyclingKey = 'annotations';
 
         var nextAnnotation = function (e) {
@@ -76,6 +76,11 @@ angular.module('dias.annotations').controller('SettingsAnnotationsCyclingControl
             return false;
         };
 
+        $scope.attributes = {
+            // restrict cycling of annotations to the currently selected label category
+            restrict: false
+        };
+
         $scope.cycling = function () {
             return $scope.getVolatileSettings('cycle') === cyclingKey;
         };
@@ -110,6 +115,31 @@ angular.module('dias.annotations').controller('SettingsAnnotationsCyclingControl
                 mapAnnotations.clearSelection();
             }
         });
+
+        var unwatchSelectedLabel;
+
+        var watchSelectedLabel = function () {
+            if (unwatchSelectedLabel) unwatchSelectedLabel();
+            unwatchSelectedLabel = $scope.$watch(labels.getSelected, function () {
+                if ($scope.cycling()) {
+                    mapAnnotations.jumpToFirst();
+                }
+            });
+        };
+
+        $scope.$watch('attributes.restrict', function (restrict) {
+            mapAnnotations.setRestrictLabelCategory(restrict);
+            if ($scope.cycling()) {
+                mapAnnotations.jumpToFirst();
+            }
+
+            if (restrict) {
+                watchSelectedLabel();
+            } else if (unwatchSelectedLabel) {
+                unwatchSelectedLabel();
+            }
+        });
+
 
         $scope.$on('image.shown', function () {
             loading = false;

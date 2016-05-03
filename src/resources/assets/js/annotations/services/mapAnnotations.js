@@ -8,6 +8,7 @@
 angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval, labels) {
 		"use strict";
 
+        // the geometric features of the annotations on the map
         var annotationFeatures = new ol.Collection();
         var annotationSource = new ol.source.Vector({
             features: annotationFeatures
@@ -26,8 +27,10 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             multi: true
 		});
 
+        // all annotations that are currently selected
 		var selectedFeatures = select.getFeatures();
 
+        // interaction for modifying annotations
 		var modify = new ol.interaction.Modify({
 			features: annotationFeatures,
 			// the SHIFT key must be pressed to delete vertices, so
@@ -40,13 +43,14 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         modify.setActive(false);
 
+        // interaction for moving annotations
         var translate = new ol.interaction.Translate({
             features: selectedFeatures
         });
 
         translate.setActive(false);
 
-		// drawing interaction
+		// drawing interaction, will be a new one for each drawing tool
 		var draw;
         // type/shape of the drawing interaction
         var drawingType;
@@ -55,13 +59,19 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         // in the annotationFeatures collection
         var currentAnnotationIndex = 0;
 
+        // the annotation that was drawn last during the current session
         var lastDrawnFeature;
+
+        // restrict cycling through annotations to those having the currently selected
+        // label category
+        var restrictLabelCategory = false;
 
         var _this = this;
 
         // scope of the CanvasController
         var _scope;
 
+        // selects a single annotation and moves the viewport to it
         var selectAndShowAnnotation = function (annotation) {
             _this.clearSelection();
             if (annotation) {
@@ -72,7 +82,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             }
         };
 
-        // invert all y coordinates
+        // invert y coordinates of a points array
         var convertFromOLPoint = function (point, index) {
             return (index % 2 === 1) ? (images.currentImage.height - point) : point;
         };
@@ -116,6 +126,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			debounce(save, 500, feature.annotation.id);
 		};
 
+        // create a new OL feature on the map based on an annotation object
 		var createFeature = function (annotation) {
 			var geometry;
 			var points = annotation.points;
@@ -164,6 +175,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             annotationSource.addFeature(feature);
 		};
 
+        // redraw all features with those belonging to the specified image
 		var refreshAnnotations = function (e, image) {
 			// clear features of previous image
             annotationSource.clear();
@@ -175,6 +187,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			});
 		};
 
+        // handle a newly drawn annotation
 		var handleNewFeature = function (e) {
 			var geometry = e.feature.getGeometry();
             var label = labels.getSelected();
@@ -201,6 +214,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             return e.feature.annotation.$promise;
 		};
 
+        // handle the removal of an annotation
         var removeFeature = function (feature) {
             if (feature === lastDrawnFeature) {
                 lastDrawnFeature = null;
@@ -210,6 +224,30 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
                 annotationSource.removeFeature(feature);
                 selectedFeatures.remove(feature);
             });
+        };
+
+        // returns true if the supplied annotation has a label of the same category than
+        // the currently selected category
+        var annotationHasCurrentLabel = function (annotation) {
+            if (!annotation.labels) return false;
+            var id = labels.getSelectedId();
+            for (var i = 0; i < annotation.labels.length; i++) {
+                if (!annotation.labels[i].label) continue;
+                if (annotation.labels[i].label.id === id) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        // filters out any annotation that does
+        var filterAnnotationsLabelCategory = function (feature) {
+            return !restrictLabelCategory || annotationHasCurrentLabel(feature.annotation);
+        };
+
+        var getFilteredAnnotationFeatures = function () {
+            return annotationFeatures.getArray().filter(filterAnnotationsLabelCategory);
         };
 
 		this.init = function (scope) {
@@ -231,6 +269,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			selectedFeatures.on('change:length', apply);
 		};
 
+        // put the map into drawing mode
 		this.startDrawing = function (type) {
             select.setActive(false);
             modify.setActive(true);
@@ -252,6 +291,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             });
 		};
 
+        // put the map out of drawing mode
 		this.finishDrawing = function () {
 			map.removeInteraction(draw);
             draw.setActive(false);
@@ -266,6 +306,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             return draw && draw.getActive();
         };
 
+        // put the map into moving mode (of an annotation)
         this.startMoving = function () {
             if (_this.isDrawing()) {
                 _this.finishDrawing();
@@ -293,6 +334,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			selectedFeatures.forEach(removeFeature);
 		};
 
+        // programmatically select an annotation (not through the select interaction)
 		this.select = function (id) {
 			var feature;
 			annotationSource.forEachFeature(function (f) {
@@ -310,7 +352,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             return selectedFeatures.getLength() > 0;
         };
 
-        // fits the view to the given feature
+        // fits the view to the given feature (id)
         this.fit = function (id) {
             annotationSource.forEachFeature(function (f) {
                 if (f.annotation.id === id) {
@@ -340,7 +382,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             return drawingType;
         };
 
-        // manually add a new feature (not through the draw interaction)
+        // programatically add a new feature (not through the draw interaction)
         this.addFeature = function (feature) {
             annotationSource.addFeature(feature);
             return handleNewFeature({feature: feature});
@@ -350,18 +392,21 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             annotationLayer.setOpacity(opacity);
         };
 
+        // move the viewport to the next annotation
         this.cycleNext = function () {
-            currentAnnotationIndex = (currentAnnotationIndex + 1) % annotationFeatures.getLength();
+            currentAnnotationIndex = (currentAnnotationIndex + 1) % getFilteredAnnotationFeatures().length;
             _this.jumpToCurrent();
         };
 
         this.hasNext = function () {
-            return (currentAnnotationIndex + 1) < annotationFeatures.getLength();
+            return (currentAnnotationIndex + 1) < getFilteredAnnotationFeatures().length;
         };
 
+        // move the viewport to the previous annotation
         this.cyclePrevious = function () {
             // we want no negative index here
-            currentAnnotationIndex = (currentAnnotationIndex + annotationFeatures.getLength() - 1) % annotationFeatures.getLength();
+            var length = getFilteredAnnotationFeatures().length;
+            currentAnnotationIndex = (currentAnnotationIndex + length - 1) % length;
             _this.jumpToCurrent();
         };
 
@@ -369,10 +414,11 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             return currentAnnotationIndex > 0;
         };
 
+        // move the viewport to the current annotation
         this.jumpToCurrent = function () {
             // only jump once the annotations were loaded
             annotations.getPromise().then(function () {
-                selectAndShowAnnotation(annotationFeatures.item(currentAnnotationIndex));
+                selectAndShowAnnotation(getFilteredAnnotationFeatures()[currentAnnotationIndex]);
             });
         };
 
@@ -383,9 +429,10 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         this.jumpToLast = function () {
             annotations.getPromise().then(function () {
+                var length = getFilteredAnnotationFeatures().length;
                 // wait for the new annotations to be loaded
-                if (annotationFeatures.getLength() !== 0) {
-                    currentAnnotationIndex = annotationFeatures.getLength() - 1;
+                if (length !== 0) {
+                    currentAnnotationIndex = length - 1;
                 }
                 _this.jumpToCurrent();
             });
@@ -409,7 +456,11 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         };
 
         this.getCurrent = function () {
-            return annotationFeatures.item(currentAnnotationIndex).annotation;
+            return getFilteredAnnotationFeatures()[currentAnnotationIndex].annotation;
+        };
+
+        this.setRestrictLabelCategory = function (restrict) {
+            restrictLabelCategory = restrict;
         };
 	}
 );

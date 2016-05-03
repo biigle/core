@@ -96,6 +96,10 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
             return !!selectedLabel;
         };
 
+        this.getSelectedId = function () {
+            return selectedLabel ? selectedLabel.id : null;
+        };
+
         this.setCurrentConfidence = function (confidence) {
             currentConfidence = confidence;
         };
