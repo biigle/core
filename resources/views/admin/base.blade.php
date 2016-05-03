@@ -12,7 +12,7 @@
 @section('content')
 <div class="container" data-ng-app="dias.admin">
     <div class="row">
-        <div class="col-sm-4 col-md-3 col-md-offset-1 col-lg-2 col-lg-offset-2">
+        <div class="col-sm-4 col-md-3 col-lg-2">
             <ul class="nav nav-pills nav-stacked">
                 <li role="presentation"@if(Request::is('admin')) class="active" @endif><a href="{{route('admin')}}">Dashboard</a></li>
                 <li role="presentation"@if(Request::is('admin/users')) class="active" @endif><a href="{{route('admin-users')}}">Users</a></li>
@@ -22,7 +22,7 @@
                 @endforeach
             </ul>
         </div>
-        <div class="col-sm-8 col-md-7 col-lg-6">
+        <div class="col-sm-8 col-md-9 col-lg-10">
             @yield('admin-content')
         </div>
     </div>
