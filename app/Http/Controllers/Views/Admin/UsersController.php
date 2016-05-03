@@ -45,4 +45,15 @@ class UsersController extends Controller
             ->with('user', User::findOrFail($id))
             ->with('roles', Role::all());
     }
+
+    /**
+     * Shows the admin delete user page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function delete($id)
+    {
+        return view('admin.users.delete')
+            ->with('user', User::findOrFail($id));
+    }
 }

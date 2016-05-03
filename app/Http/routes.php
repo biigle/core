@@ -78,6 +78,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'UsersController@edit',
         ]);
 
+        $router->get('users/delete/{id}', [
+            'as' => 'admin-users-delete',
+            'uses' => 'UsersController@delete',
+        ]);
+
         $router->get('labels', [
             'as' => 'admin-labels',
             'uses' => 'LabelsController@get',

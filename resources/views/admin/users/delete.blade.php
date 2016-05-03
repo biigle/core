@@ -1,0 +1,30 @@
+@extends('admin.base')
+
+@section('title')Users admin area - Delete user @stop
+
+@section('admin-content')
+<h4>Delete {{$user->firstname}} {{$user->lastname}}</h4>
+<p class="text-danger">
+    Deleting a user account won't delete any of its projects, transects or annotations etc. (they just won't be associated with it any more).
+</p>
+<p class="text-danger">
+    <strong>Deleting a user account cannot be undone!</strong>
+</p>
+<form role="form" method="POST" action="{{ url('api/v1/users/'.$user->id) }}">
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="_redirect" value="{{ route('admin-users') }}">
+
+    <div class="form-group{{ $errors->has('password') ? ' has-error' : ''}}">
+        <label for="password">Your Password</label>
+        <input type="password" class="form-control" name="password" id="password">
+        @if($errors->has('password'))
+            <span class="help-block">{{ $errors->first('password') }}</span>
+        @endif
+        <span class="help-block">Confirm the deletion of the user account with your password.</span>
+    </div>
+
+    <a href="{{ route('admin-users') }}" class="btn btn-link">Cancel</a>
+    <button type="submit" class="btn btn-danger pull-right" id="delete-button">Confirm deleting <strong>{{$user->firstname}} {{$user->lastname}}</strong></button>
+</form>
+@endsection

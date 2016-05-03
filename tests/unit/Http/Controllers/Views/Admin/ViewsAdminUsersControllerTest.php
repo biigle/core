@@ -69,4 +69,34 @@ class ViewsAdminUsersControllerTest extends TestCase
         $this->be($admin);
         $this->visit("admin/users/edit/{$id}")->assertResponseOk();
     }
+
+    public function testDeleteWhenNotLoggedIn()
+    {
+        $id = UserTest::create()->id;
+        $this->visit("admin/users/delete/{$id}")->seePageIs('auth/login');
+    }
+
+    public function testDeleteWhenNotAdmin()
+    {
+        $user = UserTest::create();
+        $this->be($user);
+        $this->get("admin/users/delete/{$user->id}")->assertResponseStatus(401);
+    }
+
+    public function testDeleteDoesntExist()
+    {
+        $admin = UserTest::create();
+        $admin->role()->associate(Dias\Role::$admin);
+        $this->be($admin);
+        $this->get("admin/users/delete/999")->assertResponseStatus(404);
+    }
+
+    public function testDeleteWhenLoggedIn()
+    {
+        $id = UserTest::create()->id;
+        $admin = UserTest::create();
+        $admin->role()->associate(Dias\Role::$admin);
+        $this->be($admin);
+        $this->visit("admin/users/delete/{$id}")->assertResponseOk();
+    }
 }

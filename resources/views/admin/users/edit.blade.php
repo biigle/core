@@ -4,6 +4,11 @@
 
 @section('admin-content')
 <h4>Edit {{$user->firstname}} {{$user->lastname}}</h4>
+@if (session('saved'))
+    <div class="alert alert-success" role="alert">
+        The user <strong>{{$user->firstname}} {{$user->lastname}}</strong> was successfully updated.
+    </div>
+@endif
 <form class="clearfix" role="form" method="POST" action="{{ url('api/v1/users/'.$user->id) }}">
 
     <div class="row">
@@ -72,7 +77,7 @@
 
     <div class="form-group{{ $errors->has('auth_password') ? ' has-error' : '' }}">
         <label for="auth_password">Your password</label>
-        <input type="password" class="form-control" name="auth_password" id="auth_password" value="">
+        <input type="password" class="form-control" name="auth_password" id="auth_password" value="" required>
         @if($errors->has('auth_password'))
             <span class="help-block">{{ $errors->first('auth_password') }}</span>
         @endif
@@ -81,9 +86,11 @@
 
     <input type="hidden" name="_token" value="{{ csrf_token() }}">
     <input type="hidden" name="_method" value="PUT">
-    <input type="hidden" name="_redirect" value="{{ route('admin-users') }}">
-    <a href="{{ URL::previous() }}" class="btn btn-link">Cancel</a>
-    <input type="submit" class="btn btn-success pull-right" value="Save">
-    </div>
+    <input type="hidden" name="_redirect" value="{{ route('admin-users-edit', $user->id) }}">
+    <a href="{{ route('admin-users') }}" class="btn btn-link">@if(session('saved')) Back @else Cancel @endif</a>
+    <span class="pull-right">
+        <a href="{{ route('admin-users-delete', $user->id) }}" class="btn btn-danger" title="Delete {{$user->firstname}} {{$user->lastname}}">Delete</a>
+        <input type="submit" class="btn btn-success" value="Save" title="Save">
+    </span>
 </form>
 @endsection

@@ -207,17 +207,16 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $this->validate($request, $user->updateRules());
 
-        if ($request->has('password')) {
-            // global admins do not need to provide the old password to set a new one
-            $user->password = bcrypt($request->input('password'));
-        }
-
         if ($request->has('role_id') || $request->has('email') || $request->has('password')) {
             if (!Hash::check($request->input('auth_password'), $this->user->password)) {
                 $errors = ['auth_password' => [trans('validation.custom.password')]];
                 return $this->buildFailedValidationResponse($request, $errors);
             }
+        }
 
+        if ($request->has('password')) {
+            // global admins do not need to provide the old password to set a new one
+            $user->password = bcrypt($request->input('password'));
         }
 
         $user->role_id = $request->input('role_id', $user->role_id);
@@ -225,6 +224,16 @@ class UserController extends Controller
         $user->lastname = $request->input('lastname', $user->lastname);
         $user->email = $request->input('email', $user->email);
         $user->save();
+
+        if (!static::isAutomatedRequest($this->request)) {
+            if ($this->request->has('_redirect')) {
+                return redirect($this->request->input('_redirect'))
+                    ->with('saved', true);
+            }
+            return redirect()->back()
+                ->with('saved', true);
+        }
+
     }
 
     /**
@@ -382,9 +391,28 @@ class UserController extends Controller
         }
 
         $user = User::findOrFail($id);
+
+        try {
+            $user->checkCanBeDeleted();
+        } catch (HttpException $e) {
+            return $this->buildFailedValidationResponse(
+                $this->request,
+                ['password' => [$e->getMessage()]]
+            );
+        }
+
         $user->delete();
 
-        return response('Deleted.', 200);
+        if (static::isAutomatedRequest($this->request)) {
+            return response('Deleted.', 200);
+        }
+
+        if ($this->request->has('_redirect')) {
+            return redirect($this->request->input('_redirect'))
+                ->with('deleted', true);
+        }
+        return redirect()->back()
+            ->with('deleted', true);
     }
 
     /**

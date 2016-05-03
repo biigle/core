@@ -95,13 +95,6 @@ class ApiUserControllerTest extends ApiTestCase
         $this->assertResponseStatus(422);
 
         $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
-            'password' => '',
-            'password_confirmation' => '',
-        ]);
-        // password must not be empty if it is present
-        $this->assertResponseStatus(422);
-
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
         ]);
@@ -181,18 +174,20 @@ class ApiUserControllerTest extends ApiTestCase
 
         $this->assertEquals(Role::$editor->id, $this->guest()->fresh()->role_id);
 
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $this->put('/api/v1/users/'.$this->guest()->id, [
             'role_id' => Role::$admin->id,
             'auth_password' => 'adminpassword',
+            '_redirect' => 'settings/profile',
         ]);
-        $this->assertResponseOk();
+        $this->assertRedirectedTo('settings/profile');
         $this->assertEquals(Role::$admin->id, $this->guest()->fresh()->role_id);
 
+        $this->visit('/');
         $this->put('/api/v1/users/'.$this->guest()->id, [
             'firstname' => 'jack',
             'lastname' => 'jackson',
         ]);
-        $this->assertResponseOk();
+        $this->assertRedirectedTo('/');
 
         $this->assertEquals('jack', $this->guest()->fresh()->firstname);
         $this->assertEquals('jackson', $this->guest()->fresh()->lastname);
@@ -307,6 +302,26 @@ class ApiUserControllerTest extends ApiTestCase
         ]);
         // email has already been taken
         $this->assertResponseStatus(422);
+
+        $this->post('/api/v1/users', [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+            'firstname' => 'jack',
+            'lastname' => 'jackson',
+            'email' => 'new2@email.me',
+            '_redirect' => 'settings/profile',
+        ]);
+        $this->assertRedirectedTo('settings/profile');
+
+        $this->visit('/');
+        $this->post('/api/v1/users', [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+            'firstname' => 'jack',
+            'lastname' => 'jackson',
+            'email' => 'new3@email.me',
+        ]);
+        $this->assertRedirectedTo('/');
     }
 
     public function testDestroy()
@@ -346,19 +361,27 @@ class ApiUserControllerTest extends ApiTestCase
         $this->assertResponseStatus(422);
 
         $this->assertNotNull($this->guest()->fresh());
-        $this->delete('/api/v1/users/'.$id, [
+        $this->json('DELETE', '/api/v1/users/'.$id, [
             'password' => 'globalAdmin-password',
         ]);
         $this->assertResponseOk();
         $this->assertNull($this->guest()->fresh());
 
+        $this->delete('/api/v1/users/'.$this->editor()->id, [
+            'password' => 'globalAdmin-password',
+            '_redirect' => 'settings/profile'
+        ]);
+        $this->assertRedirectedTo('settings/profile');
+        $this->assertSessionHas('deleted', true);
+        $this->assertNull($this->editor()->fresh());
+
         // remove creator, so admin is the last remaining admin of the project
         $this->project()->removeUserId($this->project()->creator->id);
-        $this->delete('/api/v1/users/'.$this->admin()->id, [
+        $this->json('DELETE', '/api/v1/users/'.$this->admin()->id, [
             'password' => 'globalAdmin-password',
         ]);
         // last remaining admin of a project mustn't be deleted
-        $this->assertResponseStatus(400);
+        $this->assertResponseStatus(422);
     }
 
     public function testDestroyOwn()

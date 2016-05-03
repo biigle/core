@@ -56,7 +56,7 @@
 
     <input type="hidden" name="_token" value="{{ csrf_token() }}">
     <input type="hidden" name="_redirect" value="{{ route('admin-users') }}">
-    <a href="{{ URL::previous() }}" class="btn btn-link">Cancel</a>
+    <a href="{{ route('admin-users') }}" class="btn btn-link">Cancel</a>
     <input type="submit" class="btn btn-success pull-right" value="Create">
     </div>
 </form>
