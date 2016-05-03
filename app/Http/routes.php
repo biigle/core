@@ -70,7 +70,7 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
 
         $router->get('users/new', [
             'as' => 'admin-users-new',
-            'uses' => 'UsersController@new',
+            'uses' => 'UsersController@newUser',
         ]);
 
         $router->get('users/edit/{id}', [
