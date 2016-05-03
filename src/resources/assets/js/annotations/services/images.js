@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Manages (pre-)loading of the images to annotate.
  */
-angular.module('dias.annotations').service('images', function ($rootScope, TransectImage, URL, $q, filterSubset, TRANSECT_ID) {
+angular.module('dias.annotations').service('images', function ($rootScope, URL, $q, filterSubset, TRANSECT_ID, TRANSECT_IMAGES_IDS) {
 		"use strict";
 
 		var _this = this;
@@ -98,29 +98,26 @@ angular.module('dias.annotations').service('images', function ($rootScope, Trans
 		 * is resolved, when the service is initialized.
 		 */
 		this.init = function () {
-			imageIds = TransectImage.query({transect_id: TRANSECT_ID}, function () {
-                // look for a sequence of image IDs in local storage.
-                // this sequence is produces by the transect index page when the images are
-                // sorted or filtered. we want to reflect the same ordering or filtering here
-                // in the annotator
-                var storedSequence = window.localStorage['dias.transects.' + TRANSECT_ID + '.images'];
-                if (storedSequence) {
-                    storedSequence = JSON.parse(storedSequence);
-                    // if there is such a stored sequence, filter out any image IDs that do not
-                    // belong to the transect (any more), since some of them may have been deleted
-                    // in the meantime
-                    filterSubset(storedSequence, imageIds);
-                    // make sure the promise is not removed when overwriting imageIds since we
-                    // need it later on.
-                    storedSequence.$promise = imageIds.$promise;
-                    storedSequence.$resolved = imageIds.$resolved;
-                    // then set the stored sequence as the sequence of image IDs instead of simply
-                    // all IDs belonging to the transect
-                    imageIds = storedSequence;
-                }
-            });
-
-			return imageIds.$promise;
+            imageIds = TRANSECT_IMAGES_IDS;
+            // look for a sequence of image IDs in local storage.
+            // this sequence is produces by the transect index page when the images are
+            // sorted or filtered. we want to reflect the same ordering or filtering here
+            // in the annotator
+            var storedSequence = window.localStorage['dias.transects.' + TRANSECT_ID + '.images'];
+            if (storedSequence) {
+                storedSequence = JSON.parse(storedSequence);
+                // if there is such a stored sequence, filter out any image IDs that do not
+                // belong to the transect (any more), since some of them may have been deleted
+                // in the meantime
+                filterSubset(storedSequence, imageIds);
+                // make sure the promise is not removed when overwriting imageIds since we
+                // need it later on.
+                storedSequence.$promise = imageIds.$promise;
+                storedSequence.$resolved = imageIds.$resolved;
+                // then set the stored sequence as the sequence of image IDs instead of simply
+                // all IDs belonging to the transect
+                imageIds = storedSequence;
+            }
 		};
 
 		/**
@@ -128,18 +125,12 @@ angular.module('dias.annotations').service('images', function ($rootScope, Trans
 		 * resolved when the image is shown.
 		 */
 		this.show = function (id) {
-			var promise = fetchImage(id).then(function() {
-				show(id);
-			});
-
-			// wait for imageIds to be loaded
-			imageIds.$promise.then(function () {
-				// pre-load previous and next images but don't display them
-				fetchImage(nextId(id));
-				fetchImage(prevId(id));
-			});
-
-			return promise;
+			return fetchImage(id).then(function() {
+                show(id);
+    			// pre-load previous and next images but don't display them
+    			fetchImage(nextId(id));
+    			fetchImage(prevId(id));
+            });
 		};
 
 		/**

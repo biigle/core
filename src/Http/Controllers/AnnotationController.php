@@ -15,7 +15,7 @@ class AnnotationController extends Controller
      */
     public function index($id)
     {
-        $image = Image::findOrFail($id);
+        $image = Image::with('transect')->findOrFail($id);
         $this->requireCanSee($image);
 
         if ($this->user->isAdmin) {
@@ -33,6 +33,7 @@ class AnnotationController extends Controller
             ->withUser($this->user)
             ->withImage($image)
             ->with('editMode', $this->user->canEditInOneOfProjects($image->projectIds()))
-            ->with('projectIds', implode(',', $projectIds));
+            ->with('projectIds', implode(',', $projectIds))
+            ->with('transectImagesIds', $image->transect->images()->pluck('id'));
     }
 }

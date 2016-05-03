@@ -10,7 +10,8 @@
     angular.module('dias.annotations').constant('IMAGE_ID', {{$image->id}});
     angular.module('dias.annotations').constant('EDIT_MODE', {{$editMode ? 'true' : 'false'}});
     angular.module('dias.annotations').constant('PROJECT_IDS', [{{$projectIds}}]);
-    angular.module('dias.annotations').constant('TRANSECT_ID', {{$image->transect->id}});
+    angular.module('dias.annotations').constant('TRANSECT_ID', {{$image->transect_id}});
+    angular.module('dias.annotations').constant('TRANSECT_IMAGES_IDS', {{$transectImagesIds}});
 </script>
 @foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
     @include($module.'::annotationsScripts', ['mixins' => $nestedMixins])
