@@ -45,8 +45,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public static $createRules = [
         'email' => 'required|email|unique:users|max:255',
         'password' => 'required|min:8|confirmed',
-        'firstname' => 'required|alpha|max:127',
-        'lastname' => 'required|alpha|max:127',
+        'firstname' => 'required|max:127',
+        'lastname' => 'required|max:127',
         'role_id' => 'exists:roles,id',
     ];
 
@@ -88,8 +88,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
             // ignore the email of this user
             'email' => "filled|email|unique:users,email,{$this->id}|max:255",
             'password' => 'min:8|confirmed',
-            'firstname' => 'alpha|max:127',
-            'lastname' => 'alpha|max:127',
+            'firstname' => 'max:127',
+            'lastname' => 'max:127',
             'role_id' => 'exists:roles,id',
             'auth_password' => 'required_with:role_id,password,email'
         ];
