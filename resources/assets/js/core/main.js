@@ -11,6 +11,7 @@ angular.module('dias.api').config(function ($httpProvider, $compileProvider) {
 
     /*
      * Disable debug info in production for better performance.
+     * see: https://code.angularjs.org/1.4.7/docs/guide/production
      */
     $compileProvider.debugInfoEnabled(false);
 });
@@ -23,6 +24,7 @@ angular.module('dias.ui.messages', ['ui.bootstrap']);
 
 /*
  * Disable debug info in production for better performance.
+ * see: https://code.angularjs.org/1.4.7/docs/guide/production
  */
 angular.module('dias.ui.messages').config(function ($compileProvider) {
     $compileProvider.debugInfoEnabled(false);
@@ -46,6 +48,7 @@ angular.module('dias.ui.users', ['ui.bootstrap', 'dias.api']);
 
 /*
  * Disable debug info in production for better performance.
+ * see: https://code.angularjs.org/1.4.7/docs/guide/production
  */
 angular.module('dias.ui.users').config(function ($compileProvider) {
     "use strict";
@@ -61,6 +64,7 @@ angular.module('dias.ui.utils', []);
 
 /*
  * Disable debug info in production for better performance.
+ * see: https://code.angularjs.org/1.4.7/docs/guide/production
  */
 angular.module('dias.ui.utils').config(function ($compileProvider) {
     "use strict";
@@ -76,6 +80,7 @@ angular.module('dias.ui', ['ui.bootstrap', 'dias.ui.messages', 'dias.ui.users', 
 
 /*
  * Disable debug info in production for better performance.
+ * see: https://code.angularjs.org/1.4.7/docs/guide/production
  */
 angular.module('dias.ui').config(function ($compileProvider) {
     "use strict";
