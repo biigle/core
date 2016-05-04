@@ -4,11 +4,15 @@
  */
 angular.module('dias.api', ['ngResource']);
 
-angular.module('dias.api').config(function ($httpProvider) {
+angular.module('dias.api').config(function ($httpProvider, $compileProvider) {
 	"use strict";
 
-	$httpProvider.defaults.headers.common["X-Requested-With"] =
-		"XMLHttpRequest";
+	$httpProvider.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+
+    /*
+     * Disable debug info in production for better performance.
+     */
+    $compileProvider.debugInfoEnabled(false);
 });
 
 /**
@@ -16,6 +20,13 @@ angular.module('dias.api').config(function ($httpProvider) {
  * @description The DIAS user feedback messages AngularJS module.
  */
 angular.module('dias.ui.messages', ['ui.bootstrap']);
+
+/*
+ * Disable debug info in production for better performance.
+ */
+angular.module('dias.ui.messages').config(function ($compileProvider) {
+    $compileProvider.debugInfoEnabled(false);
+});
 
 // bootstrap the messages module
 angular.element(document).ready(function () {
@@ -33,11 +44,29 @@ angular.element(document).ready(function () {
  */
 angular.module('dias.ui.users', ['ui.bootstrap', 'dias.api']);
 
+/*
+ * Disable debug info in production for better performance.
+ */
+angular.module('dias.ui.users').config(function ($compileProvider) {
+    "use strict";
+
+    $compileProvider.debugInfoEnabled(false);
+});
+
 /**
  * @namespace dias.ui.utils
  * @description The DIAS utils UI AngularJS module.
  */
 angular.module('dias.ui.utils', []);
+
+/*
+ * Disable debug info in production for better performance.
+ */
+angular.module('dias.ui.utils').config(function ($compileProvider) {
+    "use strict";
+
+    $compileProvider.debugInfoEnabled(false);
+});
 
 /**
  * @namespace dias.ui
@@ -45,3 +74,11 @@ angular.module('dias.ui.utils', []);
  */
 angular.module('dias.ui', ['ui.bootstrap', 'dias.ui.messages', 'dias.ui.users', 'dias.ui.utils', 'ngAnimate']);
 
+/*
+ * Disable debug info in production for better performance.
+ */
+angular.module('dias.ui').config(function ($compileProvider) {
+    "use strict";
+
+    $compileProvider.debugInfoEnabled(false);
+});
