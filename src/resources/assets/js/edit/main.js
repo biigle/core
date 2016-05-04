@@ -1,8 +1,8 @@
 /**
- * @namespace dias.transects
+ * @namespace dias.transects.edit
  * @description The DIAS transects module.
  */
-angular.module('dias.transects', ['dias.api', 'dias.ui']);
+angular.module('dias.transects.edit', ['dias.api']);
 
 /*
  * Disable debug info in production for better performance.

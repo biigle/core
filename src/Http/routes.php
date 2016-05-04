@@ -9,6 +9,11 @@ $router->group([
         'uses' => 'TransectController@create',
     ]);
 
+    $router->get('transects/edit/{id}', [
+        'as'   => 'transect-edit',
+        'uses' => 'TransectController@edit',
+    ]);
+
     $router->get('transects/{id}', [
         'as'   => 'transect',
         'uses' => 'TransectController@index',

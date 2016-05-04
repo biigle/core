@@ -17,7 +17,7 @@ class TransectController extends Controller
     public function create()
     {
         $project = Project::findOrFail($this->request->input('project'));
-        $this->requireCanEdit($project);
+        $this->requireCanAdmin($project);
 
         return view('transects::create')
             ->with('project', $project)
@@ -26,7 +26,9 @@ class TransectController extends Controller
 
     /**
      * Shows the transect index page.
+     *
      * @param int $id transect ID
+     *
      * @return \Illuminate\Http\Response
      */
     public function index($id)
@@ -35,6 +37,24 @@ class TransectController extends Controller
         $this->requireCanSee($transect);
 
         return view('transects::index')
-            ->withTransect($transect);
+            ->withTransect($transect)
+            ->with('isAdmin', $this->user->canAdminOneOfProjects($transect->projectIds()));
+    }
+
+    /**
+     * Shows the transect edit page.
+     *
+     * @param int $id transect ID
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $transect = Transect::with('projects', 'images')->findOrFail($id);
+        $this->requireCanAdmin($transect);
+
+        return view('transects::edit')
+            ->withTransect($transect)
+            ->with('mediaTypes', MediaType::all());
     }
 }

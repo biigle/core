@@ -26,6 +26,9 @@
                 <li>{{ $project->name }}</li>
             @endforeach
         </ul>
+        @if ($isAdmin)
+            <a href="{{ route('transect-edit', $transect->id) }}" class="btn btn-default" title="Edit this transect">Edit</a>
+        @endif
     </div>
 </script>
 

@@ -6,7 +6,7 @@
 @push('scripts')
     <script src="{{ asset('vendor/transects/scripts/main.js') }}"></script>
     <script type="text/javascript">
-        angular.module('dias.transects').constant('TRANSECT_IMAGES', {{json_encode($transect->images->sortBy('id')->lists('id'))}});
+        angular.module('dias.transects').constant('TRANSECT_IMAGES', {{$transect->images->sortBy('id')->pluck('id')}});
         angular.module('dias.transects').constant('TRANSECT_ID', {{$transect->id}});
     </script>
     @foreach ($modules->getMixins('transectsScripts') as $module => $nestedMixins)
