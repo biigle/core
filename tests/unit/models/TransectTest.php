@@ -100,15 +100,17 @@ class TransectTest extends ModelTestCase
 
     public function testCreateImages()
     {
-        // create images should dispatch the job to generate thumbnails after all images were
-        // created
-        $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
-
         $this->assertEmpty($this->model->images);
         $this->model->createImages(['1.jpg']);
         $this->model = $this->model->fresh();
         $this->assertNotEmpty($this->model->images);
         $this->assertEquals('1.jpg', $this->model->images()->first()->filename);
+    }
+
+    public function testGenerateThumbnails()
+    {
+        $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
+        $this->model->generateThumbnails();
     }
 
     public function testCastsAttrs()

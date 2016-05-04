@@ -1,20 +1,12 @@
 <?php
 
+use Dias\MediaType;
+
 class ApiTransectControllerTest extends ApiTestCase
 {
-
-    private $transect;
-
-    public function setUp()
-    {
-        parent::setUp();
-        $this->transect = TransectTest::create();
-        $this->project()->addTransectId($this->transect->id);
-    }
-
     public function testShow()
     {
-        $id = $this->transect->id;
+        $id = $this->transect()->id;
         $this->doTestApiRoute('GET', '/api/v1/transects/'.$id);
 
         $this->beUser();
@@ -31,7 +23,11 @@ class ApiTransectControllerTest extends ApiTestCase
 
     public function testUpdate()
     {
-        $id = $this->transect->id;
+        $this->doesntExpectJobs(\Dias\Jobs\GenerateThumbnails::class);
+
+        $id = $this->transect()->id;
+        $this->transect()->media_type_id = MediaType::$timeSeriesId;
+        $this->transect()->save();
         $this->doTestApiRoute('PUT', '/api/v1/transects/'.$id);
 
         $this->beGuest();
@@ -43,11 +39,71 @@ class ApiTransectControllerTest extends ApiTestCase
         $this->assertResponseStatus(401);
 
         $this->beAdmin();
-        $this->assertNotEquals('the new transect', $this->transect->fresh()->name);
-        $this->put('/api/v1/transects/'.$id, [
+        $this->assertNotEquals('the new transect', $this->transect()->fresh()->name);
+        $this->json('PUT', '/api/v1/transects/'.$id, [
             'name' => 'the new transect',
+            'media_type_id' => MediaType::$locationSeriesId,
         ]);
         $this->assertResponseOk();
-        $this->assertEquals('the new transect', $this->transect->fresh()->name);
+        $this->assertEquals('the new transect', $this->transect()->fresh()->name);
+        $this->assertEquals(MediaType::$locationSeriesId, $this->transect()->fresh()->media_type_id);
+    }
+
+    public function testUpdateUrl()
+    {
+        $this->beAdmin();
+        $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
+        $this->json('PUT', '/api/v1/transects/'.$this->transect()->id, [
+            'url' => '/new/url',
+        ]);
+        $this->assertResponseOk();
+        $this->assertEquals('/new/url', $this->transect()->fresh()->url);
+    }
+
+    public function testUpdateValidation()
+    {
+        $id = $this->transect()->id;
+
+        $this->beAdmin();
+        $this->json('PUT', "/api/v1/transects/{$id}", [
+            'name' => '',
+        ]);
+        // name must not be empty if present
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', "/api/v1/transects/{$id}", [
+            'media_type_id' => '',
+        ]);
+        // media type id must not be empty if present
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', "/api/v1/transects/{$id}", [
+            'media_type_id' => 999,
+        ]);
+        // media type id does not exist
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', "/api/v1/transects/{$id}", [
+            'url' => '',
+        ]);
+        // url must not be empty if present
+        $this->assertResponseStatus(422);
+    }
+
+    public function testUpdateRedirect()
+    {
+        $this->beAdmin();
+        $this->put('/api/v1/transects/'.$this->transect()->id, [
+            '_redirect' => 'settings/profile',
+        ]);
+        $this->assertRedirectedTo('settings/profile');
+        $this->assertSessionHas('saved', false);
+
+        $this->visit('/');
+        $this->put('/api/v1/transects/'.$this->transect()->id, [
+            'name' => 'abc',
+        ]);
+        $this->assertRedirectedTo('/');
+        $this->assertSessionHas('saved', true);
     }
 }

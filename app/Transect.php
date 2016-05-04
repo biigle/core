@@ -31,6 +31,17 @@ class Transect extends Model implements BelongsToProjectContract
     ];
 
     /**
+     * Validation rules for updating a transect.
+     *
+     * @var array
+     */
+    public static $updateRules = [
+        'name'          => 'filled|max:512',
+        'media_type_id' => 'filled|exists:media_types,id',
+        'url'           => 'filled',
+    ];
+
+    /**
      * The attributes hidden from the model's JSON form.
      *
      * @var array
@@ -118,9 +129,13 @@ class Transect extends Model implements BelongsToProjectContract
         }
 
         Image::insert($images);
+    }
 
-        // it's important that this is done *after* all images were added
-        // otherwise not all thumbnails will be generated
+    /**
+     * (Re-) generates the thumbnail images for all images belonging to this transect
+     */
+    public function generateThumbnails()
+    {
         $this->dispatch(new GenerateThumbnails($this));
     }
 
