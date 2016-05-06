@@ -3,6 +3,8 @@
 namespace Dias;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
+use Exception;
 use Dias\Contracts\BelongsToProjectContract;
 use Dias\Image;
 use Cache;
@@ -150,6 +152,9 @@ class Transect extends Model implements BelongsToProjectContract
      *
      * @param array $filenames image filenames at the location of the transect URL
      *
+     * @throws Exception If there was an error creating the images (e.g. if there were
+     * duplicate filenames).
+     *
      * @return bool
      */
     public function createImages($filenames)
@@ -159,7 +164,11 @@ class Transect extends Model implements BelongsToProjectContract
             $images[] = ['filename' => $filename, 'transect_id' => $this->id];
         }
 
-        return Image::insert($images);
+        try {
+            return Image::insert($images);
+        } catch (QueryException $e) {
+            throw new Exception('A transect must not have the same image twice!');
+        }
     }
 
     /**

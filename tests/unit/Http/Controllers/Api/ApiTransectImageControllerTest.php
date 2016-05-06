@@ -49,6 +49,12 @@ class ApiTransectImageControllerTest extends ApiTestCase
         $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
 
         $this->json('POST', "/api/v1/transects/{$id}/images", [
+            'images' => '1.jpg, 1.jpg',
+        ]);
+        // duplicate image filename
+        $this->assertResponseStatus(400);
+
+        $this->json('POST', "/api/v1/transects/{$id}/images", [
             'images' => '1.jpg, 2.jpg',
         ]);
 

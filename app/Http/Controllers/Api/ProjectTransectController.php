@@ -99,7 +99,14 @@ class ProjectTransectController extends Controller
 
         // save first, so the transect gets an ID for associating with images
         $transect->save();
-        $transect->createImages($images);
+
+        try {
+            $transect->createImages($images);
+        } catch (\Exception $e) {
+            $transect->delete();
+            return response($e->getMessage(), 400);
+        }
+
         // it's important that this is done *after* all images were added
         // otherwise not all thumbnails will be generated
         $transect->generateThumbnails();

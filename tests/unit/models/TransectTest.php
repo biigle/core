@@ -108,6 +108,12 @@ class TransectTest extends ModelTestCase
         $this->assertEquals('1.jpg', $this->model->images()->first()->filename);
     }
 
+    public function testCreateImagesDuplicateInsert()
+    {
+        $this->setExpectedException('Exception');
+        $return = $this->model->createImages(['1.jpg', '1.jpg']);
+    }
+
     public function testGenerateThumbnails()
     {
         $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);

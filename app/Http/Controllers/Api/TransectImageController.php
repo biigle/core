@@ -82,7 +82,11 @@ class TransectImageController extends Controller
             ]);
         }
 
-        $transect->createImages($images);
+        try {
+            $transect->createImages($images);
+        } catch (\Exception $e) {
+            return response($e->getMessage(), 400);
+        }
 
         $images = $transect->images()
             ->select('id', 'filename')

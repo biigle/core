@@ -69,6 +69,19 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         $count = $this->project()->transects()->count();
         $imageCount = Image::all()->count();
+
+        $this->json('POST', '/api/v1/projects/'.$id.'/transects', [
+            'name' => 'my transect no. 1',
+            'url' => 'random',
+            'media_type_id' => MediaType::$timeSeriesId,
+            'images' => '1.jpg, , 1.jpg',
+        ]);
+
+        // error because of duplicate image
+        $this->assertResponseStatus(400);
+        $this->assertEquals($count, $this->project()->transects()->count());
+        $this->assertEquals($imageCount, Image::all()->count());
+
         $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
 
         $this->json('POST', '/api/v1/projects/'.$id.'/transects', [
