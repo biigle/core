@@ -16,7 +16,7 @@ describe('The Project resource factory', function () {
 
 		$httpBackend.when('GET', '/api/v1/projects/my')
 		            .respond([project]);
-		
+
 		$httpBackend.when('GET', '/api/v1/projects/1')
 		            .respond(project);
 
@@ -25,25 +25,25 @@ describe('The Project resource factory', function () {
 
 		$httpBackend.when('PUT', '/api/v1/projects/1')
 		            .respond(200);
-	
+
 		$httpBackend.when('DELETE', '/api/v1/projects/1')
 		            .respond(200);
 	}));
 
 	afterEach(function() {
-		$httpBackend.verifyNoOutstandingExpectation();
-		$httpBackend.verifyNoOutstandingRequest();
-	});
-
-	it('should query my projects', inject(function (Project) {
-		$httpBackend.expectGET('/api/v1/projects/my');
-		var projects = Project.query(function () {
-			var project = projects[0];
-			expect(project instanceof Project).toBe(true);
-			expect(project.id).toEqual(1);
-			expect(project.name).toEqual('Test Project');
-		});
 		$httpBackend.flush();
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it('should query my projects', inject(function (Project) {
+        $httpBackend.expectGET('/api/v1/projects/my');
+        var projects = Project.query(function () {
+            var project = projects[0];
+            expect(project instanceof Project).toBe(true);
+            expect(project.id).toEqual(1);
+            expect(project.name).toEqual('Test Project');
+        });
 	}));
 
 	it('should show a project', inject(function (Project) {
@@ -51,7 +51,6 @@ describe('The Project resource factory', function () {
 		var project = Project.get({id: 1}, function () {
 			expect(project.name).toEqual('Test Project');
 		});
-		$httpBackend.flush();
 	}));
 
 	it('should add new projects', inject(function (Project) {
@@ -60,7 +59,6 @@ describe('The Project resource factory', function () {
 			expect(project.name).toEqual('Test Project');
 			expect(project.id).toBeDefined();
 		});
-		$httpBackend.flush();
 	}));
 
 	it('should update projects', inject(function (Project) {
@@ -76,7 +74,6 @@ describe('The Project resource factory', function () {
 		var project = Project.save({id: 1, name: 'My Project'}, function () {
 			expect(project.name).toEqual('My Project');
 		});
-		$httpBackend.flush();
 	}));
 
 	it('should delete projects', inject(function (Project) {
@@ -87,6 +84,5 @@ describe('The Project resource factory', function () {
 
 		$httpBackend.expectDELETE('/api/v1/projects/1');
 		Project.delete({id: 1});
-		$httpBackend.flush();
 	}));
 });

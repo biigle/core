@@ -30,22 +30,21 @@ describe('The Annotation resource factory', function () {
 	}));
 
 	afterEach(function() {
-		$httpBackend.verifyNoOutstandingExpectation();
-		$httpBackend.verifyNoOutstandingRequest();
-	});
-
-	it('should show an annotation', inject(function (Annotation) {
-		$httpBackend.expectGET('/api/v1/annotations/1');
-		var annotation = Annotation.get({id: 1}, function () {
-			expect(annotation.id).toEqual(1);
-		});
 		$httpBackend.flush();
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it('should show an annotation', inject(function (Annotation) {
+        $httpBackend.expectGET('/api/v1/annotations/1');
+        var annotation = Annotation.get({id: 1}, function () {
+            expect(annotation.id).toEqual(1);
+        });
 	}));
 
 	it('should delete an annotation', inject(function (Annotation) {
 		$httpBackend.expectDELETE('/api/v1/annotations/1');
 		Annotation.delete({id: 1});
-		$httpBackend.flush();
 	}));
 
 	it('should save an annotation', inject(function (Annotation) {
@@ -59,7 +58,6 @@ describe('The Annotation resource factory', function () {
 		Annotation.save({
 			id: 1, image_id: 1, shape_id: 2, points: [10, 10]
 		});
-		$httpBackend.flush();
 	}));
 
 	it('should query image annotations', inject(function (Annotation) {
@@ -69,7 +67,6 @@ describe('The Annotation resource factory', function () {
 			expect(annotation instanceof Annotation).toBe(true);
 			expect(annotation.shape_id).toEqual(2);
 		});
-		$httpBackend.flush();
 	}));
 
 	it('should add new annotations', inject(function (Annotation) {
@@ -80,6 +77,5 @@ describe('The Annotation resource factory', function () {
 			{shape_id: 2, points: [10, 20], id: 1, label_id: 1, confidence: 1},
 			function () { expect(annotation.id).toEqual(1); }
 		);
-		$httpBackend.flush();
 	}));
 });

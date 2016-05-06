@@ -20,25 +20,25 @@ describe('The ProjectUser resource factory', function () {
 
 		$httpBackend.when('POST', '/api/v1/projects/2/users/1')
 		            .respond(200);
-	
+
 		$httpBackend.when('DELETE', '/api/v1/projects/1/users/1')
 		            .respond(200);
 	}));
 
 	afterEach(function() {
-		$httpBackend.verifyNoOutstandingExpectation();
-		$httpBackend.verifyNoOutstandingRequest();
-	});
-
-	it('should query project users', inject(function (ProjectUser) {
-		$httpBackend.expectGET('/api/v1/projects/1/users');
-		var users = ProjectUser.query({ project_id: 1 }, function () {
-			var user = users[0];
-			expect(user instanceof ProjectUser).toBe(true);
-			expect(user.id).toEqual(1);
-			expect(user.firstname).toEqual('Joe');
-		});
 		$httpBackend.flush();
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it('should query project users', inject(function (ProjectUser) {
+        $httpBackend.expectGET('/api/v1/projects/1/users');
+        var users = ProjectUser.query({ project_id: 1 }, function () {
+            var user = users[0];
+            expect(user instanceof ProjectUser).toBe(true);
+            expect(user.id).toEqual(1);
+            expect(user.firstname).toEqual('Joe');
+        });
 	}));
 
 	it('should update project users', inject(function (ProjectUser) {
@@ -52,7 +52,6 @@ describe('The ProjectUser resource factory', function () {
 				expect(user.id).toBeDefined();
 			}
 		);
-		$httpBackend.flush();
 	}));
 
 	it('should attach users to projects', inject(function (ProjectUser) {
@@ -61,7 +60,6 @@ describe('The ProjectUser resource factory', function () {
 		);
 
 		ProjectUser.attach({project_id: 2}, {id: 1, project_role_id: 2});
-		$httpBackend.flush();
 	}));
 
 	it('should detach users from projects', inject(function (ProjectUser) {
@@ -73,6 +71,5 @@ describe('The ProjectUser resource factory', function () {
 
 		$httpBackend.expectDELETE('/api/v1/projects/1/users/1');
 		ProjectUser.detach({project_id: 1}, {id: 1});
-		$httpBackend.flush();
 	}));
 });

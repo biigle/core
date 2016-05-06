@@ -14,24 +14,24 @@ describe('The Role resource factory', function () {
 
 		$httpBackend.when('GET', '/api/v1/roles')
 		            .respond([role]);
-		
+
 		$httpBackend.when('GET', '/api/v1/roles/1')
 		            .respond(role);
 	}));
 
 	afterEach(function() {
-		$httpBackend.verifyNoOutstandingExpectation();
-		$httpBackend.verifyNoOutstandingRequest();
-	});
-
-	it('should query roles', inject(function (Role) {
-		$httpBackend.expectGET('/api/v1/roles');
-		var roles = Role.query(function () {
-			var role = roles[0];
-			expect(role instanceof Role).toBe(true);
-			expect(role.name).toEqual('admin');
-		});
 		$httpBackend.flush();
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it('should query roles', inject(function (Role) {
+        $httpBackend.expectGET('/api/v1/roles');
+        var roles = Role.query(function () {
+            var role = roles[0];
+            expect(role instanceof Role).toBe(true);
+            expect(role.name).toEqual('admin');
+        });
 	}));
 
 	it('should show a role', inject(function (Role) {
@@ -39,6 +39,5 @@ describe('The Role resource factory', function () {
 		var role = Role.get({id: 1}, function () {
 			expect(role.name).toEqual('admin');
 		});
-		$httpBackend.flush();
 	}));
 });

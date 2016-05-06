@@ -21,16 +21,16 @@ describe('The TransectImage resource factory', function () {
 	}));
 
 	afterEach(function() {
-		$httpBackend.verifyNoOutstandingExpectation();
-		$httpBackend.verifyNoOutstandingRequest();
-	});
-
-	it('should query transect images', inject(function (TransectImage) {
-		$httpBackend.expectGET('/api/v1/transects/1/images');
-		var images = TransectImage.query({transect_id: 1}, function () {
-			expect(images[0]).toEqual(1);
-		});
 		$httpBackend.flush();
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it('should query transect images', inject(function (TransectImage) {
+        $httpBackend.expectGET('/api/v1/transects/1/images');
+        var images = TransectImage.query({transect_id: 1}, function () {
+            expect(images[0]).toEqual(1);
+        });
 	}));
 
     it('should add transect images', inject(function (TransectImage) {
@@ -43,6 +43,5 @@ describe('The TransectImage resource factory', function () {
             expect(images[1].id).toEqual(2);
             expect(images[1].filename).toEqual('2.jpg');
         });
-        $httpBackend.flush();
     }));
 });

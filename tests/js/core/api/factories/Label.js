@@ -14,7 +14,7 @@ describe('The Label resource factory', function () {
 
 		$httpBackend.when('GET', '/api/v1/labels')
 		            .respond([label]);
-		
+
 		$httpBackend.when('GET', '/api/v1/labels/1')
 		            .respond(label);
 
@@ -23,24 +23,24 @@ describe('The Label resource factory', function () {
 
 		$httpBackend.when('PUT', '/api/v1/labels/1')
 		            .respond(200);
-	
+
 		$httpBackend.when('DELETE', '/api/v1/labels/1')
 		            .respond(200);
 	}));
 
 	afterEach(function() {
-		$httpBackend.verifyNoOutstandingExpectation();
-		$httpBackend.verifyNoOutstandingRequest();
-	});
-
-	it('should query labels', inject(function (Label) {
-		$httpBackend.expectGET('/api/v1/labels');
-		var labels = Label.query(function () {
-			var label = labels[0];
-			expect(label instanceof Label).toBe(true);
-			expect(label.name).toEqual('Benthic Object');
-		});
 		$httpBackend.flush();
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it('should query labels', inject(function (Label) {
+        $httpBackend.expectGET('/api/v1/labels');
+        var labels = Label.query(function () {
+            var label = labels[0];
+            expect(label instanceof Label).toBe(true);
+            expect(label.name).toEqual('Benthic Object');
+        });
 	}));
 
 	it('should show a label', inject(function (Label) {
@@ -48,7 +48,6 @@ describe('The Label resource factory', function () {
 		var label = Label.get({id: 1}, function () {
 			expect(label.name).toEqual('Benthic Object');
 		});
-		$httpBackend.flush();
 	}));
 
 	it('should add new labels', inject(function (Label) {
@@ -57,7 +56,6 @@ describe('The Label resource factory', function () {
 			expect(label.name).toEqual('Benthic Object');
 			expect(label.id).toBeDefined();
 		});
-		$httpBackend.flush();
 	}));
 
 	it('should update labels', inject(function (Label) {
@@ -73,7 +71,6 @@ describe('The Label resource factory', function () {
 		var label = Label.save({id: 1, name: 'Trash'}, function () {
 			expect(label.name).toEqual('Trash');
 		});
-		$httpBackend.flush();
 	}));
 
 	it('should delete labels', inject(function (Label) {
@@ -84,6 +81,5 @@ describe('The Label resource factory', function () {
 
 		$httpBackend.expectDELETE('/api/v1/labels/1');
 		Label.delete({id: 1});
-		$httpBackend.flush();
 	}));
 });

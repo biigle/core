@@ -25,20 +25,20 @@ describe('The ProjectTransect resource factory', function () {
 		            .respond(200);
 	}));
 
-	afterEach(function() {
-		$httpBackend.verifyNoOutstandingExpectation();
-		$httpBackend.verifyNoOutstandingRequest();
-	});
-
-	it('should query project transects', inject(function (ProjectTransect) {
-		$httpBackend.expectGET('/api/v1/projects/1/transects');
-		var transects = ProjectTransect.query({ project_id: 1 }, function () {
-			var transect = transects[0];
-			expect(transect instanceof ProjectTransect).toBe(true);
-			expect(transect.id).toEqual(1);
-			expect(transect.name).toEqual('transect 1');
-		});
+    afterEach(function() {
 		$httpBackend.flush();
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it('should query project transects', inject(function (ProjectTransect) {
+        $httpBackend.expectGET('/api/v1/projects/1/transects');
+        var transects = ProjectTransect.query({ project_id: 1 }, function () {
+            var transect = transects[0];
+            expect(transect instanceof ProjectTransect).toBe(true);
+            expect(transect.id).toEqual(1);
+            expect(transect.name).toEqual('transect 1');
+        });
 	}));
 
 	it('should add new transects projects', inject(function (ProjectTransect) {
@@ -52,7 +52,6 @@ describe('The ProjectTransect resource factory', function () {
 				expect(transect.id).toBeDefined();
 			}
 		);
-		$httpBackend.flush();
 	}));
 
 	it('should attach existing transects to projects', inject(function (ProjectTransect) {
@@ -64,7 +63,6 @@ describe('The ProjectTransect resource factory', function () {
 
 		$httpBackend.expectPOST('/api/v1/projects/2/transects/1');
 		ProjectTransect.attach({project_id: 2}, {id: 1});
-		$httpBackend.flush();
 	}));
 
 	it('should detach transects from projects', inject(function (ProjectTransect) {
@@ -76,6 +74,5 @@ describe('The ProjectTransect resource factory', function () {
 
 		$httpBackend.expectDELETE('/api/v1/projects/1/transects/1');
 		ProjectTransect.detach({project_id: 1}, {id: 1});
-		$httpBackend.flush();
 	}));
 });

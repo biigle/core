@@ -16,7 +16,7 @@ describe('The AnnotationLabel resource factory', function () {
 
 		$httpBackend.when('GET', '/api/v1/annotations/1/labels')
 		            .respond([label]);
-		
+
 		$httpBackend.when('POST', '/api/v1/annotations/1/labels')
 		            .respond(label);
 
@@ -28,18 +28,18 @@ describe('The AnnotationLabel resource factory', function () {
 	}));
 
 	afterEach(function() {
-		$httpBackend.verifyNoOutstandingExpectation();
-		$httpBackend.verifyNoOutstandingRequest();
-	});
-
-	it('should query annotation labels', inject(function (AnnotationLabel) {
-		$httpBackend.expectGET('/api/v1/annotations/1/labels');
-		var labels = AnnotationLabel.query({annotation_id: 1}, function () {
-			var label = labels[0];
-			expect(label instanceof AnnotationLabel).toBe(true);
-			expect(label.name).toEqual('my label');
-		});
 		$httpBackend.flush();
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it('should query annotation labels', inject(function (AnnotationLabel) {
+        $httpBackend.expectGET('/api/v1/annotations/1/labels');
+        var labels = AnnotationLabel.query({annotation_id: 1}, function () {
+            var label = labels[0];
+            expect(label instanceof AnnotationLabel).toBe(true);
+            expect(label.name).toEqual('my label');
+        });
 	}));
 
 	it('should attach annotation labels', inject(function (AnnotationLabel) {
@@ -50,7 +50,6 @@ describe('The AnnotationLabel resource factory', function () {
 			expect(label.id).toEqual(1);
 			expect(label.name).toEqual('my label');
 		});
-		$httpBackend.flush();
 	}));
 
 	it('should update annotation labels', inject(function (AnnotationLabel) {
@@ -71,7 +70,6 @@ describe('The AnnotationLabel resource factory', function () {
 			label.confidence = 0.1;
 			label.$save();
 		});
-		$httpBackend.flush();
 	}));
 
 	it('should delete annotation labels', inject(function (AnnotationLabel) {
@@ -83,6 +81,5 @@ describe('The AnnotationLabel resource factory', function () {
 
 		$httpBackend.expectDELETE('/api/v1/annotation-labels/1');
 		AnnotationLabel.delete({id: 1});
-		$httpBackend.flush();
 	}));
 });

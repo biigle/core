@@ -14,7 +14,7 @@ describe('The User resource factory', function () {
 
 		$httpBackend.when('GET', '/api/v1/users')
 		            .respond([user]);
-		
+
 		$httpBackend.when('GET', '/api/v1/users/1')
 		            .respond(user);
 
@@ -23,24 +23,24 @@ describe('The User resource factory', function () {
 
 		$httpBackend.when('PUT', '/api/v1/users/1')
 		            .respond(200);
-		
+
 		$httpBackend.when('DELETE', '/api/v1/users/1')
 		            .respond(200);
 	}));
 
 	afterEach(function() {
-		$httpBackend.verifyNoOutstandingExpectation();
-		$httpBackend.verifyNoOutstandingRequest();
-	});
-
-	it('should query users', inject(function (User) {
-		$httpBackend.expectGET('/api/v1/users');
-		var users = User.query(function () {
-			var user = users[0];
-			expect(user instanceof User).toBe(true);
-			expect(user.id).toEqual(1);
-		});
 		$httpBackend.flush();
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it('should query users', inject(function (User) {
+        $httpBackend.expectGET('/api/v1/users');
+        var users = User.query(function () {
+            var user = users[0];
+            expect(user instanceof User).toBe(true);
+            expect(user.id).toEqual(1);
+        });
 	}));
 
 	it('should show users', inject(function (User) {
@@ -48,7 +48,6 @@ describe('The User resource factory', function () {
 		var user = User.get({id: 1}, function () {
 			expect(user.firstname).toEqual('joe');
 		});
-		$httpBackend.flush();
 	}));
 
 	it('should add users', inject(function (User) {
@@ -58,7 +57,6 @@ describe('The User resource factory', function () {
 		var user = User.add({firstname: 'joe'}, function () {
 			expect(user.id).toEqual(1);
 		});
-		$httpBackend.flush();
 	}));
 
 	it('should update users', inject(function (User) {
@@ -69,16 +67,16 @@ describe('The User resource factory', function () {
 			user.firstname = 'jack';
 			user.$save();
 		});
-
-		$httpBackend.flush();
-		$httpBackend.expectPUT('/api/v1/users/1', {
-			id: 1, firstname: 'jack'
-		});
-		var user = User.save({id: 1, firstname: 'jack'}, function () {
-			expect(user.firstname).toEqual('jack');
-		});
-		$httpBackend.flush();
 	}));
+
+    it('should update users directly', inject(function (User) {
+        $httpBackend.expectPUT('/api/v1/users/1', {
+            id: 1, firstname: 'jack'
+        });
+        var user = User.save({id: 1, firstname: 'jack'}, function () {
+            expect(user.firstname).toEqual('jack');
+        });
+    }));
 
 	it('should destroy users', inject(function (User) {
 		$httpBackend.expectDELETE('/api/v1/users/1');
@@ -87,7 +85,6 @@ describe('The User resource factory', function () {
 		});
 		$httpBackend.expectDELETE('/api/v1/users/1');
 		User.delete({id: 1});
-		$httpBackend.flush();
 	}));
 
 	it('should find users', inject(function (User) {
@@ -97,7 +94,6 @@ describe('The User resource factory', function () {
 			expect(user instanceof User).toBe(true);
 			expect(user.id).toEqual(1);
 		});
-		$httpBackend.flush();
 	}));
 
 });

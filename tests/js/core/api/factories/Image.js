@@ -19,16 +19,16 @@ describe('The Image resource factory', function () {
 	}));
 
 	afterEach(function() {
-		$httpBackend.verifyNoOutstandingExpectation();
-		$httpBackend.verifyNoOutstandingRequest();
-	});
-
-	it('should show images', inject(function (Image) {
-		$httpBackend.expectGET('/api/v1/images/1');
-		var image = Image.get({id: 1}, function () {
-			expect(image.transect_id).toEqual(1);
-		});
 		$httpBackend.flush();
+        $httpBackend.verifyNoOutstandingExpectation();
+        $httpBackend.verifyNoOutstandingRequest();
+    });
+
+    it('should show images', inject(function (Image) {
+        $httpBackend.expectGET('/api/v1/images/1');
+        var image = Image.get({id: 1}, function () {
+            expect(image.transect_id).toEqual(1);
+        });
 	}));
 
     it('should delete images', inject(function (Image) {
@@ -37,12 +37,10 @@ describe('The Image resource factory', function () {
         var image = Image.get({id: 1}, function () {
             image.$delete();
         });
-        $httpBackend.flush();
     }));
 
     it('should delete images directly', inject(function (Image) {
         $httpBackend.expectDELETE('/api/v1/images/1');
         Image.delete({id: 1});
-        $httpBackend.flush();
     }));
 });
