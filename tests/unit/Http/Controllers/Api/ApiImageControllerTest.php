@@ -79,4 +79,33 @@ class ApiImageControllerTest extends ApiTestCase
         $this->assertResponseOk();
         $this->assertEquals('image/jpeg', $this->response->headers->get('content-type'));
     }
+
+    public function testDestroy()
+    {
+        $id = $this->image->id;
+
+        $this->doTestApiRoute('DELETE', "/api/v1/images/{$id}");
+
+        $this->beUser();
+        $this->delete("/api/v1/images/{$id}");
+        $this->assertResponseStatus(401);
+
+        $this->beGuest();
+        $this->delete("/api/v1/images/{$id}");
+        $this->assertResponseStatus(401);
+
+        $this->beEditor();
+        $this->delete("/api/v1/images/{$id}");
+        $this->assertResponseStatus(401);
+
+        $this->beAdmin();
+        $this->delete("/api/v1/images/999");
+        $this->assertResponseStatus(404);
+
+        $this->assertNotNull($this->image->fresh()->transect_id);
+        $this->delete("/api/v1/images/{$id}");
+        $this->assertResponseOk();
+        // only the transect ID is set to null so the image is marked for deletion
+        $this->assertNull($this->image->fresh()->transect_id);
+    }
 }

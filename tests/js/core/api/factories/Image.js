@@ -13,6 +13,9 @@ describe('The Image resource factory', function () {
 
 		$httpBackend.when('GET', '/api/v1/images/1')
 		            .respond(image);
+
+        $httpBackend.when('DELETE', '/api/v1/images/1')
+                    .respond(200);
 	}));
 
 	afterEach(function() {
@@ -27,4 +30,19 @@ describe('The Image resource factory', function () {
 		});
 		$httpBackend.flush();
 	}));
+
+    it('should delete images', inject(function (Image) {
+        $httpBackend.expectGET('/api/v1/images/1');
+        $httpBackend.expectDELETE('/api/v1/images/1');
+        var image = Image.get({id: 1}, function () {
+            image.$delete();
+        });
+        $httpBackend.flush();
+    }));
+
+    it('should delete images directly', inject(function (Image) {
+        $httpBackend.expectDELETE('/api/v1/images/1');
+        Image.delete({id: 1});
+        $httpBackend.flush();
+    }));
 });

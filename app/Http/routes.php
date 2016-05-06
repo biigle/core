@@ -107,7 +107,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
     $router->get('images/{id}/thumb', 'ImageController@showThumb');
     $router->get('images/{id}/file', 'ImageController@showFile');
     $router->resource('images', 'ImageController', [
-        'only' => ['show'],
+        'only' => ['show', 'destroy'],
     ]);
 
     $router->resource('images.annotations', 'ImageAnnotationController', [

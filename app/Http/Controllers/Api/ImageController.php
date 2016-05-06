@@ -96,7 +96,7 @@ class ImageController extends Controller
     /**
      * Shows the specified image file.
      *
-     * @api {get} images/:id/file Get an original image
+     * @api {get} images/:id/file Get the original image
      * @apiGroup Images
      * @apiName ShowImageFiles
      * @apiPermission projectMember
@@ -113,5 +113,27 @@ class ImageController extends Controller
         $this->requireCanSee($image);
 
         return $image->getFile();
+    }
+
+    /**
+     * Deletes the image
+     *
+     * @api {delete} images/:id Delete an image
+     * @apiGroup Images
+     * @apiName DestroyImage
+     * @apiPermission projectAdmin
+     *
+     * @apiParam {Number} id The image ID.
+     *
+     * @param int $id image id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $image = Image::findOrFail($id);
+        $this->requireCanAdmin($image);
+
+        $image->transect_id = null;
+        $image->save();
     }
 }
