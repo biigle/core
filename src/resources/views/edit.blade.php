@@ -23,7 +23,12 @@
 @section('content')
 
 <div class="container" data-ng-app="dias.transects.edit">
-    <h2 class="col-xs-12">Edit {{$transect->name}}</h2>
+    <h2 class="col-xs-12 clearfix">
+        Edit {{$transect->name}}
+        <span class="pull-right">
+            <a class="btn btn-default" href="{{route('transect', $transect->id)}}">Back</a>
+        </span>
+    </h2>
     <div class="col-sm-6">
         <div class="panel panel-default">
             <div class="panel-heading">
