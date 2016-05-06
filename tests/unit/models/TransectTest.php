@@ -101,7 +101,8 @@ class TransectTest extends ModelTestCase
     public function testCreateImages()
     {
         $this->assertEmpty($this->model->images);
-        $this->model->createImages(['1.jpg']);
+        $return = $this->model->createImages(['1.jpg']);
+        $this->assertTrue($return);
         $this->model = $this->model->fresh();
         $this->assertNotEmpty($this->model->images);
         $this->assertEquals('1.jpg', $this->model->images()->first()->filename);
@@ -113,10 +114,28 @@ class TransectTest extends ModelTestCase
         $this->model->generateThumbnails();
     }
 
+    public function testGenerateThumbnailsOnly()
+    {
+        $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
+        $this->model->generateThumbnails([1, 2]);
+    }
+
     public function testCastsAttrs()
     {
         $this->model->attrs = [1, 2, 3];
         $this->model->save();
         $this->assertEquals([1, 2, 3], $this->model->fresh()->attrs);
+    }
+
+    public function testParseImagesQueryString()
+    {
+        $return = Transect::parseImagesQueryString('');
+        $this->assertEquals([], $return);
+
+        $return = Transect::parseImagesQueryString('1.jpg, 2.jpg, , , ');
+        $this->assertEquals(['1.jpg', '2.jpg'], $return);
+
+        $return = Transect::parseImagesQueryString('1.jpg ');
+        $this->assertEquals(['1.jpg'], $return);
     }
 }

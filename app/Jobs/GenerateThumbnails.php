@@ -21,14 +21,25 @@ class GenerateThumbnails extends Job implements ShouldQueue
     private $transect;
 
     /**
+     * Array of image IDs to restrict the generating of thumbnails to.
+     * If it is empty, all images of the transect will be taken.
+     *
+     * @var array
+     */
+    private $only;
+
+    /**
      * Create a new job instance.
      *
      * @param Transect $transect The transect for which the thumbnails should be generated.
+     * @param array $only (optional) Array of image IDs to restrict the generating of thumbnails to. If it is empty, all images of the transect will be taken.
+     *
      * @return void
      */
-    public function __construct(Transect $transect)
+    public function __construct(Transect $transect, array $only = [])
     {
         $this->transect = $transect;
+        $this->only = $only;
     }
 
     /**
@@ -40,6 +51,7 @@ class GenerateThumbnails extends Job implements ShouldQueue
     {
         // ensure a fresh DB connection because this job is run with the daemon queue worker
         DB::reconnect();
-        app()->make('Dias\Contracts\ThumbnailService')->generateThumbnails($this->transect);
+        app()->make('Dias\Contracts\ThumbnailService')
+            ->generateThumbnails($this->transect, $this->only);
     }
 }

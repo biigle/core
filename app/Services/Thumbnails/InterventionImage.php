@@ -56,7 +56,7 @@ class InterventionImage implements ThumbnailService
     /**
      * {@inheritDoc}
      */
-    public function generateThumbnails(Transect $transect) {
+    public function generateThumbnails(Transect $transect, array $only) {
         $memoryLimit = ini_get('memory_limit');
 
         // increase memory limit for resizing large images
@@ -65,8 +65,14 @@ class InterventionImage implements ThumbnailService
         static::$width = config('thumbnails.width');
         static::$height = config('thumbnails.height');
 
+        $query = $transect->images();
+
+        if (!empty($only)) {
+            $query = $query->whereIn('id', $only);
+        }
+
         // process the images, 100 at a time
-        $transect->images()->chunk(100, function ($images) {
+        $query->chunk(100, function ($images) {
             $images->map([self::class, 'makeThumbnail']);
         });
 

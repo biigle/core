@@ -29,9 +29,23 @@ class JobsGenerateThumbnailsTest extends TestCase
         $mock = App::make('Dias\Contracts\ThumbnailService');
         $mock->shouldReceive('generateThumbnails')
             ->once()
-            ->with(Mockery::type('Dias\Transect'));
+            ->with(Mockery::type('Dias\Transect'), []);
 
         // queue is synchronous in test environment and processes immediately
         Queue::push(new GenerateThumbnails($transect));
+    }
+
+    public function testHandleWithOnly()
+    {
+        $transect = TransectTest::create();
+        // mock in TestCase catches automatic queueing; we'll do this manually here
+
+        $mock = App::make('Dias\Contracts\ThumbnailService');
+        $mock->shouldReceive('generateThumbnails')
+            ->once()
+            ->with(Mockery::type('Dias\Transect'), [2, 3, 4]);
+
+        // queue is synchronous in test environment and processes immediately
+        Queue::push(new GenerateThumbnails($transect, [2, 3, 4]));
     }
 }

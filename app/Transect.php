@@ -42,6 +42,15 @@ class Transect extends Model implements BelongsToProjectContract
     ];
 
     /**
+     * Validation rules for adding new images to a transect.
+     *
+     * @var array
+     */
+    public static $addImagesRules = [
+        'images' => 'required',
+    ];
+
+    /**
      * The attributes hidden from the model's JSON form.
      *
      * @var array
@@ -59,6 +68,26 @@ class Transect extends Model implements BelongsToProjectContract
     protected $casts = [
         'attrs' => 'array',
     ];
+
+    /**
+     * Parses a comma separated list of image filenames to an array
+     *
+     * @param string $string
+     *
+     * @return array
+     */
+    public static function parseImagesQueryString($string)
+    {
+        $images = preg_split('/\s*,\s*/', $string, null, PREG_SPLIT_NO_EMPTY);
+
+        if (!is_array($images)) {
+            $images = [$images];
+        }
+
+        $images = array_map('trim', $images);
+
+        return $images;
+    }
 
     /**
      * The user that created the transect.
@@ -113,30 +142,35 @@ class Transect extends Model implements BelongsToProjectContract
      */
     public function images()
     {
-        return $this->hasMany('Dias\Image')->orderBy('id');
+        return $this->hasMany('Dias\Image');
     }
 
     /**
      * Creates the image objects to be associated with this transect.
      *
      * @param array $filenames image filenames at the location of the transect URL
-     * @return void
+     *
+     * @return bool
      */
     public function createImages($filenames)
     {
+        $images = [];
         foreach ($filenames as $filename) {
             $images[] = ['filename' => $filename, 'transect_id' => $this->id];
         }
 
-        Image::insert($images);
+        return Image::insert($images);
     }
 
     /**
      * (Re-) generates the thumbnail images for all images belonging to this transect
+     *
+     * @param array $only (optional) Array of image IDs to restrict the (re-)generation
+     * of thumbnails to.
      */
-    public function generateThumbnails()
+    public function generateThumbnails($only = [])
     {
-        $this->dispatch(new GenerateThumbnails($this));
+        $this->dispatch(new GenerateThumbnails($this, $only));
     }
 
     /**

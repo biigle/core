@@ -17,6 +17,7 @@ interface ThumbnailService
      * one this function returned.
      *
      * @param Transect $transect The transect to generate the thumbnails for
+     * @param array $only Array of image IDs to restrict the generating of thumbnails to. If it is empty, all images of the transect will be taken.
      */
-    public function generateThumbnails(Transect $transect);
+    public function generateThumbnails(Transect $transect, array $only);
 }

@@ -89,14 +89,9 @@ class ProjectTransectController extends Controller
         $transect->setMediaTypeId($this->request->input('media_type_id'));
         $transect->creator()->associate($this->user);
 
-        $images = preg_split(
-            '/\s*,\s*/',
-            $this->request->input('images'),
-            null,
-            PREG_SPLIT_NO_EMPTY
-        );
+        $images = Transect::parseImagesQueryString($this->request->input('images'));
 
-        if (empty($images) || !is_array($images)) {
+        if (empty($images)) {
             return $this->buildFailedValidationResponse($this->request, [
                 'images' => 'No images were supplied for the new transect!',
             ]);

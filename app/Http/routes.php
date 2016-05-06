@@ -160,7 +160,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
     ]);
 
     $router->resource('transects.images', 'TransectImageController', [
-        'only' => ['index'],
+        'only' => ['index', 'store'],
     ]);
 
     $router->resource('transects.annotations', 'TransectAnnotationController', [
