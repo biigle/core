@@ -483,6 +483,36 @@
     "groupTitle": "ApiTokens"
   },
   {
+    "type": "delete",
+    "url": "images/:id",
+    "title": "Delete an image",
+    "group": "Images",
+    "name": "DestroyImage",
+    "permission": [
+      {
+        "name": "projectAdmin",
+        "title": "Project admin",
+        "description": "<p>The authenticated user needs to be admin of the project.</p>"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The image ID.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "app/Http/Controllers/Api/ImageController.php",
+    "groupTitle": "Images"
+  },
+  {
     "type": "get",
     "url": "images/:id/annotations",
     "title": "Get all annotations",
@@ -524,7 +554,7 @@
   {
     "type": "get",
     "url": "images/:id/file",
-    "title": "Get an original image",
+    "title": "Get the original image",
     "group": "Images",
     "name": "ShowImageFiles",
     "permission": [
@@ -1811,6 +1841,20 @@
             "optional": false,
             "field": "name",
             "description": "<p>Name of the transect.</p>"
+          },
+          {
+            "group": "Attributes that can be updated",
+            "type": "Number",
+            "optional": false,
+            "field": "media_type_id",
+            "description": "<p>The ID of the media type of the transect.</p>"
+          },
+          {
+            "group": "Attributes that can be updated",
+            "type": "String",
+            "optional": false,
+            "field": "url",
+            "description": "<p>The base URL ot the image files. Can be a local path like <code>/vol/transects/1</code> or a remote path like <code>https://example.com/transects/1</code>. Updating the URL will trigger a re-generation of all transect image thumbnails.</p>"
           }
         ]
       }
@@ -2073,15 +2117,6 @@
             "optional": false,
             "field": "lastname",
             "description": "<p>The lastname of the new user.</p>"
-          }
-        ],
-        "Optional parameters": [
-          {
-            "group": "Optional parameters",
-            "type": "Number",
-            "optional": false,
-            "field": "role_id",
-            "description": "<p>ID of the role of the new user. Default is the ID of the &quot;editor&quot; role.</p>"
           }
         ]
       },
