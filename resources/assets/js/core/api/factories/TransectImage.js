@@ -10,10 +10,17 @@
 var images = TransectImage.query({transect_id: 1}, function () {
    console.log(images); // [1, 12, 14, ...]
 });
+
+// Add new images to a transect
+var images = TransectImage.save({transect_id: 1}, {'images': '1.jpg, 2.jpg'}, function () {
+  console.log(images); // [{id: 1, filename: '1.jpg', id: 2, filename: '2.jpg'}]
+});
  *
  */
 angular.module('dias.api').factory('TransectImage', function ($resource, URL) {
 	"use strict";
 
-	return $resource(URL + '/api/v1/transects/:transect_id/images');
+	return $resource(URL + '/api/v1/transects/:transect_id/images', {}, {
+        save: { method: 'POST', isArray: true }
+    });
 });
