@@ -77,7 +77,7 @@
         </div>
     </div>
     <div class="col-sm-6">
-        <div class="panel panel-default transect-images-panel" data-ng-controller="ImagesController" data-confirmation="Do you really want to delete the image :img?" data-success="The image was deleted." data-ng-class="{'panel-warning': data.addingNewImages}">
+        <div class="panel panel-default transect-images-panel" data-ng-controller="ImagesController" data-confirmation="Do you really want to delete the image :img? All annotations will be lost!" data-success="The image was deleted." data-ng-class="{'panel-warning': data.addingNewImages}">
             <div class="panel-heading">
                 <h3 class="panel-title">
                     Transect images
