@@ -50,11 +50,12 @@ class TransectController extends Controller
      */
     public function edit($id)
     {
-        $transect = Transect::with('projects', 'images')->findOrFail($id);
+        $transect = Transect::with('projects')->findOrFail($id);
         $this->requireCanAdmin($transect);
 
         return view('transects::edit')
             ->withTransect($transect)
+            ->with('images', $transect->images()->pluck('filename', 'id'))
             ->with('mediaTypes', MediaType::all());
     }
 }

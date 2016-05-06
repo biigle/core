@@ -1,1 +1,1 @@
-{"version":3,"sources":["edit.css"],"names":[],"mappings":"AAAA","file":"edit.css","sourceRoot":"/source/","sourcesContent":[]}
+{"version":3,"sources":["edit.scss"],"names":[],"mappings":"AACI;EACI,kBAAkB;EAClB,iBAAiB,EACpB","file":"edit.css","sourcesContent":[".transect-images-panel {\n    .images-list {\n        max-height: 300px;\n        overflow-y: auto;\n    }\n}\n"],"sourceRoot":"/source/"}
