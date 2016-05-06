@@ -34,14 +34,20 @@ angular.module('dias.transects.edit').controller('ImagesController', function ($
             }
         };
 
-
-        $scope.deleteImage = function (id, filename) {
+        /*
+         * Use this function in global scope and onclick instead of a function in the
+         * scope of this controller and ngClick because it has a much better performance
+         * if the transect has thousands of images.
+         */
+        window.$diasTransectsEditDeleteImage = function (id, filename) {
             var question = messages.confirm.replace(':img', '#' + id + ' (' + filename + ')');
             if (confirm(question)) {
-                Image.delete({id: id}, function () {
-                    removeImageListItem(id);
-                    msg.success(messages.success);
-                }, msg.responseError);
+                $scope.$apply(function () {
+                    Image.delete({id: id}, function () {
+                        removeImageListItem(id);
+                        msg.success(messages.success);
+                    }, msg.responseError);
+                });
             }
         };
 
