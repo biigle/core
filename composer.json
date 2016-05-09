@@ -1,0 +1,14 @@
+{
+    "name": "dias/export",
+    "require": {
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Dias\\Modules\\Export\\": "src"
+        }
+    }
+}
+
+
