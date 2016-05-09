@@ -289,7 +289,8 @@ class Initialize extends Migration
         */
         Schema::create('annotations', function (Blueprint $table) {
             $table->increments('id');
-            $table->json('points')->default('[]');
+            // json type cant have a default value so it must be nullable
+            $table->json('points')->nullable();
 
             // annotations are primarily searched by image, so do index
             $table->integer('image_id')->unsigned()->index();
