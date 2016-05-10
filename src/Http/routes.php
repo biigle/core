@@ -7,7 +7,17 @@ $router->get('annotate/{id}', [
     'uses' => 'AnnotationController@index',
 ]);
 
-$router->get('api/v1/transects/{id}/images/filter/annotations', [
+$router->group([
     'middleware' => 'auth.api',
-    'uses' => 'Api\TransectImageController@index'
-]);
+    'namespace' => 'Api',
+    'prefix' => 'api/v1',
+    ], function ($router) {
+
+    $router->get('transects/{id}/images/filter/annotations', [
+        'uses' => 'TransectImageController@hasAnnotation'
+    ]);
+
+    $router->get('transects/{tid}/images/filter/user/{uid}', [
+        'uses' => 'TransectImageController@hasUser'
+    ]);
+});
