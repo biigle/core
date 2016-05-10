@@ -6,7 +6,7 @@
  * @description Controller for displaying the huge amout of images of a
  * transect on a singe page.
  */
-angular.module('dias.transects').controller('ImagesController', function ($scope, $element, $timeout, $q, images) {
+angular.module('dias.transects').controller('ImagesController', function ($scope, $element, $timeout, $q, images, filter) {
 		"use strict";
 
 		var element = $element[0];
@@ -75,6 +75,8 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
         };
 
         $scope.images = images;
+
+        $scope.imageHasFlag = filter.hasFlag;
 
         // timeout to wait for all image objects to be present in the DOM
 		$timeout(initialize);

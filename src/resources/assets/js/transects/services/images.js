@@ -5,7 +5,7 @@
  * @memberOf dias.transects
  * @description Service managing the list of images to display
  */
-angular.module('dias.transects').service('images', function ($rootScope, TRANSECT_ID, TRANSECT_IMAGES, filterSubset, filterExclude, flags) {
+angular.module('dias.transects').service('images', function ($rootScope, TRANSECT_ID, TRANSECT_IMAGES, filterSubset, filter) {
         "use strict";
 
         var _this = this;
@@ -53,21 +53,10 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
                 filterSubset(_this.sequence, TRANSECT_IMAGES, true);
             }
 
-            var filters = flags.getActiveFilters();
-
-            for (var i = 0; i < filters.length; i++) {
+            if (filter.hasRules()) {
                 shouldStore = true;
-                filterSubset(_this.sequence, filters[i]);
+                filterSubset(_this.sequence, filter.getSequence());
             }
-
-
-            filters = flags.getActiveNegateFilters();
-
-            for (i = 0; i < filters.length; i++) {
-                shouldStore = true;
-                filterExclude(_this.sequence, filters[i]);
-            }
-
 
             _this.length = _this.sequence.length;
 
@@ -79,7 +68,7 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
             }
         };
 
-        var updateFiltering = function () {
+        this.updateFiltering = function () {
             updateSequence();
             // reset limit
             _this.limit = initialLimit;
@@ -103,16 +92,6 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
             // reset limit
             _this.limit = initialLimit;
             $rootScope.$broadcast('transects.images.new-ordering');
-        };
-
-        this.toggleFilter = function (id) {
-            flags.toggleFilter(id);
-            updateFiltering();
-        };
-
-        this.toggleNegateFilter = function (id) {
-            flags.toggleNegateFilter(id);
-            updateFiltering();
         };
 
         this.advance = function (step) {

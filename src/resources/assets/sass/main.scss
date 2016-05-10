@@ -102,8 +102,7 @@ $transect-image-padding: 0.5em;
     width: 15px;
     height: 15px;
     border-radius: 50%;
-    // default flag color
-    background-color: red;
+    background-color: #31b0d5;
     border: 2px solid white;
 }
 
@@ -125,11 +124,23 @@ $transect-image-padding: 0.5em;
 
 .transect-filter-popover {
 
-    .filter-list li {
+    .filter-list {
         margin-top: 1em;
+        max-height: 100px;
+        overflow-y: auto;
     }
 
     .figure-flag {
         vertical-align: middle;
+    }
+
+    .add-rule-form {
+        white-space: nowrap;
+    }
+}
+
+.transect-filter-menu-group {
+    .popover {
+        max-width: none;
     }
 }
