@@ -20,4 +20,8 @@ $router->group([
     $router->get('transects/{tid}/images/filter/user/{uid}', [
         'uses' => 'TransectImageController@hasUser'
     ]);
+
+    $router->get('transects/{id}/users', [
+        'uses' => 'TransectUserController@index'
+    ]);
 });
