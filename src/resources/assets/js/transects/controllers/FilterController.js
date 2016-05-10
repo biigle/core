@@ -36,7 +36,7 @@ angular.module('dias.transects').controller('FilterController', function ($scope
 
             // don't allow adding the same rule twice
             if (!filter.hasRule(rule)) {
-                filter.addRule(rule).success(images.updateFiltering);
+                filter.addRule(rule).then(images.updateFiltering);
             }
         };
 
