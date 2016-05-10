@@ -7,8 +7,7 @@ $router->get('annotate/{id}', [
     'uses' => 'AnnotationController@index',
 ]);
 
-$router->get('api/v1/transects/{id}/images/having-annotations', [
+$router->get('api/v1/transects/{id}/images/filter/annotations', [
     'middleware' => 'auth.api',
-    'as' => 'transects-images-having-annotations',
     'uses' => 'Api\TransectImageController@index'
 ]);

@@ -15,5 +15,5 @@ var ids = AnnotationImage.query({transect_id: 1}, function () {
 angular.module('dias.transects').factory('AnnotationImage', function ($resource, URL) {
     "use strict";
 
-    return $resource(URL + '/api/v1/transects/:transect_id/images/having-annotations');
+    return $resource(URL + '/api/v1/transects/:transect_id/images/filter/annotations');
 });

@@ -29,6 +29,6 @@ class TransectImageController extends Controller
         $transect = Transect::findOrFail($id);
         $this->requireCanSee($transect);
 
-        return $transect->images()->has('annotations')->lists('id');
+        return $transect->images()->has('annotations')->pluck('id');
     }
 }
