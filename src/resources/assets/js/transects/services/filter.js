@@ -77,7 +77,9 @@ angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSE
             filters.push({
                 name: newFilter.name,
                 resource: newFilter.resource,
-                typeahead: newFilter.typeahead
+                typeahead: newFilter.typeahead,
+                // add the transform function or use identity if there is none
+                transformData: newFilter.transformData || angular.identity
             });
         };
 
@@ -96,7 +98,9 @@ angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSE
                 _this.removeRule(rule);
             };
 
-            rule.ids = r.filter.resource.query({transect_id: TRANSECT_ID, data: r.data}, refresh, rollback);
+            var data = r.filter.transformData(r.data);
+
+            rule.ids = r.filter.resource.query({transect_id: TRANSECT_ID, data: data}, refresh, rollback);
             rules.push(rule);
 
             return rule.ids.$promise;

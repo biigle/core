@@ -6,12 +6,12 @@
  * @description Controller for the filter feature of the transects page
  */
 angular.module('dias.transects').controller('FilterController', function ($scope, images, TRANSECT_ID, TRANSECT_IMAGES, filter) {
-		"use strict";
+        "use strict";
 
         $scope.data = {
             negate: 'false',
             filter: null,
-            data: null
+            selected: null
         };
 
         $scope.setFilterMode = function (mode) {
@@ -31,7 +31,7 @@ angular.module('dias.transects').controller('FilterController', function ($scope
             var rule = {
                 filter: $scope.data.filter,
                 negate: $scope.data.negate === 'true',
-                data: $scope.data.data
+                data: $scope.data.selected
             };
 
             // don't allow adding the same rule twice
@@ -50,5 +50,9 @@ angular.module('dias.transects').controller('FilterController', function ($scope
         $scope.rulesLoading = filter.rulesLoading;
 
         $scope.numberImages = filter.getNumberImages;
-	}
+
+        $scope.selectData = function (data) {
+            $scope.data.selected = data;
+        };
+    }
 );
