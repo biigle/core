@@ -21,6 +21,22 @@ class TransectLabelController extends Controller
      * @apiParam {String} pattern Part of the label name to find
      *
      * @apiSuccessExample {json} Success response:
+     * [
+     *    {
+     *       "aphia_id": null,
+     *       "id": 1,
+     *       "name": "Benthic Object",
+     *       "parent_id": null,
+     *       "color": "0099ff"
+     *    },
+     *    {
+     *       "aphia_id": null,
+     *       "id": 2,
+     *       "name": "Coral",
+     *       "parent_id": 1,
+     *       "color": "9900ff"
+     *    }
+     * ]
      *
      * @param  int  $id
      * @param  string  $pattern
@@ -37,6 +53,7 @@ class TransectLabelController extends Controller
         }
 
         return Label::select('id', 'name', 'color', 'parent_id', 'aphia_id')
+            ->where('name', $operator, "%{$pattern}%")
             ->whereExists(function ($query) use ($id) {
                 // take only labels that are used in annotations of this transect
                 $query->select(DB::raw(1))
@@ -46,7 +63,6 @@ class TransectLabelController extends Controller
                     ->where('images.transect_id', $id)
                     ->whereRaw('annotation_labels.label_id = labels.id');
             })
-            ->where('name', $operator, "%{$pattern}%")
             ->take(10)
             ->get();
     }

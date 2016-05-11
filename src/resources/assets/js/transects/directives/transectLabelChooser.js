@@ -6,7 +6,12 @@
  * @description An input field to find a label that was used in a transect
  * @example
 // HTML
-<input placeholder="Search by label name" data-transect-label-chooser="addUser" data-transect-id="1" />
+<input placeholder="Search by label name" data-transect-label-chooser="addLabel" data-transect-id="1" />
+
+// Controller
+$scope.addLabel = function (label) {
+    // do something
+};
 
  */
 angular.module('dias.transects').directive('transectLabelChooser', function () {
