@@ -9,3 +9,11 @@
 <script type="text/ng-template" id="userFilterTypeahead.html">
     <input class="form-control" placeholder="Select user" data-user-chooser="selectData" />
 </script>
+
+<script data-ng-controller="AnnotationsLabelFilterController" type="text/ng-template" id="labelFilterRule.html">
+@{{rule.filter.name}} @{{rule.data.name}}
+</script>
+
+<script type="text/ng-template" id="labelFilterTypeahead.html">
+    <input class="form-control" placeholder="Select label" data-transect-label-chooser="selectData" data-transect-id="{{$transect->id}}" />
+</script>

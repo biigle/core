@@ -21,7 +21,15 @@ $router->group([
         'uses' => 'TransectImageController@hasUser'
     ]);
 
+    $router->get('transects/{tid}/images/filter/label/{lid}', [
+        'uses' => 'TransectImageController@hasLabel'
+    ]);
+
     $router->get('transects/{id}/users', [
         'uses' => 'TransectUserController@index'
+    ]);
+
+    $router->get('transects/{id}/labels/find/{pattern}', [
+        'uses' => 'TransectLabelController@find'
     ]);
 });
