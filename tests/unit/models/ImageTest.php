@@ -142,6 +142,14 @@ class ImageTest extends ModelTestCase
         $this->assertEquals('image/jpeg', $exif['MimeType']);
     }
 
+    public function testGetExifNotSupported()
+    {
+        $image = self::create(['filename' => 'test-image.png']);
+        // should not throw an error
+        $exif = $image->getExif();
+        $this->assertEquals([], $exif);
+    }
+
     public function testGetSize()
     {
         $size = $this->model->getSize();
