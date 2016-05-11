@@ -73,8 +73,8 @@ class UserController extends Controller
         }
 
         return User::select('id', 'firstname', 'lastname', 'role_id')
-            ->where('firstname', $operator, '%'.$pattern.'%')
-            ->orWhere('lastname', $operator, '%'.$pattern.'%')
+            ->where('firstname', $operator, "%{$pattern}%")
+            ->orWhere('lastname', $operator, "%{$pattern}%")
             ->take(10)
             ->get();
     }
