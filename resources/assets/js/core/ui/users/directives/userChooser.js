@@ -53,7 +53,7 @@ angular.module('dias.ui.users').directive('userChooser', function () {
                 };
 
 				$scope.find = function (query) {
-					return User.find({query: query}).$promise;
+					return User.find({query: encodeURIComponent(query)}).$promise;
 				};
 			}
 		};

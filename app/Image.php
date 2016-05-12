@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Dias\Contracts\BelongsToProjectContract;
 use Response;
 use File;
+use ErrorException;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
@@ -142,7 +143,12 @@ class Image extends Model implements BelongsToProjectContract
      */
     public function getExif()
     {
-        $exif = exif_read_data($this->url);
+        try {
+            $exif = exif_read_data($this->url);
+        } catch (ErrorException $e) {
+            // exif not supported for the file
+            return [];
+        }
 
         // get only part of the exif data because other fields may contain
         // corrupted utf8 encoding, which will break json_encode()!
