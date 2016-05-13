@@ -33,10 +33,11 @@ class TransectController extends Controller
      */
     public function index($id)
     {
-        $transect = Transect::with('projects', 'images')->findOrFail($id);
+        $transect = Transect::with('projects')->findOrFail($id);
         $this->requireCanSee($transect);
 
         return view('transects::index')
+            ->with('imageIds', $transect->images()->orderBy('id')->pluck('id'))
             ->withTransect($transect)
             ->with('isAdmin', $this->user->canAdminOneOfProjects($transect->projectIds()));
     }
