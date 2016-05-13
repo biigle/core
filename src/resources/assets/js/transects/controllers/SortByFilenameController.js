@@ -10,20 +10,24 @@ angular.module('dias.transects').controller('SortByFilenameController', function
 
         var id = 'filename';
 
-        // cache the sequence here so it is loaded only once
-        var sequence;
+        var cacheKey = 'filename-sequence';
 
         $scope.active = function () {
             return sort.isSorterActive('filename');
         };
 
         $scope.toggle = function () {
-            if (!sequence) {
-                sequence = TransectImageOrderByFilename.query({transect_id: TRANSECT_ID});
+            if ($scope.active()) return;
+
+            if (!$scope.hasCache(cacheKey)) {
+                $scope.setLoading(true);
+                $scope.setCache(cacheKey, TransectImageOrderByFilename.query({transect_id: TRANSECT_ID}, function () {
+                    $scope.setLoading(false);
+                }));
             }
 
-            sequence.$promise.then(function () {
-                $scope.activateSorter(id, sequence);
+            $scope.getCache(cacheKey).$promise.then(function (s) {
+                $scope.activateSorter(id, s);
             });
         };
     }

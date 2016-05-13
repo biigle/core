@@ -81,15 +81,18 @@
 
 <script type="text/ng-template" id="sortPopover.html">
     <div class="transect-sort-popover">
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default" title="Sort ascending" data-ng-class="{active: isSortAscending()}" data-ng-click="setSortAscending()"><span class="glyphicon glyphicon-sort-by-attributes" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default" title="Sort descending" data-ng-class="{active: isSortDescending()}" data-ng-click="setSortDescending()"><span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span></button>
+        <div class="clearfix">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default" title="Sort ascending" data-ng-class="{active: isSortAscending()}" data-ng-click="setSortAscending()"><span class="glyphicon glyphicon-sort-by-attributes" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" title="Sort descending" data-ng-class="{active: isSortDescending()}" data-ng-click="setSortDescending()"><span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span></button>
+            </div>
+            <span class="pull-right text-muted" data-ng-if="isLoading()">loading...</span>
         </div>
 
         <div class="list-group sorter-list-group">
             <button type="button" class="list-group-item" title="Sort images by ID" data-ng-click="toggle()" data-ng-class="{active: active()}" data-ng-controller="SortByIdController">ID</button>
 
-            <button type="button" class="list-group-item" title="Sort images by Filename" data-ng-click="toggle()" data-ng-class="{active: active()}" data-ng-controller="SortByFilenameController">Filename</button>
+            <button type="button" class="list-group-item" title="Sort images by filename" data-ng-click="toggle()" data-ng-class="{active: active()}" data-ng-controller="SortByFilenameController">Filename</button>
 
             @foreach ($modules->getMixins('transectsSorters') as $module => $nestedMixins)
                 @include($module.'::transectsSorters')

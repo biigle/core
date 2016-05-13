@@ -15,6 +15,8 @@ angular.module('dias.transects').controller('SortByIdController', function ($sco
         };
 
         $scope.toggle = function () {
+            if ($scope.active()) return;
+
             $scope.activateSorter(id, TRANSECT_IMAGES);
         };
     }
