@@ -5,7 +5,13 @@ $router->group([
     'prefix' => 'api/v1',
     'middleware' => 'auth.api',
 ], function ($router) {
-    $router->post('projects/{id}/reports/basic', [
+    $router->get('projects/{id}/reports/basic', [
         'uses' => 'ReportsController@basic',
+    ]);
+    $router->get('projects/{id}/reports/extended', [
+        'uses' => 'ReportsController@extended',
+    ]);
+     $router->get('projects/{id}/reports/full', [
+        'uses' => 'ReportsController@full',
     ]);
 });
