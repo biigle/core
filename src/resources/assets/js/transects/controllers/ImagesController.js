@@ -80,13 +80,7 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
 
         // timeout to wait for all image objects to be present in the DOM
 		$timeout(initialize);
-        $scope.$on('transects.images.new-ordering', function () {
-            loadStack.length = 0;
-            currentlyLoading = 0;
-            $timeout(initialize);
-        });
-
-        $scope.$on('transects.images.new-filtering', function () {
+        $scope.$on('transects.images.updated', function () {
             loadStack.length = 0;
             currentlyLoading = 0;
             $timeout(initialize);

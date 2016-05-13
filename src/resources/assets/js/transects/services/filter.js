@@ -11,8 +11,8 @@ angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSE
         var DEFAULT_MODE = 'filter';
         var _this = this;
 
-        var rulesLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.filter-rules';
-        var modeLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.filter-mode';
+        var rulesLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.filter.rules';
+        var modeLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.filter.mode';
 
         // all available filters for which rules may be added
         var filters = [];

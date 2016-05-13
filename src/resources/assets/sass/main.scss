@@ -144,3 +144,14 @@ $transect-image-padding: 0.5em;
         max-width: none;
     }
 }
+
+.transect-sort-popover {
+    min-width: 200px;
+
+    .sorter-list-group {
+        margin-top: .5em;
+        margin-bottom: 0;
+        max-height: 100px;
+        overflow-y: auto;
+    }
+}

@@ -1,6 +1,6 @@
 <?php
 
-class TransectControllerTest extends ApiTestCase {
+class TransectsModuleHttpControllersTransectControllerTest extends ApiTestCase {
 
     public function testIndex() {
         $id = $this->transect()->id;

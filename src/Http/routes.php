@@ -30,3 +30,14 @@ $router->group([
         'uses' => 'AdminController@index',
     ]);
 });
+
+$router->group([
+        'middleware' => 'auth.api',
+        'prefix' => 'api/v1',
+        'namespace' => 'Api',
+    ], function ($router) {
+
+    $router->get('transects/{id}/images/order-by/filename', [
+        'uses' => 'TransectImageController@indexOrderByFilename',
+    ]);
+});

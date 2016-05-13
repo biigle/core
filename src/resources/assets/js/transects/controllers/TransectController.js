@@ -11,8 +11,5 @@ angular.module('dias.transects').controller('TransectController', function ($sco
         $scope.progress = function () {
             return {width:  images.progress() * 100 + '%'};
         };
-
-        // set the ordering of the displayed images
-        $scope.setImagesSequence = images.reorder;
 	}
 );

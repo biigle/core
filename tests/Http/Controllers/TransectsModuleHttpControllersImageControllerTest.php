@@ -2,7 +2,7 @@
 
 use Dias\Role;
 
-class ImageControllerTest extends TestCase {
+class TransectsModuleHttpControllersImageControllerTest extends TestCase {
 
    public function testIndex() {
       $project = ProjectTest::create();

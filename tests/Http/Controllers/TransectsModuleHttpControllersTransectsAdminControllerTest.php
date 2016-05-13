@@ -1,6 +1,6 @@
 <?php
 
-class TransectsAdminControllerTest extends TestCase {
+class TransectsModuleHttpControllersTransectsAdminControllerTest extends TestCase {
 
    public function testIndex()
    {
