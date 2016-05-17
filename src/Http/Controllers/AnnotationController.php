@@ -24,7 +24,7 @@ class AnnotationController extends Controller
         } else {
             // array of all project IDs that the user and the image have in common
             $projectIds = array_intersect(
-                $this->user->projects()->select('id')->get()->pluck('id')->toArray(),
+                $this->user->projects()->pluck('id')->toArray(),
                 $image->projectIds()
             );
         }
