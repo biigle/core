@@ -1,7 +1,7 @@
-<nav class="navbar navbar-inverse navbar-static-top">
+<nav class="navbar navbar-default navbar-static-top">
 	<div class="container">
 		<div class="navbar-header">
-			<a class="navbar-brand logo logo-inverse" href="{{ route('home') }}">
+			<a class="navbar-brand logo" href="{{ route('home') }}">
 				<span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup>
 			</a>
 		</div>
