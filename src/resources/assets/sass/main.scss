@@ -34,8 +34,8 @@ $transect-image-padding: 0.5em;
     width: 0%;
     background-color: #31B0D5;
     transition: width 0.1s ease;
-    border-right: 1px solid rgba(255, 255, 255, 0.75);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+    border-right: 1px solid rgba(0, 0, 0, 0.75);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.75);
     border-bottom-right-radius: 3px;
 }
 
@@ -55,7 +55,6 @@ $transect-image-padding: 0.5em;
 	display: inline-block;
     position: relative;
     margin: $transect-image-margin;
-    background-color: #eee;
 
 	img {
 		width: 100%;
