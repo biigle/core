@@ -32,7 +32,7 @@ $body-bg:               #222 !default;
 $text-color:            $gray-dark !default;
 
 //** Global textual link color.
-$link-color:            $brand-primary !default;
+$link-color:            #428bca !default;
 //** Link hover color set via `darken()` function.
 $link-hover-color:      brighten($link-color, 15%) !default;
 //** Link hover decoration.
@@ -834,7 +834,7 @@ $close-text-shadow:           0 1px 0 #000 !default;
 //
 //##
 
-$code-color:                  darken(#c7254e, 5%) !default;
+$code-color:                  #c7254e !default;
 $code-bg:                     #191214 !default;
 
 $kbd-color:                   #fff !default;
