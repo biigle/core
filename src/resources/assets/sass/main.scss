@@ -1,8 +1,6 @@
-@import "bootstrap/variables";
-
 @keyframes flash {
 	from {
-		background-color: $gray-lighter;
+		background-color: #353535;
 	}
 	to {
 	}
@@ -13,7 +11,7 @@
 	animation: flash .5s;
 
 	&:hover:not([class~="bg-danger"]) {
-		background-color: $gray-lighter;
+		background-color: #353535;
 	}
 
 	&:before {
@@ -23,7 +21,7 @@
 }
 
 .project-add-category {
-    border-bottom: 1px solid $gray-lighter;
+    border-bottom: 1px solid #353535;
 }
 
 .project-categories-list {
