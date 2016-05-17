@@ -2,7 +2,7 @@
     <div class="categories-search">
         <input class="form-control" type="text" data-ng-model="searchCategory" data-uib-typeahead="category.name for category in categories | filter:$viewValue | limitTo:10" data-typeahead-on-select="selectItem($item)" placeholder="Find category" />
 
-        <button class="btn btn-inverse pull-right" data-ng-click="toggleFoldout('categories')" title="Collapse this foldout"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
+        <button class="btn btn-default pull-right" data-ng-click="toggleFoldout('categories')" title="Collapse this foldout"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
     </div>
     <div class="categories-body">
         <div data-ng-if="favourites.length > 0" class="categories-list">

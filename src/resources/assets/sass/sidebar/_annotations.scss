@@ -8,11 +8,11 @@
 	user-select: none;
 	padding: 1em;
 	padding-right: 0;
-	border-bottom: 1px solid #333;
+	border-bottom: 1px solid #353535;
 	position: relative;
 
 	&:first-child {
-		border-top: 1px solid #333;
+		border-top: 1px solid #353535;
 	}
 
 	&:hover, &.selected {
@@ -46,14 +46,5 @@
 
 	&:last-child {
 		padding-bottom: 0;
-	}
-
-	.label__user {
-		color: #9D9D9D;
-	}
-
-	.close {
-		color: white;
-		text-shadow: none;
 	}
 }
