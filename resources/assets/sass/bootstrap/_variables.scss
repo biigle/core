@@ -32,9 +32,9 @@ $body-bg:               #222 !default;
 $text-color:            $gray-dark !default;
 
 //** Global textual link color.
-$link-color:            #428bca !default;
+$link-color:            lighten(#428bca, 1%) !default;
 //** Link hover color set via `darken()` function.
-$link-hover-color:      brighten($link-color, 15%) !default;
+$link-hover-color:      lighten($link-color, 15%) !default;
 //** Link hover decoration.
 $link-hover-decoration: underline !default;
 
@@ -384,7 +384,7 @@ $navbar-default-link-disabled-bg:          transparent !default;
 
 // Navbar brand label
 $navbar-default-brand-color:               $navbar-default-link-color !default;
-$navbar-default-brand-hover-color:         darken($navbar-default-brand-color, 10%) !default;
+$navbar-default-brand-hover-color:         #fff !default;
 $navbar-default-brand-hover-bg:            transparent !default;
 
 // Navbar toggle
