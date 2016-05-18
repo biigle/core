@@ -5,6 +5,11 @@
 				<span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup>
 			</a>
 		</div>
+        @hasSection('navbar')
+            <div class="navbar-left">
+                @yield('navbar')
+            </div>
+        @endif
         <div class="navbar-right">
             <ul class="nav navbar-nav">
                 <li class="dropdown">
