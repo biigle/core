@@ -28,23 +28,27 @@
 
 @section('content')
 <div class="annotator__container" data-ng-app="dias.annotations" data-ng-controller="AnnotatorController">
-	<div id="canvas" class="annotator__canvas" data-ng-controller="CanvasController">
-		<div class="canvas__loader" data-ng-class="{active:imageLoading}"></div>
-		@if ($editMode)
+    <div id="canvas" class="annotator__canvas" data-ng-controller="CanvasController">
+        <div class="canvas__loader" data-ng-class="{active:imageLoading}"></div>
             {{--
-			<div class="confidence-control" data-ng-controller="ConfidenceController" title="Label confidence: @{{ confidence | number:2 }}">
-				<span class="label confidence-label" data-ng-class="confidenceClass" data-ng-bind="confidence | number:2"></span>
-				<input class="confidence-range" type="range" min="0.01" max="1.0" step="0.01" data-ng-model="confidence">
-			</div>
+            @if ($editMode)
+                <div class="confidence-control" data-ng-controller="ConfidenceController" title="Label confidence: @{{ confidence | number:2 }}">
+                    <span class="label confidence-label" data-ng-class="confidenceClass" data-ng-bind="confidence | number:2"></span>
+                    <input class="confidence-range" type="range" min="0.01" max="1.0" step="0.01" data-ng-model="confidence">
+                </div>
+            @endif
             --}}
             <div class="controls-bar">
-                {{--@include('annotations::index.navigationControls')--}}
-                @include('annotations::index.drawingControls')
-                @include('annotations::index.editControls')
+                @include('annotations::index.controls.navigation')
+                @if ($editMode)
+                    @include('annotations::index.controls.drawing')
+                    @include('annotations::index.controls.edit')
+                @endif
             </div>
-            <div class="ng-cloak selected-label" data-ng-controller="SelectedLabelController" title="Currently selected label category" data-ng-bind="getSelectedLabel().name" data-ng-show="hasSelectedLabel()"></div>
-		@endif
-	</div>
-	@include('annotations::index.sidebar')
+            @if ($editMode)
+                <div class="ng-cloak selected-label" data-ng-controller="SelectedLabelController" title="Currently selected label category" data-ng-bind="getSelectedLabel().name" data-ng-show="hasSelectedLabel()"></div>
+            @endif
+    </div>
+    @include('annotations::index.sidebar')
 </div>
 @endsection

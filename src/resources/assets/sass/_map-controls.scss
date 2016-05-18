@@ -1,3 +1,5 @@
+$ol-control-color: rgb(0, 60, 136);
+
 .annotator__canvas {
     position: relative;
 }
@@ -73,7 +75,7 @@
         .btn {
             border-radius: 2px;
             transition: background-color 0.25s ease;
-            background-color: rgba(0, 60, 136, 0.5);
+            background-color: fade-out($ol-control-color, 0.5);
 
             &:not(:last-child) {
                 margin-right: 2px;
@@ -81,7 +83,7 @@
 
             &:hover, &.active {
                 color: white;
-                background-color: rgba(0, 60, 136, 0.7);
+                background-color: fade-out($ol-control-color, 0.3);
             }
 
             &:focus {
@@ -92,11 +94,12 @@
 }
 
 .selected-label {
-    @extend %ol-control;
+    z-index: 1;
+    border-radius: 4px;
     position: absolute;
     right: 0.5em;
     bottom: 0.5em;
-    color: #333;
-    padding: 0.5em 1em;
-    font-weight: bold;
+    background-color: fade-out(#222, 0.3);
+    border: 1px solid #353535;
+    padding: .25em .5em;
 }
