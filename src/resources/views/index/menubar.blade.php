@@ -1,7 +1,7 @@
 <div class="transect-menubar">
-    <button class="btn btn-default transect-menubar__item" data-popover-placement="right" data-uib-popover-template="'infoPopover.html'" type="button" title="Show transect information">
-        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-    </button>
+    @if ($isAdmin)
+        <a href="{{ route('transect-edit', $transect->id) }}" class="btn btn-default transect-menubar__item" title="Edit this transect"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
+    @endif
     @if (!empty($modules->getMixins('transectsFilters')))
         <div class="transect-filter-menu-group">
             <button class="btn btn-default transect-menubar__item" data-popover-placement="right" data-uib-popover-template="'filterPopover.html'" type="button" title="Filter images" data-ng-class="{'btn-info':active()}" data-ng-controller="FilterController">
@@ -18,23 +18,6 @@
         @include($module.'::transectsMenubar')
     @endforeach
 </div>
-
-<script type="text/ng-template" id="infoPopover.html">
-    <div>
-        <p>
-            <strong>{{ $transect->name }}</strong>
-            <small>({{ $transect->images->count() }}&nbsp;images)</small>
-        </p>
-        <ul class="transect-info-popover__projects">
-            @foreach($transect->projects as $project)
-                <li>{{ $project->name }}</li>
-            @endforeach
-        </ul>
-        @if ($isAdmin)
-            <a href="{{ route('transect-edit', $transect->id) }}" class="btn btn-default" title="Edit this transect">Edit</a>
-        @endif
-    </div>
-</script>
 
 @foreach ($modules->getMixins('transectsFilters') as $module => $nestedMixins)
     @include($module.'::transectsFilters')

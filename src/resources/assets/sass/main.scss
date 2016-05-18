@@ -154,3 +154,9 @@ $transect-image-padding: 0.5em;
         overflow-y: auto;
     }
 }
+
+.navbar-text.navbar-transects-breadcrumbs {
+    &, a {
+        color: #ccc;
+    }
+}
