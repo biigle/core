@@ -1,7 +1,7 @@
 <?php
 
 namespace Dias\Modules\Export\Http\Controllers\Api;
-
+use DB;
 use Dias\Http\Controllers\Api\Controller;
 use Dias\Project;
 use Dias\Modules\Export\Jobs\GenerateBasicReport;
@@ -27,8 +27,8 @@ class ReportsController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->requireCanSee($project);
-        $this->dispatch(new GenerateBasicReport($project));
-        echo "Job submitted please wait";
+        $this->dispatch(new GenerateBasicReport($project, $this->user));
+        return "Job submitted please wait. An Email will be sent to you.";
     }
     
     /**
@@ -48,8 +48,8 @@ class ReportsController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->requireCanSee($project);
-        $this->dispatch(new GenerateExtendedReport($project));
-        echo "Job submitted please wait";
+        $this->dispatch(new GenerateExtendedReport($project,$this->user));
+        return "Job submitted please wait. An Email will be sent to you.";
     }
     /**
      * Generate a full report
@@ -68,7 +68,36 @@ class ReportsController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->requireCanSee($project);
-        $this->dispatch(new GenerateFullReport($project));
-        echo "Job submitted please wait";
+        $this->dispatch(new GenerateFullReport($project,$this->user));
+        return "Job submitted please wait. An Email will be sent to you.";
+    }
+    /**
+     * Retrieve report from filesystem
+     *
+     * @api {post} files/retrieve/:uuid
+     * @apiGroup Files
+     * @apiName RetrieveProjectReport
+     * @apiPermission projectMember
+     *
+     * @apiParam {Text} uuid The report uuid.
+     *
+     * @param int $uuid report uuid
+     * @return \Illuminate\Http\Response
+     */
+    public function retrieveReport($uuid,$filename)
+    {
+        $results = DB::select('select path from files where id=?',[$uuid]);
+        if ($results){
+            $path = $results[0]->path;
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime=finfo_file($finfo, $path);
+            finfo_close($finfo);
+            $file = file_get_contents($path);
+            unlink($path);
+            DB::delete("delete from files where id=?",[$uuid]);
+            return response($file)->header("Content-Type",$mime);
+        }else{
+            return "The file is not available. Please check your uid.";
+        }
     }
 }

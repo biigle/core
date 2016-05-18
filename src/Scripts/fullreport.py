@@ -3,10 +3,11 @@ import numpy as np
 from pyexcelerate import Workbook, Color, Style, Fill
 import csv
 import ast
+import uuid
 
 prjName = sys.argv[1]
 transects = sys.argv[2:]
-prefix = "/tmp/"
+prefix = "/home/vagrant/dias/storage/"
 
 
 def addRow(x="", y="", label="", filename="", annotation_id="", shape=""):
@@ -15,11 +16,11 @@ def addRow(x="", y="", label="", filename="", annotation_id="", shape=""):
 workbook = Workbook()
 
 for transect in transects:
-    f = open(prefix + transect, 'r')
+    f = open(transect, 'r')
     res = np.array(list(csv.reader(f)))
     f.close()
     if res.size == 0:
-        workbook.new_sheet(transect)
+        workbook.new_sheet(transect.split("/")[-1][:-4])
         continue
     celldata = []
     celldata.append(addRow("x/radius", "y", "label", "filename", "annotation_id", "shape"))
@@ -41,6 +42,8 @@ for transect in transects:
             if len(points) % 2 == 1:
                 # add radius
                 celldata.append(addRow(points[-1], ""))
-    ws = workbook.new_sheet(transect, data=celldata)
+    ws = workbook.new_sheet(transect.split("/")[-1][:-4], data=celldata)
     ws.set_row_style(1, Style(fill=Fill(background=Color(200, 200, 200, 0))))
-workbook.save(prefix + "BiigleDiasReport(full).xlsx")
+uid = str(uuid.uuid4())
+workbook.save(prefix + "/" + uid + ".xlsx")
+print uid + ";" + prefix + "/" + uid + ".xlsx"

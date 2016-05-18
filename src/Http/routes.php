@@ -14,4 +14,7 @@ $router->group([
      $router->get('projects/{id}/reports/full', [
         'uses' => 'ReportsController@full',
     ]);
+    $router->get('files/retrieve/{uid}/{filename}', [
+        'uses' => 'ReportsController@retrieveReport',
+    ]);
 });

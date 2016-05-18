@@ -7,12 +7,12 @@ import datetime
 import sys
 import collections
 import numpy as np
-import os
+import uuid
 
 
 prjName = sys.argv[1]
 transects = sys.argv[2:]
-prefix = "/tmp/"
+prefix = "/home/vagrant/dias/storage/"
 
 
 def TitleSlide(text):
@@ -27,18 +27,19 @@ def TitleSlide(text):
     btright = plt.subplot2grid((3, 3), (2, 2))
     btright.axis('off')
     mid.text(0.404, 0.5, text, fontsize=15)
-    btleft.imshow(mpimg.imread('biigle_dias_logo.png'))
+    # btleft.imshow(mpimg.imread('biigle_dias_logo.png'))
     btmid.text(0.423, 0.5, datetime.date.today(), fontsize=9)
-    btright.imshow(mpimg.imread('logo_en_tr-height72.png'))
+    # btright.imshow(mpimg.imread('logo_en_tr-height72.png'))
     return fig
 
-pdf = PdfPages(prefix + prjName + '.pdf')
+uid = str(uuid.uuid4())
+pdf = PdfPages(prefix + "/" + uid + ".pdf")
 fig = TitleSlide("BiigleDias Report")
 pdf.savefig(fig)
 width = 1.
 
 for transect in transects:
-    f = open(prefix + transect, 'r')
+    f = open(transect, 'r')
     species = f.read().split("\n")[:-1]
     f.close()
     c = collections.Counter(species)
@@ -51,7 +52,7 @@ for transect in transects:
         ax.set_yscale('log')
     ax.set_xticks(ind + width / 2)
     ax.set_xticklabels(np.array(c.keys())[sorter], rotation='vertical', fontsize=8)
-    plt.title(str(transect[:-4]))
+    plt.title(str(transect.split("/")[-1][:-4]))
     plt.xlim([0, len(c.keys())])
     pdf.savefig()
 d = pdf.infodict()
@@ -62,3 +63,4 @@ d['Keywords'] = ''
 d['CreationDate'] = datetime.datetime.today()
 d['ModDate'] = datetime.datetime.today()
 pdf.close()
+print uid + ";" + prefix + "/" + uid + ".pdf"

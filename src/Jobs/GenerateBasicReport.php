@@ -2,9 +2,11 @@
 
 namespace Dias\Modules\Export\Jobs;
 
+use Mail;
 use DB;
 use Dias\Jobs\Job;
 use Dias\Project;
+use Dias\User;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,6 +21,7 @@ class GenerateBasicReport extends Job implements ShouldQueue
      * @var Project
      */
     private $project;
+    private $user;
 
     /**
      * Create a new job instance.
@@ -27,9 +30,10 @@ class GenerateBasicReport extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(Project $project)
+    public function __construct(Project $project, User $user)
     {
         $this->project = $project;
+        $this->user = $user;
     }
 
     /**
@@ -42,11 +46,18 @@ class GenerateBasicReport extends Job implements ShouldQueue
         DB::reconnect();
         $transects = DB::select('SELECT transects.id, transects.name FROM transects, project_transect WHERE project_transect.project_id = '.$this->project->id.' AND transects.id = project_transect.transect_id');
         $cmd=$this->project->name." ";
+        $path = uniqid("/tmp/");
+        mkdir($path);
+        chmod($path,0777);
         foreach ($transects as $transect) {
-            DB::statement('copy (SELECT labels.name FROM annotation_labels, annotations, images, labels WHERE annotation_labels.annotation_id = annotations.id AND annotations.image_id = images.id AND labels.id = annotation_labels.label_id AND images.transect_id = '.$transect->id.') to \'/tmp/'.$transect->name.'.csv\' csv');
-            $cmd.=$transect->name.'.csv ';
+            DB::statement('copy (SELECT labels.name FROM annotation_labels, annotations, images, labels WHERE annotation_labels.annotation_id = annotations.id AND annotations.image_id = images.id AND labels.id = annotation_labels.label_id AND images.transect_id = '.$transect->id.') to \''.$path."/".$transect->name.'.csv\' csv');
+            $cmd.=$path."/".$transect->name.'.csv ';
         }
-        // system('/usr/bin/python /tmp/basicreport.py '.$cmd);
-        system('/usr/bin/python /home/vagrant/dias/vendor/dias/export/src/Scripts/basicreport.py '.$cmd);
+        $ret = system('/usr/bin/python '.__DIR__.'/../Scripts/basicreport.py '.$cmd);
+        $uuid2path = explode(";",$ret);
+        DB::insert('insert into files (id, path) values (?, ?)', $uuid2path);
+        Mail::send('export::reportmail', ["uuid"=>$uuid2path[0],"ending"=>".pdf","name"=>$this->user['attributes']['firstname']." ".$this->user['attributes']['lastname']], function($message){
+            $message->to($this->user['attributes']['email'], $this->user['attributes']['firstname']." ".$this->user['attributes']['lastname'])->subject('BiigleDiasReport');
+        });
     }
 }
