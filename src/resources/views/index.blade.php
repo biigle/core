@@ -11,7 +11,8 @@
     angular.module('dias.annotations').constant('EDIT_MODE', {{$editMode ? 'true' : 'false'}});
     angular.module('dias.annotations').constant('PROJECT_IDS', [{{$projectIds}}]);
     angular.module('dias.annotations').constant('TRANSECT_ID', {{$image->transect_id}});
-    angular.module('dias.annotations').constant('TRANSECT_IMAGES_IDS', {{$transectImagesIds}});
+    angular.module('dias.annotations').constant('TRANSECT_IMAGES_IDS', {!!$images->keys()!!});
+    angular.module('dias.annotations').constant('TRANSECT_IMAGES_FILENAMES', {!!$images->values()!!});
 </script>
 @foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
     @include($module.'::annotationsScripts', ['mixins' => $nestedMixins])
@@ -25,6 +26,25 @@
     @include($module.'::annotationsStyles', ['mixins' => $nestedMixins])
 @endforeach
 @endpush
+
+@section('navbar')
+<div class="navbar-text navbar-annotations-breadcrumbs">
+    @if ($transect->projects->count() > 1)
+        <span class="dropdown">
+            <a href="#" class="dropdown-toggle navbar-link">Projects <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                @foreach ($transect->projects as $project)
+                    <li><a href="{{route('project', $project->id)}}">{{$project->name}}</a></li>
+                @endforeach
+            </ul>
+        </span>
+    @else
+        <a href="{{route('project', $transect->projects->first()->id)}}" class="navbar-link" title="Show project {{$transect->projects->first()->name}}">{{$transect->projects->first()->name}}</a>
+    @endif
+    / <a href="{{route('transect', $transect->id)}}" class="navbar-link" title="Show transect {{$transect->name}}">{{$transect->name}}</a>
+    / <strong class="navbar-annotations-filename">{{$image->filename}}</strong>
+</div>
+@endsection
 
 @section('content')
 <div class="annotator__container" data-ng-app="dias.annotations" data-ng-controller="AnnotatorController">

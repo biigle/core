@@ -13,9 +13,8 @@ class AnnotationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
-    {
-        $image = Image::with('transect')->findOrFail($id);
+    public function index($id) {
+        $image = Image::with('transect.projects')->findOrFail($id);
         $this->requireCanSee($image);
 
         if ($this->user->isAdmin) {
@@ -30,10 +29,11 @@ class AnnotationController extends Controller
         }
 
         return view('annotations::index')
-            ->withUser($this->user)
-            ->withImage($image)
+            ->with('user', $this->user)
+            ->with('image', $image)
+            ->with('transect', $image->transect)
             ->with('editMode', $this->user->canEditInOneOfProjects($image->projectIds()))
             ->with('projectIds', implode(',', $projectIds))
-            ->with('transectImagesIds', $image->transect->images()->pluck('id'));
+            ->with('images', $image->transect->images()->pluck('filename', 'id'));
     }
 }

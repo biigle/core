@@ -116,6 +116,13 @@ html, body {
     }
 }
 
+.navbar-text.navbar-annotations-breadcrumbs {
+    &, a {
+        color: #ccc;
+    }
+}
+
+
 @import "sidebar/main";
 @import "sidebar/annotations";
 @import "sidebar/categories";

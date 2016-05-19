@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Manages (pre-)loading of the images to annotate.
  */
-angular.module('dias.annotations').service('images', function ($rootScope, URL, $q, filterSubset, TRANSECT_ID, TRANSECT_IMAGES_IDS) {
+angular.module('dias.annotations').service('images', function ($rootScope, URL, $q, filterSubset, TRANSECT_ID, TRANSECT_IMAGES_IDS, TRANSECT_IMAGES_FILENAMES) {
 		"use strict";
 
 		var _this = this;
@@ -18,6 +18,11 @@ angular.module('dias.annotations').service('images', function ($rootScope, URL, 
 
 		// the currently shown image
 		this.currentImage = undefined;
+
+        var getFilename = function (id) {
+            var index = TRANSECT_IMAGES_IDS.indexOf(id);
+            return TRANSECT_IMAGES_FILENAMES[index];
+        };
 
 		/**
 		 * Returns the next ID of the specified image or the next ID of the
@@ -56,8 +61,10 @@ angular.module('dias.annotations').service('images', function ($rootScope, URL, 
 		/**
 		 * Sets the specified image to as the currently shown image.
 		 */
-		var show = function (id) {
-			_this.currentImage = getImage(id);
+		var show = function (image) {
+			_this.currentImage = image;
+
+            return image;
 		};
 
 		/**
@@ -74,6 +81,7 @@ angular.module('dias.annotations').service('images', function ($rootScope, URL, 
 			} else {
 				img = document.createElement('img');
 				img._id = id;
+                img._filename = getFilename(id);
 				img.onload = function () {
 					buffer.push(img);
 					// control maximum buffer size
@@ -92,6 +100,14 @@ angular.module('dias.annotations').service('images', function ($rootScope, URL, 
 
 			return deferred.promise;
 		};
+
+        var preloadNextAndPrev = function (image) {
+            // pre-load previous and next images but don't display them
+            fetchImage(nextId(image._id));
+            fetchImage(prevId(image._id));
+
+            return image;
+        };
 
 		/**
 		 * Initializes the service for a given transect. Returns a promise that
@@ -125,12 +141,9 @@ angular.module('dias.annotations').service('images', function ($rootScope, URL, 
 		 * resolved when the image is shown.
 		 */
 		this.show = function (id) {
-			return fetchImage(id).then(function() {
-                show(id);
-    			// pre-load previous and next images but don't display them
-    			fetchImage(nextId(id));
-    			fetchImage(prevId(id));
-            });
+			return fetchImage(id)
+                .then(show)
+                .then(preloadNextAndPrev);
 		};
 
 		/**

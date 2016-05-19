@@ -8,7 +8,10 @@
 angular.module('dias.annotations').controller('AnnotatorController', function ($scope, images, urlParams, msg, IMAGE_ID, keyboard) {
         "use strict";
 
-        $scope.images = images;
+        // set the content of the navbar element "manually" because it is outside of
+        // the scope of the angular app
+        var navbarFilename = document.querySelector('.navbar-annotations-filename');
+
         $scope.imageLoading = true;
 
         // the current canvas viewport, synced with the URL parameters
@@ -17,15 +20,25 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
             center: [urlParams.get('x'), urlParams.get('y')]
         };
 
+        var updateNavbarFilename = function (image) {
+            navbarFilename.innerHTML = image._filename;
+
+            return image;
+        };
+
         // finish image loading process
-        var finishLoading = function () {
+        var finishLoading = function (image) {
             $scope.imageLoading = false;
-            $scope.$broadcast('image.shown', $scope.images.currentImage);
+            $scope.$broadcast('image.shown', image);
+
+            return image;
         };
 
         // create a new history entry
-        var pushState = function () {
-            urlParams.pushState($scope.images.currentImage._id);
+        var pushState = function (image) {
+            urlParams.pushState(image._id);
+
+            return image;
         };
 
         // start image loading process
@@ -36,7 +49,7 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
         // load the image by id. doesn't create a new history entry by itself
         var loadImage = function (id) {
             startLoading();
-            return images.show(parseInt(id))
+            return images.show(id)
                          .then(finishLoading)
                          .catch(msg.responseError);
         };
@@ -45,6 +58,7 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
         $scope.nextImage = function () {
             startLoading();
             return images.next()
+                  .then(updateNavbarFilename)
                   .then(finishLoading)
                   .then(pushState)
                   .catch(msg.responseError);
@@ -54,6 +68,7 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
         $scope.prevImage = function () {
             startLoading();
             return images.prev()
+                  .then(updateNavbarFilename)
                   .then(finishLoading)
                   .then(pushState)
                   .catch(msg.responseError);
@@ -90,13 +105,13 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
         window.onpopstate = function(e) {
             var state = e.state;
             if (state && state.slug !== undefined) {
-                loadImage(state.slug);
+                loadImage(parseInt(state.slug));
             }
         };
 
         // initialize the images service
         images.init();
         // display the first image
-        loadImage(IMAGE_ID).then(pushState);
+        loadImage(parseInt(IMAGE_ID)).then(pushState);
     }
 );
