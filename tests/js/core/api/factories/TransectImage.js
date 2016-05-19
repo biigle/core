@@ -3,6 +3,13 @@ describe('The TransectImage resource factory', function () {
 
 	beforeEach(module('dias.api'));
 
+    // mock URL constant which is set inline in the base template
+    beforeEach(function() {
+        module(function($provide) {
+            $provide.constant('URL', '');
+        });
+    });
+
 	beforeEach(inject(function($injector) {
 		var image = 1;
         var images = [

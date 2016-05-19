@@ -3,6 +3,13 @@ describe('The Transect resource factory', function () {
 
 	beforeEach(module('dias.api'));
 
+    // mock URL constant which is set inline in the base template
+    beforeEach(function() {
+        module(function($provide) {
+            $provide.constant('URL', '');
+        });
+    });
+
 	beforeEach(inject(function($injector) {
 		var transect = {
 			id: 1,

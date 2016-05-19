@@ -10,21 +10,25 @@
     <link href="{{ asset('assets/styles/main.css') }}" rel="stylesheet">
     @stack('styles')
 </head>
+@hasSection('bodyNgApp')
+<body data-ng-app="@yield('bodyNgApp')">
+@else
 <body>
+@endif
 @if(auth()->check())
     @include('partials.navbar')
 @endif
     @include('partials.messages')
     @yield('content')
 
-    <script type="text/javascript">
-        window.$diasBaseUrl = '{{ url('/') }}';
-    </script>
     <script src="{{ asset('assets/scripts/angular.min.js') }}"></script>
     <script src="{{ asset('assets/scripts/angular-resource.min.js') }}"></script>
     <script src="{{ asset('assets/scripts/angular-animate.min.js') }}"></script>
     <script src="{{ asset('assets/scripts/ui-bootstrap-tpls.min.js') }}"></script>
     <script src="{{ asset('assets/scripts/main.js') }}"></script>
+    <script type="text/javascript">
+        angular.module('dias.api').constant('URL', '{{ url('/') }}');
+    </script>
     @stack('scripts')
 </body>
 </html>
