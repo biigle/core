@@ -15,21 +15,21 @@
         border-color: lighten($border, 25%);
   }
   &:hover {
-    color: $color;
+    color: lighten($color, 20%);
     background-color: darken($background, 10%);
         border-color: lighten($border, 12%);
   }
   &:active,
   &.active,
   .open > &.dropdown-toggle {
-    color: $color;
+    color: lighten($color, 20%);
     background-color: darken($background, 10%);
         border-color: lighten($border, 12%);
 
     &:hover,
     &:focus,
     &.focus {
-      color: $color;
+      color: lighten($color, 20%);
       background-color: darken($background, 17%);
           border-color: lighten($border, 25%);
     }
