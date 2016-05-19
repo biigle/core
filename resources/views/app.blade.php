@@ -10,11 +10,7 @@
     <link href="{{ asset('assets/styles/main.css') }}" rel="stylesheet">
     @stack('styles')
 </head>
-@hasSection('bodyNgApp')
-<body data-ng-app="@yield('bodyNgApp')">
-@else
 <body>
-@endif
 @if(auth()->check())
     @include('partials.navbar')
 @endif
