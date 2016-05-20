@@ -1,0 +1,12 @@
+{
+    "name": "dias/ate",
+    "require": {
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Dias\\Modules\\Ate\\": "src"
+        }
+    }
+}
