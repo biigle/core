@@ -40,13 +40,12 @@ $transect-image-padding: 0.5em;
 }
 
 .transect__images {
-	overflow-y: auto;
+	overflow: hidden;
     display: flex;
-    justify-content: flex-start;
-    align-content: flex-start;
+    justify-content: center;
+    align-content: center;
     flex-wrap: wrap;
     flex: 2;
-	padding: $transect-image-margin;
 }
 
 .transect-figure {

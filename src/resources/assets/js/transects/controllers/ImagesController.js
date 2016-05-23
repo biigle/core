@@ -6,84 +6,50 @@
  * @description Controller for displaying the huge amout of images of a
  * transect on a singe page.
  */
-angular.module('dias.transects').controller('ImagesController', function ($scope, $element, $timeout, $q, images, filter) {
+angular.module('dias.transects').controller('ImagesController', function ($scope, $element, images, filter, keyboard) {
 		"use strict";
 
-		var element = $element[0];
-		var boundingRect, timeoutPromise;
-		// add this many images for each step
-		var step = 20;
-		// offset of the element bottom to the window lower bound in pixels at
-		// which a new bunch of images should be displayed
-		var newStepOffset = 100;
-        // number of images that are allowed to load in parallel
-        var parallelConnections = 10;
-        // stores the promises of the images that want to load
-        var loadStack = [];
-        // number of images that are currently loading
-        var currentlyLoading = 0;
-
-		var needsNewStep = function () {
-			boundingRect = element.getBoundingClientRect();
-			return element.scrollTop >= element.scrollHeight - element.offsetHeight - newStepOffset;
-		};
-
-		var checkLowerBound = function () {
-			if (needsNewStep()) {
-                images.advance(step);
-				$scope.$apply();
-			}
-		};
-
-		// attempts to fill the current viewport with images
-		// uses $timeout to wait for DOM rendering, then checks again
-		var initialize = function () {
-			if (needsNewStep() && images.limit <= images.length) {
-				images.advance(step);
-				timeoutPromise = $timeout(initialize, 500);
-			} else {
-				// viewport is full, now switch to event listeners for loading
-				$timeout.cancel(timeoutPromise);
-				element.addEventListener('scroll', checkLowerBound);
-				window.addEventListener('resize', checkLowerBound);
-			}
-		};
-
-        // initiate loading of the next image if there are still unused parallel connections
-        var maybeLoadNext = function () {
-            while (currentlyLoading < parallelConnections && loadStack.length > 0) {
-                currentlyLoading++;
-                loadStack.pop().resolve();
-            }
+        var updateDisplay = function () {
+            images.updateGrid($element[0].clientWidth, $element[0].clientHeight);
         };
-
-        // returns a promise that gets resolved when the image should load
-        // gets a promise as argiment that is resolved when the image was loaded
-        $scope.enqueueImage = function (imageLoaded) {
-            var deferred = $q.defer();
-            // add the "should load" promise to the stack
-            loadStack.push(deferred);
-            // console.log('enqueued', loadStack.length);
-            imageLoaded.then(function () {
-                // console.log('loaded', loadStack.length);
-                // load the next image in the stack
-                currentlyLoading--;
-                maybeLoadNext();
-            });
-            if (currentlyLoading === 0) maybeLoadNext();
-            return deferred.promise;
-        };
-
-        $scope.images = images;
 
         $scope.imageHasFlag = filter.hasFlag;
 
-        // timeout to wait for all image objects to be present in the DOM
-		$timeout(initialize);
-        $scope.$on('transects.images.updated', function () {
-            loadStack.length = 0;
-            currentlyLoading = 0;
-            $timeout(initialize);
+
+        $scope.getImageIds = images.getSequence;
+
+        $element.bind('wheel', function (e) {
+            images.scrollRows((e.deltaY >= 0) ? 1 : -1);
+            $scope.$apply();
         });
+
+        // arrow up
+        keyboard.on(38, function () {
+            images.scrollRows(-1);
+            $scope.$apply();
+        });
+
+        // arrow down
+        keyboard.on(40, function () {
+            images.scrollRows(1);
+            $scope.$apply();
+        });
+
+        // arrow left
+        keyboard.on(37, function () {
+            images.scrollRows(-1 * images.getRows());
+            $scope.$apply();
+        });
+
+        // arrow right
+        keyboard.on(39, function () {
+            images.scrollRows(images.getRows());
+            $scope.$apply();
+        });
+
+        window.addEventListener('resize', function () {
+            $scope.$apply(updateDisplay);
+        });
+        updateDisplay();
 	}
 );
