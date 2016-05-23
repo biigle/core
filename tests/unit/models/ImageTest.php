@@ -78,23 +78,8 @@ class ImageTest extends ModelTestCase
         $this->assertEmpty($this->model->fresh()->projectIds());
     }
 
-    public function testGetThumbNotThere()
+    public function testGetThumb()
     {
-        File::shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
-
-        $response = $this->model->getThumb();
-        $this->assertStringEndsWith(config('thumbnails.empty_url'), $response->getTargetUrl());
-        $this->assertInstanceOf('\Illuminate\Http\RedirectResponse', $response);
-    }
-
-    public function testGetThumbIsThere()
-    {
-        File::shouldReceive('exists')
-            ->once()
-            ->andReturn(true);
-
         Response::shouldReceive('download')
             ->once()
             ->with($this->model->thumbPath)

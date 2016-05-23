@@ -5,7 +5,6 @@ namespace Dias;
 use Illuminate\Database\Eloquent\Model;
 use Dias\Contracts\BelongsToProjectContract;
 use Response;
-use File;
 use ErrorException;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
@@ -167,28 +166,21 @@ class Image extends Model implements BelongsToProjectContract
     }
 
     /**
-     * Get the thumbnail image object. The thumbnail will be created if it
-     * doesn't exist.
+     * Get the thumbnail image as download response
      *
      * @return Response
      */
     public function getThumb()
     {
-        if (!File::exists($this->thumbPath)) {
-            $emptyThumbnailUrl = config('thumbnails.empty_url');
-            // if it is not an absolute URL, prepend the URL to the public directory
-            if (!preg_match("/^https?\:\/\//", $emptyThumbnailUrl)) {
-                $emptyThumbnailUrl = asset($emptyThumbnailUrl);
-            }
-            return redirect($emptyThumbnailUrl);
+        try {
+            return Response::download($this->thumbPath);
+        } catch (FileNotFoundException $e) {
+            abort(404, $e->getMessage());
         }
-
-        return Response::download($this->thumbPath);
     }
 
     /**
-     * Get the original image file object. The image my be fetched from an
-     * external source.
+     * Get the original image as download response
      *
      * @return Response
      */

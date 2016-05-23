@@ -100,7 +100,7 @@ class ImageController extends Controller
      * @apiGroup Images
      * @apiName ShowImageFiles
      * @apiPermission projectMember
-     * @apiDescription Responds with a JPG image of the original file.
+     * @apiDescription Responds with the original file.
      *
      * @apiParam {Number} id The image ID.
      *

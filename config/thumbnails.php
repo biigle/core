@@ -23,11 +23,8 @@ return [
 
     /*
     | Image URL to use if a thumbnail was not yet generated.
-    | Must be publicly accessible via HTTP(S).
-    | If it is a relative path not starting with 'http(s)://', it is assumed to be located in the
-    | public directory.
-    | We can't use the asset() helper here because the UrlGenerator is not ready when loading the
-    | config.
+    | Must be a path relative to the 'public' directory (that can be used with the asset
+    | helper).
     */
     'empty_url' => 'assets/images/empty-thumbnail.svg',
 
