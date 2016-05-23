@@ -1,7 +1,7 @@
 <h2 class="clearfix">Projects <a href="{{ route('create-project') }}" class="btn btn-default pull-right" title="Create a new project">New Project</a></h2>
 
 <div class="row">
-    @forelse(auth()->user()->projects as $project)
+    @forelse(auth()->user()->projects()->orderBy('created_at', 'desc')->get() as $project)
         <div class="col-lg-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
