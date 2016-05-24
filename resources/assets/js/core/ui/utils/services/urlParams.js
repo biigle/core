@@ -3,7 +3,7 @@
  * @ngdoc service
  * @name urlParams
  * @memberOf dias.ui.utils
- * @description Manages URL parameters after a #
+ * @description Manages URL parameters
  */
 angular.module('dias.ui.utils').service('urlParams', function () {
         "use strict";
@@ -14,7 +14,7 @@ angular.module('dias.ui.utils').service('urlParams', function () {
 
         // transforms a URL parameter string like #a=1&b=2 to an object
         var decodeState = function () {
-            var params = location.hash.replace('#', '').split('&');
+            var params = location.search.replace('?', '').split('&');
 
             var state = {};
 
@@ -38,19 +38,19 @@ angular.module('dias.ui.utils').service('urlParams', function () {
             return params.substring(0, params.length - 1);
         };
 
-        var pushState = function () {
-            var hash = encodeState(state);
-            history.pushState(state, '', slug + (hash ? ('#' + hash) : ''));
-        };
+        // var pushState = function () {
+        //     var params = encodeState(state);
+        //     history.pushState(state, '', slug + (params ? ('?' + params) : ''));
+        // };
 
         var replaceState = function () {
-            var hash = encodeState(state);
-            history.replaceState(state, '', slug + (hash ? ('#' + hash) : ''));
+            var params = encodeState(state);
+            history.replaceState(state, '', slug + (params ? ('?' + params) : ''));
         };
 
-        this.pushState = function (s) {
+        this.setSlug = function (s) {
             slug = s;
-            pushState();
+            replaceState();
         };
 
         // sets a URL parameter and updates the history state
