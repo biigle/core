@@ -36,7 +36,7 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
 
         // create a new history entry
         var pushState = function (image) {
-            urlParams.pushState(image._id);
+            urlParams.setSlug(image._id);
 
             return image;
         };
@@ -50,8 +50,8 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
         var loadImage = function (id) {
             startLoading();
             return images.show(id)
-                         .then(finishLoading)
-                         .catch(msg.responseError);
+                 .then(finishLoading)
+                 .catch(msg.responseError);
         };
 
         // show the next image and create a new history entry
@@ -100,14 +100,6 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
             $scope.nextImage();
             $scope.$apply();
         });
-
-        // listen to the browser "back" button
-        window.onpopstate = function(e) {
-            var state = e.state;
-            if (state && state.slug !== undefined) {
-                loadImage(parseInt(state.slug));
-            }
-        };
 
         // initialize the images service
         images.init();
