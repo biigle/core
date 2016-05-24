@@ -3,78 +3,37 @@
  * @ngdoc service
  * @name urlParams
  * @memberOf dias.ui.utils
- * @description Manages URL parameters after a #
+ * @description Manages URL parameters
  */
-angular.module('dias.ui.utils').service('urlParams', function () {
+angular.module('dias.ui.utils').service('urlParams', function ($location) {
         "use strict";
 
-        var state = {};
-        var slug = location.pathname.split('/');
-        slug = slug[slug.length - 1];
-
-        // transforms a URL parameter string like #a=1&b=2 to an object
-        var decodeState = function () {
-            var params = location.hash.replace('#', '').split('&');
-
-            var state = {};
-
-            params.forEach(function (param) {
-                // capture key-value pairs
-                var capture = param.match(/(.+)\=(.+)/);
-                if (capture && capture.length === 3) {
-                    state[capture[1]] = decodeURIComponent(capture[2]);
-                }
-            });
-
-            return state;
-        };
-
-        // transforms an object to a URL parameter string
-        var encodeState = function (state) {
-            var params = '';
-            for (var key in state) {
-                params += key + '=' + encodeURIComponent(state[key]) + '&';
-            }
-            return params.substring(0, params.length - 1);
-        };
-
-        var pushState = function () {
-            var hash = encodeState(state);
-            history.pushState(state, '', slug + (hash ? ('#' + hash) : ''));
-        };
-
-        var replaceState = function () {
-            var hash = encodeState(state);
-            history.replaceState(state, '', slug + (hash ? ('#' + hash) : ''));
-        };
+        var base = '';
 
         this.pushState = function (s) {
-            slug = s;
-            pushState();
+            $location.path(base + s);
         };
 
         // sets a URL parameter and updates the history state
         this.set = function (params) {
+            var state = {};
             for (var key in params) {
                 state[key] = params[key];
             }
-            replaceState();
+            $location.search(state);
+            $location.replace();
         };
 
         this.unset = function (key) {
-            delete state[key];
-            replaceState();
+            $location.search(key, null);
         };
 
-        // returns a URL parameter
         this.get = function (key) {
-            return state[key];
+            return $location.search()[key];
         };
 
-        state = history.state;
-
-        if (!state) {
-            state = decodeState();
-        }
+        this.setBase = function (b) {
+            base = b;
+        };
     }
 );
