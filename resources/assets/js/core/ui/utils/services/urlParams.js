@@ -9,6 +9,8 @@ angular.module('dias.ui.utils').service('urlParams', function () {
       "use strict";
 
       var state = {};
+      var slug = location.pathname.split('/');
+      slug = slug[slug.length - 1];
 
       // transforms a URL parameter string like #a=1&b=2 to an object
       var decodeState = function () {
@@ -37,8 +39,8 @@ angular.module('dias.ui.utils').service('urlParams', function () {
       };
 
       this.pushState = function (s) {
-         state.slug = s;
-         history.pushState(state, '', state.slug + '#' + encodeState(state));
+         slug = s;
+         history.pushState(state, '', slug + '#' + encodeState(state));
       };
 
       // sets a URL parameter and updates the history state
@@ -46,7 +48,7 @@ angular.module('dias.ui.utils').service('urlParams', function () {
          for (var key in params) {
             state[key] = params[key];
          }
-         history.replaceState(state, '', state.slug + '#' + encodeState(state));
+         history.replaceState(state, '', slug + '#' + encodeState(state));
       };
 
       // returns a URL parameter
