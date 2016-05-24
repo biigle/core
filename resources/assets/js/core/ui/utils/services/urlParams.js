@@ -40,12 +40,12 @@ angular.module('dias.ui.utils').service('urlParams', function () {
 
         var pushState = function () {
             var hash = encodeState(state);
-            history.pushState(state, '', slug + (hash) ? ('#' + hash) : '');
+            history.pushState(state, '', slug + (hash ? ('#' + hash) : ''));
         };
 
         var replaceState = function () {
             var hash = encodeState(state);
-            history.replaceState(state, '', slug + (hash) ? ('#' + hash) : '');
+            history.replaceState(state, '', slug + (hash ? ('#' + hash) : ''));
         };
 
         this.pushState = function (s) {
