@@ -5,22 +5,14 @@
  * @memberOf dias.transects
  * @description Service managing the list of images to display
  */
-angular.module('dias.transects').service('images', function ($rootScope, TRANSECT_ID, TRANSECT_IMAGES, filterSubset, filter, sort, THUMB_DIMENSION) {
+angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSECT_IMAGES, filterSubset, filter, sort, THUMB_DIMENSION, urlParams, debounce) {
         "use strict";
 
         var imagesLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.images';
+        var offsetLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.offset';
 
         // the currently displayed ordering of images (as array of image IDs)
         var sequence = [];
-
-        var grid = {
-            cols: 0,
-            rows: 0
-        };
-
-        var margin = 8;
-
-        var offset = 0;
 
         // check for a stored image sequence
         if (window.localStorage[imagesLocalStorageKey]) {
@@ -32,7 +24,31 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
             angular.copy(TRANSECT_IMAGES, sequence);
         }
 
-        this.updateSequence = function () {
+        var grid = {
+            cols: 0,
+            rows: 0
+        };
+
+        var margin = 8;
+
+        var DEFAULT_OFFSET = 0;
+        var offset = DEFAULT_OFFSET;
+
+        if (window.localStorage[offsetLocalStorageKey]) {
+            offset = parseInt(window.localStorage[offsetLocalStorageKey]);
+            urlParams.set({offset: offset});
+        } else if (urlParams.get(offset)) {
+            offset = parseInt(urlParams.get('offset'));
+        }
+
+        // part of the sequence that is currently displayed
+        var sequenceWindow = [];
+
+        var updateSequenceWindow = function () {
+            sequenceWindow = sequence.slice(offset, offset + grid.cols * grid.rows);
+        };
+
+        var updateSequence = function () {
             var shouldStore = false;
 
             if (sort.isActive()) {
@@ -50,34 +66,54 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
                 filterSubset(sequence, filter.getSequence());
             }
 
+            updateSequenceWindow();
+
             if (shouldStore) {
                 window.localStorage[imagesLocalStorageKey] = JSON.stringify(sequence);
             } else {
                 // if there is no special ordering or filtering, the sequence shouldn't be stored
                 window.localStorage.removeItem(imagesLocalStorageKey);
             }
+        };
 
-            $rootScope.$broadcast('transects.images.updated');
+        var setOffset = function (o) {
+            offset = Math.max(0, Math.min(sequence.length - grid.cols * grid.rows, o));
+            updateSequenceWindow();
+
+            if (offset === DEFAULT_OFFSET) {
+                window.localStorage.removeItem(offsetLocalStorageKey);
+                urlParams.unset('offset');
+            } else {
+                window.localStorage[offsetLocalStorageKey] = offset;
+                urlParams.set({offset: offset});
+            }
+        };
+
+        this.updateSorting = function () {
+            updateSequence();
+        };
+
+        this.updateFiltering = function () {
+            updateSequence();
+            setOffset(DEFAULT_OFFSET);
         };
 
         this.progress = function () {
-            return offset / sequence.length;
+            return Math.max(0, Math.min(1, (offset + grid.cols * grid.rows) / sequence.length));
         };
 
         this.updateGrid = function (width, height) {
             grid.cols = Math.floor(width / (THUMB_DIMENSION.WIDTH + margin));
             grid.rows = Math.floor(height / (THUMB_DIMENSION.HEIGHT + margin));
+            updateSequenceWindow();
         };
 
         this.scrollRows = function (delta) {
-            offset = Math.max(0, Math.min(
-                sequence.length - grid.cols * grid.rows,
-                offset + grid.cols * delta
-            ));
+            setOffset(offset + grid.cols * delta);
         };
 
         this.getSequence = function () {
-            return sequence.slice(offset, offset + grid.cols * grid.rows);
+            return sequenceWindow;
         };
 
         this.getRows = function () {
@@ -86,6 +122,10 @@ angular.module('dias.transects').service('images', function ($rootScope, TRANSEC
 
         this.getCols = function () {
             return grid.cols;
+        };
+
+        this.getLength = function () {
+            return sequence.length;
         };
     }
 );

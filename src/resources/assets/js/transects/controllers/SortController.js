@@ -31,12 +31,12 @@ angular.module('dias.transects').controller('SortController', function ($scope, 
 
         $scope.setSortAscending = function () {
             sort.setAscending();
-            images.updateSequence();
+            images.updateSorting();
         };
 
         $scope.setSortDescending = function () {
             sort.setDescending();
-            images.updateSequence();
+            images.updateSorting();
         };
 
         $scope.isSortAscending = sort.isAscending;
@@ -44,7 +44,7 @@ angular.module('dias.transects').controller('SortController', function ($scope, 
 
         $scope.activateSorter = function (id, sequence) {
             sort.activateSorter(id, sequence);
-            images.updateSequence();
+            images.updateSorting();
         };
 
         $scope.resetSorting = function () {

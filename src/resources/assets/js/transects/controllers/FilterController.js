@@ -18,7 +18,7 @@ angular.module('dias.transects').controller('FilterController', function ($scope
 
         $scope.setFilterMode = function (mode) {
             filter.setMode(mode);
-            images.updateSequence();
+            images.updateFiltering();
         };
 
         $scope.isFilterMode = function (mode) {
@@ -38,7 +38,7 @@ angular.module('dias.transects').controller('FilterController', function ($scope
 
             // don't allow adding the same rule twice
             if (!filter.hasRule(rule)) {
-                filter.addRule(rule).then(images.updateSequence);
+                filter.addRule(rule).then(images.updateFiltering);
             }
         };
 
@@ -46,7 +46,7 @@ angular.module('dias.transects').controller('FilterController', function ($scope
 
         $scope.removeRule = function (rule) {
             filter.removeRule(rule);
-            images.updateSequence();
+            images.updateFiltering();
         };
 
         $scope.rulesLoading = filter.rulesLoading;

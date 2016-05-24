@@ -13,38 +13,56 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
             images.updateGrid($element[0].clientWidth, $element[0].clientHeight);
         };
 
+        var scrollRows = function (rows) {
+            images.scrollRows(rows);
+            $scope.$apply();
+        };
+
         $scope.imageHasFlag = filter.hasFlag;
 
 
         $scope.getImageIds = images.getSequence;
 
         $element.bind('wheel', function (e) {
-            images.scrollRows((e.deltaY >= 0) ? 1 : -1);
-            $scope.$apply();
+            scrollRows((e.deltaY >= 0) ? 1 : -1);
         });
 
         // arrow up
         keyboard.on(38, function () {
-            images.scrollRows(-1);
-            $scope.$apply();
+            scrollRows(-1);
         });
 
         // arrow down
         keyboard.on(40, function () {
-            images.scrollRows(1);
-            $scope.$apply();
+            scrollRows(1);
         });
+
+        var prevPage = function () {
+            scrollRows(-1 * images.getRows());
+        };
 
         // arrow left
-        keyboard.on(37, function () {
-            images.scrollRows(-1 * images.getRows());
-            $scope.$apply();
-        });
+        keyboard.on(37, prevPage);
+        // page up
+        keyboard.on(33, prevPage);
+
+        var nextPage = function () {
+            scrollRows(images.getRows());
+        };
 
         // arrow right
-        keyboard.on(39, function () {
-            images.scrollRows(images.getRows());
-            $scope.$apply();
+        keyboard.on(39, nextPage);
+        // page down
+        keyboard.on(34, nextPage);
+
+        // home
+        keyboard.on(36, function () {
+            scrollRows(-1 * images.getLength());
+        });
+
+        // end
+        keyboard.on(35, function () {
+            scrollRows(images.getLength());
         });
 
         window.addEventListener('resize', function () {
