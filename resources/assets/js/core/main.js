@@ -66,10 +66,17 @@ angular.module('dias.ui.utils', []);
  * Disable debug info in production for better performance.
  * see: https://code.angularjs.org/1.4.7/docs/guide/production
  */
-angular.module('dias.ui.utils').config(function ($compileProvider) {
+angular.module('dias.ui.utils').config(function ($compileProvider, $locationProvider) {
     "use strict";
 
     $compileProvider.debugInfoEnabled(false);
+
+    // configuration for the urlParams service
+    $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false,
+        rewriteLinks: false
+    });
 });
 
 /**
