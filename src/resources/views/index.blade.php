@@ -42,11 +42,9 @@
 @endsection
 
 @section('content')
-<div class="transect-container" data-ng-app="dias.transects" data-ng-controller="TransectController">
-    <div class="transect__progress">
-        <div class="transect__progress-bar" data-ng-style="progress()"></div>
-    </div>
+<div class="transect-container" data-ng-app="dias.transects">
     @include('transects::index.menubar')
     @include('transects::index.images')
+    @include('transects::index.progress')
 </div>
 @endsection

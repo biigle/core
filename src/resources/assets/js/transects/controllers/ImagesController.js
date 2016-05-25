@@ -18,8 +18,12 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
             $scope.$apply();
         };
 
-        $scope.imageHasFlag = filter.hasFlag;
+        var scrollToPercent = function (percent) {
+            images.scrollToPercent(percent);
+            $scope.$apply();
+        };
 
+        $scope.imageHasFlag = filter.hasFlag;
 
         $scope.getImageIds = images.getSequence;
 
@@ -57,17 +61,19 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
 
         // home
         keyboard.on(36, function () {
-            scrollRows(-1 * images.getLength());
+            scrollToPercent(0);
         });
 
         // end
         keyboard.on(35, function () {
-            scrollRows(images.getLength());
+            scrollToPercent(1);
         });
 
         window.addEventListener('resize', function () {
             $scope.$apply(updateDisplay);
         });
         updateDisplay();
+        // initialize service after setting the grid
+        images.initialize();
 	}
 );

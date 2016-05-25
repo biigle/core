@@ -32,13 +32,25 @@ angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSE
         var margin = 8;
 
         var DEFAULT_OFFSET = 0;
-        var offset = DEFAULT_OFFSET;
+        var offset = null;
 
         // part of the sequence that is currently displayed
         var sequenceWindow = [];
 
         var updateSequenceWindow = function () {
             sequenceWindow = sequence.slice(offset, offset + grid.cols * grid.rows);
+        };
+
+        // number of the topmost row of the last "page"
+        var lastRow = 0;
+
+        var updateLastRow = function () {
+            lastRow = Math.ceil(sequence.length / grid.cols) - grid.rows;
+            // if the offset was already initialized
+            if (offset !== null) {
+                // update offset based on new lastRow constraint
+                setOffset(offset);
+            }
         };
 
         var updateSequence = function () {
@@ -70,7 +82,7 @@ angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSE
         };
 
         var setOffset = function (o) {
-            offset = Math.max(0, Math.min(sequence.length - grid.cols * grid.rows, o));
+            offset = Math.max(0, Math.min(lastRow * grid.cols, o));
             updateSequenceWindow();
 
             if (offset === DEFAULT_OFFSET) {
@@ -88,21 +100,28 @@ angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSE
 
         this.updateFiltering = function () {
             updateSequence();
-            setOffset(DEFAULT_OFFSET);
+            updateLastRow();
         };
 
         this.progress = function () {
-            return Math.max(0, Math.min(1, (offset + grid.cols * grid.rows) / sequence.length));
+            return Math.max(0, Math.min(1, offset / (sequence.length - (grid.cols * grid.rows))));
         };
 
         this.updateGrid = function (width, height) {
             grid.cols = Math.floor(width / (THUMB_DIMENSION.WIDTH + margin));
             grid.rows = Math.floor(height / (THUMB_DIMENSION.HEIGHT + margin));
             updateSequenceWindow();
+            updateLastRow();
         };
 
         this.scrollRows = function (delta) {
             setOffset(offset + grid.cols * delta);
+        };
+
+        this.scrollToPercent = function (percent) {
+            // the percentage from 0 to 1 goes from row 0 to the topmost row
+            // of the last "page" and *not* to the very last row
+            setOffset(grid.cols * Math.round(lastRow * percent));
         };
 
         this.getSequence = function () {
@@ -121,11 +140,16 @@ angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSE
             return sequence.length;
         };
 
-        // url parameter has precedence over local storage
-        if (urlParams.get('offset') !== undefined) {
-            setOffset(parseInt(urlParams.get('offset')));
-        } else if (window.localStorage[offsetLocalStorageKey]) {
-            setOffset(parseInt(window.localStorage[offsetLocalStorageKey]));
-        }
+        this.initialize = function () {
+            // url parameter has precedence over local storage
+            if (urlParams.get('offset') !== undefined) {
+                setOffset(parseInt(urlParams.get('offset')));
+            } else if (window.localStorage[offsetLocalStorageKey]) {
+                setOffset(parseInt(window.localStorage[offsetLocalStorageKey]));
+            } else {
+                setOffset(DEFAULT_OFFSET);
+            }
+        };
+
     }
 );

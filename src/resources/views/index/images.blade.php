@@ -1,5 +1,5 @@
-<div class="transect__images ng-cloak" data-ng-controller="ImagesController">
-    <figure class="transect-figure" data-ng-repeat="id in getImageIds()">
+<div class="transect__images" data-ng-controller="ImagesController">
+    <figure class="transect-figure ng-cloak" data-ng-repeat="id in getImageIds()">
         <div class="transect-figure__flags" data-ng-show="imageHasFlag(id)">
             <span class="figure-flag" title="This image matches the filter rules"></span>
         </div>
