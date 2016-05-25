@@ -34,13 +34,6 @@ angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSE
         var DEFAULT_OFFSET = 0;
         var offset = DEFAULT_OFFSET;
 
-        if (window.localStorage[offsetLocalStorageKey]) {
-            offset = parseInt(window.localStorage[offsetLocalStorageKey]);
-            urlParams.set({offset: offset});
-        } else if (urlParams.get(offset)) {
-            offset = parseInt(urlParams.get('offset'));
-        }
-
         // part of the sequence that is currently displayed
         var sequenceWindow = [];
 
@@ -127,5 +120,12 @@ angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSE
         this.getLength = function () {
             return sequence.length;
         };
+
+        // url parameter has precedence over local storage
+        if (urlParams.get('offset') !== undefined) {
+            setOffset(parseInt(urlParams.get('offset')));
+        } else if (window.localStorage[offsetLocalStorageKey]) {
+            setOffset(parseInt(window.localStorage[offsetLocalStorageKey]));
+        }
     }
 );
