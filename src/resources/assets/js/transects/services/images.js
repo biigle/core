@@ -19,7 +19,7 @@ angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSE
             sequence = JSON.parse(window.localStorage[imagesLocalStorageKey]);
             // check if all images loaded from storage are still there in the transect.
             // some of them may have been deleted in the meantime.
-            filterSubset(sequence, TRANSECT_IMAGES, true);
+            filterSubset(sequence, TRANSECT_IMAGES);
         } else {
             angular.copy(TRANSECT_IMAGES, sequence);
         }
@@ -61,7 +61,7 @@ angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSE
                 angular.copy(sort.getSequence(), sequence);
                 // take only those IDs that actually belong to the transect
                 // (e.g. when IDs are taken from local storage but the transect has changed)
-                filterSubset(sequence, TRANSECT_IMAGES, true);
+                filterSubset(sequence, TRANSECT_IMAGES);
             } else {
                 angular.copy(TRANSECT_IMAGES, sequence);
             }

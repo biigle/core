@@ -73,8 +73,6 @@
         </div>
 
         <div class="list-group sorter-list-group">
-            <button type="button" class="list-group-item" title="Sort images by ID" data-ng-click="toggle()" data-ng-class="{active: active()}" data-ng-controller="SortByIdController">ID</button>
-
             <button type="button" class="list-group-item" title="Sort images by filename" data-ng-click="toggle()" data-ng-class="{active: active()}" data-ng-controller="SortByFilenameController">Filename</button>
 
             @foreach ($modules->getMixins('transectsSorters') as $module => $nestedMixins)

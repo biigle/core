@@ -5,7 +5,7 @@
  * @memberOf dias.transects
  * @description Controller for the filter feature of the transects page
  */
-angular.module('dias.transects').controller('FilterController', function ($scope, images, TRANSECT_ID, TRANSECT_IMAGES, filter) {
+angular.module('dias.transects').controller('FilterController', function ($scope, images, filter) {
         "use strict";
 
         $scope.active = filter.hasRules;

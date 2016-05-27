@@ -5,8 +5,22 @@
  * @memberOf dias.transects
  * @description Controller for sorting images by ID on the transects overview page
  */
-angular.module('dias.transects').controller('SortByFilenameController', function ($scope, sort, TransectImageOrderByFilename, TRANSECT_ID) {
+angular.module('dias.transects').controller('SortByFilenameController', function ($scope, sort, TRANSECT_IMAGES) {
         "use strict";
+
+        var id = 'filename';
+
+        $scope.active = function () {
+            return sort.isSorterActive('filename');
+        };
+
+        $scope.toggle = function () {
+            if ($scope.active()) return;
+
+            $scope.activateSorter(id, TRANSECT_IMAGES);
+        };
+
+        /* Example for a generic sort controller:
 
         var id = 'filename';
 
@@ -30,5 +44,6 @@ angular.module('dias.transects').controller('SortByFilenameController', function
                 $scope.activateSorter(id, s);
             });
         };
+        */
     }
 );

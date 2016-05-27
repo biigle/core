@@ -17,7 +17,7 @@ angular.module('dias.transects').service('sort', function (TRANSECT_ID, TRANSECT
 
         var DEFAULTS = {
             DIRECTION: ASCENDING,
-            SORTER: 'id',
+            SORTER: 'filename',
             SEQUENCE: TRANSECT_IMAGES
         };
 

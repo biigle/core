@@ -37,7 +37,7 @@ class TransectController extends Controller
         $this->requireCanSee($transect);
 
         return view('transects::index')
-            ->with('imageIds', $transect->images()->orderBy('id')->pluck('id'))
+            ->with('imageIds', $transect->images()->orderBy('filename', 'asc')->pluck('id'))
             ->withTransect($transect)
             ->with('isAdmin', $this->user->canAdminOneOfProjects($transect->projectIds()));
     }
