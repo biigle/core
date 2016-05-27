@@ -11,8 +11,8 @@
     angular.module('dias.annotations').constant('EDIT_MODE', {{$editMode ? 'true' : 'false'}});
     angular.module('dias.annotations').constant('PROJECT_IDS', [{{$projectIds}}]);
     angular.module('dias.annotations').constant('TRANSECT_ID', {{$image->transect_id}});
-    angular.module('dias.annotations').constant('TRANSECT_IMAGES_IDS', {!!$images->keys()!!});
-    angular.module('dias.annotations').constant('TRANSECT_IMAGES_FILENAMES', {!!$images->values()!!});
+    angular.module('dias.annotations').constant('IMAGES_IDS', {!!$images->keys()!!});
+    angular.module('dias.annotations').constant('IMAGES_FILENAMES', {!!$images->values()!!});
 </script>
 @foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
     @include($module.'::annotationsScripts', ['mixins' => $nestedMixins])

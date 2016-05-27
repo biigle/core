@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Manages (pre-)loading of the images to annotate.
  */
-angular.module('dias.annotations').service('images', function ($rootScope, URL, $q, filterSubset, TRANSECT_ID, TRANSECT_IMAGES_IDS, TRANSECT_IMAGES_FILENAMES) {
+angular.module('dias.annotations').service('images', function ($rootScope, URL, $q, filterSubset, TRANSECT_ID, IMAGES_IDS, IMAGES_FILENAMES) {
 		"use strict";
 
 		var _this = this;
@@ -20,8 +20,8 @@ angular.module('dias.annotations').service('images', function ($rootScope, URL, 
 		this.currentImage = undefined;
 
         var getFilename = function (id) {
-            var index = TRANSECT_IMAGES_IDS.indexOf(id);
-            return TRANSECT_IMAGES_FILENAMES[index];
+            var index = IMAGES_IDS.indexOf(id);
+            return IMAGES_FILENAMES[index];
         };
 
 		/**
@@ -114,7 +114,7 @@ angular.module('dias.annotations').service('images', function ($rootScope, URL, 
 		 * is resolved, when the service is initialized.
 		 */
 		this.init = function () {
-            imageIds = TRANSECT_IMAGES_IDS;
+            imageIds = IMAGES_IDS;
             // look for a sequence of image IDs in local storage.
             // this sequence is produces by the transect index page when the images are
             // sorted or filtered. we want to reflect the same ordering or filtering here
@@ -126,10 +126,6 @@ angular.module('dias.annotations').service('images', function ($rootScope, URL, 
                 // belong to the transect (any more), since some of them may have been deleted
                 // in the meantime
                 filterSubset(storedSequence, imageIds);
-                // make sure the promise is not removed when overwriting imageIds since we
-                // need it later on.
-                storedSequence.$promise = imageIds.$promise;
-                storedSequence.$resolved = imageIds.$resolved;
                 // then set the stored sequence as the sequence of image IDs instead of simply
                 // all IDs belonging to the transect
                 imageIds = storedSequence;

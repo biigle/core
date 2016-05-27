@@ -28,12 +28,16 @@ class AnnotationController extends Controller
             );
         }
 
+        $images = $image->transect->images()
+            ->orderBy('filename', 'asc')
+            ->pluck('filename', 'id');
+
         return view('annotations::index')
             ->with('user', $this->user)
             ->with('image', $image)
             ->with('transect', $image->transect)
             ->with('editMode', $this->user->canEditInOneOfProjects($image->projectIds()))
             ->with('projectIds', implode(',', $projectIds))
-            ->with('images', $image->transect->images()->pluck('filename', 'id'));
+            ->with('images', $images);
     }
 }
