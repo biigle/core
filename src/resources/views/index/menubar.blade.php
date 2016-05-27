@@ -75,6 +75,8 @@
         <div class="list-group sorter-list-group">
             <button type="button" class="list-group-item" title="Sort images by filename" data-ng-click="toggle()" data-ng-class="{active: active()}" data-ng-controller="SortByFilenameController">Filename</button>
 
+            <button type="button" class="list-group-item" title="Sort images randomly" data-ng-click="toggle()" data-ng-class="{active: active()}" data-ng-controller="SortRandomController">Random</button>
+
             @foreach ($modules->getMixins('transectsSorters') as $module => $nestedMixins)
                 @include($module.'::transectsSorters')
             @endforeach

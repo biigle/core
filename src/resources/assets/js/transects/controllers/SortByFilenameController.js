@@ -3,7 +3,7 @@
  * @ngdoc controller
  * @name SortByFilenameController
  * @memberOf dias.transects
- * @description Controller for sorting images by ID on the transects overview page
+ * @description Controller for sorting images by filename on the transects overview page
  */
 angular.module('dias.transects').controller('SortByFilenameController', function ($scope, sort, TRANSECT_IMAGES) {
         "use strict";
