@@ -167,6 +167,11 @@ angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSE
             return false;
         };
 
+        this.reset = function () {
+            rules.length = 0;
+            refresh();
+        };
+
         refresh();
     }
 );

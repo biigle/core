@@ -69,11 +69,13 @@ angular.module('dias.transects').service('sort', function (TRANSECT_ID, TRANSECT
             return (sorter !== DEFAULTS.SORTER) || (direction !== DEFAULTS.DIRECTION);
         };
 
-        this.resetSorting = function () {
+        this.reset = function () {
             sorter = DEFAULTS.SORTER;
             window.localStorage.removeItem(sorterLocalStorageKey);
             sequence = DEFAULTS.SEQUENCE;
             window.localStorage.removeItem(sequenceLocalStorageKey);
+            direction = DEFAULTS.DIRECTION;
+            window.localStorage.removeItem(directionLocalStorageKey);
         };
 
         this.activateSorter = function (newSorter, newSequence) {

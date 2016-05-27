@@ -48,7 +48,8 @@ angular.module('dias.transects').controller('SortController', function ($scope, 
         };
 
         $scope.resetSorting = function () {
-            sort.resetSorting();
+            sort.reset();
+            images.updateSorting();
         };
 
         $scope.setLoading = function (l) {

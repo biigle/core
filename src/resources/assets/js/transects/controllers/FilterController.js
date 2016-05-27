@@ -56,5 +56,10 @@ angular.module('dias.transects').controller('FilterController', function ($scope
         $scope.selectData = function (data) {
             $scope.data.selected = data;
         };
+
+        $scope.resetFiltering = function () {
+            filter.reset();
+            images.updateFiltering();
+        };
     }
 );
