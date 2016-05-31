@@ -104,3 +104,9 @@ $factory->define(Dias\ApiToken::class, function ($faker) {
         'hash' => bcrypt(str_random(10)),
     ];
 });
+
+$factory->define(Dias\Visibility::class, function ($faker) {
+    return [
+        'name' => str_random(10),
+    ];
+});
