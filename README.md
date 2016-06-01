@@ -6,7 +6,7 @@ Add the following to the repositories array of your `composer.json`:
 ```
 {
   "type": "vcs",
-  "url": "porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias-projects.git"
+  "url": "git@github.com:BiodataMiningGroup/dias-projects.git"
 }
 ```
 
