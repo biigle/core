@@ -1,6 +1,6 @@
 # DIAS
 
-DISCOL Image Annotation Software
+BIIGLE DISCOL Image Annotation Software
 
 ## Requirements
 
@@ -32,7 +32,7 @@ And for development/testing:
 
 0. Get [Composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx)
 1. Run `composer create-project dias/core:dev-master --keep-vcs --repository='{"type":"vcs","url":"porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias.git"}' dias`. For development you should not remove the VCS history when asked by Composer.
-4. Populate the `.env` file with your database credentials.
+2. Populate the `.env` file with your database credentials.
 
 Now you have two options:
 
@@ -69,7 +69,7 @@ Walk through all the `app/config/` files and set the configs:
 Don't forget to set the encryption key! You can generate one with `php artisan key:generate`. Make sure you don't generate a new key when you already have things encrypted with the old key!
 Maybe set up the route cache? Cache the config?
 
-**Put all sensitive and secret stuff to `.env.php`!** You'll see where the `env()` helper is used in the config files.
+**Put all sensitive and secret stuff to `.env`!** You'll see where the `env()` helper is used in the config files.
 
 The application reqires a cron job for the scheduled commands and a supervised process for the daemon queue worker to run correctly.
 
