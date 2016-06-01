@@ -73,6 +73,13 @@ class UserTest extends ModelTestCase
         $this->assertEquals($this->model->projects()->first()->id, $project->id);
     }
 
+    public function testLabelTrees()
+    {
+        $this->assertFalse($this->model->labelTrees()->exists());
+        LabelTreeTest::create()->addMember($this->model, Role::$editor);
+        $this->assertTrue($this->model->labelTrees()->exists());
+    }
+
     public function testRole()
     {
         $this->assertEquals(Role::$editor->id, $this->model->role->id);

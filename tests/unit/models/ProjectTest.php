@@ -256,4 +256,18 @@ class ProjectTest extends ModelTestCase
         $this->model->removeAllTransects(true);
         $this->assertNull($transect->fresh());
     }
+
+    public function testLabelTrees()
+    {
+        $this->assertFalse($this->model->labelTrees()->exists());
+        LabelTreeTest::create()->projects()->attach($this->model->id);
+        $this->assertTrue($this->model->labelTrees()->exists());
+    }
+
+    public function testAuthorizedLabelTrees()
+    {
+        $this->assertFalse($this->model->authorizedLabelTrees()->exists());
+        LabelTreeTest::create()->authorizedProjects()->attach($this->model->id);
+        $this->assertTrue($this->model->authorizedLabelTrees()->exists());
+    }
 }

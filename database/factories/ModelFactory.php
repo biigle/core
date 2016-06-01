@@ -62,7 +62,7 @@ $factory->define(Dias\Label::class, function ($faker) {
         'name' => str_random(10),
         'color' => '0099ff',
         'parent_id' => null,
-        'project_id' => null,
+        'label_tree_id' => factory(Dias\LabelTree::class)->create()->id,
         'aphia_id' => null,
     ];
 });
@@ -108,5 +108,13 @@ $factory->define(Dias\ApiToken::class, function ($faker) {
 $factory->define(Dias\Visibility::class, function ($faker) {
     return [
         'name' => str_random(10),
+    ];
+});
+
+$factory->define(Dias\LabelTree::class, function ($faker) {
+    return [
+        'name' => str_random(10),
+        'description' => $faker->sentence(),
+        'visibility_id' => Dias\Visibility::$public->id,
     ];
 });

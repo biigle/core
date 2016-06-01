@@ -291,4 +291,24 @@ class Project extends Model implements BelongsToProjectContract
     {
         return $this->hasMany('Dias\Label');
     }
+
+    /**
+     * The label trees, this project is using
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function labelTrees()
+    {
+        return $this->belongsToMany('Dias\LabelTree');
+    }
+
+    /**
+     * The private label trees that authorized this project to use them
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function authorizedLabelTrees()
+    {
+        return $this->belongsToMany('Dias\LabelTree', 'label_tree_authorized_project');
+    }
 }

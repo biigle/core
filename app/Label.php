@@ -66,13 +66,13 @@ class Label extends Model
     }
 
     /**
-     * The project this label belongs to. If `null`, it is a global label.
+     * The label tree this label belongs to
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function project()
+    public function tree()
     {
-        return $this->belongsTo('Dias\Project');
+        return $this->belongsTo('Dias\LabelTree', 'label_tree_id');
     }
 
     /**
@@ -94,7 +94,7 @@ class Label extends Model
      */
     public function getHasChildrenAttribute()
     {
-        return $this->children()->first() !== null;
+        return $this->children()->exists();
     }
 
     /**

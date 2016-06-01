@@ -46,22 +46,19 @@ class LabelTest extends ModelTestCase
         $this->assertNull($child->fresh());
     }
 
-    public function testProject()
+    public function testTree()
     {
-        $project = ProjectTest::create();
-        $label = self::create(['project_id' => $project->id]);
-        $this->assertEquals($project->id, $label->project->id);
+        $tree = LabelTreeTest::create();
+        $label = self::create(['label_tree_id' => $tree->id]);
+        $this->assertEquals($tree->id, $label->tree->id);
     }
 
-    public function testProjectOnDeleteCascade()
+    public function testLabelTreeOnDeleteCascade()
     {
-        // adding foreign keys doesn't work for SQLite, test this with Postgres instead
-        if (!(DB::connection() instanceof Illuminate\Database\SQLiteConnection)) {
-            $project = ProjectTest::create();
-            $label = self::create(['project_id' => $project->id]);
-            $project->delete();
-            $this->assertNull($label->fresh());
-        }
+        $tree = LabelTreeTest::create();
+        $label = self::create(['label_tree_id' => $tree->id]);
+        $tree->delete();
+        $this->assertNull($label->fresh());
     }
 
     public function testChildren()

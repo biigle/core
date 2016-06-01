@@ -106,6 +106,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     }
 
     /**
+     * The label trees, this user is a member of.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function labelTrees()
+    {
+        return $this->belongsToMany('Dias\LabelTree');
+    }
+
+    /**
      * The global role of this user.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
