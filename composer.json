@@ -49,7 +49,8 @@
         ],
         "post-install-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postInstall",
-            "php artisan optimize"
+            "php artisan optimize",
+            "echo \"You can generate the documentation with 'composer doc'.\""
         ],
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
@@ -63,7 +64,9 @@
             "php-cs-fixer --config-file='.php_cs' fix"
         ],
         "doc": [
-            "rm -rf public/doc",
+            "rm -rf public/doc/api",
+            "rm -rf public/doc/server",
+            "rm -rf public/doc/client",
             "php vendor/bin/sami.php update sami.php -v",
             "gulp docs",
             "gulp apidoc"
