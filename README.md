@@ -1,17 +1,19 @@
 # DIAS
 
-DISCOL Image Annotation Software
+BIIGLE DISCOL Image Annotation Software
 
 ## Requirements
+
+The Vagrant box for local development is already set up to meet any of these requirements.
 
 See [here](http://laravel.com/docs/5.1#installation) for the server requirements of Laravel 5.1.
 
 Additionally:
+
 - PHP JSON extension
 - PHP PGSQL extension
 - PHP Fileinfo extension
 - PHP EXIF extension
-
 - PHP GD Library (>=2.0)
 - PostgreSQL
 
@@ -19,24 +21,25 @@ And for development/testing:
 
 - PHP cURL extension
 - PHP SQLite extension
-
 - Node.js
 - gulp-cli
 - karma-cli
 - PhantomJS
-
 - SQLite
 - Git
 
 ## Installation
 
 0. Get [Composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx)
-1. Run `composer create-project dias/core:dev-master --keep-vcs --repository='{"type":"vcs","url":"porta.cebitec.uni-bielefeld.de:/vol/biodtmin/git/dias.git"}' dias`. For development you should not remove the VCS history when asked by Composer.
-4. Populate the `.env` file with your database credentials.
+
+1. Run `composer create-project dias/core:dev-master --repository='{"type":"vcs","url":"git@github.com:BiodataMiningGroup/dias-core.git"}' dias`. If you intend to use Vagrant for development on your local machine, add `--ignore-platform-reqs`. For development you should not remove the VCS history when asked by Composer.
+
+2. Populate the `.env` file with your database credentials.
 
 Now you have two options:
 
 1. Use the Vagrant box with `vagrant up`
+
 2. Directly use your local machine:
     1. Set up the database tables with `php artisan migrate`.
     2. Run a local development server with `php artisan serve`. Alternatively you can use `php -S localhost:8000 -t public/` to mimic a production server.
@@ -69,7 +72,7 @@ Walk through all the `app/config/` files and set the configs:
 Don't forget to set the encryption key! You can generate one with `php artisan key:generate`. Make sure you don't generate a new key when you already have things encrypted with the old key!
 Maybe set up the route cache? Cache the config?
 
-**Put all sensitive and secret stuff to `.env.php`!** You'll see where the `env()` helper is used in the config files.
+**Put all sensitive and secret stuff to `.env`!** You'll see where the `env()` helper is used in the config files.
 
 The application reqires a cron job for the scheduled commands and a supervised process for the daemon queue worker to run correctly.
 
