@@ -25,7 +25,7 @@ class ApiTokenController extends Controller
      * Shows a list of all API tokens belonging to the authenticated user
      *
      * @api {get} api-tokens Get all API tokens
-     * @apiGroup ApiTokens
+     * @apiGroup Api Tokens
      * @apiName IndexApiTokens
      * @apiPermission user
      * @apiDescription A user can only see their own API tokens
@@ -52,7 +52,7 @@ class ApiTokenController extends Controller
      * Creates a new API token.
      *
      * @api {post} api-tokens Create a new API token
-     * @apiGroup ApiTokens
+     * @apiGroup Api Tokens
      * @apiName StoreApiTokens
      * @apiPermission user
      * @apiDescription This action is allowed only by session cookie authentication. The token of the response is displayed only this single time!
@@ -98,7 +98,7 @@ class ApiTokenController extends Controller
      * Removes the specified API token.
      *
      * @api {delete} api-tokens/:id Delete an API token
-     * @apiGroup ApiTokens
+     * @apiGroup Api Tokens
      * @apiName DestroyApiTokens
      * @apiPermission user
      * @apiDescription A user can only destroy their own API tokens
