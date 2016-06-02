@@ -51,7 +51,7 @@ class AnnotationLabelController extends Controller
     /**
      * Creates a new label for the specified annotation.
      *
-     * @api {post} annotations/:id/labels Attach a new label
+     * @api {post} annotations/:id/labels Attach a label
      * @apiGroup Annotations
      * @apiName StoreAnnotationLabels
      * @apiPermission projectEditor
@@ -132,7 +132,7 @@ class AnnotationLabelController extends Controller
     /**
      * Deletes the specified annotation label.
      *
-     * @api {delete} annotation-labels/:id Delete a label
+     * @api {delete} annotation-labels/:id Detach a label
      * @apiGroup Annotations
      * @apiName DeleteAnnotationLabels
      * @apiPermission projectEditor

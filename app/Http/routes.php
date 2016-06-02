@@ -114,9 +114,6 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'only' => ['index', 'store'],
     ]);
 
-    $router->resource('labels', 'LabelController', [
-        'only' => ['index', 'show', 'store', 'update', 'destroy'],
-    ]);
 
     $router->resource('media-types', 'MediaTypeController', [
         'only' => ['index', 'show'],
@@ -125,10 +122,6 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
     $router->get('projects/my', 'ProjectController@index');
     $router->resource('projects', 'ProjectController', [
         'only' => ['show', 'update', 'store', 'destroy'],
-    ]);
-
-    $router->resource('projects.labels', 'ProjectLabelController', [
-        'only' => ['index', 'show'],
     ]);
 
     $router->post(

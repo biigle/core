@@ -283,16 +283,6 @@ class Project extends Model implements BelongsToProjectContract
     }
 
     /**
-     * The project specific labels of this project.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function labels()
-    {
-        return $this->hasMany('Dias\Label');
-    }
-
-    /**
      * The label trees, this project is using
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
