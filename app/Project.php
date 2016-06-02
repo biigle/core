@@ -29,6 +29,15 @@ class Project extends Model implements BelongsToProjectContract
     ];
 
     /**
+     * Validation rules for attaching a label tree
+     *
+     * @var array
+     */
+    public static $attachLabelTreeRules = [
+        'id'        => 'required|exists:label_trees,id',
+    ];
+
+    /**
      * The attributes hidden from the model's JSON form.
      *
      * @var array
@@ -59,7 +68,6 @@ class Project extends Model implements BelongsToProjectContract
     public function users()
     {
         return $this->belongsToMany('Dias\User')
-            ->select('id', 'firstname', 'lastname')
             ->withPivot('project_role_id as project_role_id');
     }
 

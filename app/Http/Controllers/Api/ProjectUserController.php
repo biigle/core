@@ -42,7 +42,7 @@ class ProjectUserController extends Controller
         $project = Project::findOrFail($projectId);
         $this->requireCanSee($project);
 
-        return $project->users;
+        return $project->users()->select('id', 'firstname', 'lastname')->get();
     }
 
     /**

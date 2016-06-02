@@ -127,6 +127,14 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'only' => ['show', 'update', 'store', 'destroy'],
     ]);
 
+    $router->get(
+        'projects/{pid}/label-trees/available',
+        'ProjectLabelTreeController@available'
+    );
+    $router->resource('projects.label-trees', 'ProjectLabelTreeController', [
+        'only' => ['index', 'store'],
+    ]);
+
     $router->post(
         'projects/{pid}/transects/{tid}',
         'ProjectTransectController@attach'

@@ -1,6 +1,5 @@
 <?php
 
-use Dias\Policies\LabelTreePolicy;
 use Dias\Role;
 
 class PoliciesLabelTreePolicyTest extends TestCase

@@ -14,6 +14,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         \Dias\LabelTree::class => \Dias\Policies\LabelTreePolicy::class,
+        \Dias\Project::class => \Dias\Policies\ProjectPolicy::class,
     ];
 
     /**

@@ -38,6 +38,15 @@ class LabelTree extends Model
     ];
 
     /**
+     * The attributes hidden from the model's JSON form.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'pivot',
+    ];
+
+    /**
      * Scope a query to public label trees
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
