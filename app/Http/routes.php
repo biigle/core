@@ -173,4 +173,8 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
     $router->resource('users', 'UserController', [
         'only' => ['index', 'show', 'update', 'store', 'destroy'],
     ]);
+
+    $router->resource('visibilities', 'VisibilityController', [
+        'only' => ['index', 'show'],
+    ]);
 });
