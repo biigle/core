@@ -14,6 +14,7 @@ class ApiTestCase extends TestCase
 
     private $globalAdmin;
 
+    private $labelTree;
     private $labelRoot;
     private $labelChild;
 
@@ -125,13 +126,27 @@ class ApiTestCase extends TestCase
         $this->be($this->globalAdmin());
     }
 
+    protected function labelTree()
+    {
+        if ($this->labelTree) {
+            return $this->labelTree;
+        }
+
+        return $this->labelTree = LabelTreeTest::create([
+            'visibility_id' => Dias\Visibility::$public->id,
+        ]);
+    }
+
     protected function labelRoot()
     {
         if ($this->labelRoot) {
             return $this->labelRoot;
         }
 
-        return $this->labelRoot = LabelTest::create(['name' => 'Test Root']);
+        return $this->labelRoot = LabelTest::create([
+            'name' => 'Test Root',
+            'label_tree_id' => $this->labelTree()->id,
+        ]);
     }
 
     protected function labelChild()
@@ -143,6 +158,7 @@ class ApiTestCase extends TestCase
         return $this->labelChild = LabelTest::create([
             'name' => 'Test Child',
             'parent_id' => $this->labelRoot()->id,
+            'label_tree_id' => $this->labelTree()->id,
         ]);
     }
 

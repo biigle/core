@@ -29,3 +29,13 @@
  * @apiDefine adminOrProjectAdmin Global admin or project admin
  * The authenticated user needs to be global admin or admin of the project.
  */
+
+/**
+ * @apiDefine labelTreeEditor Label tree editor
+ * The authenticated user needs to be editor or admin of the label tree.
+ */
+
+/**
+ * @apiDefine labelTreeAdmin Label tree admin
+ * The authenticated user needs to be admin of the label tree.
+ */

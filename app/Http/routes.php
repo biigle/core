@@ -114,6 +114,9 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'only' => ['index', 'store'],
     ]);
 
+    $router->resource('label-trees', 'LabelTreeController', [
+        'only' => ['index', 'store', 'update', 'destroy'],
+    ]);
 
     $router->resource('media-types', 'MediaTypeController', [
         'only' => ['index', 'show'],

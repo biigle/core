@@ -17,6 +17,49 @@ class LabelTree extends Model
 {
 
     /**
+     * Validation rules for creating a new label tree.
+     *
+     * @var array
+     */
+    public static $createRules = [
+        'name'        => 'required|max:256',
+        'visibility_id' => 'required|exists:visibilities,id',
+    ];
+
+    /**
+     * Validation rules for updating a label tree.
+     *
+     * @var array
+     */
+    public static $updateRules = [
+        'name'        => 'filled|max:256',
+        'description' => 'filled',
+        'visibility_id' => 'exists:visibilities,id',
+    ];
+
+    /**
+     * Scope a query to public label trees
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopePublic($query)
+    {
+        return $query->where('visibility_id', Visibility::$public->id);
+    }
+
+    /**
+     * Scope a query to private label trees
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopePrivate($query)
+    {
+        return $query->where('visibility_id', Visibility::$private->id);
+    }
+
+    /**
      * The visibility of the label tree
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

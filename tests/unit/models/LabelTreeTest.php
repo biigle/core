@@ -1,6 +1,8 @@
 <?php
 
 use Dias\Role;
+use Dias\Visibility;
+use Dias\LabelTree;
 
 class LabelTreeTest extends ModelTestCase
 {
@@ -106,5 +108,25 @@ class LabelTreeTest extends ModelTestCase
         $project = ProjectTest::create();
         $this->model->authorizedProjects()->attach($project->id);
         $this->assertNotNull($this->model->authorizedProjects()->find($project->id));
+    }
+
+    public function testPublicScope()
+    {
+        $public = static::create(['visibility_id' => Visibility::$public->id]);
+        $private = static::create(['visibility_id' => Visibility::$private->id]);
+
+        $ids = LabelTree::public()->pluck('id');
+        $this->assertContains($public->id, $ids);
+        $this->assertNotContains($private->id, $ids);
+    }
+
+    public function testPrivateScope()
+    {
+        $public = static::create(['visibility_id' => Visibility::$public->id]);
+        $private = static::create(['visibility_id' => Visibility::$private->id]);
+
+        $ids = LabelTree::private()->pluck('id');
+        $this->assertContains($private->id, $ids);
+        $this->assertNotContains($public->id, $ids);
     }
 }
