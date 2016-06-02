@@ -8,7 +8,7 @@ class MediaTypeController extends Controller
 {
     /**
      * Shows all media types.
-     * 
+     *
      * @api {get} media-types Get all media types
      * @apiGroup Media-Types
      * @apiName IndexMediaTypes
@@ -35,12 +35,12 @@ class MediaTypeController extends Controller
 
     /**
      * Displays the specified media type.
-     * 
+     *
      * @api {get} media-types/:id Get a media type
      * @apiGroup Media-Types
      * @apiName ShowMediaTypes
      * @apiPermission user
-     * 
+     *
      * @apiParam {Number} id The media type ID.
      *
      * @apiSuccessExample {json} Success response:
@@ -54,6 +54,6 @@ class MediaTypeController extends Controller
      */
     public function show($id)
     {
-        return MediaType::find($id);
+        return MediaType::findOrFail($id);
     }
 }

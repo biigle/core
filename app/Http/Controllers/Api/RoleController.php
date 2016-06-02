@@ -8,7 +8,7 @@ class RoleController extends Controller
 {
     /**
      * Shows all roles.
-     * 
+     *
      * @api {get} roles Get all user roles
      * @apiGroup Roles
      * @apiName IndexRoles
@@ -39,12 +39,12 @@ class RoleController extends Controller
 
     /**
      * Displays the specified role.
-     * 
+     *
      * @api {get} roles/:id Get a user role
      * @apiGroup Roles
      * @apiName ShowRoles
      * @apiPermission user
-     * 
+     *
      * @apiParam {Number} id The user role ID.
      *
      * @apiSuccessExample {json} Success response:
@@ -58,6 +58,6 @@ class RoleController extends Controller
      */
     public function show($id)
     {
-        return Role::find($id);
+        return Role::findOrFail($id);
     }
 }
