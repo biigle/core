@@ -2,6 +2,7 @@
 
 namespace Dias;
 
+use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
@@ -165,5 +166,20 @@ class LabelTree extends Model
     public function authorizedProjects()
     {
         return $this->belongsToMany('Dias\Project', 'label_tree_authorized_project');
+    }
+
+    /**
+     * Detaches all projects that are not among the authorized projects
+     */
+    public function detachUnauthorizedProjects()
+    {
+        // use DB directly so this can be done in a single query
+        DB::table('label_tree_project')
+            ->where('label_tree_id', $this->id)
+            ->whereNotIn('project_id', function ($query) {
+                $query->select('project_id')
+                    ->from('label_tree_authorized_project')
+                    ->where('label_tree_id', $this->id);
+            })->delete();
     }
 }

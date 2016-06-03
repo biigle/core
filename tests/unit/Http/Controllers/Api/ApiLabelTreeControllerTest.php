@@ -113,6 +113,29 @@ class ApiLabelTreeControllerTest extends ApiTestCase
         $this->assertSessionHas('saved', true);
     }
 
+    public function testUpdateVisibility()
+    {
+        $tree = LabelTreeTest::create([
+            'name' => '123',
+            'description' => '123',
+            'visibility_id' => Visibility::$public->id,
+        ]);
+        $id = $tree->id;
+        $tree->addMember($this->admin(), Role::$admin);
+        $unauthorized = ProjectTest::create();
+        $authorized = ProjectTest::create();
+        $tree->authorizedProjects()->attach($authorized->id);
+        $tree->projects()->attach([$authorized->id, $unauthorized->id]);
+
+        $this->beAdmin();
+        $this->json('PUT', "/api/v1/label-trees/{$id}", [
+            'visibility_id' => Visibility::$private->id,
+        ]);
+
+        // the IDs may be strings when testing with sqlite
+        $this->assertEquals([$authorized->id], array_map('intval', $tree->projects()->pluck('id')->all()));
+    }
+
     public function testStore()
     {
         $this->doTestApiRoute('POST', '/api/v1/label-trees');

@@ -129,4 +129,15 @@ class LabelTreeTest extends ModelTestCase
         $this->assertContains($private->id, $ids);
         $this->assertNotContains($public->id, $ids);
     }
+
+    public function testDetachUnauthorizedProjects()
+    {
+        $tree = LabelTreeTest::create();
+        $unauthorized = ProjectTest::create();
+        $authorized = ProjectTest::create();
+        $tree->authorizedProjects()->attach($authorized->id);
+        $tree->projects()->attach([$authorized->id, $unauthorized->id]);
+        $tree->detachUnauthorizedProjects();
+        $this->assertEquals([$authorized->id], array_map('intval', $tree->projects()->pluck('id')->all()));
+    }
 }

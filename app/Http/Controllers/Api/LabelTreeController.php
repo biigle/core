@@ -4,6 +4,7 @@ namespace Dias\Http\Controllers\Api;
 
 use Dias\LabelTree;
 use Dias\Role;
+use Dias\Visibility;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class LabelTreeController extends Controller
@@ -47,6 +48,7 @@ class LabelTreeController extends Controller
      * @apiGroup Label Trees
      * @apiName UpdateLabelTrees
      * @apiPermission labelTreeAdmin
+     * @apiDescription If the visibility is set to private, the label tree will be removed from all projects that are not authorized to use them.
      *
      * @apiParam {Number} id The label tree ID
      *
@@ -66,6 +68,11 @@ class LabelTreeController extends Controller
 
         $tree->name = $this->request->input('name', $tree->name);
         $tree->description = $this->request->input('description', $tree->description);
+
+        if ($this->request->has('visibility_id') && $this->request->input('visibility_id') === Visibility::$private->id) {
+            $tree->detachUnauthorizedProjects();
+        }
+
         $tree->visibility_id = $this->request->input('visibility_id', $tree->visibility_id);
         $tree->save();
 
