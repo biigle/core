@@ -6,6 +6,7 @@ use Dias\Image;
 use Dias\Shape;
 use Dias\Label;
 use Dias\Annotation;
+use Dias\AnnotationLabel;
 use Exception;
 
 class ImageAnnotationController extends Controller
@@ -138,8 +139,6 @@ class ImageAnnotationController extends Controller
         $this->validate($this->request, Image::$createAnnotationRules);
         $this->validate($this->request, Annotation::$attachLabelRules);
 
-        $shape = Shape::find($this->request->input('shape_id'));
-
         // from a JSON request, the array may already be decoded
         $points = $this->request->input('points');
 
@@ -148,7 +147,7 @@ class ImageAnnotationController extends Controller
         }
 
         $annotation = new Annotation;
-        $annotation->shape()->associate($shape);
+        $annotation->shape_id = $this->request->input('shape_id');
         $annotation->image()->associate($image);
 
         try {
@@ -162,11 +161,11 @@ class ImageAnnotationController extends Controller
         $annotation->points = $points;
         $annotation->save();
 
-        $annotation->addLabel(
-            $this->request->input('label_id'),
-            $this->request->input('confidence'),
-            $this->user
-        );
+        $annotationLabel = new AnnotationLabel;
+        $annotationLabel->label_id = $this->request->input('label_id');
+        $annotationLabel->user_id = $this->user->id;
+        $annotationLabel->confidence = $this->request->input('confidence');
+        $annotation->labels()->save($annotationLabel);
 
         $annotation->load('labels');
 

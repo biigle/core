@@ -3,7 +3,9 @@
 namespace Dias\Http\Controllers\Api;
 
 use Dias\Annotation;
+use Dias\Label;
 use Dias\AnnotationLabel;
+use Illuminate\Database\QueryException;
 
 class AnnotationLabelController extends Controller
 {
@@ -88,15 +90,18 @@ class AnnotationLabelController extends Controller
     {
         $this->validate($this->request, Annotation::$attachLabelRules);
         $annotation = Annotation::findOrFail($id);
-        $this->requireCanEdit($annotation);
+        $label = Label::findOrFail($this->request->input('label_id'));
+        $this->authorize('attach-label', [$annotation, $label]);
 
-        $labelId = $this->request->input('label_id');
-
-        $annotationLabel = $annotation->addLabel(
-            $labelId,
-            $this->request->input('confidence'),
-            $this->user
-        );
+        try {
+            $annotationLabel = new AnnotationLabel;
+            $annotationLabel->label_id = $label->id;
+            $annotationLabel->user_id = $this->user->id;
+            $annotationLabel->confidence = $this->request->input('confidence');
+            $annotation->labels()->save($annotationLabel);
+        } catch (QueryException $e) {
+            abort(400, 'The user already attached this label to the annotation.');
+        }
 
         return response($annotationLabel, 201);
     }

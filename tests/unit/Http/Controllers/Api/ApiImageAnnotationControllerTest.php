@@ -23,7 +23,11 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             'color' => 'bada55',
         ]);
 
-        $annotation->addLabel($label->id, 1.0, $this->editor());
+        AnnotationLabelTest::create([
+            'label_id' => $label->id,
+            'annotation_id' => $annotation->id,
+            'user_id' => $this->editor()->id,
+        ]);
 
         $this->doTestApiRoute('GET',"/api/v1/images/{$this->image->id}/annotations");
 

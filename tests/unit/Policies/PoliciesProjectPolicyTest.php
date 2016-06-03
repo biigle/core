@@ -4,83 +4,61 @@ use Dias\Role;
 
 class PoliciesProjectPolicyTest extends TestCase
 {
+    private $project;
+    private $user;
+    private $guest;
+    private $editor;
+    private $admin;
+    private $globalAdmin;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->project = ProjectTest::create();
+        $this->user = UserTest::create();
+        $this->guest = UserTest::create();
+        $this->editor = UserTest::create();
+        $this->admin = UserTest::create();
+        $this->globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
+
+        $this->project->addUserId($this->guest->id, Role::$guest->id);
+        $this->project->addUserId($this->editor->id, Role::$editor->id);
+        $this->project->addUserId($this->admin->id, Role::$admin->id);
+    }
+
     public function testAccess()
     {
-        $project = ProjectTest::create();
-        $user = UserTest::create();
-        $guest = UserTest::create();
-        $editor = UserTest::create();
-        $admin = UserTest::create();
-        $globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
-
-        $project->addUserId($guest->id, Role::$guest->id);
-        $project->addUserId($editor->id, Role::$editor->id);
-        $project->addUserId($admin->id, Role::$admin->id);
-
-        $this->assertFalse($user->can('access', $project));
-        $this->assertTrue($guest->can('access', $project));
-        $this->assertTrue($editor->can('access', $project));
-        $this->assertTrue($admin->can('access', $project));
-        $this->assertTrue($globalAdmin->can('access', $project));
+        $this->assertFalse($this->user->can('access', $this->project));
+        $this->assertTrue($this->guest->can('access', $this->project));
+        $this->assertTrue($this->editor->can('access', $this->project));
+        $this->assertTrue($this->admin->can('access', $this->project));
+        $this->assertTrue($this->globalAdmin->can('access', $this->project));
     }
 
     public function testEditIn()
     {
-        $project = ProjectTest::create();
-        $user = UserTest::create();
-        $guest = UserTest::create();
-        $editor = UserTest::create();
-        $admin = UserTest::create();
-        $globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
-
-        $project->addUserId($guest->id, Role::$guest->id);
-        $project->addUserId($editor->id, Role::$editor->id);
-        $project->addUserId($admin->id, Role::$admin->id);
-
-        $this->assertFalse($user->can('edit-in', $project));
-        $this->assertFalse($guest->can('edit-in', $project));
-        $this->assertTrue($editor->can('edit-in', $project));
-        $this->assertTrue($admin->can('edit-in', $project));
-        $this->assertTrue($globalAdmin->can('edit-in', $project));
+        $this->assertFalse($this->user->can('edit-in', $this->project));
+        $this->assertFalse($this->guest->can('edit-in', $this->project));
+        $this->assertTrue($this->editor->can('edit-in', $this->project));
+        $this->assertTrue($this->admin->can('edit-in', $this->project));
+        $this->assertTrue($this->globalAdmin->can('edit-in', $this->project));
     }
 
     public function testUpdate()
     {
-        $project = ProjectTest::create();
-        $user = UserTest::create();
-        $guest = UserTest::create();
-        $editor = UserTest::create();
-        $admin = UserTest::create();
-        $globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
-
-        $project->addUserId($guest->id, Role::$guest->id);
-        $project->addUserId($editor->id, Role::$editor->id);
-        $project->addUserId($admin->id, Role::$admin->id);
-
-        $this->assertFalse($user->can('update', $project));
-        $this->assertFalse($guest->can('update', $project));
-        $this->assertFalse($editor->can('update', $project));
-        $this->assertTrue($admin->can('update', $project));
-        $this->assertTrue($globalAdmin->can('update', $project));
+        $this->assertFalse($this->user->can('update', $this->project));
+        $this->assertFalse($this->guest->can('update', $this->project));
+        $this->assertFalse($this->editor->can('update', $this->project));
+        $this->assertTrue($this->admin->can('update', $this->project));
+        $this->assertTrue($this->globalAdmin->can('update', $this->project));
     }
 
     public function testDestroy()
     {
-        $project = ProjectTest::create();
-        $user = UserTest::create();
-        $guest = UserTest::create();
-        $editor = UserTest::create();
-        $admin = UserTest::create();
-        $globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
-
-        $project->addUserId($guest->id, Role::$guest->id);
-        $project->addUserId($editor->id, Role::$editor->id);
-        $project->addUserId($admin->id, Role::$admin->id);
-
-        $this->assertFalse($user->can('destroy', $project));
-        $this->assertFalse($guest->can('destroy', $project));
-        $this->assertFalse($editor->can('destroy', $project));
-        $this->assertTrue($admin->can('destroy', $project));
-        $this->assertTrue($globalAdmin->can('destroy', $project));
+        $this->assertFalse($this->user->can('destroy', $this->project));
+        $this->assertFalse($this->guest->can('destroy', $this->project));
+        $this->assertFalse($this->editor->can('destroy', $this->project));
+        $this->assertTrue($this->admin->can('destroy', $this->project));
+        $this->assertTrue($this->globalAdmin->can('destroy', $this->project));
     }
 }

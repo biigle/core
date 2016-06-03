@@ -9,11 +9,16 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
         parent::setUp();
         $this->annotation = AnnotationTest::create();
         $this->project()->addTransectId($this->annotation->image->transect->id);
+        $this->project()->labelTrees()->attach($this->labelRoot()->label_tree_id);
     }
 
     public function testIndex()
     {
-        $this->annotation->addLabel($this->labelRoot()->id, 0.5, $this->editor());
+        AnnotationLabelTest::create([
+            'label_id' => $this->labelRoot()->id,
+            'annotation_id' => $this->annotation->id,
+            'user_id' => $this->editor()->id,
+        ]);
         $this->doTestApiRoute('GET', '/api/v1/annotations/1/labels');
 
         // api key authentication
@@ -50,14 +55,14 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1
         ]);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->post('/api/v1/annotations/1/labels', [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1
         ]);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beEditor();
         $this->post('/api/v1/annotations/1/labels', [
@@ -88,7 +93,12 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
 
     public function testUpdate()
     {
-        $annotationLabel = $this->annotation->addLabel($this->labelRoot()->id, 0.5, $this->editor());
+        $annotationLabel = AnnotationLabelTest::create([
+            'label_id' => $this->labelRoot()->id,
+            'annotation_id' => $this->annotation->id,
+            'user_id' => $this->editor()->id,
+            'confidence' => 0.5,
+        ]);
         $id = $annotationLabel->id;
 
         $this->doTestApiRoute('PUT', '/api/v1/annotation-labels/'.$id);
@@ -121,8 +131,11 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
 
     public function testDestroy()
     {
-        $annotationLabel = $this->annotation->addLabel($this->labelRoot()->id, 0.5, $this->editor());
-        $id = $annotationLabel->id;
+        $id = AnnotationLabelTest::create([
+            'label_id' => $this->labelRoot()->id,
+            'annotation_id' => $this->annotation->id,
+            'user_id' => $this->editor()->id,
+        ])->id;
 
         $this->doTestApiRoute('DELETE', '/api/v1/annotation-labels/'.$id);
 
@@ -140,9 +153,12 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
         $this->assertResponseOk();
         $this->assertNull($this->annotation->labels()->first());
 
-        $annotationLabel = $this->annotation->addLabel($this->labelRoot()->id, 0.5, $this->editor());
+        $id = AnnotationLabelTest::create([
+            'label_id' => $this->labelRoot()->id,
+            'annotation_id' => $this->annotation->id,
+            'user_id' => $this->editor()->id,
+        ])->id;
         $this->assertNotNull($this->annotation->labels()->first());
-        $id = $annotationLabel->id;
 
         $this->beAdmin();
         $this->delete('/api/v1/annotation-labels/'.$id);
