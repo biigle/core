@@ -39,6 +39,25 @@ class LabelTree extends Model
     ];
 
     /**
+     * Validation rules for adding a label tree member.
+     *
+     * @var array
+     */
+    public static $addMemberRules = [
+        'id' => 'required|exists:users,id',
+        'role_id' => 'required|exists:roles,id',
+    ];
+
+    /**
+     * Validation rules for updating a label tree member.
+     *
+     * @var array
+     */
+    public static $updateMemberRules = [
+        'role_id' => 'exists:roles,id',
+    ];
+
+    /**
      * The attributes hidden from the model's JSON form.
      *
      * @var array
@@ -46,6 +65,20 @@ class LabelTree extends Model
     protected $hidden = [
         'pivot',
     ];
+
+    /**
+     * Check if a member can loose their admin status
+     *
+     * @param User $member
+     * @return bool
+     */
+    private function memberCanLooseAdminStatus(User $member)
+    {
+        return $this->members()
+            ->where('label_tree_user.role_id', Role::$admin->id)
+            ->where('id', '!=', $member->id)
+            ->exists();
+    }
 
     /**
      * Scope a query to public label trees
@@ -116,6 +149,17 @@ class LabelTree extends Model
     }
 
     /**
+     * Checks is a role can be used for a member of a label tree
+     *
+     * @param Role $role
+     * @return bool
+     */
+    public function isRoleValid(Role $role)
+    {
+        return $role->id === Role::$admin->id || $role->id === Role::$editor->id;
+    }
+
+    /**
      * Add a new member with a certain role (either admin or editor)
      *
      * @param User $user
@@ -123,8 +167,8 @@ class LabelTree extends Model
      */
     public function addMember(User $user, Role $role)
     {
-        if ($role->id !== Role::$admin->id && $role->id !== Role::$editor->id) {
-            abort(422, 'Label tree members can only have the admin or the editor role. '.$role->name.' was given.');
+        if (!$this->isRoleValid($role)) {
+            abort(422, 'Invalid label tree member role.');
         }
 
         try {
@@ -132,6 +176,25 @@ class LabelTree extends Model
         } catch (QueryException $e) {
             abort(422, 'The user is already member of this label tree.');
         }
+    }
+
+    /**
+     * Update a member (role)
+     *
+     * @param User $user
+     * @param Role $role
+     */
+    public function updateMember(User $user, Role $role)
+    {
+        if (!$this->isRoleValid($role)) {
+            abort(422, 'Invalid label tree member role.');
+        }
+
+        if ($role->id !== Role::$admin->id && !$this->memberCanLooseAdminStatus($user)) {
+            abort(403, 'The last label tree admin cannot be demoted.');
+        }
+
+        $this->members()->updateExistingPivot($user->id, ['role_id' => $role->id]);
     }
 
     /**
@@ -144,10 +207,7 @@ class LabelTree extends Model
      */
     public function memberCanBeRemoved(User $member)
     {
-        return $this->members()
-            ->where('label_tree_user.role_id', Role::$admin->id)
-            ->where('id', '!=', $member->id)
-            ->exists();
+        return $this->memberCanLooseAdminStatus($member);
     }
 
     /**

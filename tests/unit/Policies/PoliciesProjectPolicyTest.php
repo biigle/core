@@ -37,11 +37,11 @@ class PoliciesProjectPolicyTest extends TestCase
         $project->addUserId($editor->id, Role::$editor->id);
         $project->addUserId($admin->id, Role::$admin->id);
 
-        $this->assertFalse($user->can('editIn', $project));
-        $this->assertFalse($guest->can('editIn', $project));
-        $this->assertTrue($editor->can('editIn', $project));
-        $this->assertTrue($admin->can('editIn', $project));
-        $this->assertTrue($globalAdmin->can('editIn', $project));
+        $this->assertFalse($user->can('edit-in', $project));
+        $this->assertFalse($guest->can('edit-in', $project));
+        $this->assertTrue($editor->can('edit-in', $project));
+        $this->assertTrue($admin->can('edit-in', $project));
+        $this->assertTrue($globalAdmin->can('edit-in', $project));
     }
 
     public function testUpdate()

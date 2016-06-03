@@ -118,6 +118,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'only' => ['index', 'store', 'update', 'destroy'],
     ]);
 
+    $router->resource('label-trees.users', 'LabelTreeUserController', [
+        'only' => ['store', 'update', 'destroy'],
+    ]);
+
     $router->resource('media-types', 'MediaTypeController', [
         'only' => ['index', 'show'],
     ]);

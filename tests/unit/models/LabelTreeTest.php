@@ -97,6 +97,23 @@ class LabelTreeTest extends ModelTestCase
         $this->assertTrue($this->model->memberCanBeRemoved($admin));
     }
 
+    public function testUpdateMember()
+    {
+        $user = UserTest::create();
+        $this->model->addMember($user, Role::$editor);
+        $this->assertEquals(Role::$editor->id, $this->model->members()->first()->role_id);
+        $this->model->updateMember($user, Role::$admin);
+        $this->assertEquals(Role::$admin->id, $this->model->members()->first()->role_id);
+    }
+
+    public function testUpdateMemberLastAdmin()
+    {
+        $user = UserTest::create();
+        $this->model->addMember($user, Role::$admin);
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->model->updateMember($user, Role::$editor);
+    }
+
     public function testProjects()
     {
         $project = ProjectTest::create();
@@ -140,5 +157,13 @@ class LabelTreeTest extends ModelTestCase
         $tree->projects()->attach([$authorized->id, $unauthorized->id]);
         $tree->detachUnauthorizedProjects();
         $this->assertEquals([$authorized->id], array_map('intval', $tree->projects()->pluck('id')->all()));
+    }
+
+    public function testIsRoleValid()
+    {
+        $tree = LabelTreeTest::create();
+        $this->assertFalse($tree->isRoleValid(Role::$guest));
+        $this->assertTrue($tree->isRoleValid(Role::$editor));
+        $this->assertTrue($tree->isRoleValid(Role::$admin));
     }
 }

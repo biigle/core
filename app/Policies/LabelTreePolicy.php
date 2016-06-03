@@ -46,7 +46,7 @@ class LabelTreePolicy
      * @param  LabelTree  $tree
      * @return bool
      */
-    public function addLabelTo(User $user, LabelTree $tree)
+    public function addLabel(User $user, LabelTree $tree)
     {
         return $tree->members()
             ->where('id', $user->id)
@@ -61,7 +61,7 @@ class LabelTreePolicy
      * @param  LabelTree  $tree
      * @return bool
      */
-    public function removeLabelFrom(User $user, LabelTree $tree)
+    public function removeLabel(User $user, LabelTree $tree)
     {
         return $tree->members()
             ->where('id', $user->id)
@@ -94,6 +94,59 @@ class LabelTreePolicy
     public function destroy(User $user, LabelTree $tree)
     {
         return $tree->members()
+            ->where('id', $user->id)
+            ->where('label_tree_user.role_id', Role::$admin->id)
+            ->exists();
+    }
+
+    /**
+     * Determine if the user can add members to the given label tree.
+     *
+     * @param  User  $user
+     * @param  LabelTree  $tree
+     * @return bool
+     */
+    public function addMember(User $user, LabelTree $tree)
+    {
+        return $tree->members()
+            ->where('id', $user->id)
+            ->where('label_tree_user.role_id', Role::$admin->id)
+            ->exists();
+    }
+
+    /**
+     * Determine if the user can update the given member of the given label tree.
+     *
+     * @param  User  $user
+     * @param  LabelTree  $tree
+     * @param  User  $member
+     * @return bool
+     */
+    public function updateMember(User $user, LabelTree $tree, User $member)
+    {
+        return $user->id !== $member->id && $tree->members()
+            ->where('id', $user->id)
+            ->where('label_tree_user.role_id', Role::$admin->id)
+            ->exists();
+    }
+
+    /**
+     * Determine if the user can remove the given member from the given label tree.
+     *
+     * Every member can remove themselves. Otherwise only admins are allowed to remove
+     * members.
+     *
+     * @param  User  $user
+     * @param  LabelTree  $tree
+     * @param  User  $member
+     * @return bool
+     */
+    public function removeMember(User $user, LabelTree $tree, User $member)
+    {
+        $wantsToDeleteOwnMember = $user->id === $member->id && $tree->members()
+            ->where('id', $user->id)
+            ->exists();
+        return $wantsToDeleteOwnMember || $tree->members()
             ->where('id', $user->id)
             ->where('label_tree_user.role_id', Role::$admin->id)
             ->exists();
