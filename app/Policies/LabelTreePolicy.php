@@ -26,6 +26,50 @@ class LabelTreePolicy
     }
 
     /**
+     * Determine if the given label tree can be accessed by the user.
+     *
+     * @param  User  $user
+     * @param  LabelTree  $tree
+     * @return bool
+     */
+    public function access(User $user, LabelTree $tree)
+    {
+        return $tree->members()
+            ->where('id', $user->id)
+            ->exists();
+    }
+
+    /**
+     * Determine if the user can add labels to the given label tree.
+     *
+     * @param  User  $user
+     * @param  LabelTree  $tree
+     * @return bool
+     */
+    public function addLabelTo(User $user, LabelTree $tree)
+    {
+        return $tree->members()
+            ->where('id', $user->id)
+            ->whereIn('label_tree_user.role_id', [Role::$admin->id, Role::$editor->id])
+            ->exists();
+    }
+
+    /**
+     * Determine if the user can remove labels from the given label tree.
+     *
+     * @param  User  $user
+     * @param  LabelTree  $tree
+     * @return bool
+     */
+    public function removeLabelFrom(User $user, LabelTree $tree)
+    {
+        return $tree->members()
+            ->where('id', $user->id)
+            ->whereIn('label_tree_user.role_id', [Role::$admin->id, Role::$editor->id])
+            ->exists();
+    }
+
+    /**
      * Determine if the given label tree can be updated by the user.
      *
      * @param  User  $user
@@ -35,7 +79,7 @@ class LabelTreePolicy
     public function update(User $user, LabelTree $tree)
     {
         return $tree->members()
-            ->where('label_tree_user.user_id', $user->id)
+            ->where('id', $user->id)
             ->where('label_tree_user.role_id', Role::$admin->id)
             ->exists();
     }
@@ -50,7 +94,7 @@ class LabelTreePolicy
     public function destroy(User $user, LabelTree $tree)
     {
         return $tree->members()
-            ->where('label_tree_user.user_id', $user->id)
+            ->where('id', $user->id)
             ->where('label_tree_user.role_id', Role::$admin->id)
             ->exists();
     }

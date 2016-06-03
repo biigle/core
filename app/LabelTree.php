@@ -23,7 +23,7 @@ class LabelTree extends Model
      * @var array
      */
     public static $createRules = [
-        'name'        => 'required|max:256',
+        'name' => 'required|max:256',
         'visibility_id' => 'required|exists:visibilities,id',
     ];
 
@@ -33,7 +33,7 @@ class LabelTree extends Model
      * @var array
      */
     public static $updateRules = [
-        'name'        => 'filled|max:256',
+        'name' => 'filled|max:256',
         'description' => 'filled',
         'visibility_id' => 'exists:visibilities,id',
     ];
@@ -124,13 +124,13 @@ class LabelTree extends Model
     public function addMember(User $user, Role $role)
     {
         if ($role->id !== Role::$admin->id && $role->id !== Role::$editor->id) {
-            abort(400, 'Label tree members can only have the admin or the editor role. '.$role->name.' was given.');
+            abort(422, 'Label tree members can only have the admin or the editor role. '.$role->name.' was given.');
         }
 
         try {
             $this->members()->attach($user->id, ['role_id' => $role->id]);
         } catch (QueryException $e) {
-            abort(400, 'The user is already member of this label tree.');
+            abort(422, 'The user is already member of this label tree.');
         }
     }
 

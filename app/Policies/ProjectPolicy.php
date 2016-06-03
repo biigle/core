@@ -47,7 +47,8 @@ class ProjectPolicy
      */
     public function editIn(User $user, Project $project)
     {
-        return $project->users()->where('id', $user->id)
+        return $project->users()
+            ->where('id', $user->id)
             ->whereIn('project_user.project_role_id', [Role::$admin->id, Role::$editor->id])
             ->exists();
     }
@@ -61,7 +62,8 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project)
     {
-        return $project->users()->where('id', $user->id)
+        return $project->users()
+            ->where('id', $user->id)
             ->where('project_user.project_role_id', Role::$admin->id)
             ->exists();
     }
@@ -75,7 +77,8 @@ class ProjectPolicy
      */
     public function destroy(User $user, Project $project)
     {
-        return $project->users()->where('id', $user->id)
+        return $project->users()
+            ->where('id', $user->id)
             ->where('project_user.project_role_id', Role::$admin->id)
             ->exists();
     }
