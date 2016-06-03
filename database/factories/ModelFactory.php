@@ -31,7 +31,9 @@ $factory->define(Dias\Project::class, function ($faker) {
     return [
         'name' => str_random(10),
         'description' => $faker->sentence(),
-        'creator_id' => factory(Dias\User::class)->create()->id,
+        'creator_id' => function () {
+            return factory(Dias\User::class)->create()->id;
+        },
     ];
 });
 
@@ -44,8 +46,12 @@ $factory->define(Dias\MediaType::class, function ($faker) {
 $factory->define(Dias\Transect::class, function ($faker) {
     return [
         'name' => $faker->sentence(),
-        'media_type_id' => factory(Dias\MediaType::class)->create()->id,
-        'creator_id' => factory(Dias\User::class)->create()->id,
+        'media_type_id' => function () {
+            return factory(Dias\MediaType::class)->create()->id;
+        },
+        'creator_id' => function () {
+            return factory(Dias\User::class)->create()->id;
+        },
         'url' => base_path('tests/files'),
     ];
 });
@@ -53,7 +59,9 @@ $factory->define(Dias\Transect::class, function ($faker) {
 $factory->define(Dias\Image::class, function ($faker) {
     return [
         'filename' => 'test-image.jpg',
-        'transect_id' => factory(Dias\Transect::class)->create()->id,
+        'transect_id' => function () {
+            return factory(Dias\Transect::class)->create()->id;
+        },
     ];
 });
 
@@ -62,7 +70,9 @@ $factory->define(Dias\Label::class, function ($faker) {
         'name' => str_random(10),
         'color' => '0099ff',
         'parent_id' => null,
-        'label_tree_id' => factory(Dias\LabelTree::class)->create()->id,
+        'label_tree_id' => function () {
+            return factory(Dias\LabelTree::class)->create()->id;
+        },
         'aphia_id' => null,
     ];
 });
@@ -75,17 +85,27 @@ $factory->define(Dias\Shape::class, function ($faker) {
 
 $factory->define(Dias\Annotation::class, function ($faker) {
     return [
-        'image_id' => factory(Dias\Image::class)->create()->id,
-        'shape_id' => factory(Dias\Shape::class)->create()->id,
+        'image_id' => function () {
+            return factory(Dias\Image::class)->create()->id;
+        },
+        'shape_id' => function () {
+            return factory(Dias\Shape::class)->create()->id;
+        },
         'points' => '[0, 0]',
     ];
 });
 
 $factory->define(Dias\AnnotationLabel::class, function ($faker) {
     return [
-        'annotation_id' => factory(Dias\Annotation::class)->create()->id,
-        'label_id' => factory(Dias\Label::class)->create()->id,
-        'user_id' => factory(Dias\User::class)->create()->id,
+        'annotation_id' => function () {
+            return factory(Dias\Annotation::class)->create()->id;
+        },
+        'label_id' => function () {
+            return factory(Dias\Label::class)->create()->id;
+        },
+        'user_id' => function () {
+            return factory(Dias\User::class)->create()->id;
+        },
         'confidence' => $faker->randomFloat(null, 0, 1),
     ];
 });
@@ -99,7 +119,9 @@ $factory->define(Dias\Attribute::class, function ($faker) {
 
 $factory->define(Dias\ApiToken::class, function ($faker) {
     return [
-        'owner_id' => factory(Dias\User::class)->create()->id,
+        'owner_id' => function () {
+            return factory(Dias\User::class)->create()->id;
+        },
         'purpose' => $faker->sentence(),
         'hash' => bcrypt(str_random(10)),
     ];
