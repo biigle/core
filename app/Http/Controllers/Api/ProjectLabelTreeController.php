@@ -148,4 +148,37 @@ class ProjectLabelTreeController extends Controller
         return redirect()->back()
             ->with('saved', true);
     }
+
+    /**
+     * Removes a label tree form the specified project.
+     *
+     * @api {delete} projects/:pid/label-trees/:lid Remove a label tree
+     * @apiGroup Projects
+     * @apiName DetachProjectLabelTrees
+     * @apiPermission projectAdmin
+     *
+     * @apiParam {Number} pid The project ID.
+     * @apiParam {Number} lid The label tree ID.
+     *
+     * @param  int  $pid
+     * @param  int  $lid
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($pid, $lid)
+    {
+        $project = Project::findOrFail($pid);
+        $this->authorize('update', $project);
+        $count = $project->labelTrees()->detach($lid);
+
+        if (static::isAutomatedRequest($this->request)) {
+            return;
+        }
+
+        if ($this->request->has('_redirect')) {
+            return redirect($this->request->input('_redirect'))
+                ->with('deleted', $count > 0);
+        }
+        return redirect()->back()
+            ->with('deleted', $count > 0);
+    }
 }

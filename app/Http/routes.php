@@ -132,7 +132,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'ProjectLabelTreeController@available'
     );
     $router->resource('projects.label-trees', 'ProjectLabelTreeController', [
-        'only' => ['index', 'store'],
+        'only' => ['index', 'store', 'destroy'],
     ]);
 
     $router->post(

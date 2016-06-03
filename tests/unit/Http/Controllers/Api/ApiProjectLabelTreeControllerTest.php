@@ -145,6 +145,56 @@ class ApiProjectLabelTreeControllerTest extends ApiTestCase
         ]);
         $this->assertRedirectedTo('/settings');
         $this->assertSessionHas('saved', true);
+    }
 
+    public function testDestroy()
+    {
+        $p = $this->project();
+        $t = LabelTreeTest::create();
+        $t->projects()->attach($p);
+
+        $this->doTestApiRoute('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
+
+        $this->beUser();
+        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
+        $this->assertResponseStatus(403);
+
+        $this->beGuest();
+        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
+        $this->assertResponseStatus(403);
+
+        $this->beEditor();
+        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
+        $this->assertResponseStatus(403);
+
+        $this->beAdmin();
+        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/999");
+        // trying to detach anything that is not attached is ok
+        $this->assertResponseOk();
+
+        $this->assertTrue($p->labelTrees()->exists());
+        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
+        $this->assertResponseOk();
+        $this->assertFalse($p->labelTrees()->exists());
+    }
+
+    public function testDestroyFormRequest()
+    {
+        $p = $this->project();
+        $t = LabelTreeTest::create();
+        $t->projects()->attach($p);
+
+        $this->beAdmin();
+        $this->visit('/');
+        $this->delete("/api/v1/projects/{$p->id}/label-trees/{$t->id}");
+        $this->assertRedirectedTo('/');
+        $this->assertSessionHas('deleted', true);
+
+        $this->delete("/api/v1/projects/{$p->id}/label-trees/{$t->id}", [
+            '_redirect' => 'settings',
+        ]);
+        $this->assertRedirectedTo('/settings');
+        // should be false because nothing was deleted
+        $this->assertSessionHas('deleted', false);
     }
 }
