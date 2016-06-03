@@ -144,8 +144,10 @@ class LabelTree extends Model
      */
     public function memberCanBeRemoved(User $member)
     {
-        return $this->members()->where('label_tree_user.role_id', Role::$admin->id)
-            ->count() > 1;
+        return $this->members()
+            ->where('label_tree_user.role_id', Role::$admin->id)
+            ->where('id', '!=', $member->id)
+            ->exists();
     }
 
     /**

@@ -87,13 +87,14 @@ class LabelTreeTest extends ModelTestCase
 
     public function testMemberCanBeRemoved()
     {
-        $user = UserTest::create();
-        $this->model->addMember($user, Role::$admin);
-        $this->assertFalse($this->model->memberCanBeRemoved($user));
-        $this->model->addMember(UserTest::create(), Role::$editor);
-        $this->assertFalse($this->model->memberCanBeRemoved($user));
+        $editor = UserTest::create();
+        $admin = UserTest::create();
+        $this->model->addMember($admin, Role::$admin);
+        $this->model->addMember($editor, Role::$editor);
+        $this->assertFalse($this->model->memberCanBeRemoved($admin));
+        $this->assertTrue($this->model->memberCanBeRemoved($editor));
         $this->model->addMember(UserTest::create(), Role::$admin);
-        $this->assertTrue($this->model->memberCanBeRemoved($user));
+        $this->assertTrue($this->model->memberCanBeRemoved($admin));
     }
 
     public function testProjects()
