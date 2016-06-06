@@ -252,9 +252,9 @@ class ProjectTest extends ModelTestCase
 
     public function testLabelTrees()
     {
-        $this->assertFalse($this->model->labelTrees()->exists());
+        $count = $this->model->labelTrees()->count();
         LabelTreeTest::create()->projects()->attach($this->model->id);
-        $this->assertTrue($this->model->labelTrees()->exists());
+        $this->assertEquals($count + 1, $this->model->labelTrees()->count());
     }
 
     public function testAuthorizedLabelTrees()
@@ -262,5 +262,14 @@ class ProjectTest extends ModelTestCase
         $this->assertFalse($this->model->authorizedLabelTrees()->exists());
         LabelTreeTest::create()->authorizedProjects()->attach($this->model->id);
         $this->assertTrue($this->model->authorizedLabelTrees()->exists());
+    }
+
+    public function testDefaultLabelTrees()
+    {
+        // tree has no members so it is global
+        $tree = LabelTreeTest::create();
+        $project = self::create();
+        $this->assertTrue($project->labelTrees()->exists());
+        $this->assertTrue($project->labelTrees()->where('id', $tree->id)->exists());
     }
 }

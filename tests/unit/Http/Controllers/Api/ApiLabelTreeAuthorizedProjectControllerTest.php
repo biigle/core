@@ -68,10 +68,10 @@ class ApiLabelTreeAuthorizedProjectControllerTest extends ApiTestCase
 
     public function testDestroy()
     {
+        $project = $this->project();
         $tree = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
         $tree->addMember($this->editor(), Role::$editor);
         $tree->addMember($this->admin(), Role::$admin);
-        $project = $this->project();
         $tree->authorizedProjects()->attach($project->id);
         $tree->projects()->attach($project->id);
 

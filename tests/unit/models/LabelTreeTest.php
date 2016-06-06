@@ -116,8 +116,8 @@ class LabelTreeTest extends ModelTestCase
 
     public function testProjects()
     {
+        // label trees without users are attached by default
         $project = ProjectTest::create();
-        $this->model->projects()->attach($project->id);
         $this->assertNotNull($this->model->projects()->find($project->id));
     }
 
@@ -153,8 +153,8 @@ class LabelTreeTest extends ModelTestCase
         $tree = LabelTreeTest::create();
         $unauthorized = ProjectTest::create();
         $authorized = ProjectTest::create();
+        // label trees without users are attached by default
         $tree->authorizedProjects()->attach($authorized->id);
-        $tree->projects()->attach([$authorized->id, $unauthorized->id]);
         $tree->detachUnauthorizedProjects();
         $this->assertEquals([$authorized->id], array_map('intval', $tree->projects()->pluck('id')->all()));
     }

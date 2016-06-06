@@ -106,24 +106,25 @@ class ApiProjectLabelTreeControllerTest extends ApiTestCase
         // project is not authorized
         $this->assertResponseStatus(403);
 
+        $count = $p->labelTrees()->count();
         $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
             'id' => $authorized->id,
         ]);
         $this->assertResponseOk();
-        $this->assertEquals(1, $p->labelTrees()->count());
+        $this->assertEquals($count + 1, $p->labelTrees()->count());
 
         $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
             'id' => $public->id,
         ]);
         $this->assertResponseOk();
-        $this->assertEquals(2, $p->labelTrees()->count());
+        $this->assertEquals($count + 2, $p->labelTrees()->count());
 
         // if the tree is already attached, ignore and respond with success
         $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
             'id' => $public->id,
         ]);
         $this->assertResponseOk();
-        $this->assertEquals(2, $p->labelTrees()->count());
+        $this->assertEquals($count + 2, $p->labelTrees()->count());
     }
 
     public function testStoreFormRequest()
@@ -172,10 +173,10 @@ class ApiProjectLabelTreeControllerTest extends ApiTestCase
         // trying to detach anything that is not attached is ok
         $this->assertResponseOk();
 
-        $this->assertTrue($p->labelTrees()->exists());
+        $this->assertTrue($p->labelTrees()->where('id', $t->id)->exists());
         $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
         $this->assertResponseOk();
-        $this->assertFalse($p->labelTrees()->exists());
+        $this->assertFalse($p->labelTrees()->where('id', $t->id)->exists());
     }
 
     public function testDestroyFormRequest()
