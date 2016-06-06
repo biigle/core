@@ -1,6 +1,7 @@
 {
     "name": "dias/projects",
     "require": {
+        "dias/core": ">=0.2.0"
     },
     "require-dev": {
     },

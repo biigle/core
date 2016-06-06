@@ -25,7 +25,7 @@ class ProjectController extends Controller
      */
     public function index($id)
     {
-        $project = Project::findOrFail($id);
+        $project = Project::with('labelTrees')->findOrFail($id);
         $this->requireCanSee($project);
 
         return view('projects::index')
