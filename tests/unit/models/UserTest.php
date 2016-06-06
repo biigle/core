@@ -172,7 +172,7 @@ class UserTest extends ModelTestCase
         $this->assertTrue($this->model->canAdminOneOfProjects($projectIds));
     }
 
-    public function testCheckCanBeDeleted()
+    public function testCheckCanBeDeletedProjects()
     {
         $project = ProjectTest::create();
         $project->addUserId($this->model->id, Role::$guest->id);
@@ -180,5 +180,17 @@ class UserTest extends ModelTestCase
         $this->model->checkCanBeDeleted();
         $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
         $project->creator->checkCanBeDeleted();
+    }
+
+    public function testCheckCanBeDeletedLabelTrees()
+    {
+        $tree = LabelTreeTest::create();
+        $editor = self::create();
+        $tree->addMember($editor, Role::$editor);
+        $tree->addMember($this->model, Role::$admin);
+
+        $editor->checkCanBeDeleted();
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->model->checkCanBeDeleted();
     }
 }

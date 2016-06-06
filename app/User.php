@@ -207,5 +207,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         foreach ($this->projects as $project) {
             $project->checkUserCanBeRemoved($this->id);
         }
+
+        foreach ($this->labelTrees as $tree) {
+            if (!$tree->memberCanBeRemoved($this)) {
+                abort(400, "The user can't be removed from label tree '{$tree->name}'. The label tree needs at least one other admin.");
+            }
+        }
     }
 }
