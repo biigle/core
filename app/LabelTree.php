@@ -83,9 +83,10 @@ class LabelTree extends Model
      */
     private function memberCanLooseAdminStatus(User $member)
     {
-        return $this->members()
-            ->where('label_tree_user.role_id', Role::$admin->id)
-            ->where('id', '!=', $member->id)
+        return DB::table('label_tree_user')
+            ->where('label_tree_id', $this->id)
+            ->where('role_id', Role::$admin->id)
+            ->where('user_id', '!=', $member->id)
             ->exists();
     }
 
