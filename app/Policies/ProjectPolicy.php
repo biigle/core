@@ -10,6 +10,8 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ProjectPolicy
 {
+    const TABLE = 'project_user';
+
     use HandlesAuthorization;
 
     /**
@@ -35,7 +37,10 @@ class ProjectPolicy
      */
     public function access(User $user, Project $project)
     {
-        return $project->users()->where('id', $user->id)->exists();
+        return DB::table(self::TABLE)
+            ->where('project_id', $project->id)
+            ->where('user_id', $user->id)
+            ->exists();
     }
 
     /**
@@ -47,9 +52,10 @@ class ProjectPolicy
      */
     public function editIn(User $user, Project $project)
     {
-        return $project->users()
-            ->where('id', $user->id)
-            ->whereIn('project_user.project_role_id', [Role::$admin->id, Role::$editor->id])
+        return DB::table(self::TABLE)
+            ->where('project_id', $project->id)
+            ->where('user_id', $user->id)
+            ->whereIn('project_role_id', [Role::$admin->id, Role::$editor->id])
             ->exists();
     }
 
@@ -62,9 +68,10 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project)
     {
-        return $project->users()
-            ->where('id', $user->id)
-            ->where('project_user.project_role_id', Role::$admin->id)
+        return DB::table(self::TABLE)
+            ->where('project_id', $project->id)
+            ->where('user_id', $user->id)
+            ->where('project_role_id', Role::$admin->id)
             ->exists();
     }
 
@@ -77,9 +84,10 @@ class ProjectPolicy
      */
     public function destroy(User $user, Project $project)
     {
-        return $project->users()
-            ->where('id', $user->id)
-            ->where('project_user.project_role_id', Role::$admin->id)
+        return DB::table(self::TABLE)
+            ->where('project_id', $project->id)
+            ->where('user_id', $user->id)
+            ->where('project_role_id', Role::$admin->id)
             ->exists();
     }
 }
