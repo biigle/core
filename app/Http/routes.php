@@ -122,6 +122,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'only' => ['index', 'store', 'update', 'destroy'],
     ]);
 
+    $router->resource('label-trees.authorized-projects', 'LabelTreeAuthorizedProjectController', [
+        'only' => ['store', 'destroy'],
+    ]);
+
     $router->resource('label-trees.labels', 'LabelTreeLabelController', [
         'only' => ['store'],
     ]);

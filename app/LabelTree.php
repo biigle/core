@@ -24,7 +24,7 @@ class LabelTree extends Model
      */
     public static $createRules = [
         'name' => 'required|max:256',
-        'visibility_id' => 'required|exists:visibilities,id',
+        'visibility_id' => 'required|integer|exists:visibilities,id',
     ];
 
     /**
@@ -35,7 +35,7 @@ class LabelTree extends Model
     public static $updateRules = [
         'name' => 'filled|max:256',
         'description' => 'filled',
-        'visibility_id' => 'exists:visibilities,id',
+        'visibility_id' => 'integer|exists:visibilities,id',
     ];
 
     /**
@@ -44,8 +44,8 @@ class LabelTree extends Model
      * @var array
      */
     public static $addMemberRules = [
-        'id' => 'required|exists:users,id',
-        'role_id' => 'required|exists:roles,id',
+        'id' => 'required|integer|exists:users,id',
+        'role_id' => 'required|integer|exists:roles,id',
     ];
 
     /**
@@ -54,7 +54,16 @@ class LabelTree extends Model
      * @var array
      */
     public static $updateMemberRules = [
-        'role_id' => 'exists:roles,id',
+        'role_id' => 'integer|exists:roles,id',
+    ];
+
+    /**
+     * Validation rules for adding a new authorized project
+     *
+     * @var array
+     */
+    public static $authorizeProjectRules = [
+        'id' => 'required|integer|exists:projects,id',
     ];
 
     /**
