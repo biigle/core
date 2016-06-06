@@ -50,23 +50,7 @@ class LabelTreePolicy
      * @param  LabelTree  $tree
      * @return bool
      */
-    public function addLabel(User $user, LabelTree $tree)
-    {
-        return DB::table(self::TABLE)
-            ->where('label_tree_id', $tree->id)
-            ->where('user_id', $user->id)
-            ->whereIn('role_id', [Role::$admin->id, Role::$editor->id])
-            ->exists();
-    }
-
-    /**
-     * Determine if the user can remove labels from the given label tree.
-     *
-     * @param  User  $user
-     * @param  LabelTree  $tree
-     * @return bool
-     */
-    public function removeLabel(User $user, LabelTree $tree)
+    public function createLabel(User $user, LabelTree $tree)
     {
         return DB::table(self::TABLE)
             ->where('label_tree_id', $tree->id)

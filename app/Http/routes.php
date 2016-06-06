@@ -114,8 +114,16 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'only' => ['index', 'store'],
     ]);
 
+    $router->resource('labels', 'LabelController', [
+        'only' => ['destroy'],
+    ]);
+
     $router->resource('label-trees', 'LabelTreeController', [
         'only' => ['index', 'store', 'update', 'destroy'],
+    ]);
+
+    $router->resource('label-trees.labels', 'LabelTreeLabelController', [
+        'only' => ['store'],
     ]);
 
     $router->resource('label-trees.users', 'LabelTreeUserController', [

@@ -68,20 +68,24 @@ class LabelTest extends ModelTestCase
         $this->assertEquals($child->id, $parent->children()->first()->id);
     }
 
-    public function testHasChildren()
-    {
-        $parent = self::create();
-        $child = self::create();
-        $this->assertFalse($parent->hasChildren);
-        $child->parent()->associate($parent);
-        $child->save();
-        $this->assertTrue($parent->hasChildren);
-    }
-
     public function testSetColorAttribute()
     {
         $label = self::create();
         $label->color = '#aabbcc';
         $this->assertEquals('aabbcc', $label->color);
+    }
+
+    public function testIsUsed()
+    {
+        $a = AnnotationLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertTrue($this->model->isUsed());
+        $a->delete();
+        $this->assertFalse($this->model->isUsed());
+    }
+
+    public function testCanBeDeleted()
+    {
+        $a = AnnotationLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertFalse($this->model->canBeDeleted());
     }
 }

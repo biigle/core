@@ -21,10 +21,9 @@ class Label extends Model
      */
     public static $createRules = [
         'name' => 'required',
+        'color' => 'required|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
         'parent_id' => 'integer|exists:labels,id',
         'aphia_id' => 'integer',
-        'project_id' => 'integer|exists:projects,id',
-        'color' => 'required|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
     ];
 
     /**
@@ -33,9 +32,9 @@ class Label extends Model
      * @var array
      */
     public static $updateRules = [
+        'color' => 'filled|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
         'parent_id' => 'integer|exists:labels,id',
         'aphia_id' => 'integer',
-        'color' => 'filled|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
     ];
 
     /**
@@ -87,17 +86,6 @@ class Label extends Model
     }
 
     /**
-     * Adds the `hasChildren` attribute to the label model which specifies
-     * whether the label has any child labels.
-     *
-     * @return bool
-     */
-    public function getHasChildrenAttribute()
-    {
-        return $this->children()->exists();
-    }
-
-    /**
      * Remove the optional '#' from a hexadecimal color
      *
      * @param string $value The color
@@ -105,5 +93,29 @@ class Label extends Model
     public function setColorAttribute($value)
     {
         $this->attributes['color'] = ($value[0] === '#') ? substr($value, 1) : $value;
+    }
+
+    /**
+     * Determines if the label is used anywhere (e.g. attached to an annotation)
+     *
+     * @return bool
+     */
+    public function isUsed()
+    {
+        return AnnotationLabel::where('label_id', $this->id)->exists();
+    }
+
+    /**
+     * Determines if the label can be deleted
+     *
+     * A label can be deleted if it doesn't have any child labels and if it is not used
+     * anywhere (e.g. attached to an annotation).
+     *
+     * @return bool
+     */
+    public function canBeDeleted()
+    {
+        return !Label::where('parent_id', $this->id)->exists()
+            && !$this->isUsed();
     }
 }

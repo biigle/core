@@ -60,6 +60,8 @@ class LabelTreeUserController extends Controller
      * @apiName StoreLabelTreesUsers
      * @apiPermission labelTreeAdmin
      *
+     * @apiParam {Number} id The label tree ID
+     *
      * @apiParam (Required attributes) {Number} id User ID of the new member
      * @apiParam (Required attributes) {Number} role_id ID of the role of the new member (admin or editor).
      *

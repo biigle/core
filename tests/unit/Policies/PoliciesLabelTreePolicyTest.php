@@ -31,20 +31,12 @@ class PoliciesLabelTreePolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('access', $this->tree));
     }
 
-    public function testAddLabel()
+    public function testCreateLabel()
     {
-        $this->assertFalse($this->user->can('add-label', $this->tree));
-        $this->assertTrue($this->editor->can('add-label', $this->tree));
-        $this->assertTrue($this->admin->can('add-label', $this->tree));
-        $this->assertTrue($this->globalAdmin->can('add-label', $this->tree));
-    }
-
-    public function testRemoveLabel()
-    {
-        $this->assertFalse($this->user->can('remove-label', $this->tree));
-        $this->assertTrue($this->editor->can('remove-label', $this->tree));
-        $this->assertTrue($this->admin->can('remove-label', $this->tree));
-        $this->assertTrue($this->globalAdmin->can('remove-label', $this->tree));
+        $this->assertFalse($this->user->can('create-label', $this->tree));
+        $this->assertTrue($this->editor->can('create-label', $this->tree));
+        $this->assertTrue($this->admin->can('create-label', $this->tree));
+        $this->assertTrue($this->globalAdmin->can('create-label', $this->tree));
     }
 
     public function testUpdate()
