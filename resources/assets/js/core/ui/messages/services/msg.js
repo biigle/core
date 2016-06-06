@@ -44,21 +44,25 @@ angular.module('dias.ui.messages').service('msg', function () {
         this.responseError = function (response) {
             var data = response.data;
 
-            if (!data) {
-                _this.danger("The server didn't respond, sorry.");
-            } else if (data.message) {
-                // error response
-                _this.danger(data.message);
+            if (data) {
+                if (data.message) {
+                    // error response
+                    _this.danger(data.message);
+                } else if (typeof data === 'string') {
+                    // unknown error response
+                    _this.danger(data);
+                } else {
+                    // validation response
+                    for (var key in data) {
+                        _this.danger(data[key][0]);
+                    }
+                }
+            } else if (response.status === 403) {
+                _this.danger("You have no permission to do that.");
             } else if (response.status === 401) {
                 _this.danger("Please log in (again).");
-            } else if (typeof data === 'string') {
-                // unknown error response
-                _this.danger(data);
             } else {
-                // validation response
-                for (var key in data) {
-                    _this.danger(data[key][0]);
-                }
+                _this.danger("The server didn't respond, sorry.");
             }
         };
     }
