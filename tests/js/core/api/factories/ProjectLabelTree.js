@@ -22,6 +22,12 @@ describe('The ProjectUser resource factory', function () {
 
         $httpBackend.when('GET', '/api/v1/projects/1/label-trees/available')
                     .respond(trees);
+
+        $httpBackend.when('POST', '/api/v1/projects/1/label-trees')
+                    .respond(200);
+
+        $httpBackend.when('DELETE', '/api/v1/projects/1/label-trees/1')
+                    .respond(200);
 	}));
 
 	afterEach(function() {
@@ -42,5 +48,15 @@ describe('The ProjectUser resource factory', function () {
         var trees = ProjectLabelTree.available({project_id: 1}, function () {
             expect(trees[0].name).toEqual('my labels');
         });
+    }));
+
+    it('should attach label trees', inject(function (ProjectLabelTree) {
+        $httpBackend.expectPOST('/api/v1/projects/1/label-trees', {id: 1});
+        ProjectLabelTree.attach({project_id: 1}, {id: 1});
+    }));
+
+    it('should detach label trees', inject(function (ProjectLabelTree) {
+        $httpBackend.expectDELETE('/api/v1/projects/1/label-trees/1');
+        ProjectLabelTree.detach({project_id: 1}, {id: 1});
     }));
 });
