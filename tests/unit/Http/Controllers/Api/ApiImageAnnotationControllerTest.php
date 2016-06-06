@@ -108,6 +108,19 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             'confidence' => 0.5,
             'points' => '[10, 11]',
         ]);
+        // label does not belong to a label tree of the project of the image
+        $this->assertResponseStatus(403);
+
+        $this->project()->labelTrees()->attach($this->labelRoot()->label_tree_id);
+
+        $this->post("/api/v1/images/{$this->image->id}/annotations", [
+            'shape_id' => \Dias\Shape::$pointId,
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 0.5,
+            'points' => '[10, 11]',
+        ]);
+
+        $this->assertResponseOk();
 
         $this->seeJson(['points' => [10, 11]]);
         $this->seeJson(['name' => $this->labelRoot()->name]);

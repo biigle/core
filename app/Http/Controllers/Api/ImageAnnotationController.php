@@ -71,6 +71,8 @@ class ImageAnnotationController extends Controller
      * @apiGroup Annotations
      * @apiName StoreImageAnnotations
      * @apiPermission projectEditor
+     * @apiDescription Only labels may be used that belong to a label tree used by one of
+     * the projects, the image belongs to.
      *
      * @apiParam {Number} id The image ID.
      *
@@ -159,10 +161,13 @@ class ImageAnnotationController extends Controller
         }
 
         $annotation->points = $points;
+        $label = Label::findOrFail($this->request->input('label_id'));
+
+        $this->authorize('attach-label', [$annotation, $label]);
         $annotation->save();
 
         $annotationLabel = new AnnotationLabel;
-        $annotationLabel->label_id = $this->request->input('label_id');
+        $annotationLabel->label_id = $label->id;
         $annotationLabel->user_id = $this->user->id;
         $annotationLabel->confidence = $this->request->input('confidence');
         $annotation->labels()->save($annotationLabel);
