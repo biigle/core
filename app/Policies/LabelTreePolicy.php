@@ -8,7 +8,7 @@ use Dias\Role;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class LabelTreePolicy
+class LabelTreePolicy extends CachedPolicy
 {
     const TABLE = 'label_tree_user';
 
@@ -37,10 +37,12 @@ class LabelTreePolicy
      */
     public function access(User $user, LabelTree $tree)
     {
-        return DB::table(self::TABLE)
-            ->where('label_tree_id', $tree->id)
-            ->where('user_id', $user->id)
-            ->exists();
+        return $this->remember("label-tree-can-access-{$user->id}-{$tree->id}", function () use ($user, $tree) {
+            return DB::table(self::TABLE)
+                ->where('label_tree_id', $tree->id)
+                ->where('user_id', $user->id)
+                ->exists();
+        });
     }
 
     /**
@@ -52,11 +54,13 @@ class LabelTreePolicy
      */
     public function createLabel(User $user, LabelTree $tree)
     {
-        return DB::table(self::TABLE)
-            ->where('label_tree_id', $tree->id)
-            ->where('user_id', $user->id)
-            ->whereIn('role_id', [Role::$admin->id, Role::$editor->id])
-            ->exists();
+        return $this->remember("label-tree-can-create-label-{$user->id}-{$tree->id}", function () use ($user, $tree) {
+            return DB::table(self::TABLE)
+                ->where('label_tree_id', $tree->id)
+                ->where('user_id', $user->id)
+                ->whereIn('role_id', [Role::$admin->id, Role::$editor->id])
+                ->exists();
+        });
     }
 
     /**
@@ -68,11 +72,13 @@ class LabelTreePolicy
      */
     public function update(User $user, LabelTree $tree)
     {
-        return DB::table(self::TABLE)
-            ->where('label_tree_id', $tree->id)
-            ->where('user_id', $user->id)
-            ->where('role_id', Role::$admin->id)
-            ->exists();
+        return $this->remember("label-tree-can-update-{$user->id}-{$tree->id}", function () use ($user, $tree) {
+            return DB::table(self::TABLE)
+                ->where('label_tree_id', $tree->id)
+                ->where('user_id', $user->id)
+                ->where('role_id', Role::$admin->id)
+                ->exists();
+        });
     }
 
     /**
@@ -84,11 +90,13 @@ class LabelTreePolicy
      */
     public function destroy(User $user, LabelTree $tree)
     {
-        return DB::table(self::TABLE)
-            ->where('label_tree_id', $tree->id)
-            ->where('user_id', $user->id)
-            ->where('role_id', Role::$admin->id)
-            ->exists();
+        return $this->remember("label-tree-can-destroy-{$user->id}-{$tree->id}", function () use ($user, $tree) {
+            return DB::table(self::TABLE)
+                ->where('label_tree_id', $tree->id)
+                ->where('user_id', $user->id)
+                ->where('role_id', Role::$admin->id)
+                ->exists();
+        });
     }
 
     /**
@@ -100,11 +108,13 @@ class LabelTreePolicy
      */
     public function addMember(User $user, LabelTree $tree)
     {
-        return DB::table(self::TABLE)
-            ->where('label_tree_id', $tree->id)
-            ->where('user_id', $user->id)
-            ->where('role_id', Role::$admin->id)
-            ->exists();
+        return $this->remember("label-tree-can-add-member-{$user->id}-{$tree->id}", function () use ($user, $tree) {
+            return DB::table(self::TABLE)
+                ->where('label_tree_id', $tree->id)
+                ->where('user_id', $user->id)
+                ->where('role_id', Role::$admin->id)
+                ->exists();
+        });
     }
 
     /**
@@ -117,11 +127,13 @@ class LabelTreePolicy
      */
     public function updateMember(User $user, LabelTree $tree, User $member)
     {
-        return $user->id !== $member->id && DB::table(self::TABLE)
-            ->where('label_tree_id', $tree->id)
-            ->where('user_id', $user->id)
-            ->where('role_id', Role::$admin->id)
-            ->exists();
+        return $this->remember("label-tree-can-update-member-{$user->id}-{$tree->id}-{$member->id}", function () use ($user, $tree, $member) {
+            return $user->id !== $member->id && DB::table(self::TABLE)
+                ->where('label_tree_id', $tree->id)
+                ->where('user_id', $user->id)
+                ->where('role_id', Role::$admin->id)
+                ->exists();
+        });
     }
 
     /**
@@ -137,14 +149,16 @@ class LabelTreePolicy
      */
     public function removeMember(User $user, LabelTree $tree, User $member)
     {
-        $wantsToDeleteOwnMember = $user->id === $member->id && DB::table(self::TABLE)
-            ->where('label_tree_id', $tree->id)
-            ->where('user_id', $user->id)
-            ->exists();
-        return $wantsToDeleteOwnMember || DB::table(self::TABLE)
-            ->where('label_tree_id', $tree->id)
-            ->where('user_id', $user->id)
-            ->where('role_id', Role::$admin->id)
-            ->exists();
+        return $this->remember("label-tree-can-remove-member-{$user->id}-{$tree->id}-{$member->id}", function () use ($user, $tree, $member) {
+            $wantsToDeleteOwnMember = $user->id === $member->id && DB::table(self::TABLE)
+                ->where('label_tree_id', $tree->id)
+                ->where('user_id', $user->id)
+                ->exists();
+            return $wantsToDeleteOwnMember || DB::table(self::TABLE)
+                ->where('label_tree_id', $tree->id)
+                ->where('user_id', $user->id)
+                ->where('role_id', Role::$admin->id)
+                ->exists();
+        });
     }
 }

@@ -8,7 +8,7 @@ use Dias\Role;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ProjectPolicy
+class ProjectPolicy extends CachedPolicy
 {
     const TABLE = 'project_user';
 
@@ -37,10 +37,12 @@ class ProjectPolicy
      */
     public function access(User $user, Project $project)
     {
-        return DB::table(self::TABLE)
-            ->where('project_id', $project->id)
-            ->where('user_id', $user->id)
-            ->exists();
+        return $this->remember("project-can-access-{$user->id}-{$project->id}", function () use ($user, $project) {
+            return DB::table(self::TABLE)
+                ->where('project_id', $project->id)
+                ->where('user_id', $user->id)
+                ->exists();
+        });
     }
 
     /**
@@ -52,11 +54,13 @@ class ProjectPolicy
      */
     public function editIn(User $user, Project $project)
     {
-        return DB::table(self::TABLE)
-            ->where('project_id', $project->id)
-            ->where('user_id', $user->id)
-            ->whereIn('project_role_id', [Role::$admin->id, Role::$editor->id])
-            ->exists();
+        return $this->remember("project-can-edit-in-{$user->id}-{$project->id}", function () use ($user, $project) {
+            return DB::table(self::TABLE)
+                ->where('project_id', $project->id)
+                ->where('user_id', $user->id)
+                ->whereIn('project_role_id', [Role::$admin->id, Role::$editor->id])
+                ->exists();
+        });
     }
 
     /**
@@ -68,11 +72,13 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project)
     {
-        return DB::table(self::TABLE)
-            ->where('project_id', $project->id)
-            ->where('user_id', $user->id)
-            ->where('project_role_id', Role::$admin->id)
-            ->exists();
+        return $this->remember("project-can-update-{$user->id}-{$project->id}", function () use ($user, $project) {
+            return DB::table(self::TABLE)
+                ->where('project_id', $project->id)
+                ->where('user_id', $user->id)
+                ->where('project_role_id', Role::$admin->id)
+                ->exists();
+        });
     }
 
     /**
@@ -84,10 +90,12 @@ class ProjectPolicy
      */
     public function destroy(User $user, Project $project)
     {
-        return DB::table(self::TABLE)
-            ->where('project_id', $project->id)
-            ->where('user_id', $user->id)
-            ->where('project_role_id', Role::$admin->id)
-            ->exists();
+        return $this->remember("project-can-destroy-{$user->id}-{$project->id}", function () use ($user, $project) {
+            return DB::table(self::TABLE)
+                ->where('project_id', $project->id)
+                ->where('user_id', $user->id)
+                ->where('project_role_id', Role::$admin->id)
+                ->exists();
+        });
     }
 }

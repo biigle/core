@@ -8,7 +8,7 @@ use Dias\Role;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class LabelPolicy
+class LabelPolicy extends CachedPolicy
 {
     const TABLE = 'label_tree_user';
 
@@ -37,11 +37,13 @@ class LabelPolicy
      */
     public function update(User $user, Label $label)
     {
-        return DB::table(self::TABLE)
-            ->where('label_tree_id', $label->label_tree_id)
-            ->where('user_id', $user->id)
-            ->whereIn('role_id', [Role::$admin->id, Role::$editor->id])
-            ->exists();
+        return $this->remember("label-can-update-{$user->id}-{$label->id}", function () use ($user, $label) {
+            return DB::table(self::TABLE)
+                ->where('label_tree_id', $label->label_tree_id)
+                ->where('user_id', $user->id)
+                ->whereIn('role_id', [Role::$admin->id, Role::$editor->id])
+                ->exists();
+        });
     }
 
     /**
@@ -53,10 +55,12 @@ class LabelPolicy
      */
     public function destroy(User $user, Label $label)
     {
-        return DB::table(self::TABLE)
-            ->where('label_tree_id', $label->label_tree_id)
-            ->where('user_id', $user->id)
-            ->whereIn('role_id', [Role::$admin->id, Role::$editor->id])
-            ->exists();
+        return $this->remember("label-can-destroy-{$user->id}-{$label->id}", function () use ($user, $label) {
+            return DB::table(self::TABLE)
+                ->where('label_tree_id', $label->label_tree_id)
+                ->where('user_id', $user->id)
+                ->whereIn('role_id', [Role::$admin->id, Role::$editor->id])
+                ->exists();
+        });
     }
 }

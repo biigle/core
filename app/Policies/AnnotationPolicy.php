@@ -9,7 +9,7 @@ use Dias\Role;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class AnnotationPolicy
+class AnnotationPolicy extends CachedPolicy
 {
     use HandlesAuthorization;
 
@@ -37,22 +37,24 @@ class AnnotationPolicy
      */
     public function attachLabel(User $user, Annotation $annotation, Label $label)
     {
-        // the projects, the annotation belongs to
-        $projectIds = DB::table('project_transect')
-            ->join('images', 'project_transect.transect_id', '=', 'images.transect_id')
-            ->where('images.id', $annotation->image_id)
-            ->pluck('project_transect.project_id');
+        return $this->remember("annotation-can-attach-label-{$user->id}-{$annotation->id}-{$label->id}", function () use ($user, $annotation, $label) {
+            // the projects, the annotation belongs to
+            $projectIds = DB::table('project_transect')
+                ->join('images', 'project_transect.transect_id', '=', 'images.transect_id')
+                ->where('images.id', $annotation->image_id)
+                ->pluck('project_transect.project_id');
 
-        // user must be editor or admin in one of the projects
-        return DB::table('project_user')
-                ->where('user_id', $user->id)
-                ->whereIn('project_id', $projectIds)
-                ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
-                ->exists()
-            // label must belong to a label tree that is used by one of the projects
-            && DB::table('label_tree_project')
-                ->whereIn('project_id', $projectIds)
-                ->where('label_tree_id', $label->label_tree_id)
-                ->exists();
+            // user must be editor or admin in one of the projects
+            return DB::table('project_user')
+                    ->where('user_id', $user->id)
+                    ->whereIn('project_id', $projectIds)
+                    ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
+                    ->exists()
+                // label must belong to a label tree that is used by one of the projects
+                && DB::table('label_tree_project')
+                    ->whereIn('project_id', $projectIds)
+                    ->where('label_tree_id', $label->label_tree_id)
+                    ->exists();
+        });
     }
 }

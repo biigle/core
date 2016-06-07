@@ -112,6 +112,8 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
         $this->assertResponseStatus(403);
 
         $this->project()->labelTrees()->attach($this->labelRoot()->label_tree_id);
+        // policies are cached
+        Cache::flush();
 
         $this->post("/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$pointId,
