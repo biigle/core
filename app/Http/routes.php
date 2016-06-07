@@ -82,11 +82,6 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as' => 'admin-users-delete',
             'uses' => 'UsersController@delete',
         ]);
-
-        $router->get('labels', [
-            'as' => 'admin-labels',
-            'uses' => 'LabelsController@get',
-        ]);
     });
 
 });
