@@ -11,12 +11,12 @@ class PoliciesCachedPolicyTest extends TestCase
         $user = UserTest::create();
         $tree = LabelTreeTest::create();
 
-        $this->assertFalse($policy->access($user, $tree));
+        $this->assertFalse($policy->createLabel($user, $tree));
         $tree->addMember($user, Role::$editor);
         // STILL false because cache is used
-        $this->assertFalse($policy->access($user, $tree));
+        $this->assertFalse($policy->createLabel($user, $tree));
         Cache::store('array')->flush();
-        $this->assertTrue($policy->access($user, $tree));
+        $this->assertTrue($policy->createLabel($user, $tree));
     }
 
     public function testRemember()

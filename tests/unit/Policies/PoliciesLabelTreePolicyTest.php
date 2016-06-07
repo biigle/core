@@ -1,6 +1,7 @@
 <?php
 
 use Dias\Role;
+use Dias\Visibility;
 
 class PoliciesLabelTreePolicyTest extends TestCase
 {
@@ -14,7 +15,7 @@ class PoliciesLabelTreePolicyTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->tree = LabelTreeTest::create();
+        $this->tree = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
         $this->user = UserTest::create();
         $this->editor = UserTest::create();
         $this->admin = UserTest::create();
@@ -23,8 +24,17 @@ class PoliciesLabelTreePolicyTest extends TestCase
         $this->tree->addMember($this->admin, Role::$admin);
     }
 
-    public function testAccess()
+    public function testAccessPublic()
     {
+        $this->assertTrue($this->user->can('access', $this->tree));
+        $this->assertTrue($this->editor->can('access', $this->tree));
+        $this->assertTrue($this->admin->can('access', $this->tree));
+        $this->assertTrue($this->globalAdmin->can('access', $this->tree));
+    }
+
+    public function testAccessPrivate()
+    {
+        $this->tree->visibility_id = Visibility::$private->id;
         $this->assertFalse($this->user->can('access', $this->tree));
         $this->assertTrue($this->editor->can('access', $this->tree));
         $this->assertTrue($this->admin->can('access', $this->tree));

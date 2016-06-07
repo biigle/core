@@ -5,6 +5,7 @@ namespace Dias\Policies;
 use Dias\LabelTree;
 use Dias\User;
 use Dias\Role;
+use Dias\Visibility;
 use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -38,10 +39,11 @@ class LabelTreePolicy extends CachedPolicy
     public function access(User $user, LabelTree $tree)
     {
         return $this->remember("label-tree-can-access-{$user->id}-{$tree->id}", function () use ($user, $tree) {
-            return DB::table(self::TABLE)
-                ->where('label_tree_id', $tree->id)
-                ->where('user_id', $user->id)
-                ->exists();
+            return $tree->visibility_id === Visibility::$public->id
+                || DB::table(self::TABLE)
+                    ->where('label_tree_id', $tree->id)
+                    ->where('user_id', $user->id)
+                    ->exists();
         });
     }
 
