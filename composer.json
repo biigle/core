@@ -1,0 +1,17 @@
+{
+    "name": "dias/label-trees",
+    "require": {
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Dias\\Modules\\LabelTrees\\": "src"
+        }
+    },
+    "scripts": {
+        "fix": [
+            "php-cs-fixer --config-file='.php_cs' fix"
+        ]
+    }
+}
