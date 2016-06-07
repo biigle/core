@@ -135,10 +135,10 @@ class CreateLabelTrees extends Migration
          | Migrate the existing labels.
          */
 
-        // Create a global label category tree
+        // Create a global label tree
         $globalId = DB::table('label_trees')->insertGetId([
             'name' => 'Global',
-            'description' => 'The global label category tree.',
+            'description' => 'The global label tree.',
             'created_at' => new Carbon,
             'updated_at' => new Carbon,
             'visibility_id' => Visibility::$public->id,
@@ -162,7 +162,7 @@ class CreateLabelTrees extends Migration
                 // The tree is private and the project is the only authorized project
                 // for the tree.
                 $treeId = DB::table('label_trees')->insertGetId([
-                    'name' => "{$project->name} categories",
+                    'name' => "{$project->name} labels",
                     'created_at' => new Carbon,
                     'updated_at' => new Carbon,
                     'visibility_id' => Visibility::$private->id,
