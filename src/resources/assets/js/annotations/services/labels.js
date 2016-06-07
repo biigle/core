@@ -5,16 +5,34 @@
  * @memberOf dias.annotations
  * @description Wrapper service for annotation labels to provide some convenience functions.
  */
-angular.module('dias.annotations').service('labels', function (AnnotationLabel, Label, ProjectLabel, Project, msg, $q, PROJECT_IDS) {
+angular.module('dias.annotations').service('labels', function (AnnotationLabel, msg, LABEL_TREES) {
         "use strict";
 
         var selectedLabel;
         var currentConfidence = 1.0;
 
-        var labels = {};
+        var trees = LABEL_TREES;
+        var treesCompiled = {};
+        var labelsList = [];
 
-        // this promise is resolved when all labels were loaded
-        this.promise = null;
+        var init = function () {
+            var treeName = null;
+            var buildTree = function (label) {
+                var parent = label.parent_id;
+                if (treesCompiled[treeName][parent]) {
+                    treesCompiled[treeName][parent].push(label);
+                } else {
+                    treesCompiled[treeName][parent] = [label];
+                }
+            };
+
+            for (var i = trees.length - 1; i >= 0; i--) {
+                treeName = trees[i].name;
+                treesCompiled[treeName] = {};
+                trees[i].labels.forEach(buildTree);
+                labelsList = labelsList.concat(trees[i].labels);
+            }
+        };
 
         this.fetchForAnnotation = function (annotation) {
             if (!annotation) return;
@@ -59,29 +77,11 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
         };
 
         this.getTree = function () {
-            var tree = {};
-            var key = null;
-            var build = function (label) {
-                var parent = label.parent_id;
-                if (tree[key][parent]) {
-                    tree[key][parent].push(label);
-                } else {
-                    tree[key][parent] = [label];
-                }
-            };
-
-            this.promise.then(function (labels) {
-                for (key in labels) {
-                    tree[key] = {};
-                    labels[key].forEach(build);
-                }
-            });
-
-            return tree;
+            return treesCompiled;
         };
 
-        this.getAll = function () {
-            return labels;
+        this.getList = function () {
+            return labelsList;
         };
 
         this.setSelected = function (label) {
@@ -108,27 +108,6 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
             return currentConfidence;
         };
 
-        // init
-        (function (_this) {
-            var deferred = $q.defer();
-            _this.promise = deferred.promise;
-            // -1 because of global labels
-            var finished = -1;
-
-            // check if all labels are there. if yes, resolve
-            var maybeResolve = function () {
-                if (++finished === PROJECT_IDS.length) {
-                    deferred.resolve(labels);
-                }
-            };
-
-            labels[null] = Label.query(maybeResolve);
-
-            PROJECT_IDS.forEach(function (id) {
-                Project.get({id: id}, function (project) {
-                    labels[project.name] = ProjectLabel.query({project_id: id}, maybeResolve);
-                });
-            });
-        })(this);
+        init();
     }
 );

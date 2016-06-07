@@ -3,6 +3,7 @@
 namespace Dias\Modules\Annotations\Http\Controllers;
 
 use Dias\Image;
+use Dias\LabelTree;
 use Dias\Http\Controllers\Views\Controller;
 
 class AnnotationController extends Controller
@@ -28,9 +29,19 @@ class AnnotationController extends Controller
             );
         }
 
-        $images = $image->transect->images()
+        $images = Image::where('transect_id', $image->transect_id)
             ->orderBy('filename', 'asc')
             ->pluck('filename', 'id');
+
+        // all label trees that are used by all projects which are visible to the user
+        $trees = LabelTree::with('labels')
+            ->select('id', 'name')
+            ->whereIn('id', function ($query) use ($projectIds) {
+                $query->select('label_tree_id')
+                    ->from('label_tree_project')
+                    ->whereIn('project_id', $projectIds);
+            })
+            ->get();
 
         return view('annotations::index')
             ->with('user', $this->user)
@@ -38,6 +49,7 @@ class AnnotationController extends Controller
             ->with('transect', $image->transect)
             ->with('editMode', $this->user->canEditInOneOfProjects($image->projectIds()))
             ->with('projectIds', implode(',', $projectIds))
-            ->with('images', $images);
+            ->with('images', $images)
+            ->with('labelTrees', $trees);
     }
 }

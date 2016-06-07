@@ -40,14 +40,9 @@ angular.module('dias.annotations').controller('CategoriesController', function (
         $scope.hotkeysMap = ['𝟭', '𝟮', '𝟯', '𝟰', '𝟱', '𝟲', '𝟳', '𝟴', '𝟵'];
         $scope.categories = [];
         $scope.favourites = [];
-        labels.promise.then(function (all) {
-            for (var key in all) {
-                $scope.categories = $scope.categories.concat(all[key]);
-            }
-            loadFavourites();
-        });
-
+        $scope.categories = labels.getList();
         $scope.categoriesTree = labels.getTree();
+        loadFavourites();
 
         $scope.selectItem = function (item) {
             labels.setSelected(item);

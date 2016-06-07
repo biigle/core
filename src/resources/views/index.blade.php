@@ -9,10 +9,10 @@
 <script type="text/javascript">
     angular.module('dias.annotations').constant('IMAGE_ID', {{$image->id}});
     angular.module('dias.annotations').constant('EDIT_MODE', {{$editMode ? 'true' : 'false'}});
-    angular.module('dias.annotations').constant('PROJECT_IDS', [{{$projectIds}}]);
     angular.module('dias.annotations').constant('TRANSECT_ID', {{$image->transect_id}});
     angular.module('dias.annotations').constant('IMAGES_IDS', {!!$images->keys()!!});
     angular.module('dias.annotations').constant('IMAGES_FILENAMES', {!!$images->values()!!});
+    angular.module('dias.annotations').constant('LABEL_TREES', {!!$labelTrees!!});
 </script>
 @foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
     @include($module.'::annotationsScripts', ['mixins' => $nestedMixins])
@@ -66,7 +66,7 @@
                 @endif
             </div>
             @if ($editMode)
-                <div class="ng-cloak selected-label" data-ng-controller="SelectedLabelController" title="Currently selected label category" data-ng-bind="getSelectedLabel().name" data-ng-show="hasSelectedLabel()"></div>
+                <div class="ng-cloak selected-label" data-ng-controller="SelectedLabelController" title="Currently selected label" data-ng-bind="getSelectedLabel().name" data-ng-show="hasSelectedLabel()"></div>
             @endif
     </div>
     @include('annotations::index.sidebar')
