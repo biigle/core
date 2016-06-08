@@ -11,12 +11,15 @@
 <script type="text/javascript">
     angular.module('dias.label-trees').constant('LABEL_TREE_ID', {!! $tree->id !!});
     angular.module('dias.label-trees').constant('LABELS', {!! $labels !!});
-    @if($private)
-        @can('update', $tree)
+    @can('update', $tree)
+        @if($private)
             angular.module('dias.label-trees').constant('AUTH_PROJECTS', {!! $authorizedProjects !!});
             angular.module('dias.label-trees').constant('AUTH_OWN_PROJECTS', {!! $authorizedOwnProjects !!});
-        @endcan
-    @endif
+        @endif
+        angular.module('dias.label-trees').constant('MEMBERS', {!! $members !!});
+        angular.module('dias.label-trees').constant('ROLES', {!! $roles !!});
+        angular.module('dias.label-trees').constant('USER_ID', {!! $user->id !!});
+    @endcan
 </script>
 @endpush
 
@@ -29,11 +32,12 @@
     </div>
     <div class="col-md-6">
         @include('label-trees::index.projects')
-        @if($private)
-            @can('update', $tree)
+        @can('update', $tree)
+            @if($private)
                 @include('label-trees::index.authorized-projects')
-            @endcan
-        @endif
+            @endif
+            @include('label-trees::index.members')
+        @endcan
     </div>
 </div>
 @endsection

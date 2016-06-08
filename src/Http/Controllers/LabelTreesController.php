@@ -4,6 +4,7 @@ namespace Dias\Modules\LabelTrees\Http\Controllers;
 
 use Dias\LabelTree;
 use Dias\Project;
+use Dias\Role;
 use Dias\Visibility;
 use Dias\Http\Controllers\Views\Controller;
 
@@ -56,10 +57,18 @@ class LabelTreesController extends Controller
             })->pluck('id');
         }
 
+        $roles = collect([
+            Role::$admin->id => Role::$admin->name,
+            Role::$editor->id => Role::$editor->name,
+        ]);
+
         return view('label-trees::index')
             ->with('tree', $tree)
             ->with('labels', $labels)
             ->with('projects', $projects)
+            ->with('members', $members)
+            ->with('roles', $roles)
+            ->with('user', $this->user)
             ->with('authorizedProjects', $authorizedProjects)
             ->with('authorizedOwnProjects', $authorizedOwnProjects)
             ->with('private', (int) $tree->visibility_id === Visibility::$private->id);
