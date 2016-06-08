@@ -16,8 +16,8 @@ class CreateLabelTrees extends Migration
     public function up()
     {
        /*
-        | Label categories belong to label category trees. Each user is able to create
-        | label category trees. Projects can choose which trees they want to use.
+        | Labels belong to label trees. Each user is able to create label trees.
+        | Projects can choose which trees they want to use.
         | Trees can be public or private.
         | Private trees maintain a list of projects that are allowed to use the tree.
         | Tree admins can edit this list.
@@ -73,7 +73,7 @@ class CreateLabelTrees extends Migration
 
 
         /*
-         | Labels now belong to category trees instead of projects
+         | Labels now belong to label trees instead of projects
          */
         Schema::table('labels', function ($table) {
             $table->integer('label_tree_id')->unsigned()->nullable();
@@ -85,9 +85,9 @@ class CreateLabelTrees extends Migration
         });
 
        /*
-        | Projects can choose which (public) category trees they want to use.
-        | Private category trees can only be used if the project was authorized by
-        | the category tree admins.
+        | Projects can choose which (public) label trees they want to use.
+        | Private label trees can only be used if the project was authorized by
+        | the label tree admins.
         */
         Schema::create('label_tree_project', function (Blueprint $table) {
             $table->integer('label_tree_id')->unsigned();
@@ -163,6 +163,7 @@ class CreateLabelTrees extends Migration
                 // for the tree.
                 $treeId = DB::table('label_trees')->insertGetId([
                     'name' => "{$project->name} labels",
+                    'description' => "Label tree of the {$project->name} project",
                     'created_at' => new Carbon,
                     'updated_at' => new Carbon,
                     'visibility_id' => Visibility::$private->id,
@@ -200,8 +201,8 @@ class CreateLabelTrees extends Migration
 
 
         /*
-         | Finally set label_tree_id to be not nullable (since all IDs must be set now).
-         | And finish the migration by removing the project_id.
+         | Finally set label_tree_id to be not nullable (since all IDs are set now).
+         | And finish the migration by removing the old project_id.
          */
 
         Schema::table('labels', function ($table) {
@@ -256,7 +257,7 @@ class CreateLabelTrees extends Migration
          | to the labels. This will work fine if this migration was done just now (since
          | each tree is used by only one project). All global labels or the ones that
          | are not used by any project (but may be used in annotations) are assigned
-         | to the (old) global category tree (with project_id null).
+         | to the (old) global label tree (with project_id null).
          */
 
         Schema::drop('label_tree_authorized_project');

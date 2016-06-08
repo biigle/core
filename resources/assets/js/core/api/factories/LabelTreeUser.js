@@ -7,13 +7,13 @@
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
  * @example
 // update the role of a user
-LabelTreeUser.update({project_id: 1}, {id: 1, role_id: 1});
+LabelTreeUser.update({label_tree_id: 1}, {id: 1, role_id: 1});
 
 // attach a user to a label tree
-LabelTreeUser.attach({project_id: 2}, {id: 1, role_id: 2});
+LabelTreeUser.attach({label_tree_id: 2}, {id: 1, role_id: 2});
 
 // detach a user from the label tree with ID 1
-LabelTreeUser.detach({project_id: 1}, {id: 1});
+LabelTreeUser.detach({label_tree_id: 1}, {id: 1});
  *
  */
 angular.module('dias.api').factory('LabelTreeUser', function ($resource, URL) {
