@@ -18,7 +18,18 @@ class LabelTreesServiceProvider extends ServiceProvider
      */
     public function boot(Modules $modules, Router $router)
     {
-        //
+        $this->loadViewsFrom(__DIR__.'/resources/views', 'label-trees');
+
+        $this->publishes([
+            __DIR__.'/public/assets' => public_path('vendor/label-trees'),
+        ], 'public');
+
+        $router->group([
+            'namespace' => 'Dias\Modules\LabelTrees\Http\Controllers',
+            'middleware' => 'web',
+        ], function ($router) {
+            require __DIR__.'/Http/routes.php';
+        });
     }
 
     /**
