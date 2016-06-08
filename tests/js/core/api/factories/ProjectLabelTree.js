@@ -1,4 +1,4 @@
-describe('The ProjectUser resource factory', function () {
+describe('The ProjectLabelTree resource factory', function () {
 	var $httpBackend;
 
 	beforeEach(module('dias.api'));
