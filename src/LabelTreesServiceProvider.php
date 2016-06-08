@@ -39,7 +39,10 @@ class LabelTreesServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton('command.label-trees.publish', function ($app) {
+            return new \Dias\Modules\LabelTrees\Console\Commands\Publish();
+        });
+        $this->commands('command.label-trees.publish');
     }
 
     /**
@@ -50,7 +53,7 @@ class LabelTreesServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            //
+            'command.label-trees.publish',
         ];
     }
 }
