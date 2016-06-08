@@ -1,7 +1,7 @@
 {
     "name": "dias/transects",
     "require": {
-        "dias/projects": "^0.1.0"
+        "dias/projects": "^0.2.2"
     },
     "require-dev": {
     },
