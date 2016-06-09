@@ -5,7 +5,7 @@
  * @memberOf dias.label-trees
  * @description Controller for the label tree information
  */
-angular.module('dias.label-trees').controller('LabelTreeController', function ($scope,  LABEL_TREE, LabelTree, msg) {
+angular.module('dias.label-trees').controller('LabelTreeController', function ($scope,  LABEL_TREE, LabelTree, msg, $timeout) {
         "use strict";
 
         var editing = false;
@@ -28,6 +28,13 @@ angular.module('dias.label-trees').controller('LabelTreeController', function ($
             LABEL_TREE.visibility_id = parseInt(tree.visibility_id);
             editing = false;
             saving = false;
+        };
+
+        var treeDeleted = function (url) {
+            msg.success('The label tree was deleted. Redirecting...');
+            $timeout(function () {
+                window.location.href = url;
+             }, 2000);
         };
 
         $scope.isEditing = function () {
@@ -69,6 +76,14 @@ angular.module('dias.label-trees').controller('LabelTreeController', function ($
             $scope.labelTreeInfo.description = LABEL_TREE.description;
             $scope.labelTreeInfo.visibility_id = LABEL_TREE.visibility_id.toString();
             editing = false;
+        };
+
+        $scope.deleteTree = function (url) {
+            if (confirm('Do you really want to delete the label tree ' + LABEL_TREE.name + '?')) {
+                LabelTree.delete({id: LABEL_TREE.id}, function () {
+                    treeDeleted(url);
+                }, msg.responseError);
+            }
         };
     }
 );

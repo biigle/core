@@ -10,8 +10,8 @@
             </span>
             <span class="pull-right" data-ng-switch-default="">
                 <button class="btn btn-default" data-ng-click="toggleEditing()">Edit</button>
-                {{--<button class="btn btn-default">Delete</button>
-                <button class="btn btn-default">Leave</button>--}}
+                <button class="btn btn-default" data-ng-click="deleteTree('{{route('home')}}')">Delete</button>
+                {{--<button class="btn btn-default">Leave</button>--}}
             </span>
             <form class="ng-cloak form-inline label-tree-info-form" data-ng-switch-when="true" data-ng-submit="saveChanges()">
                 <div class="form-group">
