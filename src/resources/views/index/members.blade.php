@@ -40,5 +40,10 @@
             </span>
             <span data-ng-bind="member.firstname"></span> <span data-ng-bind="member.lastname"></span> <span class="text-muted" data-ng-if="isOwnUser(member)">(you)</span>
         </li>
+
+        <li class="list-group-item list-group-item-info @if ($members->count() !== 0) ng-hide @endif" data-ng-show="!hasMembers()">
+            This tree has no members and therefore is a global label tree.<br>
+            Add members to make it an ordinary label tree.
+        </li>
     </ul>
 </div>

@@ -30,6 +30,8 @@ class LabelTreesServiceProvider extends ServiceProvider
         ], function ($router) {
             require __DIR__.'/Http/routes.php';
         });
+
+        $modules->addMixin('label-trees', 'adminMenu');
     }
 
     /**

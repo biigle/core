@@ -78,6 +78,10 @@ angular.module('dias.label-trees').controller('MembersController', function ($sc
             return MEMBERS;
         };
 
+        $scope.hasMembers = function () {
+            return MEMBERS.length > 0;
+        };
+
         $scope.getRoles = function () {
             return ROLES;
         };

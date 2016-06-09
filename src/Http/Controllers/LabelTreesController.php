@@ -79,4 +79,17 @@ class LabelTreesController extends Controller
             ->with('authorizedOwnProjects', $authorizedOwnProjects)
             ->with('private', (int) $tree->visibility_id === Visibility::$private->id);
     }
+
+    /**
+     * Show the label tree admin page
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function admin() {
+        $trees = LabelTree::whereDoesntHave('members')->get();
+
+        return view('label-trees::admin', [
+            'trees' => $trees,
+        ]);
+    }
 }
