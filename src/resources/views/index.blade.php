@@ -11,12 +11,13 @@
 <script type="text/javascript">
     angular.module('dias.label-trees').constant('LABEL_TREE', {!! $tree !!});
     angular.module('dias.label-trees').constant('LABELS', {!! $labels !!});
+    angular.module('dias.label-trees').constant('USER_ID', {!! $user->id !!});
+    angular.module('dias.label-trees').constant('REDIRECT_URL', '{{route('home')}}');
     @can('update', $tree)
         angular.module('dias.label-trees').constant('AUTH_PROJECTS', {!! $authorizedProjects !!});
         angular.module('dias.label-trees').constant('AUTH_OWN_PROJECTS', {!! $authorizedOwnProjects !!});
         angular.module('dias.label-trees').constant('MEMBERS', {!! $members !!});
         angular.module('dias.label-trees').constant('ROLES', {!! $roles !!});
-        angular.module('dias.label-trees').constant('USER_ID', {!! $user->id !!});
     @endcan
 </script>
 @endpush

@@ -5,7 +5,7 @@
  * @memberOf dias.label-trees
  * @description Controller for the label tree information
  */
-angular.module('dias.label-trees').controller('LabelTreeController', function ($scope,  LABEL_TREE, LabelTree, msg, $timeout) {
+angular.module('dias.label-trees').controller('LabelTreeController', function ($scope,  LABEL_TREE, LabelTree, msg, $timeout, LabelTreeUser, USER_ID, REDIRECT_URL) {
         "use strict";
 
         var editing = false;
@@ -30,11 +30,25 @@ angular.module('dias.label-trees').controller('LabelTreeController', function ($
             saving = false;
         };
 
-        var treeDeleted = function (url) {
+        var treeDeleted = function () {
             msg.success('The label tree was deleted. Redirecting...');
             $timeout(function () {
-                window.location.href = url;
+                window.location.href = REDIRECT_URL;
              }, 2000);
+        };
+
+        var userLeft = function (redirect) {
+            if (redirect) {
+                msg.success('You left the label tree. Redirecting...');
+                $timeout(function () {
+                    window.location.href = REDIRECT_URL;
+                 }, 2000);
+            } else {
+                msg.success('You left the label tree. Reloading...');
+                $timeout(function () {
+                    window.location.reload();
+                 }, 2000);
+            }
         };
 
         $scope.isEditing = function () {
@@ -78,11 +92,23 @@ angular.module('dias.label-trees').controller('LabelTreeController', function ($
             editing = false;
         };
 
-        $scope.deleteTree = function (url) {
+        $scope.deleteTree = function () {
             if (confirm('Do you really want to delete the label tree ' + LABEL_TREE.name + '?')) {
-                LabelTree.delete({id: LABEL_TREE.id}, function () {
-                    treeDeleted(url);
-                }, msg.responseError);
+                LabelTree.delete({id: LABEL_TREE.id}, treeDeleted, msg.responseError);
+            }
+        };
+
+        $scope.leaveTree = function (redirect) {
+            // redirect if the tree is private, otherwise reload
+            if (confirm('Do you really want to leave the label tree ' + LABEL_TREE.name + '?')) {
+                LabelTreeUser.detach(
+                    {label_tree_id: LABEL_TREE.id},
+                    {id: USER_ID},
+                    function () {
+                        userLeft(redirect);
+                    },
+                    msg.responseError
+                );
             }
         };
     }

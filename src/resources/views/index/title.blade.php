@@ -10,8 +10,8 @@
             </span>
             <span class="pull-right" data-ng-switch-default="">
                 <button class="btn btn-default" data-ng-click="toggleEditing()">Edit</button>
-                <button class="btn btn-default" data-ng-click="deleteTree('{{route('home')}}')">Delete</button>
-                {{--<button class="btn btn-default">Leave</button>--}}
+                <button class="btn btn-default" data-ng-click="deleteTree()">Delete</button>
+                <button class="btn btn-default" data-ng-click="leaveTree(getVisibilityId() === {{\Dias\Visibility::$private->id}})">Leave</button>
             </span>
             <form class="ng-cloak form-inline label-tree-info-form" data-ng-switch-when="true" data-ng-submit="saveChanges()">
                 <div class="form-group">
@@ -37,7 +37,7 @@
     @else
         <h2>
             <span class="pull-right">
-                {{--<button class="btn btn-default">Leave</button>--}}
+                <button class="btn btn-default" data-ng-click="leaveTree(getVisibilityId() === {{\Dias\Visibility::$private->id}})">Leave</button>
             </span>
             @if($private)
                 <small class="text-muted glyphicon glyphicon-lock" aria-hidden="true" title="This label tree is private"></small>
