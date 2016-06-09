@@ -2,15 +2,6 @@
 
 @section('title') Label trees @stop
 
-@push('styles')
-
-@endpush
-
-@push('scripts')
-
-@endpush
-
-
 @section('content')
 <div class="container">
     <div class="col-md-offset-3 col-md-6">
@@ -29,17 +20,17 @@
                 </form>
             </div>
             <div class="col-sm-6 clearfix">
-                {{--<a class="btn btn-default pull-right" href="#">New label tree</a>--}}
+                <a class="btn btn-default pull-right" href="{{route('label-trees-create')}}">New label tree</a>
             </div>
         </div>
         @if ($trees->total() > 0)
             <p>
-                Displaying results {{$trees->firstItem()}} to {{$trees->lastItem()}} of {{$trees->total()}} label trees.
+                Results {{$trees->firstItem()}} to {{$trees->lastItem()}} of {{$trees->total()}}
             </p>
         @endif
         <div class="list-group">
             @forelse($trees as $tree)
-                <a class="list-group-item" href="{{route('label-trees', $tree->id)}}" title="Show the label tree {{$tree->name}}">
+                <a class="list-group-item @if($newTree && $tree->id === $newTree->id) list-group-item-success @endif" href="{{route('label-trees', $tree->id)}}" title="Show the label tree {{$tree->name}}">
                     <h4 class="list-group-item-heading">
                         @if ($tree->visibility_id === Dias\Visibility::$private->id)
                             <small class="text-muted glyphicon glyphicon-lock" aria-hidden="true" title="This label tree is private"></small>

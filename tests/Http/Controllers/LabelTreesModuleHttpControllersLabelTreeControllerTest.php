@@ -60,4 +60,11 @@ class LabelTreesModuleHttpControllersLabelTreeControllerTest extends TestCase
         $this->dontSee('another tree');
         $this->dontSee('private one');
     }
+
+    public function testCreate() {
+        $this->visit("label-trees/create")->seePageIs('auth/login');
+        $user = UserTest::create();
+        $this->be($user);
+        $this->visit("label-trees/create")->assertResponseOk();
+    }
 }

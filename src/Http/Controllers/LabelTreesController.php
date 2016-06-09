@@ -119,6 +119,8 @@ class LabelTreesController extends Controller
 
         return view('label-trees::index', [
             'trees' => $query->paginate(10),
+            // the create new tree page redirects here with the newly created tree
+            'newTree' => session('newTree'),
         ]);
     }
 
@@ -132,6 +134,22 @@ class LabelTreesController extends Controller
 
         return view('label-trees::admin', [
             'trees' => $trees,
+        ]);
+    }
+
+    /**
+     * Show the create label tree page
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create() {
+        $visibilities = [
+            Visibility::$public,
+            Visibility::$private,
+        ];
+
+        return view('label-trees::create', [
+            'visibilities' => $visibilities,
         ]);
     }
 }
