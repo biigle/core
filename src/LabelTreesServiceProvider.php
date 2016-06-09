@@ -32,6 +32,7 @@ class LabelTreesServiceProvider extends ServiceProvider
         });
 
         $modules->addMixin('label-trees', 'adminMenu');
+        $modules->addMixin('label-trees', 'navbarMenuItem');
     }
 
     /**

@@ -11,13 +11,13 @@ use Dias\Http\Controllers\Views\Controller;
 class LabelTreesController extends Controller
 {
     /**
-     * Show the label tree index page
+     * Show the label tree page
      *
      * @param int $id Label tree ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function show($id)
     {
         $tree = LabelTree::findOrFail($id);
         $this->authorize('access', $tree);
@@ -67,7 +67,7 @@ class LabelTreesController extends Controller
             Visibility::$private->id => Visibility::$private->name,
         ]);
 
-        return view('label-trees::index')
+        return view('label-trees::show')
             ->with('tree', $tree)
             ->with('labels', $labels)
             ->with('projects', $projects)
@@ -78,6 +78,48 @@ class LabelTreesController extends Controller
             ->with('authorizedProjects', $authorizedProjects)
             ->with('authorizedOwnProjects', $authorizedOwnProjects)
             ->with('private', (int) $tree->visibility_id === Visibility::$private->id);
+    }
+
+    /**
+     * Show the label tree list
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index() {
+        $query = LabelTree::query();
+
+        // search for trees with similar name to the query string
+        if ($this->request->has('query')) {
+            if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
+                $operator = 'ilike';
+            } else {
+                $operator = 'like';
+            }
+
+            $pattern = $this->request->input('query');
+            $query = $query->where('name', $operator, "%{$pattern}%");
+            $this->request->flash();
+        } else {
+            $this->request->flush();
+        }
+
+        // non admins can only see public trees and private ones they are member of
+        if (!$this->user->isAdmin) {
+            $query = $query->where('visibility_id', Visibility::$public->id)
+                ->orWhere(function ($query) {
+                    $query->whereIn('id', function ($query) {
+                        $query->select('label_tree_id')
+                            ->from('label_tree_user')
+                            ->where('user_id', $this->user->id);
+                    });
+                });
+        }
+
+        $query = $query->orderBy('updated_at', 'desc');
+
+        return view('label-trees::index', [
+            'trees' => $query->paginate(10),
+        ]);
     }
 
     /**

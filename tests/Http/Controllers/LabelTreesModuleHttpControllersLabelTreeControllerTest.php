@@ -1,10 +1,11 @@
 <?php
 
 use Dias\Visibility;
+use Dias\Role;
 
 class LabelTreesModuleHttpControllersLabelTreeControllerTest extends TestCase
 {
-    public function testIndex() {
+    public function testShow() {
         $tree = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
         $user = UserTest::create();
 
@@ -33,5 +34,30 @@ class LabelTreesModuleHttpControllersLabelTreeControllerTest extends TestCase
         $this->get("admin/label-trees")->assertResponseStatus(401);
         $user->role()->associate(Dias\Role::$admin);
         $this->visit("admin/label-trees")->assertResponseOk();
+    }
+
+    public function testIndex() {
+        $user = UserTest::create();
+        $tree = LabelTreeTest::create(['name' => 'random name']);
+        $tree2 = LabelTreeTest::create(['name' => 'another tree']);
+        $tree3 = LabelTreeTest::create([
+            'name' => 'private one',
+            'visibility_id' => Visibility::$private->id,
+        ]);
+        $tree->addMember($user, Role::$editor);
+
+        $this->visit("label-trees")->seePageIs('auth/login');
+
+        $this->be($user);
+        $this->get("label-trees")->assertResponseOk();
+        $this->see('random name');
+        $this->see('another tree');
+        $this->dontSee('private one');
+
+        $this->call('GET', 'label-trees', ['query' => 'ab']);
+        $this->assertResponseOk();
+        $this->see('random name');
+        $this->dontSee('another tree');
+        $this->dontSee('private one');
     }
 }
