@@ -64,13 +64,13 @@
             <nav>
                 <ul class="pager">
                     @if ($trees->currentPage() > 1)
-                        <li><a href="{{$trees->previousPageUrl()}}">Previous</a></li>
+                        <li><a href="{{$trees->previousPageUrl()}}@if(old('query'))&query={{old('query')}}@endif">Previous</a></li>
                     @else
                         <li class="disabled"><a href="#" disabled>Previous</a></li>
                     @endif
 
                     @if ($trees->hasMorePages())
-                        <li><a href="{{$trees->nextPageUrl()}}">Next</a></li>
+                        <li><a href="{{$trees->nextPageUrl()}}@if(old('query'))&query={{old('query')}}@endif">Next</a></li>
                     @else
                         <li class="disabled"><a href="#" disabled>Next</a></li>
                     @endif
