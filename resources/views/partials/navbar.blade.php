@@ -1,10 +1,11 @@
+@inject('modules', 'Dias\Services\Modules')
 <nav class="navbar navbar-default navbar-static-top">
-	<div class="container">
-		<div class="navbar-header">
-			<a class="navbar-brand logo" href="{{ route('home') }}">
-				<span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup>
-			</a>
-		</div>
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand logo" href="{{ route('home') }}">
+                <span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup>
+            </a>
+        </div>
         @hasSection('navbar')
             <div class="navbar-left">
                 @yield('navbar')
@@ -22,6 +23,9 @@
                         <li>
                             <a href="{{ route('home') }}" title="Dashboard">Dashboard</a>
                         </li>
+                        @foreach ($modules->getMixins('navbarMenuItem') as $module => $nestedMixins)
+                            @include($module.'::navbarMenuItem')
+                        @endforeach
                         @if (auth()->user()->isAdmin)
                             <li>
                                 <a href="{{ route('admin') }}" title="Admin area">Admin area</a>
@@ -41,5 +45,5 @@
                 </li>
             </ul>
         </div>
-	</div>
+    </div>
 </nav>
