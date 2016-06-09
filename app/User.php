@@ -9,6 +9,7 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Cache;
+use DB;
 
 /**
  * A user.
@@ -144,7 +145,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function getIsAdminAttribute()
     {
-        return $this->role->id === Role::$admin->id;
+        return $this->role_id === Role::$admin->id;
     }
 
     /**
@@ -155,11 +156,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function canSeeOneOfProjects($ids)
     {
-        return Cache::remember('user-'.$this->id.'-can-see-projects-'.implode('-', $ids), 0.1, function () use ($ids) {
-            return $this->isAdmin || $this->projects()
-                ->whereIn('id', $ids)
-                ->select('id')
-                ->first() !== null;
+        return Cache::remember('user-'.$this->id.'-can-see-projects-'.implode('-', $ids), 0.25, function () use ($ids) {
+            return $this->isAdmin || DB::table('project_user')
+                ->whereIn('project_id', $ids)
+                ->where('user_id', $this->id)
+                ->exists();
         });
     }
 
@@ -172,12 +173,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function canEditInOneOfProjects($ids)
     {
-        return Cache::remember('user-'.$this->id.'-can-edit-projects-'.implode('-', $ids), 0.1, function () use ($ids) {
-            return $this->isAdmin || $this->projects()
-                ->whereIn('id', $ids)
+        return Cache::remember('user-'.$this->id.'-can-edit-projects-'.implode('-', $ids), 0.25, function () use ($ids) {
+            return $this->isAdmin || DB::table('project_user')
+                ->whereIn('project_id', $ids)
                 ->whereIn('project_role_id', [Role::$admin->id, Role::$editor->id])
-                ->select('id')
-                ->first() !== null;
+                ->where('user_id', $this->id)
+                ->exists();
         });
     }
 
@@ -189,12 +190,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function canAdminOneOfProjects($ids)
     {
-        return Cache::remember('user-'.$this->id.'-can-admin-projects-'.implode('-', $ids), 0.1, function () use ($ids) {
-            return $this->isAdmin || $this->projects()
-                ->whereIn('id', $ids)
+        return Cache::remember('user-'.$this->id.'-can-admin-projects-'.implode('-', $ids), 0.25, function () use ($ids) {
+            return $this->isAdmin || DB::table('project_user')
+                ->whereIn('project_id', $ids)
                 ->where('project_role_id', Role::$admin->id)
-                ->select('id')
-                ->first() !== null;
+                ->where('user_id', $this->id)
+                ->exists();
         });
     }
 
