@@ -27,7 +27,7 @@
                 </div>
             </form>
             <h2 data-ng-switch-default="">
-                <small class="text-muted glyphicon glyphicon-lock @if(!$private) hidden @endif" aria-hidden="true" title="This label tree is private" data-ng-if="getVisibilityId() === {{\Dias\Visibility::$private->id}}"></small>
+                <small class="text-muted glyphicon glyphicon-lock @if(!$private) ng-hide @endif" aria-hidden="true" title="This label tree is private" data-ng-show="getVisibilityId() === {{\Dias\Visibility::$private->id}}"></small>
                 <span data-ng-bind="getName()">{{$tree->name}}</span>
                 <span class="@if(!$tree->description) hidden @endif" data-ng-if="getDescription()">
                     <br><small data-ng-bind="getDescription()">{{$tree->description}}</small>
