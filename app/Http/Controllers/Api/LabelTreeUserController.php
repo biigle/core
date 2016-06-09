@@ -114,7 +114,9 @@ class LabelTreeUserController extends Controller
         $member = $tree->members()->findOrFail($uid);
         $this->authorize('remove-member', [$tree, $member]);
 
-        if (!$tree->memberCanBeRemoved($member)) {
+        // global admins can remove the last label tree admin so they can convert
+        // ordinary label trees to global ones
+        if (!$this->user->isAdmin && !$tree->memberCanBeRemoved($member)) {
             throw new AuthorizationException('The only admin cannot be removed from a label tree.');
         }
 

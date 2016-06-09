@@ -186,6 +186,11 @@ class ApiLabelTreeUserControllerTest extends ApiTestCase
         $this->json('DELETE', "/api/v1/label-trees/{$tree->id}/users/{$editor->id}");
         $this->assertResponseOk();
         $this->assertFalse($tree->members()->where('id', $editor->id)->exists());
+
+        // global admin can remove even the last admin of the label tree
+        $this->beGlobalAdmin();
+        $this->json('DELETE', "/api/v1/label-trees/{$tree->id}/users/{$admin->id}");
+        $this->assertResponseOk();
     }
 
     public function testDestroyFormRequest()
