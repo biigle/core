@@ -5,7 +5,7 @@
  * @memberOf dias.label-trees
  * @description Controller for the the autorized projects of a label tree
  */
-angular.module('dias.label-trees').controller('AuthorizedProjectsController', function ($scope, LABEL_TREE_ID, AUTH_PROJECTS, AUTH_OWN_PROJECTS, Project, LabelTreeAuthorizedProject) {
+angular.module('dias.label-trees').controller('AuthorizedProjectsController', function ($scope, LABEL_TREE, AUTH_PROJECTS, AUTH_OWN_PROJECTS, Project, LabelTreeAuthorizedProject) {
         "use strict";
 
         var editing = false;
@@ -77,6 +77,10 @@ angular.module('dias.label-trees').controller('AuthorizedProjectsController', fu
             return editing;
         };
 
+        $scope.getVisibilityId = function () {
+            return LABEL_TREE.visibility_id;
+        };
+
         $scope.toggleEditing = function () {
             if (!ownProjects) {
                 ownProjects = Project.query(updateProjectsForAuthorization);
@@ -96,7 +100,7 @@ angular.module('dias.label-trees').controller('AuthorizedProjectsController', fu
         $scope.addAuthorizedProject = function (project) {
             loading = true;
             LabelTreeAuthorizedProject.addAuthorized(
-                {id: LABEL_TREE_ID},
+                {id: LABEL_TREE.id},
                 {id: project.id},
                 function () {
                     projectAdded(project);
@@ -108,7 +112,7 @@ angular.module('dias.label-trees').controller('AuthorizedProjectsController', fu
         $scope.removeAuthorizedProject = function (project) {
             loading = true;
             LabelTreeAuthorizedProject.removeAuthorized(
-                {id: LABEL_TREE_ID},
+                {id: LABEL_TREE.id},
                 {id: project.id},
                 function () {
                     projectRemoved(project);

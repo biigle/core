@@ -48,3 +48,22 @@
         vertical-align: middle;
     }
 }
+
+.label-tree-title {
+    display: inline-block;
+}
+
+.label-tree-info-form {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    line-height: 1.1;
+
+    .label-tree-description {
+        width: 500px;
+        margin-top: 2px;
+    }
+
+    .label-tree-name {
+        width: 300px;
+    }
+}

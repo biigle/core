@@ -5,7 +5,7 @@
  * @memberOf dias.label-trees
  * @description Controller for the the amembers of a label tree
  */
-angular.module('dias.label-trees').controller('MembersController', function ($scope, LABEL_TREE_ID, MEMBERS, ROLES, USER_ID, LabelTreeUser, msg, User) {
+angular.module('dias.label-trees').controller('MembersController', function ($scope, LABEL_TREE, MEMBERS, ROLES, USER_ID, LabelTreeUser, msg, User) {
         "use strict";
 
         var editing = false;
@@ -93,7 +93,7 @@ angular.module('dias.label-trees').controller('MembersController', function ($sc
         $scope.updateRole = function (member) {
             loading = true;
             LabelTreeUser.update(
-                {label_tree_id: LABEL_TREE_ID},
+                {label_tree_id: LABEL_TREE.id},
                 {id: member.id, role_id: parseInt(member.tmp_role_id)},
                 function () {
                     roleUpdated(member);
@@ -107,7 +107,7 @@ angular.module('dias.label-trees').controller('MembersController', function ($sc
         $scope.detachMember = function (member) {
             loading = true;
             LabelTreeUser.detach(
-                {label_tree_id: LABEL_TREE_ID},
+                {label_tree_id: LABEL_TREE.id},
                 {id: member.id},
                 function () {
                     memberRemoved(member);
@@ -145,7 +145,7 @@ angular.module('dias.label-trees').controller('MembersController', function ($sc
             member.role_id = parseInt($scope.newMember.role_id);
 
             LabelTreeUser.attach(
-                {label_tree_id: LABEL_TREE_ID},
+                {label_tree_id: LABEL_TREE.id},
                 {id: member.id, role_id: member.role_id},
                 function () {
                     memberAttached(member);

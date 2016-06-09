@@ -62,12 +62,18 @@ class LabelTreesController extends Controller
             Role::$editor->id => Role::$editor->name,
         ]);
 
+        $visibilities = collect([
+            Visibility::$public->id => Visibility::$public->name,
+            Visibility::$private->id => Visibility::$private->name,
+        ]);
+
         return view('label-trees::index')
             ->with('tree', $tree)
             ->with('labels', $labels)
             ->with('projects', $projects)
             ->with('members', $members)
             ->with('roles', $roles)
+            ->with('visibilities', $visibilities)
             ->with('user', $this->user)
             ->with('authorizedProjects', $authorizedProjects)
             ->with('authorizedOwnProjects', $authorizedOwnProjects)

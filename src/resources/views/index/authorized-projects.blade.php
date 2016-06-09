@@ -1,4 +1,4 @@
-<div class="panel panel-default" data-ng-controller="AuthorizedProjectsController" data-ng-class="{'panel-warning':isEditing()}">
+<div class="panel panel-default @if(!$private) ng-hide @endif" data-ng-controller="AuthorizedProjectsController" data-ng-class="{'panel-warning':isEditing()}" data-ng-hide="getVisibilityId() !== {{Dias\Visibility::$private->id}}">
     <div class="panel-heading">
         Authorized Projects
         <span class="pull-right">

@@ -1,4 +1,4 @@
-<div class="panel panel-default" data-ng-controller="LabelTreeController" data-ng-class="{'panel-warning':isEditing()}">
+<div class="panel panel-default" data-ng-controller="LabelsController" data-ng-class="{'panel-warning':isEditing()}">
     <div class="panel-heading">
         Labels
         @can('create-label', $tree)
