@@ -21,7 +21,7 @@
                     <span data-ng-bind="transect.name"></span>
                 @endif
             </li>
-            <li class="list-group-item @if($transects->count() > 0) ng-hide @endif" data-ng-show="!hasTransects()">
+            <li class="list-group-item @if($transects->count() > 0) ng-cloak @endif" data-ng-if="!hasTransects()">
                 This project has no transects
             </li>
         @else
