@@ -5,7 +5,7 @@
  * @memberOf dias.projects
  * @description Controller for the the members of a project
  */
-angular.module('dias.projects').controller('MembersController', function ($scope, PROJECT, MEMBERS, ROLES, USER_ID, ProjectUser, msg, User) {
+angular.module('dias.projects').controller('MembersController', function ($scope, PROJECT, MEMBERS, ROLES, DEFAULT_ROLE_ID, USER_ID, ProjectUser, msg, User) {
         "use strict";
 
         var editing = false;
@@ -13,7 +13,7 @@ angular.module('dias.projects').controller('MembersController', function ($scope
 
         $scope.newMember = {
             user: null,
-            project_role_id: null
+            project_role_id: DEFAULT_ROLE_ID.toString()
         };
 
         var handleError = function (response) {

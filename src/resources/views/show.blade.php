@@ -14,6 +14,7 @@
     angular.module('dias.projects').constant('USER_ID', {!! $user->id !!});
     angular.module('dias.projects').constant('REDIRECT_URL', '{{route('projects-index')}}');
     angular.module('dias.projects').constant('ROLES', {!! $roles !!});
+    angular.module('dias.projects').constant('DEFAULT_ROLE_ID', {!! Dias\Role::$guest->id !!});
     angular.module('dias.projects').constant('LABEL_TREES', {!! $labelTrees !!});
     angular.module('dias.projects').constant('TRANSECTS', {!! $transects !!});
     angular.module('dias.projects').constant('MEMBERS', {!! $members !!});
