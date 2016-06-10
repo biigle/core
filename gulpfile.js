@@ -13,8 +13,6 @@ elixir(function (mix) {
 
     mix.sass('dashboard.scss', 'public/assets/styles/dashboard.css')
 
-    mix.angular('resources/assets/js/projects/', 'public/assets/scripts', 'projects.js');
-
     mix.sass('edit.scss', 'public/assets/styles/edit.css')
     mix.angular('resources/assets/js/edit/', 'public/assets/scripts', 'edit.js');
 
