@@ -4,7 +4,6 @@ namespace Dias;
 
 use Illuminate\Database\Eloquent\Model;
 use Dias\Contracts\BelongsToProjectContract;
-use Illuminate\Database\QueryException;
 use Exception;
 use Dias\Shape;
 
@@ -128,28 +127,5 @@ class Annotation extends Model implements BelongsToProjectContract
     public function projectIds()
     {
         return $this->image->projectIds();
-    }
-
-    /**
-     * Adds a new label to this annotation.
-     *
-     * @param int $labelId
-     * @param float $confidence
-     * @param User $user The user attaching tha label
-     * @return AnnotationLabel
-     */
-    public function addLabel($labelId, $confidence, $user)
-    {
-        try {
-            $annotationLabel = new AnnotationLabel;
-            $annotationLabel->label()->associate(Label::find($labelId));
-            $annotationLabel->user()->associate($user);
-            $annotationLabel->confidence = $confidence;
-            $this->labels()->save($annotationLabel);
-
-            return $annotationLabel;
-        } catch (QueryException $e) {
-            abort(400, 'The user already attached label "'.$labelId.'" to annotation "'.$this->id.'"!');
-        }
     }
 }

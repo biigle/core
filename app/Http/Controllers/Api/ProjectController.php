@@ -93,11 +93,20 @@ class ProjectController extends Controller
         $project->description = $this->request->input('description', $project->description);
         $project->save();
 
-        if (!static::isAutomatedRequest($this->request)) {
-            return redirect()->back()
-                ->with('message', 'Saved.')
+        if (static::isAutomatedRequest($this->request)) {
+            return;
+        }
+
+        if ($this->request->has('_redirect')) {
+            return redirect($this->request->input('_redirect'))
+                ->with('saved', true)
+                ->with('message', 'Project updated.')
                 ->with('messageType', 'success');
         }
+        return redirect()->back()
+            ->with('saved', true)
+            ->with('message', 'Project updated.')
+            ->with('messageType', 'success');
     }
 
     /**
@@ -131,8 +140,19 @@ class ProjectController extends Controller
             return $project;
         }
 
-        return redirect()->route('home')
-            ->with('message', 'Project '.$project->name.' created')
+        if (static::isAutomatedRequest($this->request)) {
+            return $project;
+        }
+
+        if ($this->request->has('_redirect')) {
+            return redirect($this->request->input('_redirect'))
+                ->with('newProject', $project)
+                ->with('message', 'Project created.')
+                ->with('messageType', 'success');
+        }
+        return redirect()->back()
+            ->with('newProject', $project)
+            ->with('message', 'Project created.')
             ->with('messageType', 'success');
     }
 
@@ -171,11 +191,18 @@ class ProjectController extends Controller
         $project->delete();
 
         if (static::isAutomatedRequest($this->request)) {
-            return response('Deleted.', 200);
+            return;
         }
 
-        return redirect()->route('home')
-            ->with('message', 'Project '.$project->name.' deleted')
+        if ($this->request->has('_redirect')) {
+            return redirect($this->request->input('_redirect'))
+                ->with('deleted', true)
+                ->with('message', 'Project deleted.')
+                ->with('messageType', 'success');
+        }
+        return redirect()->back()
+            ->with('deleted', true)
+            ->with('message', 'Project deleted.')
             ->with('messageType', 'success');
     }
 }

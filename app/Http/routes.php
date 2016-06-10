@@ -82,11 +82,6 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as' => 'admin-users-delete',
             'uses' => 'UsersController@delete',
         ]);
-
-        $router->get('labels', [
-            'as' => 'admin-labels',
-            'uses' => 'LabelsController@get',
-        ]);
     });
 
 });
@@ -115,7 +110,23 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
     ]);
 
     $router->resource('labels', 'LabelController', [
-        'only' => ['index', 'show', 'store', 'update', 'destroy'],
+        'only' => ['destroy'],
+    ]);
+
+    $router->resource('label-trees', 'LabelTreeController', [
+        'only' => ['index', 'store', 'update', 'destroy'],
+    ]);
+
+    $router->resource('label-trees.authorized-projects', 'LabelTreeAuthorizedProjectController', [
+        'only' => ['store', 'destroy'],
+    ]);
+
+    $router->resource('label-trees.labels', 'LabelTreeLabelController', [
+        'only' => ['store'],
+    ]);
+
+    $router->resource('label-trees.users', 'LabelTreeUserController', [
+        'only' => ['store', 'update', 'destroy'],
     ]);
 
     $router->resource('media-types', 'MediaTypeController', [
@@ -127,8 +138,12 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'only' => ['show', 'update', 'store', 'destroy'],
     ]);
 
-    $router->resource('projects.labels', 'ProjectLabelController', [
-        'only' => ['index', 'show'],
+    $router->get(
+        'projects/{pid}/label-trees/available',
+        'ProjectLabelTreeController@available'
+    );
+    $router->resource('projects.label-trees', 'ProjectLabelTreeController', [
+        'only' => ['index', 'store', 'destroy'],
     ]);
 
     $router->post(
@@ -179,5 +194,9 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
 
     $router->resource('users', 'UserController', [
         'only' => ['index', 'show', 'update', 'store', 'destroy'],
+    ]);
+
+    $router->resource('visibilities', 'VisibilityController', [
+        'only' => ['index', 'show'],
     ]);
 });

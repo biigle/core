@@ -81,13 +81,6 @@ class ProjectTest extends ModelTestCase
         $this->assertNotNull($this->model->users()->find($user->id));
     }
 
-    public function testLabels()
-    {
-        $this->assertEmpty($this->model->labels()->get());
-        LabelTest::create(['project_id' => $this->model->id]);
-        $this->assertNotEmpty($this->model->labels()->get());
-    }
-
     public function testAdmins()
     {
         $admin = UserTest::create();
@@ -255,5 +248,28 @@ class ProjectTest extends ModelTestCase
         // use the force to detach and delete the transect
         $this->model->removeAllTransects(true);
         $this->assertNull($transect->fresh());
+    }
+
+    public function testLabelTrees()
+    {
+        $count = $this->model->labelTrees()->count();
+        LabelTreeTest::create()->projects()->attach($this->model->id);
+        $this->assertEquals($count + 1, $this->model->labelTrees()->count());
+    }
+
+    public function testAuthorizedLabelTrees()
+    {
+        $this->assertFalse($this->model->authorizedLabelTrees()->exists());
+        LabelTreeTest::create()->authorizedProjects()->attach($this->model->id);
+        $this->assertTrue($this->model->authorizedLabelTrees()->exists());
+    }
+
+    public function testDefaultLabelTrees()
+    {
+        // tree has no members so it is global
+        $tree = LabelTreeTest::create();
+        $project = self::create();
+        $this->assertTrue($project->labelTrees()->exists());
+        $this->assertTrue($project->labelTrees()->where('id', $tree->id)->exists());
     }
 }

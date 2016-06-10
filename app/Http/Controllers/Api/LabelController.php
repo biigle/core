@@ -3,200 +3,44 @@
 namespace Dias\Http\Controllers\Api;
 
 use Dias\Label;
-use Illuminate\Database\QueryException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class LabelController extends Controller
 {
     /**
-     * Shows a list of all labels.
+     * Delete a label
      *
-     * @api {get} labels Get all label categories
-     * @apiDescription This does not include project specific label categories.
-     * @apiGroup Labels
-     * @apiName IndexLabels
-     * @apiPermission user
-     *
-     * @apiSuccessExample {json} Success response:
-     * [
-     *    {
-     *       "aphia_id": null,
-     *       "id": 1,
-     *       "name": "Benthic Object",
-     *       "parent_id": null,
-     *       "color": "0099ff"
-     *    },
-     *    {
-     *       "aphia_id": null,
-     *       "id": 2,
-     *       "name": "Coral",
-     *       "parent_id": 1,
-     *       "color": "9900ff"
-     *    }
-     * ]
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        return Label::whereNull('project_id')->get();
-    }
-
-    /**
-     * Displays the specified label.
-     *
-     * @api {get} labels/:id Get a label category
-     * @apiDescription This does not include project specific label categories.
-     * @apiGroup Labels
-     * @apiName ShowLabels
-     * @apiPermission user
-     *
-     * @apiParam {Number} id The label ID.
-     *
-     * @apiSuccessExample {json} Success response:
-     * {
-     *    "aphia_id": null,
-     *    "id": 1,
-     *    "name": "Benthic Object",
-     *    "parent_id": null,
-     *    "color": "0099ff"
-     * }
-     *
-     * @param  int  $id
-     * @return Label
-     */
-    public function show($id)
-    {
-        return Label::whereNull('project_id')->findOrFail($id);
-    }
-
-    /**
-     * Creates a new label.
-     *
-     * @api {post} labels Create a new (project specific) label category
-     * @apiDescription Project specific label categories can only be created by project admins. Global categories can only be created by global admins.
-     * @apiGroup Labels
-     * @apiName StoreLabels
-     * @apiPermission adminOrProjectAdmin
-     *
-     * @apiParam (Required arguments) {String} name Name of the new label category.
-     * @apiParam (Required arguments) {String} color Color of the new label category as hexadecimal string (like `bada55`). May have an optional `#` prefix.
-     *
-     * @apiParam (Optional arguments) {Number} parent_id ID of the parent label category for ordering in a tree-like stricture.
-     * @apiParam (Optional arguments) {Number} aphia_id The [WoRMS](http://www.marinespecies.org/) AphiaID.
-     * @apiParam (Optional arguments) {Number} project_id ID of the project, this category should belong to. If this attribute is present, the category becomes a project specific category.
-     *
-     * @apiSuccessExample {json} Success response:
-     * {
-     *    "id": 4,
-     *    "name": "Sea Cucumber",
-     *    "parent_id": 1,
-     *    "aphia_id": 1234,
-     *    "project_id": null,
-     *    "color": "bada55"
-     * }
-     *
-     * @return Label
-     */
-    public function store()
-    {
-        $this->validate($this->request, Label::$createRules);
-
-        if ($this->request->has('project_id')) {
-            // if the project exists is checked by the validation before
-            $this->requireCanAdmin(\Dias\Project::find($this->request->input('project_id')));
-        } else {
-            $this->requireAdmin();
-        }
-
-        $label = new Label;
-        $label->name = $this->request->input('name');
-        $label->aphia_id = $this->request->input('aphia_id');
-        $label->project_id = $this->request->input('project_id');
-        $label->parent_id = $this->request->input('parent_id');
-        $label->color = $this->request->input('color');
-
-        $label->save();
-        // the parent object shouldn't be returned
-        unset($label->parent);
-
-        return $label;
-    }
-
-    /**
-     * Updates the attributes of the specified label.
-     *
-     * @api {put} labels/:id Update a label category
-     * @apiDescription Project specific label categories can only be updated by project admins. Global categories can only be updated by global admins.
-     * @apiGroup Labels
-     * @apiName UpdateLabels
-     * @apiPermission adminOrProjectAdmin
-     *
-     * @apiParam {Number} id The label ID.
-     *
-     * @apiParam (Attributes that can be updated) {String} name Name of the label category.
-     * @apiParam (Attributes that can be updated) {String} color Color of the label category.
-     * @apiParam (Attributes that can be updated) {Number} parent_id ID of the parent label category for ordering in a tree-like stricture.
-     * @apiParam (Attributes that can be updated) {Number} aphia_id The [WoRMS](http://www.marinespecies.org/) AphiaID.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update($id)
-    {
-        $this->validate($this->request, Label::$updateRules);
-        $label = Label::findOrFail($id);
-
-        if ($label->project_id === null) {
-            $this->requireAdmin();
-        } else {
-            $this->requireCanAdmin($label->project);
-        }
-
-        $label->name = $this->request->input('name', $label->name);
-        $label->aphia_id = $this->request->input('aphia_id', $label->aphia_id);
-        $label->parent_id = $this->request->input('parent_id', $label->parent_id);
-        $label->color = $this->request->input('color', $label->color);
-
-        $label->save();
-    }
-
-    /**
-     * Removes the specified label.
-     *
-     * @api {delete} labels/:id Delete a label category
+     * @api {delete} labels/:id Delete a label
      * @apiGroup Labels
      * @apiName DestroyLabels
-     * @apiPermission adminOrProjectAdmin
-     * @apiDescription If a label category is still attached to an annotation, it cannot be removed. Also, if a label category has child labels, the `force` argument is required.
-     * Project specific label categories can only be deleted by project admins. Global categories can only be deleted by global admins.
+     * @apiPermission labelTreeEditor
+     * @apiDescription A label may only be deleted if it doesn't have child labels and is
+     * not in use anywhere (e.g. attached to an annotation).
      *
-     * @apiParam {Number} id The label ID.
+     * @apiParam {Number} id The label ID
      *
-     * @apiParam (Optional parameters) {Boolean} force Set this parameter to delete label categories with child labels.
-     *
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         $label = Label::findOrFail($id);
+        $this->authorize('destroy', $label);
 
-        if ($label->project_id === null) {
-            $this->requireAdmin();
-        } else {
-            $this->requireCanAdmin($label->project);
+        if (!$label->canBeDeleted()) {
+            throw new AuthorizationException('A label can only be deleted if it has no children and is not in use.');
         }
 
-        if ($label->hasChildren && !$this->request->has('force')) {
-            abort(400, 'The label has child labels. Add the "force" parameter to delete the label and all its child labels.');
+        $label->delete();
+
+        if (static::isAutomatedRequest($this->request)) {
+            return;
         }
 
-        try {
-            $label->delete();
-        } catch (QueryException $e) {
-            abort(400, "You can't delete a label that is still in use.");
+        if ($this->request->has('_redirect')) {
+            return redirect($this->request->input('_redirect'))
+                ->with('deleted', true);
         }
-
-        return response('Deleted.', 200);
+        return redirect()->back()
+            ->with('deleted', true);
     }
 }

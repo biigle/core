@@ -114,18 +114,4 @@ class AnnotationTest extends ModelTestCase
         $this->setExpectedException('Exception');
         $this->model->validatePoints([10]);
     }
-
-    public function testAddLabel()
-    {
-        $label = LabelTest::create();
-        $user = UserTest::create();
-        $confidence = 0.1;
-        $this->assertEquals(0, $this->model->labels()->count());
-        $point = $this->model->addLabel($label->id, $confidence, $user);
-        $this->assertEquals(1, $this->model->labels()->count());
-        $l = $this->model->labels()->first();
-        $this->assertEquals($label->id, $l->id);
-        $this->assertEquals($confidence, $l->confidence);
-        $this->assertEquals($user->id, $l->user_id);
-    }
 }

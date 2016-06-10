@@ -13,7 +13,10 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        'Dias\Model' => 'Dias\Policies\ModelPolicy',
+        \Dias\LabelTree::class => \Dias\Policies\LabelTreePolicy::class,
+        \Dias\Project::class => \Dias\Policies\ProjectPolicy::class,
+        \Dias\Annotation::class => \Dias\Policies\AnnotationPolicy::class,
+        \Dias\Label::class => \Dias\Policies\LabelPolicy::class,
     ];
 
     /**

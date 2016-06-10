@@ -29,6 +29,15 @@ class Project extends Model implements BelongsToProjectContract
     ];
 
     /**
+     * Validation rules for attaching a label tree
+     *
+     * @var array
+     */
+    public static $attachLabelTreeRules = [
+        'id'        => 'required|exists:label_trees,id',
+    ];
+
+    /**
      * The attributes hidden from the model's JSON form.
      *
      * @var array
@@ -59,7 +68,6 @@ class Project extends Model implements BelongsToProjectContract
     public function users()
     {
         return $this->belongsToMany('Dias\User')
-            ->select('id', 'firstname', 'lastname')
             ->withPivot('project_role_id as project_role_id');
     }
 
@@ -283,12 +291,22 @@ class Project extends Model implements BelongsToProjectContract
     }
 
     /**
-     * The project specific labels of this project.
+     * The label trees, this project is using
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function labels()
+    public function labelTrees()
     {
-        return $this->hasMany('Dias\Label');
+        return $this->belongsToMany('Dias\LabelTree');
+    }
+
+    /**
+     * The private label trees that authorized this project to use them
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function authorizedLabelTrees()
+    {
+        return $this->belongsToMany('Dias\LabelTree', 'label_tree_authorized_project');
     }
 }

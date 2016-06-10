@@ -42,7 +42,7 @@ class ProjectUserController extends Controller
         $project = Project::findOrFail($projectId);
         $this->requireCanSee($project);
 
-        return $project->users;
+        return $project->users()->select('id', 'firstname', 'lastname')->get();
     }
 
     /**
@@ -81,7 +81,7 @@ class ProjectUserController extends Controller
     /**
      * Adds a new user to the specified project.
      *
-     * @api {post} projects/:pid/transects/:uid Add a new member
+     * @api {post} projects/:pid/users/:uid Add a new member
      * @apiGroup Projects
      * @apiName AttachProjectUsers
      * @apiPermission projectAdmin
@@ -118,7 +118,7 @@ class ProjectUserController extends Controller
     /**
      * Removes a user form the specified project.
      *
-     * @api {delete} projects/:pid/transects/:uid Remove a member
+     * @api {delete} projects/:pid/users/:uid Remove a member
      * @apiGroup Projects
      * @apiName DestroyProjectUsers
      * @apiPermission projectMember
