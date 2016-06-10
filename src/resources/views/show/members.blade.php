@@ -11,7 +11,6 @@
             <div class="form-group">
                 <input class="form-control" type="text" placeholder="Search new user" data-ng-model="newMember.user" data-uib-typeahead="user as username(user) for user in findUser($viewValue)" data-typeahead-wait-ms="250"/>
                 <select class="form-control" title="Role of the new user" data-ng-model="newMember.role_id">
-                    <option value="" disabled selected>-- select role --</option>
                     @foreach ($roles as $id => $name)
                         <option value="{{$id}}">{{$name}}</option>
                     @endforeach

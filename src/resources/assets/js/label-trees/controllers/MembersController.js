@@ -5,7 +5,7 @@
  * @memberOf dias.label-trees
  * @description Controller for the the members of a label tree
  */
-angular.module('dias.label-trees').controller('MembersController', function ($scope, LABEL_TREE, MEMBERS, ROLES, USER_ID, LabelTreeUser, msg, User) {
+angular.module('dias.label-trees').controller('MembersController', function ($scope, LABEL_TREE, MEMBERS, ROLES, DEFAULT_ROLE_ID, USER_ID, LabelTreeUser, msg, User) {
         "use strict";
 
         var editing = false;
@@ -13,7 +13,7 @@ angular.module('dias.label-trees').controller('MembersController', function ($sc
 
         $scope.newMember = {
             user: null,
-            role_id: null
+            role_id: DEFAULT_ROLE_ID.toString()
         };
 
         var handleError = function (response) {

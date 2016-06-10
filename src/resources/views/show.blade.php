@@ -18,6 +18,7 @@
         angular.module('dias.label-trees').constant('AUTH_OWN_PROJECTS', {!! $authorizedOwnProjects !!});
         angular.module('dias.label-trees').constant('MEMBERS', {!! $members !!});
         angular.module('dias.label-trees').constant('ROLES', {!! $roles !!});
+        angular.module('dias.label-trees').constant('DEFAULT_ROLE_ID', {!! Dias\Role::$editor->id !!});
     @endcan
 </script>
 @endpush
