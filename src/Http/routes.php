@@ -2,18 +2,17 @@
 
 $router->group(['middleware' => 'auth'], function ($router) {
     $router->get('projects/create', [
-        'as'   => 'create-project',
-        'uses' => 'ProjectController@create',
+        'as'   => 'projects-create',
+        'uses' => 'ProjectsController@create',
     ]);
 
     $router->get('projects/{id}', [
-        'as'   => 'project',
-        'uses' => 'ProjectController@index',
+        'as'   => 'projects',
+        'uses' => 'ProjectsController@show',
     ]);
 
-    $router->get('admin/projects', [
-        'as' => 'admin-projects',
-        'middleware' => 'admin',
-        'uses' => 'ProjectController@admin',
+    $router->get('projects', [
+        'as'   => 'projects-index',
+        'uses' => 'ProjectsController@index',
     ]);
 });

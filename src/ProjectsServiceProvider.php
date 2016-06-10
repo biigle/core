@@ -33,8 +33,8 @@ class ProjectsServiceProvider extends ServiceProvider
         });
 
         $modules->addMixin('projects', 'dashboard');
-        $modules->addMixin('projects', 'adminMenu');
         $modules->addMixin('projects', 'adminIndex');
+        $modules->addMixin('projects', 'navbarMenuItem');
     }
 
     /**

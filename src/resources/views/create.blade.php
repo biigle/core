@@ -17,13 +17,14 @@
 
 			<div class="form-group{{ $errors->has('description') ? ' has-error' : '' }}">
 				<label for="description">Project description</label>
-				<textarea class="form-control" name="description" id="description">{{ old('description') }}</textarea>
+                <input type="text" class="form-control" name="description" id="description" value="{{ old('description') }}">
 				@if($errors->has('description'))
 					<span class="help-block">{{ $errors->first('description') }}</span>
 				@endif
 			</div>
+            <input type="hidden" name="_redirect" value="{{ route('projects-index') }}">
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
-			<a href="{{ route('home') }}" class="btn btn-link">Cancel</a>
+			<a href="{{ URL::previous() }}" class="btn btn-link">Cancel</a>
 			<input type="submit" class="btn btn-success pull-right" value="Create">
 		</form>
 	</div>

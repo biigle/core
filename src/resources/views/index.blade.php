@@ -1,65 +1,70 @@
 @extends('app')
-@inject('modules', 'Dias\Services\Modules')
 
-@section('title'){{ $project->name }}@stop
-
-@include('projects::assets')
+@section('title') Projects @stop
 
 @section('content')
-<div class="container" data-ng-app="dias.projects" data-ng-controller="ProjectIndexController" data-project-id="{{ $project->id }}" data-user-id="{{ $user->id }}" data-leaving-success-msg="Project left. Redirecting to dashboard..." data-dashboard-url="{{ route('home') }}">
-    <h2 class="col-lg-12 clearfix">
-        {{ $project->name }} <small title="Project ID {{ $project->id }}">#{{ $project->id }}</small>
-        <span class="pull-right">
-            @if ($isMember)
-                <button class="btn btn-default" data-ng-click="leaveProject()" title="Leave {{ $project->name }}">Leave</button>
-            @endif
-            @if ($isAdmin)
-                <button class="btn btn-default" data-ng-controller="ProjectDeleteController" data-ng-click="submit()" data-success-msg="Project deleted. Redirecting to dashboard..." data-error-msg="There was an error when deleting this project." title="Delete {{ $project->name }}">Delete</button>
-            @endif
-        </span>
-    </h2>
-
-    @include('projects::index.info')
-
-    @include('projects::index.members')
-
-    @include('projects::index.label-trees')
-
-    @foreach ($modules->getMixins('projects') as $module => $nestedMixins)
-        @include($module.'::projects', array('mixins' => $nestedMixins, 'project' => $project, 'isAdmin' => $isAdmin))
-    @endforeach
-
-    @if($isAdmin)
-        <script type="text/ng-template" id="confirmDeleteModal.html">
-        <div class="modal-header">
-            <h3 class="modal-title">Confirm deletion</h3>
-        </div>
-        <div class="modal-body">
-            <div data-ng-if="!force">
-                Are you sure you want to delete <strong>{{ $project->name }}</strong>?
+<div class="container">
+    <div class="col-md-offset-3 col-md-6">
+        <div class="row">
+            <div class="col-sm-6">
+                <form class="form" action="{{route('projects-index')}}" method="GET">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" name="query" class="form-control" placeholder="Find project" value="{{old('query')}}">
+                            <span class="input-group-btn">
+                                <a class="btn btn-default" href="{{route('projects-index')}}" title="Clear"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                                <button class="btn btn-default" type="submit" title="Find"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                            </span>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div data-ng-if="force">
-                <strong>One or more transects would be deleted with this project.</strong> Do you still want to continue?
+            <div class="col-sm-6 clearfix">
+                <a class="btn btn-default pull-right" href="{{route('projects-create')}}">New project</a>
             </div>
         </div>
-        <div class="modal-footer">
-            <button data-ng-if="!force" class="btn btn-danger" data-ng-click="delete()">Delete</button>
-            <button data-ng-if="force" class="btn btn-danger" data-ng-click="delete()">Yes, delete</button>
-            <button class="btn btn-default" data-ng-click="$close()">Cancel</button>
+        @if ($projects->total() > 0)
+            <p>
+                Results {{$projects->firstItem()}} to {{$projects->lastItem()}} of {{$projects->total()}}
+            </p>
+        @endif
+        <div class="list-group">
+            @forelse($projects as $project)
+                <a class="list-group-item @if($newProject && $project->id === $newProject->id) list-group-item-success @endif" href="{{route('projects', $project->id)}}" title="Show the project {{$project->name}}">
+                    <h4 class="list-group-item-heading">
+                        {{$project->name}}
+                    </h4>
+                    @if($project->description)
+                        <p class="list-group-item-text">{{$project->description}}</p>
+                    @endif
+                </a>
+            @empty
+                <p class="list-group-item list-group-item-info">
+                    @if (old('query'))
+                        There are no projects matching your query <strong>{{old('query')}}</strong>.
+                    @else
+                        There are no projects.
+                    @endif
+                </p>
+            @endforelse
         </div>
-        </script>
-    @endif
-    <script type="text/ng-template" id="confirmLeaveProjectModal.html">
-    <div class="modal-header">
-        <h3 class="modal-title">Confirm leaving project</h3>
+        @if ($projects->total() > 0)
+            <nav>
+                <ul class="pager">
+                    @if ($projects->currentPage() > 1)
+                        <li><a href="{{$projects->previousPageUrl()}}@if(old('query'))&query={{old('query')}}@endif">Previous</a></li>
+                    @else
+                        <li class="disabled"><a href="#" disabled>Previous</a></li>
+                    @endif
+
+                    @if ($projects->hasMorePages())
+                        <li><a href="{{$projects->nextPageUrl()}}@if(old('query'))&query={{old('query')}}@endif">Next</a></li>
+                    @else
+                        <li class="disabled"><a href="#" disabled>Next</a></li>
+                    @endif
+                </ul>
+            </nav>
+        @endif
     </div>
-    <div class="modal-body">
-        <strong>Are you sure you want to leave {{ $project->name }}?</strong> You will not be able to join on your own again.
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-danger" data-ng-click="$close('yes')">Leave</button>
-        <button class="btn btn-default" data-ng-click="$close()">Cancel</button>
-    </div>
-    </script>
 </div>
 @endsection

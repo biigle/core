@@ -2,7 +2,7 @@
 
 use Dias\Role;
 
-class ProjectsControllerTest extends TestCase {
+class ProjectsModuleHttpControllersProjectsControllerTest extends TestCase {
 
    public function testEdit() {
       $project = ProjectTest::create();
@@ -40,13 +40,27 @@ class ProjectsControllerTest extends TestCase {
       $this->assertResponseOk();
    }
 
-   public function testAdmin()
-   {
-        $this->visit("admin/projects")->seePageIs('auth/login');
+
+    public function testIndex() {
         $user = UserTest::create();
+        $project = ProjectTest::create(['name' => 'random name']);
+        $project2 = ProjectTest::create(['name' => 'another project']);
+        $project3 = ProjectTest::create(['name' => 'and again']);
+        $project->addUserId($user->id, Role::$guest->id);
+        $project2->addUserId($user->id, Role::$admin->id);
+
+        $this->visit("projects")->seePageIs('auth/login');
+
         $this->be($user);
-        $this->get("admin/projects")->assertResponseStatus(401);
-        $user->role()->associate(Dias\Role::$admin);
-        $this->visit("admin/projects")->assertResponseOk();
-   }
+        $this->get("projects")->assertResponseOk();
+        $this->see('random name');
+        $this->see('another project');
+        $this->dontSee('and again');
+
+        $this->call('GET', 'projects', ['query' => 'name']);
+        $this->assertResponseOk();
+        $this->see('random name');
+        $this->dontSee('another project');
+        $this->dontSee('and again');
+    }
 }
