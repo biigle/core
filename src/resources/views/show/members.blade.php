@@ -3,7 +3,7 @@
         Members
         <span class="pull-right">
             <span class="ng-cloak" data-ng-if="isLoading()">loading...</span>
-            <button class="btn btn-default btn-xs" title="Edit authorized projects" data-ng-click="toggleEditing()" data-ng-class="{active: isEditing()}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+            <button class="btn btn-default btn-xs" title="Edit members" data-ng-click="toggleEditing()" data-ng-class="{active: isEditing()}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
         </span>
     </div>
     <div class="ng-cloak panel-body" data-ng-if="isEditing()">

@@ -3,7 +3,7 @@
  * @ngdoc controller
  * @name MembersController
  * @memberOf dias.label-trees
- * @description Controller for the the amembers of a label tree
+ * @description Controller for the the members of a label tree
  */
 angular.module('dias.label-trees').controller('MembersController', function ($scope, LABEL_TREE, MEMBERS, ROLES, USER_ID, LabelTreeUser, msg, User) {
         "use strict";

@@ -54,7 +54,7 @@ class LabelTreesModuleHttpControllersLabelTreeControllerTest extends TestCase
         $this->see('another tree');
         $this->dontSee('private one');
 
-        $this->call('GET', 'label-trees', ['query' => 'ab']);
+        $this->call('GET', 'label-trees', ['query' => 'name']);
         $this->assertResponseOk();
         $this->see('random name');
         $this->dontSee('another tree');
