@@ -27,6 +27,8 @@ angular.module('dias.projects').controller('TransectsController', function ($sco
                         },
                         handleError
                     );
+                } else {
+                    loading = false;
                 }
             } else {
                 handleError(response);
