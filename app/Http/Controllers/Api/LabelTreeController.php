@@ -82,10 +82,14 @@ class LabelTreeController extends Controller
 
         if ($this->request->has('_redirect')) {
             return redirect($this->request->input('_redirect'))
-                ->with('saved', true);
+                ->with('saved', true)
+                ->with('message', 'Label tree updated.')
+                ->with('messageType', 'success');
         }
         return redirect()->back()
-            ->with('saved', true);
+            ->with('saved', true)
+            ->with('message', 'Label tree updated.')
+            ->with('messageType', 'success');
     }
 
     /**
@@ -133,10 +137,14 @@ class LabelTreeController extends Controller
 
         if ($this->request->has('_redirect')) {
             return redirect($this->request->input('_redirect'))
-                ->with('newTree', $tree);
+                ->with('newTree', $tree)
+                ->with('message', 'Label tree created.')
+                ->with('messageType', 'success');
         }
         return redirect()->back()
-            ->with('newTree', $tree);
+            ->with('newTree', $tree)
+            ->with('message', 'Label tree created.')
+            ->with('messageType', 'success');
     }
 
     /**
@@ -170,9 +178,13 @@ class LabelTreeController extends Controller
 
         if ($this->request->has('_redirect')) {
             return redirect($this->request->input('_redirect'))
-                ->with('deleted', true);
+                ->with('deleted', true)
+                ->with('message', 'Label tree deleted.')
+                ->with('messageType', 'success');
         }
         return redirect()->back()
-            ->with('deleted', true);
+            ->with('deleted', true)
+            ->with('message', 'Label tree deleted.')
+                ->with('messageType', 'success');
     }
 }
