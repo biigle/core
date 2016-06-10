@@ -15,7 +15,7 @@ class ProjectsModuleHttpControllersProjectsControllerTest extends TestCase {
       // doesn't belong to project
       $this->be($user);
       $this->get('projects/1');
-      $this->assertResponseStatus(401);
+      $this->assertResponseStatus(403);
 
       // can't admin the project
       $project->addUserId($user->id, Role::$editor->id);

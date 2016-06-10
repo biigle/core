@@ -7,14 +7,11 @@
  * @example
 
  */
-angular.module('dias.projects').controller('ProjectLabelTreesController', function ($scope, PROJECT_ID, ProjectLabelTree, msg) {
+angular.module('dias.projects').controller('ProjectLabelTreesController', function ($scope, PROJECT, LABEL_TREES, ProjectLabelTree, msg) {
 		"use strict";
 
         var editing = false;
-        var usedTrees = [];
         var availableTrees;
-
-        var newTrees = [];
 
         var loading = false;
 
@@ -23,27 +20,26 @@ angular.module('dias.projects').controller('ProjectLabelTreesController', functi
         };
 
         var treeIsNotUsed = function (tree) {
-            return usedTrees.indexOf(tree.id) === -1;
+            for (var i = LABEL_TREES.length - 1; i >= 0; i--) {
+                if (LABEL_TREES[i].id === tree.id) {
+                    return false;
+                }
+            }
+
+            return true;
         };
 
         var treeAttached = function (tree) {
-            $scope.addUsedTree(tree.id);
-            newTrees.push(tree);
+            LABEL_TREES.push(tree);
             $scope.selected.tree = null;
             loading = false;
         };
 
         var treeDetached = function (tree) {
-            usedTrees.splice(usedTrees.indexOf(tree.id), 1);
-            var item = document.getElementById('label-tree-item-' + tree.id);
-            if (item) {
-                item.remove();
-            } else {
-                for (var i = newTrees.length - 1; i >= 0; i--) {
-                    if (newTrees[i].id === tree.id) {
-                        newTrees.splice(i, 1);
-                        break;
-                    }
+            for (var i = LABEL_TREES.length - 1; i >= 0; i--) {
+                if (LABEL_TREES[i].id === tree.id) {
+                    LABEL_TREES.splice(i, 1);
+                    break;
                 }
             }
 
@@ -62,15 +58,26 @@ angular.module('dias.projects').controller('ProjectLabelTreesController', functi
             editing = !editing;
 
             if (!availableTrees) {
-                availableTrees =  ProjectLabelTree.available({project_id: PROJECT_ID});
+                availableTrees =  ProjectLabelTree.available({project_id: PROJECT.id});
             }
+        };
+
+        $scope.getTrees = function () {
+            return LABEL_TREES;
         };
 
         $scope.attachLabelTree = function (tree) {
             if (!tree || tree.id === undefined) return;
 
             if (treeIsNotUsed(tree)) {
-                ProjectLabelTree.attach({project_id: PROJECT_ID}, tree, treeAttached, msg.responseError);
+                ProjectLabelTree.attach(
+                    {project_id: PROJECT.id},
+                    {id: tree.id},
+                    function () {
+                        treeAttached(tree);
+                    },
+                    msg.responseError
+                );
                 loading = true;
             }
         };
@@ -79,20 +86,13 @@ angular.module('dias.projects').controller('ProjectLabelTreesController', functi
             return availableTrees.filter(treeIsNotUsed);
         };
 
-        $scope.addUsedTree = function (id) {
-            usedTrees.push(id);
-        };
-
-        $scope.getNewTrees = function () {
-            return newTrees;
-        };
-
-        $scope.hasNewTrees = function () {
-            return newTrees.length > 0;
-        };
-
-        $scope.detachLabelTree = function (id) {
-            ProjectLabelTree.detach({project_id: PROJECT_ID}, {id: id}, treeDetached, msg.responseError);
+        $scope.detachLabelTree = function (tree) {
+            ProjectLabelTree.detach(
+                {project_id: PROJECT.id},
+                {id: tree.id},
+                treeDetached,
+                msg.responseError
+            );
             loading = true;
         };
 	}

@@ -7,7 +7,7 @@ $router->group(['middleware' => 'auth'], function ($router) {
     ]);
 
     $router->get('projects/{id}', [
-        'as'   => 'projects',
+        'as'   => 'project',
         'uses' => 'ProjectsController@show',
     ]);
 

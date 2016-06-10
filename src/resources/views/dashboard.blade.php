@@ -5,7 +5,7 @@
         <div class="col-lg-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <a href="{{ route('projects', $project->id) }}" title="Show {{ $project->name }}"><h3 class="panel-title">{{ $project->name }}</h3></a>
+                    <a href="{{ route('project', $project->id) }}" title="Show {{ $project->name }}"><h3 class="panel-title">{{ $project->name }}</h3></a>
                 </div>
                 <div class="panel-body">
                     @foreach ($mixins as $module => $nestedMixins)

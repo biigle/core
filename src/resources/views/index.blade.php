@@ -30,7 +30,7 @@
         @endif
         <div class="list-group">
             @forelse($projects as $project)
-                <a class="list-group-item @if($newProject && $project->id === $newProject->id) list-group-item-success @endif" href="{{route('projects', $project->id)}}" title="Show the project {{$project->name}}">
+                <a class="list-group-item @if($newProject && $project->id === $newProject->id) list-group-item-success @endif" href="{{route('project', $project->id)}}" title="Show the project {{$project->name}}">
                     <h4 class="list-group-item-heading">
                         {{$project->name}}
                     </h4>

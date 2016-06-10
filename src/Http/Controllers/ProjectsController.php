@@ -3,6 +3,7 @@
 namespace Dias\Modules\Projects\Http\Controllers;
 
 use Dias\Project;
+use Dias\Role;
 use Dias\Http\Controllers\Views\Controller;
 
 class ProjectsController extends Controller
@@ -25,14 +26,37 @@ class ProjectsController extends Controller
      */
     public function show($id)
     {
-        $project = Project::with('labelTrees')->findOrFail($id);
-        $this->requireCanSee($project);
+        $project = Project::findOrFail($id);
+        $this->authorize('access', $project);
 
-        return view('projects::show')
-            ->withProject($project)
-            ->withUser($this->user)
-            ->with('isMember', $project->users()->find($this->user->id) !== null)
-            ->with('isAdmin', $this->user->canAdminOneOfProjects([$id]));
+        $roles = collect([
+            Role::$admin->id => Role::$admin->name,
+            Role::$editor->id => Role::$editor->name,
+            Role::$guest->id => Role::$guest->name,
+        ]);
+
+        $labelTrees = $project->labelTrees()
+            ->select('id', 'name', 'description')
+            ->get();
+
+        $transects = $project->transects()
+            ->select('id', 'name', 'updated_at')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        $members = $project->users()
+            ->select('id', 'firstname', 'lastname', 'project_role_id')
+            ->orderBy('project_user.project_role_id', 'asc')
+            ->get();
+
+        return view('projects::show', [
+            'project' => $project,
+            'user' => $this->user,
+            'roles' => $roles,
+            'labelTrees' => $labelTrees,
+            'transects' => $transects,
+            'members' => $members,
+        ]);
     }
 
     /**
