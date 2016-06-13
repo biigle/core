@@ -36,9 +36,11 @@
         </div>
     @else
         <h2>
-            <span class="pull-right">
-                <button class="btn btn-default" data-ng-click="leaveTree(getVisibilityId() === {{\Dias\Visibility::$private->id}})">Leave</button>
-            </span>
+            @can('create-label', $tree)
+                <span class="pull-right">
+                    <button class="btn btn-default" data-ng-click="leaveTree(getVisibilityId() === {{\Dias\Visibility::$private->id}})">Leave</button>
+                </span>
+            @endcan
             @if($private)
                 <small class="text-muted glyphicon glyphicon-lock" aria-hidden="true" title="This label tree is private"></small>
             @endif
