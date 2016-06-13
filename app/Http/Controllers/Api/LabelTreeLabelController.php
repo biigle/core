@@ -20,7 +20,7 @@ class LabelTreeLabelController extends Controller
      * @apiParam (Required arguments) {String} name Name of the new label
      * @apiParam (Required arguments) {String} color Color of the new label as hexadecimal string (like `bada55`). May have an optional `#` prefix.
      *
-     * @apiParam (Optional arguments) {Number} parent_id ID of the parent label for ordering in a tree-like stricture.
+     * @apiParam (Optional arguments) {Number} parent_id ID of the parent label for ordering in a tree-like structure.
      * @apiParam (Optional arguments) {Number} aphia_id The [WoRMS](http://www.marinespecies.org/) AphiaID.
      *
      * @apiSuccessExample {json} Success response:
