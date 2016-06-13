@@ -138,10 +138,10 @@ class TransectTest extends ModelTestCase
         $return = Transect::parseImagesQueryString('');
         $this->assertEquals([], $return);
 
-        $return = Transect::parseImagesQueryString('1.jpg, 2.jpg, , , ');
+        $return = Transect::parseImagesQueryString(', 1.jpg , , 2.jpg, , , ');
         $this->assertEquals(['1.jpg', '2.jpg'], $return);
 
-        $return = Transect::parseImagesQueryString('1.jpg ');
+        $return = Transect::parseImagesQueryString(' 1.jpg ');
         $this->assertEquals(['1.jpg'], $return);
     }
 }

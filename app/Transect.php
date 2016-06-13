@@ -80,15 +80,7 @@ class Transect extends Model implements BelongsToProjectContract
      */
     public static function parseImagesQueryString($string)
     {
-        $images = preg_split('/\s*,\s*/', $string, null, PREG_SPLIT_NO_EMPTY);
-
-        if (!is_array($images)) {
-            $images = [$images];
-        }
-
-        $images = array_map('trim', $images);
-
-        return $images;
+        return preg_split('/\s*,\s*/', trim($string), null, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
