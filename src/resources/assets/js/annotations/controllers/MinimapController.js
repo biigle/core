@@ -8,10 +8,11 @@
 angular.module('dias.annotations').controller('MinimapController', function ($scope, map, mapImage, $element, styles) {
 		"use strict";
 
+        var element = $element[0];
         var viewportSource = new ol.source.Vector();
 
 		var minimap = new ol.Map({
-			target: 'minimap',
+			target: element,
 			// remove controls
 			controls: [],
 			// disable interactions
@@ -33,10 +34,15 @@ angular.module('dias.annotations').controller('MinimapController', function ($sc
 
 		// refresh the view (the image size could have been changed)
 		$scope.$on('image.shown', function () {
+            var extent = mapImage.getExtent();
 			minimap.setView(new ol.View({
 				projection: mapImage.getProjection(),
-				center: ol.extent.getCenter(mapImage.getExtent()),
-				zoom: 0
+				center: ol.extent.getCenter(extent),
+                // calculate resolution that fits the image into the minimap element
+				resolution: Math.max(
+                    extent[2] / element.clientWidth,
+                    extent[3] / element.clientHeight
+                )
 			}));
 		});
 

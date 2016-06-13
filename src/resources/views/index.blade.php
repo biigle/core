@@ -68,6 +68,7 @@
             @if ($editMode)
                 <div class="ng-cloak selected-label" data-ng-controller="SelectedLabelController" title="Currently selected label" data-ng-bind="getSelectedLabel().name" data-ng-show="hasSelectedLabel()"></div>
             @endif
+            <div class="fullscreen__minimap" data-ng-controller="MinimapController"></div>
     </div>
     @include('annotations::index.sidebar')
 </div>

@@ -16,6 +16,7 @@ html, body {
 // this will be the fullscreen element
 .annotator__canvas {
 	height: 100%;
+    width: 100%;
 	flex: 2;
 	// so the element shrinks and grows independently from the size of the
 	// contained svg
@@ -62,6 +63,25 @@ html, body {
 		background: url(../images/dias-wheel.png) center no-repeat;
 		background-size: contain;
 	}
+}
+
+.fullscreen__minimap {
+    position: absolute;
+    z-index: 1;
+    // below close full screen control
+    top: 3em;
+    right: .5em;
+    background-image: url(../images/noise.png);
+    height: 200px;
+    width: 250px;
+    margin-bottom: 1em;
+    border: 1px solid #090909;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.75);
+    visibility: hidden;
+}
+
+.annotator__canvas:fullscreen .fullscreen__minimap {
+    visibility: visible;
 }
 
 .icon {
