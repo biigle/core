@@ -44,9 +44,7 @@ angular.module('dias.annotations').controller('EditControlsController', function
         };
 
         $scope.deleteLastDrawnAnnotation = function () {
-            if ($scope.canDeleteLastAnnotation()) {
-                mapAnnotations.deleteLastDrawnAnnotation();
-            }
+            mapAnnotations.deleteLastDrawnAnnotation();
         };
 
         $scope.isMoving = mapAnnotations.isMoving;
@@ -75,8 +73,11 @@ angular.module('dias.annotations').controller('EditControlsController', function
 
         // backspace key
         keyboard.on(8, function (e) {
-            $scope.deleteLastDrawnAnnotation();
-            $scope.$apply();
+            if ($scope.canDeleteLastAnnotation()) {
+                e.preventDefault();
+                $scope.deleteLastDrawnAnnotation();
+                $scope.$apply();
+            }
         });
 
         keyboard.on('m', function () {

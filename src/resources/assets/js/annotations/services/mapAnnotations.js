@@ -216,6 +216,8 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         // handle the removal of an annotation
         var removeFeature = function (feature) {
+            if (!feature || !feature.annotation) return;
+
             if (feature === lastDrawnFeature) {
                 lastDrawnFeature = null;
             }
@@ -323,7 +325,9 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         };
 
         this.hasDrawnAnnotation = function () {
-            return !!lastDrawnFeature;
+            return lastDrawnFeature &&
+                lastDrawnFeature.annotation &&
+                lastDrawnFeature.annotation.$resolved;
         };
 
         this.deleteLastDrawnAnnotation = function () {
