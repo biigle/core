@@ -41,31 +41,32 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
 
     public function testStore()
     {
-        $this->doTestApiRoute('POST', '/api/v1/annotations/1/labels');
+        $id = $this->annotation->id;
+        $this->doTestApiRoute('POST', "/api/v1/annotations/{$id}/labels");
 
         // missing arguments
         $this->beEditor();
-        $this->json('POST', '/api/v1/annotations/1/labels');
+        $this->json('POST', "/api/v1/annotations/{$id}/labels");
         $this->assertResponseStatus(422);
 
         $this->assertEquals(0, $this->annotation->labels()->count());
 
         $this->beUser();
-        $this->post('/api/v1/annotations/1/labels', [
+        $this->post("/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1
         ]);
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->post('/api/v1/annotations/1/labels', [
+        $this->post("/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1
         ]);
         $this->assertResponseStatus(403);
 
         $this->beEditor();
-        $this->post('/api/v1/annotations/1/labels', [
+        $this->post("/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1
         ]);
@@ -73,16 +74,27 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
         $this->assertEquals(1, $this->annotation->labels()->count());
 
         $this->beAdmin();
-        $this->json('POST', '/api/v1/annotations/1/labels', [
+        $this->json('POST', "/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1
         ]);
         $this->assertResponseStatus(201);
         $this->assertEquals(2, $this->annotation->labels()->count());
-        $this->assertStringStartsWith('{', $this->response->getContent());
-        $this->assertStringEndsWith('}', $this->response->getContent());
+        $this->seeJson([
+            'id' => $this->labelRoot()->id,
+            'name' => $this->labelRoot()->name,
+            'parent_id' => $this->labelRoot()->parent_id,
+            'color' => $this->labelRoot()->color,
+        ]);
+        $this->seeJson([
+            'id' => $this->admin()->id,
+            'firstname' => $this->admin()->firstname,
+            'lastname' => $this->admin()->lastname,
+            'role_id' => $this->admin()->role_id,
+        ]);
+        $this->seeJson(['confidence' => 0.1]);
 
-        $this->post('/api/v1/annotations/1/labels', [
+        $this->post("/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1,
         ]);

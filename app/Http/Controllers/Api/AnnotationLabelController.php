@@ -74,8 +74,8 @@ class AnnotationLabelController extends Controller
      *       "id": 2,
      *       "name": "Coral",
      *       "parent_id": 1,
-     *       "aphia_id": null,
-     *       "color": "0099ff"
+     *       "color": "0099ff",
+     *       "label_tree_id": 1
      *    },
      *    "user": {
      *       "id": 1,
@@ -97,13 +97,17 @@ class AnnotationLabelController extends Controller
 
         try {
             $annotationLabel = new AnnotationLabel;
-            $annotationLabel->label_id = $label->id;
-            $annotationLabel->user_id = $this->user->id;
             $annotationLabel->confidence = $this->request->input('confidence');
-            $annotation->labels()->save($annotationLabel);
+            $annotationLabel->user()->associate($this->user);
+            $annotationLabel->label()->associate($label);
+            $annotationLabel->annotation()->associate($annotation);
+            $annotationLabel->save();
         } catch (QueryException $e) {
             abort(400, 'The user already attached this label to the annotation.');
         }
+
+        // should not be returned
+        unset($annotationLabel->annotation);
 
         return response($annotationLabel, 201);
     }
