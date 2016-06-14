@@ -254,20 +254,6 @@ class Project extends Model implements BelongsToProjectContract
     }
 
     /**
-     * Detaches the transect from this project. Fails if this is the last
-     * project, the transect is attached to, unless force is `true`.
-     *
-     * @param int $id Transect ID
-     * @param bool $force Delete the transect completely if this is the last
-     * project it belongs to
-     */
-    public function removeTransectId($id, $force = false)
-    {
-        $transect = $this->transects()->find($id);
-        $this->removeTransect($transect, $force);
-    }
-
-    /**
      * Detaches all transects from this project. Fails if this is the last
      * project, one of the transects is attached to, unless force is `true`.
      *

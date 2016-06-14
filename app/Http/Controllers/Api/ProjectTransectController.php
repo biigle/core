@@ -180,7 +180,7 @@ class ProjectTransectController extends Controller
         $this->requireCanAdmin($transect);
         $project = Project::findOrFail($projectId);
 
-        $project->removeTransectId($transectId, $this->request->has('force'));
+        $project->removeTransect($transect, $this->request->has('force'));
 
         return response('Removed.', 200);
     }

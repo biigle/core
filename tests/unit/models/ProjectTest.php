@@ -207,20 +207,20 @@ class ProjectTest extends ModelTestCase
         $secondProject->addTransectId($transect->id);
 
         $this->assertNotEmpty($secondProject->fresh()->transects);
-        $secondProject->removeTransectId($transect->id);
+        $secondProject->removeTransect($transect);
         $this->assertEmpty($secondProject->fresh()->transects);
 
         try {
             // trying to detach a transect belonging to only one project fails
             // without force
-            $this->model->removeTransectId($transect->id);
+            $this->model->removeTransect($transect);
             $this->assertFalse(true);
         } catch (HttpException $e) {
             $this->assertNotNull($e);
         }
 
         // use the force to detach and delete the transect
-        $this->model->removeTransectId($transect->id, true);
+        $this->model->removeTransect($transect, true);
         $this->assertNull($transect->fresh());
     }
 
