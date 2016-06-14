@@ -99,7 +99,7 @@ class AnnotationController extends Controller
     public function destroy($id)
     {
         $annotation = Annotation::findOrFail($id);
-        $this->requireCanEdit($annotation);
+        $this->authorize('destroy', $annotation);
 
         $annotation->delete();
 

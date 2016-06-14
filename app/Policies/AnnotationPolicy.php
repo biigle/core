@@ -3,6 +3,7 @@
 namespace Dias\Policies;
 
 use Dias\Annotation;
+use Dias\AnnotationLabel;
 use Dias\Label;
 use Dias\User;
 use Dias\Role;
@@ -62,6 +63,50 @@ class AnnotationPolicy extends CachedPolicy
                     ->whereIn('project_id', $projectIds)
                     ->where('label_tree_id', $label->label_tree_id)
                     ->exists();
+        });
+    }
+
+    /**
+     * Determine if the user may delete the given annotation.
+     *
+     * @param User $user
+     * @param Annotation $annotation
+     * @return bool
+     */
+    public function destroy(User $user, Annotation $annotation)
+    {
+        return $this->remember("annotation-can-destroy-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
+            // selects the IDs of the projects, the annotation belongs to
+            $projectIdsQuery = function ($query) use ($annotation) {
+                $query->select('project_transect.project_id')
+                    ->from('project_transect')
+                    ->join('images', 'project_transect.transect_id', '=', 'images.transect_id')
+                    ->where('images.id', $annotation->image_id);
+            };
+
+            // check if there are labels of other users attached to this annotation
+            // this also handles the case correctly when *no* label is attached
+            $hasLabelsFromOthers = AnnotationLabel::where('annotation_id', $annotation->id)
+                ->where('user_id', '!=', $user->id)
+                ->exists();
+
+            if ($hasLabelsFromOthers) {
+                // only project admins may delete annotations where labels of other users
+                // are still attached to
+                return DB::table('project_user')
+                    ->where('user_id', $user->id)
+                    ->whereIn('project_id', $projectIdsQuery)
+                    ->where('project_role_id', Role::$admin->id)
+                    ->exists();
+            } else {
+                // editors may delete only those annotations that have their own label
+                // attached as only label
+                return DB::table('project_user')
+                    ->where('user_id', $user->id)
+                    ->whereIn('project_id', $projectIdsQuery)
+                    ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
+                    ->exists();
+            }
         });
     }
 }

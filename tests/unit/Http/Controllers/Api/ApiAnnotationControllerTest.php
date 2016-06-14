@@ -92,7 +92,7 @@ class ApiAnnotationControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->delete("api/v1/annotations/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->assertNotNull($this->annotation->fresh());
 
@@ -108,11 +108,11 @@ class ApiAnnotationControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->delete("api/v1/annotations/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->delete("api/v1/annotations/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beEditor();
         $this->delete("api/v1/annotations/{$id}");
@@ -120,9 +120,7 @@ class ApiAnnotationControllerTest extends ApiTestCase
 
         // admin could delete but the annotation was already deleted
         $this->beAdmin();
-        $this->delete("api/v1/annotations/{$id}", [
-            '_token' => Session::token(),
-        ]);
+        $this->delete("api/v1/annotations/{$id}");
         $this->assertResponseStatus(404);
     }
 }
