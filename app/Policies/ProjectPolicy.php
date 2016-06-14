@@ -90,12 +90,6 @@ class ProjectPolicy extends CachedPolicy
      */
     public function destroy(User $user, Project $project)
     {
-        return $this->remember("project-can-destroy-{$user->id}-{$project->id}", function () use ($user, $project) {
-            return DB::table(self::TABLE)
-                ->where('project_id', $project->id)
-                ->where('user_id', $user->id)
-                ->where('project_role_id', Role::$admin->id)
-                ->exists();
-        });
+        return $this->update($user, $project);
     }
 }

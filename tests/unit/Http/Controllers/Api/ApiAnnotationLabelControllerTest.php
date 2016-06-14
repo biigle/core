@@ -105,11 +105,11 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->put('/api/v1/annotation-labels/'.$id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->put('/api/v1/annotation-labels/'.$id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beEditor();
         $this->put('/api/v1/annotation-labels/'.$id);
@@ -137,32 +137,48 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
             'user_id' => $this->editor()->id,
         ])->id;
 
+        $id2 = AnnotationLabelTest::create([
+            'label_id' => $this->labelRoot()->id,
+            'annotation_id' => $this->annotation->id,
+            'user_id' => $this->admin()->id,
+        ])->id;
+
         $this->doTestApiRoute('DELETE', '/api/v1/annotation-labels/'.$id);
 
         $this->beUser();
         $this->delete('/api/v1/annotation-labels/'.$id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->delete('/api/v1/annotation-labels/'.$id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
-        $this->assertNotNull($this->annotation->labels()->first());
+        $this->assertTrue($this->annotation->labels()->where('id', $id)->exists());
         $this->beEditor();
         $this->delete('/api/v1/annotation-labels/'.$id);
         $this->assertResponseOk();
-        $this->assertNull($this->annotation->labels()->first());
+        $this->assertFalse($this->annotation->labels()->where('id', $id)->exists());
+
+        $this->delete('/api/v1/annotation-labels/'.$id2);
+        // not the own label
+        $this->assertResponseStatus(403);
+
+        $this->assertTrue($this->annotation->labels()->where('id', $id2)->exists());
 
         $id = AnnotationLabelTest::create([
             'label_id' => $this->labelRoot()->id,
             'annotation_id' => $this->annotation->id,
             'user_id' => $this->editor()->id,
         ])->id;
-        $this->assertNotNull($this->annotation->labels()->first());
+        $this->assertTrue($this->annotation->labels()->where('id', $id)->exists());
 
         $this->beAdmin();
         $this->delete('/api/v1/annotation-labels/'.$id);
         $this->assertResponseOk();
-        $this->assertNull($this->annotation->labels()->first());
+        $this->assertFalse($this->annotation->labels()->where('id', $id)->exists());
+
+        $this->delete('/api/v1/annotation-labels/'.$id2);
+        $this->assertResponseOk();
+        $this->assertFalse($this->annotation->labels()->exists());
     }
 }

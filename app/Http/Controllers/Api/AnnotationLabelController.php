@@ -126,7 +126,7 @@ class AnnotationLabelController extends Controller
     public function update($id)
     {
         $annotationLabel = AnnotationLabel::findOrFail($id);
-        $this->requireCanEdit($annotationLabel);
+        $this->authorize('update', $annotationLabel);
 
         $annotationLabel->confidence = $this->request->input(
             'confidence',
@@ -152,7 +152,7 @@ class AnnotationLabelController extends Controller
     public function destroy($id)
     {
         $annotationLabel = AnnotationLabel::findOrFail($id);
-        $this->requireCanEdit($annotationLabel);
+        $this->authorize('destroy', $annotationLabel);
 
         $annotationLabel->delete();
 

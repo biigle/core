@@ -28,7 +28,11 @@ class AnnotationPolicy extends CachedPolicy
     }
 
     /**
-     * Determine if the user can attach the given label to the given annotation
+     * Determine if the user can attach the given label to the given annotation.
+     *
+     * The annototation (image) must belong to a project where the user is an editor or
+     * admin. The label must belong to a label tree that is used by one of the projects
+     * the user and the annotation belong to.
      *
      * @param  User  $user
      * @param  Annotation  $annotation
@@ -38,18 +42,21 @@ class AnnotationPolicy extends CachedPolicy
     public function attachLabel(User $user, Annotation $annotation, Label $label)
     {
         return $this->remember("annotation-can-attach-label-{$user->id}-{$annotation->id}-{$label->id}", function () use ($user, $annotation, $label) {
-            // the projects, the annotation belongs to
-            $projectIds = DB::table('project_transect')
-                ->join('images', 'project_transect.transect_id', '=', 'images.transect_id')
-                ->where('images.id', $annotation->image_id)
-                ->pluck('project_transect.project_id');
+            // projects, the annotation belongs to *and* the user is editor or admin of
+            $projectIds = DB::table('project_user')
+                ->where('user_id', $user->id)
+                ->whereIn('project_id', function ($query) use ($annotation) {
+                    // the projects, the annotation belongs to
+                    $query->select('project_transect.project_id')
+                        ->from('project_transect')
+                        ->join('images', 'project_transect.transect_id', '=', 'images.transect_id')
+                        ->where('images.id', $annotation->image_id);
+                })
+                ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
+                ->pluck('project_id');
 
             // user must be editor or admin in one of the projects
-            return DB::table('project_user')
-                    ->where('user_id', $user->id)
-                    ->whereIn('project_id', $projectIds)
-                    ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
-                    ->exists()
+            return !empty($projectIds)
                 // label must belong to a label tree that is used by one of the projects
                 && DB::table('label_tree_project')
                     ->whereIn('project_id', $projectIds)

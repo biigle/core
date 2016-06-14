@@ -92,13 +92,7 @@ class LabelTreePolicy extends CachedPolicy
      */
     public function destroy(User $user, LabelTree $tree)
     {
-        return $this->remember("label-tree-can-destroy-{$user->id}-{$tree->id}", function () use ($user, $tree) {
-            return DB::table(self::TABLE)
-                ->where('label_tree_id', $tree->id)
-                ->where('user_id', $user->id)
-                ->where('role_id', Role::$admin->id)
-                ->exists();
-        });
+        return $this->update($user, $tree);
     }
 
     /**
@@ -110,13 +104,7 @@ class LabelTreePolicy extends CachedPolicy
      */
     public function addMember(User $user, LabelTree $tree)
     {
-        return $this->remember("label-tree-can-add-member-{$user->id}-{$tree->id}", function () use ($user, $tree) {
-            return DB::table(self::TABLE)
-                ->where('label_tree_id', $tree->id)
-                ->where('user_id', $user->id)
-                ->where('role_id', Role::$admin->id)
-                ->exists();
-        });
+        return $this->update($user, $tree);
     }
 
     /**
@@ -130,11 +118,7 @@ class LabelTreePolicy extends CachedPolicy
     public function updateMember(User $user, LabelTree $tree, User $member)
     {
         return $this->remember("label-tree-can-update-member-{$user->id}-{$tree->id}-{$member->id}", function () use ($user, $tree, $member) {
-            return $user->id !== $member->id && DB::table(self::TABLE)
-                ->where('label_tree_id', $tree->id)
-                ->where('user_id', $user->id)
-                ->where('role_id', Role::$admin->id)
-                ->exists();
+            return $user->id !== $member->id && $this->update($user, $tree);
         });
     }
 
@@ -156,11 +140,7 @@ class LabelTreePolicy extends CachedPolicy
                 ->where('label_tree_id', $tree->id)
                 ->where('user_id', $user->id)
                 ->exists();
-            return $wantsToDeleteOwnMember || DB::table(self::TABLE)
-                ->where('label_tree_id', $tree->id)
-                ->where('user_id', $user->id)
-                ->where('role_id', Role::$admin->id)
-                ->exists();
+            return $wantsToDeleteOwnMember || $this->update($user, $tree);
         });
     }
 }

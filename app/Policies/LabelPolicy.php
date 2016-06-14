@@ -55,12 +55,6 @@ class LabelPolicy extends CachedPolicy
      */
     public function destroy(User $user, Label $label)
     {
-        return $this->remember("label-can-destroy-{$user->id}-{$label->id}", function () use ($user, $label) {
-            return DB::table(self::TABLE)
-                ->where('label_tree_id', $label->label_tree_id)
-                ->where('user_id', $user->id)
-                ->whereIn('role_id', [Role::$admin->id, Role::$editor->id])
-                ->exists();
-        });
+        return $this->update($user, $label);
     }
 }
