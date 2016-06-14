@@ -96,7 +96,7 @@ class LabelTree extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopePublic($query)
+    public function scopePublicTrees($query)
     {
         return $query->where('visibility_id', Visibility::$public->id);
     }
@@ -107,7 +107,7 @@ class LabelTree extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopePrivate($query)
+    public function scopePrivateTrees($query)
     {
         return $query->where('visibility_id', Visibility::$private->id);
     }

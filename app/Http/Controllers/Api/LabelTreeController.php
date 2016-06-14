@@ -32,7 +32,7 @@ class LabelTreeController extends Controller
      */
     public function index()
     {
-        return LabelTree::public()->select(
+        return LabelTree::publicTrees()->select(
             'id',
             'name',
             'description',

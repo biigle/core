@@ -133,7 +133,7 @@ class LabelTreeTest extends ModelTestCase
         $public = static::create(['visibility_id' => Visibility::$public->id]);
         $private = static::create(['visibility_id' => Visibility::$private->id]);
 
-        $ids = LabelTree::public()->pluck('id');
+        $ids = LabelTree::publicTrees()->pluck('id');
         $this->assertContains($public->id, $ids);
         $this->assertNotContains($private->id, $ids);
     }
@@ -143,7 +143,7 @@ class LabelTreeTest extends ModelTestCase
         $public = static::create(['visibility_id' => Visibility::$public->id]);
         $private = static::create(['visibility_id' => Visibility::$private->id]);
 
-        $ids = LabelTree::private()->pluck('id');
+        $ids = LabelTree::privateTrees()->pluck('id');
         $this->assertContains($private->id, $ids);
         $this->assertNotContains($public->id, $ids);
     }

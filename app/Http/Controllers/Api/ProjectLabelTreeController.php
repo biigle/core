@@ -90,7 +90,7 @@ class ProjectLabelTreeController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
 
-        $public = LabelTree::public()
+        $public = LabelTree::publicTrees()
             ->select('id', 'name', 'description')->get();
         $authorized = $project->authorizedLabelTrees()
             ->select('id', 'name', 'description')->get();
