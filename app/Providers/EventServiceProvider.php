@@ -13,7 +13,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        //
+        'images.cleanup' => [
+            \Dias\Listeners\CleanupThumbnails::class,
+        ],
     ];
 
     /**

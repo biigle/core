@@ -144,4 +144,11 @@ class TransectTest extends ModelTestCase
         $return = Transect::parseImagesQueryString(' 1.jpg ');
         $this->assertEquals(['1.jpg'], $return);
     }
+
+    public function testImageCleanupEventOnDelete()
+    {
+        $image = ImageTest::create(['transect_id' => $this->model->id]);
+        Event::shouldReceive('fire')->with('images.cleanup', [[$image->id]], false);
+        $this->model->delete();
+    }
 }

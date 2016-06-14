@@ -35,15 +35,15 @@ class ImageTest extends ModelTestCase
 
     public function testTransectRequired()
     {
-        $this->model->transect = null;
-        $this->setExpectedException('Exception');
+        $this->model->transect_id = null;
+        $this->setExpectedException('Illuminate\Database\QueryException');
         $this->model->save();
     }
 
-    public function testTransectOnDeleteSetNull()
+    public function testTransectOnDeleteCascade()
     {
         $this->model->transect->delete();
-        $this->assertNull($this->model->fresh()->transect);
+        $this->assertNull($this->model->fresh());
     }
 
     public function testFilenameTransectUnique()
@@ -110,15 +110,20 @@ class ImageTest extends ModelTestCase
         $this->model->getFile();
     }
 
-    public function testRemoveDeletedImages()
+    public function testCleanupTransectThumbnails()
     {
-        $this->model->getThumb();
+        File::put($this->model->thumbPath, 'test');
         $this->assertTrue(File::exists($this->model->thumbPath));
         $this->model->transect->delete();
-        $this->assertTrue(File::exists($this->model->thumbPath));
-        Artisan::call('remove-deleted-images');
         $this->assertFalse(File::exists($this->model->thumbPath));
-        $this->assertNull($this->model->fresh());
+    }
+
+    public function testCleanupImageThumbnails()
+    {
+        File::put($this->model->thumbPath, 'test');
+        $this->assertTrue(File::exists($this->model->thumbPath));
+        $this->model->delete();
+        $this->assertFalse(File::exists($this->model->thumbPath));
     }
 
     public function testGetExif()
@@ -140,5 +145,11 @@ class ImageTest extends ModelTestCase
         $size = $this->model->getSize();
         $this->assertEquals(640, $size[0]);
         $this->assertEquals(480, $size[1]);
+    }
+
+    public function testImageCleanupEventOnDelete()
+    {
+        Event::shouldReceive('fire')->with('images.cleanup', [[$this->model->id]], false);
+        $this->model->delete();
     }
 }

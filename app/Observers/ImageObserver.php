@@ -2,24 +2,20 @@
 
 namespace Dias\Observers;
 
+use Dias\Image;
 use Exception;
 
 class ImageObserver
 {
     /**
-     * An image must not be created without belonging to a transect.
-     * The `transect_id` is nullable in the database to be able to mark the image
-     * for deletion (with all its files), so this has to be checked manually and
-     * not by the database.
+     * Handle the event of deleting a single image.
      *
-     * @param \Dias\Image $image
+     * @param Image $image
      * @return bool
      */
-    public function creating($image)
+    public function deleting(Image $image)
     {
-        if ($image->transect_id === null) {
-            throw new Exception('An image must not be created without belonging to a transect!');
-        }
+        event('images.cleanup', [[$image->id]]);
 
         return true;
     }

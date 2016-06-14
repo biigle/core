@@ -14,6 +14,13 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 class Image extends Model implements BelongsToProjectContract
 {
     /**
+     * Image file format for the thumbnail images.
+     *
+     * @var string
+     */
+    const THUMB_FORMAT = 'jpg';
+
+    /**
      * Validation rules for creating a new annotation in an image.
      *
      * @var array
@@ -120,7 +127,7 @@ class Image extends Model implements BelongsToProjectContract
      */
     public function getThumbPathAttribute()
     {
-        return config('thumbnails.storage').'/'.$this->id.'.jpg';
+        return config('thumbnails.storage').'/'.$this->id.'.'.self::THUMB_FORMAT;
     }
 
     /**

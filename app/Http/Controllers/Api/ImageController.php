@@ -133,7 +133,6 @@ class ImageController extends Controller
         $image = Image::findOrFail($id);
         $this->requireCanAdmin($image);
 
-        $image->transect_id = null;
-        $image->save();
+        $image->delete();
     }
 }

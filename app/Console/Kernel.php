@@ -13,7 +13,6 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\RemoveDeletedImages::class,
         Commands\NewUser::class,
     ];
 
@@ -25,7 +24,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('remove-deleted-images')
-                 ->dailyAt('04:05');
+        //
     }
 }

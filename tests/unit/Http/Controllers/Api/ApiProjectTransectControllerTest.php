@@ -161,11 +161,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         $this->assertResponseOk();
         $this->assertNull($this->transect->fresh());
 
-        $this->assertTrue(File::exists($image->thumbPath));
-        $this->assertNotNull($image->fresh());
-        // call cleanup command immediately
-        Artisan::call('remove-deleted-images');
-        $this->assertNull($image->fresh());
         $this->assertFalse(File::exists($image->thumbPath));
+        $this->assertNull($image->fresh());
     }
 }

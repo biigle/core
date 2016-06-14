@@ -106,6 +106,6 @@ class ApiImageControllerTest extends ApiTestCase
         $this->delete("/api/v1/images/{$id}");
         $this->assertResponseOk();
         // only the transect ID is set to null so the image is marked for deletion
-        $this->assertNull($this->image->fresh()->transect_id);
+        $this->assertNull($this->image->fresh());
     }
 }
