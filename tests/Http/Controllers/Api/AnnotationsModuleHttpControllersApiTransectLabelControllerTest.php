@@ -24,7 +24,7 @@ class AnnotationsModuleHttpControllersApiTransectLabelControllerTest extends Api
 
         $this->beUser();
         $this->get("/api/v1/transects/{$tid}/labels/find/my");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get("/api/v1/transects/{$tid}/labels/find/my")

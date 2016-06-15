@@ -14,7 +14,7 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
 
         $this->beUser();
         $this->get("/api/v1/transects/{$id}/images/filter/annotations");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get("/api/v1/transects/{$id}/images/filter/annotations");
@@ -53,7 +53,7 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
 
         $this->beUser();
         $this->get("/api/v1/transects/{$tid}/images/filter/user/{$uid}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get("/api/v1/transects/{$tid}/images/filter/user/{$uid}");
@@ -93,7 +93,7 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
 
         $this->beUser();
         $this->get("/api/v1/transects/{$tid}/images/filter/label/{$lid}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get("/api/v1/transects/{$tid}/images/filter/label/{$lid}");

@@ -40,7 +40,7 @@ class TransectUserController extends Controller
      */
     public function find($id, $pattern) {
         $transect = Transect::findOrFail($id);
-        $this->requireCanSee($transect);
+        $this->authorize('access', $transect);
 
         if (DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
             $operator = 'ilike';

@@ -16,7 +16,7 @@ class AnnotationsModuleHttpControllersAnnotationControllerTest extends TestCase 
       // doesn't belong to project
       $this->be(UserTest::create());
       $this->get('annotate/'.$image->id);
-      $this->assertResponseStatus(401);
+      $this->assertResponseStatus(403);
 
       $this->be($project->creator);
       $this->get('annotate/'.$image->id);

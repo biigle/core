@@ -24,7 +24,7 @@ class AnnotationsModuleHttpControllersApiTransectUserControllerTest extends ApiT
 
         $this->beUser();
         $this->get("/api/v1/transects/{$tid}/users/find/joe");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get("/api/v1/transects/{$tid}/users/find/joe");

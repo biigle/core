@@ -27,7 +27,7 @@ class TransectImageController extends Controller
     public function hasAnnotation($id)
     {
         $transect = Transect::findOrFail($id);
-        $this->requireCanSee($transect);
+        $this->authorize('access', $transect);
 
         return $transect->images()->has('annotations')->pluck('id');
     }
@@ -54,7 +54,7 @@ class TransectImageController extends Controller
     public function hasUser($tid, $uid)
     {
         $transect = Transect::findOrFail($tid);
-        $this->requireCanSee($transect);
+        $this->authorize('access', $transect);
 
         return $transect->images()
             ->join('annotations', 'images.id', '=', 'annotations.image_id')
@@ -85,7 +85,7 @@ class TransectImageController extends Controller
     public function hasLabel($tid, $lid)
     {
         $transect = Transect::findOrFail($tid);
-        $this->requireCanSee($transect);
+        $this->authorize('access', $transect);
 
         return $transect->images()
             ->join('annotations', 'images.id', '=', 'annotations.image_id')
