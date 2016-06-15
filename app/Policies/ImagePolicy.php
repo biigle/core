@@ -6,6 +6,7 @@ use Dias\Image;
 use Dias\User;
 use Dias\Role;
 use DB;
+use Cache;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ImagePolicy extends CachedPolicy
