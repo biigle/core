@@ -12,17 +12,15 @@ class TransectsModuleHttpControllersTransectControllerTest extends ApiTestCase {
         // doesn't belong to project
         $this->beUser();
         $this->get("transects/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beEditor();
         $this->get("transects/{$id}");
         $this->assertResponseOk();
-        $this->assertViewHas('isAdmin', false);
 
         $this->beAdmin();
         $this->get("transects/{$id}");
         $this->assertResponseOk();
-        $this->assertViewHas('isAdmin', true);
 
         // doesn't exist
         $this->get('projects/-1');
@@ -39,7 +37,7 @@ class TransectsModuleHttpControllersTransectControllerTest extends ApiTestCase {
         $this->beEditor();
         // user is not allowed to edit the project
         $this->get('transects/create?project='.$id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beAdmin();
         // project doesn't exist
@@ -55,20 +53,20 @@ class TransectsModuleHttpControllersTransectControllerTest extends ApiTestCase {
 
         $this->beUser();
         $this->get("transects/edit/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get("transects/edit/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beEditor();
         $this->get("transects/edit/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         // even the transect creator is not allowed if they are no project admin
         $this->be($this->transect()->creator);
         $this->get("transects/edit/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beAdmin();
         $this->get("transects/edit/{$id}");

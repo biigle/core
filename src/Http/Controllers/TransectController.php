@@ -17,7 +17,7 @@ class TransectController extends Controller
     public function create()
     {
         $project = Project::findOrFail($this->request->input('project'));
-        $this->requireCanAdmin($project);
+        $this->authorize('update', $project);
 
         return view('transects::create')
             ->with('project', $project)
@@ -34,12 +34,11 @@ class TransectController extends Controller
     public function index($id)
     {
         $transect = Transect::with('projects')->findOrFail($id);
-        $this->requireCanSee($transect);
+        $this->authorize('access', $transect);
 
         return view('transects::index')
             ->with('imageIds', $transect->images()->orderBy('filename', 'asc')->pluck('id'))
-            ->withTransect($transect)
-            ->with('isAdmin', $this->user->canAdminOneOfProjects($transect->projectIds()));
+            ->withTransect($transect);
     }
 
     /**
@@ -52,7 +51,7 @@ class TransectController extends Controller
     public function edit($id)
     {
         $transect = Transect::with('projects')->findOrFail($id);
-        $this->requireCanAdmin($transect);
+        $this->authorize('update', $transect);
 
         return view('transects::edit')
             ->withTransect($transect)

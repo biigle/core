@@ -17,7 +17,7 @@ class TransectsModuleHttpControllersImageControllerTest extends TestCase {
       // doesn't belong to project
       $this->be($user);
       $this->get('images/'.$image->id);
-      $this->assertResponseStatus(401);
+      $this->assertResponseStatus(403);
 
       $this->be($project->creator);
       $this->get('images/'.$image->id);

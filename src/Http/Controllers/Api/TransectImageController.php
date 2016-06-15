@@ -27,7 +27,7 @@ class TransectImageController extends Controller
      */
     public function indexOrderByFilename($id) {
         $transect = Transect::findOrFail($id);
-        $this->requireCanSee($transect);
+        $this->authorize('access', $transect);
 
         return $transect->images()
             ->orderBy('filename', 'asc')

@@ -14,7 +14,7 @@ class TransectsModuleHttpControllersApiTransectImageControllerTest extends ApiTe
 
         $this->beUser();
         $this->get("/api/v1/transects/{$id}/images/order-by/filename");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
             $expect = "[\"{$image2->id}\",\"{$image1->id}\"]";
