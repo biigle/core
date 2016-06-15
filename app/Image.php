@@ -20,6 +20,15 @@ class Image extends Model
     const THUMB_FORMAT = 'jpg';
 
     /**
+     * Validation rules for attaching a label to an image.
+     *
+     * @var array
+     */
+    public static $attachLabelRules = [
+        'label_id'    => 'required|exists:labels,id',
+    ];
+
+    /**
      * Validation rules for creating a new annotation in an image.
      *
      * @var array
@@ -100,6 +109,16 @@ class Image extends Model
     public function annotations()
     {
         return $this->hasMany('Dias\Annotation');
+    }
+
+    /**
+     * The labels, this image got attached by the users.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function labels()
+    {
+        return $this->hasMany('Dias\ImageLabel')->with('label', 'user');
     }
 
     /**

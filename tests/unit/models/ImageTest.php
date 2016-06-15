@@ -136,4 +136,12 @@ class ImageTest extends ModelTestCase
         Event::shouldReceive('fire')->with('images.cleanup', [[$this->model->id]], false);
         $this->model->delete();
     }
+
+    public function testLabels()
+    {
+        $il = ImageLabelTest::create(['image_id' => $this->model->id]);
+        $this->assertEquals(1, $this->model->labels()->count());
+        $label = $this->model->labels()->first();
+        $this->assertEquals($il->id, $label->id);
+    }
 }

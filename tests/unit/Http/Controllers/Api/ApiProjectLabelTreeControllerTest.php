@@ -13,7 +13,6 @@ class ApiProjectLabelTreeControllerTest extends ApiTestCase
         $p = $this->project();
         $t = $this->labelTree();
         $label = $this->labelRoot();
-        $p->labelTrees()->attach($t->id);
 
         $this->doTestApiRoute('GET', "/api/v1/projects/{$p->id}/label-trees");
 

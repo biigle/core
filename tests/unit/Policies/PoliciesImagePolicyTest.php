@@ -55,4 +55,39 @@ class PoliciesImagePolicyTest extends TestCase
         $this->assertTrue($this->admin->can('destroy', $this->image));
         $this->assertTrue($this->globalAdmin->can('destroy', $this->image));
     }
+
+    public function testAttachLabel()
+    {
+        $allowedLabel = LabelTest::create();
+        $this->project->labelTrees()->attach($allowedLabel->label_tree_id);
+        $disallowedLabel = LabelTest::create();
+
+        // the annotation belongs to this project, too, and the label is a valid one
+        // for the project *but* no user belongs to the project so they shouldn't be able
+        // to attach the label
+        $otherProject = ProjectTest::create();
+        $otherProject->transects()->attach($this->image->transect);
+        $otherDisallowedLabel = LabelTest::create();
+        $otherProject->labelTrees()->attach($otherDisallowedLabel->label_tree_id);
+
+        $this->assertFalse($this->user->can('attach-label', [$this->image, $allowedLabel]));
+        $this->assertFalse($this->user->can('attach-label', [$this->image, $disallowedLabel]));
+        $this->assertFalse($this->user->can('attach-label', [$this->image, $otherDisallowedLabel]));
+
+        $this->assertFalse($this->guest->can('attach-label', [$this->image, $allowedLabel]));
+        $this->assertFalse($this->guest->can('attach-label', [$this->image, $disallowedLabel]));
+        $this->assertFalse($this->guest->can('attach-label', [$this->image, $otherDisallowedLabel]));
+
+        $this->assertTrue($this->editor->can('attach-label', [$this->image, $allowedLabel]));
+        $this->assertFalse($this->editor->can('attach-label', [$this->image, $disallowedLabel]));
+        $this->assertFalse($this->editor->can('attach-label', [$this->image, $otherDisallowedLabel]));
+
+        $this->assertTrue($this->admin->can('attach-label', [$this->image, $allowedLabel]));
+        $this->assertFalse($this->admin->can('attach-label', [$this->image, $disallowedLabel]));
+        $this->assertFalse($this->admin->can('attach-label', [$this->image, $otherDisallowedLabel]));
+
+        $this->assertTrue($this->globalAdmin->can('attach-label', [$this->image, $allowedLabel]));
+        $this->assertTrue($this->globalAdmin->can('attach-label', [$this->image, $disallowedLabel]));
+        $this->assertTrue($this->globalAdmin->can('attach-label', [$this->image, $otherDisallowedLabel]));
+    }
 }

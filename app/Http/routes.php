@@ -109,6 +109,14 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'only' => ['index', 'store'],
     ]);
 
+    $router->resource('images.labels', 'ImageLabelController', [
+        'only' => ['index', 'store'],
+    ]);
+
+    $router->resource('image-labels', 'ImageLabelController', [
+        'only' => ['destroy'],
+    ]);
+
     $router->resource('labels', 'LabelController', [
         'only' => ['destroy'],
     ]);

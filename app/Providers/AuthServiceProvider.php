@@ -20,6 +20,7 @@ class AuthServiceProvider extends ServiceProvider
         \Dias\AnnotationLabel::class => \Dias\Policies\AnnotationLabelPolicy::class,
         \Dias\Image::class => \Dias\Policies\ImagePolicy::class,
         \Dias\Transect::class => \Dias\Policies\TransectPolicy::class,
+        \Dias\ImageLabel::class => \Dias\Policies\ImageLabelPolicy::class,
     ];
 
     /**
