@@ -45,7 +45,7 @@ class AnnotationLabelController extends Controller
     public function index($id)
     {
         $annotation = Annotation::findOrFail($id);
-        $this->requireCanSee($annotation);
+        $this->authorize('access', $annotation);
 
         return $annotation->labels;
     }

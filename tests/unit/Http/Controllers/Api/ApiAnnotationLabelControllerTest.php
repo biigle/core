@@ -24,7 +24,7 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
         // api key authentication
         $this->beUser();
         $this->get('/api/v1/annotations/1/labels');
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get('/api/v1/annotations/1/labels');

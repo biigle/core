@@ -27,7 +27,7 @@ class TransectImageController extends Controller
     public function index($id)
     {
         $transect = Transect::findOrFail($id);
-        $this->requireCanSee($transect);
+        $this->authorize('access', $transect);
 
         return $transect->images()
             ->orderBy('id', 'asc')
@@ -70,7 +70,7 @@ class TransectImageController extends Controller
     public function store($id)
     {
         $transect = Transect::findOrFail($id);
-        $this->requireCanAdmin($transect);
+        $this->authorize('update', $transect);
 
         $this->validate($this->request, Transect::$addImagesRules);
 

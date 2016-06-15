@@ -37,7 +37,7 @@ class ProjectTransectController extends Controller
     public function index($id)
     {
         $project = Project::findOrFail($id);
-        $this->requireCanSee($project);
+        $this->authorize('access', $project);
 
         return $project->transects;
     }
@@ -80,7 +80,7 @@ class ProjectTransectController extends Controller
     public function store($id)
     {
         $project = Project::findOrFail($id);
-        $this->requireCanAdmin($project);
+        $this->authorize('update', $project);
         $this->validate($this->request, Transect::$createRules);
 
         $transect = new Transect;
@@ -147,9 +147,9 @@ class ProjectTransectController extends Controller
         // user must be able to admin the transect *and* the project it should
         // be attached to
         $transect = Transect::findOrFail($transectId);
-        $this->requireCanAdmin($transect);
+        $this->authorize('update', $transect);
         $project = Project::findOrFail($projectId);
-        $this->requireCanAdmin($project);
+        $this->authorize('update', $project);
 
         $project->addTransectId($transect->id);
     }
@@ -177,7 +177,7 @@ class ProjectTransectController extends Controller
     public function destroy($projectId, $transectId)
     {
         $transect = Transect::findOrFail($transectId);
-        $this->requireCanAdmin($transect);
+        $this->authorize('update', $transect);
         $project = Project::findOrFail($projectId);
 
         $project->removeTransect($transect, $this->request->has('force'));

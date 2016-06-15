@@ -31,10 +31,7 @@ class AnnotationController extends Controller
     public function show($id)
     {
         $annotation = Annotation::findOrFail($id);
-        $this->requireCanSee($annotation);
-
-        // image will be fetched by requireCanSee but shouldn't be returned
-        unset($annotation->image);
+        $this->authorize('access', $annotation);
 
         return $annotation;
     }
@@ -62,7 +59,7 @@ class AnnotationController extends Controller
     public function update($id)
     {
         $annotation = Annotation::findOrFail($id);
-        $this->requireCanEdit($annotation);
+        $this->authorize('update', $annotation);
 
         // from a JSON request, the array may already be decoded
         $points = $this->request->input('points');

@@ -5,9 +5,7 @@ namespace Dias;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Exception;
-use Dias\Contracts\BelongsToProjectContract;
 use Dias\Image;
-use Cache;
 use Dias\Jobs\GenerateThumbnails;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
@@ -15,7 +13,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
  * A transect is a collection of images. Transects belong to one or many
  * projects.
  */
-class Transect extends Model implements BelongsToProjectContract
+class Transect extends Model
 {
 
     use DispatchesJobs;
@@ -182,21 +180,5 @@ class Transect extends Model implements BelongsToProjectContract
     public function projects()
     {
         return $this->belongsToMany('Dias\Project');
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return array
-     */
-    public function projectIds()
-    {
-        /*
-         * remember project IDs because e.g. this query would be performed for
-         * each and every image request, which would result in dozens of
-         * calls per *single* page.
-         */
-        return Cache::remember('transect-'.$this->id.'pids', 0.5, function () {
-            return $this->projects()->pluck('id')->all();
-        });
     }
 }

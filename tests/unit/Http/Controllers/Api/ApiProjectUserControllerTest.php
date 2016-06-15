@@ -13,7 +13,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
         // the user doesn't belong to this project
         $this->beUser();
         $this->get("/api/v1/projects/{$id}/users");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beAdmin();
         $this->get("/api/v1/projects/{$id}/users");
@@ -42,11 +42,11 @@ class ApiProjectUserControllerTest extends ApiTestCase
         // non-admins are not allowed to modify users
         $this->beUser();
         $this->put("/api/v1/projects/{$id}/users/1");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beEditor();
         $this->put("/api/v1/projects/{$id}/users/5");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         // user doesn't exist
         $this->beAdmin();
@@ -88,7 +88,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->post("/api/v1/projects/{$pid}/users/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         // missing arguments
         $this->beAdmin();
@@ -98,7 +98,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
         // non-admins are not allowed to add users
         $this->beEditor();
         $this->post("/api/v1/projects/{$pid}/users/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->assertNull($this->project()->fresh()->users()->find($id));
 
@@ -130,7 +130,7 @@ class ApiProjectUserControllerTest extends ApiTestCase
         // non-admins are not allowed to delete other users
         $this->beEditor();
         $this->delete('/api/v1/projects/1/users/'.$this->admin()->id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         // but they can delete themselves
         $this->assertNotNull($this->project()->fresh()->users()->find($this->editor()->id));

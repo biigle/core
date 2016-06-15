@@ -65,7 +65,7 @@ class TransectAnnotationController extends Controller
     public function index($id)
     {
         $transect = Transect::findOrFail($id);
-        $this->requireCanSee($transect);
+        $this->authorize('access', $transect);
 
         // With lots of images and lots of annotations this query can return LOTS of
         // items. We'll then run into memory issues if we try to process them all as

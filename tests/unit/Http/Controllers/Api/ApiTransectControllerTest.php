@@ -11,7 +11,7 @@ class ApiTransectControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->get('/api/v1/transects/'.$id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get('/api/v1/transects/'.$id);
@@ -32,11 +32,11 @@ class ApiTransectControllerTest extends ApiTestCase
 
         $this->beGuest();
         $this->put('/api/v1/transects/'.$id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beEditor();
         $this->put('/api/v1/transects/'.$id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beAdmin();
         $this->assertNotEquals('the new transect', $this->transect()->fresh()->name);

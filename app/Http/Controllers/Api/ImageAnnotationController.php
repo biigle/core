@@ -59,7 +59,7 @@ class ImageAnnotationController extends Controller
     public function index($id)
     {
         $image = Image::findOrFail($id);
-        $this->requireCanSee($image);
+        $this->authorize('access', $image);
 
         return $image->annotations()->with('labels')->get();
     }
@@ -136,7 +136,7 @@ class ImageAnnotationController extends Controller
     public function store($id)
     {
         $image = Image::findOrFail($id);
-        $this->requireCanEdit($image);
+        $this->authorize('add-annotation', $image);
 
         $this->validate($this->request, Image::$createAnnotationRules);
         $this->validate($this->request, Annotation::$attachLabelRules);

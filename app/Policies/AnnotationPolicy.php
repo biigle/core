@@ -29,6 +29,53 @@ class AnnotationPolicy extends CachedPolicy
     }
 
     /**
+     * Determine if the user may access the given annotation.
+     *
+     * @param User $user
+     * @param Annotation $annotation
+     * @return bool
+     */
+    public function access(User $user, Annotation $annotation)
+    {
+        return $this->remember("annotation-can-access-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
+            // user must be member of one of the projects, the annotation belongs to
+            return DB::table('project_user')
+                ->where('user_id', $user->id)
+                ->whereIn('project_id', function ($query) use ($annotation) {
+                    $query->select('project_transect.project_id')
+                        ->from('project_transect')
+                        ->join('images', 'project_transect.transect_id', '=', 'images.transect_id')
+                        ->where('images.id', $annotation->image_id);
+                })
+                ->exists();
+        });
+    }
+
+    /**
+     * Determine if the user may update the given annotation.
+     *
+     * @param User $user
+     * @param Annotation $annotation
+     * @return bool
+     */
+    public function update(User $user, Annotation $annotation)
+    {
+        return $this->remember("annotation-can-update-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
+            // user must be member of one of the projects, the annotation belongs to
+            return DB::table('project_user')
+                ->where('user_id', $user->id)
+                ->whereIn('project_id', function ($query) use ($annotation) {
+                    $query->select('project_transect.project_id')
+                        ->from('project_transect')
+                        ->join('images', 'project_transect.transect_id', '=', 'images.transect_id')
+                        ->where('images.id', $annotation->image_id);
+                })
+                ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
+                ->exists();
+        });
+    }
+
+    /**
      * Determine if the user can attach the given label to the given annotation.
      *
      * The annototation (image) must belong to a project where the user is an editor or

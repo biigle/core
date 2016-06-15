@@ -23,7 +23,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->get('/api/v1/projects/1/transects');
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get('/api/v1/projects/1/transects');
@@ -42,7 +42,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->post('/api/v1/projects/'.$id.'/transects');
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beAdmin();
         $this->json('POST', '/api/v1/projects/'.$id.'/transects');
@@ -115,7 +115,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->post('/api/v1/projects/'.$pid.'/transects/'.$tid);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $secondProject->addUserId($this->admin()->id, Role::$admin->id);
         Cache::flush();
@@ -139,15 +139,15 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->delete('/api/v1/projects/1/transects/'.$id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->delete('/api/v1/projects/1/transects/'.$id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beEditor();
         $this->delete('/api/v1/projects/1/transects/'.$id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beAdmin();
         $this->delete('/api/v1/projects/1/transects/'.$id);

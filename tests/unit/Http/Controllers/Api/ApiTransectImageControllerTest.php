@@ -12,7 +12,7 @@ class ApiTransectImageControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->get("/api/v1/transects/{$id}/images");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get("/api/v1/transects/{$id}/images");
@@ -31,15 +31,15 @@ class ApiTransectImageControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->post("/api/v1/transects/{$id}/images");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->post("/api/v1/transects/{$id}/images");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beEditor();
         $this->post("/api/v1/transects/{$id}/images");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beAdmin();
         $this->json('POST', "/api/v1/transects/{$id}/images");

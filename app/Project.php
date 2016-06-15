@@ -4,9 +4,8 @@ namespace Dias;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Dias\Contracts\BelongsToProjectContract;
 
-class Project extends Model implements BelongsToProjectContract
+class Project extends Model
 {
     /**
      * Validation rules for creating a new project.
@@ -45,19 +44,6 @@ class Project extends Model implements BelongsToProjectContract
     protected $hidden = [
         'pivot',
     ];
-
-    /**
-     * {@inheritdoc}
-     *
-     * A project belongs only to itself but the user permissions can be handled
-     * very consistently if a project implements this method, too.
-     *
-     * @return array
-     */
-    public function projectIds()
-    {
-        return [$this->id];
-    }
 
     /**
      * The members of this project. Every member has a project-specific

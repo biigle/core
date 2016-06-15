@@ -28,7 +28,7 @@ class ApiAnnotationControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->get("api/v1/annotations/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beAdmin();
         $this->get("api/v1/annotations/{$id}")
@@ -49,7 +49,7 @@ class ApiAnnotationControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->put("api/v1/annotations/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->annotation->points = [10, 10];
         $this->annotation->save();

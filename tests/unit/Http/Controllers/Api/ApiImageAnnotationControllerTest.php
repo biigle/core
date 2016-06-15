@@ -33,7 +33,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->get("/api/v1/images/{$this->image->id}/annotations");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get("/api/v1/images/{$this->image->id}/annotations")
@@ -49,7 +49,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
         $this->beGuest();
         $this->post("/api/v1/images/{$this->image->id}/annotations");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations");

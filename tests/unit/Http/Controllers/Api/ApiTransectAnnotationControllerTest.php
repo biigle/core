@@ -20,7 +20,7 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->get("/api/v1/transects/{$id}/annotations");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $expect = [
             'id' => $image->id,

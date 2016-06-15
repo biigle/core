@@ -61,7 +61,7 @@ class ProjectController extends Controller
     public function show($id)
     {
         $project = Project::findOrFail($id);
-        $this->requireCanSee($project);
+        $this->authorize('access', $project);
 
         return $project;
     }
@@ -85,7 +85,7 @@ class ProjectController extends Controller
     public function update($id)
     {
         $project = Project::findOrFail($id);
-        $this->requireCanAdmin($project);
+        $this->authorize('update', $project);
 
         $this->validate($this->request, Project::$updateRules);
 
@@ -175,7 +175,7 @@ class ProjectController extends Controller
     public function destroy($id)
     {
         $project = Project::findOrFail($id);
-        $this->requireCanAdmin($project);
+        $this->authorize('destroy', $project);
 
         try {
             $project->removeAllTransects($this->request->has('force'));

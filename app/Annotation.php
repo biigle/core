@@ -3,7 +3,6 @@
 namespace Dias;
 
 use Illuminate\Database\Eloquent\Model;
-use Dias\Contracts\BelongsToProjectContract;
 use Exception;
 use Dias\Shape;
 
@@ -11,7 +10,7 @@ use Dias\Shape;
  * An annotation is a region of an image that can be labeled by the users.
  * It consists of one or many points and has a specific shape.
  */
-class Annotation extends Model implements BelongsToProjectContract
+class Annotation extends Model
 {
     /**
      * Validation rules for attaching a label to a annotation.
@@ -118,14 +117,5 @@ class Annotation extends Model implements BelongsToProjectContract
     public function labels()
     {
         return $this->hasMany('Dias\AnnotationLabel')->with('label', 'user');
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return array
-     */
-    public function projectIds()
-    {
-        return $this->image->projectIds();
     }
 }

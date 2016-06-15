@@ -62,22 +62,6 @@ class ImageTest extends ModelTestCase
         $this->assertNotNull($this->model->annotations()->find($annotation->id));
     }
 
-    public function testProjectIds()
-    {
-        $project = ProjectTest::create();
-
-        $this->assertEmpty($this->model->projectIds());
-        $project->addTransectId($this->model->transect->id);
-        // clear caching of previous call
-        Cache::flush();
-        $ids = $this->model->projectIds();
-        $this->assertNotEmpty($ids);
-        $this->assertEquals($project->id, $ids[0]);
-
-        $this->model->transect->delete();
-        $this->assertEmpty($this->model->fresh()->projectIds());
-    }
-
     public function testGetThumb()
     {
         Response::shouldReceive('download')

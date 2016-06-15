@@ -23,7 +23,7 @@ class ApiImageControllerTest extends ApiTestCase
         // api key authentication
         $this->beUser();
         $this->get('/api/v1/images/1');
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get('/api/v1/images/-1');
@@ -52,7 +52,7 @@ class ApiImageControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->get("/api/v1/images/{$id}/thumb");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get('/api/v1/images/-1/thumb');
@@ -69,13 +69,13 @@ class ApiImageControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->get('/api/v1/images/1/file');
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get('/api/v1/images/-1/file');
         $this->assertResponseStatus(404);
 
-        $r = $this->get('/api/v1/images/1/file');
+        $this->get('/api/v1/images/1/file');
         $this->assertResponseOk();
         $this->assertEquals('image/jpeg', $this->response->headers->get('content-type'));
     }
@@ -88,15 +88,15 @@ class ApiImageControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->delete("/api/v1/images/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->delete("/api/v1/images/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beEditor();
         $this->delete("/api/v1/images/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beAdmin();
         $this->delete("/api/v1/images/999");

@@ -2,10 +2,9 @@
 
 namespace Dias\Http\Controllers\Views;
 
-use Dias\Http\Controllers\AdvancedController;
+use Dias\Http\Controllers\Controller as BaseController;
 
-abstract class Controller extends AdvancedController
+abstract class Controller extends BaseController
 {
-    // used to have some methods that are now in the AdvancedController
-    // still here for possible future methods
+    //
 }

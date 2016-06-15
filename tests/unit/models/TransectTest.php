@@ -66,18 +66,6 @@ class TransectTest extends ModelTestCase
         $this->assertEquals(1, $this->model->projects()->count());
     }
 
-    public function testProjectIds()
-    {
-        $project = ProjectTest::create();
-        $this->assertEmpty($this->model->projectIds());
-        $project->addTransectId($this->model->id);
-        // clear caching of previous call
-        Cache::flush();
-        $ids = $this->model->projectIds();
-        $this->assertNotEmpty($ids);
-        $this->assertEquals($project->id, $ids[0]);
-    }
-
     public function testSetMediaType()
     {
         $type = MediaTypeTest::create();

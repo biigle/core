@@ -29,6 +29,24 @@ class PoliciesAnnotationPolicyTest extends TestCase
         $this->project->addUserId($this->admin->id, Role::$admin->id);
     }
 
+    public function testAccess()
+    {
+        $this->assertFalse($this->user->can('access', $this->annotation));
+        $this->assertTrue($this->guest->can('access', $this->annotation));
+        $this->assertTrue($this->editor->can('access', $this->annotation));
+        $this->assertTrue($this->admin->can('access', $this->annotation));
+        $this->assertTrue($this->globalAdmin->can('access', $this->annotation));
+    }
+
+    public function testUpdate()
+    {
+        $this->assertFalse($this->user->can('update', $this->annotation));
+        $this->assertFalse($this->guest->can('update', $this->annotation));
+        $this->assertTrue($this->editor->can('update', $this->annotation));
+        $this->assertTrue($this->admin->can('update', $this->annotation));
+        $this->assertTrue($this->globalAdmin->can('update', $this->annotation));
+    }
+
     public function testAttachLabel()
     {
         $allowedLabel = LabelTest::create();

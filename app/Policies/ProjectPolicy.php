@@ -64,6 +64,37 @@ class ProjectPolicy extends CachedPolicy
     }
 
     /**
+     * Determine if user can remove the given project member from the given project.
+     *
+     * @param  User  $user
+     * @param  Project  $project
+     * @param User $member
+     * @return bool
+     */
+    public function removeMember(User $user, Project $project, User $member)
+    {
+        return $this->remember("project-can-remove-member-{$user->id}-{$project->id}-{$member->id}", function () use ($user, $project, $member) {
+
+            $isMember = DB::table(self::TABLE)
+                ->where('project_id', $project->id)
+                ->where('user_id', $member->id)
+                ->exists();
+
+            if ($user->id === $member->id) {
+                // each member is allowed to remove themselves
+                return $isMember;
+            } else {
+                // admins can remove members other than themselves
+                return $isMember && DB::table(self::TABLE)
+                    ->where('project_id', $project->id)
+                    ->where('user_id', $user->id)
+                    ->where('project_role_id', Role::$admin->id)
+                    ->exists();
+            }
+        });
+    }
+
+    /**
      * Determine if the given project can be updated by the user.
      *
      * @param  User  $user

@@ -110,13 +110,6 @@ $factory->define(Dias\AnnotationLabel::class, function ($faker) {
     ];
 });
 
-$factory->define(Dias\Attribute::class, function ($faker) {
-    return [
-        'name' => str_random(10),
-        'type' => $faker->randomElement(['integer', 'double', 'string', 'boolean']),
-    ];
-});
-
 $factory->define(Dias\ApiToken::class, function ($faker) {
     return [
         'owner_id' => function () {

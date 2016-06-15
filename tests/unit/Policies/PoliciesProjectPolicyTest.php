@@ -53,6 +53,34 @@ class PoliciesProjectPolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('update', $this->project));
     }
 
+    public function testRemoveMember()
+    {
+        $this->assertFalse($this->user->can('remove-member', [$this->project, $this->user]));
+        $this->assertFalse($this->user->can('remove-member', [$this->project, $this->guest]));
+        $this->assertFalse($this->user->can('remove-member', [$this->project, $this->editor]));
+        $this->assertFalse($this->user->can('remove-member', [$this->project, $this->admin]));
+
+        $this->assertFalse($this->guest->can('remove-member', [$this->project, $this->user]));
+        $this->assertTrue($this->guest->can('remove-member', [$this->project, $this->guest]));
+        $this->assertFalse($this->guest->can('remove-member', [$this->project, $this->editor]));
+        $this->assertFalse($this->guest->can('remove-member', [$this->project, $this->admin]));
+
+        $this->assertFalse($this->editor->can('remove-member', [$this->project, $this->user]));
+        $this->assertFalse($this->editor->can('remove-member', [$this->project, $this->guest]));
+        $this->assertTrue($this->editor->can('remove-member', [$this->project, $this->editor]));
+        $this->assertFalse($this->editor->can('remove-member', [$this->project, $this->admin]));
+
+        $this->assertFalse($this->admin->can('remove-member', [$this->project, $this->user]));
+        $this->assertTrue($this->admin->can('remove-member', [$this->project, $this->guest]));
+        $this->assertTrue($this->admin->can('remove-member', [$this->project, $this->editor]));
+        $this->assertTrue($this->admin->can('remove-member', [$this->project, $this->admin]));
+
+        $this->assertTrue($this->globalAdmin->can('remove-member', [$this->project, $this->user]));
+        $this->assertTrue($this->globalAdmin->can('remove-member', [$this->project, $this->guest]));
+        $this->assertTrue($this->globalAdmin->can('remove-member', [$this->project, $this->editor]));
+        $this->assertTrue($this->globalAdmin->can('remove-member', [$this->project, $this->admin]));
+    }
+
     public function testDestroy()
     {
         $this->assertFalse($this->user->can('destroy', $this->project));

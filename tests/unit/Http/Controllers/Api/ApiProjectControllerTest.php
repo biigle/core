@@ -31,7 +31,7 @@ class ApiProjectControllerTest extends ApiTestCase
 
         $this->beUser();
         $this->get("/api/v1/projects/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beAdmin();
         $this->get('/api/v1/projects/999');
@@ -54,7 +54,7 @@ class ApiProjectControllerTest extends ApiTestCase
         // non-admins are not allowed to update
         $this->beEditor();
         $this->put('/api/v1/projects/1');
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beAdmin();
         $this->put('/api/v1/projects/999');
@@ -120,7 +120,7 @@ class ApiProjectControllerTest extends ApiTestCase
         // non-admins are not allowed to delete the project
         $this->beEditor();
         $this->json('DELETE', "/api/v1/projects/{$id}");
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         // project still has a transect belonging only to this project
         $this->beAdmin();

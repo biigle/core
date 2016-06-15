@@ -40,7 +40,7 @@ class ProjectUserController extends Controller
     public function index($projectId)
     {
         $project = Project::findOrFail($projectId);
-        $this->requireCanSee($project);
+        $this->authorize('access', $project);
 
         return $project->users()->select('id', 'firstname', 'lastname')->get();
     }
@@ -65,7 +65,7 @@ class ProjectUserController extends Controller
     public function update($projectId, $userId)
     {
         $project = Project::findOrFail($projectId);
-        $this->requireCanAdmin($project);
+        $this->authorize('update', $project);
 
         $role = Role::find($this->request->input('project_role_id'));
 
@@ -101,7 +101,7 @@ class ProjectUserController extends Controller
     public function attach($projectId, $userId)
     {
         $project = Project::findOrFail($projectId);
-        $this->requireCanAdmin($project);
+        $this->authorize('update', $project);
 
         $user = User::find($userId);
         $role = Role::find($this->request->input('project_role_id'));
@@ -136,15 +136,10 @@ class ProjectUserController extends Controller
     public function destroy($projectId, $userId)
     {
         $project = Project::findOrFail($projectId);
+        $member = $project->users()->findOrFail($userId);
 
-        // the user is only allowed to do this if they are admin or want to
-        // remove themselves
-        if ($this->user->canAdminOneOfProjects([$projectId]) || $this->user->id == $userId) {
-            $project->removeUserId($userId);
+        $this->authorize('remove-member', [$project, $member]);
 
-            return response('Ok.', 200);
-        }
-
-        abort(401);
+        $project->removeUserId($userId);
     }
 }

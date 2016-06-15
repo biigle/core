@@ -61,8 +61,9 @@ class ImageController extends Controller
      */
     public function show($id)
     {
-        $image = Image::with('transect')->findOrFail($id);
-        $this->requireCanSee($image);
+        $image = Image::findOrFail($id);
+        $this->authorize('access', $image);
+
         $image->setAttribute('exif', $image->getExif());
         $size = $image->getSize();
         $image->setAttribute('width', $size[0]);
@@ -88,7 +89,7 @@ class ImageController extends Controller
     public function showThumb($id)
     {
         $image = Image::findOrFail($id);
-        $this->requireCanSee($image);
+        $this->authorize('access', $image);
 
         return $image->getThumb();
     }
@@ -110,7 +111,7 @@ class ImageController extends Controller
     public function showFile($id)
     {
         $image = Image::findOrFail($id);
-        $this->requireCanSee($image);
+        $this->authorize('access', $image);
 
         return $image->getFile();
     }
@@ -131,7 +132,7 @@ class ImageController extends Controller
     public function destroy($id)
     {
         $image = Image::findOrFail($id);
-        $this->requireCanAdmin($image);
+        $this->authorize('destroy', $image);
 
         $image->delete();
     }

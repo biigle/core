@@ -2,15 +2,12 @@
 
 namespace Dias;
 
-use Dias\Contracts\BelongsToProjectContract;
 use Illuminate\Database\Eloquent\Model;
-
-// use Illuminate\Database\QueryException;
 
 /**
  * Pivot object for the connection between Annotations and Labels.
  */
-class AnnotationLabel extends Model implements BelongsToProjectContract
+class AnnotationLabel extends Model
 {
     /**
      * The attributes excluded from the model's JSON form.
@@ -54,15 +51,6 @@ class AnnotationLabel extends Model implements BelongsToProjectContract
     {
         return $this->belongsTo('Dias\User')
             ->select('id', 'firstname', 'lastname', 'role_id');
-    }
-
-    /**
-     * {@inheritdoc}
-     * @return array
-     */
-    public function projectIds()
-    {
-        return $this->annotation->projectIds();
     }
 
     /**

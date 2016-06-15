@@ -56,19 +56,6 @@ class AnnotationTest extends ModelTestCase
         $this->assertEquals($user->id, $label->user->id);
     }
 
-    public function testProjectIds()
-    {
-        $project = ProjectTest::create();
-        $transect = $this->model->image->transect;
-        $this->assertEmpty($this->model->projectIds());
-        $project->addTransectId($transect->id);
-        // clear caching of previous call
-        Cache::flush();
-        $ids = $this->model->projectIds();
-        $this->assertNotEmpty($ids);
-        $this->assertEquals($project->id, $ids[0]);
-    }
-
     public function testValidatePointsInteger()
     {
         $this->setExpectedException('Exception');

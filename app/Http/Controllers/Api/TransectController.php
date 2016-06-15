@@ -33,7 +33,7 @@ class TransectController extends Controller
     public function show($id)
     {
         $transect = Transect::findOrFail($id);
-        $this->requireCanSee($transect);
+        $this->authorize('access', $transect);
 
         return $transect;
     }
@@ -58,7 +58,7 @@ class TransectController extends Controller
     public function update($id)
     {
         $transect = Transect::findOrFail($id);
-        $this->requireCanAdmin($transect);
+        $this->authorize('update', $transect);
         $request = $this->request;
 
         $this->validate($request, Transect::$updateRules);

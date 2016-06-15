@@ -3,7 +3,6 @@
 namespace Dias;
 
 use Illuminate\Database\Eloquent\Model;
-use Dias\Contracts\BelongsToProjectContract;
 use Response;
 use ErrorException;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
@@ -11,7 +10,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 /**
  * This model stores information on an image file in the file system.
  */
-class Image extends Model implements BelongsToProjectContract
+class Image extends Model
 {
     /**
      * Image file format for the thumbnail images.
@@ -101,22 +100,6 @@ class Image extends Model implements BelongsToProjectContract
     public function annotations()
     {
         return $this->hasMany('Dias\Annotation');
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return array
-     */
-    public function projectIds()
-    {
-        // if the image was marked for deletion it doesn't belong to a project
-        // any more. like this nobody is able to see the image, too.
-        if ($this->transect === null) {
-            return [];
-        }
-
-        return $this->transect->projectIds();
     }
 
     /**
