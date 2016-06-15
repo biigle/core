@@ -37,6 +37,15 @@ class PoliciesTransectPolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('access', $this->transect));
     }
 
+    public function testEditIn()
+    {
+        $this->assertFalse($this->user->can('edit-in', $this->transect));
+        $this->assertFalse($this->guest->can('edit-in', $this->transect));
+        $this->assertTrue($this->editor->can('edit-in', $this->transect));
+        $this->assertTrue($this->admin->can('edit-in', $this->transect));
+        $this->assertTrue($this->globalAdmin->can('edit-in', $this->transect));
+    }
+
     public function testUpdate()
     {
         $this->assertFalse($this->user->can('update', $this->transect));
