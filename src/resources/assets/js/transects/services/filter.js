@@ -5,7 +5,7 @@
  * @memberOf dias.transects
  * @description Service managing the image filter of the transect index page
  */
-angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSECT_IMAGES, filterSubset, filterExclude) {
+angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSECT_IMAGES, filterSubset, filterExclude, $q) {
         "use strict";
 
         var DEFAULT_MODE = 'filter';
@@ -99,7 +99,16 @@ angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSE
                 _this.removeRule(rule);
             };
 
-            var data = r.filter.transformData(r.data);
+            var data;
+
+            try {
+                data = r.filter.transformData(r.data);
+            } catch (e) {
+                // if transforming failed, do nothing
+                var deferred = $q.defer();
+                deferred.resolve();
+                return deferred.promise;
+            }
 
             rule.ids = r.filter.resource.query({transect_id: TRANSECT_ID, data: data}, refresh, rollback);
             rules.push(rule);
@@ -170,6 +179,7 @@ angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSE
 
         this.reset = function () {
             rules.length = 0;
+            _this.setMode(DEFAULT_MODE);
             refresh();
         };
 

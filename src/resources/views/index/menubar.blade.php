@@ -19,9 +19,7 @@
     @endforeach
 </div>
 
-@foreach ($modules->getMixins('transectsFilters') as $module => $nestedMixins)
-    @include($module.'::transectsFilters')
-@endforeach
+@include('transects::index.transectFilters')
 
 <script type="text/ng-template" id="filterPopover.html">
     <div class="transect-filter-popover">

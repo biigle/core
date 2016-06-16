@@ -33,4 +33,89 @@ class TransectImageController extends Controller
             ->orderBy('filename', 'asc')
             ->pluck('id');
     }
+
+    /**
+     * List the IDs of images having one or more image labels attached
+     *
+     * @api {get} transects/:id/images/filter/labels Get all images having image labels
+     * @apiGroup Transects
+     * @apiName TransectImagesHasImageLabels
+     * @apiPermission projectMember
+     * @apiDescription Returns IDs of images having one or more image labels
+     *
+     * @apiParam {Number} id The transect ID
+     *
+     * @apiSuccessExample {json} Success response:
+     * [1, 5, 6]
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function hasLabel($id)
+    {
+        $transect = Transect::findOrFail($id);
+        $this->authorize('access', $transect);
+
+        return $transect->images()->has('labels')->pluck('id');
+    }
+
+    /**
+     * List the IDs of images having one or more image labels attached by the specified user.
+     *
+     * @api {get} transects/:tid/images/filter/image-label-user/:uid Get all images having image labels attached by a user
+     * @apiGroup Transects
+     * @apiName TransectImagesHasLabelUser
+     * @apiPermission projectMember
+     * @apiDescription Returns IDs of images having one or more image labels attached by the specified user.
+     *
+     * @apiParam {Number} tid The transect ID
+     * @apiParam {Number} uid The user ID
+     *
+     * @apiSuccessExample {json} Success response:
+     * [1, 5, 6]
+     *
+     * @param  int  $tid
+     * @param  int  $uid
+     * @return \Illuminate\Http\Response
+     */
+    public function hasImageLabelUser($tid, $uid)
+    {
+        $transect = Transect::findOrFail($tid);
+        $this->authorize('access', $transect);
+
+        return $transect->images()
+            ->join('image_labels', 'images.id', '=', 'image_labels.image_id')
+            ->where('image_labels.user_id', $uid)
+            ->pluck('images.id');
+    }
+
+    /**
+     * List the IDs of images having the specified label attached.
+     *
+     * @api {get} transects/:tid/images/filter/image-label/:lid Get all images having a certain label
+     * @apiGroup Transects
+     * @apiName TransectImagesHasImageLabel
+     * @apiPermission projectMember
+     * @apiDescription Returns IDs of images having the specified label attached to them.
+     *
+     * @apiParam {Number} tid The transect ID
+     * @apiParam {Number} lid The label ID
+     *
+     * @apiSuccessExample {json} Success response:
+     * [1, 5, 6]
+     *
+     * @param  int  $tid
+     * @param  int  $lid
+     * @return \Illuminate\Http\Response
+     */
+    public function hasImageLabel($tid, $lid)
+    {
+        $transect = Transect::findOrFail($tid);
+        $this->authorize('access', $transect);
+
+        return $transect->images()
+            ->join('image_labels', 'images.id', '=', 'image_labels.image_id')
+            ->where('image_labels.label_id', $lid)
+            ->pluck('images.id');
+    }
 }

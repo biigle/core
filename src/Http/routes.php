@@ -40,4 +40,20 @@ $router->group([
     $router->get('transects/{id}/images/order-by/filename', [
         'uses' => 'TransectImageController@indexOrderByFilename',
     ]);
+
+    $router->get('transects/{id}/images/filter/labels', [
+        'uses' => 'TransectImageController@hasLabel'
+    ]);
+
+    $router->get('transects/{tid}/images/filter/image-label-user/{uid}', [
+        'uses' => 'TransectImageController@hasImageLabelUser'
+    ]);
+
+    $router->get('transects/{tid}/images/filter/image-label/{lid}', [
+        'uses' => 'TransectImageController@hasImageLabel'
+    ]);
+
+    $router->get('transects/{id}/image-labels/find/{pattern}', [
+        'uses' => 'TransectImageLabelController@findLabel'
+    ]);
 });
