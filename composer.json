@@ -1,7 +1,8 @@
 {
     "name": "dias/annotations",
     "require": {
-        "dias/transects": ">=0.1.0"
+        "dias/transects": "~0.1",
+        "dias/label-trees": "~0.1"
     },
     "require-dev": {
     },
