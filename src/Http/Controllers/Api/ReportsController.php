@@ -26,7 +26,7 @@ class ReportsController extends Controller
     public function basic($id)
     {
         $project = Project::findOrFail($id);
-        $this->requireCanSee($project);
+        $this->authorize('access', $project);
         $this->dispatch(new GenerateBasicReport($project, $this->user));
         return "Job submitted please wait. An Email will be sent to you.";
     }
@@ -47,7 +47,7 @@ class ReportsController extends Controller
     public function extended($id)
     {
         $project = Project::findOrFail($id);
-        $this->requireCanSee($project);
+        $this->authorize('access', $project);
         $this->dispatch(new GenerateExtendedReport($project,$this->user));
         return "Job submitted please wait. An Email will be sent to you.";
     }
@@ -67,7 +67,7 @@ class ReportsController extends Controller
     public function full($id)
     {
         $project = Project::findOrFail($id);
-        $this->requireCanSee($project);
+        $this->authorize('access', $project);
         $this->dispatch(new GenerateFullReport($project,$this->user));
         return "Job submitted please wait. An Email will be sent to you.";
     }
