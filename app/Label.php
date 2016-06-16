@@ -102,7 +102,8 @@ class Label extends Model
      */
     public function isUsed()
     {
-        return AnnotationLabel::where('label_id', $this->id)->exists();
+        return AnnotationLabel::where('label_id', $this->id)->exists()
+            || ImageLabel::where('label_id', $this->id)->exists();
     }
 
     /**
@@ -115,7 +116,6 @@ class Label extends Model
      */
     public function canBeDeleted()
     {
-        return !Label::where('parent_id', $this->id)->exists()
-            && !$this->isUsed();
+        return !Label::where('parent_id', $this->id)->exists() && !$this->isUsed();
     }
 }
