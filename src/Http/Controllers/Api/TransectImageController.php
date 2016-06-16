@@ -2,6 +2,7 @@
 
 namespace Dias\Modules\Transects\Http\Controllers\Api;
 
+use DB;
 use Dias\Transect;
 use Dias\Http\Controllers\Api\Controller;
 
@@ -83,10 +84,15 @@ class TransectImageController extends Controller
         $transect = Transect::findOrFail($tid);
         $this->authorize('access', $transect);
 
-        return $transect->images()
-            ->join('image_labels', 'images.id', '=', 'image_labels.image_id')
-            ->where('image_labels.user_id', $uid)
-            ->pluck('images.id');
+        return DB::table('images')
+            ->where('transect_id', $tid)
+            ->whereExists(function ($query) use ($uid) {
+                $query->select(DB::raw(1))
+                      ->from('image_labels')
+                      ->where('image_labels.user_id', $uid)
+                      ->whereRaw('image_labels.image_id = images.id');
+            })
+            ->pluck('id');
     }
 
     /**
@@ -113,9 +119,14 @@ class TransectImageController extends Controller
         $transect = Transect::findOrFail($tid);
         $this->authorize('access', $transect);
 
-        return $transect->images()
-            ->join('image_labels', 'images.id', '=', 'image_labels.image_id')
-            ->where('image_labels.label_id', $lid)
-            ->pluck('images.id');
+        return DB::table('images')
+            ->where('transect_id', $tid)
+            ->whereExists(function ($query) use ($lid) {
+                $query->select(DB::raw(1))
+                      ->from('image_labels')
+                      ->where('image_labels.label_id', $lid)
+                      ->whereRaw('image_labels.image_id = images.id');
+            })
+            ->pluck('id');
     }
 }
