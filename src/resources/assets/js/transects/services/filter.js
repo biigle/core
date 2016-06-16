@@ -77,6 +77,7 @@ angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSE
             filters.push({
                 name: newFilter.name,
                 resource: newFilter.resource,
+                template: newFilter.template,
                 typeahead: newFilter.typeahead,
                 // add the transform function or use identity if there is none
                 transformData: newFilter.transformData || angular.identity

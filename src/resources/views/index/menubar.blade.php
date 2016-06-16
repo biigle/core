@@ -41,7 +41,7 @@
 
         <ul class="filter-list list-group">
             <li class="list-group-item ng-cloak" data-ng-repeat="rule in getRules() | orderBy: '-'" data-ng-class="{'disabled': rule.ids.$resolved === false}">
-                <span data-ng-if="!rule.negate">has</span><span data-ng-if="rule.negate">has no</span> <span data-ng-include="rule.filter.name + 'FilterRule.html'"></span> <button type="button" class="close pull-right" title="Remove this rule" data-ng-click="removeRule(rule)"><span aria-hidden="true">&times;</span></button>
+                <span data-ng-if="!rule.negate">has</span><span data-ng-if="rule.negate">has no</span> <span data-ng-include="rule.filter.template"></span> <button type="button" class="close pull-right" title="Remove this rule" data-ng-click="removeRule(rule)"><span aria-hidden="true">&times;</span></button>
             </li>
             <li class="ng-cloak list-group-item text-muted" data-ng-if="!getRules().length">No filter rules</li>
         </ul>
