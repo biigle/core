@@ -2,6 +2,7 @@
 
 namespace Dias\Modules\Annotations\Http\Controllers\Api;
 
+use DB;
 use Dias\Transect;
 use Dias\Http\Controllers\Api\Controller;
 
@@ -56,11 +57,16 @@ class TransectImageController extends Controller
         $transect = Transect::findOrFail($tid);
         $this->authorize('access', $transect);
 
-        return $transect->images()
-            ->join('annotations', 'images.id', '=', 'annotations.image_id')
-            ->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-            ->where('annotation_labels.user_id', $uid)
-            ->pluck('images.id');
+        return DB::table('images')
+            ->where('transect_id', $tid)
+            ->whereExists(function ($query) use ($uid) {
+                $query->select(DB::raw(1))
+                      ->from('annotations')
+                      ->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
+                      ->where('annotation_labels.user_id', $uid)
+                      ->whereRaw('annotations.image_id = images.id');
+            })
+            ->pluck('id');
     }
 
     /**
@@ -87,10 +93,15 @@ class TransectImageController extends Controller
         $transect = Transect::findOrFail($tid);
         $this->authorize('access', $transect);
 
-        return $transect->images()
-            ->join('annotations', 'images.id', '=', 'annotations.image_id')
-            ->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-            ->where('annotation_labels.label_id', $lid)
-            ->pluck('images.id');
+        return DB::table('images')
+            ->where('transect_id', $tid)
+            ->whereExists(function ($query) use ($lid) {
+                $query->select(DB::raw(1))
+                      ->from('annotations')
+                      ->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
+                      ->where('annotation_labels.label_id', $lid)
+                      ->whereRaw('annotations.image_id = images.id');
+            })
+            ->pluck('id');
     }
 }

@@ -39,6 +39,11 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
             'annotation_id' => $annotation->id,
             'user_id' => $this->editor()->id,
         ]);
+        // image ID should be returned only once even with multiple annotations on it
+        AnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => $this->editor()->id,
+        ]);
         $uid = $this->editor()->id;
 
         // this image shouldn't appear
@@ -74,9 +79,15 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
 
         $image = ImageTest::create(['transect_id' => $tid]);
         $annotation = AnnotationTest::create(['image_id' => $image->id]);
-        $label = AnnotationLabelTest::create([
+        $label = LabelTest::create();
+        AnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
-            'user_id' => $this->editor()->id,
+            'label_id' => $label->id,
+        ]);
+        // image ID should be returned only once, no matter how often the label is present
+        AnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'label_id' => $label->id,
         ]);
 
         $lid = $label->id;
@@ -84,7 +95,7 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
         // this image shouldn't appear
         $image2 = ImageTest::create(['transect_id' => $tid, 'filename' => 'b.jpg']);
         $annotation = AnnotationTest::create(['image_id' => $image2->id]);
-        $label2 = AnnotationLabelTest::create([
+        AnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'user_id' => $this->admin()->id,
         ]);
