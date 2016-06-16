@@ -3,7 +3,7 @@
  * @ngdoc controller
  * @name AnnotationsLabelFilterController
  * @memberOf dias.transects
- * @description Manages the label filter feature
+ * @description Manages the annotation label filter feature
  */
 angular.module('dias.transects').controller('AnnotationsLabelFilterController', function (AnnotationLabelImage, filter) {
         "use strict";

@@ -5,7 +5,7 @@
  * @memberOf dias.transects
  * @description Manages the user filter feature
  */
-angular.module('dias.transects').controller('AnnotationsUserFilterController', function (  AnnotationUserImage, filter, $attrs) {
+angular.module('dias.transects').controller('AnnotationsUserFilterController', function (  AnnotationUserImage, filter) {
         "use strict";
 
         filter.add({

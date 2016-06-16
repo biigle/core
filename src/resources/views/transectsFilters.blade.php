@@ -7,7 +7,7 @@
 </script>
 
 <script type="text/ng-template" id="annotationUserFilterTypeahead.html">
-    <input class="form-control" placeholder="Select user" data-transect-annotation-user-chooser="selectData" data-transect-id="{{$transect->id}}" />
+    <input class="form-control" placeholder="Select user" data-transect-filter-user-chooser="selectData" />
 </script>
 
 <script data-ng-controller="AnnotationsLabelFilterController" type="text/ng-template" id="annotationWithLabelFilterRule.html">

@@ -2,7 +2,7 @@
  * @ngdoc factory
  * @name TransectAnnotationLabels
  * @memberOf dias.transects
- * @description Provides the resource to find labels occurring in a certain transect
+ * @description Provides the resource to find labels occurring as annotation labels in a certain transect
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
  * @example

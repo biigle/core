@@ -35,7 +35,7 @@ class TransectImageController extends Controller
     /**
      * List the IDs of images having one or more annotations of the specified user.
      *
-     * @api {get} transects/:tid/images/filter/user/:uid Get all images having annotations of a user
+     * @api {get} transects/:tid/images/filter/annotation-user/:uid Get all images having annotations of a user
      * @apiGroup Transects
      * @apiName TransectImagesHasUser
      * @apiPermission projectMember
@@ -66,7 +66,7 @@ class TransectImageController extends Controller
     /**
      * List the IDs of images having one or more annotations with the specified label.
      *
-     * @api {get} transects/:tid/images/filter/label/:lid Get all images having annotations with a certain label
+     * @api {get} transects/:tid/images/filter/annotation-label/:lid Get all images having annotations with a certain label
      * @apiGroup Transects
      * @apiName TransectImagesHasLabel
      * @apiPermission projectMember

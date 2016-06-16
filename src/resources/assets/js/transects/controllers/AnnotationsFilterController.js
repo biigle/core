@@ -12,7 +12,10 @@ angular.module('dias.transects').controller('AnnotationsFilterController', funct
             name: 'annotations',
             template: 'annotationsFilterRule.html',
             resource: AnnotationImage,
-            typeahead: null
+            typeahead: null,
+            transformData: function () {
+                return null;
+            }
         });
     }
 );

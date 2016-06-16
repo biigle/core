@@ -25,10 +25,6 @@ $router->group([
         'uses' => 'TransectImageController@hasAnnotationLabel'
     ]);
 
-    $router->get('transects/{id}/annotation-users/find/{pattern}', [
-        'uses' => 'TransectUserController@find'
-    ]);
-
     $router->get('transects/{id}/annotation-labels/find/{pattern}', [
         'uses' => 'TransectLabelController@find'
     ]);

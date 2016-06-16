@@ -3,10 +3,10 @@
  * @ngdoc directive
  * @name transectAnnotationLabelChooser
  * @memberOf dias.transects
- * @description An input field to find a label that was used in a transect
+ * @description An input field to find a label that was used as annotation label in a transect
  * @example
 // HTML
-<input placeholder="Search by label name" data-transect-label-chooser="addLabel" data-transect-id="1" />
+<input placeholder="Search by label name" data-transect-annotation-label-chooser="addLabel" data-transect-id="1" />
 
 // Controller
 $scope.addLabel = function (label) {

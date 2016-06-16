@@ -12,7 +12,7 @@ class TransectLabelController extends Controller
     /**
      * Find a label category in all categories that were used in a transect
      *
-     * @api {get} transects/:id/labels/find/:pattern Find a label category in all categories that were used in a transect
+     * @api {get} transects/:id/annotation-labels/find/:pattern Find a label category in all categories that were used in a transect
      * @apiGroup Transects
      * @apiName TransectFindLabel
      * @apiPermission projectMember
