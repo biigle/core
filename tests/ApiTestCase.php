@@ -132,9 +132,17 @@ class ApiTestCase extends TestCase
             return $this->labelTree;
         }
 
-        return $this->labelTree = LabelTreeTest::create([
+        // initialize project before label tree, else the tree (as global tree without members)
+        // would be attached by default
+        $this->project();
+
+        $this->labelTree = $this->labelTree = LabelTreeTest::create([
             'visibility_id' => Dias\Visibility::$public->id,
         ]);
+
+        $this->labelTree->projects()->attach($this->project());
+
+        return $this->labelTree;
     }
 
     protected function labelRoot()

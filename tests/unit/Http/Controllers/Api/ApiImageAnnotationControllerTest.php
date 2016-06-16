@@ -45,6 +45,8 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
     public function testStore()
     {
+        $label = LabelTest::create();
+
         $this->doTestApiRoute('POST', "/api/v1/images/{$this->image->id}/annotations");
 
         $this->beGuest();
@@ -72,14 +74,14 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$pointId,
-            'label_id' => $this->labelRoot()->id,
+            'label_id' => $label->id,
         ]);
         // confidence required
         $this->assertResponseStatus(422);
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$pointId,
-            'label_id' => $this->labelRoot()->id,
+            'label_id' => $label->id,
             'confidence' => 2
         ]);
         // confidence must be between 0 and 1
@@ -87,7 +89,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$pointId,
-            'label_id' => $this->labelRoot()->id,
+            'label_id' => $label->id,
             'confidence' => -1
         ]);
         // confidence must be between 0 and 1
@@ -95,7 +97,7 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$pointId,
-            'label_id' => $this->labelRoot()->id,
+            'label_id' => $label->id,
             'confidence' => 0.5,
             'points' => '[]',
         ]);
@@ -104,20 +106,20 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
         $this->post("/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$pointId,
-            'label_id' => $this->labelRoot()->id,
+            'label_id' => $label->id,
             'confidence' => 0.5,
             'points' => '[10, 11]',
         ]);
         // label does not belong to a label tree of the project of the image
         $this->assertResponseStatus(403);
 
-        $this->project()->labelTrees()->attach($this->labelRoot()->label_tree_id);
+        $this->project()->labelTrees()->attach($label->label_tree_id);
         // policies are cached
         Cache::flush();
 
         $this->post("/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Dias\Shape::$pointId,
-            'label_id' => $this->labelRoot()->id,
+            'label_id' => $label->id,
             'confidence' => 0.5,
             'points' => '[10, 11]',
         ]);
@@ -125,8 +127,8 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
         $this->assertResponseOk();
 
         $this->seeJson(['points' => [10, 11]]);
-        $this->seeJson(['name' => $this->labelRoot()->name]);
-        $this->seeJson(['color' => $this->labelRoot()->color]);
+        $this->seeJson(['name' => $label->name]);
+        $this->seeJson(['color' => $label->color]);
 
         $annotation = $this->image->annotations->first();
         $this->assertNotNull($annotation);

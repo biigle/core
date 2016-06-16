@@ -46,12 +46,21 @@ class LabelTreeTest extends ModelTestCase
         $this->assertTrue($this->model->labels()->exists());
     }
 
-    public function testCanBeDeleted()
+    public function testCanBeDeletedAnnotationLabel()
     {
         $this->assertTrue($this->model->canBeDeleted());
         $label = LabelTest::create(['label_tree_id' => $this->model->id]);
         $this->assertTrue($this->model->canBeDeleted());
         AnnotationLabelTest::create(['label_id' => $label->id]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedImageLabel()
+    {
+        $this->assertTrue($this->model->canBeDeleted());
+        $label = LabelTest::create(['label_tree_id' => $this->model->id]);
+        $this->assertTrue($this->model->canBeDeleted());
+        ImageLabelTest::create(['label_id' => $label->id]);
         $this->assertFalse($this->model->canBeDeleted());
     }
 

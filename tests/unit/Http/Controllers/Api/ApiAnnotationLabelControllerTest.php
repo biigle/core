@@ -9,7 +9,6 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
         parent::setUp();
         $this->annotation = AnnotationTest::create();
         $this->project()->addTransectId($this->annotation->image->transect->id);
-        $this->project()->labelTrees()->attach($this->labelRoot()->label_tree_id);
     }
 
     public function testIndex()

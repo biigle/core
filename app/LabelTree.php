@@ -155,6 +155,9 @@ class LabelTree extends Model
     {
         return !AnnotationLabel::join('labels', 'annotation_labels.label_id', '=', 'labels.id')
             ->where('labels.label_tree_id', $this->id)
+            ->exists()
+            && !ImageLabel::join('labels', 'image_labels.label_id', '=', 'labels.id')
+            ->where('labels.label_tree_id', $this->id)
             ->exists();
     }
 

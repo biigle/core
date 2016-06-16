@@ -133,3 +133,17 @@ $factory->define(Dias\LabelTree::class, function ($faker) {
         'visibility_id' => Dias\Visibility::$public->id,
     ];
 });
+
+$factory->define(Dias\ImageLabel::class, function ($faker) {
+    return [
+        'image_id' => function () {
+            return factory(Dias\Image::class)->create()->id;
+        },
+        'label_id' => function () {
+            return factory(Dias\Label::class)->create()->id;
+        },
+        'user_id' => function () {
+            return factory(Dias\User::class)->create()->id;
+        },
+    ];
+});

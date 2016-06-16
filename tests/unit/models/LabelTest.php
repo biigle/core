@@ -75,11 +75,19 @@ class LabelTest extends ModelTestCase
         $this->assertEquals('aabbcc', $label->color);
     }
 
-    public function testIsUsed()
+    public function testIsUsedAnnotationLabel()
     {
         $a = AnnotationLabelTest::create(['label_id' => $this->model->id]);
         $this->assertTrue($this->model->isUsed());
         $a->delete();
+        $this->assertFalse($this->model->isUsed());
+    }
+
+    public function testIsUsedImageLabel()
+    {
+        $i = ImageLabelTest::create(['label_id' => $this->model->id]);
+        $this->assertTrue($this->model->isUsed());
+        $i->delete();
         $this->assertFalse($this->model->isUsed());
     }
 
