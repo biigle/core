@@ -17,19 +17,19 @@ $router->group([
         'uses' => 'TransectImageController@hasAnnotation'
     ]);
 
-    $router->get('transects/{tid}/images/filter/user/{uid}', [
-        'uses' => 'TransectImageController@hasUser'
+    $router->get('transects/{tid}/images/filter/annotation-user/{uid}', [
+        'uses' => 'TransectImageController@hasAnnotationUser'
     ]);
 
-    $router->get('transects/{tid}/images/filter/label/{lid}', [
-        'uses' => 'TransectImageController@hasLabel'
+    $router->get('transects/{tid}/images/filter/annotation-label/{lid}', [
+        'uses' => 'TransectImageController@hasAnnotationLabel'
     ]);
 
-    $router->get('transects/{id}/users/find/{pattern}', [
+    $router->get('transects/{id}/annotation-users/find/{pattern}', [
         'uses' => 'TransectUserController@find'
     ]);
 
-    $router->get('transects/{id}/labels/find/{pattern}', [
+    $router->get('transects/{id}/annotation-labels/find/{pattern}', [
         'uses' => 'TransectLabelController@find'
     ]);
 });

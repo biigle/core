@@ -1,7 +1,7 @@
 /**
  * @namespace dias.ui.users
  * @ngdoc directive
- * @name transectLabelChooser
+ * @name transectAnnotationLabelChooser
  * @memberOf dias.transects
  * @description An input field to find a label that was used in a transect
  * @example
@@ -14,14 +14,14 @@ $scope.addLabel = function (label) {
 };
 
  */
-angular.module('dias.transects').directive('transectLabelChooser', function () {
+angular.module('dias.transects').directive('transectAnnotationLabelChooser', function () {
       "use strict";
 
       return {
          restrict: 'A',
 
          scope: {
-            select: '=transectLabelChooser',
+            select: '=transectAnnotationLabelChooser',
             id: '=transectId'
          },
 
@@ -29,9 +29,9 @@ angular.module('dias.transects').directive('transectLabelChooser', function () {
 
          template: '<input type="text" data-ng-model="selected" data-uib-typeahead="label.name for label in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
 
-         controller: function ($scope, TransectLabels) {
+         controller: function ($scope, TransectAnnotationLabels) {
             $scope.find = function (query) {
-               return TransectLabels.find({
+               return TransectAnnotationLabels.find({
                     transect_id: $scope.id,
                     query: encodeURIComponent(query)
                 }).$promise;

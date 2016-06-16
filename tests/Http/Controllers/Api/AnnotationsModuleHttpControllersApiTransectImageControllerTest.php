@@ -30,7 +30,7 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
             ->seeJsonEquals($expect);
     }
 
-    public function testHasUser() {
+    public function testHasAnnotationUser() {
         $tid = $this->transect()->id;
 
         $image = ImageTest::create(['transect_id' => $tid]);
@@ -49,14 +49,14 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
             'user_id' => $this->admin()->id,
         ]);
 
-        $this->doTestApiRoute('GET', "/api/v1/transects/{$tid}/images/filter/user/{$uid}");
+        $this->doTestApiRoute('GET', "/api/v1/transects/{$tid}/images/filter/annotation-user/{$uid}");
 
         $this->beUser();
-        $this->get("/api/v1/transects/{$tid}/images/filter/user/{$uid}");
+        $this->get("/api/v1/transects/{$tid}/images/filter/annotation-user/{$uid}");
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/transects/{$tid}/images/filter/user/{$uid}");
+        $this->get("/api/v1/transects/{$tid}/images/filter/annotation-user/{$uid}");
         $this->assertResponseOk();
 
         if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
@@ -65,11 +65,11 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
             $expect = [$image->id];
         }
 
-        $this->get("/api/v1/transects/{$tid}/images/filter/user/{$uid}")
+        $this->get("/api/v1/transects/{$tid}/images/filter/annotation-user/{$uid}")
             ->seeJsonEquals($expect);
     }
 
-    public function testHasLabel() {
+    public function testHasAnnotationLabel() {
         $tid = $this->transect()->id;
 
         $image = ImageTest::create(['transect_id' => $tid]);
@@ -89,14 +89,14 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
             'user_id' => $this->admin()->id,
         ]);
 
-        $this->doTestApiRoute('GET', "/api/v1/transects/{$tid}/images/filter/label/{$lid}");
+        $this->doTestApiRoute('GET', "/api/v1/transects/{$tid}/images/filter/annotation-label/{$lid}");
 
         $this->beUser();
-        $this->get("/api/v1/transects/{$tid}/images/filter/label/{$lid}");
+        $this->get("/api/v1/transects/{$tid}/images/filter/annotation-label/{$lid}");
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/transects/{$tid}/images/filter/label/{$lid}");
+        $this->get("/api/v1/transects/{$tid}/images/filter/annotation-label/{$lid}");
         $this->assertResponseOk();
 
         if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
@@ -105,7 +105,7 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
             $expect = [$image->id];
         }
 
-        $this->get("/api/v1/transects/{$tid}/images/filter/label/{$lid}")
+        $this->get("/api/v1/transects/{$tid}/images/filter/annotation-label/{$lid}")
             ->seeJsonEquals($expect);
     }
 }

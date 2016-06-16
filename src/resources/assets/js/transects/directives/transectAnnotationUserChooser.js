@@ -1,7 +1,7 @@
 /**
  * @namespace dias.ui.users
  * @ngdoc directive
- * @name transectUserChooser
+ * @name transectAnnotationUserChooser
  * @memberOf dias.transects
  * @description An input field to find a user who has annotations in a transect
  * @example
@@ -13,14 +13,14 @@ $scope.addUser = function (user) {
     // do something
 };
  */
-angular.module('dias.transects').directive('transectUserChooser', function () {
+angular.module('dias.transects').directive('transectAnnotationUserChooser', function () {
       "use strict";
 
       return {
          restrict: 'A',
 
          scope: {
-            select: '=transectUserChooser',
+            select: '=transectAnnotationUserChooser',
             id: '=transectId'
          },
 
@@ -28,7 +28,7 @@ angular.module('dias.transects').directive('transectUserChooser', function () {
 
          template: '<input type="text" data-ng-model="selected" data-uib-typeahead="name(user) for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
 
-         controller: function ($scope, TransectUsers) {
+         controller: function ($scope, TransectAnnotationUsers) {
             $scope.name = function (user) {
                 if (user && user.firstname && user.lastname) {
                     return user.firstname + ' ' + user.lastname;
@@ -38,7 +38,7 @@ angular.module('dias.transects').directive('transectUserChooser', function () {
             };
 
             $scope.find = function (query) {
-               return TransectUsers.find({
+               return TransectAnnotationUsers.find({
                     transect_id: $scope.id,
                     query: encodeURIComponent(query)
                 }).$promise;

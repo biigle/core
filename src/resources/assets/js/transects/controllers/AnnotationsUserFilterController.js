@@ -5,13 +5,14 @@
  * @memberOf dias.transects
  * @description Manages the user filter feature
  */
-angular.module('dias.transects').controller('AnnotationsUserFilterController', function (  AnnotationUserImage, filter) {
+angular.module('dias.transects').controller('AnnotationsUserFilterController', function (  AnnotationUserImage, filter, $attrs) {
         "use strict";
 
         filter.add({
-            name: 'user',
+            name: 'annotation label by user',
+            template: 'annotationLabelByUserFilterRule.html',
             resource: AnnotationUserImage,
-            typeahead: 'userFilterTypeahead.html',
+            typeahead: 'annotationUserFilterTypeahead.html',
             transformData: function (user) {
                 return user.id;
             }

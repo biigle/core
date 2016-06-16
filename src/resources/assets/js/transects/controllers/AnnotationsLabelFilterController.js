@@ -9,9 +9,10 @@ angular.module('dias.transects').controller('AnnotationsLabelFilterController', 
         "use strict";
 
         filter.add({
-            name: 'label',
+            name: 'annotation with label',
+            template: 'annotationWithLabelFilterRule.html',
             resource: AnnotationLabelImage,
-            typeahead: 'labelFilterTypeahead.html',
+            typeahead: 'annotationLabelFilterTypeahead.html',
             transformData: function (label) {
                 return label.id;
             }

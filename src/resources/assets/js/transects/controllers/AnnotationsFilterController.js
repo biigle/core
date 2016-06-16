@@ -10,6 +10,7 @@ angular.module('dias.transects').controller('AnnotationsFilterController', funct
 
         filter.add({
             name: 'annotations',
+            template: 'annotationsFilterRule.html',
             resource: AnnotationImage,
             typeahead: null
         });

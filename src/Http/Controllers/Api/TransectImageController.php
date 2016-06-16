@@ -51,7 +51,7 @@ class TransectImageController extends Controller
      * @param  int  $uid
      * @return \Illuminate\Http\Response
      */
-    public function hasUser($tid, $uid)
+    public function hasAnnotationUser($tid, $uid)
     {
         $transect = Transect::findOrFail($tid);
         $this->authorize('access', $transect);
@@ -82,7 +82,7 @@ class TransectImageController extends Controller
      * @param  int  $lid
      * @return \Illuminate\Http\Response
      */
-    public function hasLabel($tid, $lid)
+    public function hasAnnotationLabel($tid, $lid)
     {
         $transect = Transect::findOrFail($tid);
         $this->authorize('access', $transect);

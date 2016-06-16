@@ -20,14 +20,14 @@ class AnnotationsModuleHttpControllersApiTransectLabelControllerTest extends Api
             'user_id' => $this->editor()->id,
         ]);
 
-        $this->doTestApiRoute('GET', "/api/v1/transects/{$tid}/labels/find/my");
+        $this->doTestApiRoute('GET', "/api/v1/transects/{$tid}/annotation-labels/find/my");
 
         $this->beUser();
-        $this->get("/api/v1/transects/{$tid}/labels/find/my");
+        $this->get("/api/v1/transects/{$tid}/annotation-labels/find/my");
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/transects/{$tid}/labels/find/my")
+        $this->get("/api/v1/transects/{$tid}/annotation-labels/find/my")
             // other-label should not appear
             ->seeJsonEquals([[
                 'id' => $label1->id,
@@ -38,7 +38,7 @@ class AnnotationsModuleHttpControllersApiTransectLabelControllerTest extends Api
             ]]);
         $this->assertResponseOk();
 
-        $this->get("/api/v1/transects/{$tid}/labels/find/label")
+        $this->get("/api/v1/transects/{$tid}/annotation-labels/find/label")
             ->seeJsonEquals([
                 [
                     'id' => $label1->id,
