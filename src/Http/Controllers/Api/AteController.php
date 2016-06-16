@@ -24,7 +24,7 @@ class AteController extends Controller
     public function preprocess($id)
     {
         $transect = Transect::findOrFail($id);
-        $this->requireCanSee($transect);
+        $this->authorize('access', $transect);
         $this->dispatch(new Preprocess($transect));
         return "Job submitted please wait. An Email will be sent to you.";
     }
