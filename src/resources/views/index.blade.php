@@ -12,7 +12,11 @@
     angular.module('dias.annotations').constant('TRANSECT_ID', {{$image->transect_id}});
     angular.module('dias.annotations').constant('IMAGES_IDS', {!!$images->keys()!!});
     angular.module('dias.annotations').constant('IMAGES_FILENAMES', {!!$images->values()!!});
-    angular.module('dias.annotations').constant('LABEL_TREES', {!!$labelTrees!!});
+    @can('add-annotation', $image)
+        angular.module('dias.annotations').constant('LABEL_TREES', {!!$labelTrees!!});
+    @else
+        angular.module('dias.annotations').constant('LABEL_TREES', []);
+    @endcan
 </script>
 @foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
     @include($module.'::annotationsScripts', ['mixins' => $nestedMixins])
