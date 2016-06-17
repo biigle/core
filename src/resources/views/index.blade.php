@@ -9,6 +9,9 @@
         angular.module('dias.transects').constant('TRANSECT_IMAGES', {{$imageIds}});
         angular.module('dias.transects').constant('TRANSECT_ID', {{$transect->id}});
         angular.module('dias.transects').constant('THUMB_DIMENSION', {WIDTH: {{config('thumbnails.width')}}, HEIGHT: {{config('thumbnails.height')}} });
+        @can('edit-in', $transect)
+            angular.module('dias.transects').constant('LABEL_TREES', {!!$labelTrees!!});
+        @endcan
     </script>
     @foreach ($modules->getMixins('transectsScripts') as $module => $nestedMixins)
         @include($module.'::transectsScripts', ['mixins' => $nestedMixins])
@@ -22,29 +25,29 @@
     @endforeach
 @endpush
 
-
 @section('navbar')
 <div class="navbar-text navbar-transects-breadcrumbs">
-    @if ($transect->projects->count() > 1)
+    @if ($projects->count() > 1)
         <span class="dropdown">
             <a href="#" class="dropdown-toggle navbar-link">Projects <span class="caret"></span></a>
             <ul class="dropdown-menu">
-                @foreach ($transect->projects as $project)
+                @foreach ($projects as $project)
                     <li><a href="{{route('project', $project->id)}}">{{$project->name}}</a></li>
                 @endforeach
             </ul>
         </span>
     @else
-        <a href="{{route('project', $transect->projects->first()->id)}}" class="navbar-link" title="Show project {{$transect->projects->first()->name}}">{{$transect->projects->first()->name}}</a>
+        <a href="{{route('project', $projects->first()->id)}}" class="navbar-link" title="Show project {{$projects->first()->name}}">{{$projects->first()->name}}</a>
     @endif
     / <strong>{{$transect->name}}</strong> <small>({{ sizeof($imageIds) }}&nbsp;images)</small>
 </div>
 @endsection
 
 @section('content')
-<div class="transect-container" data-ng-app="dias.transects">
+<div class="transect-container" data-ng-app="dias.transects" data-ng-controller="TransectController">
     @include('transects::index.menubar')
     @include('transects::index.images')
     @include('transects::index.progress')
+    @include('transects::index.label')
 </div>
 @endsection

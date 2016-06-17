@@ -1,0 +1,94 @@
+.transect__label {
+    position: relative;
+    height: 100%;
+}
+
+.transect__label-body {
+    width: 360px;
+    height: 100%;
+    padding: 1em;
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.transect-image-label-menu-group .popover {
+    max-width: none;
+}
+
+.labels-search {
+    margin-bottom: 1em;
+
+    .form-control {
+        display: inline-block;
+        width: auto;
+    }
+}
+
+.labels-body {
+    overflow: auto;
+    flex-grow: 2
+}
+
+.labels-list:not(:last-child) {
+    border-bottom: 1px solid #353535;
+}
+
+.label-tree-name {
+    margin-bottom: 2px;
+}
+
+.label-tree-items > .label-tree-item {
+    padding-left: 0;
+}
+
+.label-tree-item {
+    // width of the expandable before element
+    padding-left: 19px;
+    padding-top: 0.5em;
+    cursor: pointer;
+
+
+    & > .item:hover {
+        color: white;
+    }
+
+    &.expandable > .item .item__name {
+        text-decoration: underline;
+    }
+
+    &.expandable.open > .item {
+        color: white;
+    }
+
+    & > .label-subtree {
+        max-height: 0;
+        overflow: hidden;
+    }
+
+    &.open > .label-subtree {
+        max-height: none;
+    }
+
+    &.selected > .item {
+        color: white;
+        font-weight: bold;
+    }
+
+    .item {
+        white-space: nowrap;
+    }
+
+    .item__name {
+        // the star to toggle favourite
+        padding-right: 16px;
+    }
+
+    .item__color {
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        border-radius: 50%;
+        border: 2px solid #eee;
+        vertical-align: middle;
+    }
+}

@@ -1,0 +1,59 @@
+.transect__progress {
+    // width: 10px;
+    padding: 1px 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .progress__buttons--top {
+        & > .btn:last-child {
+            border-radius: 0;
+        }
+
+        .glyphicon {
+            transform: rotate(90deg);
+        }
+    }
+
+    .progress__buttons--bottom {
+        & > .btn:first-child {
+            border-radius: 0;
+        }
+
+        .glyphicon {
+            transform: rotate(90deg);
+        }
+    }
+}
+
+.transect__progress-bar {
+    flex: 2;
+    border-left: 1px solid $btn-default-border;
+    border-right: 1px solid $btn-default-border;
+    position: relative;
+
+    // this is a workaround because chrome doesn't respect percentage height of nested
+    // child elements in a flexbox: https://github.com/philipwalton/flexbugs/issues/84
+    .progress-bar__wrapper {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        pointer-events: none;
+    }
+
+    .progress-bar__progress {
+        height: 0%;
+        background-color: $btn-default-border;
+        transition: background-color 0.1s ease;
+    }
+
+    &:hover {
+        cursor: pointer;
+
+        .progress-bar__progress {
+            background-color: $gray-light;
+        }
+    }
+}

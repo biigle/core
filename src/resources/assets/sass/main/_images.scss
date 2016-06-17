@@ -1,0 +1,64 @@
+.transect__images {
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+    flex: 2;
+}
+
+.transect-figure {
+    height: 135px;
+    width: 180px;
+    display: inline-block;
+    position: relative;
+    margin: $transect-image-margin;
+
+    img {
+        width: 100%;
+        height: 100%;
+        border-radius: $border-radius-base;
+    }
+
+    & a.info-link {
+        position: absolute;
+        top: $transect-image-padding;
+        right: $transect-image-padding;
+        color: white;
+        padding: 0.3em 0.5em;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: $border-radius-base;
+        opacity: 0;
+        transition: all 0.25s ease;
+    }
+
+    &:hover a.info-link {
+        opacity: 0.75;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+.transect-figure__flags {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-top: $transect-image-padding;
+
+    .figure-flag {
+        position: relative;
+        z-index: 100;
+        margin-left: $transect-image-padding;
+    }
+}
+
+.figure-flag {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: $brand-info;
+    border: 2px solid white;
+}

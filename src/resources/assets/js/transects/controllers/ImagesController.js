@@ -6,7 +6,7 @@
  * @description Controller for displaying the huge amout of images of a
  * transect on a singe page.
  */
-angular.module('dias.transects').controller('ImagesController', function ($scope, $element, images, filter, keyboard) {
+angular.module('dias.transects').controller('ImagesController', function ($scope, $element, images, filter, keyboard, $timeout) {
 		"use strict";
 
         var updateDisplay = function () {
@@ -72,6 +72,12 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
         window.addEventListener('resize', function () {
             $scope.$apply(updateDisplay);
         });
+
+        $scope.$on('label-mode.toggle', function () {
+            // wait for label mode sidebar to be rendered
+            $timeout(updateDisplay);
+        });
+
         updateDisplay();
         // initialize service after setting the grid
         images.initialize();

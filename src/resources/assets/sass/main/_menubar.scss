@@ -1,0 +1,45 @@
+.transect-menubar {
+    min-width: 50px;
+    padding: 1em 0.5em;
+}
+
+.transect-menubar__item {
+    display: block;
+    margin-bottom: 1em;
+}
+
+
+
+.transect-filter-popover {
+
+    .filter-list {
+        margin-top: 1em;
+        max-height: 100px;
+        overflow-y: auto;
+    }
+
+    .figure-flag {
+        vertical-align: middle;
+    }
+
+    .add-rule-form {
+        white-space: nowrap;
+    }
+}
+
+.transect-filter-menu-group {
+    .popover {
+        max-width: none;
+    }
+}
+
+.transect-sort-popover {
+    min-width: 200px;
+
+    .sorter-list-group {
+        margin-top: .5em;
+        margin-bottom: 0;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+}
