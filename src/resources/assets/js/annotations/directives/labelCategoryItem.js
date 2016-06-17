@@ -36,6 +36,7 @@ angular.module('dias.annotations').directive('labelCategoryItem', function ($com
                 var checkState = function () {
                     if (labels.isOpen($scope.item)) {
                         open = true;
+                        selected = false;
                     } else if (labels.isSelected($scope.item)) {
                         open = true;
                         selected = true;
