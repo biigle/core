@@ -26,6 +26,10 @@ angular.module('dias.label-trees').controller('LabelsController', function ($sco
             name: DEFAULTS.NAME
         };
 
+        // IDs of all labels that are currently open
+        // (all parent labels of the selected label)
+        $scope.openHierarchy = [];
+
         var handleError = function (response) {
             msg.responseError(response);
             loading = false;
@@ -68,9 +72,32 @@ angular.module('dias.label-trees').controller('LabelsController', function ($sco
             loading = false;
         };
 
+        var getLabel = function (id) {
+            for (var i = LABELS.length - 1; i >= 0; i--) {
+                if (LABELS[i].id === id) {
+                    return LABELS[i];
+                }
+            }
+
+            return null;
+        };
+
+        var updateOpenHierarchy = function (label) {
+            var currentLabel = label;
+            $scope.openHierarchy.length = 0;
+
+            if (!currentLabel) return;
+
+            while (currentLabel.parent_id !== null) {
+                $scope.openHierarchy.unshift(currentLabel.parent_id);
+                currentLabel = getLabel(currentLabel.parent_id);
+            }
+        };
+
         $scope.selectLabel = function (label) {
+            updateOpenHierarchy(label);
             $scope.selected.label = label;
-            $scope.$broadcast('labels.selected', label ? label.id : null);
+            $scope.$broadcast('labels.selected');
         };
 
         $scope.hasLabels = function () {

@@ -58,6 +58,6 @@
 
 <script type="text/ng-template" id="label-subtree.html">
     <ul class="label-tree-subtree list-unstyled">
-        <li class="label-tree-item" data-ng-class="getClass()" data-ng-repeat="item in tree[item.id] | orderBy: 'name'"></li>
+        <li class="label-tree-item" data-ng-class="getClass()" data-ng-repeat="item in getSubtree() | orderBy: 'name'"></li>
     </ul>
 </script>
