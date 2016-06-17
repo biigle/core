@@ -56,6 +56,15 @@
 		font-weight: bold;
 	}
 
+    .item {
+        white-space: nowrap;
+    }
+
+    .item__name {
+        // the star to toggle favourite
+        padding-right: 16px;
+    }
+
     .item__color {
         width: 1em;
         height: 1em;
