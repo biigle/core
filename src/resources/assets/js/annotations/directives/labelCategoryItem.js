@@ -25,39 +25,50 @@ angular.module('dias.annotations').directive('labelCategoryItem', function ($com
                 });
             },
 
-            controller: function ($scope) {
+            controller: function ($scope, labels) {
                 // open the subtree of this item
-                $scope.isOpen = false;
+                var open = false;
                 // this item has children
-                $scope.isExpandable = $scope.tree && !!$scope.tree[$scope.item.id];
+                var expandable = false;
                 // this item is currently selected
-                $scope.isSelected = false;
+                var selected = false;
 
-                // handle this by the event rather than an own click handler to
-                // deal with click and search field actions in a unified way
-                $scope.$on('categories.selected', function (e, category) {
-                    // if an item is selected, its subtree and all parent items
-                    // should be opened
-                    if ($scope.item.id === category.id) {
-                        $scope.isOpen = true;
-                        $scope.isSelected = true;
-                        // this hits all parent scopes/items
-                        $scope.$emit('categories.openParents');
+                var checkState = function () {
+                    if (labels.isOpen($scope.item)) {
+                        open = true;
+                    } else if (labels.isSelected($scope.item)) {
+                        open = true;
+                        selected = true;
                     } else {
-                        $scope.isOpen = false;
-                        $scope.isSelected = false;
+                        open = false;
+                        selected = false;
                     }
-                });
+                };
 
-                // if a child item was selected, this item should be opened, too
-                // so the selected item becomes visible in the tree
-                $scope.$on('categories.openParents', function (e) {
-                    $scope.isOpen = true;
-                    // stop propagation if this is a root element
-                    if ($scope.item.parent_id === null) {
-                        e.stopPropagation();
+                var checkExpandable = function () {
+                    expandable = $scope.tree && !!$scope.tree[$scope.item.id];
+                };
+
+                $scope.getSubtree = function () {
+                    if (open) {
+                        return $scope.tree[$scope.item.id];
                     }
-                });
+
+                    return [];
+                };
+
+
+                $scope.getClass = function () {
+                    return {
+                        open: open,
+                        expandable: expandable,
+                        selected: selected
+                    };
+                };
+
+                $scope.$on('categories.selected', checkState);
+                checkState();
+                checkExpandable();
             }
         };
     }

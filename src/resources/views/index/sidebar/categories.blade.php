@@ -11,10 +11,10 @@
             <li class="label-category-item clearfix" data-ng-class="{selected: isSelected}" data-ng-repeat="item in favourites" title="Select favourite @{{hotkeysMap[$index]}}"></li>
         </ol>
         </div>
-        <div data-ng-if="tree[null]" class="categories-list" data-ng-repeat="(project, tree) in categoriesTree">
-            <h4 class="categories-list__name">@{{(project==='null') ? 'Global' : project}}</h4>
+        <div data-ng-if="tree[null]" class="categories-list" data-ng-repeat="(name, tree) in categoriesTree">
+            <h4 class="categories-list__name" data-ng-bind="name"></h4>
             <ul class="categories-list__items list-unstyled">
-                <li class="label-category-item clearfix" data-ng-class="{open: isOpen, expandable: isExpandable, selected: isSelected}" data-ng-repeat="item in tree[null] | orderBy: 'name'"></li>
+                <li class="label-category-item clearfix" data-ng-class="getClass()" data-ng-repeat="item in tree[null] | orderBy: 'name'"></li>
             </ul>
         </div>
     </div>
@@ -28,6 +28,6 @@
 
 <script type="text/ng-template" id="label-subtree.html">
     <ul class="label-category-subtree list-unstyled">
-        <li class="label-category-item clearfix" data-ng-class="{open: isOpen, expandable: isExpandable, selected: isSelected}" data-ng-repeat="item in tree[item.id] | orderBy: 'name'"></li>
+        <li class="label-category-item clearfix" data-ng-class="getClass()" data-ng-repeat="item in getSubtree() | orderBy: 'name'"></li>
     </ul>
 </script>

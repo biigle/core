@@ -15,6 +15,10 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
         var treesCompiled = {};
         var labelsList = [];
 
+        // IDs of all labels that are currently open
+        // (all parent labels of the selected label)
+        var openHierarchy = [];
+
         var init = function () {
             var treeName = null;
             var buildTree = function (label) {
@@ -31,6 +35,28 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
                 treesCompiled[treeName] = {};
                 trees[i].labels.forEach(buildTree);
                 labelsList = labelsList.concat(trees[i].labels);
+            }
+        };
+
+        var getLabel = function (id) {
+            for (var i = labelsList.length - 1; i >= 0; i--) {
+                if (labelsList[i].id === id) {
+                    return labelsList[i];
+                }
+            }
+
+            return null;
+        };
+
+        var updateOpenHierarchy = function (label) {
+            var currentLabel = label;
+            openHierarchy.length = 0;
+
+            if (!currentLabel) return;
+
+            while (currentLabel.parent_id !== null) {
+                openHierarchy.unshift(currentLabel.parent_id);
+                currentLabel = getLabel(currentLabel.parent_id);
             }
         };
 
@@ -86,6 +112,7 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
 
         this.setSelected = function (label) {
             selectedLabel = label;
+            updateOpenHierarchy(label);
         };
 
         this.getSelected = function () {
@@ -106,6 +133,14 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
 
         this.getCurrentConfidence = function () {
             return currentConfidence;
+        };
+
+        this.isOpen = function (label) {
+            return openHierarchy.indexOf(label.id) !== -1;
+        };
+
+        this.isSelected = function (label) {
+            return selectedLabel && selectedLabel.id === label.id;
         };
 
         init();

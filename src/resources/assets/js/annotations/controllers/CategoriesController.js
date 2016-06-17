@@ -47,7 +47,7 @@ angular.module('dias.annotations').controller('CategoriesController', function (
         $scope.selectItem = function (item) {
             labels.setSelected(item);
             $scope.searchCategory = ''; // clear search field
-            $scope.$broadcast('categories.selected', item);
+            $scope.$broadcast('categories.selected');
         };
 
         $scope.isFavourite = function (item) {
