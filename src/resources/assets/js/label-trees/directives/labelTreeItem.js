@@ -36,6 +36,7 @@ angular.module('dias.label-trees').directive('labelTreeItem', function ($compile
                 var checkState = function () {
                     if ($scope.openHierarchy.indexOf($scope.item.id) !== -1) {
                         open = true;
+                        selected = false;
                     } else if ($scope.selected.label && $scope.selected.label.id === $scope.item.id) {
                         open = true;
                         selected = true;
