@@ -50,7 +50,7 @@ angular.module('dias.annotations').directive('labelCategoryItem', function ($com
                 };
 
                 $scope.getSubtree = function () {
-                    if (open) {
+                    if (open && $scope.tree) {
                         return $scope.tree[$scope.item.id];
                     }
 
