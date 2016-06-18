@@ -5,6 +5,42 @@
     align-content: center;
     flex-wrap: wrap;
     flex: 2;
+
+    &.label-mode {
+        .transect-figure {
+            cursor: pointer;
+
+            &.image-label-saved {
+                border-color: $brand-success;
+            }
+
+            &.image-label-saving {
+                border-color: $brand-warning;
+            }
+
+            &.image-label-error {
+                border-color: $brand-danger;
+            }
+
+            &:hover {
+                border-color: $brand-info;
+            }
+        }
+    }
+
+    &:not(.label-mode) {
+        .transect-figure:hover {
+            // the click is captured in label mode so the info link is only usable when
+            // not in label mode
+            a.info-link {
+                opacity: 0.75;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+        }
+    }
 }
 
 .transect-figure {
@@ -13,14 +49,14 @@
     display: inline-block;
     position: relative;
     margin: $transect-image-margin;
+    border: 2px solid transparent;
+    // create a gap between transect figure border and image so the image color does
+    // not interfere with the border color
+    padding: 2px;
+    border-radius: $border-radius-large;
+    transition: border .25s ease;
 
-    img {
-        width: 100%;
-        height: 100%;
-        border-radius: $border-radius-base;
-    }
-
-    & a.info-link {
+    a.info-link {
         position: absolute;
         top: $transect-image-padding;
         right: $transect-image-padding;
@@ -32,13 +68,16 @@
         transition: all 0.25s ease;
     }
 
-    &:hover a.info-link {
-        opacity: 0.75;
-
-        &:hover {
-            opacity: 1;
-        }
+    img {
+        width: 100%;
+        height: 100%;
+        border-radius: $border-radius-base;
     }
+}
+
+.transect-figure__link {
+    display: block;
+    height: 100%;
 }
 
 .transect-figure__flags {

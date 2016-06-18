@@ -23,6 +23,12 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
             $scope.$apply();
         };
 
+        $scope.getClass = function () {
+            return {
+                'label-mode': $scope.isInLabelMode()
+            };
+        };
+
         $scope.imageHasFlag = filter.hasFlag;
 
         $scope.getImageIds = images.getSequence;
@@ -79,7 +85,7 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
         });
 
         updateDisplay();
-        // initialize service after setting the grid
+        // initialize service after setting the grid in updateDisplay
         images.initialize();
 	}
 );

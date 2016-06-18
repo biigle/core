@@ -25,7 +25,7 @@ angular.module('dias.transects').directive('labelTreeItem', function ($compile, 
                 });
             },
 
-            controller: function ($scope) {
+            controller: function ($scope, labels) {
                 // open the subtree of this item
                 var open = false;
                 // this item has children
@@ -34,10 +34,10 @@ angular.module('dias.transects').directive('labelTreeItem', function ($compile, 
                 var selected = false;
 
                 var checkState = function () {
-                    if ($scope.treeItemIsOpen($scope.item)) {
+                    if (labels.treeItemIsOpen($scope.item)) {
                         open = true;
                         selected = false;
-                    } else if ($scope.treeItemIsSelected($scope.item)) {
+                    } else if (labels.treeItemIsSelected($scope.item)) {
                         open = true;
                         selected = true;
                     } else {

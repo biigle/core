@@ -88,7 +88,7 @@ angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSE
             if (offset === DEFAULT_OFFSET) {
                 window.localStorage.removeItem(offsetLocalStorageKey);
                 urlParams.unset('offset');
-            } else {
+            } else if (Number.isInteger(offset)) {
                 window.localStorage[offsetLocalStorageKey] = offset;
                 urlParams.set({offset: offset});
             }

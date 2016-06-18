@@ -5,20 +5,8 @@
  * @memberOf dias.transects
  * @description Manages the image label feature
  */
-angular.module('dias.transects').controller('ImageLabelController', function ($scope, LABEL_TREES, TRANSECT_ID, keyboard) {
+angular.module('dias.transects').controller('ImageLabelController', function ($scope, labels, TRANSECT_ID, keyboard) {
         "use strict";
-
-        var labels = [];
-
-        // data structure used to build the tree display. for each label tree there is
-        // a map of label IDs to the child label objects
-        var treesCompiled = {};
-
-        // IDs of all labels that are currently open
-        // (all parent labels of the selected label)
-        var openHierarchy = [];
-
-        var selectedLabel = null;
 
         // favourite labels that can be selected with the hotkeys
         var favourites = [];
@@ -28,25 +16,6 @@ angular.module('dias.transects').controller('ImageLabelController', function ($s
         var favouriteCallbacks = [];
 
         var init = function () {
-            var i;
-            // parse label trees to spcial data format for display
-            var name;
-            var compileTree = function (label) {
-                var parent = label.parent_id;
-                if (treesCompiled[name][parent]) {
-                    treesCompiled[name][parent].push(label);
-                } else {
-                    treesCompiled[name][parent] = [label];
-                }
-            };
-
-            for (i = LABEL_TREES.length - 1; i >= 0; i--) {
-                name = LABEL_TREES[i].name;
-                treesCompiled[name] = {};
-                LABEL_TREES[i].labels.forEach(compileTree);
-                labels = labels.concat(LABEL_TREES[i].labels);
-            }
-
             // load favourite labels from storage
             var tmp = window.localStorage.getItem(favouritesStorageKey);
             if (tmp) {
@@ -63,32 +32,12 @@ angular.module('dias.transects').controller('ImageLabelController', function ($s
             };
 
             // initialize favourite callbacks
-            for (i = 0; i <= maxFavourites; i++) {
+            for (var i = 0; i <= maxFavourites; i++) {
                 favouriteCallbacks.push(makeCallback(i));
             }
         };
 
-        var getLabel = function (id) {
-            for (var i = labels.length - 1; i >= 0; i--) {
-                if (labels[i].id === id) {
-                    return labels[i];
-                }
-            }
 
-            return null;
-        };
-
-        var updateOpenHierarchy = function (label) {
-            var currentLabel = label;
-            openHierarchy.length = 0;
-
-            if (!currentLabel) return;
-
-            while (currentLabel.parent_id !== null) {
-                openHierarchy.unshift(currentLabel.parent_id);
-                currentLabel = getLabel(currentLabel.parent_id);
-            }
-        };
 
         var selectFavourite = function (index) {
             if (index >= 0 && index < favourites.length) {
@@ -103,27 +52,14 @@ angular.module('dias.transects').controller('ImageLabelController', function ($s
 
         $scope.hotkeysMap = ['𝟭', '𝟮', '𝟯', '𝟰', '𝟱', '𝟲', '𝟳', '𝟴', '𝟵'];
 
-        $scope.getLabels = function () {
-            return labels;
-        };
+        $scope.getLabels = labels.getLabels;
 
-        $scope.getLabelTrees = function () {
-            return treesCompiled;
-        };
+        $scope.getLabelTrees = labels.getLabelTrees;
 
         $scope.selectLabel = function (label) {
-            updateOpenHierarchy(label);
-            selectedLabel = label;
+            labels.selectLabel(label);
             $scope.selected.searchLabel = '';
             $scope.$broadcast('labels.selected');
-        };
-
-        $scope.treeItemIsOpen = function (label) {
-            return openHierarchy.indexOf(label.id) !== -1;
-        };
-
-        $scope.treeItemIsSelected = function (label) {
-            return selectedLabel && selectedLabel.id === label.id;
         };
 
         $scope.hasFavourites = function () {
