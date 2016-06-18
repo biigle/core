@@ -89,8 +89,17 @@ angular.module('dias.ui', ['ui.bootstrap', 'dias.ui.messages', 'dias.ui.users', 
  * Disable debug info in production for better performance.
  * see: https://code.angularjs.org/1.4.7/docs/guide/production
  */
-angular.module('dias.ui').config(function ($compileProvider) {
+angular.module('dias.ui').config(function ($compileProvider, $animateProvider) {
     "use strict";
 
     $compileProvider.debugInfoEnabled(false);
+
+    // By default, the $animate service will check for animation styling
+    // on every structural change. This requires a lot of animateFrame-based
+    // DOM-inspection. However, we can tell $animate to only check for
+    // animations on elements that have a specific class name RegExp pattern
+    // present. In this case, we are requiring the "animated" class.
+    // --
+    // see: http://www.bennadel.com/blog/2935-enable-animations-explicitly-for-a-performance-boost-in-angularjs.htm
+    $animateProvider.classNameFilter( /\banimated\b/ );
 });
