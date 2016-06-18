@@ -1,1 +1,0 @@
-{"version":3,"sources":["transects.scss"],"names":[],"mappings":"AAAkB,iCACd,SAAA,SACA,QAAA,MACA,IAAA,EACA,KAAA,EACA,MAAA,KACA,OAAA","file":"transects.css","sourcesContent":[".transect-figure a.annotate-link {\n    position: absolute;\n    display: block;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n}\n"],"sourceRoot":"/source/"}

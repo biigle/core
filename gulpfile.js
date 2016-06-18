@@ -12,7 +12,6 @@ elixir(function (mix) {
 	   .angular('resources/assets/js/annotations/', 'public/assets/scripts', 'main.js');
 
     mix.angular('resources/assets/js/transects/', 'public/assets/scripts', 'transects.js');
-    mix.sass('transects.scss', 'public/assets/styles/transects.css');
 
     mix.task('publish', 'public/assets/**/*');
 });

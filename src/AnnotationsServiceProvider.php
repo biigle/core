@@ -31,8 +31,6 @@ class AnnotationsServiceProvider extends ServiceProvider
             require __DIR__.'/Http/routes.php';
         });
 
-        $modules->addMixin('annotations', 'transects');
-        $modules->addMixin('annotations', 'transectsStyles');
         $modules->addMixin('annotations', 'transectsScripts');
         $modules->addMixin('annotations', 'transectsFilters');
         $modules->addMixin('annotations', 'adminIndex');
