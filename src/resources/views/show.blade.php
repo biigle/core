@@ -30,6 +30,9 @@
     <div class="col-md-6">
         @include('projects::show.label-trees')
         @include('projects::show.members')
+        @foreach ($modules->getMixins('projectsShow') as $module => $nestedMixins)
+            @include($module.'::projectsShow')
+        @endforeach
     </div>
 </div>
 @endsection
