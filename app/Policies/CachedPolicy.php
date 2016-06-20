@@ -4,6 +4,9 @@ namespace Dias\Policies;
 
 use Cache;
 
+/**
+ * A policy for caching the return values of the authorization rules during a request
+ */
 class CachedPolicy
 {
     /**
@@ -30,6 +33,13 @@ class CachedPolicy
         $this->cache = Cache::store('array');
     }
 
+    /**
+     * Wrapper for the Cache::remember function of the array cache
+     *
+     * @param string $key Key of the cached item
+     * @param callable $callback Callback returning the cached item
+     * @return mixed
+     */
     public function remember($key, $callback)
     {
         return call_user_func_array([$this->cache, 'remember'], [$key, self::TIME, $callback]);
