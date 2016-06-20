@@ -2,11 +2,8 @@
 
 namespace Dias\Http\Controllers\Views;
 
-use Dias\Project;
-use Dias\Image;
 use Dias\AnnotationLabel;
 use Dias\ImageLabel;
-use DB;
 
 class DashboardController extends Controller
 {
