@@ -11,12 +11,14 @@ angular.module('dias.transects').directive('transectFigure', function () {
         return {
             restrict: 'C',
 
-            controller: function ($scope, labels, filter, msg, $timeout) {
+            controller: function ($scope, labels, filter, msg, $timeout, images) {
                 var saved = false;
                 var saving = false;
                 var error = false;
 
-                var handleSuccess = function () {
+                var labelPopoverOpen = false;
+
+                var handleAttachSuccess = function () {
                     saved = true;
                     saving = false;
                     error = false;
@@ -27,7 +29,7 @@ angular.module('dias.transects').directive('transectFigure', function () {
                     }, 3000);
                 };
 
-                var handleError = function (response) {
+                var handleAttachError = function (response) {
                     saved = false;
                     saving = false;
                     error = true;
@@ -39,10 +41,12 @@ angular.module('dias.transects').directive('transectFigure', function () {
                 };
 
                 $scope.handleClick = function (e) {
-                    if (!$scope.isInLabelMode()) return;
-                    e.preventDefault();
-                    saving = true;
-                    labels.attachToImage($scope.id).then(handleSuccess, handleError);
+                    if ($scope.isInLabelMode()) {
+                        e.preventDefault();
+                        saving = true;
+                        labels.attachToImage($scope.id)
+                            .then(handleAttachSuccess, handleAttachError);
+                    }
                 };
 
                 $scope.getClass = function () {
@@ -51,6 +55,41 @@ angular.module('dias.transects').directive('transectFigure', function () {
                         'image-label-saving': saving,
                         'image-label-error': error
                     };
+                };
+
+                $scope.getImageLabels = function () {
+                    return labels.getAttachedLabels($scope.id);
+                };
+
+                $scope.imageLabelsResolved = function () {
+                    return labels.getAttachedLabels($scope.id).$resolved;
+                };
+
+                $scope.hasImageLabels = function () {
+                    return labels.getAttachedLabels($scope.id).length > 0;
+                };
+
+                $scope.canDetachLabel = labels.canDetachLabel;
+
+                $scope.detachLabel = function (label) {
+                    labels.detachLabel($scope.id, label)
+                        .then(angular.noop, msg.responseError);
+                };
+
+                $scope.toggleLabelPopover = function () {
+                    labelPopoverOpen = !labelPopoverOpen;
+                };
+
+                $scope.isPopoverOpen = function () {
+                    return labelPopoverOpen;
+                };
+
+                $scope.getPopoverPlacement = function () {
+                    if (images.isImageInRightHalf($scope.id)) {
+                        return 'left';
+                    }
+
+                    return 'right';
                 };
 
                 $scope.$on('label-mode.toggle', function () {

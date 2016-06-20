@@ -66,6 +66,7 @@ class TransectController extends Controller
             ->pluck('id');
 
         return view('transects::index')
+            ->with('user', $this->user)
             ->with('transect', $transect)
             ->with('labelTrees', $labelTrees)
             ->with('projects', $projects)

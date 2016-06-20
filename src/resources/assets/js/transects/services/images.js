@@ -140,6 +140,17 @@ angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSE
             return sequence.length;
         };
 
+        // determine if an image is displayed in the right half of the image grid
+        this.isImageInRightHalf = function (id) {
+            var index = sequenceWindow.indexOf(id);
+            if (index !== -1) {
+                return (index % grid.cols) >= (grid.cols / 2);
+            }
+
+            // image is not displayed
+            return false;
+        };
+
         this.initialize = function () {
             // url parameter has precedence over local storage
             if (urlParams.get('offset') !== undefined) {

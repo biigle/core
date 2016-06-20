@@ -1,4 +1,5 @@
 .transect__images {
+    position: relative;
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -10,14 +11,6 @@
         .transect-figure {
             cursor: pointer;
 
-            &.image-label-saved {
-                border-color: $brand-success;
-            }
-
-            &.image-label-saving {
-                border-color: $brand-warning;
-            }
-
             &.image-label-error {
                 border-color: $brand-danger;
             }
@@ -25,19 +18,14 @@
             &:hover {
                 border-color: $brand-info;
             }
-        }
-    }
 
-    &:not(.label-mode) {
-        .transect-figure:hover {
-            // the click is captured in label mode so the info link is only usable when
-            // not in label mode
-            a.info-link {
-                opacity: 0.75;
+            // saving and saved state should override hover state
+            &.image-label-saving {
+                border-color: $brand-warning;
+            }
 
-                &:hover {
-                    opacity: 1;
-                }
+            &.image-label-saved {
+                border-color: $brand-success;
             }
         }
     }
@@ -56,22 +44,68 @@
     border-radius: $border-radius-large;
     transition: border .25s ease;
 
-    a.info-link {
+    &:hover .image-button {
+        opacity: .75;
+    }
+
+    .image-buttons {
         position: absolute;
         top: $transect-image-padding;
         right: $transect-image-padding;
-        color: white;
+        // width of a single button
+        width: 28px;
+    }
+
+    .image-button {
         padding: 0.3em 0.5em;
         background-color: rgba(0, 0, 0, 0.5);
         border-radius: $border-radius-base;
+        color: white;
+        display: block;
         opacity: 0;
-        transition: all 0.25s ease;
+        transition: opacity 0.25s ease;
+
+        &:not(:last-child) {
+            margin-bottom: $transect-image-padding;
+        }
+
+        &:hover {
+            opacity: 1;
+        }
     }
 
     img {
         width: 100%;
         height: 100%;
         border-radius: $border-radius-base;
+    }
+}
+
+.image-label-popover {
+    white-space: nowrap;
+    overflow: auto;
+    max-height: 150px;
+
+    .image-label-list {
+        margin-bottom: 0;
+
+        .label-item {
+            // for the "detach label" button
+            padding-right: 16px;
+        }
+
+        .label-color {
+            width: 1em;
+            height: 1em;
+            display: inline-block;
+            border-radius: 50%;
+            border: 2px solid #eee;
+            vertical-align: middle;
+        }
+
+        .label-user {
+            color: $gray-light;
+        }
     }
 }
 

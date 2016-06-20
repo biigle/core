@@ -9,8 +9,18 @@
         angular.module('dias.transects').constant('TRANSECT_IMAGES', {{$imageIds}});
         angular.module('dias.transects').constant('TRANSECT_ID', {{$transect->id}});
         angular.module('dias.transects').constant('THUMB_DIMENSION', {WIDTH: {{config('thumbnails.width')}}, HEIGHT: {{config('thumbnails.height')}} });
+        angular.module('dias.transects').constant('USER_ID', {{$user->id}});
+
+        @can('update', $transect)
+            angular.module('dias.transects').constant('IS_ADMIN', true);
+        @else
+            angular.module('dias.transects').constant('IS_ADMIN', false);
+        @endcan
+
         @can('edit-in', $transect)
             angular.module('dias.transects').constant('LABEL_TREES', {!!$labelTrees!!});
+        @else
+            angular.module('dias.transects').constant('LABEL_TREES', []);
         @endcan
     </script>
     @foreach ($modules->getMixins('transectsScripts') as $module => $nestedMixins)
@@ -48,6 +58,8 @@
     @include('transects::index.menubar')
     @include('transects::index.images')
     @include('transects::index.progress')
-    @include('transects::index.label')
+    @can('edit-in', $transect)
+        @include('transects::index.label')
+    @endcan
 </div>
 @endsection

@@ -23,6 +23,10 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
             $scope.$apply();
         };
 
+        var handleScrollEvent = function (e) {
+            scrollRows((e.deltaY >= 0) ? 1 : -1);
+        };
+
         $scope.getClass = function () {
             return {
                 'label-mode': $scope.isInLabelMode()
@@ -33,9 +37,15 @@ angular.module('dias.transects').controller('ImagesController', function ($scope
 
         $scope.getImageIds = images.getSequence;
 
-        $element.bind('wheel', function (e) {
-            scrollRows((e.deltaY >= 0) ? 1 : -1);
-        });
+        $scope.disableScrolling = function () {
+            $element.unbind('wheel', handleScrollEvent);
+        };
+
+        $scope.enableScrolling = function () {
+            $element.bind('wheel', handleScrollEvent);
+        };
+
+        $scope.enableScrolling();
 
         // arrow up
         keyboard.on(38, function () {
