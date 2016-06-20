@@ -13,3 +13,4 @@ Add the following to the repositories array of your `composer.json`:
 1. Run `php composer.phar require dias/export:dev-master`.
 2. Add `'Dias\Modules\Export\ExportServiceProvider'` to the `providers` array in `config/app.php`.
 3. Run `php artisan export:publish` to refresh the public assets of this package. Do this for every update of the package.
+4. Run `pip install -r requirements` to install python requirements
