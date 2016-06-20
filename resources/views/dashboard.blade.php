@@ -22,10 +22,10 @@
             <div class="col-md-6">
                 <div class="panel panel-info">
                     <div class="panel-heading">Most recently annotated image</div>
-                    <div class="panel-body">
-                        <figure class="image-thumbnail dashboard__recent-image">
+                    <div class="panel-body dashboard__recent-image">
+                        <figure class="image-thumbnail">
                             @if(Route::has('annotate'))
-                                <a href="{{ route('annotate', $recentImage->id) }}">
+                                <a href="{{ route('annotate', $recentImage->id) }}" title="Show image {{$recentImage->filename}}">
                             @endif
                                 @if (File::exists($recentImage->thumbPath))
                                     <img src="{{ url('api/v1/images/'.$recentImage->id.'/thumb') }}">
@@ -47,10 +47,10 @@
             <div class="col-md-6">
                 <div class="panel panel-info">
                     <div class="panel-heading">Most recently edited transect</div>
-                    <div class="panel-body">
-                        <figure class="image-thumbnail dashboard__recent-transect">
+                    <div class="panel-body dashboard__recent-transect">
+                        <figure class="image-thumbnail">
                             @if(Route::has('transect'))
-                                <a href="{{ route('transect', $recentTransect->id) }}">
+                                <a href="{{ route('transect', $recentTransect->id) }}" title="Show transect {{$recentTransect->name}}">
                             @endif
                                 @if (File::exists($recentTransectImage->thumbPath))
                                     <img src="{{ url('api/v1/images/'.$recentTransectImage->id.'/thumb') }}">
@@ -69,14 +69,11 @@
             </div>
         @endif
     </div>
-	@foreach ($modules->getMixins('dashboard') as $module => $nestedMixins)
-		@include($module.'::dashboard', array('mixins' => $nestedMixins))
-	@endforeach
     @forelse($projects as $project)
         <div class="row">
             <h3 class="col-sm-12">
-                @if(Route::has('projects'))
-                    <a href="{{route('projects', $project->id)}}" title="Show project {{$project->name}}">
+                @if(Route::has('project'))
+                    <a href="{{route('project', $project->id)}}" title="Show project {{$project->name}}">
                         {{$project->name}}
                     </a>
                 @else

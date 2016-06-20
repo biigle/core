@@ -1,7 +1,11 @@
 .dashboard__recent-image, .dashboard__recent-transect {
-    display: block;
-    margin: auto;
     width: 200px;
+    height: 150px;
+
+    .image-thumbnail {
+        display: block;
+        margin: auto;
+    }
 }
 
 .dashboard__project-transect {
