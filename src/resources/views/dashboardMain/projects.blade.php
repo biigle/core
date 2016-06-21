@@ -3,7 +3,7 @@
         <figure class="image-thumbnail">
             <a href="{{ route('transect', $transect->id) }}" title="Show transect {{$transect->name}}">
                 <?php $image = $transect->images()->first() ?>
-                @if (File::exists($image->thumbPath))
+                @if ($image && File::exists($image->thumbPath))
                     <img src="{{ url('api/v1/images/'.$image->id.'/thumb') }}">
                 @else
                     <img src="{{ asset(config('thumbnails.empty_url')) }}">

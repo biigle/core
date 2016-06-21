@@ -4,7 +4,7 @@
         <div class="panel-body dashboard__hot-thumbnail">
             <figure class="image-thumbnail">
                 <a href="{{ route('transect', $recentTransect->id) }}" title="Show transect {{$recentTransect->name}}">
-                    @if (File::exists($recentTransectImage->thumbPath))
+                    @if ($recentTransectImage && File::exists($recentTransectImage->thumbPath))
                         <img src="{{ url('api/v1/images/'.$recentTransectImage->id.'/thumb') }}">
                     @else
                         <img src="{{ asset(config('thumbnails.empty_url')) }}">
