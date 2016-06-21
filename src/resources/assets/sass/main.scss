@@ -1,0 +1,14 @@
+@import 'variables';
+
+.navbar-text.navbar-ate-breadcrumbs {
+    &, a {
+        color: $text-color;
+    }
+}
+
+.transect-figure {
+    .image-wrapper {
+        height: 100%;
+        position: relative;
+    }
+}

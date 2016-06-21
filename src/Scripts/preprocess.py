@@ -4,31 +4,31 @@ import collections
 import sys
 import numpy as np
 import scipy.misc
-import sklearn.cluster
+# import sklearn.cluster
 import os
 import ast
 
 
-csvfile = sys.argv[1]
-transect = sys.argv[2]
-storage_path = sys.argv[3]
+CSV_FILE = sys.argv[1]
+PATCH_STORAGE = sys.argv[2]
+DICT_FILE = sys.argv[3]
 
-TRANSECT_PATH = storage_path + "/ate/"
-PATCHES_PATH = storage_path + "/ate/" + str(transect) + "/"
+if not os.path.exists(PATCH_STORAGE):
+    os.makedirs(PATCH_STORAGE)
 
-if not os.path.isdir(PATCHES_PATH):
-    os.makedirs(PATCHES_PATH)
+if not os.path.exists(os.path.dirname(DICT_FILE)):
+    os.makedirs(os.path.dirname(DICT_FILE))
 
 npfile = None
 dictfile = None
 
-if os.path.isfile(TRANSECT_PATH + transect + ".npy"):
-    f = open(TRANSECT_PATH + transect + ".npy")
+if os.path.isfile(DICT_FILE):
+    f = open(DICT_FILE)
     npfile = np.load(f)
     dictfile = np.load(f)
     f.close()
 
-f = open(csvfile)
+f = open(CSV_FILE)
 csvr = csv.reader(f)
 
 img2points = collections.defaultdict(list)
@@ -65,7 +65,7 @@ for i in img2points:
             xmax = np.max(npoints[::2])
             ymax = np.max(npoints[1::2])
         patch = img[ymin:ymax, xmin:xmax]
-        mpimg.imsave(PATCHES_PATH + str(points[1]) + ".png", patch)
+        mpimg.imsave(PATCH_STORAGE + str(points[1]) + ".png", patch)
         patch64 = scipy.misc.imresize(patch, (64, 64))
         if points[1] in patchid2annotationid.values():
             # get index of points
@@ -80,7 +80,7 @@ if dictfile:
     dictfile.update(patchid2annotationid)
 else:
     dictfile = patchid2annotationid
-f = open(TRANSECT_PATH + transect + ".npy", 'w')
+f = open(DICT_FILE, 'w')
 # km = sklearn.cluster.KMeans()
 # km.fit(npfile)
 # km.labels_

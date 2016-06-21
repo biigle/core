@@ -12,10 +12,15 @@ class AddPatchesTable extends Migration
      */
     public function up()
     {
-        Schema::create('patches', function (Blueprint $table) {
-            $table->bigIncrements('annotation_id');
-            $table->longText('path');
-        });
+        // Schema::create('patches', function (Blueprint $table) {
+        //     $table->integer('annotation_id')->unsigned();
+        //     $table->foreign('annotation_id')
+        //           ->references('id')
+        //           ->on('annotations')
+        //           ->onDelete('cascade');
+
+        //     $table->string('path');
+        // });
     }
 
     /**
@@ -25,6 +30,6 @@ class AddPatchesTable extends Migration
      */
     public function down()
     {
-         Schema::drop('patches');
+         // Schema::drop('patches');
     }
 }

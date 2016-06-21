@@ -4,6 +4,7 @@ namespace Dias\Modules\Ate\Jobs;
 
 use Mail;
 use DB;
+use File;
 use Dias\Jobs\Job;
 use Dias\Transect;
 use Illuminate\Queue\SerializesModels;
@@ -31,7 +32,6 @@ class Preprocess extends Job implements ShouldQueue
     public function __construct(Transect $transect)
     {
         $this->transect= $transect;
-    
     }
 
     /**
@@ -42,12 +42,35 @@ class Preprocess extends Job implements ShouldQueue
     public function handle()
     {
         DB::reconnect();
-        $path = uniqid("/tmp/");
-        mkdir($path);
-        chmod($path,0777);
-        $points = DB::select("copy (select annotations.id,transects.url||'/'||images.filename, annotations.points from images,transects,annotations left join patches on annotations.id = patches.annotation_id where patches.annotation_id is NULL and annotations.image_id = images.id and images.transect_id = transects.id and transects.id=".$this->transect->id.") to '".$path."/points.csv' csv");
-        $cmd = $path."/points.csv ".$this->transect->id." ".storage_path();
-        var_dump($cmd);
-        $ret = system('/usr/bin/python '.__DIR__.'/../Scripts/preprocess.py '.$cmd);
+
+        $csv = uniqid(config('ate.tmp_path').'/').'.csv';
+
+        $query = <<<EOT
+COPY (
+    SELECT annotations.id, transects.url||'/'||images.filename, annotations.points
+    FROM images, transects, annotations
+            WHERE annotations.image_id = images.id
+                AND images.transect_id = transects.id
+                AND transects.id = {$this->transect->id}
+) TO '{$csv}' csv;
+EOT;
+
+        DB::statement($query);
+
+        $patchDestination = config('ate.patch_storage');
+        $dictDestination = config('ate.dict_storage').'/'.$this->transect->id.'.npy';
+
+        system(
+            config('ate.python').' '.
+            config('ate.preprocess_script').' '.
+            // exported source file
+            $csv.' '.
+            // target directory for the annotation patch files
+            config('ate.patch_storage').'/'.$this->transect->id.'/ '.
+            // source/target path for the transect dict file
+            config('ate.dict_storage').'/'.$this->transect->id.'.npy'
+        );
+
+        File::delete($csv);
     }
 }

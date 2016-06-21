@@ -1,6 +1,7 @@
 {
     "name": "dias/ate",
     "require": {
+        "dias/transects": "~0.4",
     },
     "require-dev": {
     },

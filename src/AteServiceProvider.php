@@ -19,6 +19,11 @@ class AteServiceProvider extends ServiceProvider {
     public function boot(Router $router)
     {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'ate');
+
+        $this->publishes([
+            __DIR__.'/public/assets' => public_path('vendor/ate'),
+        ], 'public');
+
         $router->group([
             'namespace' => 'Dias\Modules\Ate\Http\Controllers',
             'middleware' => 'web',
@@ -34,6 +39,6 @@ class AteServiceProvider extends ServiceProvider {
      */
     public function register()
     {
-        
+        $this->mergeConfigFrom(__DIR__.'/config/ate.php', 'ate');
     }
 }
