@@ -31,6 +31,7 @@ class LabelTreesServiceProvider extends ServiceProvider
             require __DIR__.'/Http/routes.php';
         });
 
+        $modules->addMixin('label-trees', 'dashboardButtons');
         $modules->addMixin('label-trees', 'adminMenu');
         $modules->addMixin('label-trees', 'navbarMenuItem');
     }
