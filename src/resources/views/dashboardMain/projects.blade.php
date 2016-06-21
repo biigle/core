@@ -1,7 +1,7 @@
 @forelse($project->transects()->orderBy('created_at', 'desc')->take(3)->get() as $transect)
     <div class="col-xs-12 col-sm-6 col-md-3 dashboard__project-transect">
         <figure class="image-thumbnail">
-            <a href="{{ route('transect', $transect->id) }}">
+            <a href="{{ route('transect', $transect->id) }}" title="Show transect {{$transect->name}}">
                 <?php $image = $transect->images()->first() ?>
                 @if (File::exists($image->thumbPath))
                     <img src="{{ url('api/v1/images/'.$image->id.'/thumb') }}">
