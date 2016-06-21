@@ -1,25 +1,3 @@
-@keyframes flash {
-	from {
-		background-color: #353535;
-	}
-	to {
-	}
-}
-
-[draggable="true"] {
-	cursor: pointer;
-	animation: flash .5s;
-
-	&:hover:not([class~="bg-danger"]) {
-		background-color: #353535;
-	}
-
-	&:before {
-		content: "::";
-		padding-right: .5em;
-	}
-}
-
 .list-group-restricted {
     max-height: 400px;
     max-width: 100%;

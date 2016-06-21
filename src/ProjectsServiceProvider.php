@@ -32,7 +32,9 @@ class ProjectsServiceProvider extends ServiceProvider
             require __DIR__.'/Http/routes.php';
         });
 
-        $modules->addMixin('projects', 'dashboard');
+        $modules->addMixin('projects', 'dashboardMain');
+        $modules->addMixin('projects', 'dashboardButtons');
+        $modules->addMixin('projects', 'dashboardStyles');
         $modules->addMixin('projects', 'adminIndex');
         $modules->addMixin('projects', 'navbarMenuItem');
     }

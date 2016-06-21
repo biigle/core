@@ -11,6 +11,8 @@ elixir(function (mix) {
 	mix.sass('main.scss', 'public/assets/styles')
 	   .angular('resources/assets/js/projects/', 'public/assets/scripts', 'main.js');
     mix.task('publish', 'resources/assets/**/*');
+
+    mix.sass('dashboard.scss', 'public/assets/styles/dashboard.css')
 });
 
 gulp.task('publish', function () {
