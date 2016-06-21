@@ -11,6 +11,11 @@ class PopulateRequiredRows extends Migration
      */
     public function up()
     {
+        DB::table('visibilities')->insert([
+            ['name' => 'public'],
+            ['name' => 'private'],
+        ]);
+
         DB::table('roles')->insert([
             ['name' => 'admin'],
             ['name' => 'editor'],

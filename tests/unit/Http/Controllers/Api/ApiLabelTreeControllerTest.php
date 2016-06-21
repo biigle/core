@@ -164,7 +164,7 @@ class ApiLabelTreeControllerTest extends ApiTestCase
         // visibility must exist
         $this->assertResponseStatus(422);
 
-        $this->assertEquals(1, LabelTree::count());
+        $this->assertEquals(0, LabelTree::count());
 
         $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
@@ -173,7 +173,7 @@ class ApiLabelTreeControllerTest extends ApiTestCase
         // description is optional
         $this->assertResponseOk();
 
-        $this->assertEquals(2, LabelTree::count());
+        $this->assertEquals(1, LabelTree::count());
 
         $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
@@ -183,7 +183,7 @@ class ApiLabelTreeControllerTest extends ApiTestCase
         ]);
         $this->assertResponseOk();
 
-        $this->assertEquals(3, LabelTree::count());
+        $this->assertEquals(2, LabelTree::count());
 
         $tree = LabelTree::orderBy('id', 'desc')->first();
         $this->seeJsonEquals($tree->toArray());
@@ -203,7 +203,7 @@ class ApiLabelTreeControllerTest extends ApiTestCase
             'visibility_id' => Visibility::$public->id,
             'description' => 'my description',
         ]);
-        $this->assertEquals(2, LabelTree::count());
+        $this->assertEquals(1, LabelTree::count());
         $this->assertRedirectedTo('/');
         $this->assertSessionHas('newTree');
 
@@ -213,7 +213,7 @@ class ApiLabelTreeControllerTest extends ApiTestCase
             'description' => 'my description',
             '_redirect' => 'settings',
         ]);
-        $this->assertEquals(3, LabelTree::count());
+        $this->assertEquals(2, LabelTree::count());
         $this->assertRedirectedTo('/settings');
         $this->assertSessionHas('newTree');
     }

@@ -16,6 +16,21 @@ class Initialize extends Migration
     {
 
         /*
+        | Types of visibility that different models can have. E.g. a label category
+        | tree may be "public" or "private".
+        */
+        Schema::create('visibilities', function (Blueprint $table) {
+            $table->increments('id');
+            // visibilities are primarily searched by name, so do index
+            $table->string('name', 128)->index();
+
+            // each visibility type should be unique
+            $table->unique('name');
+
+            // NO timestamps
+        });
+
+        /*
         | The roles users can have. For example a user can be 'admin' in one
         | project and 'guest' un another. Roles are not restricted to projects,
         | so a user can have a 'global' role, too.
@@ -87,6 +102,62 @@ class Initialize extends Migration
         });
 
         /*
+        | Labels belong to label trees. Each user is able to create label trees.
+        | Projects can choose which trees they want to use.
+        | Trees can be public or private.
+        | Private trees maintain a list of projects that are allowed to use the tree.
+        | Tree admins can edit this list.
+        | Public trees may be used by all projects.
+        | There may be "global" trees without members which are maintained by the global
+        | admins of the Dias instance.
+        */
+        Schema::create('label_trees', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 256);
+            $table->text('description')->nullable();
+
+            $table->integer('visibility_id')->unsigned();
+            $table->foreign('visibility_id')
+                  ->references('id')
+                  ->on('visibilities')
+                  // don't delete a visibility that is in use
+                  ->onDelete('restrict');
+
+            $table->timestamps();
+        });
+
+        /*
+        | Trees have admins and editors. The tree creator automatically becomes admin.
+        | Editors can add and remove labels from the tree. Admins additionally can
+        | add/modify/remove tree members and set the tree visibility.
+        */
+        Schema::create('label_tree_user', function (Blueprint $table) {
+            $table->integer('label_tree_id')->unsigned();
+            $table->foreign('label_tree_id')
+                  ->references('id')
+                  ->on('label_trees')
+                  // remove the member assignment if the label tree is deleted
+                  ->onDelete('cascade');
+
+            $table->integer('user_id')->unsigned();
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  // remove the member if the user is deleted
+                  ->onDelete('cascade');
+
+            $table->integer('role_id')->unsigned();
+            $table->foreign('role_id')
+                  ->references('id')
+                  ->on('roles')
+                  // dont delete role if it is in use
+                  ->onDelete('restrict');
+
+            // each user must not be added twice as a category tree member
+            $table->unique(['label_tree_id', 'user_id']);
+        });
+
+        /*
         | Users and transects are grouped into projects.
         */
         Schema::create('projects', function (Blueprint $table) {
@@ -103,6 +174,53 @@ class Initialize extends Migration
                   ->onDelete('set null');
 
             $table->timestamps();
+        });
+
+        /*
+        | Projects can choose which (public) label trees they want to use.
+        | Private label trees can only be used if the project was authorized by
+        | the label tree admins.
+        */
+        Schema::create('label_tree_project', function (Blueprint $table) {
+            $table->integer('label_tree_id')->unsigned();
+            $table->foreign('label_tree_id')
+                  ->references('id')
+                  ->on('label_trees')
+                  // delete the label tree from the project if the tree is deleted
+                  ->onDelete('cascade');
+
+            $table->integer('project_id')->unsigned();
+            $table->foreign('project_id')
+                  ->references('id')
+                  ->on('projects')
+                  // delete the reference to the label tree if the project was deleted
+                  ->onDelete('cascade');
+
+            // each project may "use" each label tree only once
+            $table->unique(['label_tree_id', 'project_id']);
+        });
+
+        /*
+        | This table specifies which projects are allowed (authorized) to use a private
+        | label tree.
+        */
+        Schema::create('label_tree_authorized_project', function (Blueprint $table) {
+            $table->integer('label_tree_id')->unsigned();
+            $table->foreign('label_tree_id')
+                  ->references('id')
+                  ->on('label_trees')
+                  // delete the authorization if the tree is deleted
+                  ->onDelete('cascade');
+
+            $table->integer('project_id')->unsigned();
+            $table->foreign('project_id')
+                  ->references('id')
+                  ->on('projects')
+                  // delete the reference to the label tree if the project was deleted
+                  ->onDelete('cascade');
+
+            // each project may be authorized only once
+            $table->unique(['label_tree_id', 'project_id']);
         });
 
         /*
@@ -224,13 +342,11 @@ class Initialize extends Migration
             $table->string('filename', 512);
 
             // images are primarily searched by transect, so do index
-            $table->integer('transect_id')->nullable()->unsigned()->index();
+            $table->integer('transect_id')->unsigned()->index();
             $table->foreign('transect_id')
                   ->references('id')
                   ->on('transects')
-                  // setting the transect to null will mark the image for
-                  // deletion in the regular housekeeping cron job
-                  ->onDelete('set null');
+                  ->onDelete('cascade');
 
             // filename must be unique for each transect
             $table->unique(['filename', 'transect_id']);
@@ -261,15 +377,50 @@ class Initialize extends Migration
             // id for the World Register of Marine Species (WoRMS)
             $table->integer('aphia_id')->nullable();
 
-            // labels can be project specific or global (project_id is null)
-            $table->integer('project_id')->unsigned()->nullable();
-            $table->foreign('project_id')
+            $table->integer('label_tree_id')->unsigned()->nullable();
+            $table->foreign('label_tree_id')
                   ->references('id')
-                  ->on('projects')
-                  // delete project specific labels when the project is deleted
+                  ->on('label_trees')
+                  // delete labels of a tree if the tree is deleted
                   ->onDelete('cascade');
 
             // NO timestamps
+        });
+
+        /*
+        | Table of pivot objects for image labels. Each image can get a label attached to
+        | similar to annotations. But where annotations can get the same label attached
+        | multiple times by different users, images can have the same label attached only
+        | once.
+        | If a user is deleted, their image labels should persist.
+        */
+        Schema::create('image_labels', function (Blueprint $table) {
+            $table->increments('id');
+
+            $table->integer('image_id')->unsigned();
+            $table->foreign('image_id')
+                  ->references('id')
+                  ->on('images')
+                  ->onDelete('cascade');
+
+            $table->integer('label_id')->unsigned();
+            $table->foreign('label_id')
+                  ->references('id')
+                  ->on('labels')
+                  // don't delete labels in use
+                  ->onDelete('restrict');
+
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  // don't delete labels if the creator is deleted
+                  ->onDelete('set null');
+
+            $table->timestamps();
+
+            // each image may have the same label attached only once
+            $table->unique(['image_id', 'label_id']);
         });
 
         /*
@@ -362,15 +513,21 @@ class Initialize extends Migration
         Schema::drop('annotation_labels');
         Schema::drop('annotations');
         Schema::drop('shapes');
+        Schema::drop('image_labels');
         Schema::drop('labels');
         Schema::drop('images');
         Schema::drop('project_transect');
         Schema::drop('transects');
         Schema::drop('media_types');
         Schema::drop('project_user');
+        Schema::drop('label_tree_authorized_project');
+        Schema::drop('label_tree_project');
         Schema::drop('projects');
+        Schema::drop('label_tree_user');
+        Schema::drop('label_trees');
         Schema::drop('api_tokens');
         Schema::drop('users');
         Schema::drop('roles');
+        Schema::drop('visibilities');
     }
 }
