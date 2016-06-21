@@ -31,8 +31,9 @@ class TransectsServiceProvider extends ServiceProvider
             require __DIR__.'/Http/routes.php';
         });
 
-        $modules->addMixin('transects', 'dashboard.projects');
+        $modules->addMixin('transects', 'dashboardMain.projects');
         $modules->addMixin('transects', 'dashboardStyles');
+        $modules->addMixin('transects', 'dashboardHotBoxRight');
         $modules->addMixin('transects', 'adminMenu');
         $modules->addMixin('transects', 'adminIndex');
     }
