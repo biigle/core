@@ -1,0 +1,16 @@
+{
+  "name": "dias-export",
+  "version": "0.0.1",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "gulp-cli": "~0.1.5",
+    "laravel-elixir-angular": "~1.0.1",
+    "laravel-elixir": "~3.2.8",
+    "gulp-shell": "~0.3.0"
+  }
+}
