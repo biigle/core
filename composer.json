@@ -1,7 +1,7 @@
 {
     "name": "dias/transects",
     "require": {
-        "dias/projects": "~0.3",
+        "dias/projects": "~0.4",
         "dias/label-trees": "~0.1"
     },
     "require-dev": {
