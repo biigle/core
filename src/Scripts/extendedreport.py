@@ -10,11 +10,14 @@ prefix = "/home/vagrant/dias/storage/"
 
 
 workbook = Workbook()
-
+numSheets = 0
 for transect in transects:
     f = open(transect, 'r')
     res = np.array(map(lambda x: x.split(","), f.read().split("\n")[:-1]))
     f.close()
+    if not res.size:
+        continue
+    numSheets += 1
     uniqueclasses = np.unique(res[:, 1])
     uniqueimages = np.unique(res[:, 0])
     class2column = dict(zip(uniqueclasses, range(len(uniqueclasses))))
@@ -30,6 +33,8 @@ for transect in transects:
     ws.set_cell_value(1, 1, "")
     ws.set_row_style(1, Style(fill=Fill(background=Color(200, 200, 200, 0))))
     ws.set_col_style(1, Style(fill=Fill(background=Color(200, 200, 200, 0))))
+if not numSheets:
+    ws = workbook.new_sheet("No labels found")
 uid = str(uuid.uuid4())
 workbook.save(prefix + "/" + uid + ".xlsx")
 print uid + ";" + prefix + "/" + uid + ".xlsx"

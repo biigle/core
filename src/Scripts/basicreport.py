@@ -42,6 +42,8 @@ for transect in transects:
     f = open(transect, 'r')
     species = f.read().split("\n")[:-1]
     f.close()
+    if species == []:
+        continue
     c = collections.Counter(species)
     sorter = np.argsort(c.keys())
     ind = np.arange(len(c.keys()))

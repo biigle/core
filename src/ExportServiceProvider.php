@@ -4,6 +4,7 @@ namespace Dias\Modules\Export;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
+use Dias\Services\Modules;
 use Dias\Modules\Export\Console\Commands\Install as InstallCommand;
 
 class ExportServiceProvider extends ServiceProvider {
@@ -16,7 +17,7 @@ class ExportServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-    public function boot(Router $router)
+    public function boot(Modules $modules,Router $router)
     {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'export');
         $router->group([
@@ -28,6 +29,11 @@ class ExportServiceProvider extends ServiceProvider {
         $this->publishes([
             __DIR__.'/database/migrations/' => database_path('migrations')
         ], 'migrations');
+        $this->publishes([
+            __DIR__.'/public/assets' => public_path('vendor/export'),
+        ], 'public');
+        $modules->addMixin('export', 'projectsShow');
+        $modules->addMixin('export', 'projectsScripts');
     }
 
     /**
