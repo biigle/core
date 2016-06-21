@@ -30,7 +30,17 @@ class DashboardController extends Controller
         }
 
         if ($imageLabel) {
-            $recentTransect = $imageLabel->image->transect;
+            if ($annotationLabel && $annotationLabel->created_at > $imageLabel->created_at) {
+                // if the annotation label is newer than the image label,
+                // take its transect
+                $recentTransect = $recentImage->transect;
+            } else {
+                // else take the transect of the image label
+                $recentTransect = $imageLabel->image->transect;
+            }
+            $recentTransectImage = $recentTransect->images()->first();
+        } elseif ($recentImage) {
+            $recentTransect = $recentImage->transect;
             $recentTransectImage = $recentTransect->images()->first();
         } else {
             $recentTransect = null;
