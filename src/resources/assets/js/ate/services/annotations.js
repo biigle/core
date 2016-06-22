@@ -1,11 +1,11 @@
 /**
  * @namespace dias.ate
  * @ngdoc service
- * @name annotationLabels
+ * @name annotations
  * @memberOf dias.ate
  * @description Service for managing the dismissed/replaced annotation labels of the ATE view
  */
-angular.module('dias.ate').service('annotationLabels', function (labels) {
+angular.module('dias.ate').service('annotations', function (labels) {
         "use strict";
 
         // maps label IDs to the IDs of dismissed annotations for the label

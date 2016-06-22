@@ -33,7 +33,7 @@
     @else
         <a href="{{route('project', $projects->first()->id)}}" class="navbar-link" title="Show project {{$projects->first()->name}}">{{$projects->first()->name}}</a>
     @endif
-    / <strong>{{$transect->name}}</strong>
+    / <a href="{{route('transect', $transect->id)}}" title="Show transect {{$transect->name}}"><strong>{{$transect->name}}</strong></a>
 </div>
 @endsection
 

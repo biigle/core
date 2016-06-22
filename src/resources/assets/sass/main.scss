@@ -33,7 +33,7 @@
     &.label-dismissed {
 
         &:before {
-            opacity: .25;
+            opacity: .5;
         }
 
         .image-wrapper {
@@ -48,6 +48,6 @@
     }
 }
 
-.select-label-alert {
+.ate-alert {
     margin-top: 1em;
 }

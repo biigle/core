@@ -29,12 +29,6 @@ angular.module('dias.ate').controller('AteController', function ($scope, TRANSEC
             images.scrollToPercent(0);
         };
 
-
-        // required for compatibility to the re-used parts of dias/transects
-        $scope.isInLabelMode = function () {
-            return true;
-        };
-
         $scope.annotationsExist = function () {
             return annotationsExist;
         };
@@ -44,6 +38,10 @@ angular.module('dias.ate').controller('AteController', function ($scope, TRANSEC
         };
 
         $scope.hasSelectedLabel = labels.hasSelectedLabel;
+
+        $scope.getSelectedLabelName = function () {
+            return labels.getSelectedLabel().name;
+        };
 
         $scope.$watch(labels.getSelectedLabel, handleSelectedLabel);
 	}

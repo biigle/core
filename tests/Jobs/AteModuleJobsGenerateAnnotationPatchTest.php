@@ -39,6 +39,10 @@ class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
             ->once()
             ->andReturn($mock);
 
+        File::shouldReceive('exists')
+            ->once()
+            ->andReturn(true);
+
         $job->handle();
     }
 
@@ -71,6 +75,10 @@ class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
         IImage::shouldReceive('make')
             ->once()
             ->andReturn($mock);
+
+        File::shouldReceive('exists')
+            ->once()
+            ->andReturn(true);
 
         $job->handle();
     }
@@ -105,6 +113,10 @@ class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
         IImage::shouldReceive('make')
             ->once()
             ->andReturn($mock);
+
+        File::shouldReceive('exists')
+            ->once()
+            ->andReturn(true);
 
         $job->handle();
     }

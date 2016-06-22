@@ -103,7 +103,6 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         $widthRatio = $width / $thumbWidth;
         $heightRatio = $height / $thumbHeight;
 
-
         // increase the size of the patch so its aspect ratio is the same than the
         // ratio of the thumbnail dimensions
         if ($widthRatio > $heightRatio) {

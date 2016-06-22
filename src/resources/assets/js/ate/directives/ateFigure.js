@@ -11,16 +11,16 @@ angular.module('dias.ate').directive('ateFigure', function () {
         return {
             restrict: 'A',
 
-            controller: function ($scope, annotationLabels, msg) {
+            controller: function ($scope, annotations, msg) {
 
                 var dismissed = false;
 
                 $scope.handleClick = function (e) {
-                    annotationLabels.toggleDismiss($scope.id);
+                    annotations.toggleDismiss($scope.id);
                 };
 
                 $scope.isDismissed = function () {
-                    return annotationLabels.isDismissed($scope.id);
+                    return annotations.isDismissed($scope.id);
                 };
 
                 $scope.getClass = function () {
