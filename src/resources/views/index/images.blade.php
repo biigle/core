@@ -1,5 +1,5 @@
 <div class="transect__images" data-ng-controller="ImagesController" data-ng-class="getClass()">
-    <figure class="transect-figure ng-cloak" data-ng-repeat="id in getImageIds()" data-ng-class="getClass()" data-popover-placement="@{{getPopoverPlacement()}}" data-popover-trigger="none" data-popover-is-open="isPopoverOpen()" data-uib-popover-template="'imageLabelPopover.html'">
+    <figure class="transect-figure ng-cloak" data-transect-figure="" data-ng-repeat="id in getImageIds()" data-ng-class="getClass()" data-popover-placement="@{{getPopoverPlacement()}}" data-popover-trigger="none" data-popover-is-open="isPopoverOpen()" data-uib-popover-template="'imageLabelPopover.html'">
         @if (Route::has('annotate'))
             <a class="transect-figure__link" href="{{ route('annotate', '') }}/@{{id}}" title="@{{isInLabelMode() ? 'Attach the selected label' : 'Annotate this image'}}" data-ng-click="handleClick($event)">
         @else

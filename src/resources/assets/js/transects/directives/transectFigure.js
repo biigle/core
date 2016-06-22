@@ -9,7 +9,7 @@ angular.module('dias.transects').directive('transectFigure', function () {
         "use strict";
 
         return {
-            restrict: 'C',
+            restrict: 'A',
 
             controller: function ($scope, labels, filter, msg, $timeout, images) {
                 var saved = false;
