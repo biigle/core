@@ -49,8 +49,6 @@ class GenerateThumbnails extends Job implements ShouldQueue
      */
     public function handle()
     {
-        // ensure a fresh DB connection because this job is run with the daemon queue worker
-        DB::reconnect();
         app()->make('Dias\Contracts\ThumbnailService')
             ->generateThumbnails($this->transect, $this->only);
     }

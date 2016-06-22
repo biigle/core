@@ -129,11 +129,6 @@ class ApiProjectTransectControllerTest extends ApiTestCase
     public function testDestroy()
     {
         $id = $this->transect->id;
-        $image = ImageTest::create(['transect_id' => $id]);
-        // generate thumbnail manually
-        InterventionImage::$width = 10;
-        InterventionImage::$height = 10;
-        InterventionImage::makeThumbnail($image);
 
         $this->doTestApiRoute('DELETE', '/api/v1/projects/1/transects/'.$id);
 
@@ -154,14 +149,13 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         // trying to delete withour force
         $this->assertResponseStatus(400);
 
+        $this->expectsEvents('images.cleanup');
+
         $this->delete('/api/v1/projects/1/transects/'.$id, [
             'force' => 'abc',
         ]);
         // deleting with force succeeds
         $this->assertResponseOk();
         $this->assertNull($this->transect->fresh());
-
-        $this->assertFalse(File::exists($image->thumbPath));
-        $this->assertNull($image->fresh());
     }
 }

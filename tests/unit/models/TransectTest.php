@@ -135,8 +135,7 @@ class TransectTest extends ModelTestCase
 
     public function testImageCleanupEventOnDelete()
     {
-        $image = ImageTest::create(['transect_id' => $this->model->id]);
-        Event::shouldReceive('fire')->with('images.cleanup', [[$image->id]], false);
+        $this->expectsEvents('images.cleanup');
         $this->model->delete();
     }
 }

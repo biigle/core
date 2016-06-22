@@ -23,14 +23,8 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
         Artisan::call('migrate');
 
-        // replace observer class with mock for regular tests
-        Transect::flushEventListeners();
-        // use builtin PHPUnit mock to disable the 'created' method
-        // because this would generate thumbnail images for each test
-        $mock = $this->getMockBuilder('Dias\Observers\TransectObserver')
-            ->setMethods(['created'])
-            ->getMock();
-        Transect::observe($mock);
+        $this->withoutEvents();
+        $this->withoutJobs();
     }
 
     public function tearDown()

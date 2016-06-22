@@ -96,18 +96,8 @@ class ImageTest extends ModelTestCase
 
     public function testCleanupTransectThumbnails()
     {
-        File::put($this->model->thumbPath, 'test');
-        $this->assertTrue(File::exists($this->model->thumbPath));
+        $this->expectsEvents('images.cleanup');
         $this->model->transect->delete();
-        $this->assertFalse(File::exists($this->model->thumbPath));
-    }
-
-    public function testCleanupImageThumbnails()
-    {
-        File::put($this->model->thumbPath, 'test');
-        $this->assertTrue(File::exists($this->model->thumbPath));
-        $this->model->delete();
-        $this->assertFalse(File::exists($this->model->thumbPath));
     }
 
     public function testGetExif()
@@ -133,7 +123,7 @@ class ImageTest extends ModelTestCase
 
     public function testImageCleanupEventOnDelete()
     {
-        Event::shouldReceive('fire')->with('images.cleanup', [[$this->model->id]], false);
+        $this->expectsEvents('images.cleanup');
         $this->model->delete();
     }
 
