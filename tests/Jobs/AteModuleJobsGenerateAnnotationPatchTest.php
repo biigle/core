@@ -4,11 +4,10 @@ use Dias\Modules\Ate\Jobs\GenerateAnnotationPatch;
 use Dias\Shape;
 use InterventionImage as IImage;
 
-class GenerateAnnotationPatchTest extends TestCase
+class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
 {
     public function testHandlePoint()
     {
-        $padding = config('ate.patch_padding');
         $annotation = AnnotationTest::create([
             'points' => [100, 100],
             'shape_id' => Shape::$pointId,
@@ -18,12 +17,7 @@ class GenerateAnnotationPatchTest extends TestCase
         $mock = Mockery::mock(IImage::make($annotation->image->url));
 
         $mock->shouldReceive('crop')
-            ->with(
-                128 + 2 * $padding,
-                128 + 2 * $padding,
-                36 - $padding,
-                36 - $padding
-            )
+            ->with(197, 148, 1, 26)
             ->once()
             ->andReturn($mock);
 
@@ -50,7 +44,6 @@ class GenerateAnnotationPatchTest extends TestCase
 
     public function testHandleCircle()
     {
-        $padding = config('ate.patch_padding');
         $annotation = AnnotationTest::create([
             'points' => [100, 100, 20],
             'shape_id' => Shape::$circleId,
@@ -60,12 +53,7 @@ class GenerateAnnotationPatchTest extends TestCase
         $mock = Mockery::mock(IImage::make($annotation->image->url));
 
         $mock->shouldReceive('crop')
-            ->with(
-                40 + 2 * $padding,
-                40 + 2 * $padding,
-                80 - $padding,
-                80 - $padding
-            )
+            ->with(80, 60, 60, 70)
             ->once()
             ->andReturn($mock);
 
@@ -99,12 +87,7 @@ class GenerateAnnotationPatchTest extends TestCase
         $mock = Mockery::mock(IImage::make($annotation->image->url));
 
         $mock->shouldReceive('crop')
-            ->with(
-                100 + 2 * $padding,
-                100 + 2 * $padding,
-                100 - $padding,
-                100 - $padding
-            )
+            ->with(160, 120, 70, 90)
             ->once()
             ->andReturn($mock);
 

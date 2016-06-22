@@ -52,6 +52,9 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         $padding = config('ate.patch_padding');
         $points = $this->annotation->points;
 
+        $thumbWidth = config('thumbnails.width');
+        $thumbHeight = config('thumbnails.height');
+
         if (!File::exists($prefix)) {
             // make recursive
             File::makeDirectory($prefix, 755, true);
@@ -94,17 +97,27 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         $ymin -= $padding;
         $ymax += $padding;
 
+        $width = $xmax - $xmin;
+        $height = $ymax - $ymin;
+
+        $widthRatio = $width / $thumbWidth;
+        $heightRatio = $height / $thumbHeight;
+
+
+        // increase the size of the patch so its aspect ratio is the same than the
+        // ratio of the thumbnail dimensions
+        if ($widthRatio > $heightRatio) {
+            $newHeight = round($thumbHeight * $widthRatio);
+            $ymin -= round(($newHeight - $height) / 2);
+            $height = $newHeight;
+        } else {
+            $newWidth = round($thumbWidth * $heightRatio);
+            $xmin -= round(($newWidth - $width) / 2);
+            $width = $newWidth;
+        }
+
         IImage::make($image->url)
-            ->crop(
-                // width
-                $xmax - $xmin,
-                // height
-                $ymax - $ymin,
-                // x offset
-                $xmin,
-                // y offset
-                $ymin
-            )
+            ->crop($width, $height, $xmin, $ymin)
             ->encode($format)
             ->save("{$prefix}/{$this->annotation->id}.{$format}")
             ->destroy();
