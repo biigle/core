@@ -5,6 +5,7 @@ namespace Dias\Modules\Ate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
 use Dias\Modules\Ate\Listeners\ImagesCleanupListener;
+use Dias\Services\Modules;
 
 class AteServiceProvider extends ServiceProvider {
 
@@ -16,7 +17,7 @@ class AteServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-    public function boot(Router $router)
+    public function boot(Modules $modules, Router $router)
     {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'ate');
 
@@ -34,6 +35,8 @@ class AteServiceProvider extends ServiceProvider {
         \Dias\Annotation::observe(new \Dias\Modules\Ate\Observers\AnnotationObserver);
 
         \Event::listen('images.cleanup', ImagesCleanupListener::class);
+
+        $modules->addMixin('ate', 'transectsMenubar');
     }
 
     /**

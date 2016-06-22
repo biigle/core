@@ -8,15 +8,9 @@
     <script type="text/javascript">
         angular.module('dias.ate').constant('TRANSECT_ID', '{{$transect->id}}.ate');
         angular.module('dias.ate').constant('THUMB_DIMENSION', {WIDTH: {{config('thumbnails.width')}}, HEIGHT: {{config('thumbnails.height')}} });
-        angular.module('dias.ate').constant('TRANSECT_IMAGES', {!!$annotationIds!!});
+        angular.module('dias.ate').constant('TRANSECT_IMAGES', []);
+        angular.module('dias.ate').constant('LABEL_MAP', {!!json_encode($labelMap)!!});
         angular.module('dias.ate').constant('LABEL_TREES', {!!$labelTrees!!});
-        angular.module('dias.ate').constant('USER_ID', {{$user->id}});
-
-        @can('update', $transect)
-            angular.module('dias.ate').constant('IS_ADMIN', true);
-        @else
-            angular.module('dias.ate').constant('IS_ADMIN', false);
-        @endcan
     </script>
 @endpush
 
@@ -39,7 +33,7 @@
     @else
         <a href="{{route('project', $projects->first()->id)}}" class="navbar-link" title="Show project {{$projects->first()->name}}">{{$projects->first()->name}}</a>
     @endif
-    / <strong>{{$transect->name}}</strong> <small>({{ sizeof($annotationIds) }}&nbsp;annotations)</small>
+    / <strong>{{$transect->name}}</strong>
 </div>
 @endsection
 
@@ -47,6 +41,6 @@
 <div class="transect-container" data-ng-app="dias.ate" data-ng-controller="AteController">
     @include('ate::index.images')
     @include('transects::index.progress')
-    @include('transects::index.label')
+    @include('ate::index.label')
 </div>
 @endsection

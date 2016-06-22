@@ -5,12 +5,8 @@
  * @memberOf dias.ate
  * @description Service managing the list of labels. This service overrides the labels service of dias.transects!
  */
-angular.module('dias.ate').service('labels', function (LABEL_TREES, USER_ID, IS_ADMIN, AnnotationLabel, $q) {
+angular.module('dias.ate').service('labels', function (LABEL_TREES) {
         "use strict";
-
-        // cache the already requested attached image labels here
-        // this is a map from image ID to a list of image labels attached to the image
-        var attachedLabelCache = {};
 
         var labels = [];
 
@@ -66,31 +62,6 @@ angular.module('dias.ate').service('labels', function (LABEL_TREES, USER_ID, IS_
             }
         };
 
-        // add attached labels to the label cache if the labels already were queried
-        var handleAttachedLabel = function (id, label) {
-            if (attachedLabelCache.hasOwnProperty(id)) {
-                attachedLabelCache[id].unshift(label);
-            }
-        };
-
-        var handleDetachedLabel = function (id, label) {
-            if (attachedLabelCache.hasOwnProperty(id)) {
-                var labels = attachedLabelCache[id];
-                for (var i = labels.length - 1; i >= 0; i--) {
-                    if (labels[i].id === label.id) {
-                        labels.splice(i, 1);
-                        break;
-                    }
-                }
-            }
-        };
-
-        var restoreDetachedLabel = function (id, label) {
-            if (attachedLabelCache.hasOwnProperty(id)) {
-                attachedLabelCache[id].push(label);
-            }
-        };
-
         this.getLabels = function () {
             return labels;
         };
@@ -112,41 +83,12 @@ angular.module('dias.ate').service('labels', function (LABEL_TREES, USER_ID, IS_
             return selectedLabel && selectedLabel.id === label.id;
         };
 
-        this.attachToImage = function (id) {
-            if (selectedLabel) {
-                return AnnotationLabel.attach({
-                    label_id: selectedLabel.id,
-                    confidence: 1.0,
-                    annotation_id: id
-                }, function (label) {
-                    handleAttachedLabel(id, label);
-                }).$promise;
-            } else {
-                var deferred = $q.defer();
-                deferred.reject({data: {message: 'No label selected.'}});
-                return deferred.promise;
-            }
+        this.getSelectedLabel = function () {
+            return selectedLabel;
         };
 
-        this.getAttachedLabels = function (id) {
-            if (!attachedLabelCache.hasOwnProperty(id)) {
-                attachedLabelCache[id] = AnnotationLabel.query({annotation_id: id});
-            }
-
-            return attachedLabelCache[id];
-        };
-
-        this.canDetachLabel = function (label) {
-            return IS_ADMIN || label.user.id === USER_ID;
-        };
-
-        this.detachLabel = function (id, label) {
-            handleDetachedLabel(id, label);
-            return AnnotationLabel.delete({id: label.id}, angular.noop, function () {
-                // adds the detached label back to the image labels list if anything went
-                // wrong when detaching the label
-                restoreDetachedLabel(id, label);
-            }).$promise;
+        this.hasSelectedLabel = function () {
+            return selectedLabel !== null;
         };
 
         init();
