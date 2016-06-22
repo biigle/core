@@ -146,10 +146,6 @@ angular.module('dias.transects').service('labels', function (LABEL_TREES, USER_I
             }).$promise;
         };
 
-        this.getSelectedLabel = function () {
-            return selectedLabel;
-        };
-
         init();
     }
 );
