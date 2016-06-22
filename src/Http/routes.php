@@ -15,10 +15,6 @@ $router->group([
     'prefix' => 'api/v1',
     'middleware' => 'auth.api',
 ], function ($router) {
-    $router->get('transects/{id}/ate/preprocess', [
-        'uses' => 'AteController@preprocess',
-    ]);
-
     $router->get('annotations/{id}/patch', [
         'uses' => 'AteController@showPatch',
     ]);

@@ -4,7 +4,7 @@ namespace Dias\Modules\Ate;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
-// use Dias\Modules\Ate\Console\Commands\Install as InstallCommand;
+use Dias\Modules\Ate\Listeners\ImagesCleanupListener;
 
 class AteServiceProvider extends ServiceProvider {
 
@@ -30,6 +30,10 @@ class AteServiceProvider extends ServiceProvider {
         ], function ($router) {
             require __DIR__.'/Http/routes.php';
         });
+
+        \Dias\Annotation::observe(new \Dias\Modules\Ate\Observers\AnnotationObserver);
+
+        \Event::listen('images.cleanup', ImagesCleanupListener::class);
     }
 
     /**
@@ -40,5 +44,22 @@ class AteServiceProvider extends ServiceProvider {
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/config/ate.php', 'ate');
+
+        $this->app->singleton('command.ate.publish', function ($app) {
+            return new \Dias\Modules\Ate\Console\Commands\Publish();
+        });
+        $this->commands('command.ate.publish');
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [
+            'command.ate.publish',
+        ];
     }
 }

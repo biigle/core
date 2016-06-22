@@ -3,29 +3,30 @@
 return [
 
     /*
-    | Directory where the temporary files for transect preprocessing are stored.
-    | Make sure the database user is able to write to this directory.
-    */
-    'tmp_path' => storage_path('ate_tmp'),
-
-    /*
     | Directory where the annotation patch images will be stored
     */
     'patch_storage' => storage_path('ate_patches'),
 
     /*
-    | Directory where the ate dict files will be stored
+    | Image file format for the annotation patch images.
+    | Must be supported by Python matplotlib.image.imsave.
     */
-    'dict_storage' => storage_path('ate_dicts'),
+    'patch_format' => 'jpg',
 
     /*
-    | Script for preprocessing a transect
+    | Padding to add to each patch in x and y direction (in px).
     */
-    'preprocess_script' => __DIR__.'/../Scripts/preprocess.py',
+    'patch_padding' => 10,
 
     /*
-    | Location of the Python binary
+    | Padding to add around a point annotation (in addition to the patch padding) in px.
     */
-    'python' => '/usr/bin/python',
+    'point_padding' => 64,
+
+    /*
+    | Time in Seconds to delay generating a new annotation patch.
+    | This saves resources for annotations that are quickly removed again.
+    */
+    'patch_generation_delay' => 10,
 
 ];
