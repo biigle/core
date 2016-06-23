@@ -16,16 +16,36 @@ angular.module('dias.ate').directive('ateFigure', function () {
                 var dismissed = false;
 
                 $scope.handleClick = function (e) {
-                    annotations.toggleDismiss($scope.id);
+                    annotations.selectAnnotation($scope.id);
                 };
 
-                $scope.isDismissed = function () {
+                var isDismissed = function () {
                     return annotations.isDismissed($scope.id);
+                };
+
+                var isChanged = function () {
+                    return annotations.isChanged($scope.id);
+                };
+
+                $scope.getTitle = function () {
+                    if ($scope.isInDismissMode()) {
+                        if (isDismissed()) {
+                            return 'Undo dismissing this annotation';
+                        }
+
+                        return 'Dismiss this annotation';
+                    }
+
+                    if (isChanged()) {
+                        return 'Revert changing the label of this annotation';
+                    }
+
+                    return 'Change the label of this annotation';
                 };
 
                 $scope.getClass = function () {
                     return {
-                        'label-dismissed': $scope.isDismissed()
+                        'annotation-selected': $scope.isInDismissMode() && isDismissed() || $scope.isInReLabellingMode() && isChanged()
                     };
                 };
             }

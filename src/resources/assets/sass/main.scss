@@ -6,11 +6,24 @@
     }
 }
 
+.transect-container {
+    &.dismiss-mode {
+        .transect-figure:before {
+            content: "\e014";
+        }
+    }
+
+    &.re-labelling-mode {
+        .transect-figure:before {
+            content: "\e013";
+        }
+    }
+}
+
 .transect-figure {
 
     &:before {
         font-family: 'Glyphicons Halflings';
-        content: "\e014";
         position: absolute;
         display: block;
         z-index: 1;
@@ -30,7 +43,7 @@
         }
     }
 
-    &.label-dismissed {
+    &.annotation-selected {
 
         &:before {
             opacity: .5;

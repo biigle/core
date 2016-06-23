@@ -34,12 +34,13 @@
     @else
         <a href="{{route('project', $projects->first()->id)}}" class="navbar-link" title="Show project {{$projects->first()->name}}">{{$projects->first()->name}}</a>
     @endif
-    / <a href="{{route('transect', $transect->id)}}" title="Show transect {{$transect->name}}"><strong>{{$transect->name}}</strong></a>
+    / <a href="{{route('transect', $transect->id)}}" title="Show transect {{$transect->name}}">{{$transect->name}}</a>
+    / <strong id="dismiss-mode-title">ATE - dismiss existing annotations</strong><strong id="re-labelling-mode-title" class="ng-hide">ATE - re-label dismissed annotations</strong>
 </div>
 @endsection
 
 @section('content')
-<div class="transect-container" data-ng-app="dias.ate" data-ng-controller="AteController">
+<div class="transect-container" data-ng-app="dias.ate" data-ng-controller="AteController" data-ng-class="getClass()">
     @include('ate::index.images')
     @include('transects::index.progress')
     @include('ate::index.label')

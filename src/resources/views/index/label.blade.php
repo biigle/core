@@ -1,9 +1,17 @@
 <div class="transect__label" data-ng-controller="ImageLabelController">
     <div class="transect__label-body">
         <div class="labels-search clearfix">
-            <button class="btn btn-success pull-right" data-ng-click="" title="Go to the next step">
-                Continue
-            </button>
+            <span class="pull-right" data-ng-switch="isInDismissMode()">
+                <button class="btn btn-success" data-ng-click="goToReLabelling()" title="Go to the re-labelling step" data-ng-switch-when="true">
+                    Continue
+                </button>
+                <button class="btn btn-default ng-cloak" data-ng-click="goToDismiss()" title="Go back to dismissing annotations" data-ng-switch-default="">
+                    Back
+                </button>
+                <button class="btn btn-success ng-cloak" data-ng-click="saveReLabelling()" title="Save the changes" data-ng-switch-default="">
+                    Save
+                </button>
+            </span>
             <input class="form-control" type="text" data-ng-model="selected.searchLabel" data-uib-typeahead="label.name for label in getLabels() | filter:$viewValue | limitTo:10" data-typeahead-on-select="selectLabel($item)" placeholder="Find label" />
         </div>
         <div class="labels-body">
