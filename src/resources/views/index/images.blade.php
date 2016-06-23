@@ -11,8 +11,13 @@
         <div class="alert alert-info" data-ng-switch-when="false">
             Please choose a label in the sidebar to start the re-evaluation.
         </div>
-        <div class="alert alert-info" data-ng-switch-default="" data-ng-if="!annotationsExist()">
-            There are no annotations with the label <strong data-ng-bind="getSelectedLabelName()"></strong>.
+        <div data-ng-switch-default="" data-ng-switch="isLoading()">
+            <div class="alert alert-info ng-cloak" data-ng-switch-when="true">
+                loading...
+            </div>
+            <div class="alert alert-info ng-cloak" data-ng-switch-default="" data-ng-if="!annotationsExist()">
+                There are no annotations with the label <strong data-ng-bind="getSelectedLabelName()"></strong>.
+            </div>
         </div>
     </div>
 </div>

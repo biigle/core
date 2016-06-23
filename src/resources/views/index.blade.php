@@ -6,10 +6,11 @@
     <script src="{{ asset('vendor/transects/scripts/main.js') }}"></script>
     <script src="{{ asset('vendor/ate/scripts/main.js') }}"></script>
     <script type="text/javascript">
+        {{-- Fake TRANSECT_ID so the images service of dias.transects can be reused --}}
         angular.module('dias.ate').constant('TRANSECT_ID', '{{$transect->id}}.ate');
+        angular.module('dias.ate').constant('ATE_TRANSECT_ID', {{$transect->id}});
         angular.module('dias.ate').constant('THUMB_DIMENSION', {WIDTH: {{config('thumbnails.width')}}, HEIGHT: {{config('thumbnails.height')}} });
         angular.module('dias.ate').constant('TRANSECT_IMAGES', []);
-        angular.module('dias.ate').constant('LABEL_MAP', {!!json_encode($labelMap)!!});
         angular.module('dias.ate').constant('LABEL_TREES', {!!$labelTrees!!});
     </script>
 @endpush

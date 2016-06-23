@@ -18,4 +18,8 @@ $router->group([
     $router->get('annotations/{id}/patch', [
         'uses' => 'AteController@showPatch',
     ]);
+
+    $router->get('transects/{tid}/annotations/filter/label/{lid}', [
+        'uses' => 'TransectsAnnotationsController@filter',
+    ]);
 });

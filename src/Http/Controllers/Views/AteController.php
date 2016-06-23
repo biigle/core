@@ -21,30 +21,6 @@ class AteController extends Controller
         $transect = Transect::findOrFail($id);
         $this->authorize('edit-in', $transect);
 
-        $annotationMap = DB::table('annotation_labels')
-            ->join('annotations', 'annotations.id', '=', 'annotation_labels.annotation_id')
-            ->whereIn('annotations.image_id', function ($query) use ($transect) {
-                $query->select('id')
-                    ->from('images')
-                    ->where('transect_id', $transect->id);
-            })
-            ->select('annotation_labels.label_id', 'annotations.id')
-            ->get();
-
-        // map a label ID to the IDs of all annotations of this transects who have the
-        // label atached to them
-        $labelMap = [];
-
-        foreach ($annotationMap as $key => $value) {
-            $labelMap[$value->label_id][] = $value->id;
-            // clear the one array while filling the other to save memory
-            // (there can be a massive amount of annotations per transect)
-            unset($annotationMap[$key]);
-        }
-
-        unset($annotationMap);
-
-
         if ($this->user->isAdmin) {
             // admins have no restrictions
             $projects = $transect->projects;
@@ -74,7 +50,6 @@ class AteController extends Controller
             'transect' => $transect,
             'projects' => $projects,
             'labelTrees' => $labelTrees,
-            'labelMap' => $labelMap,
         ]);
     }
 }
