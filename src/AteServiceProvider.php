@@ -25,6 +25,10 @@ class AteServiceProvider extends ServiceProvider {
             __DIR__.'/public/assets' => public_path('vendor/ate'),
         ], 'public');
 
+        $this->publishes([
+            __DIR__.'/config/ate.php' => config_path('ate.php'),
+        ], 'config');
+
         $router->group([
             'namespace' => 'Dias\Modules\Ate\Http\Controllers',
             'middleware' => 'web',
@@ -52,6 +56,11 @@ class AteServiceProvider extends ServiceProvider {
             return new \Dias\Modules\Ate\Console\Commands\Publish();
         });
         $this->commands('command.ate.publish');
+
+        $this->app->singleton('command.ate.config', function ($app) {
+            return new \Dias\Modules\Ate\Console\Commands\Config();
+        });
+        $this->commands('command.ate.config');
     }
 
     /**
@@ -63,6 +72,7 @@ class AteServiceProvider extends ServiceProvider {
     {
         return [
             'command.ate.publish',
+            'command.ate.config',
         ];
     }
 }
