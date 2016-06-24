@@ -5,6 +5,7 @@ namespace Dias\Modules\Annotations\Http\Controllers;
 use DB;
 use Dias\Image;
 use Dias\LabelTree;
+use Dias\Role;
 use Dias\Http\Controllers\Views\Controller;
 
 class AnnotationController extends Controller
@@ -26,12 +27,15 @@ class AnnotationController extends Controller
                 ->pluck('project_id');
         } else {
             // array of all project IDs that the user and the image have in common
+            // and where the user is editor or admin
             $projectIds = DB::table('project_user')
                 ->where('user_id', $this->user->id)
                 ->whereIn('project_id', function ($query) use ($image) {
-                    $query->select('project_id')
+                    $query->select('project_transect.project_id')
                         ->from('project_transect')
-                        ->where('transect_id', $image->transect_id);
+                        ->join('project_user', 'project_transect.project_id', '=', 'project_user.project_id')
+                        ->where('project_transect.transect_id', $image->transect_id)
+                        ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id]);
                 })
                 ->pluck('project_id');
         }
