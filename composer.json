@@ -1,6 +1,8 @@
 {
     "name": "dias/ate",
     "require": {
+        "dias/transects": "~0.4",
+        "intervention/image": "~2.1"
     },
     "require-dev": {
     },

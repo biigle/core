@@ -1,0 +1,68 @@
+@import 'variables';
+
+.navbar-text.navbar-ate-breadcrumbs {
+    &, a {
+        color: $text-color;
+    }
+}
+
+.transect-container {
+    &.dismiss-mode {
+        .transect-figure:before {
+            // glyphicon-remove
+            content: "\e014";
+        }
+    }
+
+    &.re-labelling-mode {
+        .transect-figure:before {
+            // glyphicon-ok
+            content: "\e013";
+        }
+    }
+}
+
+.transect-figure {
+
+    &:before {
+        font-family: 'Glyphicons Halflings';
+        position: absolute;
+        display: block;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        font-size: $font-size-h1;
+        text-align: center;
+        padding-top: 1em;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .25s ease;
+    }
+
+    &:hover {
+        &:before {
+            opacity: 1;
+        }
+    }
+
+    &.annotation-selected {
+
+        &:before {
+            opacity: .5;
+        }
+
+        .image-wrapper {
+            opacity: .25;
+        }
+    }
+
+    .image-wrapper {
+        height: 100%;
+        position: relative;
+        transition: opacity .25s ease;
+    }
+}
+
+.ate-alert {
+    margin-top: 1em;
+}
