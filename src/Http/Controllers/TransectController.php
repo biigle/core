@@ -6,6 +6,7 @@ use Dias\Transect;
 use Dias\Project;
 use Dias\LabelTree;
 use Dias\MediaType;
+use Dias\Role;
 use Dias\Http\Controllers\Views\Controller;
 
 class TransectController extends Controller
@@ -44,9 +45,11 @@ class TransectController extends Controller
             // all projects that the user and the transect have in common
             $projects = $this->user->projects()
                 ->whereIn('id', function ($query) use ($transect) {
-                    $query->select('project_id')
+                    $query->select('project_transect.project_id')
                         ->from('project_transect')
-                        ->where('transect_id', $transect->id);
+                        ->join('project_user', 'project_transect.project_id', '=', 'project_user.project_id')
+                        ->where('project_transect.transect_id', $transect->id)
+                        ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id]);
                 })
                 ->get();
         }
