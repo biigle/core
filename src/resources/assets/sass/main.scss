@@ -9,12 +9,14 @@
 .transect-container {
     &.dismiss-mode {
         .transect-figure:before {
+            // glyphicon-remove
             content: "\e014";
         }
     }
 
     &.re-labelling-mode {
         .transect-figure:before {
+            // glyphicon-ok
             content: "\e013";
         }
     }

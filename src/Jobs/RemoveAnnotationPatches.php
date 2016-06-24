@@ -51,6 +51,7 @@ class RemoveAnnotationPatches extends Job implements ShouldQueue
         $format = config('ate.patch_format');
 
         // use a loop because this may be a massive amount of files
+        // (the alternative would be array_map to assemble all file paths first)
         foreach ($this->annotationIds as $id) {
             File::delete("{$prefix}/{$id}.{$format}");
         }

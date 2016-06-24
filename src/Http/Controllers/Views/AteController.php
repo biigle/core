@@ -7,6 +7,7 @@ use Dias\Http\Controllers\Views\Controller;
 use Dias\Transect;
 use Dias\Annotation;
 use Dias\LabelTree;
+use Dias\Role;
 
 class AteController extends Controller
 {
@@ -26,11 +27,14 @@ class AteController extends Controller
             $projects = $transect->projects;
         } else {
             // all projects that the user and the transect have in common
+            // and where the user is editor or admin
             $projects = $this->user->projects()
                 ->whereIn('id', function ($query) use ($transect) {
-                    $query->select('project_id')
+                    $query->select('project_transect.project_id')
                         ->from('project_transect')
-                        ->where('transect_id', $transect->id);
+                        ->join('project_user', 'project_transect.project_id', '=', 'project_user.project_id')
+                        ->where('project_transect.transect_id', $transect->id)
+                        ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id]);
                 })
                 ->get();
         }

@@ -8,6 +8,7 @@ use Dias\Annotation;
 use Dias\Label;
 use Dias\Transect;
 use Dias\AnnotationLabel;
+use Dias\Role;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Dias\Modules\Ate\Jobs\RemoveAnnotationPatches;
@@ -70,6 +71,7 @@ class AteController extends Controller
      *    }
      * }
      *
+     * @param int $id Transect ID
      * @return \Illuminate\Http\Response
      */
     public function save($id)
@@ -79,11 +81,10 @@ class AteController extends Controller
 
         $dismissed = $this->request->input('dismissed', []);
         $changed = $this->request->input('changed', []);
-        $affectedAnnotations = [];
 
-        foreach ($dismissed as $labelId => $annotationIds) {
-            $affectedAnnotations = array_merge($affectedAnnotations, $annotationIds);
-        }
+        $affectedAnnotations = array_reduce($dismissed, function ($carry, $item) {
+            return array_merge($carry, $item);
+        }, []);
 
         $affectedAnnotations = array_merge($affectedAnnotations, array_keys($changed));
         $affectedAnnotations = array_unique($affectedAnnotations);
@@ -104,12 +105,25 @@ class AteController extends Controller
             ->groupBy('label_tree_id')
             ->pluck('label_tree_id');
 
+        if ($this->user->isAdmin) {
+            // admins have no restrictions
+            $projects = $transect->projects()->pluck('id');
+        } else {
+            // all projects that the user and the transect have in common
+            // and where the user is editor or admin
+            $projects = $this->user->projects()
+                ->whereIn('id', function ($query) use ($transect) {
+                    $query->select('project_transect.project_id')
+                        ->from('project_transect')
+                        ->join('project_user', 'project_transect.project_id', '=', 'project_user.project_id')
+                        ->where('project_transect.transect_id', $transect->id)
+                        ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id]);
+                })
+                ->pluck('id');
+        }
+
         $availableLabelTreeIds = DB::table('label_tree_project')
-            ->whereIn('project_id', function ($query) use ($id) {
-                $query->select('project_id')
-                    ->from('project_transect')
-                    ->where('transect_id', $id);
-            })
+            ->whereIn('project_id', $projects)
             ->pluck('label_tree_id');
 
         if ($requiredLabelTreeIds->diff($availableLabelTreeIds)->count() > 0) {
@@ -141,7 +155,7 @@ class AteController extends Controller
 
         AnnotationLabel::insert($newAnnotationLabels);
 
-        // remove annotations that now have no more label attached
+        // remove annotations that now have no more labels attached
         $toDelete = Annotation::whereIn('id', $affectedAnnotations)
             ->whereDoesntHave('labels')
             ->pluck('id')
