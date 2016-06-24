@@ -5,7 +5,7 @@
  * @memberOf dias.ate
  * @description Controller for the transect view
  */
-angular.module('dias.ate').controller('AteController', function ($scope, labels, annotations) {
+angular.module('dias.ate').controller('AteController', function ($scope, labels, annotations, msg) {
 		"use strict";
 
         var step = 0;
@@ -41,6 +41,13 @@ angular.module('dias.ate').controller('AteController', function ($scope, labels,
             annotations.goToStep(step);
         };
 
+        $scope.saveReLabelling = function () {
+            annotations.save().then(function () {
+                $scope.goToDismiss();
+                msg.success('Saved. You can now start a new re-evaluation session.');
+            });
+        };
+
         $scope.hasSelectedLabel = labels.hasSelectedLabel;
 
         $scope.getSelectedLabelName = function () {
@@ -48,6 +55,8 @@ angular.module('dias.ate').controller('AteController', function ($scope, labels,
         };
 
         $scope.isLoading = annotations.isLoading;
+        $scope.isSaving = annotations.isSaving;
+        $scope.canContinue = annotations.canContinue;
 
         $scope.getClass = function () {
             return {

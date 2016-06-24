@@ -25,4 +25,9 @@
             There are no annotations marked for dismissal.
         </div>
     </div>
+    <div class="ate-alert ng-cloak" data-ng-if="isSaving()">
+        <div class="alert alert-info">
+            saving...
+        </div>
+    </div>
 </div>

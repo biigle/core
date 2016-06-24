@@ -2,13 +2,13 @@
     <div class="transect__label-body">
         <div class="labels-search clearfix">
             <span class="pull-right" data-ng-switch="isInDismissMode()">
-                <button class="btn btn-success" data-ng-click="goToReLabelling()" title="Go to the re-labelling step" data-ng-switch-when="true">
+                <button class="btn btn-success" data-ng-click="goToReLabelling()" title="@{{canContinue() ? 'Go to the re-labelling step' : 'Please select annotations for dismissal first'}}" data-ng-switch-when="true" data-ng-disabled="!canContinue()" disabled="">
                     Continue
                 </button>
                 <button class="btn btn-default ng-cloak" data-ng-click="goToDismiss()" title="Go back to dismissing annotations" data-ng-switch-default="">
                     Back
                 </button>
-                <button class="btn btn-success ng-cloak" data-ng-click="saveReLabelling()" title="Save the changes" data-ng-switch-default="">
+                <button class="btn btn-success ng-cloak" data-ng-click="saveReLabelling()" title="Save the changes" data-ng-switch-default="" data-ng-disabled="isSaving()">
                     Save
                 </button>
             </span>

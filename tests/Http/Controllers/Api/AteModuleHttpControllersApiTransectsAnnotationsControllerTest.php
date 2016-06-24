@@ -16,7 +16,7 @@ class AteModuleHttpControllersApiTransectsAnnotationsControllerTest extends ApiT
         $l3 = AnnotationLabelTest::create(['annotation_id' => $a3->id]);
 
         // annotation from other transect should not appear
-        AnnotationLabelTest::create(['annotation_id' => $a3->id]);
+        AnnotationTest::create();
 
         $this->doTestApiRoute('GET', "/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
 

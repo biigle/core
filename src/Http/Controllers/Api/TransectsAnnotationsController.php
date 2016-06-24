@@ -4,7 +4,7 @@ namespace Dias\Modules\Ate\Http\Controllers\Api;
 
 use Dias\Http\Controllers\Api\Controller;
 use Dias\Transect;
-use DB;
+use Dias\Annotation;
 
 class TransectsAnnotationsController extends Controller
 {
@@ -28,8 +28,7 @@ class TransectsAnnotationsController extends Controller
         $transect = Transect::findOrFail($tid);
         $this->authorize('access', $transect);
 
-        return DB::table('annotation_labels')
-            ->join('annotations', 'annotations.id', '=', 'annotation_labels.annotation_id')
+        return Annotation::join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
             ->whereIn('annotations.image_id', function ($query) use ($tid) {
                 $query->select('id')
                     ->from('images')

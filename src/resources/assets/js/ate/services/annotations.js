@@ -5,7 +5,7 @@
  * @memberOf dias.ate
  * @description Service for managing the dismissed/replaced annotation labels of the ATE view
  */
-angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRANSECT_IMAGES, TransectFilterAnnotationLabel, labels, images, msg) {
+angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRANSECT_IMAGES, TransectFilterAnnotationLabel, Ate, labels, images, msg) {
         "use strict";
 
         // cache that maps label IDs to IDs of annotations with this label
@@ -14,6 +14,7 @@ angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRA
         var annotationsExist = false;
 
         var loading = false;
+        var saving = false;
 
         // maps label IDs to the IDs of dismissed annotations for the label
         var dismissed = {};
@@ -50,8 +51,22 @@ angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRA
             }
         };
 
-        var handleError = function (response) {
+        var handleFetchAnnotationsError = function (response) {
             loading = false;
+            msg.responseError(response);
+        };
+
+        var handleSaveSuccess = function () {
+            saving = false;
+            labelMapCache = {};
+            dismissed = {};
+            dismissedFlat.length = 0;
+            changed = {};
+        };
+
+        var handleSaveError = function (response) {
+            saving = false;
+            switchToDismissedAnnotations();
             msg.responseError(response);
         };
 
@@ -142,7 +157,7 @@ angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRA
                 labelMapCache[id] = TransectFilterAnnotationLabel.query(
                     {transect_id: ATE_TRANSECT_ID, label_id: id},
                     updateDisplayedAnnotations,
-                    msg.responseError
+                    handleFetchAnnotationsError
                 );
             }
         };
@@ -155,6 +170,14 @@ angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRA
             return loading;
         };
 
+        this.isSaving = function () {
+            return saving;
+        };
+
+        this.canContinue = function () {
+            return dismissedFlat.length > 0;
+        };
+
         this.goToStep = function (s) {
             step = s;
             if (step === STEP.DISMISS) {
@@ -162,6 +185,18 @@ angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRA
             } else {
                 switchToDismissedAnnotations();
             }
+        };
+
+        this.save = function () {
+            saving = true;
+            TRANSECT_IMAGES.length = 0;
+            images.updateFiltering();
+            return Ate.save(
+                {transect_id: ATE_TRANSECT_ID},
+                {dismissed: dismissed, changed: changed},
+                handleSaveSuccess,
+                handleSaveError
+            ).$promise;
         };
     }
 );

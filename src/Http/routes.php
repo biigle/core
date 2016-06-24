@@ -19,6 +19,10 @@ $router->group([
         'uses' => 'AteController@showPatch',
     ]);
 
+    $router->post('transects/{id}/ate', [
+        'uses' => 'AteController@save',
+    ]);
+
     $router->get('transects/{tid}/annotations/filter/label/{lid}', [
         'uses' => 'TransectsAnnotationsController@filter',
     ]);
