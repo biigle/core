@@ -92,6 +92,15 @@ class Image extends Model
     ];
 
     /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'attrs' => 'array',
+    ];
+
+    /**
      * The transect, this image belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

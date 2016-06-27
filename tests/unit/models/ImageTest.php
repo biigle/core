@@ -134,4 +134,11 @@ class ImageTest extends ModelTestCase
         $label = $this->model->labels()->first();
         $this->assertEquals($il->id, $label->id);
     }
+
+    public function testCastsAttrs()
+    {
+        $this->model->attrs = ['a', 'b', 'c'];
+        $this->model->save();
+        $this->assertEquals(['a', 'b', 'c'], $this->model->fresh()->attrs);
+    }
 }
