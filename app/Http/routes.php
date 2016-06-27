@@ -20,15 +20,27 @@ $router->group(['namespace' => 'Auth'], function ($router) {
     ]);
 });
 
-$router->group(['namespace' => 'Views', 'prefix' => 'documentation'], function ($router) {
+$router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router) {
     // route name must be different from the 'doc' directory name of the static
     // files in the public directory
     $router->get('/', [
-        'as' => 'documentation',
-        'uses' => 'DocumentationController@index',
+        'as' => 'manual',
+        'uses' => 'ManualController@index',
     ]);
 
-    $router->get('/{article}', 'DocumentationController@article');
+    $router->get('/tutorials', [
+        'as' => 'manual-tutorials',
+        'uses' => 'ManualController@indexTutorials',
+    ]);
+
+    $router->get('/tutorials/{article}', 'ManualController@tutorialsArticle');
+
+    $router->get('/documentation', [
+        'as' => 'manual-documentation',
+        'uses' => 'ManualController@indexDocumentation',
+    ]);
+
+    $router->get('/documentation/{article}', 'ManualController@documentationArticle');
 });
 
 // PROTECTED ROUTES -----------------------------------------------------------

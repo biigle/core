@@ -13,7 +13,8 @@ return array(
 		'resetpw' => 'Reset password',
 		'register' => 'Register',
 		'dashboard' => 'BIIGLE DIAS',
-		'doc' => 'Documentation'
+        'manual' => 'Manual',
+		'doc' => 'Documentation',
 	),
 
 	'media_types' => array(

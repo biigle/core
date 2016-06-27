@@ -158,7 +158,7 @@ class QuotesServiceProvider extends ServiceProvider {
 			</p>
 <pre>
 git add .
-git commit -m "Initial commit"	
+git commit -m "Initial commit"
 </pre>
 			<p>
 				When developing a real package (using Git), you now normally would create a bare remote repository on a server all developers can access, and push the first commit to this repository. But for this tutorial we can stick to the local repository, as well.
@@ -221,7 +221,7 @@ git commit -m "Initial commit"
 				This requires us to modify the existing dashboard view somehow. DIAS has a mechanism to do just that, called <em>view mixins</em>, that allows packages to inject components into predefined spaces of existing views.
 			</p>
 			<p>
-				First, we have to create a new view of the package, containing the code of the new dashboard section. In Laravel, views are usually located in <code>resources/views</code>, so let's create the new file <code>src/resources/views/dashboard.blade.php</code> in our package repository, with the following content:
+				First, we have to create a new view of the package, containing the code of the new dashboard section. In Laravel, views are usually located in <code>resources/views</code>, so let's create the new file <code>src/resources/views/dashboardMain.blade.php</code> in our package repository, with the following content:
 			</p>
 <pre>
 &lt;div class="panel panel-default"&gt;
@@ -239,7 +239,7 @@ git commit -m "Initial commit"
 				You see that we can use the entire pallette of <a href="http://getbootstrap.com/">Bootstrap</a> classes for styling without having to set anything up. The actual quote is echoed using the <code>@{{&nbsp;}}</code> control structure of the Laravel <a href="http://laravel.com/docs/5.0/templates">Blade templating engine</a>.
 			</p>
 			<p>
-				Calling the new view <code>dashboard.blade.php</code> is essential here, since the view has to have the same name as the identifier of registered space for view mixins. Usually views only register one such space so taking the view name as identifier makes sense. For the dashboard, the ID is <code>dashboard</code> so our view mixin must be called <code>dashboard</code>, too.
+				Calling the new view <code>dashboardMain.blade.php</code> is essential here, since the view has to have the same name as the identifier of registered space for view mixins. Usually views only register one such space so taking the view name as identifier makes sense. For the dashboard, the ID is <code>dashboardMain</code> so our view mixin must be called <code>dashboardMain</code>, too.
 			</p>
 			<p>
 				Next, we have to tell Laravel that our package <em>has</em> any views in the first place. To do so, add the following to the <code>boot</code> function of the packages service provider class:
@@ -270,7 +270,7 @@ class QuotesServiceProvider extends ServiceProvider {
    public function boot(Modules $modules)
    {
       $this->loadViewsFrom(__DIR__.'/resources/views', 'quotes');
-      $modules->addMixin('quotes', 'dashboard');
+      $modules->addMixin('quotes', 'dashboardMain');
    }
 
    /**
@@ -307,7 +307,7 @@ class QuotesServiceProvider extends ServiceProvider {
 				If you have any questions or are looking for examples, take a look at the <a href="http://laravel.com/docs/5.0/packages">Laravel documentation</a> on package development or the existing DIAS modules of your installation.
 			</p>
 			<p>
-				<a href="{{ route('documentation') }}" class="btn btn-default" title="Back to the documentation center"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> back</a>
+				<a href="{{ route('manual-documentation') }}" class="btn btn-default" title="Back to the core documentation"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> back</a>
 			</p>
 		</div>
 	</div>

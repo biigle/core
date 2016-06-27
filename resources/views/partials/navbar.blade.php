@@ -32,7 +32,7 @@
                             </li>
                         @endif
                         <li>
-                            <a href="{{ route('documentation') }}" title="{{ trans('dias.titles.doc') }}">{{ trans('dias.titles.doc') }}</a>
+                            <a href="{{ route('manual') }}" title="{{ trans('dias.titles.manual') }}">{{ trans('dias.titles.manual') }}</a>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li>

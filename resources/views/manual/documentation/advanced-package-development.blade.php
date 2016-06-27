@@ -13,7 +13,7 @@
 			</p>
 
 			<p>
-				In a previous tutorial you have learned what PHP package development is all about and how to start developing your own DIAS module. If you haven't done the tutorial yet, <a href="{{ route('documentation').'/package-development' }}">start there</a> and come back later, since we'll build upon that.
+				In a previous tutorial you have learned what PHP package development is all about and how to start developing your own DIAS module. If you haven't done the tutorial yet, <a href="{{ route('manual-documentation') }}/package-development">start there</a> and come back later, since we'll build upon that.
 			</p>
 
 			<p>
@@ -130,8 +130,8 @@ Failed asserting that false is true.
 
 /your/local/path/to/dias/vendor/laravel/framework/src/Illuminate/Foundation/Testing/AssertionsTrait.php:17
 /your/local/path/to/dias/vendor/dias/quotes/tests/QuotesControllerTest.php:7
-                                     
-FAILURES!                            
+
+FAILURES!
 Tests: 1, Assertions: 1, Failures: 1.
 </pre>
 			<p>
@@ -179,7 +179,7 @@ class QuotesController extends Controller {
 
 	/**
 	 * Shows the quotes page.
-	 * 
+	 *
 	 * @return \Illuminate\Http\Response
 	 */
 	public function index()
@@ -300,7 +300,7 @@ public function index()
 				Take a look at the page again. Now we are talking!
 			</p>
 			<p>
-				To finish up, we quickly add a link to the new route to the previously developed view mixin of the dashboard. Open the <code>dashboard</code> view and edit the panel heading:
+				To finish up, we quickly add a link to the new route to the previously developed view mixin of the dashboard. Open the <code>dashboardMain</code> view and edit the panel heading:
 			</p>
 <pre>
 &lt;div class="panel-heading"&gt;
@@ -320,7 +320,7 @@ public function index()
 				But there is still one step left for you to master package development: Custom assets. Besides using custom CSS to style the content beyond Bootstrap's capabilities, you need to be able to use custom JavaScript for interactive client side applications as well. In a next tutorial, we'll discuss how to include and publish custom assets and how to use the already provided functionality of the DIAS core client side application.
 			</p>
 			<p>
-				<a href="{{ route('documentation') }}" class="btn btn-default" title="Back to the documentation center"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> back</a>
+				<a href="{{ route('manual-documentation') }}" class="btn btn-default" title="Back to the core documentation"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> back</a>
 			</p>
 		</div>
 	</div>
