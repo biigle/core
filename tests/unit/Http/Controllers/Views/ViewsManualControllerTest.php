@@ -1,11 +1,11 @@
 <?php
 
-class ViewsDocumentationControllerTest extends TestCase
+class ViewsManualControllerTest extends TestCase
 {
     public function testRoute()
     {
         // route should be public
-        $this->get('/documentation');
+        $this->get('/manual');
         $this->assertResponseOk();
     }
 }
