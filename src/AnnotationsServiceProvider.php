@@ -35,6 +35,7 @@ class AnnotationsServiceProvider extends ServiceProvider
         $modules->addMixin('annotations', 'transectsScripts');
         $modules->addMixin('annotations', 'transectsFilters');
         $modules->addMixin('annotations', 'adminIndex');
+        $modules->addMixin('annotations', 'manualTutorial');
     }
 
     /**

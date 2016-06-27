@@ -7,6 +7,11 @@ $router->get('annotate/{id}', [
     'uses' => 'AnnotationController@index',
 ]);
 
+$router->get('manual/tutorials/annotations/{name}', [
+    'as'   => 'manual-tutorials-annotations',
+    'uses' => 'AnnotationController@tutorial',
+]);
+
 $router->group([
     'middleware' => 'auth.api',
     'namespace' => 'Api',
