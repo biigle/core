@@ -12,7 +12,7 @@
                 <button type="button" class="btn btn-default" title="Sort descending" data-ng-class="{active: isSortDescending()}" data-ng-click="setSortDescending()"><span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span></button>
             </div>
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" title="Reset sorting" data-ng-click="resetSorting()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" title="Reset sorting" data-ng-click="resetSorting()" data-ng-disabled="!active()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
             </div>
             <span class="pull-right text-muted" data-ng-if="isLoading()">loading...</span>
         </div>
