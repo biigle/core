@@ -32,6 +32,12 @@ angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRA
         };
 
         var _this = this;
+        var annotationCountElement = document.getElementById('annotation-count');
+
+        var updateAnnotationCount = function (count) {
+            count = count || TRANSECT_IMAGES.length;
+            annotationCountElement.innerHTML = count;
+        };
 
         var addToDismissedFlat = function (id) {
             if (dismissedFlat.indexOf(id) === -1) {
@@ -77,6 +83,7 @@ angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRA
                 Array.prototype.push.apply(TRANSECT_IMAGES, ids);
             }
             images.updateFiltering();
+            updateAnnotationCount();
         };
 
         var toggleDismissed = function (annotationId) {
@@ -109,12 +116,8 @@ angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRA
 
         var switchToDismissedAnnotations = function () {
             TRANSECT_IMAGES.length = 0;
-            annotationsExist = dismissedFlat.length > 0;
-            if (annotationsExist) {
-                Array.prototype.push.apply(TRANSECT_IMAGES, dismissedFlat);
-            }
+            updateDisplayedAnnotations(dismissedFlat);
             images.scrollToPercent(0);
-            images.updateFiltering();
         };
 
         this.selectAnnotation = function (id) {
@@ -147,6 +150,7 @@ angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRA
 
             var id = label.id;
             TRANSECT_IMAGES.length = 0;
+            updateAnnotationCount();
             images.updateFiltering();
             images.scrollToPercent(0);
 
@@ -190,6 +194,7 @@ angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRA
         this.save = function () {
             saving = true;
             TRANSECT_IMAGES.length = 0;
+            updateAnnotationCount();
             images.updateFiltering();
             return Ate.save(
                 {transect_id: ATE_TRANSECT_ID},
