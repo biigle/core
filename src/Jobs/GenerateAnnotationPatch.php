@@ -115,10 +115,18 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
             $width = $newWidth;
         }
 
+        $memoryLimit = ini_get('memory_limit');
+
+        // increase memory limit for modifying large images
+        ini_set('memory_limit', config('ate.memory_limit'));
+
         IImage::make($image->url)
             ->crop($width, $height, $xmin, $ymin)
             ->encode($format)
             ->save("{$prefix}/{$this->annotation->id}.{$format}")
             ->destroy();
+
+        // restore default memory limit
+        ini_set('memory_limit', $memoryLimit);
     }
 }

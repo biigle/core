@@ -29,4 +29,10 @@ return [
     */
     'patch_generation_delay' => 10,
 
+    /*
+    | PHP memory limit to use during processing of the images. After processing, the
+    | default memory limit will be used.
+    */
+    'memory_limit' => '512M',
+
 ];
