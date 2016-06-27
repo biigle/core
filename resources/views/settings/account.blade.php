@@ -11,7 +11,7 @@
 
             <div class="form-group{{ $errors->has('auth_password') && $origin === 'password'  ? ' has-error' : '' }}">
                 <label for="auth_password">Old password</label>
-                <input type="password" class="form-control" name="auth_password" id="auth_password">
+                <input type="password" class="form-control" name="auth_password" id="auth_password" required="required">
                 @if($errors->has('auth_password') && $origin === 'password')
                     <span class="help-block">{{ $errors->first('auth_password') }}</span>
                 @endif
@@ -19,7 +19,7 @@
 
             <div class="form-group{{ $errors->has('password') && $origin === 'password' ? ' has-error' : '' }}">
                 <label for="password">New password</label>
-                <input type="password" class="form-control" name="password" id="password">
+                <input type="password" class="form-control" name="password" id="password" required="required">
                 @if($errors->has('password') && $origin === 'password')
                     <span class="help-block">{{ $errors->first('password') }}</span>
                 @endif
@@ -27,7 +27,7 @@
 
             <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
                 <label for="password_confirmation">Confirm new password</label>
-                <input type="password" class="form-control" name="password_confirmation" id="password_confirmation">
+                <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" required="required">
                 @if($errors->has('password_confirmation'))
                     <span class="help-block">{{ $errors->first('password_confirmation') }}</span>
                 @endif
@@ -53,7 +53,7 @@
         <form class="" role="form" method="POST" action="{{ url('api/v1/users/my') }}">
             <div class="form-group{{ $errors->has('auth_password') && $origin === 'email' ? ' has-error' : '' }}">
                 <label for="auth_password">Password</label>
-                <input type="password" class="form-control" name="auth_password" id="auth_password">
+                <input type="password" class="form-control" name="auth_password" id="auth_password" required="required">
                 @if($errors->has('auth_password') && $origin === 'email')
                     <span class="help-block">{{ $errors->first('auth_password') }}</span>
                 @endif
@@ -61,7 +61,7 @@
 
             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                 <label for="email">Email</label>
-                <input type="email" class="form-control" name="email" id="email" value="{{$user->email}}">
+                <input type="email" class="form-control" name="email" id="email" value="{{$user->email}}" required="required">
                 @if($errors->has('email'))
                     <span class="help-block">{{ $errors->first('email') }}</span>
                 @endif
@@ -90,13 +90,13 @@
             Deleting your account won't delete any of your projects, transects or annotations etc. (they just won't be associated with you any more).<br>
             <strong>Deleting your account cannot be undone!</strong>
         </p>
-        <form role="form" method="POST" action="{{ url('api/v1/users/my') }}">
+        <form role="form" method="POST" action="{{ url('api/v1/users/my') }}" onsubmit="return confirm('Do you really want to delete your account?')">
             <input type="hidden" name="_method" value="DELETE">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
             <div class="form-group{{ $errors->has('password') && $origin === null ? ' has-error' : '' }}">
                 <label for="password">Password</label>
-                <input type="password" class="form-control" name="password" id="password">
+                <input type="password" class="form-control" name="password" id="password" required="required">
                 @if($errors->has('password') && $origin === null)
                     <span class="help-block">{{ $errors->first('password') }}</span>
                 @endif
