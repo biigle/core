@@ -285,7 +285,7 @@ class Initialize extends Migration
 
             // don't call it "attributes" because Eloquent models already have an
             // "attributes" variable!
-            $table->json('attrs')->nullable();
+            $table->jsonb('attrs')->nullable();
 
             // which kind of data is stored in this transect?
             $table->integer('media_type_id')->unsigned();
@@ -441,7 +441,7 @@ class Initialize extends Migration
         Schema::create('annotations', function (Blueprint $table) {
             $table->increments('id');
             // json type cant have a default value so it must be nullable
-            $table->json('points')->nullable();
+            $table->jsonb('points')->nullable();
 
             // annotations are primarily searched by image, so do index
             $table->integer('image_id')->unsigned()->index();
