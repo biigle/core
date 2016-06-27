@@ -26,7 +26,7 @@ class ManualController extends Controller
     }
 
     /**
-     * Show the a tutorials article.
+     * Show a tutorials article.
      *
      * @param string $name Article name
      * @return \Illuminate\Http\Response
@@ -51,7 +51,7 @@ class ManualController extends Controller
     }
 
     /**
-     * Show the a documentation article.
+     * Show a documentation article.
      *
      * @param string $name Article name
      * @return \Illuminate\Http\Response
