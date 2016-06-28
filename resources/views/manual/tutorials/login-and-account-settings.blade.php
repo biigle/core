@@ -9,7 +9,7 @@
         </p>
 
         <div class="embed-responsive embed-responsive-16by9">
-            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/ZyPj7UXRvWo" allowfullscreen></iframe>
+            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/ZyPj7UXRvWo?cc_load_policy=1" allowfullscreen></iframe>
         </div>
     </div>
 @endsection
