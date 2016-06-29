@@ -99,4 +99,19 @@ class ProjectsController extends Controller
             'newProject' => session('newProject'),
         ]);
     }
+    /**
+     * Show a tutorials article.
+     *
+     * @param string $name Article name
+     * @return \Illuminate\Http\Response
+     */
+    public function tutorial($name)
+    {
+        if (view()->exists('projects::manual.tutorials.'.$name)) {
+            return view('projects::manual.tutorials.'.$name);
+        } else {
+            abort(404);
+        }
+    }
+
 }
