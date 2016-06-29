@@ -7,6 +7,14 @@
 </p>
 
 <h4>
+    <a href="{{route('manual-tutorials-annotations', 'image-section-cycle-mode')}}">Effectively annotate images</a>
+</h4>
+
+<p>
+    See how to use the image section cycle mode to effectively annotate an image.
+</p>
+
+<h4>
     <a href="{{route('manual-tutorials-annotations', 'shortcuts')}}">Annotator shortcuts</a>
 </h4>
 

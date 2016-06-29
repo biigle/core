@@ -8,8 +8,6 @@
 angular.module('dias.annotations').service('annotations', function (Annotation, shapes, msg) {
 		"use strict";
 
-        // map image ID to annotations
-        var cache = {};
 		var annotations;
         var promise;
 
@@ -24,17 +22,11 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 		};
 
 		this.query = function (params) {
-            if (!cache.hasOwnProperty(params.id)) {
-                cache[params.id] = Annotation.query(params);
-                cache[params.id].$promise.then(function (a) {
-                    a.forEach(resolveShapeName);
-                    return a;
-                });
-            }
-
-            annotations = cache[params.id];
+			annotations = Annotation.query(params);
             promise = annotations.$promise;
-
+			promise.then(function (a) {
+				a.forEach(resolveShapeName);
+			});
 			return annotations;
 		};
 
