@@ -4,6 +4,8 @@ namespace Dias\Modules\Export\Jobs;
 
 use Mail;
 use DB;
+use Dias\Modules\Export\Support\CsvFile;
+use Dias\Modules\Export\Support\Reports\Basic;
 use Dias\Jobs\Job;
 use Dias\Project;
 use Dias\User;
@@ -21,12 +23,19 @@ class GenerateBasicReport extends Job implements ShouldQueue
      * @var Project
      */
     private $project;
+
+    /**
+     * The user to notify of the finished report
+     *
+     * @var User
+     */
     private $user;
 
     /**
      * Create a new job instance.
      *
      * @param Project $project The project for which the report should be generated.
+     * @param User $user The user to notify of the finished report
      *
      * @return void
      */
@@ -43,21 +52,58 @@ class GenerateBasicReport extends Job implements ShouldQueue
      */
     public function handle()
     {
-        DB::reconnect();
-        $transects = DB::select('SELECT transects.id, transects.name FROM transects, project_transect WHERE project_transect.project_id = '.$this->project->id.' AND transects.id = project_transect.transect_id');
-        $cmd=$this->project->name." ";
-        $path = uniqid("/tmp/");
-        mkdir($path);
-        chmod($path,0777);
-        foreach ($transects as $transect) {
-            DB::statement('copy (SELECT labels.name FROM annotation_labels, annotations, images, labels WHERE annotation_labels.annotation_id = annotations.id AND annotations.image_id = images.id AND labels.id = annotation_labels.label_id AND images.transect_id = '.$transect->id.') to \''.$path."/".$transect->name.'.csv\' csv');
-            $cmd.=$path."/".$transect->name.'.csv ';
+        $transects = $this->project->transects()
+            ->pluck('name', 'id');
+
+        $tmpPath = config('export.tmp_storage');
+        $tmpFiles = [];
+
+        $query = DB::table('labels')
+            ->join('annotation_labels', 'annotation_labels.label_id', '=', 'labels.id')
+            ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
+            ->join('images', 'annotations.image_id', '=', 'images.id')
+            ->select('labels.id', 'labels.name', 'labels.color');
+
+        try {
+            foreach ($transects as $id => $name) {
+                $csv = CsvFile::makeTmp();
+                $tmpFiles[] = $csv;
+
+                // put transect name to first line
+                $csv->put([$name]);
+
+                $query->where('images.transect_id', $id)
+                    ->chunk(500, function ($rows) use ($csv) {
+                        foreach ($rows as $row) {
+                            $csv->put((array) $row);
+                        }
+                    });
+
+                $csv->close();
+            }
+
+            $report = app()->make(Basic::class);
+            $report->generate($this->project, $tmpFiles);
+
+            Mail::send('export::emails.report', [
+                'user' => $this->user,
+                'project' => $this->project,
+                'type' => 'basic',
+                'uuid' => $report->basename(),
+            ], function ($mail) {
+                if ($this->user->firstname && $this->user->lastname) {
+                    $name = "{$this->user->firstname} {$this->user->lastname}";
+                } else {
+                    $name = null;
+                }
+
+                $mail->subject("BIIGLE basic report for project {$this->project->name}")
+                    ->to($this->user->email, $name);
+            });
+        } finally {
+            array_walk($tmpFiles, function ($file) {
+                $file->delete();
+            });
         }
-        $ret = system('/usr/bin/python '.__DIR__.'/../Scripts/basicreport.py '.$cmd);
-        $uuid2path = explode(";",$ret);
-        DB::insert('insert into files (id, path) values (?, ?)', $uuid2path);
-        Mail::send('export::reportmail', ["uuid"=>$uuid2path[0],"ending"=>".pdf","name"=>$this->user['attributes']['firstname']." ".$this->user['attributes']['lastname']], function($message){
-            $message->to($this->user['attributes']['email'], $this->user['attributes']['firstname']." ".$this->user['attributes']['lastname'])->subject('BiigleDiasReport');
-        });
     }
 }

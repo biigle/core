@@ -5,7 +5,6 @@ namespace Dias\Modules\Export;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
 use Dias\Services\Modules;
-use Dias\Modules\Export\Console\Commands\Install as InstallCommand;
 
 class ExportServiceProvider extends ServiceProvider {
 
@@ -20,18 +19,22 @@ class ExportServiceProvider extends ServiceProvider {
     public function boot(Modules $modules,Router $router)
     {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'export');
+
         $router->group([
             'namespace' => 'Dias\Modules\Export\Http\Controllers',
             'middleware' => 'web',
         ], function ($router) {
             require __DIR__.'/Http/routes.php';
         });
-        $this->publishes([
-            __DIR__.'/database/migrations/' => database_path('migrations')
-        ], 'migrations');
+
         $this->publishes([
             __DIR__.'/public/assets' => public_path('vendor/export'),
         ], 'public');
+
+        $this->publishes([
+            __DIR__.'/config/export.php' => config_path('export.php'),
+        ], 'config');
+
         $modules->addMixin('export', 'projectsShow');
         $modules->addMixin('export', 'projectsScripts');
     }
@@ -43,12 +46,20 @@ class ExportServiceProvider extends ServiceProvider {
      */
     public function register()
     {
-        // set up the install console command
-        $this->app->singleton('command.export.install', function ($app) {
-            return new InstallCommand();
+        $this->mergeConfigFrom(__DIR__.'/config/export.php', 'export');
+
+        $this->app->singleton('command.export.publish', function ($app) {
+            return new \Dias\Modules\Export\Console\Commands\Publish();
         });
 
-        $this->commands('command.export.install');
+        $this->app->singleton('command.export.config', function ($app) {
+            return new \Dias\Modules\Export\Console\Commands\Config();
+        });
+
+        $this->commands([
+            'command.export.publish',
+            'command.export.config',
+        ]);
     }
 
     /**
@@ -59,7 +70,8 @@ class ExportServiceProvider extends ServiceProvider {
     public function provides()
     {
         return [
-            'command.export.install',
+            'command.export.publish',
+            'command.export.config',
         ];
     }
 }
