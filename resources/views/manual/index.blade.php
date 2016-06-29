@@ -20,6 +20,14 @@
             </p>
 
             <h4>
+                <a href="{{route('manual-tutorials')}}/whole-playlist">Biigle Dias Tutorial Playlist</a>
+            </h4>
+
+            <p>
+                The Biigle Dias Tutorial playlist.
+            </p>            
+
+            <h4>
                 <a href="{{route('manual-tutorials')}}/login-and-account-settings">Login and account settings</a>
             </h4>
 
