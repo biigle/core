@@ -16,7 +16,7 @@ $router->group([
     ]);
 });
 
-// this route should be public public (is protected by random uids)
+// this route should be public (is protected by random uids)
 $router->get('api/v1/reports/{uid}/{filename}', [
     'uses' => 'Api\ReportsController@show',
 ]);
