@@ -36,7 +36,7 @@ class ExportServiceProvider extends ServiceProvider {
         ], 'config');
 
         $modules->addMixin('export', 'projectsShow');
-        $modules->addMixin('export', 'projectsScripts');
+        $modules->addMixin('export', 'projectsShowScripts');
     }
 
     /**
@@ -52,13 +52,8 @@ class ExportServiceProvider extends ServiceProvider {
             return new \Dias\Modules\Export\Console\Commands\Publish();
         });
 
-        $this->app->singleton('command.export.config', function ($app) {
-            return new \Dias\Modules\Export\Console\Commands\Config();
-        });
-
         $this->commands([
             'command.export.publish',
-            'command.export.config',
         ]);
     }
 
@@ -71,7 +66,6 @@ class ExportServiceProvider extends ServiceProvider {
     {
         return [
             'command.export.publish',
-            'command.export.config',
         ];
     }
 }

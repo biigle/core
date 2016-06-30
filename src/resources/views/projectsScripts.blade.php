@@ -1,1 +1,0 @@
-<script src="{{ asset('vendor/export/scripts/main.js') }}"></script>
