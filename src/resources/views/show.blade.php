@@ -19,6 +19,9 @@
     angular.module('dias.projects').constant('TRANSECTS', {!! $transects !!});
     angular.module('dias.projects').constant('MEMBERS', {!! $members !!});
 </script>
+@foreach ($modules->getMixins('projectsShowScripts') as $module => $nestedMixins)
+    @include($module.'::projectsShowScripts')
+@endforeach
 @endpush
 
 @section('content')
