@@ -15,6 +15,14 @@
 </p>
 
 <h4>
+    <a href="{{route('manual-tutorials-annotations', 'setting-image-labels')}}">Setting Image Labels</a>
+</h4>
+
+<p>
+    See how to set a label for an whole image.
+</p>
+
+<h4>
     <a href="{{route('manual-tutorials-annotations', 'shortcuts')}}">Annotator shortcuts</a>
 </h4>
 
