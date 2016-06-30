@@ -23,6 +23,14 @@
 </p>
 
 <h4>
+    <a href="{{route('manual-tutorials-annotations', 'manipulate-an-annotation')}}">Manipulate an annotation</a>
+</h4>
+
+<p>
+     See how to manipulate an annotation.
+</p>
+
+<h4>
     <a href="{{route('manual-tutorials-annotations', 'shortcuts')}}">Annotator shortcuts</a>
 </h4>
 
