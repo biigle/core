@@ -22,10 +22,10 @@ class Extended extends Report
             return $csv->path;
         }, $csvs));
 
-        system("{$python} {$script} \"{$project->name}\" {$this->path} {$csvs}", $code);
+        $dump = [];
+        exec("{$python} {$script} \"{$project->name}\" {$this->path} {$csvs}", $dump, $code);
 
         if ($code !== 0) {
-            \Log::debug("{$python} {$script} \"{$project->name}\" {$this->path} {$csvs}");
             throw new \Exception("Extended report generation failed with exit code {$code}.");
         }
     }

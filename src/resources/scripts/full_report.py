@@ -1,39 +1,44 @@
 import sys
 import numpy as np
-from pyexcelerate import Workbook, Color, Style, Fill
+from pyexcelerate import Workbook, Style, Font
 import csv
 import ast
-import uuid
 
-prjName = sys.argv[1]
-transects = sys.argv[2:]
-prefix = "/home/vagrant/dias/storage/"
-
-
-def addRow(x="", y="", label="", filename="", annotation_id="", shape=""):
-    return[filename, annotation_id, shape, x, y, label]
+project_name = sys.argv[1]
+target_file = sys.argv[2]
+transect_csvs = sys.argv[3:]
 
 workbook = Workbook()
+numSheets = 0
 
-for transect in transects:
-    f = open(transect, 'r')
-    res = np.array(list(csv.reader(f)))
+def addRow(x="", y="", label="", filename="", annotation_id="", shape=""):
+    return [filename, annotation_id, shape, x, y, label]
+
+for path in transect_csvs:
+    f = open(path, 'r')
+    transect_csv = csv.reader(f)
+    transect_name = transect_csv.next()[0]
+    rows = np.array(list(transect_csv))
     f.close()
-    if res.size == 0:
-        workbook.new_sheet(transect.split("/")[-1][:-4])
+    if rows.shape[0] == 0:
         continue
-    celldata = []
-    celldata.append(addRow("x/radius", "y", "label", "filename", "annotation_id", "shape"))
-    uniqueimages = np.unique(res[:, 1])
+    numSheets += 1
+    # rows have the content: image_filename, annotation_id, label_name, shape_name, points
+    celldata = [[transect_name]]
+    celldata.append(addRow("x/radius", "y", "labels", "filename", "annotation_id", "shape"))
+
+    uniqueimages = np.unique(rows[:, 0])
+
     for img in uniqueimages:
-        curImgData = res[res[:, 1] == img]
-        uniqueannotations = np.unique(curImgData[:, 2])
+        curImgData = rows[rows[:, 0] == img]
+        uniqueannotations = np.unique(curImgData[:, 1])
+
         for annotation in uniqueannotations:
-            curAnnotationData = curImgData[curImgData[:, 2] == annotation]
-            labels = ",".join(curAnnotationData[:, 0])
-            points = ast.literal_eval(curAnnotationData[:, 6][0])
+            curAnnotationData = curImgData[curImgData[:, 1] == annotation]
+            labels = ", ".join(curAnnotationData[:, 2])
+            points = ast.literal_eval(curAnnotationData[:, 4][0])
             it = iter(points)
-            celldata.append(addRow(it.next(), it.next(), labels, img, annotation, curAnnotationData[0, 5]))
+            celldata.append(addRow(it.next(), it.next(), labels, img, annotation, curAnnotationData[0, 3]))
             try:
                 for x in it:
                     celldata.append(addRow(x, next(it)))
@@ -42,8 +47,9 @@ for transect in transects:
             if len(points) % 2 == 1:
                 # add radius
                 celldata.append(addRow(points[-1], ""))
-    ws = workbook.new_sheet(transect.split("/")[-1][:-4], data=celldata)
-    ws.set_row_style(1, Style(fill=Fill(background=Color(200, 200, 200, 0))))
-uid = str(uuid.uuid4())
-workbook.save(prefix + "/" + uid + ".xlsx")
-print uid + ";" + prefix + "/" + uid + ".xlsx"
+
+    ws = workbook.new_sheet("transect " + str(numSheets), data=celldata)
+    ws.set_row_style(1, Style(font=Font(bold=True)))
+    ws.set_row_style(2, Style(font=Font(bold=True)))
+
+workbook.save(target_file)
