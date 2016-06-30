@@ -1,19 +1,20 @@
 <?php
 
 namespace Dias\Modules\Export\Http\Controllers\Api;
-use DB;
+
 use Dias\Http\Controllers\Api\Controller;
 use Dias\Project;
 use Dias\Modules\Export\Jobs\GenerateBasicReport;
 use Dias\Modules\Export\Jobs\GenerateExtendedReport;
 use Dias\Modules\Export\Jobs\GenerateFullReport;
+use Dias\Modules\Export\Support\Reports\Report;
 
 class ReportsController extends Controller
 {
     /**
      * Generate a basic report
      *
-     * @api {post} projects/:id/reports/basic Generate a new report
+     * @api {get} projects/:id/reports/basic Generate a new report
      * @apiGroup Projects
      * @apiName GenerateBasicProjectReport
      * @apiPermission projectMember
@@ -28,13 +29,12 @@ class ReportsController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
         $this->dispatch(new GenerateBasicReport($project, $this->user));
-        return "Job submitted please wait. An Email will be sent to you.";
     }
-    
+
     /**
      * Generate a extended report
      *
-     * @api {post} projects/:id/reports/extended Generate a new report
+     * @api {get} projects/:id/reports/extended Generate a new report
      * @apiGroup Projects
      * @apiName GenerateExtendedProjectReport
      * @apiPermission projectMember
@@ -48,13 +48,12 @@ class ReportsController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
-        $this->dispatch(new GenerateExtendedReport($project,$this->user));
-        return "Job submitted please wait. An Email will be sent to you.";
+        $this->dispatch(new GenerateExtendedReport($project, $this->user));
     }
     /**
      * Generate a full report
      *
-     * @api {post} projects/:id/reports/full Generate a new report
+     * @api {get} projects/:id/reports/full Generate a new report
      * @apiGroup Projects
      * @apiName GenerateFullProjectReport
      * @apiPermission projectMember
@@ -68,36 +67,31 @@ class ReportsController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
-        $this->dispatch(new GenerateFullReport($project,$this->user));
-        return "Job submitted please wait. An Email will be sent to you.";
+        $this->dispatch(new GenerateFullReport($project, $this->user));
     }
     /**
      * Retrieve report from filesystem
      *
-     * @api {post} files/retrieve/:uuid
+     * @api {get} reports/:uid/:filename
      * @apiGroup Files
      * @apiName RetrieveProjectReport
-     * @apiPermission projectMember
      *
-     * @apiParam {Text} uuid The report uuid.
+     * @apiParam {string} uid The report uid.
+     * @apiParam {string} filename Filename of the downloaded file.
      *
-     * @param int $uuid report uuid
+     * @param string $uid report uid
+     * @param string $filename Download filename
      * @return \Illuminate\Http\Response
      */
-    public function retrieveReport($uuid,$filename)
+    public function show($uid, $filename)
     {
-        $results = DB::select('select path from files where id=?',[$uuid]);
-        if ($results){
-            $path = $results[0]->path;
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mime=finfo_file($finfo, $path);
-            finfo_close($finfo);
-            $file = file_get_contents($path);
-            unlink($path);
-            DB::delete("delete from files where id=?",[$uuid]);
-            return response($file)->header("Content-Type",$mime);
-        }else{
-            return "The file is not available. Please check your uid.";
+        $report = new Report($uid);
+        if ($report->exists()) {
+            return response()
+                ->download($report->path, $filename)
+                ->deleteFileAfterSend(true);
+        } else {
+            abort(404);
         }
     }
 }

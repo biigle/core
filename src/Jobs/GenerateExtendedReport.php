@@ -2,40 +2,13 @@
 
 namespace Dias\Modules\Export\Jobs;
 
-use DB;
 use Mail;
-use Dias\Jobs\Job;
-use Dias\Project;
-use Dias\User;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use DB;
+use Dias\Modules\Export\Support\CsvFile;
+use Dias\Modules\Export\Support\Reports\Extended;
 
-class GenerateExtendedReport extends Job implements ShouldQueue
+class GenerateExtendedReport extends GenerateReportJob
 {
-    use InteractsWithQueue, SerializesModels;
-
-    /**
-     * The project for which the report should be generated.
-     *
-     * @var Project
-     */
-    private $project;
-    private $user;
-
-    /**
-     * Create a new job instance.
-     *
-     * @param Project $project The project for which the report should be generated.
-     *
-     * @return void
-     */
-    public function __construct(Project $project, User $user)
-    {
-        $this->project = $project;
-        $this->user = $user;
-    }
-
     /**
      * Execute the job.
      *
@@ -43,21 +16,80 @@ class GenerateExtendedReport extends Job implements ShouldQueue
      */
     public function handle()
     {
-        DB::reconnect();
-        $transects = DB::select('SELECT transects.id, transects.name FROM transects, project_transect WHERE project_transect.project_id = '.$this->project->id.' AND transects.id = project_transect.transect_id');
-        $cmd=$this->project->name." ";
-        $path = uniqid("/tmp/");
-        mkdir($path);
-        chmod($path,0777);
-        foreach ($transects as $transect) {
-            DB::statement('copy (SELECT images.filename, labels.name FROM labels, annotations, annotation_labels, images WHERE annotation_labels.annotation_id = annotations.id AND annotations.image_id = images.id AND labels.id = annotation_labels.label_id AND images.transect_id = '.$transect->id.') to \''.$path."/".$transect->name.'.csv\' csv');
-            $cmd.=$path."/".$transect->name.'.csv ';
+        $transects = $this->project->transects()
+            ->pluck('name', 'id');
+
+        $tmpFiles = [];
+
+        try {
+            foreach ($transects as $id => $name) {
+                $csv = CsvFile::makeTmp();
+                $tmpFiles[] = $csv;
+
+                // put transect name to first line
+                $csv->put([$name]);
+
+                $query = $this->query()->where('images.transect_id', $id);
+
+                $query->chunk(500, function ($rows) use ($csv) {
+                    foreach ($rows as $row) {
+                        $csv->put([
+                            $row->filename,
+                            $row->name,
+                            $row->count,
+                        ]);
+                    }
+                });
+
+                $csv->close();
+            }
+
+            $report = app()->make(Extended::class);
+            $report->generate($this->project, $tmpFiles);
+
+            Mail::send('export::emails.report', [
+                'user' => $this->user,
+                'project' => $this->project,
+                'type' => 'extended',
+                'uuid' => $report->basename(),
+                'filename' => "biigle_{$this->project->id}_extended_report.xlsx",
+            ], function ($mail) {
+                if ($this->user->firstname && $this->user->lastname) {
+                    $name = "{$this->user->firstname} {$this->user->lastname}";
+                } else {
+                    $name = null;
+                }
+
+                $mail->subject("BIIGLE extended report for project {$this->project->name}")
+                    ->to($this->user->email, $name);
+            });
+        } catch (\Exception $e) {
+            if (isset($report)) {
+                $report->delete();
+                throw $e;
+            }
+        } finally {
+            array_walk($tmpFiles, function ($file) {
+                $file->delete();
+            });
         }
-        $ret = system('/usr/bin/python '.__DIR__.'/../Scripts/extendedreport.py '.$cmd);
-        $uuid2path = explode(";",$ret);
-        DB::insert('insert into files (id, path) values (?, ?)', $uuid2path);
-        Mail::send('export::reportmail', ["uuid"=>$uuid2path[0],"ending"=>".xlsx","name"=>$this->user['attributes']['firstname']." ".$this->user['attributes']['lastname']], function($message){
-            $message->to($this->user['attributes']['email'], $this->user['attributes']['firstname']." ".$this->user['attributes']['lastname'])->subject('BiigleDiasReport');
-        });
+    }
+
+    /**
+     * Assemble a new DB query for a transect.
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    private function query()
+    {
+        return DB::table('labels')
+            ->join('annotation_labels', 'annotation_labels.label_id', '=', 'labels.id')
+            ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
+            ->join('images', 'annotations.image_id', '=', 'images.id')
+            ->select(DB::raw('images.filename, labels.name, count(labels.id) as count'))
+            ->groupBy('labels.id', 'images.id')
+            // order by is essential for chunking!
+            ->orderBy('images.id')
+            ->orderBy('labels.id');
     }
 }

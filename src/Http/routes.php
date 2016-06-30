@@ -14,7 +14,9 @@ $router->group([
      $router->get('projects/{id}/reports/full', [
         'uses' => 'ReportsController@full',
     ]);
-    $router->get('files/retrieve/{uid}/{filename}', [
-        'uses' => 'ReportsController@retrieveReport',
-    ]);
 });
+
+// this route should be public (is protected by random uids)
+$router->get('api/v1/reports/{uid}/{filename}', [
+    'uses' => 'Api\ReportsController@show',
+]);
