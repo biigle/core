@@ -7,7 +7,7 @@
 </p>
 
 <h4>
-    <a href="{{route('manual-tutorials-label-trees', 'add-a-public-label-tree-to-a-project')}}">Add a publice Label Tree to a Project</a>
+    <a href="{{route('manual-tutorials-label-trees', 'add-a-public-label-tree-to-a-project')}}">Add a public Label Tree to a Project</a>
 </h4>
 
 <p>
