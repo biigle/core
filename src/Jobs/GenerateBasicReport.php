@@ -6,45 +6,9 @@ use Mail;
 use DB;
 use Dias\Modules\Export\Support\CsvFile;
 use Dias\Modules\Export\Support\Reports\Basic;
-use Dias\Jobs\Job;
-use Dias\Project;
-use Dias\User;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
-class GenerateBasicReport extends Job implements ShouldQueue
+class GenerateBasicReport extends GenerateReportJob
 {
-    use InteractsWithQueue, SerializesModels;
-
-    /**
-     * The project for which the report should be generated.
-     *
-     * @var Project
-     */
-    private $project;
-
-    /**
-     * The user to notify of the finished report
-     *
-     * @var User
-     */
-    private $user;
-
-    /**
-     * Create a new job instance.
-     *
-     * @param Project $project The project for which the report should be generated.
-     * @param User $user The user to notify of the finished report
-     *
-     * @return void
-     */
-    public function __construct(Project $project, User $user)
-    {
-        $this->project = $project;
-        $this->user = $user;
-    }
-
     /**
      * Execute the job.
      *
@@ -55,29 +19,26 @@ class GenerateBasicReport extends Job implements ShouldQueue
         $transects = $this->project->transects()
             ->pluck('name', 'id');
 
-        $tmpPath = config('export.tmp_storage');
         $tmpFiles = [];
-
-        $query = DB::table('labels')
-            ->join('annotation_labels', 'annotation_labels.label_id', '=', 'labels.id')
-            ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
-            ->join('images', 'annotations.image_id', '=', 'images.id')
-            ->select('labels.id', 'labels.name', 'labels.color');
 
         try {
             foreach ($transects as $id => $name) {
                 $csv = CsvFile::makeTmp();
                 $tmpFiles[] = $csv;
 
+
                 // put transect name to first line
                 $csv->put([$name]);
 
-                $query->where('images.transect_id', $id)
-                    ->chunk(500, function ($rows) use ($csv) {
-                        foreach ($rows as $row) {
-                            $csv->put((array) $row);
-                        }
-                    });
+                $rows = $this->query()->where('images.transect_id', $id)->get();
+
+                foreach ($rows as $row) {
+                    $csv->put([
+                        $row->name,
+                        $row->color,
+                        $row->count,
+                    ]);
+                }
 
                 $csv->close();
             }
@@ -90,6 +51,7 @@ class GenerateBasicReport extends Job implements ShouldQueue
                 'project' => $this->project,
                 'type' => 'basic',
                 'uuid' => $report->basename(),
+                'filename' => "biigle_{$this->project->id}_basic_report.pdf",
             ], function ($mail) {
                 if ($this->user->firstname && $this->user->lastname) {
                     $name = "{$this->user->firstname} {$this->user->lastname}";
@@ -100,10 +62,30 @@ class GenerateBasicReport extends Job implements ShouldQueue
                 $mail->subject("BIIGLE basic report for project {$this->project->name}")
                     ->to($this->user->email, $name);
             });
+        } catch (\Exception $e) {
+            if (isset($report)) {
+                $report->delete();
+                throw $e;
+            }
         } finally {
             array_walk($tmpFiles, function ($file) {
                 $file->delete();
             });
         }
+    }
+
+    /**
+     * Assemble a new DB query for a transect.
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    private function query()
+    {
+        return DB::table('labels')
+            ->join('annotation_labels', 'annotation_labels.label_id', '=', 'labels.id')
+            ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
+            ->join('images', 'annotations.image_id', '=', 'images.id')
+            ->select(DB::raw('labels.name, labels.color, count(labels.id) as count'))
+            ->groupBy('labels.id');
     }
 }

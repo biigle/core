@@ -5,7 +5,7 @@
         <title>BIGLE DIAS Report Notification</title>
     </head>
     <body>
-    	<p>
+        <p>
             @if ($user->firstname && $user->lastname)
                 Dear {{$user->firstname}} {{$user->lastname}},<br><br>
             @else
@@ -17,7 +17,7 @@
             <strong>The report will be removed once you have downloaded it.</strong>
         </p>
         <p>
-    	   <a href="{{url("api/v1/reports/{$uuid}")}}" download="biigle_{{$project->id}}_{{$type}}_report">Download report</a>
+           <a href="{{url("api/v1/reports/{$uuid}/{$filename}")}}">Download report</a>
         </p>
     </body>
 </html>

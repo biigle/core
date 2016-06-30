@@ -119,7 +119,7 @@ class CsvFile
     /**
      * Close the CSV file
      */
-    private function close()
+    public function close()
     {
         try {
             fclose($this->handle);

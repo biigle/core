@@ -15,20 +15,26 @@ class Report
 
     /**
      * Create a new report object
+     *
+     * @param string $path Optional basename of an existing report file. If not specified, a new one will be generated
      */
-    public function __construct()
+    public function __construct($basename = null)
     {
-        do {
-            // use str_random to generate a cryptographically secure random string
-            // because it will be used to retrieve the file via a public url
-            $path = config('export.reports_storage').'/'.str_random();
-        } while (File::exists($path));
+        if ($basename) {
+            $this->path = config('export.reports_storage').'/'.$basename;
+        } else {
+            do {
+                // use str_random to generate a cryptographically secure random string
+                // because it will be used to retrieve the file via a public url
+                $path = config('export.reports_storage').'/'.str_random();
+            } while (File::exists($path));
 
-        $this->path = $path;
+            $this->path = $path;
+        }
     }
 
     /**
-     * Return the basename of the file of this repost
+     * Return the basename of the file of this report
      *
      * @return string
      */
@@ -38,13 +44,31 @@ class Report
     }
 
     /**
-     * Return the dirname of the file of this repost
+     * Return the dirname of the file of this report
      *
      * @return string
      */
     public function dirname()
     {
         return File::dirname($this->path);
+    }
+
+    /**
+     * Delete the report file
+     */
+    public function delete()
+    {
+        return File::delete($this->path);
+    }
+
+    /**
+     * Check if the report exists
+     *
+     * @return bool
+     */
+    public function exists()
+    {
+        return File::exists($this->path);
     }
 
 }

@@ -25,7 +25,7 @@ class Basic extends Report
         system("{$python} {$script} \"{$project->name}\" {$this->path} {$csvs}", $code);
 
         if ($code !== 0) {
-            throw new Exception("Basic report generation failed with exit code {$code}.");
+            throw new \Exception("Basic report generation failed with exit code {$code}.");
         }
     }
 }
