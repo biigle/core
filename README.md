@@ -2,11 +2,10 @@
 
 BIIGLE DISCOL Image Annotation Software
 
+
 ## Requirements
 
-The Vagrant box for local development is already set up to meet any of these requirements.
-
-See [here](http://laravel.com/docs/5.1#installation) for the server requirements of Laravel 5.1.
+See [here](https://laravel.com/docs/5.2#installation) for the server requirements of Laravel 5.2.
 
 Additionally:
 
@@ -16,6 +15,7 @@ Additionally:
 - PHP EXIF extension
 - PHP GD Library (>=2.0)
 - PostgreSQL
+- Git
 
 And for development/testing:
 
@@ -26,83 +26,131 @@ And for development/testing:
 - karma-cli
 - PhantomJS
 - SQLite
-- Git
+
 
 ## Installation
 
-0. Get [Composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx)
+### For Production
 
-1. Run `composer create-project dias/core:dev-master --repository='{"type":"vcs","url":"git@github.com:BiodataMiningGroup/dias-core.git"}' dias`. If you intend to use Vagrant for development on your local machine, add `--ignore-platform-reqs`. For development you should not remove the VCS history when asked by Composer.
+The recommended setup for production is a clone of the dias/core repository. This way you can update the application with a simple `git pull`.
 
-2. Populate the `.env` file with your database credentials.
+DIAS uses [Composer](https://getcomposer.org) for package management. If you use the `composer.phar` archive, substitute all following `composer` commands with `php composer.phar`.
 
-Now you have two options:
-
-1. Use the Vagrant box with `vagrant up`
-
-2. Directly use your local machine:
-    1. Set up the database tables with `php artisan migrate`.
-    2. Run a local development server with `php artisan serve`. Alternatively you can use `php -S localhost:8000 -t public/` to mimic a production server.
-
-## Developing
-
-TODO
-
-(`npm install`, Package development, `php artisan tinker`)
-
-Update the documentation with `composer doc`.
-
-## Testing
-
-To run all tests, run `composer test`.
-
-## Deployment
-
-Deployment instructions are not final yet!
-
-Generate minified sources with `gulp --production`.
-
-Make sure `storage/` is writable for the webserver.
-
-Walk through all the `app/config/` files and set the configs:
-- `app.php`: url
-- `mail.php`: credentials for the mail server
-- `session.php`: encrypt, secure?
-
-Don't forget to set the encryption key! You can generate one with `php artisan key:generate`. Make sure you don't generate a new key when you already have things encrypted with the old key!
-Maybe set up the route cache? Cache the config?
-
-**Put all sensitive and secret stuff to `.env`!** You'll see where the `env()` helper is used in the config files.
-
-The application reqires a cron job for the scheduled commands and a supervised process for the daemon queue worker to run correctly.
-
-### Scheduled Commands
-
-The cron entry needs to look like this:
+First, set up the project in the current directory:
 
 ```
-* * * * * php /path/to/artisan schedule:run 1>> /dev/null 2>&1
+composer create-project dias/core --repository='{"type":"vcs","url":"git@github.com:BiodataMiningGroup/dias-core.git"}' --keep-vcs .
 ```
 
-Read more in the [Laravel docs](http://laravel.com/docs/5.1/artisan#scheduling-artisan-commands).
+This will clone the dias/core repository and install all required packages. Now you have to configure the application environment in the `.env` file. The `.env` file contains all sensitive information like the database credentials or the application encryption key. The file is not tracked by Git and should never be publicly accessible.
 
+We recommend to use PostgreSQL as a DBMS but MySQL or SQLite should work fine as well.
 
-### Deamon Queue Worker
+To check if everything was set up correctly you can run `php vendor/bin/phpunit` (but don't do this once the application is in production).
 
-The deamon queue worker is started with the following command:
+Next, run `php artisan migrate` to set up the database tables.
 
-```
-php artisan queue:work --daemon --sleep=5 --tries=3
-```
+Now, you have to make sure that the web server user has write permissions in the `storage` directory and any of its subdirectories.
 
-This command needs to be supervised (e.g. with [Supervisor](http://supervisord.org/)) so the queue worker will be restarted if the process should stop running.
-
-Also the queue worker needs to be restarted on every update of the application using the following command:
+Finally, you have to configure a supervised process for the queue worker daemon. The worker runs in parallel to the web server and is used for longer running tasks that should not be handled during a single request. The recommended setup for a supervised process is to use [Supervisor](http://supervisord.org/) but you can use any equivalent service as well. A supervisor configuration might look like this:
 
 ```
-php artisan queue:restart
+[program:dias-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /path/to/dias/application/artisan queue:work --sleep=5 --tries=3 --daemon
+autostart=true
+autorestart=true
+user=webserver-user
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/path/to/dias/application/storage/logs/worker.log
 ```
 
-This may be included in a possible future deploy script.
+Substitute `/path/to/dias/application` with the absolute path to the dias application directory and `webserver-user` with the name of the webserver user. If usage and load of your DIAS instance increases, you may increase `numprocs` to run multiple worker processes.
 
-Read more in the [Laravel docs](http://laravel.com/docs/5.1/queues#daemon-queue-worker).
+Read more about workers in the [Laravel docs](https://laravel.com/docs/5.2/queues#supervisor-configuration).
+
+Congratulations, your personal DIAS instance is ready to run. You may use the `php artisan user:new` command to create the first user. Now you probably want to continue by installing some DIAS modules.
+
+
+### For Development
+
+To develop DIAS on your local machine you may use a Vagrant virtual machine. This way you don't need to install any of the requirements listed above (except of PHP and Git) and keep your development environment clearly separated from your regular OS. First, install [Vagrant](https://www.vagrantup.com/) and a VM provider like [VirtualBox](https://www.virtualbox.org/).
+
+Set up the project in the current directory:
+
+```
+composer create-project dias/core --repository='{"type":"vcs","url":"git@github.com:BiodataMiningGroup/dias-core.git"}' --keep-vcs --ignore-platform-reqs .
+```
+
+Note the `--ignore-platform-reqs` flag to keep Composer from complaining about missing requirements. These requirements will be met by the virtual machine.
+
+Now you can run `vagrant up` to create and boot your virtual machine for development. The DIAS application is now running at `http://localhost:8000`. Access the virtual machine with `vagrant ssh`. Stop the virtual machine with `vagrant halt`. Delete the virtual machine with `vagrant destroy`.
+
+You will find the application directory in `/home/vagrant/dias` in the virtual machine. Any changes you make there in the virtual machine will be reflected on your host machine and vice versa.
+
+For DIAS module development you should install the modules with the `--prefer-source` flag to keep Composer from deleting the VCS files (eg `.git`). Example:
+
+```
+composer require --prefer-source dias/projects
+```
+
+## Updating
+
+To update the application, first set it to maintenance mode:
+
+```
+php artisan down
+```
+
+Now users can't access the application and the worker processes will pause.
+
+Before doing anything with the database (e.g. applying new migrations), we recommend you to make a backup. For PostgreSQL it might look like this:
+
+```
+pg_dump -h localhost -U dias_user -d dias_db > dias_db.dump
+```
+
+Substitute `localhost` with the machine your DBMS is running on, `dias_user` with the database user and `dias_db` with the name of the DIAS database.
+
+Now you can update the core application, say to v1.0.1, with:
+
+```
+git pull v1.0.1
+```
+
+Check out the upgrade notes on GitHub as to whether you have to do anything else (e.g. run migrations or update dependencies).
+
+Running new migrations:
+
+```
+php artisan migrate
+```
+
+Updating dependencies:
+
+```
+composer install
+```
+
+To update your installed DIAS modules, run:
+
+```
+composer update dias/*
+```
+
+Now you have to restart your worker processes so the changes will be applied to them as well. This depends on the service you are using. For Supervisor it looks like this:
+
+```
+supervisorctl restart dias-worker
+```
+
+Finally you can exit the maintenance mode of the application with:
+
+```
+php artisan up
+```
+
+## Module Development
+
+coming soon
