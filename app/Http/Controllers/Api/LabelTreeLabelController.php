@@ -68,7 +68,7 @@ class LabelTreeLabelController extends Controller
             $label->name = $this->request->input('name');
             $label->color = $this->request->input('color');
             $label->parent_id = $this->request->input('parent_id');
-            $label->label_tree_id = $id;
+            $label->label_tree_id = (int) $id;
             $label->save();
 
             $labels = [$label];

@@ -100,7 +100,8 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         $id = json_decode($content)->id;
         $transect = Transect::find($id);
-        $this->assertEquals('1.jpg', $transect->images()->first()->filename);
+        $this->assertTrue($transect->images()->where('filename', '1.jpg')->exists());
+        $this->assertTrue($transect->images()->where('filename', '2.jpg')->exists());
     }
 
     public function testAttach()

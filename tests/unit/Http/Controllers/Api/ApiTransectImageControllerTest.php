@@ -60,13 +60,12 @@ class ApiTransectImageControllerTest extends ApiTestCase
 
         $this->assertResponseOk();
 
-        $this->seeJsonEquals([
-            ['id' => 2, 'filename' => '1.jpg'],
-            ['id' => 3, 'filename' => '2.jpg'],
-        ]);
+        $images = $this->transect()->images()
+            ->where('filename', '!=', 'no.jpg')
+            ->select('id', 'filename')->get();
 
+        $this->seeJsonEquals($images->toArray());
 
-        $images = $this->transect()->images;
         $this->assertEquals(1, $images->where('filename', '1.jpg')->count());
         $this->assertEquals(1, $images->where('filename', '2.jpg')->count());
     }

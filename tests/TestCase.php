@@ -14,7 +14,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         parent::setUp();
 
         // activate sqlite foreign key integrity checks on SQLite
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+        if ($this->isSqlite()) {
             DB::statement('PRAGMA foreign_keys = ON;');
         } else {
             // in case the real DB connection should be tested
