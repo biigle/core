@@ -23,18 +23,8 @@ class Label extends Model
         'name' => 'required',
         'color' => 'required|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
         'parent_id' => 'integer|exists:labels,id',
-        'aphia_id' => 'integer',
-    ];
-
-    /**
-     * Validation rules for updating a label.
-     *
-     * @var array
-     */
-    public static $updateRules = [
-        'color' => 'filled|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
-        'parent_id' => 'integer|exists:labels,id',
-        'aphia_id' => 'integer',
+        'label_source_id' => 'integer|exists:label_sources,id',
+        'source_id' => 'required_with:label_source_id|filled',
     ];
 
     /**
@@ -43,16 +33,6 @@ class Label extends Model
      * @var bool
      */
     public $timestamps = false;
-
-    /**
-     * The attributes excluded from the model's JSON form.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        // hide pivot table in annotation show output
-        'pivot',
-    ];
 
     /**
      * The parent label if the labels are ordered in a tree-like structure.

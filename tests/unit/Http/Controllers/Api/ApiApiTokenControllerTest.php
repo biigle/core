@@ -19,7 +19,7 @@ class ApiApiTokenControllerTest extends ApiTestCase
             'updated_at' => (string) $token->updated_at,
         ];
 
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+        if ($this->isSqlite()) {
             $expect['owner_id'] = "{$expect['owner_id']}";
         }
 

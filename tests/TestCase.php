@@ -46,4 +46,9 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
         return $app;
     }
+
+    public function isSqlite()
+    {
+        return DB::connection() instanceof Illuminate\Database\SQLiteConnection;
+    }
 }

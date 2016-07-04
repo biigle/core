@@ -47,7 +47,7 @@ class ApiTransectAnnotationControllerTest extends ApiTestCase
 
         // SQLite converts integers to string
         // Eloquent does convert IDs back but not the IDs of relations or other integers
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+        if ($this->isSqlite()) {
             $expect['image_id'] = "{$expect['image_id']}";
             $expect['shape_id'] = "{$expect['shape_id']}";
         }

@@ -4,16 +4,20 @@ namespace Dias\Http\Controllers\Api;
 
 use Dias\LabelTree;
 use Dias\Label;
+use Dias\LabelSource;
 
 class LabelTreeLabelController extends Controller
 {
     /**
-     * Add a label to a label tree
+     * Add labels to a label tree
      *
-     * @api {post} label-trees/:id/labels Create a new label
+     * @api {post} label-trees/:id/labels Create new labels
      * @apiGroup Label Trees
      * @apiName StoreLabelTreesLabels
      * @apiPermission labelTreeEditor
+     * @apiDescription If a label source is used to create a new label (or labels), this
+     * endpoint may accept/require additional arguments. Also label sources may create
+     * multiple new labels at once.
      *
      * @apiParam {Number} id The label tree ID
      *
@@ -21,17 +25,19 @@ class LabelTreeLabelController extends Controller
      * @apiParam (Required arguments) {String} color Color of the new label as hexadecimal string (like `bada55`). May have an optional `#` prefix.
      *
      * @apiParam (Optional arguments) {Number} parent_id ID of the parent label for ordering in a tree-like structure.
-     * @apiParam (Optional arguments) {Number} aphia_id The [WoRMS](http://www.marinespecies.org/) AphiaID.
+     * @apiParam (Optional arguments) {Number} label_source_id ID of the external label source (e.g. a database)
+     * @apiParam (Optional arguments) {Number} source_id ID of the label in the external label source. Required is a label source is specified.
      *
      * @apiSuccessExample {json} Success response:
-     * {
-     *    "id": 4,
-     *    "name": "Sea Cucumber",
-     *    "parent_id": null,
-     *    "aphia_id": 1234,
-     *    "label_tree_id": 1,
-     *    "color": "bada55"
-     * }
+     * [
+     *    {
+     *       "id": 4,
+     *       "name": "Sea Cucumber",
+     *       "parent_id": null,
+     *       "label_tree_id": 1,
+     *       "color": "bada55"
+     *    }
+     * ]
      *
      * @return \Illuminate\Http\Response
      */
@@ -54,16 +60,22 @@ class LabelTreeLabelController extends Controller
             }
         }
 
-        $label = new Label;
-        $label->name = $this->request->input('name');
-        $label->color = $this->request->input('color');
-        $label->parent_id = $this->request->input('parent_id');
-        $label->aphia_id = $this->request->input('aphia_id');
-        $label->label_tree_id = $id;
-        $label->save();
+        if ($this->request->has('label_source_id')) {
+            $source = LabelSource::findOrFail($this->request->input('label_source_id'));
+            $labels = $source->getAdapter()->create($this->request);
+        } else {
+            $label = new Label;
+            $label->name = $this->request->input('name');
+            $label->color = $this->request->input('color');
+            $label->parent_id = $this->request->input('parent_id');
+            $label->label_tree_id = $id;
+            $label->save();
+
+            $labels = [$label];
+        }
 
         if (static::isAutomatedRequest($this->request)) {
-            return $label;
+            return $labels;
         }
 
         if ($this->request->has('_redirect')) {

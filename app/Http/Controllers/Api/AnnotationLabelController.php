@@ -27,7 +27,6 @@ class AnnotationLabelController extends Controller
      *          "id": 2,
      *          "name": "Coral",
      *          "parent_id": 1,
-     *          "aphia_id": null,
      *          "color": "0099ff"
      *       },
      *       "user": {

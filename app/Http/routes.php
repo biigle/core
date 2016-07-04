@@ -133,6 +133,8 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'only' => ['destroy'],
     ]);
 
+    $router->get('label-sources/{id}/find', 'LabelSourceController@find');
+
     $router->resource('label-trees', 'LabelTreeController', [
         'only' => ['index', 'store', 'update', 'destroy'],
     ]);

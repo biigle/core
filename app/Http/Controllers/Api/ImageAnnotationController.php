@@ -35,7 +35,6 @@ class ImageAnnotationController extends Controller
      *             "confidence": 1,
      *             "id": 1,
      *             "label": {
-     *                "aphia_id": null,
      *                "color": "bada55",
      *                "id": 3,
      *                "name": "My label",
@@ -113,7 +112,6 @@ class ImageAnnotationController extends Controller
      *          "confidence": 1,
      *          "id": 1,
      *          "label": {
-     *             "aphia_id": null,
      *             "color": "bada55",
      *             "id": 3,
      *             "name": "My label",
