@@ -1,6 +1,7 @@
 {
     "name": "dias/label-trees",
     "require": {
+        "ext-soap": "*"
     },
     "require-dev": {
     },

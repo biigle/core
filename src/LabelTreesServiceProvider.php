@@ -47,6 +47,10 @@ class LabelTreesServiceProvider extends ServiceProvider
             return new \Dias\Modules\LabelTrees\Console\Commands\Publish();
         });
         $this->commands('command.label-trees.publish');
+
+        $this->app->singleton("Dias\Services\LabelSourceAdapters\WormsAdapter", function ($app) {
+            return new \Dias\Modules\LabelTrees\Services\LabelSourceAdapters\WormsAdapter();
+        });
     }
 
     /**
