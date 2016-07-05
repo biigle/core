@@ -63,17 +63,12 @@ class ApiLabelTreeLabelControllerTest extends ApiTestCase
         $this->assertEquals(3, $tree->labels()->count());
 
         $expect = [
-            'id' => $tree->labels()->max('id'),
+            'id' => (int) $tree->labels()->max('id'),
             'name' => 'new label 2',
             'color' => 'bada55',
             'parent_id' => null,
             'label_tree_id' => $tree->id,
         ];
-
-        if ($this->isSqlite()) {
-            $expect['id'] = (int) $expect['id'];
-            $expect['label_tree_id'] = (string) $expect['label_tree_id'];
-        }
 
         $this->seeJsonEquals([$expect]);
     }

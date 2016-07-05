@@ -186,6 +186,9 @@ class ApiLabelTreeControllerTest extends ApiTestCase
         $this->assertEquals(2, LabelTree::count());
 
         $tree = LabelTree::orderBy('id', 'desc')->first();
+        if ($this->isSqlite()) {
+            $tree->visibility_id = (int) $tree->visibility_id;
+        }
         $this->seeJsonEquals($tree->toArray());
 
         // creator gets first label tree admin

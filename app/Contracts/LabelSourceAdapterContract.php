@@ -24,9 +24,10 @@ interface LabelSourceAdapterContract
      * The request may contain arbitrary input data. This function may create multiple
      * labels (e.g. all parent labels of the label to create) as well.
      *
+     * @param int $id Label tree ID
      * @param Request $request
      *
      * @return array Array of Label objects that were created
      */
-    public function create(Request $request);
+    public function create($id, Request $request);
 }
