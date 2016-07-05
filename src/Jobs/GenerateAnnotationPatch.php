@@ -5,7 +5,6 @@ namespace Dias\Modules\Ate\Jobs;
 use Dias\Annotation;
 use Dias\Shape;
 use Dias\Jobs\Job;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use InterventionImage as IImage;
@@ -13,14 +12,14 @@ use File;
 
 class GenerateAnnotationPatch extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue;
 
     /**
-     * The annotation to generate a patch for
+     * The ID of the annotation to generate a patch for
      *
-     * @var Annotation
+     * @var int
      */
-    private $annotation;
+    private $annotationId;
 
     /**
      * Create a new job instance.
@@ -31,7 +30,9 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
      */
     public function __construct(Annotation $annotation)
     {
-        $this->annotation = $annotation;
+        // take only the ID and not the annotation because the annotation may already be
+        // deleted when this job runs and the job would fail!
+        $this->annotationId = $annotation->id;
     }
 
     /**
@@ -41,16 +42,17 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
      */
     public function handle()
     {
+        $annotation = Annotation::with('image')->find($this->annotationId);
         // annotation may have been deleted in the meantime
-        if (!$this->annotation) {
+        if ($annotation === null) {
             return;
         }
 
-        $image = $this->annotation->image;
+        $image = $annotation->image;
         $prefix = config('ate.patch_storage').'/'.$image->transect_id;
         $format = config('ate.patch_format');
         $padding = config('ate.patch_padding');
-        $points = $this->annotation->points;
+        $points = $annotation->points;
 
         $thumbWidth = config('thumbnails.width');
         $thumbHeight = config('thumbnails.height');
@@ -60,7 +62,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
             File::makeDirectory($prefix, 755, true);
         }
 
-        switch ($this->annotation->shape_id) {
+        switch ($annotation->shape_id) {
             case Shape::$pointId:
                 $pointPadding = config('ate.point_padding');
                 $xmin = $points[0] - $pointPadding;
@@ -123,7 +125,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         IImage::make($image->url)
             ->crop($width, $height, $xmin, $ymin)
             ->encode($format)
-            ->save("{$prefix}/{$this->annotation->id}.{$format}")
+            ->save("{$prefix}/{$annotation->id}.{$format}")
             ->destroy();
 
         // restore default memory limit
