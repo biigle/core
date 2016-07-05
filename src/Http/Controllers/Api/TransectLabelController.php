@@ -23,14 +23,12 @@ class TransectLabelController extends Controller
      * @apiSuccessExample {json} Success response:
      * [
      *    {
-     *       "aphia_id": null,
      *       "id": 1,
      *       "name": "Benthic Object",
      *       "parent_id": null,
      *       "color": "0099ff"
      *    },
      *    {
-     *       "aphia_id": null,
      *       "id": 2,
      *       "name": "Coral",
      *       "parent_id": 1,
@@ -52,7 +50,7 @@ class TransectLabelController extends Controller
             $operator = 'like';
         }
 
-        return Label::select('id', 'name', 'color', 'parent_id', 'aphia_id')
+        return Label::select('id', 'name', 'color', 'parent_id')
             ->where('name', $operator, "%{$pattern}%")
             ->whereExists(function ($query) use ($id) {
                 // take only labels that are used in annotations of this transect
