@@ -27,6 +27,14 @@ interface LabelSourceAdapterContract
      * @param int $id Label tree ID
      * @param Request $request
      *
+     * @throws \Illuminate\Validation\ValidationException If any of the request parameters
+     * are wrong. Example:
+     * ```
+     * throw new ValidationException(null, [
+     *    'my_field' => ['My field contains invalid data.']
+     * ]);
+     * ```
+     *
      * @return array Array of Label objects that were created
      */
     public function create($id, Request $request);

@@ -2,6 +2,7 @@
 
 namespace Dias\Http\Controllers\Api;
 
+use Illuminate\Validation\ValidationException;
 use Dias\LabelTree;
 use Dias\Label;
 use Dias\LabelSource;
@@ -62,7 +63,11 @@ class LabelTreeLabelController extends Controller
 
         if ($this->request->has('label_source_id')) {
             $source = LabelSource::findOrFail($this->request->input('label_source_id'));
-            $labels = $source->getAdapter()->create($id, $this->request);
+            try {
+                $labels = $source->getAdapter()->create($id, $this->request);
+            } catch (ValidationException $e) {
+                return $this->buildFailedValidationResponse($this->request, $e->response);
+            }
         } else {
             $label = new Label;
             $label->name = $this->request->input('name');

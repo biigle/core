@@ -2,6 +2,7 @@
 
 use Dias\Role;
 use Dias\LabelTree;
+use Illuminate\Validation\ValidationException;
 
 class ApiLabelTreeLabelControllerTest extends ApiTestCase
 {
@@ -141,5 +142,33 @@ class ApiLabelTreeLabelControllerTest extends ApiTestCase
         ]);
         $this->assertResponseOk();
         $this->seeJsonEquals($labels);
+    }
+
+    public function testStoreLabelSourceError()
+    {
+        $tree = LabelTreeTest::create();
+        $tree->addMember($this->editor(), Role::$editor);
+        $source = LabelSourceTest::create(['name' => 'my_source']);
+
+        $mock = Mockery::mock();
+
+        $exception = new ValidationException(null, ['my_field' => ['Invalid.']]);
+        $mock->shouldReceive('create')
+            ->once()
+            ->andThrow($exception);
+
+        App::singleton('Dias\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
+            return $mock;
+        });
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+            'name' => 'new label',
+            'color' => 'bada55',
+            'label_source_id' => $source->id,
+            'source_id' => 'affbbaa00123',
+        ]);
+        $this->assertResponseStatus(422);
+        $this->seeJsonEquals(['my_field' => ['Invalid.']]);
     }
 }
