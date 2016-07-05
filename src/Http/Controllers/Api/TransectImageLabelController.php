@@ -24,14 +24,12 @@ class TransectImageLabelController extends Controller
      * @apiSuccessExample {json} Success response:
      * [
      *    {
-     *       "aphia_id": null,
      *       "id": 1,
      *       "name": "Quality",
      *       "parent_id": null,
      *       "color": "0099ff"
      *    },
      *    {
-     *       "aphia_id": null,
      *       "id": 2,
      *       "name": "Bad quality",
      *       "parent_id": 1,
@@ -53,7 +51,7 @@ class TransectImageLabelController extends Controller
             $operator = 'like';
         }
 
-        return Label::select('id', 'name', 'color', 'parent_id', 'aphia_id')
+        return Label::select('id', 'name', 'color', 'parent_id')
             ->where('name', $operator, "%{$pattern}%")
             ->whereExists(function ($query) use ($id) {
                 // take only labels that are attached to images of this transect

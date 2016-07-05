@@ -35,7 +35,6 @@ class TransectsModuleHttpControllersApiTransectImageLabelControllerTest extends 
                 'name' => $label1->name,
                 'color' => $label1->color,
                 'parent_id' => $label1->parent_id,
-                'aphia_id' => $label1->aphia_id,
             ]]);
         $this->assertResponseOk();
 
@@ -46,14 +45,12 @@ class TransectsModuleHttpControllersApiTransectImageLabelControllerTest extends 
                     'name' => $label1->name,
                     'color' => $label1->color,
                     'parent_id' => $label1->parent_id,
-                    'aphia_id' => $label1->aphia_id,
                 ],
                 [
                     'id' => $label2->id,
                     'name' => $label2->name,
                     'color' => $label2->color,
                     'parent_id' => $label2->parent_id,
-                    'aphia_id' => $label2->aphia_id,
                 ]
             ]);
     }
