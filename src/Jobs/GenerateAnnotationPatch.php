@@ -59,7 +59,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
 
         if (!File::exists($prefix)) {
             // make recursive
-            File::makeDirectory($prefix, 755, true);
+            File::makeDirectory($prefix, 0755, true);
         }
 
         switch ($annotation->shape_id) {
