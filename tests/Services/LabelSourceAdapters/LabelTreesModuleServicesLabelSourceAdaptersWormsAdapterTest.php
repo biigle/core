@@ -21,7 +21,7 @@ class LabelTreesModuleServicesLabelSourceAdaptersWormsAdapterTest extends TestCa
             ->once()
             ->with('%Kolga%')
             ->andReturn([
-                [
+                (object) [
                     "AphiaID" => 124731,
                     "url" => "http://www.marinespecies.org/aphia.php?p=taxdetails&id=124731",
                     "scientificname" => "Kolga hyalina",
@@ -35,7 +35,7 @@ class LabelTreesModuleServicesLabelSourceAdaptersWormsAdapterTest extends TestCa
                     // is not raeally null but we want to test if this is omitted later
                     "genus" => null,
                 ],
-                [
+                (object) [
                     // should not be returned
                     "AphiaID" => 124732,
                     "url" => "http://www.marinespecies.org/aphia.php?p=taxdetails&id=124731",
@@ -50,6 +50,11 @@ class LabelTreesModuleServicesLabelSourceAdaptersWormsAdapterTest extends TestCa
                     "genus" => null,
                 ]
             ]);
+
+        $mock->shouldReceive('getAphiaRecords')
+            ->once()
+            ->with('%%')
+            ->andReturn(null);
 
         app()->singleton(SoapClient::class, function () use ($mock) {
             return $mock;
@@ -72,6 +77,9 @@ class LabelTreesModuleServicesLabelSourceAdaptersWormsAdapterTest extends TestCa
         ]];
 
         $this->assertEquals($expect, $results);
+
+        $results = with(new WormsAdapter)->find('');
+        $this->assertEquals([], $results);
     }
 
     public function testCreateNormal()

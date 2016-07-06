@@ -48,7 +48,15 @@ class WormsAdapter implements LabelSourceAdapterContract
     {
         // add '%' for SQL LIKE matching
         $results = $this->client->getAphiaRecords("%{$query}%");
-        $results = array_filter($results, [$this, 'filterUnaccepted']);
+
+        if (!is_array($results)) {
+            return [];
+        }
+
+        // use array_values because array_filter retains the keys and this might
+        // produce a JSON object output and no array output in the HTTP response
+        $results = array_values(array_filter($results, [$this, 'filterUnaccepted']));
+
         return array_map([$this, 'parseItem'], $results);
     }
 
@@ -110,36 +118,39 @@ class WormsAdapter implements LabelSourceAdapterContract
     /**
      * Returns `true` for accepted WoRMS items and `false` otherwise
      *
-     * @param array $item
+     * @param object $item
      * @return bool
      */
     private function filterUnaccepted($item)
     {
-        return $item['status'] === 'accepted';
+        return $item->status === 'accepted';
     }
 
     /**
      * Parse a WoRMS item to the internal representation
      *
-     * @param array $item
+     * @param object $item
      * @return array
      */
     private function parseItem($item)
     {
+        $item = (array) $item;
         return [
             'aphia_id' => $item['AphiaID'],
             'name' => $item['scientificname'],
             'url' => $item['url'],
             'rank' => $item['rank'],
             // use array_filter to remove empty elements
-            'parents' => array_filter(array_values(array_only($item, [
+            // and the outer array_values to reset array keys so it is not parsed as
+            // object in the JSON output
+            'parents' => array_values(array_filter(array_values(array_only($item, [
                 'kingdom',
                 'phylum',
                 'class',
                 'order',
                 'family',
                 'genus',
-            ]))),
+            ])))),
         ];
     }
 
