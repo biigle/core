@@ -2,11 +2,12 @@
 
 use Dias\Role;
 use Dias\LabelTree;
+use Illuminate\Validation\ValidationException;
 
 class ApiLabelTreeLabelControllerTest extends ApiTestCase
 {
 
-    public function testStore()
+    public function testStoreNormal()
     {
         $tree = LabelTreeTest::create();
         $tree->addMember($this->editor(), Role::$editor);
@@ -58,26 +59,19 @@ class ApiLabelTreeLabelControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
             'name' => 'new label 2',
             'color' => 'bada55',
-            'aphia_id' => 1234,
         ]);
         $this->assertResponseOk();
         $this->assertEquals(3, $tree->labels()->count());
 
         $expect = [
-            'id' => $tree->labels()->max('id'),
+            'id' => (int) $tree->labels()->max('id'),
             'name' => 'new label 2',
             'color' => 'bada55',
             'parent_id' => null,
-            'aphia_id' => 1234,
             'label_tree_id' => $tree->id,
         ];
 
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
-            $expect['id'] = (int) $expect['id'];
-            $expect['label_tree_id'] = (string) $expect['label_tree_id'];
-        }
-
-        $this->seeJsonEquals($expect);
+        $this->seeJsonEquals([$expect]);
     }
 
     public function testStoreFormRequest()
@@ -102,5 +96,79 @@ class ApiLabelTreeLabelControllerTest extends ApiTestCase
         $this->assertEquals(2, $tree->labels()->count());
         $this->assertRedirectedTo('/settings');
         $this->assertSessionHas('saved', true);
+    }
+
+    public function testStoreLabelSource()
+    {
+        $tree = LabelTreeTest::create();
+        $tree->addMember($this->editor(), Role::$editor);
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+            'name' => 'new label',
+            'color' => 'bada55',
+            'label_source_id' => 1,
+        ]);
+        // label source does not exist
+        $this->assertResponseStatus(422);
+
+        $source = LabelSourceTest::create(['name' => 'my_source']);
+
+        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+            'name' => 'new label',
+            'color' => 'bada55',
+            'label_source_id' => $source->id,
+        ]);
+        // source_id not given
+        $this->assertResponseStatus(422);
+
+        $mock = Mockery::mock();
+
+        $labels = collect([LabelTest::create()])->toArray();
+
+        $mock->shouldReceive('create')
+            ->once()
+            ->andReturn($labels);
+
+        App::singleton('Dias\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
+            return $mock;
+        });
+
+        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+            'name' => 'new label',
+            'color' => 'bada55',
+            'label_source_id' => $source->id,
+            'source_id' => 'affbbaa00123',
+        ]);
+        $this->assertResponseOk();
+        $this->seeJsonEquals($labels);
+    }
+
+    public function testStoreLabelSourceError()
+    {
+        $tree = LabelTreeTest::create();
+        $tree->addMember($this->editor(), Role::$editor);
+        $source = LabelSourceTest::create(['name' => 'my_source']);
+
+        $mock = Mockery::mock();
+
+        $exception = new ValidationException(null, ['my_field' => ['Invalid.']]);
+        $mock->shouldReceive('create')
+            ->once()
+            ->andThrow($exception);
+
+        App::singleton('Dias\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
+            return $mock;
+        });
+
+        $this->beEditor();
+        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+            'name' => 'new label',
+            'color' => 'bada55',
+            'label_source_id' => $source->id,
+            'source_id' => 'affbbaa00123',
+        ]);
+        $this->assertResponseStatus(422);
+        $this->seeJsonEquals(['my_field' => ['Invalid.']]);
     }
 }

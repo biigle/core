@@ -125,7 +125,7 @@ class LabelTreeController extends Controller
 
         $tree = new LabelTree;
         $tree->name = $this->request->input('name');
-        $tree->visibility_id = $this->request->input('visibility_id');
+        $tree->visibility_id = (int) $this->request->input('visibility_id');
         $tree->description = $this->request->input('description');
         $tree->save();
 

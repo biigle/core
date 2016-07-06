@@ -28,7 +28,6 @@ class ImageLabelController extends Controller
      *          "id": 2,
      *          "name": "Bad quality",
      *          "parent_id": 1,
-     *          "aphia_id": null,
      *          "color": "0099ff",
      *          "label_tree_id": 1
      *       },

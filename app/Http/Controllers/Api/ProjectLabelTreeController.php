@@ -31,7 +31,6 @@ class ProjectLabelTreeController extends Controller
      *               "name": "Trash",
      *               "color": "bada55",
      *               "parent_id": null,
-     *               "aphia_id": null,
      *               "label_tree_id": 1
      *           }
      *       ]

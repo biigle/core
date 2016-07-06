@@ -20,7 +20,7 @@ describe('The Label resource factory', function () {
         $httpBackend = $injector.get('$httpBackend');
 
         $httpBackend.when('POST', '/api/v1/label-trees/1/labels')
-                    .respond(label);
+                    .respond([label]);
 
         $httpBackend.when('DELETE', '/api/v1/labels/1')
                     .respond(200);
@@ -37,9 +37,9 @@ describe('The Label resource factory', function () {
             name: "Benthic Object",
             label_tree_id: 1
         });
-        var label = Label.create({name: "Benthic Object", label_tree_id: 1}, function () {
-            expect(label.name).toEqual('Benthic Object');
-            expect(label.id).toBeDefined();
+        var labels = Label.create({name: "Benthic Object", label_tree_id: 1}, function () {
+            expect(labels[0].name).toEqual('Benthic Object');
+            expect(labels[0].id).toBeDefined();
         });
     }));
 

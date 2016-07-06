@@ -45,7 +45,7 @@ $factory->define(Dias\MediaType::class, function ($faker) {
 
 $factory->define(Dias\Transect::class, function ($faker) {
     return [
-        'name' => $faker->sentence(),
+        'name' => str_random(10),
         'media_type_id' => function () {
             return factory(Dias\MediaType::class)->create()->id;
         },
@@ -73,7 +73,6 @@ $factory->define(Dias\Label::class, function ($faker) {
         'label_tree_id' => function () {
             return factory(Dias\LabelTree::class)->create()->id;
         },
-        'aphia_id' => null,
     ];
 });
 
@@ -145,5 +144,12 @@ $factory->define(Dias\ImageLabel::class, function ($faker) {
         'user_id' => function () {
             return factory(Dias\User::class)->create()->id;
         },
+    ];
+});
+
+$factory->define(Dias\LabelSource::class, function ($faker) {
+    return [
+        'name' => str_random(10),
+        'description' => $faker->sentence(),
     ];
 });

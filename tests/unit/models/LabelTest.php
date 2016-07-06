@@ -40,6 +40,10 @@ class LabelTest extends ModelTestCase
 
     public function testParentOnDeleteCascade()
     {
+        // SQLite doesn't support altering foreign key constraits
+        // (which is done by our migrations)
+        if ($this->isSqlite()) return;
+
         $parent = self::create();
         $child = self::create(['parent_id' => $parent->id]);
         $parent->delete();
@@ -55,6 +59,10 @@ class LabelTest extends ModelTestCase
 
     public function testLabelTreeOnDeleteCascade()
     {
+        // SQLite doesn't support altering foreign key constraits
+        // (which is done by our migrations)
+        if ($this->isSqlite()) return;
+
         $tree = LabelTreeTest::create();
         $label = self::create(['label_tree_id' => $tree->id]);
         $tree->delete();

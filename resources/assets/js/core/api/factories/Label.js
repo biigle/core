@@ -7,8 +7,8 @@
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
  * @example
 // create a new label
-var label = Label.create({label_tree_id: 1, name: "Trash", color: 'bada55'}, function () {
-   console.log(label); // {id: 2, name: "Trash", color: 'bada55', ...}
+var labels = Label.create({label_tree_id: 1, name: "Trash", color: 'bada55'}, function () {
+   console.log(labels); // [{id: 2, name: "Trash", color: 'bada55', ...}]
 });
 
 // delete a label
@@ -23,7 +23,8 @@ angular.module('dias.api').factory('Label', function ($resource, URL) {
             create: {
               method: 'POST',
               url: URL + '/api/v1/label-trees/:label_tree_id/labels',
-              params: { label_tree_id: '@label_tree_id' }
+              params: { label_tree_id: '@label_tree_id' },
+              isArray: true
             }
         }
     );
