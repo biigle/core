@@ -157,4 +157,19 @@ class LabelTreesController extends Controller
             'visibilities' => $visibilities,
         ]);
     }
+
+        /**
+     * Show a tutorials article.
+     *
+     * @param string $name Article name
+     * @return \Illuminate\Http\Response
+     */
+    public function tutorial($name)
+    {
+        if (view()->exists('label-trees::manual.tutorials.'.$name)) {
+            return view('label-trees::manual.tutorials.'.$name);
+        } else {
+            abort(404);
+        }
+    }
 }
