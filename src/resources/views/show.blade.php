@@ -19,6 +19,7 @@
         angular.module('dias.label-trees').constant('MEMBERS', {!! $members !!});
         angular.module('dias.label-trees').constant('ROLES', {!! $roles !!});
         angular.module('dias.label-trees').constant('DEFAULT_ROLE_ID', {!! Dias\Role::$editor->id !!});
+        angular.module('dias.label-trees').constant('LABEL_SOURCES', {!! $labelSources !!});
     @endcan
 </script>
 @endpush

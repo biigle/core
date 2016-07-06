@@ -3,6 +3,7 @@
 namespace Dias\Modules\LabelTrees\Http\Controllers;
 
 use Dias\LabelTree;
+use Dias\LabelSource;
 use Dias\Project;
 use Dias\Role;
 use Dias\Visibility;
@@ -67,17 +68,21 @@ class LabelTreesController extends Controller
             Visibility::$private->id => Visibility::$private->name,
         ]);
 
-        return view('label-trees::show')
-            ->with('tree', $tree)
-            ->with('labels', $labels)
-            ->with('projects', $projects)
-            ->with('members', $members)
-            ->with('roles', $roles)
-            ->with('visibilities', $visibilities)
-            ->with('user', $this->user)
-            ->with('authorizedProjects', $authorizedProjects)
-            ->with('authorizedOwnProjects', $authorizedOwnProjects)
-            ->with('private', (int) $tree->visibility_id === Visibility::$private->id);
+        $labelSources = LabelSource::all();
+
+        return view('label-trees::show', [
+            'tree' => $tree,
+            'labels' => $labels,
+            'projects' => $projects,
+            'members' => $members,
+            'roles' => $roles,
+            'visibilities' => $visibilities,
+            'user' => $this->user,
+            'authorizedProjects' => $authorizedProjects,
+            'authorizedOwnProjects' => $authorizedOwnProjects,
+            'private' => (int) $tree->visibility_id === Visibility::$private->id,
+            'labelSources' => $labelSources,
+        ]);
     }
 
     /**

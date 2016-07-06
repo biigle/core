@@ -37,7 +37,7 @@ angular.module('dias.label-trees').directive('labelTreeItem', function ($compile
                     if ($scope.openHierarchy.indexOf($scope.item.id) !== -1) {
                         open = true;
                         selected = false;
-                    } else if ($scope.selected.label && $scope.selected.label.id === $scope.item.id) {
+                    } else if ($scope.isSelectedLabel($scope.item)) {
                         open = true;
                         selected = true;
                     } else {
@@ -47,7 +47,7 @@ angular.module('dias.label-trees').directive('labelTreeItem', function ($compile
                 };
 
                 var checkExpandable = function () {
-                    expandable = $scope.tree && !!$scope.tree[$scope.item.id];
+                    expandable = $scope.tree && $scope.tree.hasOwnProperty($scope.item.id);
                 };
 
                 $scope.getSubtree = function () {

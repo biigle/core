@@ -5,26 +5,16 @@
  * @memberOf dias.label-trees
  * @description Controller for the interactive label tree
  */
-angular.module('dias.label-trees').controller('LabelsController', function ($scope, LABELS, LABEL_TREE, Label, msg) {
+angular.module('dias.label-trees').controller('LabelsController', function ($scope, LABELS, LABEL_TREE, Label, msg, $q) {
         "use strict";
 
         var editing = false;
 
         var loading = false;
 
-        var DEFAULTS = {
-            LABEL: null,
-            COLOR: '#0099ff',
-            NAME: ''
-        };
+        var selectedLabel = null;
 
         $scope.tree = {};
-
-        $scope.selected = {
-            label: DEFAULTS.LABEL,
-            color: DEFAULTS.COLOR,
-            name: DEFAULTS.NAME
-        };
 
         // IDs of all labels that are currently open
         // (all parent labels of the selected label)
@@ -47,11 +37,10 @@ angular.module('dias.label-trees').controller('LabelsController', function ($sco
             });
         };
 
-        var labelAdded = function (label) {
-            LABELS.push(label);
+        var handleCreateLabelSuccess = function (labels) {
+            Array.prototype.push.apply(LABELS, labels);
             buildTree();
             $scope.$broadcast('labels.refresh');
-            $scope.resetName();
             loading = false;
         };
 
@@ -63,12 +52,14 @@ angular.module('dias.label-trees').controller('LabelsController', function ($sco
                 }
             }
             buildTree();
+            $scope.$broadcast('labels.refresh');
 
-            if ($scope.selected.label && $scope.selected.label.id === label.id) {
-                $scope.selected.label = null;
+            if (selectedLabel && selectedLabel.id === label.id) {
+                // select the parent if the currently selected label was deleted
+                selectedLabel = getLabel(label.parent_id);
             }
 
-            $scope.selectLabel($scope.selected.label);
+            $scope.selectLabel(selectedLabel);
             loading = false;
         };
 
@@ -95,9 +86,13 @@ angular.module('dias.label-trees').controller('LabelsController', function ($sco
         };
 
         $scope.selectLabel = function (label) {
+            selectedLabel = label;
             updateOpenHierarchy(label);
-            $scope.selected.label = label;
-            $scope.$broadcast('labels.selected');
+            $scope.$broadcast('labels.selected', label);
+        };
+
+        $scope.isSelectedLabel = function (label) {
+            return selectedLabel && selectedLabel.id === label.id;
         };
 
         $scope.hasLabels = function () {
@@ -116,29 +111,17 @@ angular.module('dias.label-trees').controller('LabelsController', function ($sco
             return LABELS;
         };
 
-        $scope.resetParent = function () {
-            $scope.selectLabel(DEFAULTS.LABEL);
-        };
-
-        $scope.resetColor = function () {
-            $scope.selected.color = DEFAULTS.COLOR;
-        };
-
-        $scope.resetName = function () {
-            $scope.selected.name = DEFAULTS.NAME;
-        };
-
-        $scope.addLabel = function () {
-            loading = true;
-            var label = {
-                name: $scope.selected.name,
-                color: $scope.selected.color,
-                label_tree_id: LABEL_TREE.id
-            };
-            if ($scope.selected.label) {
-                label.parent_id = $scope.selected.label.id;
+        $scope.createLabel = function (label) {
+            // prevent users from accidentally adding a label twice
+            if (loading) {
+                var deferred = $q.defer();
+                deferred.resolve([]);
+                return deferred.promise;
             }
-            Label.create(label, labelAdded, handleError);
+
+            loading = true;
+            label.label_tree_id = LABEL_TREE.id;
+            return Label.create(label, handleCreateLabelSuccess, handleError).$promise;
         };
 
         $scope.removeLabel = function (label, e) {
@@ -151,6 +134,14 @@ angular.module('dias.label-trees').controller('LabelsController', function ($sco
 
         $scope.isLoading = function () {
             return loading;
+        };
+
+        $scope.startLoading = function () {
+            loading = true;
+        };
+
+        $scope.stopLoading = function () {
+            loading = false;
         };
 
         buildTree();
