@@ -64,7 +64,7 @@ class LabelTreeLabelController extends Controller
         if ($this->request->has('label_source_id')) {
             $source = LabelSource::findOrFail($this->request->input('label_source_id'));
             try {
-                $labels = $source->getAdapter()->create($id, $this->request);
+                $labels = $source->getAdapter()->create((int) $id, $this->request);
             } catch (ValidationException $e) {
                 return $this->buildFailedValidationResponse($this->request, $e->response);
             }
