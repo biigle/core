@@ -62,6 +62,8 @@ angular.module('dias.ate').service('labels', function (LABEL_TREES) {
             }
         };
 
+        this.getLabel = getLabel;
+
         this.getLabels = function () {
             return labels;
         };

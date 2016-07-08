@@ -15,8 +15,11 @@ angular.module('dias.ate').directive('ateFigure', function () {
 
                 var dismissed = false;
 
+                $scope.changedLabel = null;
+
                 $scope.handleClick = function (e) {
                     annotations.selectAnnotation($scope.id);
+                    $scope.changedLabel = annotations.getChangedLabel($scope.id);
                 };
 
                 var isDismissed = function () {
@@ -26,6 +29,8 @@ angular.module('dias.ate').directive('ateFigure', function () {
                 var isChanged = function () {
                     return annotations.isChanged($scope.id);
                 };
+
+                $scope.isChanged = isChanged;
 
                 $scope.getTitle = function () {
                     if ($scope.isInDismissMode()) {

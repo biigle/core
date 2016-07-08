@@ -61,6 +61,31 @@
         position: relative;
         transition: opacity .25s ease;
     }
+
+    .changed-label {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        bottom: 0;
+        padding: .5em;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .changed-label-name {
+        // the star to toggle favourite
+        padding-right: 16px;
+    }
+
+    .changed-label-color {
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        border-radius: 50%;
+        border: 2px solid #eee;
+        vertical-align: middle;
+    }
 }
 
 .ate-alert {
