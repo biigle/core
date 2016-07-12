@@ -28,9 +28,7 @@ class WormsAdapter implements LabelSourceAdapterContract
     {
         $this->client = app()->make(SoapClient::class, [
             "http://www.marinespecies.org/aphia.php?p=soap&wsdl=1",
-            // explicitly define the optional second argument because the IoC can't
-            // resolve it automatically
-            []
+            config('label-trees.soap_options')
         ]);
     }
 

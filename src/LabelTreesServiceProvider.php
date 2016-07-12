@@ -44,6 +44,8 @@ class LabelTreesServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/config/label-trees.php', 'label-trees');
+
         $this->app->singleton('command.label-trees.publish', function ($app) {
             return new \Dias\Modules\LabelTrees\Console\Commands\Publish();
         });
