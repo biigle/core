@@ -17,8 +17,7 @@ angular.module('dias.ate').directive('ateFigure', function () {
 
                 $scope.changedLabel = null;
 
-                $scope.handleClick = function (e) {
-                    annotations.selectAnnotation($scope.id);
+                var updateChangedLabel = function () {
                     $scope.changedLabel = annotations.getChangedLabel($scope.id);
                 };
 
@@ -31,6 +30,11 @@ angular.module('dias.ate').directive('ateFigure', function () {
                 };
 
                 $scope.isChanged = isChanged;
+
+                $scope.handleClick = function (e) {
+                    annotations.selectAnnotation($scope.id);
+                    updateChangedLabel();
+                };
 
                 $scope.getTitle = function () {
                     if ($scope.isInDismissMode()) {
@@ -53,6 +57,8 @@ angular.module('dias.ate').directive('ateFigure', function () {
                         'annotation-selected': $scope.isInDismissMode() && isDismissed() || $scope.isInReLabellingMode() && isChanged()
                     };
                 };
+
+                updateChangedLabel();
             }
         };
     }
