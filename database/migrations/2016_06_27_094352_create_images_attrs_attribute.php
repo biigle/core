@@ -13,7 +13,7 @@ class CreateImagesAttrsAttribute extends Migration
     public function up()
     {
         Schema::table('images', function (Blueprint $table) {
-            $table->jsonb('attrs')->nullable();
+            $table->json('attrs')->nullable();
         });
     }
 
