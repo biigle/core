@@ -27,7 +27,7 @@ angular.module('dias.ate').directive('ateFigure', function () {
                 };
 
                 var isChanged = function () {
-                    return annotations.isChanged($scope.id);
+                    return $scope.changedLabel !== null;
                 };
 
                 $scope.isChanged = isChanged;

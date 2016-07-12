@@ -139,10 +139,6 @@ angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRA
             return dismissedFlat;
         };
 
-        this.isChanged = function (annotationId) {
-            return changed.hasOwnProperty(annotationId);
-        };
-
         // return the label that was assigned to an annotation in the re-label step
         this.getChangedLabel = function (annotationId) {
             if (changed.hasOwnProperty(annotationId)) {

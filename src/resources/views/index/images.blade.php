@@ -3,7 +3,7 @@
         <div class ="image-wrapper" title="@{{getTitle()}}" data-ng-click="handleClick($event)">
             <img src="{{ asset(config('thumbnails.empty_url')) }}" data-ng-src="{{ url('api/v1/annotations/') }}/@{{ id }}/patch" data-fallback-src="{{ asset(config('thumbnails.empty_url')) }}">
         </div>
-        <div class="changed-label ng-cloak" data-ng-if="isChanged()">
+        <div class="changed-label ng-cloak" data-ng-if="isInReLabellingMode() && isChanged()">
             <span class="changed-label-color" data-ng-style="{'background-color': '#' + changedLabel.color}"></span>
             <span class="changed-label-name" data-ng-bind="changedLabel.name"></span>
         </div>
