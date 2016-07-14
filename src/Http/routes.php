@@ -23,7 +23,7 @@ $router->group(['middleware' => 'auth'], function ($router) {
 
     $router->get('admin/label-trees', [
         'as' => 'admin-global-label-trees',
-        'middleware' => 'admin',
+        'middleware' => 'can:admin',
         'uses' => 'LabelTreesController@admin',
     ]);
 });

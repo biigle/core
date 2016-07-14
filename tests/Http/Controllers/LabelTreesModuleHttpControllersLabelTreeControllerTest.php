@@ -31,7 +31,7 @@ class LabelTreesModuleHttpControllersLabelTreeControllerTest extends TestCase
         $this->visit("admin/label-trees")->seePageIs('auth/login');
         $user = UserTest::create();
         $this->be($user);
-        $this->get("admin/label-trees")->assertResponseStatus(401);
+        $this->get("admin/label-trees")->assertResponseStatus(403);
         $user->role()->associate(Dias\Role::$admin);
         $this->visit("admin/label-trees")->assertResponseOk();
     }
