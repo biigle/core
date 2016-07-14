@@ -26,7 +26,7 @@ $router->group([
 
     $router->get('admin/transects', [
         'as' => 'admin-transects',
-        'middleware' => 'admin',
+        'middleware' => 'can:admin',
         'uses' => 'AdminController@index',
     ]);
 });

@@ -7,7 +7,7 @@ class TransectsModuleHttpControllersTransectsAdminControllerTest extends TestCas
         $this->visit("admin/transects")->seePageIs('auth/login');
         $user = UserTest::create();
         $this->be($user);
-        $this->get("admin/transects")->assertResponseStatus(401);
+        $this->get("admin/transects")->assertResponseStatus(403);
         $user->role()->associate(Dias\Role::$admin);
         $this->visit("admin/transects")->assertResponseOk();
    }
