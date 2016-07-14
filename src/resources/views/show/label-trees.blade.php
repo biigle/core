@@ -21,7 +21,11 @@
         @can('update', $project)
             <li class="list-group-item ng-cloak" data-ng-repeat="tree in getTrees()">
                 <button data-ng-if="isEditing()" type="button" class="ng-cloak close" aria-label="Close" title="Detach this tree" data-ng-click="detachLabelTree(tree)"><span aria-hidden="true">&times;</span></button>
-                <span data-ng-bind="tree.name"></span>
+                @if(Route::has('label-trees'))
+                    <a href="{{route('label-trees', '')}}/@{{tree.id}}" data-ng-bind="tree.name"></a>
+                @else
+                    <span data-ng-bind="tree.name"></span>
+                @endif
                 <span data-ng-if="tree.description">
                     <br><small data-ng-bind="tree.description"></small>
                 </span>
@@ -29,7 +33,11 @@
         @else
             @forelse ($labelTrees as $tree)
                 <li class="list-group-item">
-                    {{$tree->name}}
+                    @if(Route::has('label-trees'))
+                        <a href="{{route('label-trees', $tree->id)}}">{{$tree->name}}</a>
+                    @else
+                        {{$tree->name}}
+                    @endif
                     @if ($tree->description)
                         <br><small>{{$tree->description}}</small>
                     @endif
