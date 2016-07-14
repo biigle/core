@@ -34,7 +34,6 @@ class LabelTree extends Model
      */
     public static $updateRules = [
         'name' => 'filled|max:256',
-        'description' => 'filled',
         'visibility_id' => 'integer|exists:visibilities,id',
     ];
 
