@@ -18,7 +18,7 @@ angular.module('dias.label-trees').controller('LabelTreeController', function ($
         };
 
         var handleSavingError = function (response) {
-            meg.responseError(response);
+            msg.responseError(response);
             saving = false;
         };
 
