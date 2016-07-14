@@ -13,6 +13,8 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Session\TokenMismatchException;
+use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
+use Symfony\Component\Debug\Exception\FlattenException;
 
 class Handler extends ExceptionHandler
 {
@@ -83,8 +85,52 @@ class Handler extends ExceptionHandler
         // use JsonResponse if this was an automated request
         if (Controller::isAutomatedRequest($request)) {
             return $this->renderJsonResponse($e);
+        } else if ($e instanceof \ErrorException && view()->exists("errors.500")) {
+            return $this->renderCustomErrorPage($e);
         } else {
             return parent::render($request, $e);
         }
+    }
+
+    /**
+     * Render the given HttpException.
+     *
+     * @param  \Symfony\Component\HttpKernel\Exception\HttpException  $e
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function renderHttpException(HttpException $e)
+    {
+        $status = $e->getStatusCode();
+
+        if (!view()->exists("errors.{$status}")) {
+            return parent::renderHttpException($e);
+        }
+
+        return $this->renderCustomErrorPage($e);
+    }
+
+    /**
+     * Render an exception with a custom view
+     *
+     * @param \Exception $e
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    private function renderCustomErrorPage(Exception $e)
+    {
+        $e = FlattenException::create($e);
+        $handler = new SymfonyExceptionHandler(config('app.debug'));
+        $status = $e->getStatusCode();
+
+        return response()->view(
+            "errors.{$status}",
+            [
+                'exception' => $e,
+                'content' => $handler->getContent($e),
+                'css' => $handler->getStylesheet($e),
+                'debug' => config('app.debug'),
+            ],
+            $status,
+            $e->getHeaders()
+        );
     }
 }
