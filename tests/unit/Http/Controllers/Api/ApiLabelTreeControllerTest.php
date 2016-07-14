@@ -53,12 +53,6 @@ class ApiLabelTreeControllerTest extends ApiTestCase
         $this->assertResponseStatus(422);
 
         $this->json('PUT', "/api/v1/label-trees/{$id}", [
-            'description' => '',
-        ]);
-        // description must not be empty if it is present
-        $this->assertResponseStatus(422);
-
-        $this->json('PUT', "/api/v1/label-trees/{$id}", [
             'visibility_id' => 999,
         ]);
         // visibility must exist
