@@ -19,10 +19,10 @@
             </div>
             <div data-ng-switch="selected.type">
                 <div class="help-block" data-ng-switch-when="basic">
-                    The basic report contains graphical plots of abundancies of the different annotation labels for each transect of this project (as PDF).
+                    The basic report contains graphical plots of abundances of the different annotation labels for each transect of this project (as PDF).  
                 </div>
                 <div class="help-block ng-cloak" data-ng-switch-when="extended">
-                    The extended report lists the abundancies of annotation labels for each image in all transects of this project (as XLSX).
+                    The extended report lists the abundances of annotation labels for each image in all transects of this project (as XLSX).
                 </div>
                 <div class="help-block ng-cloak" data-ng-switch-when="full">
                     The full report lists the labels, shape and coordinates of all annotations in all transects of this project (as XLSX).
