@@ -19,17 +19,17 @@ class UserController extends Controller
     {
         parent::__construct($request);
 
-        $this->middleware('admin', ['only' => [
-            'update',
-            'store',
-            'destroy',
-        ]]);
-
         $this->middleware('session', ['except' => [
             'find',
             'index',
             'show',
             'showOwn',
+        ]]);
+
+        $this->middleware('can:admin', ['only' => [
+            'update',
+            'store',
+            'destroy',
         ]]);
     }
 

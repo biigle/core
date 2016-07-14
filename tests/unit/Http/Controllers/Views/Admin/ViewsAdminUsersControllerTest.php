@@ -10,7 +10,7 @@ class ViewsAdminUsersControllerTest extends TestCase
     public function testGetWhenNotAdmin()
     {
         $this->be(UserTest::create());
-        $this->get('admin/users')->assertResponseStatus(401);
+        $this->get('admin/users')->assertResponseStatus(403);
     }
 
     public function testGetWhenLoggedIn()
@@ -29,7 +29,7 @@ class ViewsAdminUsersControllerTest extends TestCase
     public function testNewWhenNotAdmin()
     {
         $this->be(UserTest::create());
-        $this->get('admin/users/new')->assertResponseStatus(401);
+        $this->get('admin/users/new')->assertResponseStatus(403);
     }
 
     public function testNewWhenLoggedIn()
@@ -50,7 +50,7 @@ class ViewsAdminUsersControllerTest extends TestCase
     {
         $user = UserTest::create();
         $this->be($user);
-        $this->get("admin/users/edit/{$user->id}")->assertResponseStatus(401);
+        $this->get("admin/users/edit/{$user->id}")->assertResponseStatus(403);
     }
 
     public function testEditDoesntExist()
@@ -80,7 +80,7 @@ class ViewsAdminUsersControllerTest extends TestCase
     {
         $user = UserTest::create();
         $this->be($user);
-        $this->get("admin/users/delete/{$user->id}")->assertResponseStatus(401);
+        $this->get("admin/users/delete/{$user->id}")->assertResponseStatus(403);
     }
 
     public function testDeleteDoesntExist()

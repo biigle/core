@@ -50,7 +50,6 @@ class Kernel extends HttpKernel
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'can' => \Illuminate\Foundation\Http\Middleware\Authorize::class,
         'guest' => \Dias\Http\Middleware\RedirectIfAuthenticated::class,
-        'admin' => \Dias\Http\Middleware\RequireAdmin::class,
         'session' => \Dias\Http\Middleware\SessionOnly::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
     ];

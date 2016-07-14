@@ -73,11 +73,11 @@ class ApiUserControllerTest extends ApiTestCase
 
         $this->beGuest();
         $this->put('/api/v1/users/'.$this->guest()->id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beEditor();
         $this->put('/api/v1/users/'.$this->guest()->id);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->globalAdmin()->password = bcrypt('adminpassword');
         $this->globalAdmin()->save();
@@ -265,7 +265,7 @@ class ApiUserControllerTest extends ApiTestCase
         $this->post('/api/v1/users', [
             '_token' => Session::token(),
         ]);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGlobalAdmin();
         // ajax call to get the correct response status
@@ -340,7 +340,7 @@ class ApiUserControllerTest extends ApiTestCase
         $this->delete('/api/v1/users/'.$id, [
             '_token' => Session::token(),
         ]);
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(403);
 
         $this->beGlobalAdmin();
 

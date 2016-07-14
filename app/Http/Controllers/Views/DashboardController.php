@@ -14,7 +14,6 @@ class DashboardController extends Controller
      */
     public function index()
     {
-
         $annotationLabel = AnnotationLabel::where('user_id', $this->user->id)
             ->orderBy('created_at', 'desc')
             ->first();

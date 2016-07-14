@@ -68,7 +68,7 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         'uses' => 'SettingsController@tokens',
     ]);
 
-    $router->group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'admin'], function ($router) {
+    $router->group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'can:admin'], function ($router) {
 
         $router->get('/', [
             'as' => 'admin',

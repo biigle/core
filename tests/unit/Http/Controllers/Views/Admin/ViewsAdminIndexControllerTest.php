@@ -10,7 +10,7 @@ class ViewsAdminIndexControllerTest extends TestCase
     public function testIndexWhenNotAdmin()
     {
         $this->be(UserTest::create());
-        $this->get('admin')->assertResponseStatus(401);
+        $this->get('admin')->assertResponseStatus(403);
     }
 
     public function testIndexWhenLoggedIn()
