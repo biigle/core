@@ -5,6 +5,7 @@
 
 @push('scripts')
 <script src="{{ asset('vendor/annotations/scripts/ol.js') }}"></script>
+<script src="{{ asset('vendor/annotations/scripts/glfx.js') }}"></script>
 <script src="{{ asset('vendor/annotations/scripts/main.js') }}"></script>
 <script type="text/javascript">
     angular.module('dias.annotations').constant('IMAGE_ID', {{$image->id}});

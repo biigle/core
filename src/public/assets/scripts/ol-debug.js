@@ -1,6 +1,6 @@
 // OpenLayers 3. See http://openlayers.org/
 // License: https://raw.githubusercontent.com/openlayers/ol3/master/LICENSE.md
-// Version: v3.11.2-3-gabc106d
+// Version: v3.11.2-5-gb03d12f
 
 (function (root, factory) {
   if (typeof exports === "object") {
@@ -61946,7 +61946,7 @@ goog.require('ol.ImageState');
  * @constructor
  * @extends {ol.ImageBase}
  * @param {ol.Extent} extent Extent.
- * @param {number} resolution Resolution.
+ * @param {number|undefined} resolution Resolution.
  * @param {number} pixelRatio Pixel ratio.
  * @param {Array.<ol.Attribution>} attributions Attributions.
  * @param {HTMLCanvasElement} canvas Canvas.
@@ -100458,6 +100458,92 @@ var define;
  * @suppress {accessControls, ambiguousFunctionDecl, checkDebuggerStatement, checkRegExp, checkTypes, checkVars, const, constantProperty, deprecated, duplicate, es5Strict, fileoverviewTags, missingProperties, nonStandardJsDocs, strictModuleDepCheck, suspiciousCode, undefinedNames, undefinedVars, unknownDefines, uselessCode, visibility}
  */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.pbf = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
+
+  i += d
+
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+
+  if (e === 0) {
+    e = 1 - eBias
+  } else if (e === eMax) {
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
+  } else {
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
+  }
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
+
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+
+  value = Math.abs(value)
+
+  if (isNaN(value) || value === Infinity) {
+    m = isNaN(value) ? 1 : 0
+    e = eMax
+  } else {
+    e = Math.floor(Math.log(value) / Math.LN2)
+    if (value * (c = Math.pow(2, -e)) < 1) {
+      e--
+      c *= 2
+    }
+    if (e + eBias >= 1) {
+      value += rt / c
+    } else {
+      value += rt * Math.pow(2, 1 - eBias)
+    }
+    if (value * c >= 2) {
+      e++
+      c /= 2
+    }
+
+    if (e + eBias >= eMax) {
+      m = 0
+      e = eMax
+    } else if (e + eBias >= 1) {
+      m = (value * c - 1) * Math.pow(2, mLen)
+      e = e + eBias
+    } else {
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
+    }
+  }
+
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+
+  buffer[offset + i - d] |= s * 128
+}
+
+},{}],2:[function(_dereq_,module,exports){
 'use strict';
 
 // lightweight Buffer shim for pbf browser build
@@ -100618,7 +100704,7 @@ function encodeString(str) {
     return bytes;
 }
 
-},{"ieee754":3}],2:[function(_dereq_,module,exports){
+},{"ieee754":1}],3:[function(_dereq_,module,exports){
 (function (global){
 'use strict';
 
@@ -101048,93 +101134,7 @@ function writePackedFixed64(arr, pbf)  { for (var i = 0; i < arr.length; i++) pb
 function writePackedSFixed64(arr, pbf) { for (var i = 0; i < arr.length; i++) pbf.writeSFixed64(arr[i]); }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./buffer":1}],3:[function(_dereq_,module,exports){
-exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var nBits = -7
-  var i = isLE ? (nBytes - 1) : 0
-  var d = isLE ? -1 : 1
-  var s = buffer[offset + i]
-
-  i += d
-
-  e = s & ((1 << (-nBits)) - 1)
-  s >>= (-nBits)
-  nBits += eLen
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
-  m = e & ((1 << (-nBits)) - 1)
-  e >>= (-nBits)
-  nBits += mLen
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
-  if (e === 0) {
-    e = 1 - eBias
-  } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity)
-  } else {
-    m = m + Math.pow(2, mLen)
-    e = e - eBias
-  }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
-}
-
-exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c
-  var eLen = nBytes * 8 - mLen - 1
-  var eMax = (1 << eLen) - 1
-  var eBias = eMax >> 1
-  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
-  var i = isLE ? 0 : (nBytes - 1)
-  var d = isLE ? 1 : -1
-  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
-
-  value = Math.abs(value)
-
-  if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0
-    e = eMax
-  } else {
-    e = Math.floor(Math.log(value) / Math.LN2)
-    if (value * (c = Math.pow(2, -e)) < 1) {
-      e--
-      c *= 2
-    }
-    if (e + eBias >= 1) {
-      value += rt / c
-    } else {
-      value += rt * Math.pow(2, 1 - eBias)
-    }
-    if (value * c >= 2) {
-      e++
-      c /= 2
-    }
-
-    if (e + eBias >= eMax) {
-      m = 0
-      e = eMax
-    } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen)
-      e = e + eBias
-    } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
-      e = 0
-    }
-  }
-
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
-
-  e = (e << mLen) | m
-  eLen += mLen
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
-
-  buffer[offset + i - d] |= s * 128
-}
-
-},{}]},{},[2])(2)
+},{"./buffer":2}]},{},[3])(3)
 });
 ol.ext.pbf = module.exports;
 })();
@@ -101151,11 +101151,144 @@ var define;
  * @suppress {accessControls, ambiguousFunctionDecl, checkDebuggerStatement, checkRegExp, checkTypes, checkVars, const, constantProperty, deprecated, duplicate, es5Strict, fileoverviewTags, missingProperties, nonStandardJsDocs, strictModuleDepCheck, suspiciousCode, undefinedNames, undefinedVars, unknownDefines, uselessCode, visibility}
  */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.vectortile = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+'use strict';
+
+module.exports = Point;
+
+function Point(x, y) {
+    this.x = x;
+    this.y = y;
+}
+
+Point.prototype = {
+    clone: function() { return new Point(this.x, this.y); },
+
+    add:     function(p) { return this.clone()._add(p);     },
+    sub:     function(p) { return this.clone()._sub(p);     },
+    mult:    function(k) { return this.clone()._mult(k);    },
+    div:     function(k) { return this.clone()._div(k);     },
+    rotate:  function(a) { return this.clone()._rotate(a);  },
+    matMult: function(m) { return this.clone()._matMult(m); },
+    unit:    function() { return this.clone()._unit(); },
+    perp:    function() { return this.clone()._perp(); },
+    round:   function() { return this.clone()._round(); },
+
+    mag: function() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    },
+
+    equals: function(p) {
+        return this.x === p.x &&
+               this.y === p.y;
+    },
+
+    dist: function(p) {
+        return Math.sqrt(this.distSqr(p));
+    },
+
+    distSqr: function(p) {
+        var dx = p.x - this.x,
+            dy = p.y - this.y;
+        return dx * dx + dy * dy;
+    },
+
+    angle: function() {
+        return Math.atan2(this.y, this.x);
+    },
+
+    angleTo: function(b) {
+        return Math.atan2(this.y - b.y, this.x - b.x);
+    },
+
+    angleWith: function(b) {
+        return this.angleWithSep(b.x, b.y);
+    },
+
+    // Find the angle of the two vectors, solving the formula for the cross product a x b = |a||b|sin(θ) for θ.
+    angleWithSep: function(x, y) {
+        return Math.atan2(
+            this.x * y - this.y * x,
+            this.x * x + this.y * y);
+    },
+
+    _matMult: function(m) {
+        var x = m[0] * this.x + m[1] * this.y,
+            y = m[2] * this.x + m[3] * this.y;
+        this.x = x;
+        this.y = y;
+        return this;
+    },
+
+    _add: function(p) {
+        this.x += p.x;
+        this.y += p.y;
+        return this;
+    },
+
+    _sub: function(p) {
+        this.x -= p.x;
+        this.y -= p.y;
+        return this;
+    },
+
+    _mult: function(k) {
+        this.x *= k;
+        this.y *= k;
+        return this;
+    },
+
+    _div: function(k) {
+        this.x /= k;
+        this.y /= k;
+        return this;
+    },
+
+    _unit: function() {
+        this._div(this.mag());
+        return this;
+    },
+
+    _perp: function() {
+        var y = this.y;
+        this.y = this.x;
+        this.x = -y;
+        return this;
+    },
+
+    _rotate: function(angle) {
+        var cos = Math.cos(angle),
+            sin = Math.sin(angle),
+            x = cos * this.x - sin * this.y,
+            y = sin * this.x + cos * this.y;
+        this.x = x;
+        this.y = y;
+        return this;
+    },
+
+    _round: function() {
+        this.x = Math.round(this.x);
+        this.y = Math.round(this.y);
+        return this;
+    }
+};
+
+// constructs Point from an array if necessary
+Point.convert = function (a) {
+    if (a instanceof Point) {
+        return a;
+    }
+    if (Array.isArray(a)) {
+        return new Point(a[0], a[1]);
+    }
+    return a;
+};
+
+},{}],2:[function(_dereq_,module,exports){
 module.exports.VectorTile = _dereq_('./lib/vectortile.js');
 module.exports.VectorTileFeature = _dereq_('./lib/vectortilefeature.js');
 module.exports.VectorTileLayer = _dereq_('./lib/vectortilelayer.js');
 
-},{"./lib/vectortile.js":2,"./lib/vectortilefeature.js":3,"./lib/vectortilelayer.js":4}],2:[function(_dereq_,module,exports){
+},{"./lib/vectortile.js":3,"./lib/vectortilefeature.js":4,"./lib/vectortilelayer.js":5}],3:[function(_dereq_,module,exports){
 'use strict';
 
 var VectorTileLayer = _dereq_('./vectortilelayer');
@@ -101174,7 +101307,7 @@ function readTile(tag, layers, pbf) {
 }
 
 
-},{"./vectortilelayer":4}],3:[function(_dereq_,module,exports){
+},{"./vectortilelayer":5}],4:[function(_dereq_,module,exports){
 'use strict';
 
 var Point = _dereq_('point-geometry');
@@ -101342,7 +101475,7 @@ VectorTileFeature.prototype.toGeoJSON = function(x, y, z) {
     };
 };
 
-},{"point-geometry":5}],4:[function(_dereq_,module,exports){
+},{"point-geometry":1}],5:[function(_dereq_,module,exports){
 'use strict';
 
 var VectorTileFeature = _dereq_('./vectortilefeature.js');
@@ -101405,140 +101538,7 @@ VectorTileLayer.prototype.feature = function(i) {
     return new VectorTileFeature(this._pbf, end, this.extent, this._keys, this._values);
 };
 
-},{"./vectortilefeature.js":3}],5:[function(_dereq_,module,exports){
-'use strict';
-
-module.exports = Point;
-
-function Point(x, y) {
-    this.x = x;
-    this.y = y;
-}
-
-Point.prototype = {
-    clone: function() { return new Point(this.x, this.y); },
-
-    add:     function(p) { return this.clone()._add(p);     },
-    sub:     function(p) { return this.clone()._sub(p);     },
-    mult:    function(k) { return this.clone()._mult(k);    },
-    div:     function(k) { return this.clone()._div(k);     },
-    rotate:  function(a) { return this.clone()._rotate(a);  },
-    matMult: function(m) { return this.clone()._matMult(m); },
-    unit:    function() { return this.clone()._unit(); },
-    perp:    function() { return this.clone()._perp(); },
-    round:   function() { return this.clone()._round(); },
-
-    mag: function() {
-        return Math.sqrt(this.x * this.x + this.y * this.y);
-    },
-
-    equals: function(p) {
-        return this.x === p.x &&
-               this.y === p.y;
-    },
-
-    dist: function(p) {
-        return Math.sqrt(this.distSqr(p));
-    },
-
-    distSqr: function(p) {
-        var dx = p.x - this.x,
-            dy = p.y - this.y;
-        return dx * dx + dy * dy;
-    },
-
-    angle: function() {
-        return Math.atan2(this.y, this.x);
-    },
-
-    angleTo: function(b) {
-        return Math.atan2(this.y - b.y, this.x - b.x);
-    },
-
-    angleWith: function(b) {
-        return this.angleWithSep(b.x, b.y);
-    },
-
-    // Find the angle of the two vectors, solving the formula for the cross product a x b = |a||b|sin(θ) for θ.
-    angleWithSep: function(x, y) {
-        return Math.atan2(
-            this.x * y - this.y * x,
-            this.x * x + this.y * y);
-    },
-
-    _matMult: function(m) {
-        var x = m[0] * this.x + m[1] * this.y,
-            y = m[2] * this.x + m[3] * this.y;
-        this.x = x;
-        this.y = y;
-        return this;
-    },
-
-    _add: function(p) {
-        this.x += p.x;
-        this.y += p.y;
-        return this;
-    },
-
-    _sub: function(p) {
-        this.x -= p.x;
-        this.y -= p.y;
-        return this;
-    },
-
-    _mult: function(k) {
-        this.x *= k;
-        this.y *= k;
-        return this;
-    },
-
-    _div: function(k) {
-        this.x /= k;
-        this.y /= k;
-        return this;
-    },
-
-    _unit: function() {
-        this._div(this.mag());
-        return this;
-    },
-
-    _perp: function() {
-        var y = this.y;
-        this.y = this.x;
-        this.x = -y;
-        return this;
-    },
-
-    _rotate: function(angle) {
-        var cos = Math.cos(angle),
-            sin = Math.sin(angle),
-            x = cos * this.x - sin * this.y,
-            y = sin * this.x + cos * this.y;
-        this.x = x;
-        this.y = y;
-        return this;
-    },
-
-    _round: function() {
-        this.x = Math.round(this.x);
-        this.y = Math.round(this.y);
-        return this;
-    }
-};
-
-// constructs Point from an array if necessary
-Point.convert = function (a) {
-    if (a instanceof Point) {
-        return a;
-    }
-    if (Array.isArray(a)) {
-        return new Point(a[0], a[1]);
-    }
-    return a;
-};
-
-},{}]},{},[1])(1)
+},{"./vectortilefeature.js":4}]},{},[2])(2)
 });
 ol.ext.vectortile = module.exports;
 })();
@@ -115931,6 +115931,67 @@ ol.source.BingMaps.prototype.handleImageryMetadataResponse =
 
 };
 
+goog.provide('ol.source.Canvas');
+
+goog.require('ol.ImageCanvas');
+goog.require('ol.extent');
+goog.require('ol.source.Image');
+
+
+
+/**
+ * @classdesc
+ * Base class for image sources where a canvas element is the image.
+ *
+ * @constructor
+ * @extends {ol.source.Image}
+ * @param {olx.source.CanvasOptions} options
+ * @api
+ */
+ol.source.Canvas = function(options) {
+
+  var attributions = options.attributions !== undefined ?
+      options.attributions : null;
+
+  var canvasExtent = options.canvasExtent;
+
+  var resolution, resolutions;
+  if (options.canvasSize !== undefined) {
+    resolution = ol.extent.getHeight(canvasExtent) / options.canvasSize[1];
+    resolutions = [resolution];
+  }
+
+  goog.base(this, {
+    attributions: attributions,
+    logo: options.logo,
+    projection: ol.proj.get(options.projection),
+    resolutions: resolutions
+  });
+
+  /**
+   * @private
+   * @type {ol.ImageCanvas}
+   */
+  this.canvas_ = new ol.ImageCanvas(canvasExtent, resolution, 1,
+        attributions, options.canvas);
+  goog.events.listen(this.canvas_, goog.events.EventType.CHANGE,
+    this.handleImageChange, false, this);
+};
+goog.inherits(ol.source.Canvas, ol.source.Image);
+
+
+/**
+ * @inheritDoc
+ */
+ol.source.Canvas.prototype.getImageInternal =
+    function(extent, resolution, pixelRatio, projection) {
+
+  if (ol.extent.intersects(extent, this.canvas_.getExtent())) {
+    return this.canvas_;
+  }
+  return null;
+};
+
 // FIXME keep cluster cache by resolution ?
 // FIXME distance not respected because of the centroid
 
@@ -121205,6 +121266,7 @@ goog.require('ol.render.canvas.Immediate');
 goog.require('ol.render.webgl.Immediate');
 goog.require('ol.size');
 goog.require('ol.source.BingMaps');
+goog.require('ol.source.Canvas');
 goog.require('ol.source.Cluster');
 goog.require('ol.source.Image');
 goog.require('ol.source.ImageCanvas');
@@ -122761,6 +122823,11 @@ goog.exportSymbol(
 goog.exportSymbol(
     'ol.source.BingMaps.TOS_ATTRIBUTION',
     ol.source.BingMaps.TOS_ATTRIBUTION,
+    OPENLAYERS);
+
+goog.exportSymbol(
+    'ol.source.Canvas',
+    ol.source.Canvas,
     OPENLAYERS);
 
 goog.exportSymbol(
@@ -125105,11 +125172,6 @@ goog.exportProperty(
 
 goog.exportProperty(
     ol.control.MousePosition.prototype,
-    'setMap',
-    ol.control.MousePosition.prototype.setMap);
-
-goog.exportProperty(
-    ol.control.MousePosition.prototype,
     'setCoordinateFormat',
     ol.control.MousePosition.prototype.setCoordinateFormat);
 
@@ -125122,11 +125184,6 @@ goog.exportSymbol(
     'ol.control.OverviewMap',
     ol.control.OverviewMap,
     OPENLAYERS);
-
-goog.exportProperty(
-    ol.control.OverviewMap.prototype,
-    'setMap',
-    ol.control.OverviewMap.prototype.setMap);
 
 goog.exportSymbol(
     'ol.control.OverviewMap.render',
@@ -126454,6 +126511,186 @@ goog.exportProperty(
     ol.source.BingMaps.prototype.unByKey);
 
 goog.exportProperty(
+    ol.source.Image.prototype,
+    'getAttributions',
+    ol.source.Image.prototype.getAttributions);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'getLogo',
+    ol.source.Image.prototype.getLogo);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'getProjection',
+    ol.source.Image.prototype.getProjection);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'getState',
+    ol.source.Image.prototype.getState);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'setAttributions',
+    ol.source.Image.prototype.setAttributions);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'get',
+    ol.source.Image.prototype.get);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'getKeys',
+    ol.source.Image.prototype.getKeys);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'getProperties',
+    ol.source.Image.prototype.getProperties);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'set',
+    ol.source.Image.prototype.set);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'setProperties',
+    ol.source.Image.prototype.setProperties);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'unset',
+    ol.source.Image.prototype.unset);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'changed',
+    ol.source.Image.prototype.changed);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'dispatchEvent',
+    ol.source.Image.prototype.dispatchEvent);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'getRevision',
+    ol.source.Image.prototype.getRevision);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'on',
+    ol.source.Image.prototype.on);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'once',
+    ol.source.Image.prototype.once);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'un',
+    ol.source.Image.prototype.un);
+
+goog.exportProperty(
+    ol.source.Image.prototype,
+    'unByKey',
+    ol.source.Image.prototype.unByKey);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'getAttributions',
+    ol.source.Canvas.prototype.getAttributions);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'getLogo',
+    ol.source.Canvas.prototype.getLogo);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'getProjection',
+    ol.source.Canvas.prototype.getProjection);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'getState',
+    ol.source.Canvas.prototype.getState);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'setAttributions',
+    ol.source.Canvas.prototype.setAttributions);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'get',
+    ol.source.Canvas.prototype.get);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'getKeys',
+    ol.source.Canvas.prototype.getKeys);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'getProperties',
+    ol.source.Canvas.prototype.getProperties);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'set',
+    ol.source.Canvas.prototype.set);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'setProperties',
+    ol.source.Canvas.prototype.setProperties);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'unset',
+    ol.source.Canvas.prototype.unset);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'changed',
+    ol.source.Canvas.prototype.changed);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'dispatchEvent',
+    ol.source.Canvas.prototype.dispatchEvent);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'getRevision',
+    ol.source.Canvas.prototype.getRevision);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'on',
+    ol.source.Canvas.prototype.on);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'once',
+    ol.source.Canvas.prototype.once);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'un',
+    ol.source.Canvas.prototype.un);
+
+goog.exportProperty(
+    ol.source.Canvas.prototype,
+    'unByKey',
+    ol.source.Canvas.prototype.unByKey);
+
+goog.exportProperty(
     ol.source.Vector.prototype,
     'getAttributions',
     ol.source.Vector.prototype.getAttributions);
@@ -126702,96 +126939,6 @@ goog.exportProperty(
     ol.source.Cluster.prototype,
     'unByKey',
     ol.source.Cluster.prototype.unByKey);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'getAttributions',
-    ol.source.Image.prototype.getAttributions);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'getLogo',
-    ol.source.Image.prototype.getLogo);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'getProjection',
-    ol.source.Image.prototype.getProjection);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'getState',
-    ol.source.Image.prototype.getState);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'setAttributions',
-    ol.source.Image.prototype.setAttributions);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'get',
-    ol.source.Image.prototype.get);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'getKeys',
-    ol.source.Image.prototype.getKeys);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'getProperties',
-    ol.source.Image.prototype.getProperties);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'set',
-    ol.source.Image.prototype.set);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'setProperties',
-    ol.source.Image.prototype.setProperties);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'unset',
-    ol.source.Image.prototype.unset);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'changed',
-    ol.source.Image.prototype.changed);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'dispatchEvent',
-    ol.source.Image.prototype.dispatchEvent);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'getRevision',
-    ol.source.Image.prototype.getRevision);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'on',
-    ol.source.Image.prototype.on);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'once',
-    ol.source.Image.prototype.once);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'un',
-    ol.source.Image.prototype.un);
-
-goog.exportProperty(
-    ol.source.Image.prototype,
-    'unByKey',
-    ol.source.Image.prototype.unByKey);
 
 goog.exportProperty(
     ol.source.ImageCanvas.prototype,
@@ -132020,16 +132167,6 @@ goog.exportProperty(
 
 goog.exportProperty(
     ol.geom.Circle.prototype,
-    'applyTransform',
-    ol.geom.Circle.prototype.applyTransform);
-
-goog.exportProperty(
-    ol.geom.Circle.prototype,
-    'translate',
-    ol.geom.Circle.prototype.translate);
-
-goog.exportProperty(
-    ol.geom.Circle.prototype,
     'getClosestPoint',
     ol.geom.Circle.prototype.getClosestPoint);
 
@@ -132210,16 +132347,6 @@ goog.exportProperty(
 
 goog.exportProperty(
     ol.geom.LinearRing.prototype,
-    'applyTransform',
-    ol.geom.LinearRing.prototype.applyTransform);
-
-goog.exportProperty(
-    ol.geom.LinearRing.prototype,
-    'translate',
-    ol.geom.LinearRing.prototype.translate);
-
-goog.exportProperty(
-    ol.geom.LinearRing.prototype,
     'getClosestPoint',
     ol.geom.LinearRing.prototype.getClosestPoint);
 
@@ -132317,16 +132444,6 @@ goog.exportProperty(
     ol.geom.LineString.prototype,
     'getLayout',
     ol.geom.LineString.prototype.getLayout);
-
-goog.exportProperty(
-    ol.geom.LineString.prototype,
-    'applyTransform',
-    ol.geom.LineString.prototype.applyTransform);
-
-goog.exportProperty(
-    ol.geom.LineString.prototype,
-    'translate',
-    ol.geom.LineString.prototype.translate);
 
 goog.exportProperty(
     ol.geom.LineString.prototype,
@@ -132430,16 +132547,6 @@ goog.exportProperty(
 
 goog.exportProperty(
     ol.geom.MultiLineString.prototype,
-    'applyTransform',
-    ol.geom.MultiLineString.prototype.applyTransform);
-
-goog.exportProperty(
-    ol.geom.MultiLineString.prototype,
-    'translate',
-    ol.geom.MultiLineString.prototype.translate);
-
-goog.exportProperty(
-    ol.geom.MultiLineString.prototype,
     'getClosestPoint',
     ol.geom.MultiLineString.prototype.getClosestPoint);
 
@@ -132537,16 +132644,6 @@ goog.exportProperty(
     ol.geom.MultiPoint.prototype,
     'getLayout',
     ol.geom.MultiPoint.prototype.getLayout);
-
-goog.exportProperty(
-    ol.geom.MultiPoint.prototype,
-    'applyTransform',
-    ol.geom.MultiPoint.prototype.applyTransform);
-
-goog.exportProperty(
-    ol.geom.MultiPoint.prototype,
-    'translate',
-    ol.geom.MultiPoint.prototype.translate);
 
 goog.exportProperty(
     ol.geom.MultiPoint.prototype,
@@ -132650,16 +132747,6 @@ goog.exportProperty(
 
 goog.exportProperty(
     ol.geom.MultiPolygon.prototype,
-    'applyTransform',
-    ol.geom.MultiPolygon.prototype.applyTransform);
-
-goog.exportProperty(
-    ol.geom.MultiPolygon.prototype,
-    'translate',
-    ol.geom.MultiPolygon.prototype.translate);
-
-goog.exportProperty(
-    ol.geom.MultiPolygon.prototype,
     'getClosestPoint',
     ol.geom.MultiPolygon.prototype.getClosestPoint);
 
@@ -132760,16 +132847,6 @@ goog.exportProperty(
 
 goog.exportProperty(
     ol.geom.Point.prototype,
-    'applyTransform',
-    ol.geom.Point.prototype.applyTransform);
-
-goog.exportProperty(
-    ol.geom.Point.prototype,
-    'translate',
-    ol.geom.Point.prototype.translate);
-
-goog.exportProperty(
-    ol.geom.Point.prototype,
     'getClosestPoint',
     ol.geom.Point.prototype.getClosestPoint);
 
@@ -132867,16 +132944,6 @@ goog.exportProperty(
     ol.geom.Polygon.prototype,
     'getLayout',
     ol.geom.Polygon.prototype.getLayout);
-
-goog.exportProperty(
-    ol.geom.Polygon.prototype,
-    'applyTransform',
-    ol.geom.Polygon.prototype.applyTransform);
-
-goog.exportProperty(
-    ol.geom.Polygon.prototype,
-    'translate',
-    ol.geom.Polygon.prototype.translate);
 
 goog.exportProperty(
     ol.geom.Polygon.prototype,
@@ -133005,11 +133072,6 @@ goog.exportProperty(
 
 goog.exportProperty(
     ol.geom.Rectangle.prototype,
-    'intersectsExtent',
-    ol.geom.Rectangle.prototype.intersectsExtent);
-
-goog.exportProperty(
-    ol.geom.Rectangle.prototype,
     'setCoordinates',
     ol.geom.Rectangle.prototype.setCoordinates);
 
@@ -133027,16 +133089,6 @@ goog.exportProperty(
     ol.geom.Rectangle.prototype,
     'getLayout',
     ol.geom.Rectangle.prototype.getLayout);
-
-goog.exportProperty(
-    ol.geom.Rectangle.prototype,
-    'applyTransform',
-    ol.geom.Rectangle.prototype.applyTransform);
-
-goog.exportProperty(
-    ol.geom.Rectangle.prototype,
-    'translate',
-    ol.geom.Rectangle.prototype.translate);
 
 goog.exportProperty(
     ol.geom.Rectangle.prototype,
@@ -133370,6 +133422,11 @@ goog.exportProperty(
 
 goog.exportProperty(
     ol.control.MousePosition.prototype,
+    'setMap',
+    ol.control.MousePosition.prototype.setMap);
+
+goog.exportProperty(
+    ol.control.MousePosition.prototype,
     'setTarget',
     ol.control.MousePosition.prototype.setTarget);
 
@@ -133442,6 +133499,11 @@ goog.exportProperty(
     ol.control.OverviewMap.prototype,
     'getMap',
     ol.control.OverviewMap.prototype.getMap);
+
+goog.exportProperty(
+    ol.control.OverviewMap.prototype,
+    'setMap',
+    ol.control.OverviewMap.prototype.setMap);
 
 goog.exportProperty(
     ol.control.OverviewMap.prototype,
@@ -133757,6 +133819,11 @@ goog.exportProperty(
     ol.control.ZoomSlider.prototype,
     'getMap',
     ol.control.ZoomSlider.prototype.getMap);
+
+goog.exportProperty(
+    ol.control.ZoomSlider.prototype,
+    'setMap',
+    ol.control.ZoomSlider.prototype.setMap);
 
 goog.exportProperty(
     ol.control.ZoomSlider.prototype,

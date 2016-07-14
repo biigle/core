@@ -12,7 +12,7 @@ angular.module('dias.annotations').service('images', function ($rootScope, URL, 
 		// array of all image IDs of the transect
 		var imageIds = [];
 		// maximum number of images to hold in buffer
-		var MAX_BUFFER_SIZE = 10;
+		var MAX_BUFFER_SIZE = 5;
 		// buffer of already loaded images
 		var buffer = [];
 

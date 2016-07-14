@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
  */
-angular.module('dias.annotations').controller('AnnotatorController', function ($scope, images, urlParams, msg, IMAGE_ID, keyboard) {
+angular.module('dias.annotations').controller('AnnotatorController', function ($scope, images, urlParams, msg, IMAGE_ID, keyboard, viewport) {
         "use strict";
 
         // set the content of the navbar element "manually" because it is outside of
@@ -13,12 +13,6 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
         var navbarFilename = document.querySelector('.navbar-annotations-filename');
 
         $scope.imageLoading = true;
-
-        // the current canvas viewport, synced with the URL parameters
-        $scope.viewport = {
-            zoom: urlParams.get('z'),
-            center: [urlParams.get('x'), urlParams.get('y')]
-        };
 
         var updateNavbarFilename = function (image) {
             navbarFilename.innerHTML = image._filename;
@@ -74,16 +68,9 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
                   .catch(msg.responseError);
         };
 
-        // update the URL parameters of the viewport
+        // update the viewport
         $scope.$on('canvas.moveend', function(e, params) {
-            $scope.viewport.zoom = params.zoom;
-            $scope.viewport.center[0] = Math.round(params.center[0]);
-            $scope.viewport.center[1] = Math.round(params.center[1]);
-            urlParams.set({
-                z: $scope.viewport.zoom,
-                x: $scope.viewport.center[0],
-                y: $scope.viewport.center[1]
-            });
+            viewport.set(params);
         });
 
         keyboard.on(37, function () {
