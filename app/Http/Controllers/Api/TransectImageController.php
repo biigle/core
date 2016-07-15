@@ -34,7 +34,6 @@ class TransectImageController extends Controller
             ->pluck('id');
     }
 
-
     /**
      * Add images to the specified transect
      *
@@ -94,7 +93,10 @@ class TransectImageController extends Controller
             ->take(sizeof($images))
             ->get();
 
-        $transect->generateThumbnails($images->pluck('id')->all());
+        $ids = $images->pluck('id')->toArray();
+
+        $transect->generateThumbnails($ids);
+        event('images.created', [$id, $ids]);
 
         return $images;
     }

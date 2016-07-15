@@ -47,6 +47,7 @@ class ApiTransectImageControllerTest extends ApiTestCase
 
         $this->assertEquals(1, $this->transect()->images()->count());
         $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
+        $this->expectsEvents('images.created');
 
         $this->json('POST', "/api/v1/transects/{$id}/images", [
             'images' => '1.jpg, 1.jpg',
