@@ -14,15 +14,15 @@
                 <div data-uib-tab="" index="0" heading="Manual" title="Manually add new labels">
                     @include('label-trees::show.labels.manual')
                 </div>
-                <div data-uib-tab="" index="0" heading="WoRMS" title="Import labels from the World Register of Marine Species">
+                <div data-uib-tab="" index="1" heading="WoRMS" title="Import labels from the World Register of Marine Species">
                     @include('label-trees::show.labels.worms')
                 </div>
             </div>
 
         </div>
     @endcan
-    <ul class="list-group">
-        <li data-ng-if="hasLabels()" class="ng-cloak label-tree-item list-group-item" data-ng-class="getClass()" data-ng-repeat="item in tree[null] | orderBy: 'name'"></li>
+    <ul class="list-group ng-cloak">
+        <li data-ng-if="hasLabels()" class="label-tree-item list-group-item" data-ng-class="getClass()" data-ng-repeat="item in tree[null] | orderBy: 'name'"></li>
         <li class="ng-cloak list-group-item" data-ng-if="!hasLabels()">This tree has no labels</li>
     </ul>
 </div>
