@@ -48,10 +48,18 @@
             "php artisan key:generate"
         ],
         "post-install-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postInstall"
+            "Illuminate\\Foundation\\ComposerScripts::postInstall",
+            "php artisan cache:clear",
+            "php artisan config:cache",
+            "php artisan route:cache",
+            "php artisan optimize"
         ],
         "post-update-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postUpdate"
+            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
+            "php artisan cache:clear",
+            "php artisan config:cache",
+            "php artisan route:cache",
+            "php artisan optimize"
         ],
         "test": [
             "php vendor/bin/phpunit",
