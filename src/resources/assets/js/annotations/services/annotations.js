@@ -11,6 +11,10 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 		var annotations;
         var promise;
 
+        // maps image IDs to the array of annotations for all images that were already
+        // visited
+        var cache = {};
+
 		var resolveShapeName = function (annotation) {
 			annotation.shape = shapes.getName(annotation.shape_id);
 			return annotation;
@@ -22,11 +26,18 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 		};
 
 		this.query = function (params) {
-			annotations = Annotation.query(params);
+            if (cache.hasOwnProperty(params.id)) {
+                annotations = cache[params.id];
+            } else {
+                annotations = Annotation.query(params);
+                cache[params.id] = annotations;
+                annotations.$promise.then(function (a) {
+                    a.forEach(resolveShapeName);
+                });
+            }
+
             promise = annotations.$promise;
-			promise.then(function (a) {
-				a.forEach(resolveShapeName);
-			});
+
 			return annotations;
 		};
 
