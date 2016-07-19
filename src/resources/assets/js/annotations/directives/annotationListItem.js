@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description An annotation list item.
  */
-angular.module('dias.annotations').directive('annotationListItem', function (labels) {
+angular.module('dias.annotations').directive('annotationListItem', function (labels, mapAnnotations) {
 		"use strict";
 
 		return {
@@ -22,7 +22,16 @@ angular.module('dias.annotations').directive('annotationListItem', function (lab
 				};
 
 				$scope.removeLabel = function (label) {
-					labels.removeFromAnnotation($scope.annotation, label);
+                    if ($scope.annotation.labels.length === 1) {
+                        if (confirm('Detaching the last label will delete the annotation. Proceed?')) {
+                            // detaching the last label will also delete the annotation
+                            // but directly deleting the annotation is easier to
+                            // implement here
+                            mapAnnotations.deleteAnnotation($scope.annotation);
+                        }
+                    } else {
+                        labels.removeFromAnnotation($scope.annotation, label);
+                    }
 				};
 
 				$scope.canAttachLabel = function () {

@@ -338,6 +338,16 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			selectedFeatures.forEach(removeFeature);
 		};
 
+        this.deleteAnnotation = function (annotation) {
+            var array = annotationFeatures.getArray();
+            for (var i = array.length - 1; i >= 0; i--) {
+                if (array[i].annotation.id === annotation.id) {
+                    removeFeature(array[i]);
+                    break;
+                }
+            }
+        };
+
         // programmatically select an annotation (not through the select interaction)
 		this.select = function (id) {
 			var feature;
