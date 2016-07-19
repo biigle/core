@@ -192,4 +192,29 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
         $this->assertResponseOk();
         $this->assertFalse($this->annotation->labels()->exists());
     }
+
+    public function testDestroyLast()
+    {
+        $id = AnnotationLabelTest::create([
+            'label_id' => $this->labelRoot()->id,
+            'annotation_id' => $this->annotation->id,
+            'user_id' => $this->editor()->id,
+        ])->id;
+
+        $id2 = AnnotationLabelTest::create([
+            'label_id' => $this->labelChild()->id,
+            'annotation_id' => $this->annotation->id,
+            'user_id' => $this->editor()->id,
+        ])->id;
+
+        $this->beEditor();
+        $this->delete("/api/v1/annotation-labels/{$id}");
+        $this->assertResponseOk();
+
+        $this->assertNotNull($this->annotation->fresh());
+
+        $this->delete("/api/v1/annotation-labels/{$id2}");
+        $this->assertResponseOk();
+        $this->assertNull($this->annotation->fresh());
+    }
 }

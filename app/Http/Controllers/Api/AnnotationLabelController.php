@@ -146,6 +146,7 @@ class AnnotationLabelController extends Controller
      * @apiGroup Annotations
      * @apiName DeleteAnnotationLabels
      * @apiPermission projectEditor
+     * @apiDescription If the detached label is the last label of an annotation, the annotation will be deleted as well!
      *
      * @apiParam {Number} id The annotation **label** ID (not the annotation ID).
      *
@@ -154,10 +155,14 @@ class AnnotationLabelController extends Controller
      */
     public function destroy($id)
     {
-        $annotationLabel = AnnotationLabel::findOrFail($id);
+        $annotationLabel = AnnotationLabel::with('annotation')->findOrFail($id);
         $this->authorize('destroy', $annotationLabel);
 
         $annotationLabel->delete();
+
+        if (!$annotationLabel->annotation->labels()->exists()) {
+            $annotationLabel->annotation->delete();
+        }
 
         return response('Deleted.', 200);
     }
