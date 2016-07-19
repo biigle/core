@@ -7,12 +7,22 @@
  */
 angular.module('dias.annotations').service('mapImage', function (map, viewport) {
 		"use strict";
-		var extent = [0, 0, 0, 0];
+        var extent = [0, 0, 0, 0];
 
-		var canvas = document.createElement('canvas');
-		var context = canvas.getContext('2d');
-        var fxCanvas = fx.canvas();
-        var fxTexture = null;
+        var webglSupported = true;
+        var needsTextureSizeCheck = true;
+
+        try {
+            // webgl check is done here
+            var fxCanvas = fx.canvas();
+            // we don't need all this if webgl is not supported
+            var fxTexture = null;
+            var canvas = document.createElement('canvas');
+            var context = canvas.getContext('2d');
+        } catch (error) {
+            webglSupported = false;
+            console.log(error);
+        }
 
         window.onbeforeunload = function () {
             // Make sure the texture is destroyed when the page is left.
@@ -49,6 +59,14 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             vibrance: [0]
         };
 
+        var checkTextureSize = function (width, height) {
+            var size = fxCanvas._.gl.getParameter(fxCanvas._.gl.MAX_TEXTURE_SIZE);
+            webglSupported = size >= height && size >= width;
+            if (!webglSupported) {
+                console.log('Insufficient WebGL texture size. Required: ' + width + 'x' + height + ', available: ' + size + 'x' + size + '.');
+            }
+        };
+
         var applyFilters = function (revert) {
             if (!fxTexture) {
                 return;
@@ -79,13 +97,34 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             extent[2] = image.width;
             extent[3] = image.height;
 
-            if (fxTexture) {
-                fxTexture.loadContentsOf(image);
-            } else {
-                fxTexture = fxCanvas.texture(image);
+            if (webglSupported && needsTextureSizeCheck) {
+                needsTextureSizeCheck = false;
+                checkTextureSize(image.width, image.height);
             }
 
-            applyFilters();
+            if (webglSupported) {
+                if (fxTexture) {
+                    fxTexture.loadContentsOf(image);
+                } else {
+                    fxTexture = fxCanvas.texture(image);
+                }
+
+                applyFilters();
+
+                imageLayer.setSource(new ol.source.Canvas({
+                    canvas: canvas,
+                    projection: projection,
+                    canvasExtent: extent,
+                    canvasSize: [canvas.width, canvas.height]
+                }));
+            } else {
+                imageLayer.setSource(new ol.source.ImageStatic({
+                    url: image.src,
+                    projection: projection,
+                    imageExtent: extent,
+                    imageSize: [image.width, image.height]
+                }));
+            }
 
             var center = viewport.getCenter();
             if (center[0] === undefined || center[1] === undefined) {
@@ -94,13 +133,6 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             }
 
             var zoom = viewport.getZoom();
-
-            imageLayer.setSource(new ol.source.Canvas({
-                canvas: canvas,
-                projection: projection,
-                canvasExtent: extent,
-                canvasSize: [canvas.width, canvas.height]
-            }));
 
             // create a new view because the extend may change
             map.setView(new ol.View({
@@ -138,6 +170,10 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
         };
 
         this.filter = function (params) {
+            if (!webglSupported) {
+                return;
+            }
+
             for (var filter in filters) {
                 if (!params.hasOwnProperty(filter) || !filters.hasOwnProperty(filter)) {
                     continue;
@@ -147,6 +183,10 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             }
 
             applyFilters();
+        };
+
+        this.supportsFilters = function () {
+            return webglSupported;
         };
 	}
 );
