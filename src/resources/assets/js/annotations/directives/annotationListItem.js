@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description An annotation list item.
  */
-angular.module('dias.annotations').directive('annotationListItem', function (labels, mapAnnotations) {
+angular.module('dias.annotations').directive('annotationListItem', function (labels, mapAnnotations, USER_ID) {
 		"use strict";
 
 		return {
@@ -37,6 +37,10 @@ angular.module('dias.annotations').directive('annotationListItem', function (lab
 				$scope.canAttachLabel = function () {
 					return $scope.selected() && labels.hasSelected();
 				};
+
+                $scope.canRemoveLabel = function (label) {
+                    return label.user.id === USER_ID;
+                };
 
 				$scope.currentLabel = labels.getSelected;
 

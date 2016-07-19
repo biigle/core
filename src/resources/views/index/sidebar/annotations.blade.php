@@ -9,7 +9,7 @@
 				<li class="label-list__item" data-ng-repeat="annotationLabel in annotation.labels | orderBy:'confidence':true" data-label-item="">
 					{{--<span class="confidence-label label" data-ng-bind="annotationLabel.confidence | number:2" data-ng-class="class" title="Level of confidence: @{{annotationLabel.confidence | number:2}}"></span>--}}<span class="label__name">@{{annotationLabel.label.name}}</span> <small class="text-muted">@{{annotationLabel.user ? (annotationLabel.user.firstname + ' ' + annotationLabel.user.lastname) : '(user deleted)'}}</small>
 					@if ($editMode)
-						<button type="button" class="close" title="Remove this label" data-ng-click="removeLabel(annotationLabel)"><span aria-hidden="true">&times;</span></button>
+						<button type="button" class="close" title="Detach this label" data-ng-if="canRemoveLabel(annotationLabel)" data-ng-click="removeLabel(annotationLabel)"><span aria-hidden="true">&times;</span></button>
 					@endif
 				</li>
 			</ul>
