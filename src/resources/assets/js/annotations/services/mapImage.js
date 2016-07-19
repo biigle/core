@@ -8,6 +8,11 @@
 angular.module('dias.annotations').service('mapImage', function (map, viewport) {
 		"use strict";
         var extent = [0, 0, 0, 0];
+        // image that is currently displayed
+        var image = null;
+
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
 
         var webglSupported = true;
         var needsTextureSizeCheck = true;
@@ -17,8 +22,8 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             var fxCanvas = fx.canvas();
             // we don't need all this if webgl is not supported
             var fxTexture = null;
-            var canvas = document.createElement('canvas');
-            var context = canvas.getContext('2d');
+            // src of the image currently loaded to the fxTexture
+            var loadedImageTexture = null;
         } catch (error) {
             webglSupported = false;
             console.log(error);
@@ -67,9 +72,22 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             }
         };
 
-        var applyFilters = function (revert) {
-            if (!fxTexture) {
+        var filtersActive = function () {
+            return !angular.equals(filters, DEFAULT_FILTERS);
+        };
+
+        var applyFilters = function (render) {
+            if (!image) {
                 return;
+            }
+
+            if (loadedImageTexture !== image.src) {
+                if (fxTexture) {
+                    fxTexture.loadContentsOf(image);
+                } else {
+                    fxTexture = fxCanvas.texture(image);
+                }
+                loadedImageTexture = image.src;
             }
 
             fxCanvas.draw(fxTexture);
@@ -87,44 +105,39 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             }
 
             fxCanvas.update();
-            canvas.width = fxCanvas.width;
-            canvas.height = fxCanvas.height;
             context.drawImage(fxCanvas, 0, 0);
-            map.render();
+
+            if (render) {
+                map.render();
+            }
         };
 
-        var renderImage = function (e, image) {
+        var renderImage = function (e, i) {
+            image = i;
             extent[2] = image.width;
             extent[3] = image.height;
+            canvas.width = image.width;
+            canvas.height = image.height;
 
             if (webglSupported && needsTextureSizeCheck) {
                 needsTextureSizeCheck = false;
                 checkTextureSize(image.width, image.height);
             }
 
-            if (webglSupported) {
-                if (fxTexture) {
-                    fxTexture.loadContentsOf(image);
-                } else {
-                    fxTexture = fxCanvas.texture(image);
-                }
-
+            if (webglSupported && filtersActive()) {
+                // only use the WebGL filter stuff if any of the filters are activated
+                // since drawing directly is much quicker
                 applyFilters();
-
-                imageLayer.setSource(new ol.source.Canvas({
-                    canvas: canvas,
-                    projection: projection,
-                    canvasExtent: extent,
-                    canvasSize: [canvas.width, canvas.height]
-                }));
             } else {
-                imageLayer.setSource(new ol.source.ImageStatic({
-                    url: image.src,
-                    projection: projection,
-                    imageExtent: extent,
-                    imageSize: [image.width, image.height]
-                }));
+                context.drawImage(image, 0, 0);
             }
+
+            imageLayer.setSource(new ol.source.Canvas({
+                canvas: canvas,
+                projection: projection,
+                canvasExtent: extent,
+                canvasSize: [canvas.width, canvas.height]
+            }));
 
             var center = viewport.getCenter();
             if (center[0] === undefined || center[1] === undefined) {
@@ -182,7 +195,7 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
                 filters[filter] = params[filter].map(parseFloat);
             }
 
-            applyFilters();
+            applyFilters(true);
         };
 
         this.supportsFilters = function () {
