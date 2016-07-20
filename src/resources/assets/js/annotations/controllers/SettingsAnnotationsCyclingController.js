@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Controller cycling through annotations
  */
-angular.module('dias.annotations').controller('SettingsAnnotationsCyclingController', function ($scope, mapAnnotations, labels, keyboard) {
+angular.module('dias.annotations').controller('SettingsAnnotationsCyclingController', function ($scope, mapAnnotations, annotations, labels, keyboard) {
         "use strict";
 
         // flag to prevent cycling while a new image is loading
@@ -60,7 +60,7 @@ angular.module('dias.annotations').controller('SettingsAnnotationsCyclingControl
             }
 
             if ($scope.cycling() && labels.hasSelected()) {
-                labels.attachToAnnotation(mapAnnotations.getCurrent()).$promise.then(function () {
+                annotations.attachAnnotationLabel(mapAnnotations.getCurrent()).$promise.then(function () {
                     mapAnnotations.flicker(1);
                 });
             } else {

@@ -5,46 +5,51 @@
  * @memberOf dias.annotations
  * @description An annotation list item.
  */
-angular.module('dias.annotations').directive('annotationListItem', function (labels, mapAnnotations, USER_ID) {
+angular.module('dias.annotations').directive('annotationListItem', function (annotations, mapAnnotations, USER_ID) {
 		"use strict";
 
 		return {
-			scope: true,
 			controller: function ($scope) {
-				$scope.shapeClass = 'icon-' + $scope.annotation.shape.toLowerCase();
+				// $scope.attachLabel = function () {
+				// 	labels.attachToAnnotation($scope.annotation);
+				// };
 
-				$scope.selected = function () {
-					return $scope.isSelected($scope.annotation.id);
-				};
+                $scope.getClass = function () {
+                    return {
+                        'selected': mapAnnotations.isAnnotationSelected($scope.a.annotation)
+                    };
+                };
 
-				$scope.attachLabel = function () {
-					labels.attachToAnnotation($scope.annotation);
-				};
+                $scope.getShapeClass = function () {
+                    return 'icon-' + $scope.a.shape.toLowerCase();
+                };
 
-				$scope.removeLabel = function (label) {
-                    if ($scope.annotation.labels.length === 1) {
+                $scope.select = function (e) {
+                    mapAnnotations.toggleSelect($scope.a.annotation, e.shiftKey);
+                };
+
+                $scope.zoomTo = function () {
+                    mapAnnotations.fit($scope.a.annotation);
+                };
+
+                $scope.canBeRemoved = function () {
+                    return $scope.a.label.user && $scope.a.label.user.id === USER_ID;
+                };
+
+                $scope.remove = function (e) {
+                    e.stopPropagation();
+                    var annotation = $scope.a.annotation;
+                    if (annotation.labels.length === 1) {
                         if (confirm('Detaching the last label will delete the annotation. Proceed?')) {
                             // detaching the last label will also delete the annotation
                             // but directly deleting the annotation is easier to
                             // implement here
-                            mapAnnotations.deleteAnnotation($scope.annotation);
+                            mapAnnotations.deleteAnnotation(annotation);
                         }
                     } else {
-                        labels.removeFromAnnotation($scope.annotation, label);
+                        annotations.removeAnnotationLabel(annotation, $scope.a.label);
                     }
-				};
-
-				$scope.canAttachLabel = function () {
-					return $scope.selected() && labels.hasSelected();
-				};
-
-                $scope.canRemoveLabel = function (label) {
-                    return label.user.id === USER_ID;
                 };
-
-				$scope.currentLabel = labels.getSelected;
-
-				$scope.currentConfidence = labels.getCurrentConfidence;
 			}
 		};
 	}

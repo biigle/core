@@ -1,3 +1,5 @@
+@import "variables";
+
 html, body {
 	height: 100%;
 }
@@ -114,7 +116,7 @@ html, body {
     }
 }
 
-.icon.icon-white, .icon.active, .annotation-list__item.selected .icon, .annotation-list__item:hover .icon{
+.icon.icon-white, .icon.active {
     &.icon-point {
         background-image: url(../images/point_white.svg);
     }
@@ -133,6 +135,28 @@ html, body {
 
     &.icon-circle {
         background-image: url(../images/circle_white.svg);
+    }
+}
+
+.icon.icon-highlight {
+    &.icon-point {
+        background-image: url(../images/point_highlight.svg);
+    }
+
+    &.icon-rectangle {
+        background-image: url(../images/rectangle_highlight.svg);
+    }
+
+    &.icon-polygon {
+        background-image: url(../images/polygon_highlight.svg);
+    }
+
+    &.icon-linestring {
+        background-image: url(../images/linestring_highlight.svg);
+    }
+
+    &.icon-circle {
+        background-image: url(../images/circle_highlight.svg);
     }
 }
 

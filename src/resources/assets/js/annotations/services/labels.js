@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service for annotation labels to provide some convenience functions.
  */
-angular.module('dias.annotations').service('labels', function (AnnotationLabel, msg, LABEL_TREES) {
+angular.module('dias.annotations').service('labels', function (AnnotationLabel, LABEL_TREES) {
         "use strict";
 
         var selectedLabel;
@@ -71,35 +71,6 @@ angular.module('dias.annotations').service('labels', function (AnnotationLabel, 
             }
 
             return annotation.labels;
-        };
-
-        this.attachToAnnotation = function (annotation) {
-            var label = AnnotationLabel.attach({
-                annotation_id: annotation.id,
-                label_id: selectedLabel.id,
-                confidence: currentConfidence
-            });
-
-            label.$promise.then(function () {
-                annotation.labels.push(label);
-            });
-
-            label.$promise.catch(msg.responseError);
-
-            return label;
-        };
-
-        this.removeFromAnnotation = function (annotation, label) {
-            // use index to see if the label exists for the annotation
-            var index = annotation.labels.indexOf(label);
-            if (index > -1) {
-                return AnnotationLabel.delete({id: label.id}, function () {
-                    // update the index since the label list may have been modified
-                    // in the meantime
-                    index = annotation.labels.indexOf(label);
-                    annotation.labels.splice(index, 1);
-                }, msg.responseError);
-            }
         };
 
         this.getTree = function () {

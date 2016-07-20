@@ -5,11 +5,22 @@
  * @memberOf dias.annotations
  * @description Wrapper service the annotations to make them available in multiple controllers.
  */
-angular.module('dias.annotations').service('annotations', function (Annotation, shapes, msg) {
+angular.module('dias.annotations').service('annotations', function (Annotation, shapes, msg, AnnotationLabel, labels) {
 		"use strict";
 
 		var annotations;
         var promise;
+
+        /*
+         * Contains one item for each label that is present in annotations on the image
+         * (with label IDs as keys).
+         * Each item is an object {label:..., annotations:...}, the label this item
+         * represents and a list of all annotations that are associated with the label.
+         * The annotation items are not the annotation objects themselbes but
+         * {user:..., annotation:..., shape:...} objects with a reference to the user
+         * that attached the label to the annotation.
+         */
+        var groupedByLabel = {};
 
         // maps image IDs to the array of annotations for all images that were already
         // visited
@@ -22,10 +33,80 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 
 		var addAnnotation = function (annotation) {
 			annotations.push(annotation);
+            insertIntoGroupedByLabel(annotation, annotation.labels[0]);
 			return annotation;
 		};
 
+        var removeAnnotation = function (annotation) {
+            var index = annotations.indexOf(annotation);
+            annotations.splice(index, 1);
+            removeAnnotationFromGroupedByLabel(annotation);
+            return annotation;
+        };
+
+        var insertIntoGroupedByLabel = function (annotation, annotationLabel) {
+            var annotationItem = {
+                annotation: annotation,
+                label: annotationLabel,
+                shape: annotation.shape
+            };
+            var label = annotationLabel.label;
+
+            if (groupedByLabel.hasOwnProperty(label.id)) {
+                groupedByLabel[label.id].annotations.push(annotationItem);
+            } else {
+                groupedByLabel[label.id] = {
+                    label: label,
+                    annotations: [annotationItem]
+                };
+            }
+        };
+
+        var removeFromGroupedByLabel = function (annotation, label) {
+            var annotations = groupedByLabel[label.id].annotations;
+
+            for (var i = annotations.length - 1; i >= 0; i--) {
+                if (annotations[i].annotation.id === annotation.id) {
+                    annotations.splice(i, 1);
+                    break;
+                }
+            }
+
+            if (annotations.length === 0) {
+                delete groupedByLabel[label.id];
+            }
+        };
+
+        var removeAnnotationFromGroupedByLabel = function (annotation) {
+            for (var key in groupedByLabel) {
+                if (!groupedByLabel.hasOwnProperty(key)) continue;
+                removeFromGroupedByLabel(annotation, groupedByLabel[key].label);
+            }
+        };
+
+        var clearGroupedByLabel = function () {
+            for (var key in groupedByLabel) {
+                if (!groupedByLabel.hasOwnProperty(key)) continue;
+                delete groupedByLabel[key];
+            }
+        };
+
+        var buildGroupedByLabel = function (anns) {
+            var annotation;
+            var labels;
+
+            for (var i = anns.length - 1; i >= 0; i--) {
+                annotation = anns[i];
+                labels = annotation.labels;
+
+                for (var j = labels.length - 1; j >= 0; j--) {
+                    insertIntoGroupedByLabel(annotation, labels[j]);
+                }
+            }
+        };
+
 		this.query = function (params) {
+            clearGroupedByLabel();
             if (cache.hasOwnProperty(params.id)) {
                 annotations = cache[params.id];
             } else {
@@ -37,6 +118,7 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
             }
 
             promise = annotations.$promise;
+            promise.then(buildGroupedByLabel);
 
 			return annotations;
 		};
@@ -55,15 +137,8 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 		};
 
 		this.delete = function (annotation) {
-			// use index to see if the annotation exists in the annotations list
-			var index = annotations.indexOf(annotation);
-			if (index > -1) {
-				return annotation.$delete(function () {
-					// update the index since the annotations list may have been
-					// modified in the meantime
-					index = annotations.indexOf(annotation);
-					annotations.splice(index, 1);
-				}, msg.responseError);
+			if (annotations.indexOf(annotation) > -1) {
+				return annotation.$delete(removeAnnotation, msg.responseError);
 			}
 		};
 
@@ -77,6 +152,34 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 
         this.getPromise = function () {
             return promise;
+        };
+
+        this.getGroupedByLabel = function () {
+            return groupedByLabel;
+        };
+
+        this.attachAnnotationLabel = function (annotation, label, confidence) {
+            label = label || labels.getSelected();
+            confidence = confidence || labels.getCurrentConfidence();
+
+            var annotationLabel = AnnotationLabel.attach({
+                annotation_id: annotation.id,
+                label_id: label.id,
+                confidence: confidence
+            }, function () {
+                annotation.labels.push(annotationLabel);
+                insertIntoGroupedByLabel(annotation, annotationLabel);
+            }, msg.responseError);
+
+            return annotationLabel;
+        };
+
+        this.removeAnnotationLabel = function (annotation, label) {
+            return AnnotationLabel.delete({id: label.id}, function () {
+                var index = annotation.labels.indexOf(label);
+                annotation.labels.splice(index, 1);
+                removeFromGroupedByLabel(annotation, label.label);
+            }, msg.responseError);
         };
 	}
 );

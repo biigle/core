@@ -3,48 +3,67 @@
 	overflow-y: auto;
 }
 
-.annotation-list__item {
-	cursor: pointer;
-	user-select: none;
-	padding: 1em;
-	padding-right: 0;
-	border-bottom: 1px solid #353535;
-	position: relative;
+.labels-list-item {
+    user-select: none;
+    padding: 0 1em;
+    border-bottom: 1px solid #353535;
+    position: relative;
 
-	&:first-child {
-		border-top: 1px solid #353535;
-	}
+    &:first-child {
+        border-top: 1px solid #353535;
+    }
 
-	&:hover, &.selected {
-		color: white;
-	}
+    &.selected {
+        .list-item-title {
+            color: white;
+            padding-bottom: .5em;
+            font-weight: bold;
+        }
+    }
 
-	&.selected:before {
-        content: '';
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-		border-left: 3px solid #ff5e00;
-	}
+    .list-item-title {
+        padding: 1em 0;
+        cursor: pointer;
 
-	.icon {
-		margin-right: 1em;
-	}
-}
+        &:hover {
+            color: white;
+        }
+    }
 
-.label-list {
-	padding-top: 1em;
-}
+    .list-item-color {
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        border-radius: 50%;
+        border: 2px solid #eee;
+        vertical-align: middle;
+    }
 
-.label-list__item {
-	padding: 0.75em 0;
 
-	&:first-child {
-		padding-top: 0;
-	}
+    .annotations-list {
+        padding-bottom: 1em;
+    }
 
-	&:last-child {
-		padding-bottom: 0;
-	}
+    .annotation-list-item {
+        position: relative;
+        cursor: pointer;
+        padding: .25em 0 .25em 1em;
+        color: $text-muted;
+
+        &:hover, &.selected {
+            color: white;
+        }
+
+        &:hover .icon {
+            @extend .icon-white;
+        }
+
+        &.selected .icon {
+            @extend .icon-highlight;
+        }
+
+        .icon {
+           margin-right: .25em;
+        }
+    }
 }
