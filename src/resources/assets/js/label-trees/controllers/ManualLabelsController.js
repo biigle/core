@@ -5,31 +5,36 @@
  * @memberOf dias.label-trees
  * @description Controller for manually adding labels to the label tree
  */
-angular.module('dias.label-trees').controller('ManualLabelsController', function ($scope) {
+angular.module('dias.label-trees').controller('ManualLabelsController', function ($scope, randomColor) {
         "use strict";
 
         var DEFAULTS = {
             LABEL: null,
-            COLOR: '#0099ff',
             NAME: ''
         };
 
         $scope.selected = {
             label: DEFAULTS.LABEL,
-            color: DEFAULTS.COLOR,
+            color: randomColor.get(),
             name: DEFAULTS.NAME
         };
 
         var handleLabelCreateSuccess = function () {
             $scope.resetName();
+
+            // don't refresh the color if new labels should get the same color than the
+            // selected (parent) label
+            if (!$scope.selected.label || ('#' + $scope.selected.label.color) !== $scope.selected.color) {
+                $scope.refreshColor();
+            }
         };
 
         $scope.resetParent = function () {
             $scope.selectLabel(DEFAULTS.LABEL);
         };
 
-        $scope.resetColor = function () {
-            $scope.selected.color = DEFAULTS.COLOR;
+        $scope.refreshColor = function () {
+            $scope.selected.color = randomColor.get();
         };
 
         $scope.resetName = function () {
@@ -42,10 +47,6 @@ angular.module('dias.label-trees').controller('ManualLabelsController', function
 
         $scope.isParentDirty = function () {
             return $scope.selected.label !== DEFAULTS.LABEL;
-        };
-
-        $scope.isColorDirty = function () {
-            return $scope.selected.color !== DEFAULTS.COLOR;
         };
 
         $scope.addLabel = function () {
@@ -63,6 +64,9 @@ angular.module('dias.label-trees').controller('ManualLabelsController', function
 
         $scope.$on('labels.selected', function (e, label) {
             $scope.selected.label = label;
+            if (label) {
+                $scope.selected.color = '#' + label.color;
+            }
         });
     }
 );

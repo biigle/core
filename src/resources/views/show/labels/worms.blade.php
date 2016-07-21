@@ -7,7 +7,7 @@
             <div class="input-group">
                 <input type="color" class="form-control" id="new-label-color" title="Label color" data-ng-model="selected.color"/>
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" title="Reset color" data-ng-click="resetColor()" data-ng-disabled="!isColorDirty()" disabled=""><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                    <button class="btn btn-default" type="button" title="Get a random color" data-ng-click="refreshColor()"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
                 </span>
             </div>
         </div>

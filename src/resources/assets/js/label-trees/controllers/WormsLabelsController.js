@@ -5,7 +5,7 @@
  * @memberOf dias.label-trees
  * @description Controller for importing labels from WoRMS
  */
-angular.module('dias.label-trees').controller('WormsLabelsController', function ($scope, LabelSource, LABEL_SOURCES, msg) {
+angular.module('dias.label-trees').controller('WormsLabelsController', function ($scope, LabelSource, LABEL_SOURCES, msg, randomColor) {
         "use strict";
 
         // WoRMS label source
@@ -19,7 +19,6 @@ angular.module('dias.label-trees').controller('WormsLabelsController', function 
 
         var DEFAULTS = {
             LABEL: null,
-            COLOR: '#0099ff',
             NAME: ''
         };
 
@@ -48,11 +47,17 @@ angular.module('dias.label-trees').controller('WormsLabelsController', function 
             for (var i = labels.length - 1; i >= 0; i--) {
                 importedIds.push(parseInt(labels[i].source_id));
             }
+
+            // don't refresh the color if new labels should get the same color than the
+            // selected (parent) label
+            if (!$scope.selected.label || ('#' + $scope.selected.label.color) !== $scope.selected.color) {
+                $scope.refreshColor();
+            }
         };
 
         $scope.selected = {
             label: DEFAULTS.LABEL,
-            color: DEFAULTS.COLOR,
+            color: randomColor.get(),
             name: DEFAULTS.NAME
         };
 
@@ -86,8 +91,8 @@ angular.module('dias.label-trees').controller('WormsLabelsController', function 
             $scope.selectLabel(DEFAULTS.LABEL);
         };
 
-        $scope.resetColor = function () {
-            $scope.selected.color = DEFAULTS.COLOR;
+        $scope.refreshColor = function () {
+            $scope.selected.color = randomColor.get();
         };
 
         $scope.isNameDirty = function () {
@@ -96,10 +101,6 @@ angular.module('dias.label-trees').controller('WormsLabelsController', function 
 
         $scope.isParentDirty = function () {
             return $scope.selected.label !== DEFAULTS.LABEL;
-        };
-
-        $scope.isColorDirty = function () {
-            return $scope.selected.color !== DEFAULTS.COLOR;
         };
 
         $scope.toggleRecursive = function () {
@@ -145,6 +146,9 @@ angular.module('dias.label-trees').controller('WormsLabelsController', function 
 
         $scope.$on('labels.selected', function (e, label) {
             $scope.selected.label = label;
+            if (label) {
+                $scope.selected.color = '#' + label.color;
+            }
         });
     }
 );
