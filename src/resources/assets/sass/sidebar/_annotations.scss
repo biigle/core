@@ -1,13 +1,15 @@
 .sidebar__annotations {
 	flex-grow: 2;
 	overflow-y: auto;
+    position: relative;
 }
 
 .labels-list-item {
+    // must not be position:relative because .annotation-list-item calculates the
+    // offsetTop property relative to .sidebar__annotations!
     user-select: none;
     padding: 0 1em;
     border-bottom: 1px solid #353535;
-    position: relative;
 
     &:first-child {
         border-top: 1px solid #353535;
@@ -45,7 +47,6 @@
     }
 
     .annotation-list-item {
-        position: relative;
         cursor: pointer;
         padding: .25em 0 .25em 1em;
         color: $text-muted;

@@ -10,7 +10,7 @@
                     @if ($editMode)
                         <button type="button" class="close" title="Detach this label from the annotation" data-ng-if="canBeRemoved()" data-ng-click="remove($event)"><span aria-hidden="true">&times;</span></button>
                     @endif
-                    <span class="icon" data-ng-class="getShapeClass()"></span> <span>@{{a.label.user ? (a.label.user.firstname + ' ' + a.label.user.lastname) : '(user deleted)'}}</span>
+                    <span class="icon" data-ng-class="getShapeClass()"></span> <span data-ng-bind="getUsername()"></span>
                 </li>
             </ul>
         </li>

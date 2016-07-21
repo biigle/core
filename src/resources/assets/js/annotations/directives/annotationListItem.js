@@ -9,10 +9,27 @@ angular.module('dias.annotations').directive('annotationListItem', function (ann
 		"use strict";
 
 		return {
-			controller: function ($scope) {
+			controller: function ($scope, $element) {
+                // cache the selected state so it is checked only once during a digest
+                var selected = false;
+                var annotation = $scope.a.annotation;
+                var label = $scope.a.label;
+
+                var isSelected = function () {
+                    return mapAnnotations.isAnnotationSelected($scope.a.annotation);
+                };
+
+                $scope.getUsername = function () {
+                    if (label.user) {
+                        return label.user.firstname + ' ' + label.user.lastname;
+                    }
+
+                    return '(user deleted)';
+                };
+
                 $scope.getClass = function () {
                     return {
-                        'selected': mapAnnotations.isAnnotationSelected($scope.a.annotation)
+                        'selected': selected
                     };
                 };
 
@@ -29,12 +46,11 @@ angular.module('dias.annotations').directive('annotationListItem', function (ann
                 };
 
                 $scope.canBeRemoved = function () {
-                    return $scope.a.label.user && $scope.a.label.user.id === USER_ID;
+                    return label.user && label.user.id === USER_ID;
                 };
 
                 $scope.remove = function (e) {
                     e.stopPropagation();
-                    var annotation = $scope.a.annotation;
                     if (annotation.labels.length === 1) {
                         if (confirm('Detaching the last label will delete the annotation. Proceed?')) {
                             // detaching the last label will also delete the annotation
@@ -43,9 +59,22 @@ angular.module('dias.annotations').directive('annotationListItem', function (ann
                             mapAnnotations.deleteAnnotation(annotation);
                         }
                     } else {
-                        annotations.removeAnnotationLabel(annotation, $scope.a.label);
+                        annotations.removeAnnotationLabel(annotation, label);
                     }
                 };
+
+                $scope.$watch(isSelected, function (s) {
+                    selected = s;
+                    if (selected) {
+                        $scope.scrollToElement($element);
+                    } else {
+                        $scope.dontScrollToElement($element);
+                    }
+                });
+
+                $element.on('$destroy', function () {
+                    $scope.dontScrollToElement($element);
+                });
 			}
 		};
 	}
