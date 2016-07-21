@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval, labels) {
+angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval, labels, AttachLabelInteraction) {
 		"use strict";
 
         // the geometric features of the annotations on the map
@@ -16,7 +16,9 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         var annotationLayer = new ol.layer.Vector({
             source: annotationSource,
             style: styles.features,
-            zIndex: 100
+            zIndex: 100,
+            updateWhileAnimating: true,
+            updateWhileInteracting: true
         });
 
 		// select interaction working on "singleclick"
@@ -49,6 +51,13 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         });
 
         translate.setActive(false);
+
+        // interaction to attach labels to existing annotations
+        var attachLabel = new AttachLabelInteraction({
+            features: annotationFeatures
+        });
+
+        attachLabel.setActive(false);
 
 		// drawing interaction, will be a new one for each drawing tool
 		var draw;
@@ -109,7 +118,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
             // merge the individual point arrays to a single array
             // round the coordinates to integers
-            return [].concat.apply([], coordinates)
+            return Array.prototype.concat.apply([], coordinates)
                 .map(Math.round)
                 .map(convertFromOLPoint);
 		};
@@ -252,11 +261,24 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             return annotationFeatures.getArray().filter(filterAnnotationsLabelCategory);
         };
 
+        // get the feature that represents the given annotation
+        var getFeature = function (annotation) {
+            var features = annotationFeatures.getArray();
+            for (var i = features.length - 1; i >= 0; i--) {
+                if (features[i].annotation.id === annotation.id) {
+                    return features[i];
+                }
+            }
+
+            return null;
+        };
+
 		this.init = function (scope) {
             _scope = scope;
             map.addLayer(annotationLayer);
 			map.addInteraction(select);
             map.addInteraction(translate);
+            map.addInteraction(attachLabel);
             map.addInteraction(modify);
 			scope.$on('image.shown', refreshAnnotations);
 
@@ -276,6 +298,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             select.setActive(false);
             modify.setActive(true);
             _this.finishMoving();
+            _this.finishAttaching();
             // allow only one draw interaction at a time
             map.removeInteraction(draw);
 
@@ -295,6 +318,8 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         // put the map out of drawing mode
 		this.finishDrawing = function () {
+            if (!_this.isDrawing()) return;
+
 			map.removeInteraction(draw);
             draw.setActive(false);
             drawingType = undefined;
@@ -310,9 +335,8 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         // put the map into moving mode (of an annotation)
         this.startMoving = function () {
-            if (_this.isDrawing()) {
-                _this.finishDrawing();
-            }
+            _this.finishDrawing();
+            _this.finishAttaching();
             translate.setActive(true);
         };
 
@@ -322,6 +346,21 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         this.isMoving = function () {
             return translate.getActive();
+        };
+
+        // put the map into "attach label to annotation" mode
+        this.startAttaching = function () {
+            _this.finishDrawing();
+            _this.finishMoving();
+            attachLabel.setActive(true);
+        };
+
+        this.finishAttaching = function () {
+            attachLabel.setActive(false);
+        };
+
+        this.isAttaching = function () {
+            return attachLabel.getActive();
         };
 
         this.hasDrawnAnnotation = function () {
@@ -339,25 +378,20 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		};
 
         this.deleteAnnotation = function (annotation) {
-            var array = annotationFeatures.getArray();
-            for (var i = array.length - 1; i >= 0; i--) {
-                if (array[i].annotation.id === annotation.id) {
-                    removeFeature(array[i]);
-                    break;
-                }
-            }
+            removeFeature(getFeature(annotation));
         };
 
-        // programmatically select an annotation (not through the select interaction)
-		this.select = function (id) {
-			var feature;
-			annotationSource.forEachFeature(function (f) {
-				if (f.annotation.id === id) {
-					feature = f;
-				}
-			});
-			// remove selection if feature was already selected. otherwise select.
+        // programmatically de-/select an annotation (not through the select interaction)
+		this.toggleSelect = function (annotation, multiple) {
+            var feature = getFeature(annotation);
+            if (!feature) return;
+
+			// remove selection if feature was already selected
 			if (!selectedFeatures.remove(feature)) {
+                if (!multiple) {
+                    // clear if feature was not selected and should not be added to existing selections
+                    _this.clearSelection();
+                }
 				selectedFeatures.push(feature);
 			}
 		};
@@ -366,22 +400,32 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             return selectedFeatures.getLength() > 0;
         };
 
-        // fits the view to the given feature (id)
-        this.fit = function (id) {
-            annotationSource.forEachFeature(function (f) {
-                if (f.annotation.id === id) {
-                    // animate fit
-                    var view = map.getView();
-                    var pan = ol.animation.pan({
-                        source: view.getCenter()
-                    });
-                    var zoom = ol.animation.zoom({
-                        resolution: view.getResolution()
-                    });
-                    map.beforeRender(pan, zoom);
-                    view.fit(f.getGeometry(), map.getSize());
-                }
+        // fits the view to the given annotation
+        this.fit = function (annotation) {
+            var feature = getFeature(annotation);
+            if (!feature) return;
+
+            // animate fit
+            var view = map.getView();
+            var pan = ol.animation.pan({
+                source: view.getCenter()
             });
+            var zoom = ol.animation.zoom({
+                resolution: view.getResolution()
+            });
+            map.beforeRender(pan, zoom);
+            view.fit(feature.getGeometry(), map.getSize());
+        };
+
+        this.isAnnotationSelected = function (annotation) {
+            var features = selectedFeatures.getArray();
+            for (var i = features.length - 1; i >= 0; i--) {
+                if (features[i].annotation && features[i].annotation.id === annotation.id) {
+                    return true;
+                }
+            }
+
+            return false;
         };
 
 		this.clearSelection = function () {

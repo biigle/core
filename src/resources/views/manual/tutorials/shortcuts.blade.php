@@ -54,7 +54,11 @@
                 </tr>
                 <tr>
                     <td><code>M</code></td>
-                    <td>Select the move annotation tool</td>
+                    <td>Select the tool to move selected annotations</td>
+                </tr>
+                <tr>
+                    <td><code>L</code></td>
+                    <td>Select tool to attach labels to existing annotations</td>
                 </tr>
                 <tr>
                     <td><code>Del</code></td>

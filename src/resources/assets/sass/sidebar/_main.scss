@@ -1,22 +1,3 @@
-.annotator__sidebar {
-	display: flex;
-	flex-flow: row nowrap;
-
-	.confidence-label {
-		margin-right: 0.6em;
-	}
-}
-
-.sidebar__permanent {
-	@extend %sidebar-panel;
-	display: flex;
-	flex-flow: column nowrap;
-}
-
-.sidebar__controls {
-	padding-bottom: 1em;
-}
-
 %sidebar-panel {
 	width: 360px;
 	border-left: 1px solid #090909;
@@ -32,6 +13,27 @@
 	}
 }
 
+.annotator__sidebar {
+    display: flex;
+    flex-flow: row nowrap;
+
+    .confidence-label {
+        margin-right: 0.6em;
+    }
+}
+
+.sidebar__permanent {
+    @extend %sidebar-panel;
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 0;
+}
+
+.sidebar__controls {
+    padding: 1em;
+}
+
+
 .sidebar__foldout {
     @extend %foldout;
     @extend %sidebar-panel;
@@ -44,7 +46,6 @@
 
 .sidebar__minimap {
 	background-image: url(../images/noise.png);
-	height: 200px;
-	margin-bottom: 1em;
-	border: 1px solid #090909;
+	height: 220px;
+	border-bottom: 1px solid #090909;
 }

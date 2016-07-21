@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Controller for the controls bar edit buttons
  */
-angular.module('dias.annotations').controller('EditControlsController', function ($scope, mapAnnotations, keyboard, $timeout) {
+angular.module('dias.annotations').controller('EditControlsController', function ($scope, mapAnnotations, keyboard, $timeout, labels, msg) {
 		"use strict";
 
         // the user has a certain amount of time to quick delete the last drawn
@@ -23,19 +23,28 @@ angular.module('dias.annotations').controller('EditControlsController', function
 
         $scope.hasSelectedAnnotations = mapAnnotations.hasSelectedFeatures;
 
-        var startMoving = function () {
-            mapAnnotations.startMoving();
-        };
+        var startMoving = mapAnnotations.startMoving;
+        var finishMoving = mapAnnotations.finishMoving;
 
-        var finishMoving = function () {
-            mapAnnotations.finishMoving();
-        };
+        var startAttaching = mapAnnotations.startAttaching;
+        var finishAttaching = mapAnnotations.finishAttaching;
 
-        $scope.moveSelectedAnnotations = function () {
+        $scope.toggleMoving = function () {
             if ($scope.isMoving()) {
                 finishMoving();
             } else {
                 startMoving();
+            }
+        };
+
+        $scope.toggleAttaching = function () {
+            if ($scope.isAttaching()) {
+                finishAttaching();
+            } else if (labels.hasSelected()) {
+                startAttaching();
+            } else {
+                $scope.$emit('sidebar.foldout.do-open', 'categories');
+                msg.info('Please select a label to attach to the annotations.');
             }
         };
 
@@ -48,6 +57,7 @@ angular.module('dias.annotations').controller('EditControlsController', function
         };
 
         $scope.isMoving = mapAnnotations.isMoving;
+        $scope.isAttaching = mapAnnotations.isAttaching;
 
         // the quick delete timeout always starts when a new annotation was drawn
         $scope.$on('annotations.drawn', function (e, feature) {
@@ -81,7 +91,11 @@ angular.module('dias.annotations').controller('EditControlsController', function
         });
 
         keyboard.on('m', function () {
-            $scope.$apply($scope.moveSelectedAnnotations);
+            $scope.$apply($scope.toggleMoving);
+        });
+
+        keyboard.on('l', function () {
+            $scope.$apply($scope.toggleAttaching);
         });
 	}
 );
