@@ -10,10 +10,6 @@ angular.module('dias.annotations').directive('annotationListItem', function (ann
 
 		return {
 			controller: function ($scope) {
-				// $scope.attachLabel = function () {
-				// 	labels.attachToAnnotation($scope.annotation);
-				// };
-
                 $scope.getClass = function () {
                     return {
                         'selected': mapAnnotations.isAnnotationSelected($scope.a.annotation)

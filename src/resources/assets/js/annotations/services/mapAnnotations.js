@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval, labels) {
+angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval, labels, AttachLabelInteraction) {
 		"use strict";
 
         // the geometric features of the annotations on the map
@@ -51,6 +51,13 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         });
 
         translate.setActive(false);
+
+        // interaction to attach labels to existing annotations
+        var attachLabel = new AttachLabelInteraction({
+            features: annotationFeatures
+        });
+
+        attachLabel.setActive(false);
 
 		// drawing interaction, will be a new one for each drawing tool
 		var draw;
@@ -271,6 +278,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             map.addLayer(annotationLayer);
 			map.addInteraction(select);
             map.addInteraction(translate);
+            map.addInteraction(attachLabel);
             map.addInteraction(modify);
 			scope.$on('image.shown', refreshAnnotations);
 
@@ -290,6 +298,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             select.setActive(false);
             modify.setActive(true);
             _this.finishMoving();
+            _this.finishAttaching();
             // allow only one draw interaction at a time
             map.removeInteraction(draw);
 
@@ -309,6 +318,8 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         // put the map out of drawing mode
 		this.finishDrawing = function () {
+            if (!_this.isDrawing()) return;
+
 			map.removeInteraction(draw);
             draw.setActive(false);
             drawingType = undefined;
@@ -324,9 +335,8 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         // put the map into moving mode (of an annotation)
         this.startMoving = function () {
-            if (_this.isDrawing()) {
-                _this.finishDrawing();
-            }
+            _this.finishDrawing();
+            _this.finishAttaching();
             translate.setActive(true);
         };
 
@@ -336,6 +346,21 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         this.isMoving = function () {
             return translate.getActive();
+        };
+
+        // put the map into "attach label to annotation" mode
+        this.startAttaching = function () {
+            _this.finishDrawing();
+            _this.finishMoving();
+            attachLabel.setActive(true);
+        };
+
+        this.finishAttaching = function () {
+            attachLabel.setActive(false);
+        };
+
+        this.isAttaching = function () {
+            return attachLabel.getActive();
         };
 
         this.hasDrawnAnnotation = function () {
