@@ -75,6 +75,12 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         // label category
         var restrictLabelCategory = false;
 
+        // options to use for the view.fit function
+        var viewFitOptions = {
+            padding: [50, 50, 50, 50],
+            minResolution: 1
+        };
+
         var _this = this;
 
         // scope of the CanvasController
@@ -85,9 +91,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             _this.clearSelection();
             if (annotation) {
                 selectedFeatures.push(annotation);
-                map.getView().fit(annotation.getGeometry(), map.getSize(), {
-                    padding: [50, 50, 50, 50]
-                });
+                map.getView().fit(annotation.getGeometry(), map.getSize(), viewFitOptions);
             }
         };
 
@@ -414,7 +418,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
                 resolution: view.getResolution()
             });
             map.beforeRender(pan, zoom);
-            view.fit(feature.getGeometry(), map.getSize());
+            view.fit(feature.getGeometry(), map.getSize(), viewFitOptions);
         };
 
         this.isAnnotationSelected = function (annotation) {
