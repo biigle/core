@@ -76,9 +76,18 @@ class ApiProjectTransectControllerTest extends ApiTestCase
             'media_type_id' => MediaType::$timeSeriesId,
             'images' => '1.jpg, , 1.jpg',
         ]);
-
         // error because of duplicate image
-        $this->assertResponseStatus(400);
+        $this->assertResponseStatus(422);
+
+        $this->json('POST', '/api/v1/projects/'.$id.'/transects', [
+            'name' => 'my transect no. 1',
+            'url' => 'random',
+            'media_type_id' => MediaType::$timeSeriesId,
+            'images' => '1.bmp',
+        ]);
+        // error because of unsupported image format
+        $this->assertResponseStatus(422);
+
         $this->assertEquals($count, $this->project()->transects()->count());
         $this->assertEquals($imageCount, Image::all()->count());
 

@@ -1,6 +1,8 @@
 <?php
 
 use Dias\Transect;
+use Illuminate\Database\QueryException;
+use Illuminate\Validation\ValidationException;
 
 class TransectTest extends ModelTestCase
 {
@@ -98,8 +100,33 @@ class TransectTest extends ModelTestCase
 
     public function testCreateImagesDuplicateInsert()
     {
-        $this->setExpectedException('Exception');
+        $this->setExpectedException(QueryException::class);
         $return = $this->model->createImages(['1.jpg', '1.jpg']);
+    }
+
+    public function testValidateImagesFormatOk()
+    {
+        $this->model->validateImages(['1.jpg', '2.jpeg', '1.JPG', '2.JPEG']);
+        $this->model->validateImages(['1.png', '2.PNG']);
+        $this->model->validateImages(['1.gif', '2.GIF']);
+    }
+
+    public function testValidateImagesFormatNotOk()
+    {
+        $this->setExpectedException(ValidationException::class);
+        $this->model->validateImages(['1.jpg', '2.bmp']);
+    }
+
+    public function testValidateImagesDupes()
+    {
+        $this->setExpectedException(ValidationException::class);
+        $this->model->validateImages(['1.jpg', '1.jpg']);
+    }
+
+    public function testValidateImagesEmpty()
+    {
+        $this->setExpectedException(ValidationException::class);
+        $this->model->validateImages([]);
     }
 
     public function testGenerateThumbnails()

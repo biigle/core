@@ -52,8 +52,14 @@ class ApiTransectImageControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/transects/{$id}/images", [
             'images' => '1.jpg, 1.jpg',
         ]);
-        // duplicate image filename
-        $this->assertResponseStatus(400);
+        // error because of duplicate image
+        $this->assertResponseStatus(422);
+
+        $this->json('POST', "/api/v1/transects/{$id}/images", [
+            'images' => '1.bmp',
+        ]);
+        // error because of unsupported image format
+        $this->assertResponseStatus(422);
 
         $this->json('POST', "/api/v1/transects/{$id}/images", [
             'images' => '1.jpg, 2.jpg',

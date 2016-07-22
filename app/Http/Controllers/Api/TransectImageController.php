@@ -3,6 +3,7 @@
 namespace Dias\Http\Controllers\Api;
 
 use Dias\Transect;
+use Illuminate\Validation\ValidationException;
 
 class TransectImageController extends Controller
 {
@@ -75,9 +76,11 @@ class TransectImageController extends Controller
 
         $images = Transect::parseImagesQueryString($this->request->input('images'));
 
-        if (empty($images)) {
+        try {
+            $transect->validateImages($images);
+        } catch (ValidationException $e) {
             return $this->buildFailedValidationResponse($this->request, [
-                'images' => 'No images were supplied!',
+                'images' => $e->getMessage(),
             ]);
         }
 

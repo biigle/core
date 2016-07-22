@@ -2,12 +2,13 @@
 
 namespace Dias;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\QueryException;
 use Exception;
 use Dias\Image;
 use Dias\Jobs\GenerateThumbnails;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Validation\ValidationException;
 
 /**
  * A transect is a collection of images. Transects belong to one or many
@@ -138,11 +139,39 @@ class Transect extends Model
     }
 
     /**
+     * Check if an array of image filenames is valid.
+     *
+     * A valid array is not empty, contains no duplicates and has only images with JPG,
+     * PNG or GIF file endings.
+     *
+     * @param array $filenames
+     * @throws ValidationException
+     */
+    public function validateImages($filenames)
+    {
+        if (empty($filenames)) {
+            throw new ValidationException('No images were supplied.');
+        }
+
+        if (count($filenames) !== count(array_unique($filenames))) {
+            throw new ValidationException('A transect must not have the same image twice.');
+        }
+
+        foreach ($filenames as $filename) {
+            if (preg_match('/\.(jpe?g|png|gif)$/i', $filename) !== 1) {
+                throw new ValidationException('Only JPG, PNG or GIF image formats are supported.');
+            }
+        }
+    }
+
+    /**
      * Creates the image objects to be associated with this transect.
+     *
+     * Make sure the image filenames are valid.
      *
      * @param array $filenames image filenames at the location of the transect URL
      *
-     * @throws Exception If there was an error creating the images (e.g. if there were
+     * @throws QueryException If there was an error creating the images (e.g. if there were
      * duplicate filenames).
      *
      * @return bool
@@ -154,11 +183,7 @@ class Transect extends Model
             $images[] = ['filename' => $filename, 'transect_id' => $this->id];
         }
 
-        try {
-            return Image::insert($images);
-        } catch (QueryException $e) {
-            throw new Exception('A transect must not have the same image twice!');
-        }
+        return Image::insert($images);
     }
 
     /**

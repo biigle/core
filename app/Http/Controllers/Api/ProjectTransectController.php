@@ -4,7 +4,7 @@ namespace Dias\Http\Controllers\Api;
 
 use Dias\Project;
 use Dias\Transect;
-use Dias\Exceptions\ProjectIntegrityException;
+use Illuminate\Validation\ValidationException;
 
 class ProjectTransectController extends Controller
 {
@@ -91,9 +91,11 @@ class ProjectTransectController extends Controller
 
         $images = Transect::parseImagesQueryString($this->request->input('images'));
 
-        if (empty($images)) {
+        try {
+            $transect->validateImages($images);
+        } catch (ValidationException $e) {
             return $this->buildFailedValidationResponse($this->request, [
-                'images' => 'No images were supplied for the new transect!',
+                'images' => $e->getMessage(),
             ]);
         }
 
