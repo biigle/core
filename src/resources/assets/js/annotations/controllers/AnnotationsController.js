@@ -58,15 +58,12 @@ angular.module('dias.annotations').controller('AnnotationsController', function 
         };
 
         $scope.keepElementPosition = function (element) {
-            var offsetBefore = element[0].offsetTop;
+            var positionBefore = element[0].offsetTop - scrollElement.scrollTop;
             // wait until everything is rendered
             $timeout(function () {
-                var offsetAfter = element[0].offsetTop;
-                if (offsetAfter > offsetBefore) {
-                    // scroll down if required so the element has the same relative
-                    // position than before
-                    scrollElement.scrollTop += offsetAfter - offsetBefore;
-                }
+                var positionAfter = element[0].offsetTop - scrollElement.scrollTop;
+                // scroll so the element has the same relative position than before
+                scrollElement.scrollTop += positionAfter - positionBefore;
             });
         };
 
