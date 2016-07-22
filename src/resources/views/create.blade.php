@@ -42,7 +42,8 @@
 				<label for="images">Transect images</label>
 				<textarea class="form-control" name="images" id="images" required>{{ old('images') }}</textarea>
 				<p class="help-block">
-					The filenames of the transect images in the directory of the transect URL formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>.
+					The filenames of the transect images in the directory of the transect URL formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>.<br>
+                    The supported image file formats are: JPG, PNG and GIF.
 				</p>
 				@if($errors->has('images'))
 					<span class="help-block">{{ $errors->first('images') }}</span>
