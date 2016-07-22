@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Controller for the annotations list in the sidebar
  */
-angular.module('dias.annotations').controller('AnnotationsController', function ($scope, $element, annotations) {
+angular.module('dias.annotations').controller('AnnotationsController', function ($scope, $element, annotations, mapAnnotations, $timeout) {
         "use strict";
 
         var scrollElement = $element[0];
@@ -44,20 +44,36 @@ angular.module('dias.annotations').controller('AnnotationsController', function 
 
         };
 
-        $scope.scrollToElement = function (element) {
+        $scope.shouldBeVisible = function (element) {
             if (shouldBeVisible.indexOf(element[0]) === -1) {
                 shouldBeVisible.push(element[0]);
-                updateElementVisibility();
             }
         };
 
-        $scope.dontScrollToElement = function (element) {
+        $scope.shouldNotBeVisible = function (element) {
             var index = shouldBeVisible.indexOf(element[0]);
             if (index !== -1) {
                 shouldBeVisible.splice(index, 1);
             }
         };
 
+        $scope.keepElementPosition = function (element) {
+            var offsetBefore = element[0].offsetTop;
+            // wait until everything is rendered
+            $timeout(function () {
+                var offsetAfter = element[0].offsetTop;
+                if (offsetAfter > offsetBefore) {
+                    // scroll down if required so the element has the same relative
+                    // position than before
+                    scrollElement.scrollTop += offsetAfter - offsetBefore;
+                }
+            });
+        };
+
         $scope.getAnnotations = annotations.getGroupedByLabel;
+
+        // only use automatic scrolling if the annotations were selected on the image,
+        // not when they are selected in the sidebar
+        mapAnnotations.onSelectedAnnotation(updateElementVisibility);
     }
 );

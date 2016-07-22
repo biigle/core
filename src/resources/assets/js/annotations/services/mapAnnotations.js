@@ -286,15 +286,13 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             map.addInteraction(modify);
 			scope.$on('image.shown', refreshAnnotations);
 
-            var apply = function () {
+            _this.onSelectedAnnotation(function () {
                 // if not already digesting, digest
                 if (!scope.$$phase) {
                     // propagate new selections through the angular application
                     scope.$apply();
                 }
-            };
-
-			selectedFeatures.on('change:length', apply);
+            });
 		};
 
         // put the map into drawing mode
@@ -402,6 +400,15 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         this.hasSelectedFeatures = function () {
             return selectedFeatures.getLength() > 0;
+        };
+
+        // do something whenever annotations are (de-)selected
+        this.onSelectedAnnotation = function (callback) {
+            return select.on('select', callback);
+        };
+
+        this.offSelectedAnnotation = function (callback) {
+            return select.un('select', callback);
         };
 
         // fits the view to the given annotation

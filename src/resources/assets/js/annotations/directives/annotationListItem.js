@@ -39,6 +39,11 @@ angular.module('dias.annotations').directive('annotationListItem', function (ann
 
                 $scope.select = function (e) {
                     mapAnnotations.toggleSelect($scope.a.annotation, e.shiftKey);
+                    // If the annotation is selected in the sidebar, other label items
+                    // might unfold and push it away from the current position beneath
+                    // the cursor. This call will change the scroll position of the
+                    // parent container so the selected item satys at the same position.
+                    $scope.keepElementPosition($element);
                 };
 
                 $scope.zoomTo = function () {
@@ -51,29 +56,27 @@ angular.module('dias.annotations').directive('annotationListItem', function (ann
 
                 $scope.remove = function (e) {
                     e.stopPropagation();
-                    if (annotation.labels.length === 1) {
-                        if (confirm('Detaching the last label will delete the annotation. Proceed?')) {
-                            // detaching the last label will also delete the annotation
-                            // but directly deleting the annotation is easier to
-                            // implement here
-                            mapAnnotations.deleteAnnotation(annotation);
-                        }
-                    } else {
+                    if (annotation.labels.length > 1) {
                         annotations.removeAnnotationLabel(annotation, label);
+                    } else if (annotation.labels.length === 1 && confirm('Detaching the last label will delete the annotation. Proceed?')) {
+                        // Detaching the last label will also delete the annotation
+                        // but directly deleting the annotation is easier to
+                        // implement here.
+                        mapAnnotations.deleteAnnotation(annotation);
                     }
                 };
 
                 $scope.$watch(isSelected, function (s) {
                     selected = s;
                     if (selected) {
-                        $scope.scrollToElement($element);
+                        $scope.shouldBeVisible($element);
                     } else {
-                        $scope.dontScrollToElement($element);
+                        $scope.shouldNotBeVisible($element);
                     }
                 });
 
                 $element.on('$destroy', function () {
-                    $scope.dontScrollToElement($element);
+                    $scope.shouldNotBeVisible($element);
                 });
 			}
 		};
