@@ -16,12 +16,11 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         // activate sqlite foreign key integrity checks on SQLite
         if ($this->isSqlite()) {
             DB::statement('PRAGMA foreign_keys = ON;');
+            $this->artisan('migrate');
         } else {
             // in case the real DB connection should be tested
-            Artisan::call('migrate:rollback');
+            $this->artisan('migrate:refresh');
         }
-
-        Artisan::call('migrate');
 
         $this->withoutEvents();
         $this->withoutJobs();
@@ -29,7 +28,9 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
     public function tearDown()
     {
-        DB::disconnect();
+        if (!$this->isSqlite()) {
+            DB::disconnect();
+        }
         parent::tearDown();
     }
 
