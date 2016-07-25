@@ -19,8 +19,6 @@ var angular = require('laravel-elixir-angular')
 elixir(function (mix) {
 	mix.sass('main.scss', 'public/assets/styles/main.css')
 	   .angular('resources/assets/js/core/', 'public/assets/scripts', 'main.js');
-    mix.sass('admin.scss', 'public/assets/styles/admin.css')
-       .angular('resources/assets/js/admin/', 'public/assets/scripts', 'admin.js');
 });
 
 var shell = require('gulp-shell');
