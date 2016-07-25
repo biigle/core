@@ -15,5 +15,5 @@ elixir(function (mix) {
 });
 
 gulp.task('publish', function () {
-    gulp.src('').pipe(shell('php ../../../../artisan vendor:publish --provider="Dias\\Modules\\Ate\\AteServiceProvider" --force'));
+    gulp.src('').pipe(shell('php ../../../../artisan vendor:publish --provider="Dias\\Modules\\Ate\\AteServiceProvider" --tag="public" --force'));
 });
