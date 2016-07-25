@@ -7,7 +7,7 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <title>@yield('title')</title>
 
-    <link href="{{ asset('assets/styles/main.css') }}" rel="stylesheet">
+    <link href="{{ url(elixir('assets/styles/main.css', '')) }}" rel="stylesheet">
     @stack('styles')
 </head>
 <body>
@@ -17,11 +17,11 @@
     @include('partials.messages')
     @yield('content')
 
-    <script src="{{ asset('assets/scripts/angular.min.js') }}"></script>
-    <script src="{{ asset('assets/scripts/angular-resource.min.js') }}"></script>
-    <script src="{{ asset('assets/scripts/angular-animate.min.js') }}"></script>
-    <script src="{{ asset('assets/scripts/ui-bootstrap-tpls.min.js') }}"></script>
-    <script src="{{ asset('assets/scripts/main.js') }}"></script>
+    <script src="{{ asset('assets/scripts/angular.min.js?v=1.5.7') }}"></script>
+    <script src="{{ asset('assets/scripts/angular-resource.min.js?v=1.5.7') }}"></script>
+    <script src="{{ asset('assets/scripts/angular-animate.min.js?v=1.5.7') }}"></script>
+    <script src="{{ asset('assets/scripts/ui-bootstrap-tpls.min.js?v=1.3.3') }}"></script>
+    <script src="{{ url(elixir('assets/scripts/main.js', '')) }}"></script>
     <script type="text/javascript">
         angular.module('dias.api').constant('URL', '{{ url('/') }}');
     </script>
