@@ -1,0 +1,21 @@
+.ate-example-patches {
+    overflow-x: auto;
+    white-space: nowrap;
+
+    &.filled {
+        margin-bottom: 1em;
+    }
+
+    .patch {
+        max-height: 100px;
+        max-width: 150px;
+
+        &:not(:last-child) {
+            margin-right: .5em;
+        }
+    }
+
+    .alert {
+        margin: 0 1em;
+    }
+}

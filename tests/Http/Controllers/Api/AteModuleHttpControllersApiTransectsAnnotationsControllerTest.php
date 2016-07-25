@@ -24,15 +24,21 @@ class AteModuleHttpControllersApiTransectsAnnotationsControllerTest extends ApiT
         $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
         $this->assertResponseStatus(403);
 
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+        $this->beGuest();
+        $this->json('GET', "/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}", ['take' => 'abc']);
+        // take must be integer
+        $this->assertResponseStatus(422);
+
+        if ($this->isSqlite()) {
             $expect1 = ["{$a1->id}", "{$a2->id}"];
             $expect2 = ["{$a3->id}"];
+            $expect3 = ["{$a1->id}"];
         } else {
             $expect1 = [$a1->id, $a2->id];
             $expect2 = [$a3->id];
+            $expect3 = [$a1->id];
         }
 
-        $this->beGuest();
         $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
         $this->assertResponseOk();
         $this->seeJsonEquals($expect1);
@@ -40,5 +46,9 @@ class AteModuleHttpControllersApiTransectsAnnotationsControllerTest extends ApiT
         $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l3->label_id}");
         $this->assertResponseOk();
         $this->seeJsonEquals($expect2);
+
+        $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}?take=1");
+        $this->assertResponseOk();
+        $this->seeJsonEquals($expect3);
     }
 }
