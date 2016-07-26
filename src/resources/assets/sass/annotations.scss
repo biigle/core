@@ -1,13 +1,13 @@
 .ate-example-patches {
-    overflow-x: auto;
-    white-space: nowrap;
 
-    &.filled {
+    .patch-container {
+        overflow-x: auto;
+        white-space: nowrap;
         margin-bottom: 1em;
     }
 
     .patch {
-        max-height: 100px;
+        height: 100px;
         max-width: 150px;
 
         &:not(:last-child) {

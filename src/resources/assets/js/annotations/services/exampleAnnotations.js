@@ -8,6 +8,9 @@
 angular.module('dias.annotations').service('exampleAnnotations', function (TransectFilterAnnotationLabel, TRANSECT_ID) {
         "use strict";
 
+        // number of annotations to display
+        var TAKE = 3;
+
         // map of label ID to list of already fetched annotation IDs
         var cache = {};
         var enabled = true;
@@ -17,11 +20,12 @@ angular.module('dias.annotations').service('exampleAnnotations', function (Trans
                 return [];
             }
 
-            if (!cache.hasOwnProperty(label.id)) {
+            // fetch anew as long as there are not enough sample annotations available
+            if (!cache.hasOwnProperty(label.id) || cache[label.id].length < TAKE) {
                 cache[label.id] = TransectFilterAnnotationLabel.query({
                     transect_id: TRANSECT_ID,
                     label_id: label.id,
-                    take: 3
+                    take: TAKE
                 });
             }
 
