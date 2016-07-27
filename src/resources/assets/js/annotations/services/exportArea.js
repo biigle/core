@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Manages the export area drawn on the map
  */
-angular.module('dias.annotations').service('exportArea', function (map, styles, ExportArea, TRANSECT_ID, EXPORT_AREA) {
+angular.module('dias.annotations').service('exportArea', function (map, styles, ExportArea, TRANSECT_ID, EXPORT_AREA, msg) {
         "use strict";
 
         // a circle with a red and white stroke
@@ -80,9 +80,18 @@ angular.module('dias.annotations').service('exportArea', function (map, styles, 
         });
 
         draw.on('drawend', function (e) {
-            removeAreaFeature();
-            area = e.feature;
-            saveArea();
+            if (area) {
+                source.removeFeature(area);
+            }
+
+            saveArea(e.feature).then(function () {
+                area = e.feature;
+            }).catch(function () {
+                source.removeFeature(e.feature);
+                if (area) {
+                    source.addFeature(area);
+                }
+            });
         });
 
         var modify = new ol.interaction.Modify({
@@ -91,32 +100,35 @@ angular.module('dias.annotations').service('exportArea', function (map, styles, 
             deleteCondition: ol.events.condition.never
         });
 
-        var removeAreaFeature = function () {
-            if (area !== undefined) {
-                source.removeFeature(area);
-                area = undefined;
-            }
-        };
-
         var deleteArea = function () {
-            removeAreaFeature();
-            ExportArea.delete({transect_id: TRANSECT_ID});
+            if (!area) {
+                return;
+            }
+
+            source.removeFeature(area);
+            ExportArea.delete({transect_id: TRANSECT_ID}, function () {
+                area = undefined;
+            }, function (response) {
+                source.addFeature(area);
+                msg.responseError(response);
+            });
         };
 
-        var saveArea = function () {
-            if (area) {
-                coordinates = fromOlCoordinates(area.getGeometry().getCoordinates());
-                ExportArea.save({transect_id: TRANSECT_ID}, {
-                    coordinates: coordinates
-                }, function () {
-                    EXPORT_AREA = coordinates;
-                });
-            }
-            // ------------------
-            // TODO HANDLE ERRORS
-            // ------------------
+        var saveArea = function (feature) {
+            var coordinates = fromOlCoordinates(feature.getGeometry().getCoordinates());
+
+            return ExportArea.save({transect_id: TRANSECT_ID}, {
+                coordinates: coordinates
+            }, function () {
+                EXPORT_AREA = coordinates;
+            }, msg.responseError).$promise;
         };
-        modify.on('modifyend', saveArea);
+
+        modify.on('modifyend', function () {
+            if (area) {
+                saveArea(area);
+            }
+        });
 
         var toOlCoordinates = function (cooridnates) {
             return [
