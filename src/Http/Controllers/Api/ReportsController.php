@@ -2,12 +2,12 @@
 
 namespace Dias\Modules\Export\Http\Controllers\Api;
 
-use Dias\Http\Controllers\Api\Controller;
 use Dias\Project;
+use Dias\Http\Controllers\Api\Controller;
+use Dias\Modules\Export\Support\Reports\Report;
+use Dias\Modules\Export\Jobs\GenerateFullReport;
 use Dias\Modules\Export\Jobs\GenerateBasicReport;
 use Dias\Modules\Export\Jobs\GenerateExtendedReport;
-use Dias\Modules\Export\Jobs\GenerateFullReport;
-use Dias\Modules\Export\Support\Reports\Report;
 
 class ReportsController extends Controller
 {
@@ -17,6 +17,7 @@ class ReportsController extends Controller
      * @api {get} projects/:id/reports/basic Generate a new report
      * @apiGroup Projects
      * @apiName GenerateBasicProjectReport
+     * @apiParam (Optional arguments) {Boolean} restrict If `1`, restrict the report to the export area defined for the individual transects.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The project ID.
@@ -28,7 +29,12 @@ class ReportsController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
-        $this->dispatch(new GenerateBasicReport($project, $this->user));
+        $this->validate($this->request, ['restrict' => 'boolean']);
+        $this->dispatch(new GenerateBasicReport(
+            $project,
+            $this->user,
+            (bool) $this->request->input('restrict', false)
+        ));
     }
 
     /**
@@ -37,6 +43,7 @@ class ReportsController extends Controller
      * @api {get} projects/:id/reports/extended Generate a new report
      * @apiGroup Projects
      * @apiName GenerateExtendedProjectReport
+     * @apiParam (Optional arguments) {Boolean} restrict If `1`, restrict the report to the export area defined for the individual transects.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The project ID.
@@ -48,7 +55,12 @@ class ReportsController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
-        $this->dispatch(new GenerateExtendedReport($project, $this->user));
+        $this->validate($this->request, ['restrict' => 'boolean']);
+        $this->dispatch(new GenerateExtendedReport(
+            $project,
+            $this->user,
+            (bool) $this->request->input('restrict', false)
+        ));
     }
     /**
      * Generate a full report
@@ -56,6 +68,7 @@ class ReportsController extends Controller
      * @api {get} projects/:id/reports/full Generate a new report
      * @apiGroup Projects
      * @apiName GenerateFullProjectReport
+     * @apiParam (Optional arguments) {Boolean} restrict If `1`, restrict the report to the export area defined for the individual transects.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The project ID.
@@ -67,7 +80,12 @@ class ReportsController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
-        $this->dispatch(new GenerateFullReport($project, $this->user));
+        $this->validate($this->request, ['restrict' => 'boolean']);
+        $this->dispatch(new GenerateFullReport(
+            $project,
+            $this->user,
+            (bool) $this->request->input('restrict', false)
+        ));
     }
     /**
      * Retrieve report from filesystem

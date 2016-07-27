@@ -13,6 +13,11 @@
             @endif
             your BIGLE DIAS {{$type}} report for project {{$project->name}} is ready for download.
         </p>
+        @if($restricted)
+            <p>
+                 All annotations that were outside of the export area were discarded for this report.
+            </p>
+        @endif
         <p>
             <strong>The report will be removed once you have downloaded it.</strong>
         </p>

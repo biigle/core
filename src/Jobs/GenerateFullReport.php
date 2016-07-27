@@ -2,7 +2,6 @@
 
 namespace Dias\Modules\Export\Jobs;
 
-use Mail;
 use DB;
 use Dias\Modules\Export\Support\CsvFile;
 use Dias\Modules\Export\Support\Reports\Full;
@@ -29,9 +28,9 @@ class GenerateFullReport extends GenerateReportJob
                 // put transect name to first line
                 $csv->put([$name]);
 
-                $query = $this->query()->where('images.transect_id', $id);
+                $query = $this->query($id);
 
-                $query->chunk(500, function ($rows) use ($csv) {
+                $query->chunkById(500, function ($rows) use ($csv) {
                     foreach ($rows as $row) {
                         $csv->put([
                             $row->filename,
@@ -41,30 +40,15 @@ class GenerateFullReport extends GenerateReportJob
                             $row->points,
                         ]);
                     }
-                });
-
+                }, 'annotation_labels.id');
                 $csv->close();
             }
 
             $report = app()->make(Full::class);
             $report->generate($this->project, $tmpFiles);
 
-            Mail::send('export::emails.report', [
-                'user' => $this->user,
-                'project' => $this->project,
-                'type' => 'full',
-                'uuid' => $report->basename(),
-                'filename' => "biigle_{$this->project->id}_full_report.xlsx",
-            ], function ($mail) {
-                if ($this->user->firstname && $this->user->lastname) {
-                    $name = "{$this->user->firstname} {$this->user->lastname}";
-                } else {
-                    $name = null;
-                }
+            $this->sendReportMail('full', $report->basename(), 'xlsx');
 
-                $mail->subject("BIIGLE full report for project {$this->project->name}")
-                    ->to($this->user->email, $name);
-            });
         } catch (\Exception $e) {
             if (isset($report)) {
                 $report->delete();
@@ -80,22 +64,29 @@ class GenerateFullReport extends GenerateReportJob
     /**
      * Assemble a new DB query for a transect.
      *
+     * @param int $id Transect ID
+     *
      * @return \Illuminate\Database\Query\Builder
      */
-    private function query()
+    private function query($id)
     {
-        return DB::table('labels')
-            ->join('annotation_labels', 'annotation_labels.label_id', '=', 'labels.id')
+        return DB::table('annotation_labels')
+            ->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
             ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
             ->join('images', 'annotations.image_id', '=', 'images.id')
             ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
             ->select(
+                'annotation_labels.id', // required for chunkById
                 'images.filename',
                 'annotations.id as annotation_id',
                 'labels.name as label_name',
                 'shapes.name as shape_name',
                 'annotations.points'
             )
+            ->where('images.transect_id', $id)
+            ->when($this->restricted, function ($query) use ($id) {
+                return $query->whereNotIn('annotations.id', $this->getSkipIds($id));
+            })
             // order by is essential for chunking!
             ->orderBy('annotations.id')
             ->orderBy('labels.id')

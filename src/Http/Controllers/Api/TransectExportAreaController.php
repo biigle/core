@@ -15,7 +15,7 @@ class TransectExportAreaController extends Controller
      * @api {get} transects/:id/export-area Show the export area
      * @apiGroup Transects
      * @apiName IndexTransectsExportArea
-     * @apiPermission member
+     * @apiPermission projectMember
      * @apiDescription The export area is a rectangle defined by two points. This endpoint returns an array containing the coordinates as follows: `[x1, y1, x2, y2]`.
      * The first point may be any of the 4 points of the rectangle. The second point is the point not directly adjacent to the first.
      *
@@ -39,9 +39,9 @@ class TransectExportAreaController extends Controller
      * @api {post} transects/:id/export-area Set the export area
      * @apiGroup Transects
      * @apiName StoreTransectsExportArea
-     * @apiPermission admin
+     * @apiPermission projectAdmin
      *
-     * @apiParam (Required attributes) {Number[]} coordinates Coordinates of the export area formatted as `[x1, y1, x2, y2]` array of integers
+     * @apiParam (Required arguments) {Number[]} coordinates Coordinates of the export area formatted as `[x1, y1, x2, y2]` array of integers
      *
      * @param int $id Transect ID
      * @return \Illuminate\Http\Response
@@ -70,7 +70,7 @@ class TransectExportAreaController extends Controller
      * @api {delete} transects/:id/export-area Remove the export area
      * @apiGroup Transects
      * @apiName DestroyTransectsExportArea
-     * @apiPermission admin
+     * @apiPermission projectAdmin
      *
      * @param int $id Transect ID
      * @return \Illuminate\Http\Response

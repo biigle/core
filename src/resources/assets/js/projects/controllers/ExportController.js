@@ -26,13 +26,18 @@ angular.module('dias.projects').controller('ExportController', function ($scope,
         };
 
         $scope.selected = {
-            type: 'basic'
+            type: 'basic',
+            restrict: false
         };
 
         $scope.requestReport = function () {
             if (!$scope.selected.type) return;
 
-            types[$scope.selected.type]({project_id: PROJECT.id}, handleSuccess, handleError);
+            types[$scope.selected.type](
+                {project_id: PROJECT.id, restrict: $scope.selected.restrict ? '1' : '0'},
+                handleSuccess,
+                handleError
+            );
         };
 
         $scope.isRequested = function () {
