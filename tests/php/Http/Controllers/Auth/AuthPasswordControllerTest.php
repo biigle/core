@@ -12,7 +12,7 @@ class AuthPasswordControllerTest extends TestCase
     {
         $this->visit('password/email');
 
-        Mail::shouldReceive('send')->never();
+        Mail::shouldReceive('send')->once();
 
         $this->post('password/email', [
             '_token' => Session::token(),
@@ -20,7 +20,6 @@ class AuthPasswordControllerTest extends TestCase
         ]);
 
         $user = UserTest::create();
-        Mail::shouldReceive('send')->once();
 
         $this->assertNull(DB::table('password_resets')->where('email', $user->email)->first());
 
@@ -40,6 +39,8 @@ class AuthPasswordControllerTest extends TestCase
     {
         $this->visit('password/email');
         $user = UserTest::create();
+
+        Mail::shouldReceive('send')->once();
         $this->post('password/email', ['_token' => Session::token(), 'email' => $user->email]);
 
         $token = DB::table('password_resets')->where('email', $user->email)->first()->token;
