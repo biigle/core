@@ -90,7 +90,7 @@ $factory->define(Dias\Annotation::class, function ($faker) {
         'shape_id' => function () {
             return factory(Dias\Shape::class)->create()->id;
         },
-        'points' => '[0, 0]',
+        'points' => [0, 0],
     ];
 });
 
