@@ -2,16 +2,17 @@
 
 namespace Dias\Modules\Ate\Http\Controllers\Api;
 
-use Dias\Http\Controllers\Api\Controller;
 use DB;
-use Dias\Annotation;
-use Dias\Label;
-use Dias\Transect;
-use Dias\AnnotationLabel;
 use Dias\Role;
-use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
-use Illuminate\Auth\Access\AuthorizationException;
+use Dias\Label;
+use Dias\Project;
+use Dias\Transect;
+use Dias\Annotation;
+use Dias\AnnotationLabel;
+use Dias\Http\Controllers\Api\Controller;
 use Dias\Modules\Ate\Jobs\RemoveAnnotationPatches;
+use Illuminate\Auth\Access\AuthorizationException;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class AteController extends Controller
 {
@@ -74,36 +75,20 @@ class AteController extends Controller
      * @param int $id Transect ID
      * @return \Illuminate\Http\Response
      */
-    public function save($id)
+    public function saveTransect($id)
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('edit-in', $transect);
+        $this->validateAteInput();
 
         $dismissed = $this->request->input('dismissed', []);
         $changed = $this->request->input('changed', []);
 
-        $affectedAnnotations = array_reduce($dismissed, function ($carry, $item) {
-            return array_merge($carry, $item);
-        }, []);
+        $affectedAnnotations = $this->getAffectedAnnotations($dismissed, $changed);
 
-        $affectedAnnotations = array_merge($affectedAnnotations, array_keys($changed));
-        $affectedAnnotations = array_unique($affectedAnnotations);
-
-        // check if all annotations belong to this transect
-        $invalid = Annotation::join('images', 'annotations.image_id', '=', 'images.id')
-            ->whereIn('annotations.id', $affectedAnnotations)
-            ->where('images.transect_id', '!=', $id)
-            ->exists();
-
-        if ($invalid) {
+        if (!$this->anotationsBelongToTransects($affectedAnnotations, [$id])) {
             abort(400, 'All annotations must belong to the specified transect.');
         }
-
-        // check if all labels specified in 'changed' may be used for the annotations
-        // (i.e. are from a label tree which is available for the transect)
-        $requiredLabelTreeIds = Label::whereIn('id', array_unique(array_values($changed)))
-            ->groupBy('label_tree_id')
-            ->pluck('label_tree_id');
 
         if ($this->user->isAdmin) {
             // admins have no restrictions
@@ -126,34 +111,13 @@ class AteController extends Controller
             ->whereIn('project_id', $projects)
             ->pluck('label_tree_id');
 
+        $requiredLabelTreeIds = $this->getRequiredLabelTrees($changed);
+
         if ($requiredLabelTreeIds->diff($availableLabelTreeIds)->count() > 0) {
             throw new AuthorizationException('You may only attach labels that belong to one of the label trees available for the specified transect.');
         }
 
-        // remove dismissed annotation labels
-        foreach ($dismissed as $labelId => $annotationIds) {
-            AnnotationLabel::whereIn('annotation_id', $annotationIds)
-                ->where('label_id', $labelId)
-                ->where('user_id', $this->user->id)
-                ->delete();
-        }
-
-        // create new 'changed' annotation labels
-        $newAnnotationLabels = [];
-        $now = new \Carbon\Carbon;
-
-        foreach ($changed as $annotationId => $labelId) {
-            $newAnnotationLabels[] = [
-                'annotation_id' => $annotationId,
-                'label_id' => $labelId,
-                'user_id' => $this->user->id,
-                'confidence' => 1,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
-        }
-
-        AnnotationLabel::insert($newAnnotationLabels);
+        $this->save($dismissed, $changed);
 
         // remove annotations that now have no more labels attached
         $toDelete = Annotation::whereIn('id', $affectedAnnotations)
@@ -165,5 +129,161 @@ class AteController extends Controller
         // the annotation model observer does not fire for this query so we dispatch
         // the remove patch job manually here
         $this->dispatch(new RemoveAnnotationPatches($id, $toDelete));
+    }
+
+    /**
+     * Save changes of an ATE session for a project
+     *
+     * @api {post} projects/:id/ate Save ATE session
+     * @apiGroup ATE
+     * @apiName ProjectsStoreATE
+     * @apiParam {Number} id The project ID.
+     * @apiPermission projectEditor
+     * @apiDescription see the 'Save ATE session' endpoint for a transect for more information
+     *
+     * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of annotations from which this label should be detached.
+     * @apiParam (Optional arguments) {Object} changed Map from annotation ID to a label ID that should be attached to the annotation.
+     *
+     * @param int $id Project ID
+     * @return \Illuminate\Http\Response
+     */
+    public function saveProject($id)
+    {
+        $project = Project::findOrFail($id);
+        $this->authorize('edit-in', $project);
+        $this->validateAteInput();
+
+        $transectIds = $project->transects()->pluck('id');
+
+        $dismissed = $this->request->input('dismissed', []);
+        $changed = $this->request->input('changed', []);
+
+        $affectedAnnotations = $this->getAffectedAnnotations($dismissed, $changed);
+
+        if (!$this->anotationsBelongToTransects($affectedAnnotations, $transectIds)) {
+            abort(400, 'All annotations must belong to the transects of the project.');
+        }
+
+        $requiredLabelTreeIds = $this->getRequiredLabelTrees($changed);
+        $availableLabelTreeIds = $project->labelTrees()->pluck('id');
+
+        if ($requiredLabelTreeIds->diff($availableLabelTreeIds)->count() > 0) {
+            throw new AuthorizationException('You may only attach labels that belong to one of the label trees available for the project.');
+        }
+
+        $this->save($dismissed, $changed);
+
+        // remove annotations that now have no more labels attached
+        $toDelete = Annotation::join('images', 'images.id', '=', 'annotations.image_id')
+            ->whereIn('annotations.id', $affectedAnnotations)
+            ->whereDoesntHave('labels')
+            ->select('annotations.id', 'images.transect_id')
+            ->get();
+
+        Annotation::whereIn('id', $toDelete->pluck('id'))->delete();
+
+        // the annotation model observer does not fire for this query so we dispatch
+        // the remove patch job manually here
+        $toDelete->groupBy('transect_id')->each(function ($annotations, $transectId) {
+            $this->dispatch(new RemoveAnnotationPatches(
+                $transectId,
+                $annotations->pluck('id')->toArray()
+            ));
+        });
+    }
+
+    /**
+     * Validates the input for saving an ATE session
+     */
+    protected function validateAteInput()
+    {
+        $this->validate($this->request, [
+            'dismissed' => 'array',
+            'changed' => 'array',
+        ]);
+    }
+
+    /**
+     * Get a list of unique annotation IDs that are either dismissed or changed
+     *
+     * @param array $dismissed Array of all dismissed annotation IDs for each label
+     * @param array $changed Array of IDs of changed annotations
+     *
+     * @return array
+     */
+    protected function getAffectedAnnotations($dismissed, $changed)
+    {
+        $affectedAnnotations = array_reduce($dismissed, function ($carry, $item) {
+            return array_merge($carry, $item);
+        }, []);
+
+        return array_unique(array_merge($affectedAnnotations, array_keys($changed)));
+    }
+
+    /**
+     * Check if all given annotations belong to the given transects
+     *
+     * @param array $annotations Annotation IDs
+     * @param array $transects Transect IDs
+     *
+     * @return bool
+     */
+    protected function anotationsBelongToTransects($annotations, $transects)
+    {
+        return !Annotation::join('images', 'annotations.image_id', '=', 'images.id')
+            ->whereIn('annotations.id', $annotations)
+            ->whereNotIn('images.transect_id', $transects)
+            ->exists();
+    }
+
+    /**
+     * Returns the IDs of all label trees that must be available to apply the changes
+     *
+     * @param array $changed Array of IDs of changed annotations
+     *
+     * @return array
+     */
+    protected function getRequiredLabelTrees($changed)
+    {
+        return Label::whereIn('id', array_unique(array_values($changed)))
+            ->groupBy('label_tree_id')
+            ->pluck('label_tree_id');
+    }
+
+    /**
+     * Apply the changes of an ATE session
+     *
+     * Removes the dismissed annotation labels and creates the changed annotation labels.
+     *
+     * @param array $dismissed Array of all dismissed annotation IDs for each label
+     * @param array $changed Array of IDs of changed annotations
+     */
+    protected function save($dismissed, $changed)
+    {
+        $userId = $this->user->id;
+        // remove dismissed annotation labels
+        foreach ($dismissed as $labelId => $annotationIds) {
+            AnnotationLabel::whereIn('annotation_id', $annotationIds)
+                ->where('label_id', $labelId)
+                ->where('user_id', $userId)
+                ->delete();
+        }
+
+        // create new 'changed' annotation labels
+        $newAnnotationLabels = [];
+        $now = new \Carbon\Carbon;
+
+        foreach ($changed as $annotationId => $labelId) {
+            $newAnnotationLabels[] = [
+                'annotation_id' => $annotationId,
+                'label_id' => $labelId,
+                'user_id' => $userId,
+                'confidence' => 1,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        AnnotationLabel::insert($newAnnotationLabels);
     }
 }

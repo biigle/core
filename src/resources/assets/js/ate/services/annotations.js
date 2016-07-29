@@ -5,7 +5,7 @@
  * @memberOf dias.ate
  * @description Service for managing the dismissed/replaced annotation labels of the ATE view
  */
-angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRANSECT_IMAGES, TransectFilterAnnotationLabel, Ate, labels, images, msg) {
+angular.module('dias.ate').service('annotations', function (TRANSECT_IMAGES, ate, labels, images, msg) {
         "use strict";
 
         // cache that maps label IDs to IDs of annotations with this label
@@ -163,8 +163,8 @@ angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRA
                 updateDisplayedAnnotations(labelMapCache[id]);
             } else {
                 loading = true;
-                labelMapCache[id] = TransectFilterAnnotationLabel.query(
-                    {transect_id: ATE_TRANSECT_ID, label_id: id},
+                labelMapCache[id] = ate.getAnnotations(id);
+                labelMapCache[id].$promise.then(
                     updateDisplayedAnnotations,
                     handleFetchAnnotationsError
                 );
@@ -201,12 +201,10 @@ angular.module('dias.ate').service('annotations', function (ATE_TRANSECT_ID, TRA
             TRANSECT_IMAGES.length = 0;
             updateAnnotationCount();
             images.updateFiltering();
-            return Ate.save(
-                {transect_id: ATE_TRANSECT_ID},
-                {dismissed: dismissed, changed: changed},
-                handleSaveSuccess,
-                handleSaveError
-            ).$promise;
+            var promise = ate.save(dismissed, changed).$promise;
+            promise.then(handleSaveSuccess, handleSaveError);
+
+            return promise;
         };
     }
 );

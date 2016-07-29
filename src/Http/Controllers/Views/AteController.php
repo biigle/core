@@ -3,21 +3,22 @@
 namespace Dias\Modules\Ate\Http\Controllers\Views;
 
 use DB;
-use Dias\Http\Controllers\Views\Controller;
-use Dias\Transect;
-use Dias\Annotation;
-use Dias\LabelTree;
 use Dias\Role;
+use Dias\Project;
+use Dias\Transect;
+use Dias\LabelTree;
+use Dias\Annotation;
+use Dias\Http\Controllers\Views\Controller;
 
 class AteController extends Controller
 {
     /**
-     * Show the application dashboard to the user.
+     * Show the the ATE view for a transect
      *
      * @param int $id Transect ID
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function indexTransect($id)
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('edit-in', $transect);
@@ -53,6 +54,29 @@ class AteController extends Controller
             'user' => $this->user,
             'transect' => $transect,
             'projects' => $projects,
+            'labelTrees' => $labelTrees,
+        ]);
+    }
+
+    /**
+     * Show the ATE view for a project
+     *
+     * @param int $id Project ID
+     * @return \Illuminate\Http\Response
+     */
+    public function indexProject($id)
+    {
+        $project = Project::findOrFail($id);
+        $this->authorize('edit-in', $project);
+
+        $labelTrees = $project->labelTrees()
+            ->with('labels')
+            ->select('id', 'name')
+            ->get();
+
+        return view('ate::project', [
+            'user' => $this->user,
+            'project' => $project,
             'labelTrees' => $labelTrees,
         ]);
     }

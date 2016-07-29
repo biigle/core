@@ -6,7 +6,12 @@ $router->group([
 ], function ($router) {
     $router->get('transects/{id}/ate', [
         'as'   => 'ate',
-        'uses' => 'AteController@index',
+        'uses' => 'AteController@indexTransect',
+    ]);
+
+    $router->get('projects/{id}/ate', [
+        'as'   => 'projectsAte',
+        'uses' => 'AteController@indexProject',
     ]);
 });
 
@@ -20,10 +25,18 @@ $router->group([
     ]);
 
     $router->post('transects/{id}/ate', [
-        'uses' => 'AteController@save',
+        'uses' => 'AteController@saveTransect',
     ]);
 
     $router->get('transects/{tid}/annotations/filter/label/{lid}', [
         'uses' => 'TransectsAnnotationsController@filter',
+    ]);
+
+    $router->post('projects/{id}/ate', [
+        'uses' => 'AteController@saveProject',
+    ]);
+
+    $router->get('projects/{pid}/annotations/filter/label/{lid}', [
+        'uses' => 'ProjectsAnnotationsController@filter',
     ]);
 });
