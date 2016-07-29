@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Controller for the controls bar edit buttons
  */
-angular.module('dias.annotations').controller('EditControlsController', function ($scope, mapAnnotations, keyboard, $timeout, labels, msg) {
+angular.module('dias.annotations').controller('EditControlsController', function ($scope, mapAnnotations, keyboard, $timeout, labels, msg, mapInteractions) {
 		"use strict";
 
         // the user has a certain amount of time to quick delete the last drawn
@@ -23,11 +23,21 @@ angular.module('dias.annotations').controller('EditControlsController', function
 
         $scope.hasSelectedAnnotations = mapAnnotations.hasSelectedFeatures;
 
-        var startMoving = mapAnnotations.startMoving;
-        var finishMoving = mapAnnotations.finishMoving;
+        var startMoving = function () {
+            mapInteractions.activate('translate');
+        };
 
-        var startAttaching = mapAnnotations.startAttaching;
-        var finishAttaching = mapAnnotations.finishAttaching;
+        var finishMoving = function () {
+            mapInteractions.deactivate('translate');
+        };
+
+        var startAttaching = function () {
+            mapInteractions.activate('attachLabel');
+        };
+
+        var finishAttaching = function () {
+            mapInteractions.deactivate('attachLabel');
+        };
 
         $scope.toggleMoving = function () {
             if ($scope.isMoving()) {
@@ -56,8 +66,13 @@ angular.module('dias.annotations').controller('EditControlsController', function
             mapAnnotations.deleteLastDrawnAnnotation();
         };
 
-        $scope.isMoving = mapAnnotations.isMoving;
-        $scope.isAttaching = mapAnnotations.isAttaching;
+        $scope.isMoving = function () {
+            return mapInteractions.active('translate');
+        };
+
+        $scope.isAttaching = function () {
+            return mapInteractions.active('attachLabel');
+        };
 
         // the quick delete timeout always starts when a new annotation was drawn
         $scope.$on('annotations.drawn', function (e, feature) {

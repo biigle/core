@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval, labels, AttachLabelInteraction) {
+angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval, labels, mapInteractions) {
 		"use strict";
 
         // the geometric features of the annotations on the map
@@ -20,49 +20,20 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             updateWhileAnimating: true,
             updateWhileInteracting: true
         });
-
-		// select interaction working on "singleclick"
-		var select = new ol.interaction.Select({
-			style: styles.highlight,
-            layers: [annotationLayer],
-            // enable selecting multiple overlapping features at once
-            multi: true
-		});
+        map.addLayer(annotationLayer);
 
         // all annotations that are currently selected
-		var selectedFeatures = select.getFeatures();
+        var selectedFeatures = mapInteractions.init('select', [annotationLayer])
+            .getFeatures();
 
-        // interaction for modifying annotations
-		var modify = new ol.interaction.Modify({
-			features: annotationFeatures,
-			// the SHIFT key must be pressed to delete vertices, so
-			// that new vertices can be drawn at the same position
-			// of existing vertices
-			deleteCondition: function(event) {
-				return ol.events.condition.shiftKeyOnly(event) && ol.events.condition.singleClick(event);
-			}
-		});
+        mapInteractions.init('modify', annotationFeatures);
+        mapInteractions.deactivate('modify');
 
-        modify.setActive(false);
+        mapInteractions.init('translate', selectedFeatures);
+        mapInteractions.deactivate('translate');
 
-        // interaction for moving annotations
-        var translate = new ol.interaction.Translate({
-            features: selectedFeatures
-        });
-
-        translate.setActive(false);
-
-        // interaction to attach labels to existing annotations
-        var attachLabel = new AttachLabelInteraction({
-            features: annotationFeatures
-        });
-
-        attachLabel.setActive(false);
-
-		// drawing interaction, will be a new one for each drawing tool
-		var draw;
-        // type/shape of the drawing interaction
-        var drawingType;
+        mapInteractions.init('attachLabel', annotationFeatures);
+        mapInteractions.deactivate('attachLabel');
 
         // index of the currently selected annotation (during cycling through annotations)
         // in the annotationFeatures collection
@@ -279,11 +250,6 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
 		this.init = function (scope) {
             _scope = scope;
-            map.addLayer(annotationLayer);
-			map.addInteraction(select);
-            map.addInteraction(translate);
-            map.addInteraction(attachLabel);
-            map.addInteraction(modify);
 			scope.$on('image.shown', refreshAnnotations);
 
             _this.onSelectedAnnotation(function () {
@@ -297,73 +263,17 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         // put the map into drawing mode
 		this.startDrawing = function (type) {
-            select.setActive(false);
-            modify.setActive(true);
-            _this.finishMoving();
-            _this.finishAttaching();
-            // allow only one draw interaction at a time
-            map.removeInteraction(draw);
-
-			drawingType = type || 'Point';
-			draw = new ol.interaction.Draw({
-                source: annotationSource,
-				type: drawingType,
-				style: styles.editing
-			});
-
-			map.addInteraction(draw);
-			draw.on('drawend', handleNewFeature);
-            draw.on('drawend', function (e) {
+            mapInteractions.init('draw', type, annotationSource);
+            mapInteractions.on('draw', 'drawend', handleNewFeature);
+            mapInteractions.on('draw', 'drawend', function (e) {
                 _scope.$broadcast('annotations.drawn', e.feature);
             });
 		};
 
         // put the map out of drawing mode
 		this.finishDrawing = function () {
-            if (!_this.isDrawing()) return;
-
-			map.removeInteraction(draw);
-            draw.setActive(false);
-            drawingType = undefined;
-            select.setActive(true);
-            modify.setActive(false);
-			// don't select the last drawn point
-			_this.clearSelection();
+            mapInteractions.deactivate('draw');
 		};
-
-        this.isDrawing = function () {
-            return draw && draw.getActive();
-        };
-
-        // put the map into moving mode (of an annotation)
-        this.startMoving = function () {
-            _this.finishDrawing();
-            _this.finishAttaching();
-            translate.setActive(true);
-        };
-
-        this.finishMoving = function () {
-            translate.setActive(false);
-        };
-
-        this.isMoving = function () {
-            return translate.getActive();
-        };
-
-        // put the map into "attach label to annotation" mode
-        this.startAttaching = function () {
-            _this.finishDrawing();
-            _this.finishMoving();
-            attachLabel.setActive(true);
-        };
-
-        this.finishAttaching = function () {
-            attachLabel.setActive(false);
-        };
-
-        this.isAttaching = function () {
-            return attachLabel.getActive();
-        };
 
         this.hasDrawnAnnotation = function () {
             return lastDrawnFeature &&
@@ -404,11 +314,11 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         // do something whenever annotations are (de-)selected
         this.onSelectedAnnotation = function (callback) {
-            return select.on('select', callback);
+            return mapInteractions.on('select', 'select', callback);
         };
 
         this.offSelectedAnnotation = function (callback) {
-            return select.un('select', callback);
+            return mapInteractions.un('select', 'select', callback);
         };
 
         // fits the view to the given annotation
@@ -446,10 +356,6 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		this.getSelectedFeatures = function () {
 			return selectedFeatures;
 		};
-
-        this.getSelectedDrawingType = function () {
-            return drawingType;
-        };
 
         // programatically add a new feature (not through the draw interaction)
         this.addFeature = function (feature) {

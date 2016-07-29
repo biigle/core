@@ -8,20 +8,26 @@
 angular.module('dias.annotations').controller('DrawingControlsController', function ($scope, mapAnnotations, labels, msg, $attrs, keyboard) {
 		"use strict";
 
+        var selectedShape;
+
 		$scope.selectShape = function (name) {
-            if (name !== null && $scope.selectedShape() !== name) {
+            if (name === null || $scope.isSelected(name)) {
+                mapAnnotations.finishDrawing();
+                selectedShape = undefined;
+            } else {
                 if (!labels.hasSelected()) {
                     $scope.$emit('sidebar.foldout.do-open', 'categories');
                     msg.info($attrs.selectCategory);
                     return;
                 }
-				mapAnnotations.startDrawing(name);
-			} else {
-                mapAnnotations.finishDrawing();
+                mapAnnotations.startDrawing(name);
+                selectedShape = name;
             }
 		};
 
-        $scope.selectedShape = mapAnnotations.getSelectedDrawingType;
+        $scope.isSelected = function (name) {
+            return selectedShape === name;
+        };
 
         // deselect drawing tool on escape
         keyboard.on(27, function () {
