@@ -20,7 +20,7 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
         $this->get("/api/v1/transects/{$id}/images/filter/annotations");
         $this->assertResponseOk();
 
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+        if ($this->isSqlite()) {
             $expect = ["{$image->id}"];
         } else {
             $expect = [$image->id];
@@ -64,7 +64,7 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
         $this->get("/api/v1/transects/{$tid}/images/filter/annotation-user/{$uid}");
         $this->assertResponseOk();
 
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+        if ($this->isSqlite()) {
             $expect = ["{$image->id}"];
         } else {
             $expect = [$image->id];
@@ -110,7 +110,7 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
         $this->get("/api/v1/transects/{$tid}/images/filter/annotation-label/{$lid}");
         $this->assertResponseOk();
 
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+        if ($this->isSqlite()) {
             $expect = ["{$image->id}"];
         } else {
             $expect = [$image->id];
