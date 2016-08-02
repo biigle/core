@@ -159,16 +159,12 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             annotationSource.addFeature(feature);
 		};
 
-        // redraw all features with those belonging to the specified image
-		var refreshAnnotations = function (e, image) {
-			// clear features of previous image
+        // redraw all features
+		var refreshAnnotations = function () {
             annotationSource.clear();
 			_this.clearSelection();
             lastDrawnFeature = null;
-
-			annotations.query({id: image._id}).$promise.then(function () {
-				annotations.forEach(createFeature);
-			});
+			annotations.get().forEach(createFeature);
 		};
 
         // handle a newly drawn annotation
@@ -206,10 +202,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
                 lastDrawnFeature = null;
             }
 
-            annotations.delete(feature.annotation).then(function () {
-                annotationSource.removeFeature(feature);
-                selectedFeatures.remove(feature);
-            });
+            annotations.delete(feature.annotation);
         };
 
         // returns true if the supplied annotation has a label of the same category than
@@ -250,7 +243,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
 		this.init = function (scope) {
             _scope = scope;
-			scope.$on('image.shown', refreshAnnotations);
+            scope.$watch(annotations.getRevision, refreshAnnotations);
 
             _this.onSelectedAnnotation(function () {
                 // if not already digesting, digest

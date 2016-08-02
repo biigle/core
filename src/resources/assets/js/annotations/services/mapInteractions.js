@@ -31,7 +31,8 @@ angular.module('dias.annotations').service('mapInteractions', function (map, sty
                 // that new vertices can be drawn at the same position
                 // of existing vertices
                 deleteCondition: function(event) {
-                    return ol.events.condition.shiftKeyOnly(event) && ol.events.condition.singleClick(event);
+                    return ol.events.condition.shiftKeyOnly(event) &&
+                        ol.events.condition.singleClick(event);
                 }
             });
 

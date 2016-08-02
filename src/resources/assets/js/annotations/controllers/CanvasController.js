@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Main controller for the annotation canvas element
  */
-angular.module('dias.annotations').controller('CanvasController', function ($scope, mapImage, mapAnnotations, map, $timeout, debounce) {
+angular.module('dias.annotations').controller('CanvasController', function ($scope, mapImage, mapAnnotations, map, $timeout, debounce, annotations) {
 		"use strict";
 
         var mapView = map.getView();
@@ -27,8 +27,13 @@ angular.module('dias.annotations').controller('CanvasController', function ($sco
             mapView = map.getView();
         });
 
-		mapImage.init($scope);
+        $scope.$on('image.shown', mapImage.renderImage);
+
 		mapAnnotations.init($scope);
+
+        $scope.$on('image.shown', function (e, image) {
+            annotations.load(image._id);
+        });
 
 		var updateSize = function () {
 			// workaround, so the function is called *after* the angular digest

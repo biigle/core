@@ -11,6 +11,7 @@
       <div class="sidebar__permanent">
       <div id="minimap" class="sidebar__minimap" data-ng-controller="MinimapController"></div>
       @include('annotations::index.sidebar.controls')
+      @include('annotations::index.sidebar.annotationFilter')
       @foreach ($modules->getMixins('annotationsSidebar') as $module => $nestedMixins)
             @include($module.'::annotationsSidebar')
       @endforeach

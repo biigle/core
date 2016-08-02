@@ -10,6 +10,16 @@ angular.module('dias.annotations').controller('SidebarController', function ($sc
 
         var foldoutStorageKey = 'dias.annotations.sidebar-foldout';
 
+        var annotationFilterOpen = false;
+
+        $scope.toggleAnnotationFilter = function () {
+            annotationFilterOpen = !annotationFilterOpen;
+        };
+
+        $scope.isAnnotationFilterOpen = function () {
+            return annotationFilterOpen;
+        };
+
         $scope.foldout = '';
 
 		$scope.openFoldout = function (name) {
