@@ -5,11 +5,12 @@
  * @memberOf dias.ui.utils
  * @description Service to register and manage keypress events with priorities
  */
-angular.module('dias.ui.utils').service('keyboard', function () {
+angular.module('dias.ui.utils').service('keyboard', function ($document) {
         "use strict";
 
         // maps key codes/characters to arrays of listeners
         var listeners = {};
+        var body = $document[0].body;
 
         var executeCallbacks = function (list, e) {
             // go from highest priority down
@@ -20,6 +21,11 @@ angular.module('dias.ui.utils').service('keyboard', function () {
         };
 
         var handleKeyEvents = function (e) {
+            if (e.target !== body) {
+                // don't do anything if e.g. the user types into an input field
+                return;
+            }
+
             var code = e.keyCode;
             var character = String.fromCharCode(e.which || code).toLowerCase();
 
@@ -32,7 +38,7 @@ angular.module('dias.ui.utils').service('keyboard', function () {
             }
         };
 
-        document.addEventListener('keydown', handleKeyEvents);
+        $document.bind('keydown', handleKeyEvents);
 
         // register a new event listener for the key code or character with an optional priority
         // listeners with higher priority are called first anc can return 'false' to prevent the
