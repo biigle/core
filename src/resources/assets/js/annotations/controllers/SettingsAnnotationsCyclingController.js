@@ -108,7 +108,7 @@ angular.module('dias.annotations').controller('SettingsAnnotationsCyclingControl
                 mapAnnotations.jumpToCurrent();
                 // if the displayed annotations change (due to filtering etc),
                 // jump to the first annotation again
-                annotations.observe(mapAnnotations.jumpToFirst);
+                annotations.observeFilter(mapAnnotations.jumpToFirst);
             } else if (oldCycle === cyclingKey) {
                 keyboard.off(37, prevAnnotation);
                 keyboard.off(39, nextAnnotation);
@@ -116,7 +116,7 @@ angular.module('dias.annotations').controller('SettingsAnnotationsCyclingControl
                 keyboard.off(13, attachLabel);
                 keyboard.off(27, stopCycling);
                 mapAnnotations.clearSelection();
-                annotations.unobserve(mapAnnotations.jumpToFirst);
+                annotations.unobserveFilter(mapAnnotations.jumpToFirst);
             }
         });
 

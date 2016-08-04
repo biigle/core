@@ -12,7 +12,11 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 		var annotations;
         var promise;
 
+        // observers to the (filtered) list of annotations
         var observers = [];
+
+        // observers to the active annotation filters
+        var filterObservers = [];
 
         /*
          * Contains one item for each label that is present in annotations on the image
@@ -272,7 +276,12 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
             activeFilters.push(filter);
         };
 
-        this.refreshFiltering = refreshFiltering;
+        this.refreshFiltering = function () {
+            refreshFiltering();
+            filterObservers.forEach(function (callback) {
+                callback();
+            });
+        };
 
         this.clearActiveFilters = function () {
             activeFilters.length = 0;
@@ -296,10 +305,14 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
             observers.push(callback);
         };
 
-        this.unobserve = function (callback) {
-            var index = observers.indexOf(callback);
+        this.observeFilter = function (callback) {
+            filterObservers.push(callback);
+        };
+
+        this.unobserveFilter = function (callback) {
+            var index = filterObservers.indexOf(callback);
             if (index !== -1) {
-                observers.splice(index, 1);
+                filterObservers.splice(index, 1);
             }
         };
 	}
