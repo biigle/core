@@ -23,7 +23,7 @@
                 <button class="btn btn-default" data-ng-disabled="!cycling()" data-ng-click="attachLabel()" title="Attach the current label to the selected annotation 𝗘𝗻𝘁𝗲𝗿"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
             </div>
         </div>
-        <label class="form-group checkbox-inline" title="Restrict cycling through annotations to those having the currently selected label"><input type="checkbox" data-ng-model="attributes.restrict"> Restrict to currently selected label</label>
+        <p class="help-text">Use the annotation filter to cycle through annotations with certain properties.</p>
     </div>
 
     <div class="settings-foldout__item"  data-ng-controller="SettingsSectionCyclingController">

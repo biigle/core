@@ -49,6 +49,7 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
 		});
 
 		var imageLayer = new ol.layer.Image();
+        map.addLayer(imageLayer);
 
         var DEFAULT_FILTERS = {
             brightnessContrast: [0, 0],
@@ -112,7 +113,7 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             }
         };
 
-        var renderImage = function (e, i) {
+        this.renderImage = function (e, i) {
             image = i;
             extent[2] = image.width;
             extent[3] = image.height;
@@ -164,11 +165,6 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
                 map.getView().fit(extent, map.getSize());
             }
         };
-
-		this.init = function (scope) {
-			map.addLayer(imageLayer);
-			scope.$on('image.shown', renderImage);
-		};
 
 		this.getExtent = function () {
 			return extent;
