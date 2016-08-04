@@ -106,6 +106,9 @@ angular.module('dias.annotations').controller('SettingsAnnotationsCyclingControl
                 keyboard.on(13, attachLabel, 10);
                 keyboard.on(27, stopCycling, 10);
                 mapAnnotations.jumpToCurrent();
+                // if the displayed annotations change (due to filtering etc),
+                // jump to the first annotation again
+                annotations.observe(mapAnnotations.jumpToFirst);
             } else if (oldCycle === cyclingKey) {
                 keyboard.off(37, prevAnnotation);
                 keyboard.off(39, nextAnnotation);
@@ -113,33 +116,9 @@ angular.module('dias.annotations').controller('SettingsAnnotationsCyclingControl
                 keyboard.off(13, attachLabel);
                 keyboard.off(27, stopCycling);
                 mapAnnotations.clearSelection();
+                annotations.unobserve(mapAnnotations.jumpToFirst);
             }
         });
-
-        var unwatchSelectedLabel;
-
-        var watchSelectedLabel = function () {
-            if (unwatchSelectedLabel) unwatchSelectedLabel();
-            unwatchSelectedLabel = $scope.$watch(labels.getSelected, function () {
-                if ($scope.cycling()) {
-                    mapAnnotations.jumpToFirst();
-                }
-            });
-        };
-
-        $scope.$watch('attributes.restrict', function (restrict) {
-            mapAnnotations.setRestrictLabelCategory(restrict);
-            if ($scope.cycling()) {
-                mapAnnotations.jumpToFirst();
-            }
-
-            if (restrict) {
-                watchSelectedLabel();
-            } else if (unwatchSelectedLabel) {
-                unwatchSelectedLabel();
-            }
-        });
-
 
         $scope.$on('image.shown', function () {
             loading = false;

@@ -12,8 +12,7 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 		var annotations;
         var promise;
 
-        // revision counter for watchers of other services/controllers
-        var revision = 0;
+        var observers = [];
 
         /*
          * Contains one item for each label that is present in annotations on the image
@@ -145,7 +144,9 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
             filtered.flat = f.flat;
 
             if (!silent) {
-                revision++;
+                observers.forEach(function (callback) {
+                    callback(filtered.flat);
+                });
             }
         };
 
@@ -202,9 +203,10 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
             // update *after* clearing annotations and groupByLabel
             update();
 
-            promise = annotations.$promise;
-            promise.then(buildGroupedByLabel)
-                .then(update);
+            promise = annotations.$promise
+                .then(buildGroupedByLabel)
+                .then(update)
+                .then(_this.get);
         };
 
         this.add = function (params) {
@@ -290,8 +292,15 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 
         this.getAvailableShapes = shapes.getAll;
 
-        this.getRevision = function () {
-            return revision;
+        this.observe = function (callback) {
+            observers.push(callback);
+        };
+
+        this.unobserve = function (callback) {
+            var index = observers.indexOf(callback);
+            if (index !== -1) {
+                observers.splice(index, 1);
+            }
         };
 	}
 );
