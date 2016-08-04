@@ -16,7 +16,7 @@ class TransectsModuleHttpControllersApiTransectImageControllerTest extends ApiTe
         $this->get("/api/v1/transects/{$id}/images/order-by/filename");
         $this->assertResponseStatus(403);
 
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+        if ($this->isSqlite()) {
             $expect = "[\"{$image2->id}\",\"{$image1->id}\"]";
         } else {
             $expect = "[{$image2->id},{$image1->id}]";
@@ -47,7 +47,7 @@ class TransectsModuleHttpControllersApiTransectImageControllerTest extends ApiTe
         $this->get("/api/v1/transects/{$id}/images/filter/labels");
         $this->assertResponseOk();
 
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+        if ($this->isSqlite()) {
             $expect = ["{$image->id}"];
         } else {
             $expect = [$image->id];
@@ -84,7 +84,7 @@ class TransectsModuleHttpControllersApiTransectImageControllerTest extends ApiTe
         $this->get("/api/v1/transects/{$tid}/images/filter/image-label-user/{$uid}");
         $this->assertResponseOk();
 
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+        if ($this->isSqlite()) {
             $expect = ["{$image->id}"];
         } else {
             $expect = [$image->id];
@@ -122,7 +122,7 @@ class TransectsModuleHttpControllersApiTransectImageControllerTest extends ApiTe
         $this->get("/api/v1/transects/{$tid}/images/filter/image-label/{$lid}");
         $this->assertResponseOk();
 
-        if (DB::connection() instanceof Illuminate\Database\SQLiteConnection) {
+        if ($this->isSqlite()) {
             $expect = ["{$image->id}"];
         } else {
             $expect = [$image->id];
