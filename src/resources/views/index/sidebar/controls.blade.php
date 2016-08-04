@@ -11,9 +11,8 @@
         @endforeach
     </div>
     <div class="btn-group">
-        <span data-ng-switch="isAnnotationFilterOpen()">
-            <button class="btn btn-info active ng-cloak" data-ng-click="toggleAnnotationFilter()" title="Clear annotation filter" data-ng-switch-when="true"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
-            <button class="btn btn-default" data-ng-click="toggleAnnotationFilter()" title="Filter annotations" data-ng-switch-default=""><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
-        </span>
+        <button class="btn btn-info active ng-cloak" data-ng-click="toggleAnnotationFilter()" title="Clear annotation filter" data-ng-if="isAnnotationFilterOpen()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+        <button class="btn btn-default" data-ng-click="toggleAnnotationFilter()" title="Filter annotations" data-ng-if="!isAnnotationFilterOpen()"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
+        <button class="btn btn-default" data-ng-click="makeShot()" title="Get a screenshot of the visible area" data-ng-controller="ScreenshotController"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span></button>
     </div>
 </div>
