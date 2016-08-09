@@ -99,7 +99,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			var feature = e.target;
 			var save = function () {
 				feature.annotation.points = getCoordinates(feature.getGeometry());
-				feature.annotation.$save();
+                annotations.save(feature.annotation);
 			};
 			// this event is rapidly fired, so wait until the firing stops
 			// before saving the changes

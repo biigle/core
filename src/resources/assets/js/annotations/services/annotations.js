@@ -236,6 +236,15 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
             });
         };
 
+        this.save = function (annotation) {
+            annotation.$save(function () {
+                doForId(annotations, annotation.id, function (a, i) {
+                    // update cached annotation
+                    annotations[i] = angular.copy(annotation);
+                });
+            }, msg.responseError);
+        };
+
         this.getPromise = function () {
             return promise;
         };
