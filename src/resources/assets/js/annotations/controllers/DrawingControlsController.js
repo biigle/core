@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Controller for the controls bar drawing butons
  */
-angular.module('dias.annotations').controller('DrawingControlsController', function ($scope, mapAnnotations, labels, msg, $attrs, keyboard) {
+angular.module('dias.annotations').controller('DrawingControlsController', function ($scope, mapAnnotations, labels, msg, $attrs, keyboard, mapInteractions) {
 		"use strict";
 
         var selectedShape;
@@ -26,7 +26,7 @@ angular.module('dias.annotations').controller('DrawingControlsController', funct
 		};
 
         $scope.isSelected = function (name) {
-            return selectedShape === name;
+            return mapInteractions.active('draw') && selectedShape === name;
         };
 
         // deselect drawing tool on escape
