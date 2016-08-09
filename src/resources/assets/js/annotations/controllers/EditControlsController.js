@@ -39,10 +39,16 @@ angular.module('dias.annotations').controller('EditControlsController', function
             mapInteractions.deactivate('attachLabel');
         };
 
-        $scope.toggleMoving = function () {
+        $scope.toggleMoving = function (e) {
             if ($scope.isMoving()) {
                 finishMoving();
             } else {
+                // Remove focus of the button so the keyboard events of the translate
+                // interaction workright away. The keyboard events only work if the
+                // event target is the body.
+                if (e && e.target) {
+                    e.target.blur();
+                }
                 startMoving();
             }
         };

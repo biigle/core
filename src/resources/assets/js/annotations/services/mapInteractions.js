@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Manages all the (default) OpenLayers interactions of the annotator
  */
-angular.module('dias.annotations').service('mapInteractions', function (map, styles, AttachLabelInteraction) {
+angular.module('dias.annotations').service('mapInteractions', function (map, styles, AttachLabelInteraction, ExtendedTranslateInteraction) {
     "use strict";
 
     var _this = this;
@@ -49,7 +49,7 @@ angular.module('dias.annotations').service('mapInteractions', function (map, sty
         },
         // interaction for moving annotations
         translate: function (name, features) {
-            interactions.translate = new ol.interaction.Translate({
+            interactions.translate = new ExtendedTranslateInteraction({
                 features: features
             });
 
