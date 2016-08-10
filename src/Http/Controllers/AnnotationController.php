@@ -3,9 +3,10 @@
 namespace Dias\Modules\Annotations\Http\Controllers;
 
 use DB;
+use Dias\Role;
+use Dias\Shape;
 use Dias\Image;
 use Dias\LabelTree;
-use Dias\Role;
 use Dias\Http\Controllers\Views\Controller;
 
 class AnnotationController extends Controller
@@ -54,13 +55,17 @@ class AnnotationController extends Controller
             })
             ->get();
 
-        return view('annotations::index')
-            ->with('user', $this->user)
-            ->with('image', $image)
-            ->with('transect', $image->transect)
-            ->with('editMode', $this->user->can('add-annotation', $image))
-            ->with('images', $images)
-            ->with('labelTrees', $trees);
+        $shapes = Shape::all();
+
+        return view('annotations::index', [
+            'user' => $this->user,
+            'image' => $image,
+            'transect' => $image->transect,
+            'editMode' => $this->user->can('add-annotation', $image),
+            'images' => $images,
+            'labelTrees' => $trees,
+            'shapes' => $shapes,
+        ]);
     }
 
     /**

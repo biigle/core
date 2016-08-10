@@ -113,7 +113,7 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             }
         };
 
-        this.renderImage = function (e, i) {
+        this.renderImage = function (i) {
             image = i;
             extent[2] = image.width;
             extent[3] = image.height;
@@ -164,6 +164,9 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             if (zoom === undefined) {
                 map.getView().fit(extent, map.getSize());
             }
+
+            // apply all changes immediately
+            map.renderSync();
         };
 
 		this.getExtent = function () {

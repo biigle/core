@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service the annotations to make them available in multiple controllers.
  */
-angular.module('dias.annotations').service('annotations', function (Annotation, shapes, msg, AnnotationLabel, labels) {
+angular.module('dias.annotations').service('annotations', function (Annotation, SHAPES, msg, AnnotationLabel, labels) {
 		"use strict";
 
         var _this = this;
@@ -55,8 +55,24 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
             }
         };
 
+        var shapeById = function (id) {
+            for (var i = SHAPES.length - 1; i >= 0; i--) {
+                if (SHAPES[i].id === id) {
+                    return SHAPES[i];
+                }
+            }
+        };
+
+        var shapeByName = function (name) {
+            for (var i = SHAPES.length - 1; i >= 0; i--) {
+                if (SHAPES[i].name === name) {
+                    return SHAPES[i];
+                }
+            }
+        };
+
 		var resolveShapeName = function (annotation) {
-			annotation.shape = shapes.getName(annotation.shape_id);
+			annotation.shape = shapeById(annotation.shape_id).name;
 			return annotation;
 		};
 
@@ -192,20 +208,19 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
         };
 
         this.load = function (id) {
-            clearGroupedByLabel();
-
-            if (cache.hasOwnProperty(id)) {
-                annotations = cache[id];
-            } else {
-                annotations = Annotation.query({id: id});
-                cache[id] = annotations;
-                annotations.$promise.then(function (a) {
+            if (!cache.hasOwnProperty(id)) {
+                cache[id] = Annotation.query({id: id});
+                cache[id].$promise.then(function (a) {
                     a.forEach(resolveShapeName);
                 });
             }
 
-            // update *after* clearing annotations and groupByLabel
-            update();
+            return cache[id];
+        };
+
+        this.show = function (id) {
+            clearGroupedByLabel();
+            annotations = _this.load(id);
 
             promise = annotations.$promise
                 .then(buildGroupedByLabel)
@@ -215,7 +230,7 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
 
         this.add = function (params) {
             if (!params.shape_id && params.shape) {
-                params.shape_id = shapes.getId(params.shape);
+                params.shape_id = shapeByName(params.shape).id;
             }
             var annotation = Annotation.add(params);
             annotation.$promise
@@ -308,7 +323,9 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
             return availableUsers;
         };
 
-        this.getAvailableShapes = shapes.getAll;
+        this.getAvailableShapes = function () {
+            return SHAPES;
+        };
 
         this.observe = function (callback) {
             observers.push(callback);

@@ -122,36 +122,36 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
                 ]);
             }
 
-			switch (annotation.shape) {
-				case 'Point':
-					geometry = new ol.geom.Point(newPoints[0]);
-					break;
-				case 'Rectangle':
-					geometry = new ol.geom.Rectangle([ newPoints ]);
-					break;
-				case 'Polygon':
-					// example: https://github.com/openlayers/ol3/blob/master/examples/geojson.js#L126
-					geometry = new ol.geom.Polygon([ newPoints ]);
-					break;
-				case 'LineString':
-					geometry = new ol.geom.LineString(newPoints);
-					break;
-				case 'Circle':
-					// radius is the x value of the second point of the circle
-					geometry = new ol.geom.Circle(newPoints[0], newPoints[1][0]);
-					break;
+            switch (annotation.shape) {
+                case 'Point':
+                    geometry = new ol.geom.Point(newPoints[0]);
+                    break;
+                case 'Rectangle':
+                    geometry = new ol.geom.Rectangle([ newPoints ]);
+                    break;
+                case 'Polygon':
+                    // example: https://github.com/openlayers/ol3/blob/master/examples/geojson.js#L126
+                    geometry = new ol.geom.Polygon([ newPoints ]);
+                    break;
+                case 'LineString':
+                    geometry = new ol.geom.LineString(newPoints);
+                    break;
+                case 'Circle':
+                    // radius is the x value of the second point of the circle
+                    geometry = new ol.geom.Circle(newPoints[0], newPoints[1][0]);
+                    break;
                 // unsupported shapes are ignored
                 default:
                     console.error('Unknown annotation shape: ' + annotation.shape);
                     return;
-			}
+            }
 
-			var feature = new ol.Feature({ geometry: geometry });
+            var feature = new ol.Feature({ geometry: geometry });
             feature.annotation = annotation;
             if (annotation.labels && annotation.labels.length > 0) {
                 feature.color = annotation.labels[0].label.color;
             }
-			feature.on('change', handleGeometryChange);
+            feature.on('change', handleGeometryChange);
             annotationSource.addFeature(feature);
 		};
 

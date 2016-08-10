@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
  */
-angular.module('dias.annotations').controller('AnnotatorController', function ($scope, images, urlParams, msg, IMAGE_ID, keyboard, viewport) {
+angular.module('dias.annotations').controller('AnnotatorController', function ($scope, images, urlParams, msg, IMAGE_ID, keyboard, viewport, annotations, mapImage) {
         "use strict";
 
         // set the content of the navbar element "manually" because it is outside of
@@ -23,6 +23,8 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
         // finish image loading process
         var finishLoading = function (image) {
             $scope.imageLoading = false;
+            mapImage.renderImage(image);
+            annotations.show(image._id);
             $scope.$broadcast('image.shown', image);
 
             return image;
@@ -67,6 +69,10 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
                   .then(pushState)
                   .catch(msg.responseError);
         };
+
+        $scope.$on('image.fetching', function (e, image) {
+            annotations.load(image._id);
+        });
 
         // update the viewport
         $scope.$on('canvas.moveend', function(e, params) {
