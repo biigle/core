@@ -1,20 +1,32 @@
 "use strict"
-process.env.DISABLE_NOTIFIER = true;
 
-var gulp    = require('gulp');
-var elixir  = require('laravel-elixir');
-var angular = require('laravel-elixir-angular');
-var shell   = require('gulp-shell');
+var gulp = require('gulp');
+var h = require('gulp-helpers');
+var publish = h.publish('Dias\\Modules\\Projects\\ProjectsServiceProvider');
 
-elixir(function (mix) {
-	process.chdir('src');
-	mix.sass('main.scss', 'public/assets/styles')
-	   .angular('resources/assets/js/projects/', 'public/assets/scripts', 'main.js');
-    mix.task('publish', 'resources/assets/**/*');
+h.paths.sass = 'src/resources/assets/sass/';
+h.paths.js = 'src/resources/assets/js/';
+h.paths.public = 'src/public/assets/';
 
-    mix.sass('dashboard.scss', 'public/assets/styles/dashboard.css')
+gulp.task('sass-main', function () {
+    h.sass('main.scss', 'main.css');
 });
 
-gulp.task('publish', function () {
-    gulp.src('').pipe(shell('php ../../../../artisan vendor:publish --provider="Dias\\Modules\\Projects\\ProjectsServiceProvider" --force'));
+gulp.task('sass-dashboard', function () {
+    h.sass('dashboard.scss', 'dashboard.css');
 });
+
+gulp.task('sass', ['sass-main', 'sass-dashboard']);
+
+gulp.task('js', function (cb) {
+    h.angular('projects/**/*.js', 'main.js', cb);
+});
+
+gulp.task('watch', function () {
+    gulp.watch(h.paths.sass + 'main.scss', ['sass-main']);
+    gulp.watch(h.paths.sass + 'dashboard.scss', ['sass-dashboard']);
+    gulp.watch(h.paths.js + 'projects/**/*.js', ['js']);
+    gulp.watch(h.paths.public + '**/*', publish);
+});
+
+gulp.task('default', ['sass', 'js'], publish)
