@@ -1,19 +1,15 @@
 {
   "private": true,
   "devDependencies": {
+    "angular-jsdoc": "~0.3.2",
     "gulp": "^3.9.1",
+    "gulp-apidoc": "~0.1.2",
+    "gulp-helpers": "git+https://github.com/mzur/gulp-helpers.git",
     "jasmine-core": "^2.4.1",
+    "jsdoc": "~3.3.0-beta1",
     "karma": "^1.1.1",
     "karma-jasmine": "^1.0.2",
-    "karma-phantomjs-launcher": "^1.0.1",
-    "laravel-elixir-angular": "~1.0.1",
-    "angular-jsdoc": "~0.3.2",
-    "gulp-shell": "~0.3.0",
-    "jsdoc": "~3.3.0-beta1",
-    "gulp-apidoc": "~0.1.2"
-  },
-  "dependencies": {
-    "laravel-elixir": "^5.0.0"
+    "karma-phantomjs-launcher": "^1.0.1"
   },
   "scripts": {
     "test": "karma start karma.conf.js --single-run"
