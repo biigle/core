@@ -7,10 +7,10 @@ $router->get('annotate/{id}', [
     'uses' => 'AnnotationController@index',
 ]);
 
-$router->get('annotations/show/{id}', [
+$router->get('annotations/{id}', [
     'middleware' => 'auth',
     'as'   => 'show-annotation',
-    'uses' => 'ShowAnnotationController@show',
+    'uses' => 'AnnotationController@show',
 ]);
 
 $router->get('manual/tutorials/annotations/{name}', [
