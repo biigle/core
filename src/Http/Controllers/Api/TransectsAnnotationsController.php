@@ -2,9 +2,9 @@
 
 namespace Dias\Modules\Ate\Http\Controllers\Api;
 
-use Dias\Http\Controllers\Api\Controller;
 use Dias\Transect;
 use Dias\Annotation;
+use Dias\Http\Controllers\Api\Controller;
 
 class TransectsAnnotationsController extends Controller
 {

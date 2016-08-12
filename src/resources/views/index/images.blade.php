@@ -8,6 +8,11 @@
             <span class="changed-label-name" data-ng-bind="changedLabel.name"></span>
         </div>
         <div class="image-buttons">
+            @if(Route::has('show-annotation'))
+                <a href="{{ route('show-annotation', '') }}/@{{id}}" target="_blank" class="image-button" title="Show the annotation in the annotation tool">
+                    <span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>
+                </a>
+            @endif
         </div>
     </figure>
 

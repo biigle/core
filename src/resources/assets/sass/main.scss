@@ -37,6 +37,9 @@
         opacity: 0;
         pointer-events: none;
         transition: opacity .25s ease;
+        // text "border"
+        text-shadow: -2px 0 $body-bg, 0 2px $body-bg, 2px 0 $body-bg, 0 -2px $body-bg;
+        color: white;
     }
 
     &:hover {
