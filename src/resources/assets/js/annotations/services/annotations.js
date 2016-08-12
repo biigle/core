@@ -5,12 +5,16 @@
  * @memberOf dias.annotations
  * @description Wrapper service the annotations to make them available in multiple controllers.
  */
-angular.module('dias.annotations').service('annotations', function (Annotation, SHAPES, msg, AnnotationLabel, labels) {
+angular.module('dias.annotations').service('annotations', function (Annotation, SHAPES, msg, AnnotationLabel, labels, $q) {
 		"use strict";
 
         var _this = this;
 		var annotations;
-        var promise;
+
+        // Manually construct a promise that can be used even before the annotations
+        // were loaded. It will be resolved once the first annotations are there.
+        var deferred = $q.defer();
+        var promise = deferred.promise;
 
         // observers to the (filtered) list of annotations
         var observers = [];
@@ -225,7 +229,10 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
             promise = annotations.$promise
                 .then(buildGroupedByLabel)
                 .then(update)
-                .then(_this.get);
+                .then(_this.get)
+                // resolve initial promise
+                .then(deferred.resolve)
+                .catch(deferred.reject);
         };
 
         this.add = function (params) {

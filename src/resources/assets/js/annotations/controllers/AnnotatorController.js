@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Main controller of the Annotator application.
  */
-angular.module('dias.annotations').controller('AnnotatorController', function ($scope, images, urlParams, msg, IMAGE_ID, keyboard, viewport, annotations, mapImage) {
+angular.module('dias.annotations').controller('AnnotatorController', function ($scope, images, urlParams, msg, IMAGE_ID, keyboard, viewport, annotations, mapImage, mapAnnotations) {
         "use strict";
 
         // set the content of the navbar element "manually" because it is outside of
@@ -98,5 +98,10 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
         images.init();
         // display the first image
         loadImage(parseInt(IMAGE_ID)).then(pushState);
+
+        // zoom to and select the annotation specified in the url parameters
+        if (urlParams.get('annotation')) {
+            mapAnnotations.jumpToAnnotation({id: parseInt(urlParams.get('annotation'))});
+        }
     }
 );

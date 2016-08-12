@@ -376,6 +376,18 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             });
         };
 
+        this.jumpToAnnotation = function (annotation) {
+            annotations.getPromise().then(function () {
+                var features = annotationFeatures.getArray();
+                for (var i = features.length - 1; i >= 0; i--) {
+                    if (features[i].annotation.id === annotation.id) {
+                        selectAndShowAnnotation(features[i]);
+                        break;
+                    }
+                }
+            });
+        };
+
         // flicker the highlighted annotation to signal an error
         this.flicker = function (count) {
             var annotation = selectedFeatures.item(0);
