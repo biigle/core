@@ -2,8 +2,8 @@
 
 namespace Dias\Modules\Projects\Http\Controllers;
 
-use Dias\Project;
 use Dias\Role;
+use Dias\Project;
 use Dias\Http\Controllers\Views\Controller;
 
 class ProjectsController extends Controller

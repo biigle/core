@@ -109,6 +109,8 @@ angular.module('dias.projects').controller('MembersController', function ($scope
         };
 
         $scope.detachMember = function (member) {
+            if (loading) return;
+
             loading = true;
             ProjectUser.detach(
                 {project_id: PROJECT.id},
@@ -141,7 +143,7 @@ angular.module('dias.projects').controller('MembersController', function ($scope
         };
 
         $scope.attachMember = function () {
-            if (!$scope.newMemberValid()) return;
+            if (loading || !$scope.newMemberValid()) return;
 
             loading = true;
             var member = $scope.newMember.user;

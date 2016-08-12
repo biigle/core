@@ -21,3 +21,8 @@ $router->group(['middleware' => 'auth'], function ($router) {
         'uses' => 'ProjectsController@index',
     ]);
 });
+
+$router->group(['middleware' => 'auth.api', 'namespace' => 'Api', 'prefix' => 'api/v1'],
+    function ($router) {
+        $router->get('projects/{id}/attachable-transects', 'AttachableTransectsController@index');
+});

@@ -5,11 +5,16 @@
  * @memberOf dias.projects
  * @description Controller for the the transects of a project
  */
-angular.module('dias.projects').controller('TransectsController', function ($scope, PROJECT, TRANSECTS, ProjectTransect, msg) {
+angular.module('dias.projects').controller('TransectsController', function ($scope, PROJECT, TRANSECTS, ProjectTransect, msg, AttachableTransects) {
         "use strict";
 
         var editing = false;
         var loading = false;
+        var attachableTransects;
+
+        $scope.data = {
+            transectToAttach: null
+        };
 
         var handleError = function (response) {
             msg.responseError(response);
@@ -43,9 +48,17 @@ angular.module('dias.projects').controller('TransectsController', function ($sco
                 }
             }
             loading = false;
-            if (!$scope.hasTransects()) {
-                editing = false;
+        };
+
+        var attachSuccess = function (transect) {
+            for (var i = attachableTransects.length - 1; i >= 0; i--) {
+                if (attachableTransects[i].id === transect.id) {
+                    attachableTransects.splice(i, 1);
+                }
             }
+            TRANSECTS.push(transect);
+            $scope.data.transectToAttach = null;
+            loading = false;
         };
 
         $scope.isEditing = function () {
@@ -69,16 +82,45 @@ angular.module('dias.projects').controller('TransectsController', function ($sco
         };
 
         $scope.detachTransect = function (transect) {
+            if (loading) return;
+
             loading = true;
             ProjectTransect.detach(
                 {project_id: PROJECT.id},
                 {id: transect.id},
                 function () {
+                    // transect was only detached and not deleted
+                    attachableTransects.push(transect);
                     detachSuccess(transect);
                 },
                 function (response) {
                     detachError(transect, response);
                 }
+            );
+        };
+
+        $scope.getAttachableTransects = function () {
+            if (!attachableTransects) {
+                loading = true;
+                attachableTransects = AttachableTransects.query({id: PROJECT.id}, function () {
+                    loading = false;
+                }, handleError);
+            }
+
+            return attachableTransects;
+        };
+
+        $scope.attachTransect = function () {
+            if (loading) return;
+
+            loading = true;
+            ProjectTransect.attach(
+                {project_id: PROJECT.id},
+                {id: $scope.data.transectToAttach.id},
+                function () {
+                    attachSuccess($scope.data.transectToAttach);
+                },
+                handleError
             );
         };
     }

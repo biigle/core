@@ -1,1 +1,1 @@
-{"version":3,"sources":["dashboard.scss"],"names":[],"mappings":"AAAA,yBACI,QAAA,IACA,WAAA","file":"dashboard.css","sourcesContent":[".dashboard__all-projects {\n    padding: 2em;\n    text-align: center;\n}\n"],"sourceRoot":"/source/"}
+{"version":3,"sources":["dashboard.scss"],"names":[],"mappings":"AAAA;EACI,aAAa;EACb,mBAAmB,EACtB","file":"dashboard.css","sourcesContent":[".dashboard__all-projects {\n    padding: 2em;\n    text-align: center;\n}\n"],"sourceRoot":"/source/"}

@@ -17,7 +17,7 @@ angular.module('dias.projects').controller('ProjectController', function ($scope
         };
 
         var handleSavingError = function (response) {
-            meg.responseError(response);
+            msg.responseError(response);
             saving = false;
         };
 
