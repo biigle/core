@@ -1,24 +1,44 @@
 "use strict";
-process.env.DISABLE_NOTIFIER = true;
 
-var gulp    = require('gulp');
-var elixir  = require('laravel-elixir');
-var angular = require('laravel-elixir-angular');
-var shell   = require('gulp-shell');
+var gulp = require('gulp');
+var h = require('gulp-helpers');
+var publish = h.publish('Dias\\Modules\\Ate\\AteServiceProvider', 'public');
 
-elixir(function (mix) {
-    process.chdir('src');
-    mix.sass('main.scss', 'public/assets/styles/main.css')
-        .angular('resources/assets/js/ate/', 'public/assets/scripts', 'main.js');
+h.paths.sass = 'src/resources/assets/sass/';
+h.paths.js = 'src/resources/assets/js/';
+h.paths.public = 'src/public/assets/';
 
-    mix.angular('resources/assets/js/project-ate/', 'public/assets/scripts', 'project-ate.js');
-
-    mix.sass('annotations.scss', 'public/assets/styles/annotations.css')
-        .angular('resources/assets/js/annotations/', 'public/assets/scripts', 'annotations.js');
-
-    mix.task('publish', 'public/assets/**/*');
+gulp.task('sass-main', function () {
+   h.sass('main.scss', 'main.css');
 });
 
-gulp.task('publish', function () {
-    gulp.src('').pipe(shell('php ../../../../artisan vendor:publish --provider="Dias\\Modules\\Ate\\AteServiceProvider" --tag="public" --force'));
+gulp.task('sass-annotations', function () {
+   h.sass('annotations.scss', 'annotations.css');
 });
+
+gulp.task('sass', ['sass-main', 'sass-annotations']);
+
+gulp.task('js-main', function (cb) {
+   h.angular('ate/**/*.js', 'main.js', cb);
+});
+
+gulp.task('js-project-ate', function (cb) {
+   h.angular('project-ate/**/*.js', 'project-ate.js', cb);
+});
+
+gulp.task('js-annotations', function (cb) {
+   h.angular('annotations/**/*.js', 'annotations.js', cb);
+});
+
+gulp.task('js', ['js-main', 'js-project-ate', 'js-annotations']);
+
+gulp.task('watch', function () {
+    gulp.watch(h.paths.sass + 'main.scss', ['sass-main']);
+    gulp.watch(h.paths.sass + 'annotations.scss', ['sass-annotations']);
+    gulp.watch(h.paths.js + 'ate/**/*.js', ['js-main']);
+    gulp.watch(h.paths.js + 'project-ate/**/*.js', ['js-project-ate']);
+    gulp.watch(h.paths.js + 'annotations/**/*.js', ['js-annotations']);
+    gulp.watch(h.paths.public + '**/*', publish);
+});
+
+gulp.task('default', ['sass', 'js'], publish)
