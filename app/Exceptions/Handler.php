@@ -78,6 +78,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
+        // convert the exception here because we want to throw a 403 and not a 500
         if ($e instanceof TokenMismatchException) {
             $e = new AccessDeniedHttpException();
         }

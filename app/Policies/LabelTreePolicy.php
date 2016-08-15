@@ -2,11 +2,11 @@
 
 namespace Dias\Policies;
 
-use Dias\LabelTree;
+use DB;
 use Dias\User;
 use Dias\Role;
+use Dias\LabelTree;
 use Dias\Visibility;
-use DB;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LabelTreePolicy extends CachedPolicy

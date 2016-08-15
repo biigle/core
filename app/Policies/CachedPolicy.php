@@ -42,6 +42,9 @@ class CachedPolicy
      */
     public function remember($key, $callback)
     {
-        return call_user_func_array([$this->cache, 'remember'], [$key, self::TIME, $callback]);
+        return call_user_func_array(
+            [$this->cache, 'remember'],
+            [$key, self::TIME, $callback]
+        );
     }
 }

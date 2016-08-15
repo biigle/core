@@ -16,7 +16,7 @@ class Initialize extends Migration
     {
 
         /*
-        | Types of visibility that different models can have. E.g. a label category
+        | Types of visibility that different models can have. E.g. a label
         | tree may be "public" or "private".
         */
         Schema::create('visibilities', function (Blueprint $table) {
@@ -153,7 +153,7 @@ class Initialize extends Migration
                   // dont delete role if it is in use
                   ->onDelete('restrict');
 
-            // each user must not be added twice as a category tree member
+            // each user must not be added twice as a label tree member
             $table->unique(['label_tree_id', 'user_id']);
         });
 
