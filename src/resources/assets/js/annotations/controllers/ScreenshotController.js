@@ -20,6 +20,60 @@ angular.module('dias.annotations').controller('ScreenshotController', function (
             return 'dias_screenshot.png';
         };
 
+        // see: https://gist.github.com/remy/784508
+        var trim = function (c) {
+            var ctx = c.getContext('2d');
+            var copy = document.createElement('canvas').getContext('2d');
+            var pixels = ctx.getImageData(0, 0, c.width, c.height);
+            var l = pixels.data.length;
+            var i, x, y;
+            var bound = {
+                top: null,
+                left: null,
+                right: null,
+                bottom: null
+            };
+
+            for (i = 0; i < l; i += 4) {
+                if (pixels.data[i + 3] !== 0) {
+                    x = (i / 4) % c.width;
+                    y = ~~((i / 4) / c.width);
+
+                    if (bound.top === null) {
+                        bound.top = y;
+                    }
+
+                    if (bound.left === null) {
+                        bound.left = x;
+                    } else if (x < bound.left) {
+                        bound.left = x;
+                    }
+
+                    if (bound.right === null) {
+                        bound.right = x;
+                    } else if (bound.right < x) {
+                        bound.right = x;
+                    }
+
+                    if (bound.bottom === null) {
+                        bound.bottom = y;
+                    } else if (bound.bottom < y) {
+                        bound.bottom = y;
+                    }
+                }
+            }
+
+            var trimHeight = bound.bottom - bound.top;
+            var trimWidth = bound.right - bound.left;
+            var trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight);
+
+            copy.canvas.width = trimWidth;
+            copy.canvas.height = trimHeight;
+            copy.putImageData(trimmed, 0, 0);
+
+            return copy.canvas;
+        };
+
         var getBlob = function (canvas, callback) {
             var type = 'image/png';
             if (!HTMLCanvasElement.prototype.toBlob) {
@@ -54,7 +108,7 @@ angular.module('dias.annotations').controller('ScreenshotController', function (
 
         $scope.makeShot = function () {
             map.once('postcompose', function (e) {
-                getBlob(e.context.canvas, download);
+                getBlob(trim(e.context.canvas), download);
             });
             map.renderSync();
         };
