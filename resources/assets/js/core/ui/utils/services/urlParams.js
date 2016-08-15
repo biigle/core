@@ -25,6 +25,7 @@ angular.module('dias.ui.utils').service('urlParams', function ($location) {
 
         this.unset = function (key) {
             $location.search(key, null);
+            $location.replace();
         };
 
         // returns a URL parameter
