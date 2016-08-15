@@ -273,7 +273,38 @@ class AteController extends Controller
         $newAnnotationLabels = [];
         $now = new \Carbon\Carbon;
 
+        // Get all labels that are already there exactly like they should be created
+        // in the next step.
+        $alreadyThereQuery = AnnotationLabel::select('id', 'annotation_id', 'label_id', 'user_id');
+        $first = true;
+
         foreach ($changed as $annotationId => $labelId) {
+            $callback = function ($query) use ($annotationId, $labelId, $userId) {
+                $query->where('annotation_id', $annotationId)
+                    ->where('label_id', $labelId)
+                    ->where('user_id', $userId);
+            };
+
+            if ($first) {
+                $first = false;
+                $alreadyThereQuery->where($callback);
+            } else {
+                $alreadyThereQuery->orWhere($callback);
+            }
+        }
+
+        $alreadyThere = $alreadyThereQuery->get();
+
+        foreach ($changed as $annotationId => $labelId) {
+            $skip = !$alreadyThere->whereLoose('annotation_id', $annotationId)
+                ->whereLoose('label_id', $labelId)
+                ->isEmpty();
+
+            if ($skip) {
+                // don't add new annotation labels if they already exist exactly the same
+                continue;
+            }
+
             $newAnnotationLabels[] = [
                 'annotation_id' => $annotationId,
                 'label_id' => $labelId,

@@ -237,4 +237,36 @@ class AteModuleHttpControllersApiAteControllerTest extends ApiTestCase {
         $this->assertNotNull($l4->fresh());
         $this->assertNotNull($a4->fresh());
     }
+
+    public function testSaveChangedAlreadyExists()
+    {
+        $id = $this->transect()->id;
+        $image = ImageTest::create(['transect_id' => $this->transect()->id]);
+        $a1 = AnnotationTest::create(['image_id' => $image->id]);
+
+        $l1 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $this->editor()->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+        $l2 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $this->editor()->id,
+            'label_id' => $this->labelChild()->id,
+        ]);
+
+        $this->beEditor();
+        $this->post("/api/v1/transects/{$id}/ate", [
+            'dismissed' => [
+                $l1->label_id => [$a1->id],
+            ],
+            'changed' => [
+                $a1->id => $l2->label_id, // but this already exists from the same user!
+            ]
+        ]);
+        $this->assertResponseOk();
+
+        $this->assertEquals(1, $a1->labels()->count());
+        $this->assertEquals($l2->id, $a1->labels()->first()->id);
+    }
 }
