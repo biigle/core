@@ -39,6 +39,7 @@ class GenerateFullReport extends GenerateReportJob
                             $row->label_name,
                             $row->shape_name,
                             $row->points,
+                            $row->attrs
                         ]);
                     }
                 });
@@ -94,7 +95,8 @@ class GenerateFullReport extends GenerateReportJob
                 'annotations.id as annotation_id',
                 'labels.name as label_name',
                 'shapes.name as shape_name',
-                'annotations.points'
+                'annotations.points',
+                'images.attrs'
             )
             // order by is essential for chunking!
             ->orderBy('annotations.id')
