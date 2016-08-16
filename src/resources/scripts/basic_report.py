@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -11,6 +13,7 @@ import csv
 project_name = sys.argv[1]
 target_file = sys.argv[2]
 transect_csvs = sys.argv[3:]
+
 
 def TitleSlide(text):
     fig = plt.figure(figsize=(10, 4))
@@ -30,7 +33,7 @@ def TitleSlide(text):
     return fig
 
 pdf = PdfPages(target_file)
-fig = TitleSlide("BIIGLE DIAS basic report for project\n" + project_name)
+fig = TitleSlide("BIIGLE DIAS basic report for project\n" + project_name.decode('UTF-8'))
 pdf.savefig(fig)
 width = 1.
 
@@ -43,7 +46,7 @@ for path in transect_csvs:
     if rows.shape[0] == 0:
         continue
     # rows have the content: label_name, label_color, label_count
-    counts = rows[:,2].astype(int)
+    counts = rows[:, 2].astype(int)
     ind = np.arange(rows.shape[0])
 
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -53,16 +56,16 @@ for path in transect_csvs:
     hashes = np.chararray(rows.shape[0])
     hashes[:] = '#'
 
-    ax.bar(ind, counts, width, color=np.core.defchararray.add(hashes, rows[:,1]), log=counts.max() > 100)
+    ax.bar(ind, counts, width, color=np.core.defchararray.add(hashes, rows[:, 1]), log=counts.max() > 100)
 
     ax.set_xticks(ind + width / 2)
-    ax.set_xticklabels(rows[:,0], rotation=45, fontsize=8)
+    ax.set_xticklabels(rows[:, 0], rotation=45, fontsize=8)
     plt.title(transect_name)
     plt.xlim([0, ind.size])
     pdf.savefig()
 
 d = pdf.infodict()
-d['Title'] = "BIIGLE DIAS basic report for project " + project_name
+d['Title'] = "BIIGLE DIAS basic report for project " + project_name.decode('UTF-8')
 d['Author'] = 'Biodata Mining Group, Bielefeld University'
 d['Subject'] = 'Histograms of label distribution in all transects of the project'
 d['Keywords'] = ''
