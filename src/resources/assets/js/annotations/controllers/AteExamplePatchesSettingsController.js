@@ -5,23 +5,27 @@
  * @memberOf dias.annotations
  * @description Controller for ATE example patches settings
  */
-angular.module('dias.annotations').controller('AteExamplePatchesSettingsController', function ($scope, exampleAnnotations) {
+angular.module('dias.annotations').controller('AteExamplePatchesSettingsController', function ($scope, exampleAnnotations, settings) {
 		"use strict";
 
-        $scope.setDefaultSettings('exampleAnnotations', true);
+        var key = 'exampleAnnotations';
+
+        settings.setDefaultSettings(key, true);
 
         $scope.show = function () {
-            $scope.setSettings('exampleAnnotations', true);
+            settings.setPermanentSettings(key, true);
         };
 
         $scope.hide = function () {
-            $scope.setSettings('exampleAnnotations', false);
+            settings.setPermanentSettings(key, false);
         };
 
-        $scope.shown = exampleAnnotations.isEnabled;
+        $scope.shown = function () {
+            return settings.getPermanentSettings(key);
+        };
 
-        $scope.$watch('settings.exampleAnnotations', function (enabled) {
-            if (enabled) {
+        $scope.$watch($scope.shown, function (shown) {
+            if (shown) {
                 exampleAnnotations.enable();
             } else {
                 exampleAnnotations.disable();
