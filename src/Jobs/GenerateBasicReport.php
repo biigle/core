@@ -2,8 +2,8 @@
 
 namespace Dias\Modules\Export\Jobs;
 
-use Mail;
 use DB;
+use Mail;
 use Dias\Modules\Export\Support\CsvFile;
 use Dias\Modules\Export\Support\Reports\Basic;
 
@@ -86,6 +86,7 @@ class GenerateBasicReport extends GenerateReportJob
             ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
             ->join('images', 'annotations.image_id', '=', 'images.id')
             ->select(DB::raw('labels.name, labels.color, count(labels.id) as count'))
-            ->groupBy('labels.id');
+            ->groupBy('labels.id')
+            ->orderBy('labels.id');
     }
 }
