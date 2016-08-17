@@ -156,8 +156,13 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->delete('/api/v1/projects/1/transects/'.$id);
-        // trying to delete withour force
+        // trying to delete without force
         $this->assertResponseStatus(400);
+
+        $otherTransect = TransectTest::create();
+        $this->delete('/api/v1/projects/1/transects/'.$otherTransect->id);
+        // does not belong to the project
+        $this->assertResponseStatus(404);
 
         $this->expectsEvents('images.cleanup');
 

@@ -178,9 +178,9 @@ class ProjectTransectController extends Controller
      */
     public function destroy($projectId, $transectId)
     {
-        $transect = Transect::findOrFail($transectId);
-        $this->authorize('update', $transect);
         $project = Project::findOrFail($projectId);
+        $transect = $project->transects()->findOrFail($transectId);
+        $this->authorize('destroy', $transect);
 
         $project->removeTransect($transect, $this->request->has('force'));
 

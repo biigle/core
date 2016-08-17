@@ -2,10 +2,10 @@
 
 namespace Dias\Policies;
 
-use Dias\Transect;
+use DB;
 use Dias\User;
 use Dias\Role;
-use DB;
+use Dias\Transect;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TransectPolicy extends CachedPolicy
@@ -89,5 +89,17 @@ class TransectPolicy extends CachedPolicy
                 ->where('project_role_id', Role::$admin->id)
                 ->exists();
         });
+    }
+
+    /**
+     * Determine if the given transect can be deleted by the user.
+     *
+     * @param  User  $user
+     * @param  Transect  $transect
+     * @return bool
+     */
+    public function destroy(User $user, Transect $transect)
+    {
+        return $this->update($user, $transect);
     }
 }
