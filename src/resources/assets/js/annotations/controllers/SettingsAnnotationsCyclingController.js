@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Controller cycling through annotations
  */
-angular.module('dias.annotations').controller('SettingsAnnotationsCyclingController', function ($scope, mapAnnotations, annotations, labels, keyboard) {
+angular.module('dias.annotations').controller('SettingsAnnotationsCyclingController', function ($scope, mapAnnotations, annotations, labels, keyboard, settings) {
         "use strict";
 
         // flag to prevent cycling while a new image is loading
@@ -82,21 +82,19 @@ angular.module('dias.annotations').controller('SettingsAnnotationsCyclingControl
         };
 
         $scope.cycling = function () {
-            return $scope.getVolatileSettings('cycle') === cyclingKey;
+            return settings.getVolatileSettings('cycle') === cyclingKey;
         };
 
         $scope.startCycling = function () {
-            $scope.setVolatileSettings('cycle', cyclingKey);
+            settings.setVolatileSettings('cycle', cyclingKey);
         };
 
         $scope.stopCycling = function () {
-            $scope.setVolatileSettings('cycle', '');
+            settings.setVolatileSettings('cycle', '');
         };
 
-        // the cycle settings my be set by other controllers, too, so watch it
-        // instead of using the start/stop functions to add/remove events etc.
-        $scope.$watch('volatileSettings.cycle', function (cycle, oldCycle) {
-            if (cycle === cyclingKey) {
+        $scope.$watch($scope.cycling, function (cycling) {
+            if (cycling) {
                 // override previous image on arrow left
                 keyboard.on(37, prevAnnotation, 10);
                 // override next image on arrow right and space
@@ -109,7 +107,7 @@ angular.module('dias.annotations').controller('SettingsAnnotationsCyclingControl
                 // if the displayed annotations change (due to filtering etc),
                 // jump to the first annotation again
                 annotations.observeFilter(mapAnnotations.jumpToFirst);
-            } else if (oldCycle === cyclingKey) {
+            } else {
                 keyboard.off(37, prevAnnotation);
                 keyboard.off(39, nextAnnotation);
                 keyboard.off(32, nextAnnotation);

@@ -5,14 +5,14 @@
  * @memberOf dias.annotations
  * @description Controller for cycling through image sections
  */
-angular.module('dias.annotations').controller('SettingsSectionCyclingController', function ($scope, map, mapImage, keyboard) {
+angular.module('dias.annotations').controller('SettingsSectionCyclingController', function ($scope, map, mapImage, keyboard, settings) {
         "use strict";
 
         // flag to prevent cycling while a new image is loading
         var loading = false;
 
         var cyclingKey = 'sections';
-        var view;
+        var view = map.getView();
 
         // view center point of the start position
         var startCenter = [0, 0];
@@ -195,21 +195,19 @@ angular.module('dias.annotations').controller('SettingsSectionCyclingController'
         };
 
         $scope.cycling = function () {
-            return $scope.getVolatileSettings('cycle') === cyclingKey;
+            return settings.getVolatileSettings('cycle') === cyclingKey;
         };
 
         $scope.startCycling = function () {
-            $scope.setVolatileSettings('cycle', cyclingKey);
+            settings.setVolatileSettings('cycle', cyclingKey);
         };
 
         $scope.stopCycling = function () {
-            $scope.setVolatileSettings('cycle', '');
+            settings.setVolatileSettings('cycle', '');
         };
 
-        // the cycle settings my be set by other controllers, too, so watch it
-        // instead of using the start/stop functions to add/remove events etc.
-        $scope.$watch('volatileSettings.cycle', function (cycle, oldCycle) {
-            if (cycle === cyclingKey) {
+        $scope.$watch($scope.cycling, function (cycling) {
+            if (cycling) {
                 map.on('change:size', handleMapResize);
                 updateExtent();
                 goToStartStep();
@@ -220,7 +218,7 @@ angular.module('dias.annotations').controller('SettingsSectionCyclingController'
                 keyboard.on(32, nextSection, 10);
 
                 keyboard.on(27, stopCycling, 10);
-            } else if (oldCycle === cyclingKey) {
+            } else {
                 map.un('change:size', handleMapResize);
                 view.un('change:resolution', handleUserZoom);
                 keyboard.off(37, prevSection);
