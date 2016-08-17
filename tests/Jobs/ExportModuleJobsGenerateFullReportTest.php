@@ -16,6 +16,7 @@ class ExportModuleJobsGenerateFullReportTest extends TestCase {
 
         $al = AnnotationLabelTest::create();
         $al->annotation->image->transect_id = $transect->id;
+        $al->annotation->image->attrs = ['image' => 'attrs'];
         $al->annotation->image->save();
 
         // check if the temporary file exists
@@ -37,6 +38,7 @@ class ExportModuleJobsGenerateFullReportTest extends TestCase {
                 $al->label->name,
                 $al->annotation->shape->name,
                 json_encode($al->annotation->points),
+                json_encode(['image' => 'attrs']),
             ]);
 
         $mock->shouldReceive('delete', 'close')
