@@ -77,7 +77,7 @@ class AnnotationController extends Controller
      */
     public function show($id)
     {
-        $annotation = Annotation::findOrFail($id);
+        $annotation = Annotation::select('id', 'image_id')->findOrFail($id);
         $this->authorize('access', $annotation);
 
         return redirect()->route('annotate', [
