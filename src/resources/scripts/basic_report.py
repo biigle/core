@@ -60,7 +60,7 @@ for path in transect_csvs:
 
     ax.set_xticks(ind + width / 2)
     ax.set_xticklabels(rows[:, 0], rotation=45, fontsize=8)
-    plt.title(transect_name)
+    plt.title(transect_name.decode('UTF-8'))
     plt.xlim([0, ind.size])
     pdf.savefig()
 
