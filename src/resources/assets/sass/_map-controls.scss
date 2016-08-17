@@ -93,13 +93,23 @@ $ol-control-color: rgb(0, 60, 136);
     }
 }
 
-.selected-label {
+%info-box {
     z-index: 1;
     border-radius: 4px;
     position: absolute;
-    right: 0.5em;
-    bottom: 0.5em;
     background-color: fade-out(#222, 0.3);
     border: 1px solid #353535;
     padding: .25em .5em;
+}
+
+.selected-label {
+    @extend %info-box;
+    right: 0.5em;
+    bottom: 0.5em;
+}
+
+.mouse-position {
+    @extend %info-box;
+    left: 0.5em;
+    bottom: 0.5em;
 }

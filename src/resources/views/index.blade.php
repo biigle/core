@@ -65,6 +65,9 @@
                 </div>
             @endif
             --}}
+            <div class="ng-cloak mouse-position" data-ng-controller="MousePositionController" title="Mouse position on the image" data-ng-show="shown()">
+                <span data-ng-bind="position[0]"></span> &times; <span data-ng-bind="position[1]"></span>
+            </div>
             <div class="controls-bar">
                 @include('annotations::index.controls.navigation')
                 @if ($editMode)
