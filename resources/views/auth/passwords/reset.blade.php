@@ -1,23 +1,15 @@
 @extends('app')
 
-@section('title'){{ trans('dias.titles.login') }}@stop
-
-@push('scripts')
-    <script type="text/javascript">
-        angular.module('dias.ui.collapse', ['ui.bootstrap.collapse', 'ngAnimate']);
-    </script>
-@endpush
+@section('title'){{ trans('dias.titles.resetpw') }}@stop
 
 @section('content')
 <div class="container">
     <div class="row center-form">
         <div class="col-md-4 col-sm-6">
-            <div data-ng-app="dias.ui.collapse" class="info-text">
-                <h1 class="logo  logo--standalone"><a href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></a></h1>
-                <a class="info-text__sign" href="" data-ng-click="isShown = !isShown" data-ng-hide="isShown" title="What is DIAS?"><span class="glyphicon glyphicon-info-sign"></span></a>
-                <p class="ng-cloak" data-uib-collapse="!isShown" data-ng-click="isShown = !isShown">{{ trans('dias.info') }}</p>
-            </div>
-            <form class="well clearfix" role="form" method="POST" action="{{ url('login') }}">
+            <h1 class="logo  logo--standalone"><a href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></a></h1>
+            <form class="well clearfix" role="form" method="POST" action="{{ url('password/reset') }}">
+                {{ csrf_field() }}
+                <p class="lead text-center">{{ trans('auth.reset_pw') }}</p>
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                     <div class="input-group">
                         <div class="input-group-addon">
@@ -29,6 +21,7 @@
                         <span class="help-block">{{ $errors->first('email') }}</span>
                     @endif
                 </div>
+
                 <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
                     <div class="input-group">
                         <div class="input-group-addon">
@@ -40,18 +33,20 @@
                         <span class="help-block">{{ $errors->first('password') }}</span>
                     @endif
                 </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" name="remember"> {{ trans('auth.remember_me') }}
-                    </label>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="glyphicon glyphicon-lock"></i>
+                        </div>
+                        <input type="password" placeholder="{{ trans('form.password_confirmation') }}" class="form-control" name="password_confirmation" value="{{ old('password_confirmation') }}" required>
+                    </div>
+                    <span class="help-block">{{ trans('auth.reset_pw_help') }}</span>
                 </div>
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="submit" class="btn btn-success btn-block" value="{{ trans('form.login') }}">
+
+                <input type="hidden" name="token" value="{{ $token }}">
+                <input type="submit" class="btn btn-warning btn-block" value="{{ trans('auth.reset_pw') }}">
             </form>
-            <p class="clearfix">
-                <a href="{{ url('password/email') }}" class="">{{ trans('auth.forgotpw') }}</a>
-                {{--<a href="{{ url('auth/register') }}" class="pull-right">{{ trans('auth.register') }}</a>--}}
-            </p>
         </div>
     </div>
 </div>

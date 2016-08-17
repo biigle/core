@@ -2,10 +2,10 @@
 
 namespace Dias\Http\Middleware;
 
-use Closure;
 use Hash;
-use Illuminate\Support\Facades\Auth;
+use Closure;
 use Dias\User;
+use Illuminate\Support\Facades\Auth;
 
 class AuthenticateAPI
 {

@@ -2,19 +2,12 @@
 
 namespace Dias;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Foundation\Auth\Access\Authorizable;
-use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-/**
- * A user.
- */
-class User extends Model implements AuthenticatableContract, CanResetPasswordContract
+class User extends Authenticatable
 {
-    use Authenticatable, CanResetPassword, Authorizable;
+    use Notifiable;
 
     /**
      * Validation rules for logging in.
@@ -57,6 +50,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public static $deleteRules = [
         'password'  => 'required|min:8',
+    ];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name', 'email', 'password',
     ];
 
     /**
