@@ -2,9 +2,11 @@
 
 namespace Dias\Http\Controllers\Api;
 
-use Dias\LabelTree;
 use Dias\Role;
+use Dias\LabelTree;
 use Dias\Visibility;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class LabelTreeController extends Controller
@@ -56,32 +58,33 @@ class LabelTreeController extends Controller
      * @apiParam (Attributes that can be updated) {String} description Description of the label tree.
      * @apiParam (Attributes that can be updated) {Number} visibility_id ID of the new visibility of the label tree (public or private).
      *
+     * @param Request $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update($id)
+    public function update(Request $request, $id)
     {
         $tree = LabelTree::findOrFail($id);
         $this->authorize('update', $tree);
 
-        $this->validate($this->request, LabelTree::$updateRules);
+        $this->validate($request, LabelTree::$updateRules);
 
-        $tree->name = $this->request->input('name', $tree->name);
-        $tree->description = $this->request->input('description', $tree->description);
+        $tree->name = $request->input('name', $tree->name);
+        $tree->description = $request->input('description', $tree->description);
 
-        if ($this->request->has('visibility_id') && $this->request->input('visibility_id') === Visibility::$private->id) {
+        if ($request->has('visibility_id') && $request->input('visibility_id') === Visibility::$private->id) {
             $tree->detachUnauthorizedProjects();
         }
 
-        $tree->visibility_id = $this->request->input('visibility_id', $tree->visibility_id);
+        $tree->visibility_id = $request->input('visibility_id', $tree->visibility_id);
         $tree->save();
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('saved', true)
                 ->with('message', 'Label tree updated.')
                 ->with('messageType', 'success');
@@ -117,26 +120,28 @@ class LabelTreeController extends Controller
      *    "updated_at": "2015-02-10 09:45:30"
      * }
      *
+     * @param Request $request
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(Request $request, Guard $auth)
     {
-        $this->validate($this->request, LabelTree::$createRules);
+        $this->validate($request, LabelTree::$createRules);
 
         $tree = new LabelTree;
-        $tree->name = $this->request->input('name');
-        $tree->visibility_id = (int) $this->request->input('visibility_id');
-        $tree->description = $this->request->input('description');
+        $tree->name = $request->input('name');
+        $tree->visibility_id = (int) $request->input('visibility_id');
+        $tree->description = $request->input('description');
         $tree->save();
 
-        $tree->addMember($this->user, Role::$admin);
+        $tree->addMember($auth->user(), Role::$admin);
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return $tree;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('newTree', $tree)
                 ->with('message', 'Label tree created.')
                 ->with('messageType', 'success');
@@ -158,10 +163,11 @@ class LabelTreeController extends Controller
      *
      * @apiParam {Number} id The label tree ID.
      *
+     * @param Request $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $tree = LabelTree::findOrFail($id);
         $this->authorize('destroy', $tree);
@@ -172,12 +178,12 @@ class LabelTreeController extends Controller
 
         $tree->delete();
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('deleted', true)
                 ->with('message', 'Label tree deleted.')
                 ->with('messageType', 'success');

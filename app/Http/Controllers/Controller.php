@@ -2,6 +2,7 @@
 
 namespace Dias\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Dias\Http\Middleware\AuthenticateAPI;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -12,31 +13,6 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-
-    /**
-     * The authenticated user.
-     *
-     * @var \Dias\User
-     */
-    protected $user;
-
-    /**
-     * The request.
-     *
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * Creates a new AdvancedController instance.
-     *
-     * @param Request $request
-     */
-    public function __construct(Request $request)
-    {
-        $this->user = auth()->user();
-        $this->request = $request;
-    }
 
     /**
      * Determines if the request was done by an automated script (with API

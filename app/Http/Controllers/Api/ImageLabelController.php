@@ -5,6 +5,8 @@ namespace Dias\Http\Controllers\Api;
 use Dias\Image;
 use Dias\Label;
 use Dias\ImageLabel;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\QueryException;
 
 class ImageLabelController extends Controller
@@ -85,19 +87,21 @@ class ImageLabelController extends Controller
      *    }
      * }
      *
+     * @param Request $request
+     * @param Guard $auth
      * @param int $id Image ID
      * @return \Illuminate\Http\Response
      */
-    public function store($id)
+    public function store(Request $request, Guard $auth, $id)
     {
-        $this->validate($this->request, Image::$attachLabelRules);
+        $this->validate($request, Image::$attachLabelRules);
         $image = Image::findOrFail($id);
-        $label = Label::findOrFail($this->request->input('label_id'));
+        $label = Label::findOrFail($request->input('label_id'));
         $this->authorize('attach-label', [$image, $label]);
 
         try {
             $imageLabel = new ImageLabel;
-            $imageLabel->user()->associate($this->user);
+            $imageLabel->user()->associate($auth->user());
             $imageLabel->label()->associate($label);
             $imageLabel->image()->associate($image);
             $imageLabel->save();

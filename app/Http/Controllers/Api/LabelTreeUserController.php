@@ -2,9 +2,11 @@
 
 namespace Dias\Http\Controllers\Api;
 
-use Dias\LabelTree;
 use Dias\User;
 use Dias\Role;
+use Dias\LabelTree;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class LabelTreeUserController extends Controller
@@ -23,29 +25,30 @@ class LabelTreeUserController extends Controller
      *
      * @apiParam (Attributes that can be updated) {Number} role_id New role of the member (admin or editor)
      *
+     * @param Request $request
      * @param  int  $lid Label tree ID
      * @param  int  $uid User ID
      * @return \Illuminate\Http\Response
      */
-    public function update($lid, $uid)
+    public function update(Request $request, $lid, $uid)
     {
         $tree = LabelTree::findOrFail($lid);
         $user = $tree->members()->findOrFail($uid);
 
         $this->authorize('update-member', [$tree, $user]);
 
-        $this->validate($this->request, LabelTree::$updateMemberRules);
+        $this->validate($request, LabelTree::$updateMemberRules);
 
-        if ($this->request->has('role_id')) {
-            $tree->updateMember($user, Role::findOrFail($this->request->input('role_id')));
+        if ($request->has('role_id')) {
+            $tree->updateMember($user, Role::findOrFail($request->input('role_id')));
         }
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('saved', true);
         }
         return redirect()->back()
@@ -65,26 +68,28 @@ class LabelTreeUserController extends Controller
      * @apiParam (Required attributes) {Number} id User ID of the new member
      * @apiParam (Required attributes) {Number} role_id ID of the role of the new member (admin or editor).
      *
+     * @param Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function store($id)
+    public function store(Request $request, $id)
     {
         $tree = LabelTree::findOrFail($id);
         $this->authorize('add-member', $tree);
 
-        $this->validate($this->request, LabelTree::$addMemberRules);
+        $this->validate($request, LabelTree::$addMemberRules);
 
         $tree->addMember(
-            User::findOrFail($this->request->input('id')),
-            Role::findOrFail($this->request->input('role_id'))
+            User::findOrFail($request->input('id')),
+            Role::findOrFail($request->input('role_id'))
         );
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return $tree;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('saved', true);
         }
         return redirect()->back()
@@ -104,11 +109,13 @@ class LabelTreeUserController extends Controller
      * @apiParam {Number} lid The label tree ID.
      * @apiParam {Number} uid User ID of the member.
      *
+     * @param Request $request
+     * @param Guard $auth
      * @param  int  $lid
      * @param  int  $uid
      * @return \Illuminate\Http\Response
      */
-    public function destroy($lid, $uid)
+    public function destroy(Request $request, Guard $auth, $lid, $uid)
     {
         $tree = LabelTree::findOrFail($lid);
         $member = $tree->members()->findOrFail($uid);
@@ -116,18 +123,18 @@ class LabelTreeUserController extends Controller
 
         // global admins can remove the last label tree admin so they can convert
         // ordinary label trees to global ones
-        if (!$this->user->isAdmin && !$tree->memberCanBeRemoved($member)) {
+        if (!$auth->user()->isAdmin && !$tree->memberCanBeRemoved($member)) {
             throw new AuthorizationException('The only admin cannot be removed from a label tree.');
         }
 
         $tree->members()->detach($uid);
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('deleted', true);
         }
         return redirect()->back()

@@ -2,12 +2,14 @@
 
 namespace Dias\Http\Controllers\Api;
 
+use Exception;
 use Dias\Image;
 use Dias\Shape;
 use Dias\Label;
 use Dias\Annotation;
 use Dias\AnnotationLabel;
-use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 
 class ImageAnnotationController extends Controller
 {
@@ -128,46 +130,48 @@ class ImageAnnotationController extends Controller
      *    ]
      * }
      *
+     * @param Request $request
+     * @param Guard $auth
      * @param int $id image ID
      * @return Annotation
      */
-    public function store($id)
+    public function store(Request $request, Guard $auth, $id)
     {
         $image = Image::findOrFail($id);
         $this->authorize('add-annotation', $image);
 
-        $this->validate($this->request, Image::$createAnnotationRules);
-        $this->validate($this->request, Annotation::$attachLabelRules);
+        $this->validate($request, Image::$createAnnotationRules);
+        $this->validate($request, Annotation::$attachLabelRules);
 
         // from a JSON request, the array may already be decoded
-        $points = $this->request->input('points');
+        $points = $request->input('points');
 
         if (is_string($points)) {
             $points = json_decode($points);
         }
 
         $annotation = new Annotation;
-        $annotation->shape_id = $this->request->input('shape_id');
+        $annotation->shape_id = $request->input('shape_id');
         $annotation->image()->associate($image);
 
         try {
             $annotation->validatePoints($points);
         } catch (Exception $e) {
-            return $this->buildFailedValidationResponse($this->request, [
+            return $this->buildFailedValidationResponse($request, [
                 'points' => [$e->getMessage()]
             ]);
         }
 
         $annotation->points = $points;
-        $label = Label::findOrFail($this->request->input('label_id'));
+        $label = Label::findOrFail($request->input('label_id'));
 
         $this->authorize('attach-label', [$annotation, $label]);
         $annotation->save();
 
         $annotationLabel = new AnnotationLabel;
         $annotationLabel->label_id = $label->id;
-        $annotationLabel->user_id = $this->user->id;
-        $annotationLabel->confidence = $this->request->input('confidence');
+        $annotationLabel->user_id = $auth->user()->id;
+        $annotationLabel->confidence = $request->input('confidence');
         $annotation->labels()->save($annotationLabel);
 
         $annotation->load('labels');

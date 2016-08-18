@@ -4,6 +4,7 @@ namespace Dias\Http\Controllers\Auth;
 
 use Dias\User;
 use Validator;
+use Illuminate\Http\Request;
 use Dias\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
@@ -66,6 +67,17 @@ class RegisterController extends Controller
         $user->save();
 
         return $user;
+    }
+
+    /**
+     * Show the application registration form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showRegistrationForm()
+    {
+        // registration is disabled for now
+        abort(404);
     }
 
     /**

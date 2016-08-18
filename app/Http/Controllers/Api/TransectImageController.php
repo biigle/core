@@ -3,6 +3,7 @@
 namespace Dias\Http\Controllers\Api;
 
 use Dias\Transect;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class TransectImageController extends Controller
@@ -63,23 +64,24 @@ class TransectImageController extends Controller
      * ]
      *
      *
+     * @param Request $request
      * @param int $id Transect ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function store($id)
+    public function store(Request $request, $id)
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('update', $transect);
 
-        $this->validate($this->request, Transect::$addImagesRules);
+        $this->validate($request, Transect::$addImagesRules);
 
-        $images = Transect::parseImagesQueryString($this->request->input('images'));
+        $images = Transect::parseImagesQueryString($request->input('images'));
 
         try {
             $transect->validateImages($images);
         } catch (ValidationException $e) {
-            return $this->buildFailedValidationResponse($this->request, [
+            return $this->buildFailedValidationResponse($request, [
                 'images' => $e->getMessage(),
             ]);
         }

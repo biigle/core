@@ -4,6 +4,8 @@ namespace Dias\Http\Controllers\Api;
 
 use Dias\Project;
 use Dias\Transect;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Validation\ValidationException;
 
 class ProjectTransectController extends Controller
@@ -74,27 +76,29 @@ class ProjectTransectController extends Controller
      *    "url": "/vol/transects/test-transect"
      * }
      *
+     * @param Request $request
+     * @param Guard $auth
      * @param int $id Project ID
      * @return Transect
      */
-    public function store($id)
+    public function store(Request $request, Guard $auth, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
-        $this->validate($this->request, Transect::$createRules);
+        $this->validate($request, Transect::$createRules);
 
         $transect = new Transect;
-        $transect->name = $this->request->input('name');
-        $transect->url = $this->request->input('url');
-        $transect->setMediaTypeId($this->request->input('media_type_id'));
-        $transect->creator()->associate($this->user);
+        $transect->name = $request->input('name');
+        $transect->url = $request->input('url');
+        $transect->setMediaTypeId($request->input('media_type_id'));
+        $transect->creator()->associate($auth->user());
 
-        $images = Transect::parseImagesQueryString($this->request->input('images'));
+        $images = Transect::parseImagesQueryString($request->input('images'));
 
         try {
             $transect->validateImages($images);
         } catch (ValidationException $e) {
-            return $this->buildFailedValidationResponse($this->request, [
+            return $this->buildFailedValidationResponse($request, [
                 'images' => $e->getMessage(),
             ]);
         }
@@ -115,7 +119,7 @@ class ProjectTransectController extends Controller
 
         $project->addTransectId($transect->id);
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             // media type shouldn't be returned
             unset($transect->media_type);
 
@@ -172,17 +176,18 @@ class ProjectTransectController extends Controller
      *
      * @apiParam (Optional parameters) {Boolean} force If the transect only belongs to a single project, set this parameter to delete it instead of detaching it. Otherwise the transect cannot be removed.
      *
+     * @param Request $request
      * @param  int  $projectId
      * @param  int  $transectId
      * @return \Illuminate\Http\Response
      */
-    public function destroy($projectId, $transectId)
+    public function destroy(Request $request, $projectId, $transectId)
     {
         $project = Project::findOrFail($projectId);
         $transect = $project->transects()->findOrFail($transectId);
         $this->authorize('destroy', $transect);
 
-        $project->removeTransect($transect, $this->request->has('force'));
+        $project->removeTransect($transect, $request->has('force'));
 
         return response('Removed.', 200);
     }

@@ -3,6 +3,7 @@
 namespace Dias\Http\Controllers\Api;
 
 use Dias\Label;
+use Illuminate\Http\Request;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class LabelController extends Controller
@@ -19,9 +20,10 @@ class LabelController extends Controller
      *
      * @apiParam {Number} id The label ID
      *
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $label = Label::findOrFail($id);
         $this->authorize('destroy', $label);
@@ -32,12 +34,12 @@ class LabelController extends Controller
 
         $label->delete();
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('deleted', true);
         }
         return redirect()->back()

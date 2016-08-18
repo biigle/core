@@ -2,8 +2,9 @@
 
 namespace Dias\Http\Controllers\Api;
 
-use Dias\Annotation;
 use Exception;
+use Dias\Annotation;
+use Illuminate\Http\Request;
 
 class AnnotationController extends Controller
 {
@@ -53,16 +54,17 @@ class AnnotationController extends Controller
      * @apiParamExample {String} Request example (String):
      * points: '[10, 11, 20, 21]'
      *
+     * @param Request $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update($id)
+    public function update(Request $request, $id)
     {
         $annotation = Annotation::findOrFail($id);
         $this->authorize('update', $annotation);
 
         // from a JSON request, the array may already be decoded
-        $points = $this->request->input('points');
+        $points = $request->input('points');
 
         if (is_string($points)) {
             $points = json_decode($points);
@@ -71,7 +73,7 @@ class AnnotationController extends Controller
         try {
             $annotation->validatePoints($points);
         } catch (Exception $e) {
-            return $this->buildFailedValidationResponse($this->request, [
+            return $this->buildFailedValidationResponse($request, [
                 'points' => [$e->getMessage()]
             ]);
         }
