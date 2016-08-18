@@ -1,9 +1,9 @@
 <?php
 
-use Dias\MediaType;
-use Dias\Transect;
 use Dias\Role;
 use Dias\Image;
+use Dias\Transect;
+use Dias\MediaType;
 use Dias\Services\Thumbnails\InterventionImage;
 
 class ApiProjectTransectControllerTest extends ApiTestCase
