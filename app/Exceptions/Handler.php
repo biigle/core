@@ -53,17 +53,17 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         // convert the exception here because we want to throw a 403 and not a 500
-        if ($e instanceof TokenMismatchException) {
-            $e = new AccessDeniedHttpException();
+        if ($exception instanceof TokenMismatchException) {
+            $exception = new AccessDeniedHttpException();
         }
 
         // use JsonResponse if this was an automated request
         if (Controller::isAutomatedRequest($request)) {
-            return $this->renderJsonResponse($e);
-        } else if ($e instanceof \ErrorException && view()->exists("errors.500")) {
-            return $this->renderCustomErrorPage($e);
+            return $this->renderJsonResponse($exception);
+        } else if ($exception instanceof \ErrorException && view()->exists("errors.500")) {
+            return $this->renderCustomErrorPage($exception);
         } else {
-            return parent::render($request, $e);
+            return parent::render($request, $exception);
         }
     }
 

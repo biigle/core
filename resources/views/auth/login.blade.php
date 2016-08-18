@@ -49,7 +49,7 @@
                 <input type="submit" class="btn btn-success btn-block" value="{{ trans('form.login') }}">
             </form>
             <p class="clearfix">
-                <a href="{{ url('password/email') }}" class="">{{ trans('auth.forgotpw') }}</a>
+                <a href="{{ url('password/reset') }}" class="">{{ trans('auth.forgotpw') }}</a>
                 {{--<a href="{{ url('auth/register') }}" class="pull-right">{{ trans('auth.register') }}</a>--}}
             </p>
         </div>
