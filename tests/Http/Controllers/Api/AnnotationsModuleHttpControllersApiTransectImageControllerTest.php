@@ -20,14 +20,8 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
         $this->get("/api/v1/transects/{$id}/images/filter/annotations");
         $this->assertResponseOk();
 
-        if ($this->isSqlite()) {
-            $expect = ["{$image->id}"];
-        } else {
-            $expect = [$image->id];
-        }
-
         $this->get("/api/v1/transects/{$id}/images/filter/annotations")
-            ->seeJsonEquals($expect);
+            ->seeJsonEquals([$image->id]);
     }
 
     public function testHasAnnotationUser() {
