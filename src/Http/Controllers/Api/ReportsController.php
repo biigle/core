@@ -2,12 +2,13 @@
 
 namespace Dias\Modules\Export\Http\Controllers\Api;
 
-use Dias\Http\Controllers\Api\Controller;
 use Dias\Project;
+use Illuminate\Contracts\Auth\Guard;
+use Dias\Http\Controllers\Api\Controller;
+use Dias\Modules\Export\Support\Reports\Report;
+use Dias\Modules\Export\Jobs\GenerateFullReport;
 use Dias\Modules\Export\Jobs\GenerateBasicReport;
 use Dias\Modules\Export\Jobs\GenerateExtendedReport;
-use Dias\Modules\Export\Jobs\GenerateFullReport;
-use Dias\Modules\Export\Support\Reports\Report;
 
 class ReportsController extends Controller
 {
@@ -21,14 +22,15 @@ class ReportsController extends Controller
      *
      * @apiParam {Number} id The project ID.
      *
+     * @param Guard $auth
      * @param int $id project id
      * @return \Illuminate\Http\Response
      */
-    public function basic($id)
+    public function basic(Guard $auth, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
-        $this->dispatch(new GenerateBasicReport($project, $this->user));
+        $this->dispatch(new GenerateBasicReport($project, $auth->user()));
     }
 
     /**
@@ -41,14 +43,15 @@ class ReportsController extends Controller
      *
      * @apiParam {Number} id The project ID.
      *
+     * @param Guard $auth
      * @param int $id project id
      * @return \Illuminate\Http\Response
      */
-    public function extended($id)
+    public function extended(Guard $auth, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
-        $this->dispatch(new GenerateExtendedReport($project, $this->user));
+        $this->dispatch(new GenerateExtendedReport($project, $auth->user()));
     }
     /**
      * Generate a full report
@@ -60,14 +63,15 @@ class ReportsController extends Controller
      *
      * @apiParam {Number} id The project ID.
      *
+     * @param Guard $auth
      * @param int $id project id
      * @return \Illuminate\Http\Response
      */
-    public function full($id)
+    public function full(Guard $auth, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
-        $this->dispatch(new GenerateFullReport($project, $this->user));
+        $this->dispatch(new GenerateFullReport($project, $auth->user()));
     }
     /**
      * Retrieve report from filesystem
