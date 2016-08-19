@@ -2,8 +2,9 @@
 
 namespace Dias\Observers;
 
-use Dias\Image;
+use Event;
 use Exception;
+use Dias\Image;
 
 class ImageObserver
 {
@@ -15,7 +16,7 @@ class ImageObserver
      */
     public function deleting(Image $image)
     {
-        event('images.cleanup', [[$image->id]]);
+        Event::fire('images.cleanup', [[$image->id]]);
 
         return true;
     }

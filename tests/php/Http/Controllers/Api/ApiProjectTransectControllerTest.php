@@ -139,6 +139,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
     public function testDestroy()
     {
         $id = $this->transect->id;
+        $image = ImageTest::create(['transect_id' => $id]);
 
         $this->doTestApiRoute('DELETE', '/api/v1/projects/1/transects/'.$id);
 
@@ -164,7 +165,12 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         // does not belong to the project
         $this->assertResponseStatus(404);
 
-        $this->expectsEvents('images.cleanup');
+
+        Event::shouldReceive('fire')
+            ->once()
+            ->with('images.cleanup', [[$image->id]]);
+
+        Event::shouldReceive('fire'); // catch other events
 
         $this->delete('/api/v1/projects/1/transects/'.$id, [
             'force' => 'abc',

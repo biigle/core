@@ -96,7 +96,11 @@ class ImageTest extends ModelTestCase
 
     public function testCleanupTransectThumbnails()
     {
-        $this->expectsEvents('images.cleanup');
+        Event::shouldReceive('fire')
+            ->once()
+            ->with('images.cleanup', [[$this->model->id]]);
+        Event::shouldReceive('fire'); // catch other events
+
         $this->model->transect->delete();
     }
 
@@ -123,7 +127,11 @@ class ImageTest extends ModelTestCase
 
     public function testImageCleanupEventOnDelete()
     {
-        $this->expectsEvents('images.cleanup');
+        Event::shouldReceive('fire')
+            ->once()
+            ->with('images.cleanup', [[$this->model->id]]);
+        Event::shouldReceive('fire'); // catch other events
+
         $this->model->delete();
     }
 

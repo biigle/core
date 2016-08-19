@@ -162,7 +162,11 @@ class TransectTest extends ModelTestCase
 
     public function testImageCleanupEventOnDelete()
     {
-        $this->expectsEvents('images.cleanup');
+        Event::shouldReceive('fire')
+            ->once()
+            ->with('images.cleanup', [[]]);
+        Event::shouldReceive('fire'); // catch other events
+
         $this->model->delete();
     }
 }

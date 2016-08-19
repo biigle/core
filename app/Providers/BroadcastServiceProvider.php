@@ -5,6 +5,9 @@ namespace Dias\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Broadcast;
 
+// THIS SERVICE PROVIDER IS CURRENTLY NOT LOADED IN config/app.php AND ONLY HERE
+// FOR POSSIBLE FUTURE USE OF WEBSOCKETS.
+
 class BroadcastServiceProvider extends ServiceProvider
 {
     /**

@@ -2,10 +2,10 @@
 
 namespace Dias\Listeners;
 
+use File;
+use Dias\Image;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Dias\Image;
-use File;
 
 class CleanupThumbnails implements ShouldQueue
 {
