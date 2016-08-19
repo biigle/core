@@ -13,7 +13,7 @@ class LabelTreesModuleHttpControllersLabelTreeControllerTest extends TestCase
 
         // not logged in
         $this->get("label-trees/{$tree->id}");
-        $this->assertRedirectedTo('auth/login');
+        $this->assertRedirectedTo('login');
 
         $this->be($user);
         $this->get("label-trees/{$tree->id}");
@@ -28,7 +28,7 @@ class LabelTreesModuleHttpControllersLabelTreeControllerTest extends TestCase
     }
 
     public function testAdmin() {
-        $this->visit("admin/label-trees")->seePageIs('auth/login');
+        $this->visit("admin/label-trees")->seePageIs('login');
         $user = UserTest::create();
         $this->be($user);
         $this->get("admin/label-trees")->assertResponseStatus(403);
@@ -46,7 +46,7 @@ class LabelTreesModuleHttpControllersLabelTreeControllerTest extends TestCase
         ]);
         $tree->addMember($user, Role::$editor);
 
-        $this->visit("label-trees")->seePageIs('auth/login');
+        $this->visit("label-trees")->seePageIs('login');
 
         $this->be($user);
         $this->get("label-trees")->assertResponseOk();
@@ -62,7 +62,7 @@ class LabelTreesModuleHttpControllersLabelTreeControllerTest extends TestCase
     }
 
     public function testCreate() {
-        $this->visit("label-trees/create")->seePageIs('auth/login');
+        $this->visit("label-trees/create")->seePageIs('login');
         $user = UserTest::create();
         $this->be($user);
         $this->visit("label-trees/create")->assertResponseOk();

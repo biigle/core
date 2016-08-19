@@ -2,11 +2,13 @@
 
 namespace Dias\Modules\LabelTrees\Http\Controllers;
 
-use Dias\LabelTree;
-use Dias\LabelSource;
-use Dias\Project;
 use Dias\Role;
+use Dias\Project;
+use Dias\LabelTree;
 use Dias\Visibility;
+use Dias\LabelSource;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 use Dias\Http\Controllers\Views\Controller;
 
 class LabelTreesController extends Controller
@@ -14,14 +16,16 @@ class LabelTreesController extends Controller
     /**
      * Show the label tree page
      *
+     * @param Guard $auth
      * @param int $id Label tree ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Guard $auth, $id)
     {
         $tree = LabelTree::findOrFail($id);
         $this->authorize('access', $tree);
+        $user = $auth->user();
 
         $labels = $tree->labels()
             ->select('id', 'name', 'parent_id', 'color')
@@ -35,25 +39,25 @@ class LabelTreesController extends Controller
             ->select('id', 'name')
             ->get();
 
-        if ($this->user->isAdmin) {
+        if ($user->isAdmin) {
             $projects = $tree->projects;
             $authorizedOwnProjects = $authorizedProjects->pluck('id');
         } else {
             // all projects of the user that use the label tree
-            $projects = Project::whereIn('id', function ($query) use ($id) {
+            $projects = Project::whereIn('id', function ($query) use ($user, $id) {
                 $query->select('project_user.project_id')
                     ->from('project_user')
                     ->join('label_tree_project', 'project_user.project_id', '=', 'label_tree_project.project_id')
-                    ->where('project_user.user_id', $this->user->id)
+                    ->where('project_user.user_id', $user->id)
                     ->where('label_tree_project.label_tree_id', $id);
             })->get();
 
             // all projects of the user that are authorized to use the label tree
-            $authorizedOwnProjects = Project::whereIn('id', function ($query) use ($id) {
+            $authorizedOwnProjects = Project::whereIn('id', function ($query) use ($user, $id) {
                 $query->select('project_user.project_id')
                     ->from('project_user')
                     ->join('label_tree_authorized_project', 'project_user.project_id', '=', 'label_tree_authorized_project.project_id')
-                    ->where('project_user.user_id', $this->user->id)
+                    ->where('project_user.user_id', $user->id)
                     ->where('label_tree_authorized_project.label_tree_id', $id);
             })->pluck('id');
         }
@@ -77,7 +81,7 @@ class LabelTreesController extends Controller
             'members' => $members,
             'roles' => $roles,
             'visibilities' => $visibilities,
-            'user' => $this->user,
+            'user' => $user,
             'authorizedProjects' => $authorizedProjects,
             'authorizedOwnProjects' => $authorizedOwnProjects,
             'private' => (int) $tree->visibility_id === Visibility::$private->id,
@@ -88,34 +92,37 @@ class LabelTreesController extends Controller
     /**
      * Show the label tree list
      *
+     * @param Request $request
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index(Request $request, Guard $auth) {
         $query = LabelTree::query();
+        $user = $auth->user();
 
         // search for trees with similar name to the query string
-        if ($this->request->has('query')) {
+        if ($request->has('query')) {
             if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
                 $operator = 'ilike';
             } else {
                 $operator = 'like';
             }
 
-            $pattern = $this->request->input('query');
+            $pattern = $request->input('query');
             $query = $query->where('name', $operator, "%{$pattern}%");
-            $this->request->flash();
+            $request->flash();
         } else {
-            $this->request->flush();
+            $request->flush();
         }
 
         // non admins can only see public trees and private ones they are member of
-        if (!$this->user->isAdmin) {
+        if (!$user->isAdmin) {
             $query = $query->where('visibility_id', Visibility::$public->id)
-                ->orWhere(function ($query) {
-                    $query->whereIn('id', function ($query) {
+                ->orWhere(function ($query) use ($user) {
+                    $query->whereIn('id', function ($query) use ($user) {
                         $query->select('label_tree_id')
                             ->from('label_tree_user')
-                            ->where('user_id', $this->user->id);
+                            ->where('user_id', $user->id);
                     });
                 });
         }
