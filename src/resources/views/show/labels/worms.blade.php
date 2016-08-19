@@ -22,7 +22,7 @@
     </div>
     <div class="row">
         <div class="col-xs-6 form-group">
-            <button class="btn btn-default btn-block" data-ng-click="toggleRecursive()" data-ng-class="{active:isRecursive(), 'btn-primary':isRecursive()}" title="Recursively import all parent labels from WoRMS (if they don't alerady exist)">
+            <button class="btn btn-default btn-block" data-ng-click="toggleRecursive()" data-ng-class="{active:isRecursive(), 'btn-primary':isRecursive()}" title="Recursively import all parent labels from WoRMS (if they don't already exist)">
                 Recursive
             </button>
         </div>
