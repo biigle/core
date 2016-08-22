@@ -14,7 +14,6 @@ class UpdateJobsTable extends Migration
     public function up()
     {
         Schema::table('jobs', function (Blueprint $table) {
-            $table->dropIndex('jobs_queue_reserved_reserved_at_index');
             $table->dropColumn('reserved');
             $table->index(['queue', 'reserved_at']);
         });
