@@ -1,8 +1,9 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports;
+namespace Dias\Modules\Export\Support\Reports\Annotations;
 
 use Dias\Project;
+use Dias\Modules\Export\Support\Reports\Report;
 
 class Extended extends Report
 {
@@ -26,7 +27,7 @@ class Extended extends Report
         exec("{$python} {$script} \"{$project->name}\" {$this->path} {$csvs}", $dump, $code);
 
         if ($code !== 0) {
-            throw new \Exception("Extended report generation failed with exit code {$code}.");
+            throw new \Exception("Extended report generation failed with exit code {$code}:\n".implode("\n", $dump));
         }
     }
 }

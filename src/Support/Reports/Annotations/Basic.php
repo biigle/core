@@ -1,10 +1,11 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports;
+namespace Dias\Modules\Export\Support\Reports\Annotations;
 
 use Dias\Project;
+use Dias\Modules\Export\Support\Reports\Report;
 
-class Full extends Report
+class Basic extends Report
 {
     /**
      * Generate this basic report
@@ -16,7 +17,7 @@ class Full extends Report
     {
         $code = 0;
         $python = config('export.python');
-        $script = config('export.scripts.full_report');
+        $script = config('export.scripts.basic_report');
 
         $csvs = implode(' ', array_map(function ($csv) {
             return $csv->path;
@@ -26,7 +27,7 @@ class Full extends Report
         exec("{$python} {$script} \"{$project->name}\" {$this->path} {$csvs}", $dump, $code);
 
         if ($code !== 0) {
-            throw new \Exception("Full report generation failed with exit code {$code}.");
+            throw new \Exception("Basic report generation failed with exit code {$code}:\n".implode("\n", $dump));
         }
     }
 }

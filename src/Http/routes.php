@@ -6,27 +6,31 @@ $router->group([
     'middleware' => 'auth.api',
 ], function ($router) {
 
-    $router->get('projects/{id}/reports/basic', [
+    $router->post('projects/{id}/reports/basic', [
         'uses' => 'ReportsController@basic',
     ]);
 
-    $router->get('projects/{id}/reports/extended', [
+    $router->post('projects/{id}/reports/extended', [
         'uses' => 'ReportsController@extended',
     ]);
 
-     $router->get('projects/{id}/reports/full', [
+    $router->post('projects/{id}/reports/full', [
         'uses' => 'ReportsController@full',
     ]);
 
-     $router->get('transects/{id}/export-area', [
+    $router->post('projects/{id}/reports/image-labels', [
+        'uses' => 'ReportsController@storeImageLabelReport',
+    ]);
+
+    $router->get('transects/{id}/export-area', [
         'uses' => 'TransectExportAreaController@show',
     ]);
 
-     $router->post('transects/{id}/export-area', [
+    $router->post('transects/{id}/export-area', [
         'uses' => 'TransectExportAreaController@store',
     ]);
 
-     $router->delete('transects/{id}/export-area', [
+    $router->delete('transects/{id}/export-area', [
         'uses' => 'TransectExportAreaController@destroy',
     ]);
 });

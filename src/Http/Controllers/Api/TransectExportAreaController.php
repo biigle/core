@@ -3,6 +3,7 @@
 namespace Dias\Modules\Export\Http\Controllers\Api;
 
 use Exception;
+use Illuminate\Http\Request;
 use Dias\Modules\Export\Transect;
 use Dias\Transect as BaseTransect;
 use Dias\Http\Controllers\Api\Controller;
@@ -43,22 +44,23 @@ class TransectExportAreaController extends Controller
      *
      * @apiParam (Required arguments) {Number[]} coordinates Coordinates of the export area formatted as `[x1, y1, x2, y2]` array of integers
      *
+     * @param Request $request
      * @param int $id Transect ID
      * @return \Illuminate\Http\Response
      */
-    public function store($id)
+    public function store(Request $request, $id)
     {
         $transect = BaseTransect::findOrFail($id);
         $this->authorize('update', $transect);
-        $this->validate($this->request, Transect::$storeRules);
+        $this->validate($request, Transect::$storeRules);
 
         $transect = Transect::convert($transect);
 
         try {
-            $transect->exportArea = $this->request->input('coordinates');
+            $transect->exportArea = $request->input('coordinates');
             $transect->save();
         } catch (Exception $e) {
-            return $this->buildFailedValidationResponse($this->request, [
+            return $this->buildFailedValidationResponse($request, [
                 'coordinates' => $e->getMessage(),
             ]);
         }

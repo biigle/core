@@ -4,12 +4,12 @@ use Dias\Shape;
 use Dias\Project;
 use Dias\Modules\Export\Transect;
 use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\Extended;
-use Dias\Modules\Export\Jobs\GenerateExtendedReport;
+use Dias\Modules\Export\Support\Reports\Annotations\Full;
+use Dias\Modules\Export\Jobs\Annotations\GenerateFullReport;
 
-class ExportModuleJobsGenerateExtendedReportTest extends TestCase {
+class ExportModuleJobsAnnotationsGenerateFullReportTest extends TestCase {
 
-    public function testHandle()
+    public function testGenerateReport()
     {
         $project = ProjectTest::create();
         $transect = TransectTest::create();
@@ -18,13 +18,8 @@ class ExportModuleJobsGenerateExtendedReportTest extends TestCase {
 
         $al = AnnotationLabelTest::create();
         $al->annotation->image->transect_id = $transect->id;
+        $al->annotation->image->attrs = ['image' => 'attrs'];
         $al->annotation->image->save();
-        AnnotationLabelTest::create([
-            'annotation_id' => $al->annotation_id,
-            'label_id' => $al->label_id,
-        ]);
-
-        $al2 = AnnotationLabelTest::create(['annotation_id' => $al->annotation_id]);
 
         // check if the temporary file exists
         File::shouldReceive('exists')
@@ -39,13 +34,16 @@ class ExportModuleJobsGenerateExtendedReportTest extends TestCase {
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$al->annotation->image->filename, $al->label->name, 2]);
+            ->with([
+                $al->annotation->image->filename,
+                $al->annotation_id,
+                $al->label->name,
+                $al->annotation->shape->name,
+                json_encode($al->annotation->points),
+                json_encode(['image' => 'attrs']),
+            ]);
 
-        $mock->shouldReceive('put')
-            ->once()
-            ->with([$al->annotation->image->filename, $al2->label->name, 1]);
-
-        $mock->shouldReceive('delete', 'close')
+        $mock->shouldReceive('close')
             ->once();
 
         App::singleton(CsvFile::class, function () use ($mock) {
@@ -62,7 +60,7 @@ class ExportModuleJobsGenerateExtendedReportTest extends TestCase {
             ->once()
             ->andReturn('abc123');
 
-        App::singleton(Extended::class, function () use ($mock) {
+        App::singleton(Full::class, function () use ($mock) {
             return $mock;
         });
 
@@ -72,20 +70,19 @@ class ExportModuleJobsGenerateExtendedReportTest extends TestCase {
                 'export::emails.report',
                 [
                     'user' => $user,
-                    'type' => 'extended',
+                    'type' => 'full annotation',
                     'project' => $project,
                     'uuid' => 'abc123',
-                    'restricted' => false,
-                    'filename' => "biigle_{$project->id}_extended_report.xlsx",
+                    'filename' => "biigle_{$project->id}_full_annotation_report.xlsx",
                 ],
                 Mockery::type('callable')
             ]);
 
 
-        with(new GenerateExtendedReport($project, $user))->handle();
+        with(new GenerateFullReport($project, $user))->generateReport();
     }
 
-    public function testHandleRestrict()
+    public function testGenerateReportRestrict()
     {
         $project = ProjectTest::create();
         $transect = Transect::convert(TransectTest::create());
@@ -98,6 +95,7 @@ class ExportModuleJobsGenerateExtendedReportTest extends TestCase {
         $image = ImageTest::create([
             'transect_id' => $transect->id,
             'filename' => '1.jpg',
+            'attrs' => ['image' => 'attrs'],
         ]);
 
         $annotations = [
@@ -153,16 +151,30 @@ class ExportModuleJobsGenerateExtendedReportTest extends TestCase {
         foreach ($inside as $a) {
             $mock->shouldReceive('put')
                 ->once()
-                ->with([$image->filename, $a->label->name, 1]);
+                ->with([
+                    $image->filename,
+                    $a->annotation_id,
+                    $a->label->name,
+                    $a->annotation->shape->name,
+                    json_encode($a->annotation->points),
+                    json_encode(['image' => 'attrs']),
+                ]);
         }
 
         foreach ($outside as $a) {
             $mock->shouldReceive('put')
                 ->never()
-                ->with([$image->filename, $a->label->name, 1]);
+                ->with([
+                    $image->filename,
+                    $a->annotation_id,
+                    $a->label->name,
+                    $a->annotation->shape->name,
+                    json_encode($a->annotation->points),
+                    json_encode(['image' => 'attrs']),
+                ]);
         }
 
-        $mock->shouldReceive('delete', 'close')->once();
+        $mock->shouldReceive('close')->once();
 
         App::singleton(CsvFile::class, function () use ($mock) {
             return $mock;
@@ -171,104 +183,12 @@ class ExportModuleJobsGenerateExtendedReportTest extends TestCase {
         $mock = Mockery::mock();
         $mock->shouldReceive('generate', 'basename')->once();
 
-        App::singleton(Extended::class, function () use ($mock) {
+        App::singleton(Full::class, function () use ($mock) {
             return $mock;
         });
 
         Mail::shouldReceive('send')->once();
 
-        with(new GenerateExtendedReport($project, $user, true))->handle();
-    }
-
-    public function testHandleExceptionCsv()
-    {
-        $project = ProjectTest::create();
-        $transect = TransectTest::create();
-        $project->transects()->attach($transect);
-        $user = UserTest::create();
-
-        $al = AnnotationLabelTest::create();
-        $al->annotation->image->transect_id = $transect->id;
-        $al->annotation->image->save();
-
-        // check if the temporary file exists
-        File::shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
-
-        $mock = Mockery::mock();
-
-        $mock->shouldReceive('put')
-            ->once()
-            ->andThrow('Exception');
-
-        $mock->shouldReceive('delete')
-            ->once();
-
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
-
-        $mock = Mockery::mock();
-
-        $mock->shouldReceive('generate')
-            ->never();
-
-        App::singleton(Extended::class, function () use ($mock) {
-            return $mock;
-        });
-
-        Mail::shouldReceive('send')
-            ->never();
-
-        with(new GenerateExtendedReport($project, $user))->handle();
-    }
-
-    public function testHandleExceptionReport()
-    {
-        $project = ProjectTest::create();
-        $transect = TransectTest::create();
-        $project->transects()->attach($transect);
-        $user = UserTest::create();
-
-        $al = AnnotationLabelTest::create();
-        $al->annotation->image->transect_id = $transect->id;
-        $al->annotation->image->save();
-
-        // check if the temporary file exists
-        File::shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
-
-        $mock = Mockery::mock();
-
-        $mock->shouldReceive('put')
-            ->twice();
-
-        $mock->shouldReceive('delete', 'close')
-            ->once();
-
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
-
-        $mock = Mockery::mock();
-
-        $mock->shouldReceive('generate')
-            ->once()
-            ->andThrow('Exception');
-
-        $mock->shouldReceive('delete')
-            ->once();
-
-        App::singleton(Extended::class, function () use ($mock) {
-            return $mock;
-        });
-
-        Mail::shouldReceive('send')
-            ->never();
-
-        $this->setExpectedException('Exception');
-        with(new GenerateExtendedReport($project, $user))->handle();
+        with(new GenerateFullReport($project, $user, true))->generateReport();
     }
 }
