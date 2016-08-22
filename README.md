@@ -5,7 +5,7 @@ BIIGLE DISCOL Image Annotation Software
 
 ## Requirements
 
-See [here](https://laravel.com/docs/5.2#installation) for the server requirements of Laravel 5.2.
+See [here](https://laravel.com/docs/5.3#installation) for the server requirements of Laravel 5.3.
 
 Additionally:
 
@@ -57,7 +57,7 @@ Finally, you have to configure a supervised process for the queue worker daemon.
 ```
 [program:dias-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=php /path/to/dias/application/artisan queue:work --sleep=5 --tries=3 --daemon
+command=php /path/to/dias/application/artisan queue:work --sleep=5 --tries=3
 autostart=true
 autorestart=true
 user=webserver-user
@@ -68,7 +68,7 @@ stdout_logfile=/path/to/dias/application/storage/logs/worker.log
 
 Substitute `/path/to/dias/application` with the absolute path to the dias application directory and `webserver-user` with the name of the webserver user. If usage and load of your DIAS instance increases, you may increase `numprocs` to run multiple worker processes.
 
-Read more about workers in the [Laravel docs](https://laravel.com/docs/5.2/queues#supervisor-configuration).
+Read more about workers in the [Laravel docs](https://laravel.com/docs/5.3/queues#supervisor-configuration).
 
 Congratulations, your personal DIAS instance is ready to run. You may use the `php artisan user:new` command to create the first user. Now you probably want to continue by installing some DIAS modules.
 
