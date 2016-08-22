@@ -7,7 +7,7 @@ use Dias\Modules\Export\Jobs\Annotations\GenerateFullReport;
 
 class ExportModuleJobsAnnotationsGenerateFullReportTest extends TestCase {
 
-    public function testHandle()
+    public function testGenerateReport()
     {
         $project = ProjectTest::create();
         $transect = TransectTest::create();
@@ -41,7 +41,7 @@ class ExportModuleJobsAnnotationsGenerateFullReportTest extends TestCase {
                 json_encode(['image' => 'attrs']),
             ]);
 
-        $mock->shouldReceive('delete', 'close')
+        $mock->shouldReceive('close')
             ->once();
 
         App::singleton(CsvFile::class, function () use ($mock) {
@@ -77,98 +77,6 @@ class ExportModuleJobsAnnotationsGenerateFullReportTest extends TestCase {
             ]);
 
 
-        with(new GenerateFullReport($project, $user))->handle();
-    }
-
-    public function testHandleExceptionCsv()
-    {
-        $project = ProjectTest::create();
-        $transect = TransectTest::create();
-        $project->transects()->attach($transect);
-        $user = UserTest::create();
-
-        $al = AnnotationLabelTest::create();
-        $al->annotation->image->transect_id = $transect->id;
-        $al->annotation->image->save();
-
-        // check if the temporary file exists
-        File::shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
-
-        $mock = Mockery::mock();
-
-        $mock->shouldReceive('put')
-            ->once()
-            ->andThrow('Exception');
-
-        $mock->shouldReceive('delete')
-            ->once();
-
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
-
-        $mock = Mockery::mock();
-
-        $mock->shouldReceive('generate')
-            ->never();
-
-        App::singleton(Full::class, function () use ($mock) {
-            return $mock;
-        });
-
-        Mail::shouldReceive('send')
-            ->never();
-
-        with(new GenerateFullReport($project, $user))->handle();
-    }
-
-    public function testHandleExceptionReport()
-    {
-        $project = ProjectTest::create();
-        $transect = TransectTest::create();
-        $project->transects()->attach($transect);
-        $user = UserTest::create();
-
-        $al = AnnotationLabelTest::create();
-        $al->annotation->image->transect_id = $transect->id;
-        $al->annotation->image->save();
-
-        // check if the temporary file exists
-        File::shouldReceive('exists')
-            ->once()
-            ->andReturn(false);
-
-        $mock = Mockery::mock();
-
-        $mock->shouldReceive('put')
-            ->twice();
-
-        $mock->shouldReceive('delete', 'close')
-            ->once();
-
-        App::singleton(CsvFile::class, function () use ($mock) {
-            return $mock;
-        });
-
-        $mock = Mockery::mock();
-
-        $mock->shouldReceive('generate')
-            ->once()
-            ->andThrow('Exception');
-
-        $mock->shouldReceive('delete')
-            ->once();
-
-        App::singleton(Full::class, function () use ($mock) {
-            return $mock;
-        });
-
-        Mail::shouldReceive('send')
-            ->never();
-
-        $this->setExpectedException('Exception');
-        with(new GenerateFullReport($project, $user))->handle();
+        with(new GenerateFullReport($project, $user))->generateReport();
     }
 }

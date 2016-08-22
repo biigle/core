@@ -2,80 +2,68 @@
 
 namespace Dias\Modules\Export\Jobs\Annotations;
 
-use Mail;
 use DB;
+use Mail;
 use Dias\Modules\Export\Support\CsvFile;
+use Dias\Modules\Export\Jobs\GenerateReportJob;
 use Dias\Modules\Export\Support\Reports\Annotations\Full;
 
 class GenerateFullReport extends GenerateReportJob
 {
     /**
-     * Execute the job.
+     * Generate the report.
      *
      * @return void
      */
-    public function handle()
+    public function generateReport()
     {
         $transects = $this->project->transects()
             ->pluck('name', 'id');
 
-        $tmpFiles = [];
+        foreach ($transects as $id => $name) {
+            $csv = CsvFile::makeTmp();
+            $this->tmpFiles[] = $csv;
 
-        try {
-            foreach ($transects as $id => $name) {
-                $csv = CsvFile::makeTmp();
-                $tmpFiles[] = $csv;
+            // put transect name to first line
+            $csv->put([$name]);
 
-                // put transect name to first line
-                $csv->put([$name]);
+            $query = $this->query()->where('images.transect_id', $id);
 
-                $query = $this->query()->where('images.transect_id', $id);
-
-                $query->chunk(500, function ($rows) use ($csv) {
-                    foreach ($rows as $row) {
-                        $csv->put([
-                            $row->filename,
-                            $row->annotation_id,
-                            $row->label_name,
-                            $row->shape_name,
-                            $row->points,
-                            $row->attrs
-                        ]);
-                    }
-                });
-
-                $csv->close();
-            }
-
-            $report = app()->make(Full::class);
-            $report->generate($this->project, $tmpFiles);
-
-            Mail::send('export::emails.report', [
-                'user' => $this->user,
-                'project' => $this->project,
-                'type' => 'full',
-                'uuid' => $report->basename(),
-                'filename' => "biigle_{$this->project->id}_full_report.xlsx",
-            ], function ($mail) {
-                if ($this->user->firstname && $this->user->lastname) {
-                    $name = "{$this->user->firstname} {$this->user->lastname}";
-                } else {
-                    $name = null;
+            $query->chunk(500, function ($rows) use ($csv) {
+                foreach ($rows as $row) {
+                    $csv->put([
+                        $row->filename,
+                        $row->annotation_id,
+                        $row->label_name,
+                        $row->shape_name,
+                        $row->points,
+                        $row->attrs
+                    ]);
                 }
+            });
 
-                $mail->subject("BIIGLE full report for project {$this->project->name}")
-                    ->to($this->user->email, $name);
-            });
-        } catch (\Exception $e) {
-            if (isset($report)) {
-                $report->delete();
-                throw $e;
-            }
-        } finally {
-            array_walk($tmpFiles, function ($file) {
-                $file->delete();
-            });
+            $csv->close();
         }
+
+        $this->report = app()->make(Full::class);
+        $this->report->generate($this->project, $this->tmpFiles);
+
+        Mail::send('export::emails.report', [
+            'user' => $this->user,
+            'project' => $this->project,
+            'type' => 'full',
+            'uuid' => $this->report->basename(),
+            'filename' => "biigle_{$this->project->id}_full_report.xlsx",
+        ], function ($mail) {
+            if ($this->user->firstname && $this->user->lastname) {
+                $name = "{$this->user->firstname} {$this->user->lastname}";
+            } else {
+                $name = null;
+            }
+
+            $mail->subject("BIIGLE full report for project {$this->project->name}")
+                ->to($this->user->email, $name);
+        });
     }
 
     /**

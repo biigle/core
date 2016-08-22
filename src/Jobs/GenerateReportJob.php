@@ -2,6 +2,7 @@
 
 namespace Dias\Modules\Export\Jobs;
 
+use Exception;
 use Dias\User;
 use Dias\Project;
 use Dias\Jobs\Job;
@@ -9,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class GenerateReportJob extends Job implements ShouldQueue
+abstract class GenerateReportJob extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
@@ -21,11 +22,25 @@ class GenerateReportJob extends Job implements ShouldQueue
     protected $project;
 
     /**
-     * The user to notify of the finished report
+     * The user to notify of the finished report.
      *
      * @var User
      */
     protected $user;
+
+    /**
+     * The report that should be generated.
+     *
+     * @var \Dias\Modules\Export\Support\Reports\Report
+     */
+    protected $report;
+
+    /**
+     * Temporary files that are created when generating a report.
+     *
+     * @var array
+     */
+    protected $tmpFiles;
 
     /**
      * Create a new job instance.
@@ -39,5 +54,34 @@ class GenerateReportJob extends Job implements ShouldQueue
     {
         $this->project = $project;
         $this->user = $user;
+        $this->tmpFiles = [];
     }
+
+    /**
+     * Execute the job
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        try {
+            $this->generateReport();
+        } catch (Exception $e) {
+            if (isset($this->report)) {
+                $this->report->delete();
+                throw $e;
+            }
+        } finally {
+            array_walk($this->tmpFiles, function ($file) {
+                $file->delete();
+            });
+        }
+    }
+
+    /**
+     * Generate the report
+     *
+     * @return void
+     */
+    protected abstract function generateReport();
 }
