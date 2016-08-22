@@ -2,9 +2,9 @@
 
 namespace Dias\Modules\Export\Jobs;
 
-use Dias\Jobs\Job;
-use Dias\Project;
 use Dias\User;
+use Dias\Project;
+use Dias\Jobs\Job;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
