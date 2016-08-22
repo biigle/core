@@ -27,7 +27,7 @@ class Extended extends Report
         exec("{$python} {$script} \"{$project->name}\" {$this->path} {$csvs}", $dump, $code);
 
         if ($code !== 0) {
-            throw new \Exception("Extended report generation failed with exit code {$code}.");
+            throw new \Exception("Extended report generation failed with exit code {$code}:\n" + implode("\n", $dump));
         }
     }
 }
