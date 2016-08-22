@@ -15,7 +15,7 @@ class UpdateFailedJobsTable extends Migration
     {
         // update for Laravel 5.3
         Schema::table('failed_jobs', function (Blueprint $table) {
-            $table->text('exception')->nullable();
+            $table->longText('exception')->nullable();
         });
     }
 
