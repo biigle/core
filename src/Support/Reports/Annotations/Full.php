@@ -1,8 +1,9 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports;
+namespace Dias\Modules\Export\Support\Reports\Annotations;
 
 use Dias\Project;
+use Dias\Modules\Export\Support\Reports\Report;
 
 class Full extends Report
 {

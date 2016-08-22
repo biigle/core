@@ -1,13 +1,13 @@
 <?php
 
-namespace Dias\Modules\Export\Jobs;
+namespace Dias\Modules\Export\Jobs\Annotations;
 
-use Mail;
 use DB;
+use Mail;
 use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\Extended;
+use Dias\Modules\Export\Support\Reports\Annotations\Basic;
 
-class GenerateExtendedReport extends GenerateReportJob
+class GenerateBasicReport extends GenerateReportJob
 {
     /**
      * Execute the job.
@@ -26,33 +26,32 @@ class GenerateExtendedReport extends GenerateReportJob
                 $csv = CsvFile::makeTmp();
                 $tmpFiles[] = $csv;
 
+
                 // put transect name to first line
                 $csv->put([$name]);
 
-                $query = $this->query()->where('images.transect_id', $id);
+                $rows = $this->query()->where('images.transect_id', $id)->get();
 
-                $query->chunk(500, function ($rows) use ($csv) {
-                    foreach ($rows as $row) {
-                        $csv->put([
-                            $row->filename,
-                            $row->name,
-                            $row->count,
-                        ]);
-                    }
-                });
+                foreach ($rows as $row) {
+                    $csv->put([
+                        $row->name,
+                        $row->color,
+                        $row->count,
+                    ]);
+                }
 
                 $csv->close();
             }
 
-            $report = app()->make(Extended::class);
+            $report = app()->make(Basic::class);
             $report->generate($this->project, $tmpFiles);
 
             Mail::send('export::emails.report', [
                 'user' => $this->user,
                 'project' => $this->project,
-                'type' => 'extended',
+                'type' => 'basic',
                 'uuid' => $report->basename(),
-                'filename' => "biigle_{$this->project->id}_extended_report.xlsx",
+                'filename' => "biigle_{$this->project->id}_basic_report.pdf",
             ], function ($mail) {
                 if ($this->user->firstname && $this->user->lastname) {
                     $name = "{$this->user->firstname} {$this->user->lastname}";
@@ -60,7 +59,7 @@ class GenerateExtendedReport extends GenerateReportJob
                     $name = null;
                 }
 
-                $mail->subject("BIIGLE extended report for project {$this->project->name}")
+                $mail->subject("BIIGLE basic report for project {$this->project->name}")
                     ->to($this->user->email, $name);
             });
         } catch (\Exception $e) {
@@ -86,10 +85,8 @@ class GenerateExtendedReport extends GenerateReportJob
             ->join('annotation_labels', 'annotation_labels.label_id', '=', 'labels.id')
             ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
             ->join('images', 'annotations.image_id', '=', 'images.id')
-            ->select(DB::raw('images.filename, labels.name, count(labels.id) as count'))
-            ->groupBy('labels.id', 'images.id')
-            // order by is essential for chunking!
-            ->orderBy('images.id')
+            ->select(DB::raw('labels.name, labels.color, count(labels.id) as count'))
+            ->groupBy('labels.id')
             ->orderBy('labels.id');
     }
 }

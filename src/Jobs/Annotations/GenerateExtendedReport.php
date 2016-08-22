@@ -1,13 +1,13 @@
 <?php
 
-namespace Dias\Modules\Export\Jobs;
+namespace Dias\Modules\Export\Jobs\Annotations;
 
 use Mail;
 use DB;
 use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\Full;
+use Dias\Modules\Export\Support\Reports\Annotations\Extended;
 
-class GenerateFullReport extends GenerateReportJob
+class GenerateExtendedReport extends GenerateReportJob
 {
     /**
      * Execute the job.
@@ -35,11 +35,8 @@ class GenerateFullReport extends GenerateReportJob
                     foreach ($rows as $row) {
                         $csv->put([
                             $row->filename,
-                            $row->annotation_id,
-                            $row->label_name,
-                            $row->shape_name,
-                            $row->points,
-                            $row->attrs
+                            $row->name,
+                            $row->count,
                         ]);
                     }
                 });
@@ -47,15 +44,15 @@ class GenerateFullReport extends GenerateReportJob
                 $csv->close();
             }
 
-            $report = app()->make(Full::class);
+            $report = app()->make(Extended::class);
             $report->generate($this->project, $tmpFiles);
 
             Mail::send('export::emails.report', [
                 'user' => $this->user,
                 'project' => $this->project,
-                'type' => 'full',
+                'type' => 'extended',
                 'uuid' => $report->basename(),
-                'filename' => "biigle_{$this->project->id}_full_report.xlsx",
+                'filename' => "biigle_{$this->project->id}_extended_report.xlsx",
             ], function ($mail) {
                 if ($this->user->firstname && $this->user->lastname) {
                     $name = "{$this->user->firstname} {$this->user->lastname}";
@@ -63,7 +60,7 @@ class GenerateFullReport extends GenerateReportJob
                     $name = null;
                 }
 
-                $mail->subject("BIIGLE full report for project {$this->project->name}")
+                $mail->subject("BIIGLE extended report for project {$this->project->name}")
                     ->to($this->user->email, $name);
             });
         } catch (\Exception $e) {
@@ -89,18 +86,10 @@ class GenerateFullReport extends GenerateReportJob
             ->join('annotation_labels', 'annotation_labels.label_id', '=', 'labels.id')
             ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
             ->join('images', 'annotations.image_id', '=', 'images.id')
-            ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
-            ->select(
-                'images.filename',
-                'annotations.id as annotation_id',
-                'labels.name as label_name',
-                'shapes.name as shape_name',
-                'annotations.points',
-                'images.attrs'
-            )
+            ->select(DB::raw('images.filename, labels.name, count(labels.id) as count'))
+            ->groupBy('labels.id', 'images.id')
             // order by is essential for chunking!
-            ->orderBy('annotations.id')
-            ->orderBy('labels.id')
-            ->orderBy('annotation_labels.user_id');
+            ->orderBy('images.id')
+            ->orderBy('labels.id');
     }
 }

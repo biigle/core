@@ -1,11 +1,11 @@
 <?php
 
-use Dias\Modules\Export\Jobs\GenerateBasicReport;
-use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\Basic;
 use Dias\Project;
+use Dias\Modules\Export\Support\CsvFile;
+use Dias\Modules\Export\Support\Reports\Annotations\Full;
+use Dias\Modules\Export\Jobs\Annotations\GenerateFullReport;
 
-class ExportModuleJobsGenerateBasicReportTest extends TestCase {
+class ExportModuleJobsAnnotationsGenerateFullReportTest extends TestCase {
 
     public function testHandle()
     {
@@ -16,13 +16,8 @@ class ExportModuleJobsGenerateBasicReportTest extends TestCase {
 
         $al = AnnotationLabelTest::create();
         $al->annotation->image->transect_id = $transect->id;
+        $al->annotation->image->attrs = ['image' => 'attrs'];
         $al->annotation->image->save();
-        AnnotationLabelTest::create([
-            'annotation_id' => $al->annotation_id,
-            'label_id' => $al->label_id,
-        ]);
-
-        $al2 = AnnotationLabelTest::create(['annotation_id' => $al->annotation_id]);
 
         // check if the temporary file exists
         File::shouldReceive('exists')
@@ -37,11 +32,14 @@ class ExportModuleJobsGenerateBasicReportTest extends TestCase {
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$al->label->name, $al->label->color, 2]);
-
-        $mock->shouldReceive('put')
-            ->once()
-            ->with([$al2->label->name, $al2->label->color, 1]);
+            ->with([
+                $al->annotation->image->filename,
+                $al->annotation_id,
+                $al->label->name,
+                $al->annotation->shape->name,
+                json_encode($al->annotation->points),
+                json_encode(['image' => 'attrs']),
+            ]);
 
         $mock->shouldReceive('delete', 'close')
             ->once();
@@ -60,7 +58,7 @@ class ExportModuleJobsGenerateBasicReportTest extends TestCase {
             ->once()
             ->andReturn('abc123');
 
-        App::singleton(Basic::class, function () use ($mock) {
+        App::singleton(Full::class, function () use ($mock) {
             return $mock;
         });
 
@@ -70,16 +68,16 @@ class ExportModuleJobsGenerateBasicReportTest extends TestCase {
                 'export::emails.report',
                 [
                     'user' => $user,
-                    'type' => 'basic',
+                    'type' => 'full',
                     'project' => $project,
                     'uuid' => 'abc123',
-                    'filename' => "biigle_{$project->id}_basic_report.pdf",
+                    'filename' => "biigle_{$project->id}_full_report.xlsx",
                 ],
                 Mockery::type('callable')
             ]);
 
 
-        with(new GenerateBasicReport($project, $user))->handle();
+        with(new GenerateFullReport($project, $user))->handle();
     }
 
     public function testHandleExceptionCsv()
@@ -116,14 +114,14 @@ class ExportModuleJobsGenerateBasicReportTest extends TestCase {
         $mock->shouldReceive('generate')
             ->never();
 
-        App::singleton(Basic::class, function () use ($mock) {
+        App::singleton(Full::class, function () use ($mock) {
             return $mock;
         });
 
         Mail::shouldReceive('send')
             ->never();
 
-        with(new GenerateBasicReport($project, $user))->handle();
+        with(new GenerateFullReport($project, $user))->handle();
     }
 
     public function testHandleExceptionReport()
@@ -163,7 +161,7 @@ class ExportModuleJobsGenerateBasicReportTest extends TestCase {
         $mock->shouldReceive('delete')
             ->once();
 
-        App::singleton(Basic::class, function () use ($mock) {
+        App::singleton(Full::class, function () use ($mock) {
             return $mock;
         });
 
@@ -171,6 +169,6 @@ class ExportModuleJobsGenerateBasicReportTest extends TestCase {
             ->never();
 
         $this->setExpectedException('Exception');
-        with(new GenerateBasicReport($project, $user))->handle();
+        with(new GenerateFullReport($project, $user))->handle();
     }
 }

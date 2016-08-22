@@ -1,11 +1,11 @@
 <?php
 
-use Dias\Modules\Export\Jobs\GenerateExtendedReport;
-use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\Extended;
 use Dias\Project;
+use Dias\Modules\Export\Support\CsvFile;
+use Dias\Modules\Export\Support\Reports\Annotations\Extended;
+use Dias\Modules\Export\Jobs\Annotations\GenerateExtendedReport;
 
-class ExportModuleJobsGenerateExtendedReportTest extends TestCase {
+class ExportModuleJobsAnnotationsGenerateExtendedReportTest extends TestCase {
 
     public function testHandle()
     {

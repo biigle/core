@@ -1,8 +1,8 @@
 <?php
 
-use Dias\Modules\Export\Jobs\GenerateFullReport;
-use Dias\Modules\Export\Jobs\GenerateBasicReport;
-use Dias\Modules\Export\Jobs\GenerateExtendedReport;
+use Dias\Modules\Export\Jobs\Annotations\GenerateFullReport;
+use Dias\Modules\Export\Jobs\Annotations\GenerateBasicReport;
+use Dias\Modules\Export\Jobs\Annotations\GenerateExtendedReport;
 
 class ExportModuleHttpControllersApiReportsControllerTest extends ApiTestCase {
 

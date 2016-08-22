@@ -1,11 +1,11 @@
 <?php
 
-use Dias\Modules\Export\Jobs\GenerateFullReport;
-use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\Full;
 use Dias\Project;
+use Dias\Modules\Export\Support\CsvFile;
+use Dias\Modules\Export\Support\Reports\Annotations\Basic;
+use Dias\Modules\Export\Jobs\Annotations\GenerateBasicReport;
 
-class ExportModuleJobsGenerateFullReportTest extends TestCase {
+class ExportModuleJobsAnnotationsGenerateBasicReportTest extends TestCase {
 
     public function testHandle()
     {
@@ -16,8 +16,13 @@ class ExportModuleJobsGenerateFullReportTest extends TestCase {
 
         $al = AnnotationLabelTest::create();
         $al->annotation->image->transect_id = $transect->id;
-        $al->annotation->image->attrs = ['image' => 'attrs'];
         $al->annotation->image->save();
+        AnnotationLabelTest::create([
+            'annotation_id' => $al->annotation_id,
+            'label_id' => $al->label_id,
+        ]);
+
+        $al2 = AnnotationLabelTest::create(['annotation_id' => $al->annotation_id]);
 
         // check if the temporary file exists
         File::shouldReceive('exists')
@@ -32,14 +37,11 @@ class ExportModuleJobsGenerateFullReportTest extends TestCase {
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([
-                $al->annotation->image->filename,
-                $al->annotation_id,
-                $al->label->name,
-                $al->annotation->shape->name,
-                json_encode($al->annotation->points),
-                json_encode(['image' => 'attrs']),
-            ]);
+            ->with([$al->label->name, $al->label->color, 2]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$al2->label->name, $al2->label->color, 1]);
 
         $mock->shouldReceive('delete', 'close')
             ->once();
@@ -58,7 +60,7 @@ class ExportModuleJobsGenerateFullReportTest extends TestCase {
             ->once()
             ->andReturn('abc123');
 
-        App::singleton(Full::class, function () use ($mock) {
+        App::singleton(Basic::class, function () use ($mock) {
             return $mock;
         });
 
@@ -68,16 +70,16 @@ class ExportModuleJobsGenerateFullReportTest extends TestCase {
                 'export::emails.report',
                 [
                     'user' => $user,
-                    'type' => 'full',
+                    'type' => 'basic',
                     'project' => $project,
                     'uuid' => 'abc123',
-                    'filename' => "biigle_{$project->id}_full_report.xlsx",
+                    'filename' => "biigle_{$project->id}_basic_report.pdf",
                 ],
                 Mockery::type('callable')
             ]);
 
 
-        with(new GenerateFullReport($project, $user))->handle();
+        with(new GenerateBasicReport($project, $user))->handle();
     }
 
     public function testHandleExceptionCsv()
@@ -114,14 +116,14 @@ class ExportModuleJobsGenerateFullReportTest extends TestCase {
         $mock->shouldReceive('generate')
             ->never();
 
-        App::singleton(Full::class, function () use ($mock) {
+        App::singleton(Basic::class, function () use ($mock) {
             return $mock;
         });
 
         Mail::shouldReceive('send')
             ->never();
 
-        with(new GenerateFullReport($project, $user))->handle();
+        with(new GenerateBasicReport($project, $user))->handle();
     }
 
     public function testHandleExceptionReport()
@@ -161,7 +163,7 @@ class ExportModuleJobsGenerateFullReportTest extends TestCase {
         $mock->shouldReceive('delete')
             ->once();
 
-        App::singleton(Full::class, function () use ($mock) {
+        App::singleton(Basic::class, function () use ($mock) {
             return $mock;
         });
 
@@ -169,6 +171,6 @@ class ExportModuleJobsGenerateFullReportTest extends TestCase {
             ->never();
 
         $this->setExpectedException('Exception');
-        with(new GenerateFullReport($project, $user))->handle();
+        with(new GenerateBasicReport($project, $user))->handle();
     }
 }
