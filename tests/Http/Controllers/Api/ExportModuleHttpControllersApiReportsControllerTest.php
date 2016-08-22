@@ -3,6 +3,7 @@
 use Dias\Modules\Export\Jobs\Annotations\GenerateFullReport;
 use Dias\Modules\Export\Jobs\Annotations\GenerateBasicReport;
 use Dias\Modules\Export\Jobs\Annotations\GenerateExtendedReport;
+use Dias\Modules\Export\Jobs\ImageLabels\GenerateStandardReport;
 
 class ExportModuleHttpControllersApiReportsControllerTest extends ApiTestCase {
 
@@ -39,6 +40,18 @@ class ExportModuleHttpControllersApiReportsControllerTest extends ApiTestCase {
         $this->expectsJobs(GenerateFullReport::class);
         $this->beGuest();
         $this->post("api/v1/projects/{$id}/reports/full")
+            ->assertResponseOk();
+    }
+
+    public function testStoreImageLabelReport() {
+        $id = $this->project()->id;
+
+        $this->post("api/v1/projects/{$id}/reports/image-labels")
+            ->assertResponseStatus(401);
+
+        $this->expectsJobs(GenerateStandardReport::class);
+        $this->beGuest();
+        $this->post("api/v1/projects/{$id}/reports/image-labels")
             ->assertResponseOk();
     }
 }

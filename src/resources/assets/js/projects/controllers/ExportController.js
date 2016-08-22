@@ -14,6 +14,7 @@ angular.module('dias.projects').controller('ExportController', function ($scope,
             basic: Report.getBasic,
             extended: Report.getExtended,
             full: Report.getFull,
+            'image label': Report.getImageLabel
         };
 
         var handleSuccess = function () {

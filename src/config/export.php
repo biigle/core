@@ -14,6 +14,7 @@ return [
         'basic_report' => __DIR__.'/../resources/scripts/basic_report.py',
         'extended_report' => __DIR__.'/../resources/scripts/extended_report.py',
         'full_report' => __DIR__.'/../resources/scripts/full_report.py',
+        'image_labels_standard_report' => __DIR__.'/../resources/scripts/image_label_report.py',
     ],
 
     /*

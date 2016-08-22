@@ -9,13 +9,14 @@ use Dias\Modules\Export\Support\Reports\Report;
 use Dias\Modules\Export\Jobs\Annotations\GenerateFullReport;
 use Dias\Modules\Export\Jobs\Annotations\GenerateBasicReport;
 use Dias\Modules\Export\Jobs\Annotations\GenerateExtendedReport;
+use Dias\Modules\Export\Jobs\ImageLabels\GenerateStandardReport;
 
 class ReportsController extends Controller
 {
     /**
      * Generate a basic report
      *
-     * @api {get} projects/:id/reports/basic Generate a new report
+     * @api {post} projects/:id/reports/basic Generate a new basic report
      * @apiGroup Projects
      * @apiName GenerateBasicProjectReport
      * @apiPermission projectMember
@@ -36,7 +37,7 @@ class ReportsController extends Controller
     /**
      * Generate a extended report
      *
-     * @api {get} projects/:id/reports/extended Generate a new report
+     * @api {post} projects/:id/reports/extended Generate a new extended report
      * @apiGroup Projects
      * @apiName GenerateExtendedProjectReport
      * @apiPermission projectMember
@@ -53,10 +54,11 @@ class ReportsController extends Controller
         $this->authorize('access', $project);
         $this->dispatch(new GenerateExtendedReport($project, $auth->user()));
     }
+
     /**
      * Generate a full report
      *
-     * @api {get} projects/:id/reports/full Generate a new report
+     * @api {post} projects/:id/reports/full Generate a new full report
      * @apiGroup Projects
      * @apiName GenerateFullProjectReport
      * @apiPermission projectMember
@@ -73,6 +75,28 @@ class ReportsController extends Controller
         $this->authorize('access', $project);
         $this->dispatch(new GenerateFullReport($project, $auth->user()));
     }
+
+    /**
+     * Generate an image label report
+     *
+     * @api {post} projects/:id/reports/image-labels Generate a new image label report
+     * @apiGroup Projects
+     * @apiName GenerateImageLabelProjectReport
+     * @apiPermission projectMember
+     *
+     * @apiParam {Number} id The project ID.
+     *
+     * @param Guard $auth
+     * @param int $id project id
+     * @return \Illuminate\Http\Response
+     */
+    public function storeImageLabelReport(Guard $auth, $id)
+    {
+        $project = Project::findOrFail($id);
+        $this->authorize('access', $project);
+        $this->dispatch(new GenerateStandardReport($project, $auth->user()));
+    }
+
     /**
      * Retrieve report from filesystem
      *

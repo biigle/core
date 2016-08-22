@@ -17,6 +17,10 @@ $router->group([
     $router->post('projects/{id}/reports/full', [
         'uses' => 'ReportsController@full',
     ]);
+
+    $router->post('projects/{id}/reports/image-labels', [
+        'uses' => 'ReportsController@storeImageLabelReport',
+    ]);
 });
 
 // this route should be public (is protected by random uids)
