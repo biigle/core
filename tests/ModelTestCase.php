@@ -22,7 +22,7 @@ abstract class ModelTestCase extends TestCase
 
     public function testCreation()
     {
-        $this->assertTrue($this->model->save());
+        $this->assertTrue($this->model->exists);
     }
 
     abstract public function testAttributes();

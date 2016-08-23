@@ -2,23 +2,27 @@
 
 namespace Dias\Http\Controllers\Views;
 
-use Dias\AnnotationLabel;
 use Dias\ImageLabel;
+use Dias\AnnotationLabel;
+use Illuminate\Contracts\Auth\Guard;
 
 class DashboardController extends Controller
 {
     /**
      * Show the application dashboard to the user.
      *
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Guard $auth)
     {
-        $annotationLabel = AnnotationLabel::where('user_id', $this->user->id)
+        $user = $auth->user();
+
+        $annotationLabel = AnnotationLabel::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->first();
 
-        $imageLabel = ImageLabel::where('user_id', $this->user->id)
+        $imageLabel = ImageLabel::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->first();
 
@@ -46,13 +50,13 @@ class DashboardController extends Controller
             $recentTransectImage = null;
         }
 
-        $projects = $this->user->projects()
+        $projects = $user->projects()
             ->orderBy('updated_at', 'desc')
             ->take(3)
             ->get();
 
         return view('dashboard', [
-            'user' => $this->user,
+            'user' => $user,
             'recentImage' => $recentImage,
             'recentTransect' => $recentTransect,
             'recentTransectImage' => $recentTransectImage,

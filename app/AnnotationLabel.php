@@ -23,6 +23,15 @@ class AnnotationLabel extends Model
     ];
 
     /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'confidence' => 'float',
+    ];
+
+    /**
      * The annotation, this annotation label belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -51,15 +60,5 @@ class AnnotationLabel extends Model
     {
         return $this->belongsTo('Dias\User')
             ->select('id', 'firstname', 'lastname', 'role_id');
-    }
-
-    /**
-     * Accessor function to parse the confidence to float.
-     * @param string $confidence
-     * @return float
-     */
-    public function getConfidenceAttribute($confidence)
-    {
-        return (float) $confidence;
     }
 }

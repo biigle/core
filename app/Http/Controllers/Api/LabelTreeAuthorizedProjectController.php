@@ -4,6 +4,7 @@ namespace Dias\Http\Controllers\Api;
 
 use Dias\LabelTree;
 use Dias\Visibility;
+use Illuminate\Http\Request;
 
 class LabelTreeAuthorizedProjectController extends Controller
 {
@@ -19,27 +20,29 @@ class LabelTreeAuthorizedProjectController extends Controller
      *
      * @apiParam (Required attributes) {Number} id ID of the project to authorize
      *
+     * @param Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function store($id)
+    public function store(Request $request, $id)
     {
         $tree = LabelTree::findOrFail($id);
         $this->authorize('update', $tree);
 
-        $this->validate($this->request, LabelTree::$authorizeProjectRules);
+        $this->validate($request, LabelTree::$authorizeProjectRules);
 
-        $pid = $this->request->input('id');
+        $pid = $request->input('id');
 
         if (!$tree->authorizedProjects()->where('id', $pid)->exists()) {
             $tree->authorizedProjects()->attach($pid);
         }
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('saved', true);
         }
         return redirect()->back()
@@ -59,11 +62,12 @@ class LabelTreeAuthorizedProjectController extends Controller
      * @apiParam {Number} lid The label tree ID.
      * @apiParam {Number} pid The project ID.
      *
+     * @param Request $request
      * @param  int  $lid
      * @param  int  $pid
      * @return \Illuminate\Http\Response
      */
-    public function destroy($lid, $pid)
+    public function destroy(Request $request, $lid, $pid)
     {
         $tree = LabelTree::findOrFail($lid);
         $this->authorize('update', $tree);
@@ -74,12 +78,12 @@ class LabelTreeAuthorizedProjectController extends Controller
             $tree->projects()->detach($pid);
         }
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('deleted', true);
         }
         return redirect()->back()

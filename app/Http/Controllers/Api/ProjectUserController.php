@@ -2,9 +2,10 @@
 
 namespace Dias\Http\Controllers\Api;
 
-use Dias\Project;
 use Dias\User;
 use Dias\Role;
+use Dias\Project;
+use Illuminate\Http\Request;
 
 class ProjectUserController extends Controller
 {
@@ -58,16 +59,17 @@ class ProjectUserController extends Controller
      *
      * @apiParam (Attributes that can be updated) {Number} project_role_id The project role of the member.
      *
+     * @param Request $request
      * @param  int  $projectId
      * @param  int  $userId
      * @return \Illuminate\Http\Response
      */
-    public function update($projectId, $userId)
+    public function update(Request $request, $projectId, $userId)
     {
         $project = Project::findOrFail($projectId);
         $this->authorize('update', $project);
 
-        $role = Role::find($this->request->input('project_role_id'));
+        $role = Role::find($request->input('project_role_id'));
 
         if (!$role) {
             abort(400, 'Role does not exist.');
@@ -94,17 +96,18 @@ class ProjectUserController extends Controller
      * @apiParamExample {String} Request example:
      * project_role_id: 3
      *
+     * @param Request $request
      * @param int $projectId
      * @param int $userId
      * @return \Illuminate\Http\Response
      */
-    public function attach($projectId, $userId)
+    public function attach(Request $request, $projectId, $userId)
     {
         $project = Project::findOrFail($projectId);
         $this->authorize('update', $project);
 
         $user = User::find($userId);
-        $role = Role::find($this->request->input('project_role_id'));
+        $role = Role::find($request->input('project_role_id'));
 
         if (!$user || !$role) {
             abort(400, 'Bad arguments.');
