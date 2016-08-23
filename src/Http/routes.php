@@ -38,6 +38,6 @@ $router->group([
 // this route should be public (is protected by random uids)
 $router->get('api/v1/reports/{uid}/{filename}', [
     'as' => 'download_report',
-    'uses' => 'Api\StoredReportController@show',
+    'uses' => 'Api\AvailableReportController@show',
 ]);
 
