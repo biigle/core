@@ -2,8 +2,8 @@
 
 namespace Dias\Modules\Export;
 
-use Dias\Transect as BaseTransect;
 use Exception;
+use Dias\Transect as BaseTransect;
 
 /**
  * Extends the base Dias transect

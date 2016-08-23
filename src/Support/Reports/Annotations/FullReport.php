@@ -1,13 +1,29 @@
 <?php
 
-namespace Dias\Modules\Export\Jobs\Annotations;
+namespace Dias\Modules\Export\Support\Reports\Annotations;
 
 use DB;
+use App;
+use Dias\Project;
+use Dias\Modules\Export\Support\Exec;
 use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\Annotations\Full;
 
-class GenerateFullReport extends GenerateAnnotationReportJob
+class FullReport extends AnnotationReport
 {
+    /**
+     * Create an image label report instance.
+     *
+     * @param Project $project The project for which the report should be generated.
+     * @param bool $restricted Is the report restricted to the export area?
+     */
+    public function __construct(Project $project, $restricted)
+    {
+        parent::__construct($project, $restricted);
+        $this->name = 'full annotation report';
+        $this->filename = 'full_annotation_report';
+        $this->extension = 'xlsx';
+    }
+
     /**
      * Generate the report.
      *
@@ -43,15 +59,7 @@ class GenerateFullReport extends GenerateAnnotationReportJob
             $csv->close();
         }
 
-        $this->report = app()->make(Full::class);
-        $this->report->generate($this->project, $this->tmpFiles);
-
-        $this->sendReportMail(
-            'full annotation',
-            'full_annotation',
-            $this->report->basename(),
-            'xlsx'
-        );
+        $this->executeScript();
     }
 
     /**
@@ -61,7 +69,7 @@ class GenerateFullReport extends GenerateAnnotationReportJob
      *
      * @return \Illuminate\Database\Query\Builder
      */
-    private function query($id)
+    protected function query($id)
     {
         return DB::table('annotation_labels')
             ->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
@@ -85,5 +93,26 @@ class GenerateFullReport extends GenerateAnnotationReportJob
             ->orderBy('annotations.id')
             ->orderBy('labels.id')
             ->orderBy('annotation_labels.user_id');
+    }
+
+    /**
+     * Execute the external report parsing script
+     */
+    protected function executeScript()
+    {
+        $python = config('export.python');
+        $script = config('export.scripts.full_report');
+
+        $csvs = implode(' ', array_map(function ($csv) {
+            return $csv->path;
+        }, $this->tmpFiles));
+
+        $exec = App::make(Exec::class, [
+            'command' => "{$python} {$script} \"{$this->project->name}\" {$this->storedReport->path} {$csvs}",
+        ]);
+
+        if ($exec->code !== 0) {
+            throw new \Exception("Full annotation report generation failed with exit code {$exec->code}:\n".implode("\n", $exec->lines));
+        }
     }
 }

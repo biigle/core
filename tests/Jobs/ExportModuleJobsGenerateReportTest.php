@@ -1,51 +1,18 @@
 <?php
 
-use Dias\Project;
-use Dias\Modules\Export\Support\CsvFile;
+use Dias\User;
+use Dias\Modules\Export\Support\Reports\Report;
 use Dias\Modules\Export\Jobs\GenerateReportJob;
-use Dias\Modules\Export\Support\Reports\Annotations\Basic;
-use Dias\Modules\Export\Jobs\Annotations\GenerateBasicReport;
+use Dias\Modules\Export\Notifications\ReportReady;
 
 class ExportModuleJobsGenerateReportTest extends TestCase {
 
-    public function testHandleException()
+    public function testHandle()
     {
-        $project = ProjectTest::make();
-        $user = UserTest::make();
-        $this->setExpectedException(Exception::class);
-        with(new ReportJobThrowExceptionStub($project, $user))->handle();
-    }
-
-    public function testHandleRegular()
-    {
-        $project = ProjectTest::make();
-        $user = UserTest::make();
-        with(new ReportJobThrowNoExceptionStub($project, $user))->handle();
-    }
-}
-
-class ReportJobThrowExceptionStub extends GenerateReportJob
-{
-    public function generateReport()
-    {
-        $this->report = Mockery::mock();
-        $this->report->shouldReceive('delete')->once();
-
-        $this->tmpFiles[] = Mockery::mock();
-        $this->tmpFiles[0]->shouldReceive('delete')->once();
-
-        throw new Exception();
-    }
-}
-
-class ReportJobThrowNoExceptionStub extends GenerateReportJob
-{
-    public function generateReport()
-    {
-        $this->report = Mockery::mock();
-        $this->report->shouldReceive('delete')->never();
-
-        $this->tmpFiles[] = Mockery::mock();
-        $this->tmpFiles[0]->shouldReceive('delete')->once();
+        $report = Mockery::mock(Report::class);
+        $report->shouldReceive('generate')->once();
+        $user = Mockery::mock(User::class);
+        $user->shouldReceive('notify')->once()->with(Mockery::type(ReportReady::class));
+        with(new GenerateReportJob($report, $user))->handle();
     }
 }

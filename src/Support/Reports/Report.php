@@ -3,72 +3,120 @@
 namespace Dias\Modules\Export\Support\Reports;
 
 use File;
+use Exception;
+use Dias\Project;
+use Dias\Modules\Export\AvailableReport;
 
 class Report
 {
     /**
-     * The file path of this report
+     * The project for which the report should be generated.
+     *
+     * @var Project
+     */
+    protected $project;
+
+    /**
+     * Name of the report for use in text.
      *
      * @var string
      */
-    public $path;
+    protected $name;
 
     /**
-     * Create a new report object
+     * Name of the report for use as (part of) a filename.
      *
-     * @param string $path Optional basename of an existing report file. If not specified, a new one will be generated
+     * @var string
      */
-    public function __construct($basename = null)
-    {
-        if ($basename) {
-            $this->path = config('export.reports_storage').'/'.$basename;
-        } else {
-            do {
-                // use str_random to generate a cryptographically secure random string
-                // because it will be used to retrieve the file via a public url
-                $path = config('export.reports_storage').'/'.str_random();
-            } while (File::exists($path));
+    protected $filename;
 
-            $this->path = $path;
+    /**
+     * File extension of the report file.
+     *
+     * @var string
+     */
+    protected $extension;
+
+    /**
+     * Temporary files that are created when generating a report.
+     *
+     * @var array
+     */
+    protected $tmpFiles;
+
+    /**
+     * Instance of the stored report file.
+     *
+     * @var AvailableReport
+     */
+    protected $storedReport;
+
+    /**
+     * Create a report instance.
+     *
+     * @param Project $project The project for which the report should be generated.
+     */
+    public function __construct(Project $project)
+    {
+        $this->project = $project;
+        $this->tmpFiles = [];
+        $this->name = '';
+        $this->filename = '';
+        $this->extension = '';
+        $this->storedReport = new AvailableReport;
+    }
+
+    /**
+     * Generate the report.
+     *
+     * @return void
+     */
+    public function generate()
+    {
+        try {
+            $this->generateReport();
+        } catch (Exception $e) {
+            if (isset($this->storedReport)) {
+                $this->storedReport->delete();
+                throw $e;
+            }
+        } finally {
+            array_walk($this->tmpFiles, function ($file) {
+                $file->delete();
+            });
         }
     }
 
     /**
-     * Return the basename of the file of this report
+     * Get the report name
      *
      * @return string
      */
-    public function basename()
+    public function getName()
     {
-        return File::basename($this->path);
+        return $this->name;
     }
 
     /**
-     * Return the dirname of the file of this report
+     * Get the download URL for this report.
      *
      * @return string
      */
-    public function dirname()
+    public function getUrl()
     {
-        return File::dirname($this->path);
+        return route('download_report', [
+            $this->storedReport->basename(),
+            "biigle_{$this->project->id}_{$this->getFilename()}_report.{$this->extension}"
+        ]);
     }
 
     /**
-     * Delete the report file
-     */
-    public function delete()
-    {
-        return File::delete($this->path);
-    }
-
-    /**
-     * Check if the report exists
+     * Get the filename
      *
-     * @return bool
+     * @return string
      */
-    public function exists()
+    public function getFilename()
     {
-        return File::exists($this->path);
+        return $this->filename;
     }
-
 }

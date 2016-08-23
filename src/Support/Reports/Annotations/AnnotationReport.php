@@ -1,36 +1,59 @@
 <?php
 
-namespace Dias\Modules\Export\Jobs\Annotations;
+namespace Dias\Modules\Export\Support\Reports\Annotations;
 
 use DB;
-use Dias\User;
 use Dias\Project;
 use Dias\Modules\Export\Transect;
-use Dias\Modules\Export\Jobs\GenerateReportJob;
+use Dias\Modules\Export\Support\Reports\Report;
 
-abstract class GenerateAnnotationReportJob extends GenerateReportJob
+class AnnotationReport extends Report
 {
-
     /**
-     * Restrict the report to the export areas of the transects
+     * Specifies if the report is restricted to the export area
      *
      * @var bool
      */
     protected $restricted;
 
     /**
-     * Create a new job instance.
+     * Create a report instance.
      *
      * @param Project $project The project for which the report should be generated.
-     * @param User $user The user to notify of the finished report
-     * @param bool $restricted Restrict the report to the export areas of the transects
-     *
-     * @return void
+     * @param bool $restricted Is the report restricted to the export area?
      */
-    public function __construct(Project $project, User $user, $restricted = false)
+    public function __construct(Project $project, $restricted)
     {
-        parent::__construct($project, $user);
+        parent::__construct($project);
         $this->restricted = $restricted;
+    }
+
+    /**
+     * Get the report name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        if ($this->restricted) {
+            return "{$this->name} (restricted to export area)";
+        }
+
+        return $this->name;
+    }
+
+    /**
+     * Get the filename
+     *
+     * @return string
+     */
+    public function getFilename()
+    {
+        if ($this->restricted) {
+            return "{$this->filename}_restricted";
+        }
+
+        return $this->filename;
     }
 
     /**
@@ -91,23 +114,5 @@ abstract class GenerateAnnotationReportJob extends GenerateReportJob
             ->chunkById(500, $handleChunk, 'annotations.id', 'id');
 
         return $skip;
-    }
-
-    /**
-     * Send the email with the link to the report file
-     *
-     * @param string $type Report type
-     * @param string $filename Filename used for the download file
-     * @param string $uuid Refort file UUID for the download link
-     * @param string $filetype Type of the report file, e.g. `pdf` or `xls`.
-     * @return void
-     */
-    protected function sendReportMail($type, $filename, $uuid, $filetype)
-    {
-        if ($this->restricted) {
-            $filename = "{$filename}_restricted";
-        }
-
-        parent::sendReportMail($type, $filename, $uuid, $filetype);
     }
 }
