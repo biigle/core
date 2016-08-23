@@ -5,14 +5,17 @@
  * @memberOf dias.annotations
  * @description Controller for ATE example patches settings
  */
-angular.module('dias.annotations').controller('ExportAreaSettingsController', function ($scope, exportArea) {
+angular.module('dias.annotations').controller('ExportAreaSettingsController', function ($scope, exportArea, settings) {
 		"use strict";
 
-        $scope.setDefaultSettings('export_area_opacity', '1');
+        var key = 'export_area_opacity';
+
+        settings.setDefaultSettings(key, '1');
+        $scope[key] = settings.getPermanentSettings(key);
 
         $scope.edit = function () {
             if (!$scope.isShown()) {
-                $scope.settings.export_area_opacity = '1';
+                $scope[key] = '1';
             }
 
             exportArea.toggleEdit();
@@ -21,7 +24,7 @@ angular.module('dias.annotations').controller('ExportAreaSettingsController', fu
         $scope.isEditing = exportArea.isEditing;
 
         $scope.isShown = function () {
-            return $scope.settings.export_area_opacity !== '0';
+            return $scope[key] !== '0';
         };
 
         $scope.delete = function () {
@@ -31,7 +34,9 @@ angular.module('dias.annotations').controller('ExportAreaSettingsController', fu
         };
 
         $scope.$on('image.shown', exportArea.updateHeight);
-
-        $scope.$watch('settings.export_area_opacity', exportArea.setOpacity);
+        $scope.$watch(key, function (opacity) {
+            settings.setPermanentSettings(key, opacity);
+            exportArea.setOpacity(opacity);
+        });
 	}
 );
