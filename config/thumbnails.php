@@ -9,9 +9,9 @@ return [
     'service' => 'Dias\Services\Thumbnails\InterventionImage',
 
     /*
-    | The directory where all thumbnail images are stored.
+    | The directory where all thumbnail images are stored. Must be publicly visible!
     */
-    'storage' => storage_path('thumbs'),
+    'storage' => public_path('thumbs'),
 
     /*
     | Dimensions of the thumbnail images to create. Only change this if you know what you are

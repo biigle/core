@@ -20,6 +20,8 @@ class ServicesThumbnailsInterventionImageTest extends TestCase
         $this->assertTrue($size[0] <= $config[0]);
         $this->assertTrue($size[1] <= $config[1]);
         $this->assertTrue($size[0] == $config[0] || $size[1] == $config[1]);
+
+        File::delete($image->thumbPath);
     }
 
     public function testGenerateThumbnailsWithOnly()
@@ -34,5 +36,8 @@ class ServicesThumbnailsInterventionImageTest extends TestCase
 
         $this->assertTrue(File::exists($image1->thumbPath));
         $this->assertFalse(File::exists($image2->thumbPath));
+
+        File::delete($image1->thumbPath);
+        File::delete($image2->thumbPath);
     }
 }

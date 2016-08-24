@@ -12,17 +12,17 @@ class CleanupThumbnails implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param  array  $ids  The transect image ids
+     * @param  array  $uuids  The transect image UUIDs
      * @return void
      */
-    public function handle(array $ids)
+    public function handle(array $uuids)
     {
         $prefix = config('thumbnails.storage');
         $format = Image::THUMB_FORMAT;
 
-        foreach ($ids as $id) {
-            if (File::exists("{$prefix}/{$id}.{$format}")) {
-                File::delete("{$prefix}/{$id}.{$format}");
+        foreach ($uuids as $uuid) {
+            if (File::exists("{$prefix}/{$uuid}.{$format}")) {
+                File::delete("{$prefix}/{$uuid}.{$format}");
             }
         }
     }

@@ -2,10 +2,10 @@
 
 namespace Dias\Services\Thumbnails;
 
-use Dias\Contracts\ThumbnailService;
-use Dias\Transect;
 use Dias\Image;
+use Dias\Transect;
 use InterventionImage as IImage;
+use Dias\Contracts\ThumbnailService;
 
 /**
  * The default Dias thumbnails service using the InterventionImage package

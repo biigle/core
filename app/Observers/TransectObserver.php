@@ -31,7 +31,7 @@ class TransectObserver
      */
     public function deleting(Transect $transect)
     {
-        Event::fire('images.cleanup', [$transect->images()->pluck('id')->toArray()]);
+        Event::fire('images.cleanup', [$transect->images()->pluck('uuid')->toArray()]);
 
         return true;
     }

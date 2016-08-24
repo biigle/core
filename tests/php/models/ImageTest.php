@@ -20,6 +20,13 @@ class ImageTest extends ModelTestCase
         $this->assertNull($this->model->updated_at);
     }
 
+    public function testThumbPath()
+    {
+        $path = $this->model->thumbPath;
+        $contains = $this->model->uuid.'.'.Image::THUMB_FORMAT;
+        $this->assertContains($contains, $path);
+    }
+
     public function testHiddenAttributes()
     {
         $json = json_decode((string) $this->model);
@@ -102,7 +109,7 @@ class ImageTest extends ModelTestCase
     {
         Event::shouldReceive('fire')
             ->once()
-            ->with('images.cleanup', [[$this->model->id]]);
+            ->with('images.cleanup', [[$this->model->uuid]]);
         Event::shouldReceive('fire'); // catch other events
 
         $this->model->transect->delete();
@@ -133,7 +140,7 @@ class ImageTest extends ModelTestCase
     {
         Event::shouldReceive('fire')
             ->once()
-            ->with('images.cleanup', [[$this->model->id]]);
+            ->with('images.cleanup', [[$this->model->uuid]]);
         Event::shouldReceive('fire'); // catch other events
 
         $this->model->delete();

@@ -18,6 +18,6 @@ class ListenersCleanupThumbnailsTest extends TestCase
             ->once()
             ->with($image->thumbPath);
 
-        with(new CleanupThumbnails)->handle([$image->id]);
+        with(new CleanupThumbnails)->handle([$image->uuid]);
     }
 }
