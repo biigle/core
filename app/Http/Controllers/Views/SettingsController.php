@@ -2,6 +2,8 @@
 
 namespace Dias\Http\Controllers\Views;
 
+use Illuminate\Contracts\Auth\Guard;
+
 class SettingsController extends Controller
 {
     /**
@@ -17,24 +19,26 @@ class SettingsController extends Controller
     /**
      * Shows the profile settings.
      *
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function profile()
+    public function profile(Guard $auth)
     {
         return view('settings.profile')
-            ->withUser($this->user)
+            ->withUser($auth->user())
             ->withSaved(session('saved'));
     }
 
     /**
      * Shows the account settings.
      *
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function account()
+    public function account(Guard $auth)
     {
         return view('settings.account')
-            ->withUser($this->user)
+            ->withUser($auth->user())
             ->withSaved(session('saved'))
             ->withOrigin(session('_origin'));
     }
@@ -42,13 +46,14 @@ class SettingsController extends Controller
     /**
      * Shows the tokens settings.
      *
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function tokens()
+    public function tokens(Guard $auth)
     {
         return view('settings.tokens')
-            ->withUser($this->user)
-            ->withTokens($this->user->apiTokens()->orderBy('updated_at', 'desc')->get())
+            ->withUser($auth->user())
+            ->withTokens($auth->user()->apiTokens()->orderBy('updated_at', 'desc')->get())
             ->withToken(session('token'))
             ->withDeleted(session('deleted'));
     }

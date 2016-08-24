@@ -19,7 +19,7 @@ class AuthControllerTest extends TestCase
     public function testLoginViewRedirect()
     {
         $this->get('/');
-        $this->assertRedirectedTo('/auth/login');
+        $this->assertRedirectedTo('/login');
 
         $this->be(UserTest::create());
         $this->get('/');
@@ -28,22 +28,22 @@ class AuthControllerTest extends TestCase
 
     public function testLoginView()
     {
-        $this->get('/auth/login');
+        $this->get('/login');
         $this->assertResponseOk();
     }
 
     public function testLoginFail()
     {
-        $this->visit('auth/login');
+        $this->visit('login');
 
         // user doesn't exist
-        $response = $this->post('/auth/login', [
+        $response = $this->post('/login', [
             '_token'   => Session::getToken(),
             'email'    => 'test@test.com',
             'password' => 'example123',
         ]);
 
-        $this->assertRedirectedTo('auth/login');
+        $this->assertRedirectedTo('login');
     }
 
     public function testLoginSuccess()
@@ -52,7 +52,7 @@ class AuthControllerTest extends TestCase
         // login_at attribute should be null after creation
         $this->assertNull($user->login_at);
 
-        $response = $this->post('/auth/login', [
+        $response = $this->post('/login', [
             '_token'   => Session::getToken(),
             'email'    => 'test@test.com',
             'password' => 'example123',
@@ -67,32 +67,32 @@ class AuthControllerTest extends TestCase
     {
         $this->be(UserTest::create());
         $this->seeIsAuthenticated();
-        $this->get('/auth/logout');
+        $this->post('/logout');
         $this->dontSeeIsAuthenticated();
     }
 
-    // public function testRegisterRoute()
-    // {
-    //     $this->get('/auth/register');
-    //     $this->assertResponseOk();
-    //     $this->post('/auth/register');
-    //     $this->assertResponseStatus(403);
-    // }
+    public function testRegisterRoute()
+    {
+        $this->get('/register');
+        $this->assertResponseStatus(404);
+        $this->post('/register');
+        $this->assertResponseStatus(404);
+    }
 
     // public function testRegisterFieldsRequired()
     // {
-    //     $this->get('/auth/register');
-    //     $this->post('/auth/register', [
+    //     $this->get('/register');
+    //     $this->post('/register', [
     //         '_token'   => Session::getToken(),
     //     ]);
     //     // fields are missing
-    //     $this->assertRedirectedTo('/auth/register');
+    //     $this->assertRedirectedTo('/register');
     // }
 
     // public function testPasswordConfirmation()
     // {
-    //     $this->get('/auth/register');
-    //     $this->post('/auth/register', [
+    //     $this->get('/register');
+    //     $this->post('/register', [
     //         '_token'    => Session::getToken(),
     //         'email'     => 'e@ma.il',
     //         'password'  => 'password',
@@ -101,15 +101,15 @@ class AuthControllerTest extends TestCase
     //         'lastname'  => 'b',
     //     ]);
 
-    //     $this->assertRedirectedTo('/auth/register');
+    //     $this->assertRedirectedTo('/register');
     // }
 
     // public function testRegisterSuccess()
     // {
     //     $this->assertNull(\Dias\User::find(1));
 
-    //     $this->get('/auth/register');
-    //     $this->post('/auth/register', [
+    //     $this->get('/register');
+    //     $this->post('/register', [
     //         '_token'    => Session::getToken(),
     //         'email'     => 'e@ma.il',
     //         'password'  => 'password',
@@ -128,8 +128,8 @@ class AuthControllerTest extends TestCase
     //     UserTest::create(['email' => 'test@test.com']);
     //     $this->assertEquals(1, \Dias\User::all()->count());
 
-    //     $this->get('/auth/register');
-    //     $this->post('/auth/register', [
+    //     $this->get('/register');
+    //     $this->post('/register', [
     //         '_token'    => Session::getToken(),
     //         'email'     => 'test@test.com',
     //         'password'  => 'password',
@@ -138,7 +138,7 @@ class AuthControllerTest extends TestCase
     //         'lastname'  => 'b',
     //     ]);
 
-    //     $this->assertRedirectedTo('/auth/register');
+    //     $this->assertRedirectedTo('/register');
     //     $this->assertEquals(1, \Dias\User::all()->count());
     // }
 
@@ -147,10 +147,10 @@ class AuthControllerTest extends TestCase
     //     $this->be(UserTest::create());
     //     $this->assertEquals(1, \Dias\User::all()->count());
 
-    //     $this->get('/auth/register');
+    //     $this->get('/register');
     //     $this->assertRedirectedTo('/');
 
-    //     $this->post('/auth/register', [
+    //     $this->post('/register', [
     //         '_token'    => Session::getToken(),
     //         'email'     => 'e@ma.il',
     //         'password'  => 'password',

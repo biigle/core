@@ -3,6 +3,8 @@
 namespace Dias\Http\Controllers\Api;
 
 use Dias\Project;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectController extends Controller
@@ -28,11 +30,12 @@ class ProjectController extends Controller
      *    }
      * ]
      *
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Guard $auth)
     {
-        return $this->user->projects;
+        return $auth->user()->projects;
     }
 
     /**
@@ -79,26 +82,27 @@ class ProjectController extends Controller
      * @apiParam (Attributes that can be updated) {String} name Name of the project.
      * @apiParam (Attributes that can be updated) {String} description Description of the project.
      *
+     * @param Request $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update($id)
+    public function update(Request $request, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
 
-        $this->validate($this->request, Project::$updateRules);
+        $this->validate($request, Project::$updateRules);
 
-        $project->name = $this->request->input('name', $project->name);
-        $project->description = $this->request->input('description', $project->description);
+        $project->name = $request->input('name', $project->name);
+        $project->description = $request->input('description', $project->description);
         $project->save();
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('saved', true)
                 ->with('message', 'Project updated.')
                 ->with('messageType', 'success');
@@ -121,31 +125,33 @@ class ProjectController extends Controller
      * @apiParam (Required attributes) {String} name Name of the new project.
      * @apiParam (Required attributes) {String} description Description of the new project.
      *
+     * @param Request $request
+     * @param Guard $auth
      * @return Project
      */
-    public function store()
+    public function store(Request $request, Guard $auth)
     {
-        $this->validate($this->request, Project::$createRules);
+        $this->validate($request, Project::$createRules);
 
         $project = new Project;
-        $project->name = $this->request->input('name');
-        $project->description = $this->request->input('description');
-        $project->setCreator($this->user);
+        $project->name = $request->input('name');
+        $project->description = $request->input('description');
+        $project->setCreator($auth->user());
         $project->save();
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             // creator shouldn't be returned
             unset($project->creator);
 
             return $project;
         }
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return $project;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('newProject', $project)
                 ->with('message', 'Project created.')
                 ->with('messageType', 'success');
@@ -169,18 +175,19 @@ class ProjectController extends Controller
      *
      * @apiParam (Optional parameters) {Boolean} force Set this parameter to delete the project **and** all transects that belong only to this project.
      *
+     * @param Request $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('destroy', $project);
 
         try {
-            $project->removeAllTransects($this->request->has('force'));
+            $project->removeAllTransects($request->has('force'));
         } catch (HttpException $e) {
-            if (static::isAutomatedRequest($this->request)) {
+            if (static::isAutomatedRequest($request)) {
                 abort(400, $e->getMessage());
             }
 
@@ -190,12 +197,12 @@ class ProjectController extends Controller
         }
         $project->delete();
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('deleted', true)
                 ->with('message', 'Project deleted.')
                 ->with('messageType', 'success');

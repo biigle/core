@@ -3,6 +3,7 @@
 namespace Dias\Http\Controllers\Api;
 
 use Dias\LabelSource;
+use Illuminate\Http\Request;
 
 class LabelSourceController extends Controller
 {
@@ -17,13 +18,15 @@ class LabelSourceController extends Controller
      *
      * @apiParam {Number} id The label source ID
      *
+     * @param Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function find($id)
+    public function find(Request $request, $id)
     {
         $source = LabelSource::findOrFail($id);
-        $this->validate($this->request, LabelSource::$findRules);
+        $this->validate($request, LabelSource::$findRules);
 
-        return $source->getAdapter()->find($this->request->input('query'));
+        return $source->getAdapter()->find($request->input('query'));
     }
 }

@@ -4,7 +4,7 @@ class ViewsAdminUsersControllerTest extends TestCase
 {
     public function testGetWhenNotLoggedIn()
     {
-        $this->visit('admin/users')->seePageIs('auth/login');
+        $this->visit('admin/users')->seePageIs('login');
     }
 
     public function testGetWhenNotAdmin()
@@ -23,7 +23,7 @@ class ViewsAdminUsersControllerTest extends TestCase
 
     public function testNewWhenNotLoggedIn()
     {
-        $this->visit('admin/users/new')->seePageIs('auth/login');
+        $this->visit('admin/users/new')->seePageIs('login');
     }
 
     public function testNewWhenNotAdmin()
@@ -43,7 +43,7 @@ class ViewsAdminUsersControllerTest extends TestCase
     public function testEditWhenNotLoggedIn()
     {
         $id = UserTest::create()->id;
-        $this->visit("admin/users/edit/{$id}")->seePageIs('auth/login');
+        $this->visit("admin/users/edit/{$id}")->seePageIs('login');
     }
 
     public function testEditWhenNotAdmin()
@@ -73,7 +73,7 @@ class ViewsAdminUsersControllerTest extends TestCase
     public function testDeleteWhenNotLoggedIn()
     {
         $id = UserTest::create()->id;
-        $this->visit("admin/users/delete/{$id}")->seePageIs('auth/login');
+        $this->visit("admin/users/delete/{$id}")->seePageIs('login');
     }
 
     public function testDeleteWhenNotAdmin()

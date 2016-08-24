@@ -2,6 +2,7 @@
 
 namespace Dias\Observers;
 
+use Event;
 use Exception;
 use Dias\Transect;
 
@@ -30,7 +31,7 @@ class TransectObserver
      */
     public function deleting(Transect $transect)
     {
-        event('images.cleanup', [$transect->images()->pluck('id')->toArray()]);
+        Event::fire('images.cleanup', [$transect->images()->pluck('id')->toArray()]);
 
         return true;
     }

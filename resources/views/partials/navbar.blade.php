@@ -39,7 +39,13 @@
                             <a href="{{ route('settings') }}" title="{{ trans('dias.titles.settings') }}">{{ trans('dias.titles.settings') }}</a>
                         </li>
                         <li>
-                            <a href="{{ url('auth/logout') }}" title="{{ trans('dias.titles.logout') }}">{{ trans('dias.titles.logout') }}</a>
+                            <a href="{{ url('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();" title="{{ trans('dias.titles.logout') }}">
+                                {{ trans('dias.titles.logout') }}
+                            </a>
+
+                            <form id="logout-form" action="{{ url('logout') }}" method="POST" style="display: none;">
+                                {{ csrf_field() }}
+                            </form>
                         </li>
                     </ul>
                 </li>

@@ -5,12 +5,12 @@ class AuthPasswordControllerTest extends TestCase
     public function testGetEmail()
     {
         // route is public
-        $this->visit('password/email')->assertResponseOk();
+        $this->visit('password/reset')->assertResponseOk();
     }
 
     public function testPostEmail()
     {
-        $this->visit('password/email');
+        $this->visit('password/reset');
 
         Mail::shouldReceive('send')->once();
 
@@ -31,13 +31,12 @@ class AuthPasswordControllerTest extends TestCase
     public function testGetReset()
     {
         // token must be provided
-        $this->get('password/reset')->assertViewMissing('token');
         $this->get('password/reset/'.str_random(40))->assertViewHas('token');
     }
 
     public function testPostReset()
     {
-        $this->visit('password/email');
+        $this->visit('password/reset');
         $user = UserTest::create();
 
         Mail::shouldReceive('send')->once();
@@ -49,7 +48,7 @@ class AuthPasswordControllerTest extends TestCase
 
         $this->assertFalse(Hash::check('new-password', $user->fresh()->password));
 
-        $this->post("password/reset/$token", [
+        $this->post("password/reset", [
             '_token' => Session::token(),
             'token' => $token,
             'email' => $user->email,

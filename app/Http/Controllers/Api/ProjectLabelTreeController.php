@@ -5,6 +5,7 @@ namespace Dias\Http\Controllers\Api;
 use Dias\Project;
 use Dias\LabelTree;
 use Dias\Visibility;
+use Illuminate\Http\Request;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class ProjectLabelTreeController extends Controller
@@ -113,20 +114,21 @@ class ProjectLabelTreeController extends Controller
      * @apiParamExample {String} Request example:
      * id: 3
      *
+     * @param Request $request
      * @param int $id Project ID
      * @return \Illuminate\Http\Response
      */
-    public function store($id)
+    public function store(Request $request, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
-        $this->validate($this->request, Project::$attachLabelTreeRules);
+        $this->validate($request, Project::$attachLabelTreeRules);
 
-        $treeId = $this->request->input('id');
+        $treeId = $request->input('id');
 
         // only do anything if the tree is not already attached
         if (!$project->labelTrees()->where('id', $treeId)->exists()) {
-            $tree = LabelTree::findOrFail($this->request->input('id'));
+            $tree = LabelTree::findOrFail($request->input('id'));
 
             // only attach if the project is allowed to
             if ((int)$tree->visibility_id === Visibility::$public->id || $tree->authorizedProjects()->where('label_tree_authorized_project.project_id', $id)->exists()) {
@@ -136,12 +138,12 @@ class ProjectLabelTreeController extends Controller
             }
         }
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('saved', true);
         }
         return redirect()->back()
@@ -159,22 +161,23 @@ class ProjectLabelTreeController extends Controller
      * @apiParam {Number} pid The project ID.
      * @apiParam {Number} lid The label tree ID.
      *
+     * @param Request $request
      * @param  int  $pid
      * @param  int  $lid
      * @return \Illuminate\Http\Response
      */
-    public function destroy($pid, $lid)
+    public function destroy(Request $request, $pid, $lid)
     {
         $project = Project::findOrFail($pid);
         $this->authorize('update', $project);
         $count = $project->labelTrees()->detach($lid);
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('deleted', $count > 0);
         }
         return redirect()->back()

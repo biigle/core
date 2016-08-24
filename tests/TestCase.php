@@ -22,7 +22,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
             $this->artisan('migrate:refresh');
         }
 
-        $this->withoutEvents();
+        // $this->withoutEvents();
         $this->withoutJobs();
     }
 

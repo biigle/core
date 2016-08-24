@@ -23,8 +23,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(
-            \Dias\Services\Modules::class
-        );
+        $this->app->bind(\Dias\Services\Modules::class);
     }
 }

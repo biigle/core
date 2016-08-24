@@ -4,7 +4,7 @@ class ViewsSettingsControllerTest extends TestCase
 {
     public function testIndexWhenNotLoggedIn()
     {
-        $this->visit('settings')->seePageIs('auth/login');
+        $this->visit('settings')->seePageIs('login');
     }
 
     public function testIndexWhenLoggedIn()
@@ -16,7 +16,7 @@ class ViewsSettingsControllerTest extends TestCase
     public function testPagesWhenNotLoggedIn()
     {
         foreach (['profile', 'account', 'tokens'] as $page) {
-            $this->visit("settings/$page")->seePageIs('auth/login');
+            $this->visit("settings/$page")->seePageIs('login');
         }
     }
 

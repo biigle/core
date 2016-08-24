@@ -4,7 +4,7 @@ class ViewsAdminIndexControllerTest extends TestCase
 {
     public function testIndexWhenNotLoggedIn()
     {
-        $this->visit('admin')->seePageIs('auth/login');
+        $this->visit('admin')->seePageIs('login');
     }
 
     public function testIndexWhenNotAdmin()

@@ -2,23 +2,19 @@
 
 namespace Dias\Http\Controllers\Api;
 
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Http\Request;
 use Hash;
 use Dias\User;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UserController extends Controller
 {
     /**
      * Creates a new UserController instance.
-     *
-     * @param Request $request
      */
-    public function __construct(Request $request)
+    public function __construct()
     {
-        parent::__construct($request);
-
         $this->middleware('session', ['except' => [
             'find',
             'index',
@@ -162,9 +158,9 @@ class UserController extends Controller
      *
      * @return User
      */
-    public function showOwn()
+    public function showOwn(Guard $auth)
     {
-        return $this->user;
+        return $auth->user();
     }
 
     /**
@@ -193,22 +189,22 @@ class UserController extends Controller
      * role_id: 1
      * auth_password: 'password123'
      *
+     * @param Request $request
+     * @param Guard $auth
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update($id)
+    public function update(Request $request, Guard $auth, $id)
     {
-        if ($id == $this->user->id) {
+        if ($id == $auth->user()->id) {
             abort(400, 'The own user cannot be updated using this endpoint.');
         }
-
-        $request = $this->request;
 
         $user = User::findOrFail($id);
         $this->validate($request, $user->updateRules());
 
         if ($request->has('role_id') || $request->has('email') || $request->has('password')) {
-            if (!Hash::check($request->input('auth_password'), $this->user->password)) {
+            if (!Hash::check($request->input('auth_password'), $auth->user()->password)) {
                 $errors = ['auth_password' => [trans('validation.custom.password')]];
                 return $this->buildFailedValidationResponse($request, $errors);
             }
@@ -225,9 +221,9 @@ class UserController extends Controller
         $user->email = $request->input('email', $user->email);
         $user->save();
 
-        if (!static::isAutomatedRequest($this->request)) {
-            if ($this->request->has('_redirect')) {
-                return redirect($this->request->input('_redirect'))
+        if (!static::isAutomatedRequest($request)) {
+            if ($request->has('_redirect')) {
+                return redirect($request->input('_redirect'))
                     ->with('saved', true);
             }
             return redirect()->back()
@@ -258,15 +254,16 @@ class UserController extends Controller
      * firstname: 'New'
      * lastname: 'Name'
      *
+     * @param Request $request
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function updateOwn()
+    public function updateOwn(Request $request, Guard $auth)
     {
-        $request = $this->request;
         // save origin so the settings view can highlight the right form fields
         $request->session()->flash('origin', $request->input('_origin'));
 
-        $user = $this->user;
+        $user = $auth->user();
         $this->validate($request, $user->updateRules());
 
         // confirm change of credentials with old password
@@ -328,9 +325,10 @@ class UserController extends Controller
      *    "updated_at"; "2016-04-29 07:38:51"
      * }
      *
+     * @param Request $request
      * @return User
      */
-    public function store()
+    public function store(Request $request)
     {
         /*
          * DON'T allow setting the role through this route. The role may only be changed
@@ -340,20 +338,20 @@ class UserController extends Controller
          * can wreak havoc.
          */
 
-        $this->validate($this->request, User::$createRules);
+        $this->validate($request, User::$createRules);
         $user = new User;
-        $user->firstname = $this->request->input('firstname');
-        $user->lastname = $this->request->input('lastname');
-        $user->email = $this->request->input('email');
-        $user->password = bcrypt($this->request->input('password'));
+        $user->firstname = $request->input('firstname');
+        $user->lastname = $request->input('lastname');
+        $user->email = $request->input('email');
+        $user->password = bcrypt($request->input('password'));
         $user->save();
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return $user;
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('newUser', $user);
         }
         return redirect()->back()
@@ -372,20 +370,20 @@ class UserController extends Controller
      *
      * @apiParam {Number} id The user ID.
      *
+     * @param Request $request
+     * @param Guard $auth
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, Guard $auth, $id)
     {
-        if ($id == $this->user->id) {
+        if ($id == $auth->user()->id) {
             abort(400, 'The own user cannot be deleted using this endpoint.');
         }
 
-        $request = $this->request;
-
         $this->validate($request, User::$deleteRules);
 
-        if (!Hash::check($request->input('password'), $this->user->password)) {
+        if (!Hash::check($request->input('password'), $auth->user()->password)) {
             $errors = ['password' => [trans('validation.custom.password')]];
             return $this->buildFailedValidationResponse($request, $errors);
         }
@@ -396,19 +394,19 @@ class UserController extends Controller
             $user->checkCanBeDeleted();
         } catch (HttpException $e) {
             return $this->buildFailedValidationResponse(
-                $this->request,
+                $request,
                 ['password' => [$e->getMessage()]]
             );
         }
 
         $user->delete();
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return response('Deleted.', 200);
         }
 
-        if ($this->request->has('_redirect')) {
-            return redirect($this->request->input('_redirect'))
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
                 ->with('deleted', true);
         }
         return redirect()->back()
@@ -425,12 +423,13 @@ class UserController extends Controller
      * @apiParam (Required parameters) {String} password The password of the user.
      * @apiDescription This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.
      *
+     * @param Request $request
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function destroyOwn()
+    public function destroyOwn(Request $request, Guard $auth)
     {
-        $user = $this->user;
-        $request = $this->request;
+        $user = $auth->user();
 
         $this->validate($request, User::$deleteRules);
 
@@ -443,7 +442,7 @@ class UserController extends Controller
             $user->checkCanBeDeleted();
         } catch (HttpException $e) {
             return $this->buildFailedValidationResponse(
-                $this->request,
+                $request,
                 ['submit' => [$e->getMessage()]]
             );
         }
@@ -453,7 +452,7 @@ class UserController extends Controller
         // them again
         $user->delete();
 
-        if (static::isAutomatedRequest($this->request)) {
+        if (static::isAutomatedRequest($request)) {
             return response('Deleted.', 200);
         }
 

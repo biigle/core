@@ -2,20 +2,18 @@
 
 namespace Dias\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
 use Dias\ApiToken;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 
 class ApiTokenController extends Controller
 {
     /**
      * Creates a new ApiTokenController instance.
      *
-     * @param Request $request
      */
-    public function __construct(Request $request)
+    public function __construct()
     {
-        parent::__construct($request);
-
         $this->middleware('session', ['only' => [
             'store',
         ]]);
@@ -41,11 +39,12 @@ class ApiTokenController extends Controller
      *    }
      * ]
      *
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Guard $auth)
     {
-        return $this->user->apiTokens;
+        return $auth->user()->apiTokens;
     }
 
     /**
@@ -72,22 +71,24 @@ class ApiTokenController extends Controller
      *    "token": "KMrUSYbdHxZKImInd3vcI8F8fzZ0Gx6H"
      * }
      *
+     * @param Request $request
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(Request $request, Guard $auth)
     {
-        $this->validate($this->request, ApiToken::$createRules);
+        $this->validate($request, ApiToken::$createRules);
 
         $token = new ApiToken;
-        $token->owner_id = $this->user->id;
-        $token->purpose = $this->request->input('purpose');
+        $token->owner_id = $auth->user()->id;
+        $token->purpose = $request->input('purpose');
         $secret = str_random(32);
         $token->hash = bcrypt($secret);
         $token->save();
         // return the un-hashed token only this time
         $token->setAttribute('token', $secret);
 
-        if (!static::isAutomatedRequest($this->request)) {
+        if (!static::isAutomatedRequest($request)) {
             return redirect()->back()->with('token', $token);
         }
 
@@ -105,18 +106,20 @@ class ApiTokenController extends Controller
      *
      * @apiParam {Number} id The API token ID
      *
+     * @param Request $request
+     * @param Guard $auth
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, Guard $auth, $id)
     {
         $token = ApiToken::findOrFail($id);
 
         // IDs are automatically casted to ints by Eloquent
-        if ((int) $token->owner_id === $this->user->id) {
+        if ((int) $token->owner_id === $auth->user()->id) {
             $token->delete();
 
-            if (!static::isAutomatedRequest($this->request)) {
+            if (!static::isAutomatedRequest($request)) {
                 return redirect()->back()->with('deleted', true);
             }
         } else {

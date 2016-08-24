@@ -3,6 +3,7 @@
 namespace Dias\Http\Controllers\Api;
 
 use Dias\Transect;
+use Illuminate\Http\Request;
 
 class TransectController extends Controller
 {
@@ -52,14 +53,14 @@ class TransectController extends Controller
      * @apiParam (Attributes that can be updated) {Number} media_type_id The ID of the media type of the transect.
      * @apiParam (Attributes that can be updated) {String} url The base URL ot the image files. Can be a local path like `/vol/transects/1` or a remote path like `https://example.com/transects/1`. Updating the URL will trigger a re-generation of all transect image thumbnails.
      *
+     * @param Request $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update($id)
+    public function update(Request $request, $id)
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('update', $transect);
-        $request = $this->request;
 
         $this->validate($request, Transect::$updateRules);
 
@@ -76,9 +77,9 @@ class TransectController extends Controller
             $transect->generateThumbnails();
         }
 
-        if (!static::isAutomatedRequest($this->request)) {
-            if ($this->request->has('_redirect')) {
-                return redirect($this->request->input('_redirect'))
+        if (!static::isAutomatedRequest($request)) {
+            if ($request->has('_redirect')) {
+                return redirect($request->input('_redirect'))
                     ->with('saved', $isDirty);
             }
             return redirect()->back()

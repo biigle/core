@@ -2,9 +2,11 @@
 
 namespace Dias\Http\Controllers\Api;
 
-use Dias\Annotation;
 use Dias\Label;
+use Dias\Annotation;
 use Dias\AnnotationLabel;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\QueryException;
 
 class AnnotationLabelController extends Controller
@@ -84,20 +86,22 @@ class AnnotationLabelController extends Controller
      *    }
      * }
      *
+     * @param Request $request
+     * @param Guard $auth
      * @param int $id Annotation ID
      * @return \Illuminate\Http\Response
      */
-    public function store($id)
+    public function store(Request $request, Guard $auth, $id)
     {
-        $this->validate($this->request, Annotation::$attachLabelRules);
+        $this->validate($request, Annotation::$attachLabelRules);
         $annotation = Annotation::findOrFail($id);
-        $label = Label::findOrFail($this->request->input('label_id'));
+        $label = Label::findOrFail($request->input('label_id'));
         $this->authorize('attach-label', [$annotation, $label]);
 
         try {
             $annotationLabel = new AnnotationLabel;
-            $annotationLabel->confidence = $this->request->input('confidence');
-            $annotationLabel->user()->associate($this->user);
+            $annotationLabel->confidence = $request->input('confidence');
+            $annotationLabel->user()->associate($auth->user());
             $annotationLabel->label()->associate($label);
             $annotationLabel->annotation()->associate($annotation);
             $annotationLabel->save();
@@ -124,14 +128,15 @@ class AnnotationLabelController extends Controller
      * @apiParamExample {String} Request example:
      * confidence: 0.75
      *
+     * @param Request $request
      * @param int  $id
      */
-    public function update($id)
+    public function update(Request $request, $id)
     {
         $annotationLabel = AnnotationLabel::findOrFail($id);
         $this->authorize('update', $annotationLabel);
 
-        $annotationLabel->confidence = $this->request->input(
+        $annotationLabel->confidence = $request->input(
             'confidence',
             $annotationLabel->confidence
         );
