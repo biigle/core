@@ -1,10 +1,13 @@
 <?php
 
+use Dias\Image;
+use Ramsey\Uuid\Uuid;
+use Doctrine\DBAL\Types\Type;
+use Ramsey\Uuid\Doctrine\UuidType;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Dias\Image;
 
-class AddImagesTokenColumn extends Migration
+class AddImagesUuidColumn extends Migration
 {
     /**
      * Run the migrations.
@@ -14,18 +17,23 @@ class AddImagesTokenColumn extends Migration
     public function up()
     {
         Schema::table('images', function (Blueprint $table) {
-            $table->string('token', 15)->nullable();
+            $table->uuid('uuid')->nullable();
+            $table->unique('uuid');
         });
 
-
-        Image::select('id')->chunk(500, function ($images) {
+        Image::unguard();
+        Image::select('id')->chunkById(1000, function ($images) {
             foreach ($images as $image) {
-                $image->update(['token' => str_random(15)]);
+                $image->update(['uuid' => Uuid::uuid4()]);
             }
         });
 
         Schema::table('images', function (Blueprint $table) {
-            $table->string('token', 15)
+            // make doctrine/dbal work with uuid type
+            if (!Type::hasType('uuid')) {
+                Type::addType('uuid', UuidType::class);
+            }
+            $table->uuid('uuid')
                 ->nullable(false)
                 ->change();
         });
@@ -39,7 +47,8 @@ class AddImagesTokenColumn extends Migration
     public function down()
     {
         Schema::table('images', function (Blueprint $table) {
-            $table->dropColumn('token');
+            $table->dropUnique('images_uuid_unique');
+            $table->dropColumn('uuid');
         });
     }
 }

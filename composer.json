@@ -11,7 +11,8 @@
         "ext-gd": "*",
         "ext-exif": "*",
         "laravel/framework": "5.3.*",
-        "intervention/image": "~2.1"
+        "intervention/image": "~2.1",
+        "ramsey/uuid": "^3.5"
     },
     "require-dev": {
         "ext-curl": "*",
@@ -22,7 +23,8 @@
         "symfony/css-selector": "3.1.*",
         "symfony/dom-crawler": "3.1.*",
         "doctrine/dbal": "^2.5",
-        "laravel/homestead": "^3.0"
+        "laravel/homestead": "^3.0",
+        "ramsey/uuid-doctrine": "^1.2"
     },
     "autoload": {
         "classmap": [

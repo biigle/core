@@ -15,6 +15,7 @@ class ImageTest extends ModelTestCase
         $this->assertNotNull($this->model->transect_id);
         $this->assertNotNull($this->model->thumbPath);
         $this->assertNotNull($this->model->url);
+        $this->assertNotNull($this->model->uuid);
         $this->assertNull($this->model->created_at);
         $this->assertNull($this->model->updated_at);
     }
@@ -42,6 +43,9 @@ class ImageTest extends ModelTestCase
 
     public function testTransectOnDeleteCascade()
     {
+        if ($this->isSqlite()) {
+            $this->markTestSkipped('Can\'t test wit SQLite because altering foreign key constraints is not supported.');
+        }
         $this->model->transect->delete();
         $this->assertNull($this->model->fresh());
     }

@@ -59,9 +59,7 @@ $factory->define(Dias\Transect::class, function ($faker) {
 $factory->define(Dias\Image::class, function ($faker) {
     return [
         'filename' => 'test-image.jpg',
-        'token' => function () {
-            return str_random(15);
-        },
+        'uuid' => $faker->uuid(),
         'transect_id' => function () {
             return factory(Dias\Transect::class)->create()->id;
         },
