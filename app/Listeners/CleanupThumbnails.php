@@ -18,7 +18,7 @@ class CleanupThumbnails implements ShouldQueue
     public function handle(array $uuids)
     {
         $prefix = public_path(config('thumbnails.uri'));
-        $format = Image::THUMB_FORMAT;
+        $format = config('thumbnails.format');
 
         foreach ($uuids as $uuid) {
             if (File::exists("{$prefix}/{$uuid}.{$format}")) {

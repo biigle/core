@@ -47,7 +47,7 @@ class InterventionImage implements ThumbnailService
                 // resize images proportionally
                 $constraint->aspectRatio();
             })
-            ->encode(Image::THUMB_FORMAT)
+            ->encode(config('thumbnails.format'))
             ->save($image->thumbPath)
             // free memory; very important for scaling 1000s of images!!
             ->destroy();

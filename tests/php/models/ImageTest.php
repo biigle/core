@@ -23,7 +23,7 @@ class ImageTest extends ModelTestCase
     public function testThumbPath()
     {
         $path = $this->model->thumbPath;
-        $contains = $this->model->uuid.'.'.Image::THUMB_FORMAT;
+        $contains = $this->model->uuid.'.'.config('thumbnails.format');
         $this->assertContains($contains, $path);
     }
 
