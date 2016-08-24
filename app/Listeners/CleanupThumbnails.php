@@ -17,7 +17,7 @@ class CleanupThumbnails implements ShouldQueue
      */
     public function handle(array $uuids)
     {
-        $prefix = config('thumbnails.storage');
+        $prefix = public_path(config('thumbnails.uri'));
         $format = Image::THUMB_FORMAT;
 
         foreach ($uuids as $uuid) {

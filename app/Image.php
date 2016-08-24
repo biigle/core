@@ -138,7 +138,7 @@ class Image extends Model
      */
     public function getThumbPathAttribute()
     {
-        return config('thumbnails.storage').'/'.$this->uuid.'.'.self::THUMB_FORMAT;
+        return public_path(config('thumbnails.uri').'/'.$this->uuid.'.'.self::THUMB_FORMAT);
     }
 
     /**
