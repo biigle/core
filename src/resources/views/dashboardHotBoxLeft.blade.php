@@ -5,7 +5,7 @@
             <figure class="image-thumbnail">
                 <a href="{{ route('annotate', $recentImage->id) }}" title="Show image {{$recentImage->filename}}">
                     @if (File::exists($recentImage->thumbPath))
-                        <img src="{{ url('api/v1/images/'.$recentImage->id.'/thumb') }}">
+                        <img src="{{ asset(config('thumbnails.uri').'/'.$recentImage->uuid.'.'.config('thumbnails.format')) }}">
                     @else
                         <img src="{{ asset(config('thumbnails.empty_url')) }}">
                     @endif
