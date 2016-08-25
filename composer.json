@@ -75,7 +75,7 @@
             "rm -rf public/doc/server",
             "rm -rf public/doc/client",
             "php vendor/bin/sami.php update sami.php -v",
-            "gulp docs",
+            "node node_modules/jsdoc/jsdoc.js -c node_modules/angular-jsdoc/conf.json -t node_modules/angular-jsdoc/template -d public/doc/client -r resources/assets/js",
             "gulp apidoc"
         ]
     },
