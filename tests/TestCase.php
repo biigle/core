@@ -22,11 +22,11 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
                 DB::statement('PRAGMA foreign_keys = ON;');
             }
             static::$pdo = DB::getPdo();
-            $this->artisan('migrate');
         } else {
             DB::setPdo(static::$pdo);
-            $this->artisan('migrate:refresh');
         }
+
+        $this->artisan('migrate:refresh');
 
         // $this->withoutEvents();
         $this->withoutJobs();
