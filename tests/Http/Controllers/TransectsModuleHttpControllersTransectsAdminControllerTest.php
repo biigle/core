@@ -4,7 +4,7 @@ class TransectsModuleHttpControllersTransectsAdminControllerTest extends TestCas
 
    public function testIndex()
    {
-        $this->visit("admin/transects")->seePageIs('auth/login');
+        $this->visit("admin/transects")->seePageIs('login');
         $user = UserTest::create();
         $this->be($user);
         $this->get("admin/transects")->assertResponseStatus(403);

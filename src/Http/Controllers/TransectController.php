@@ -2,11 +2,13 @@
 
 namespace Dias\Modules\Transects\Http\Controllers;
 
-use Dias\Transect;
+use Dias\Role;
 use Dias\Project;
+use Dias\Transect;
 use Dias\LabelTree;
 use Dias\MediaType;
-use Dias\Role;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 use Dias\Http\Controllers\Views\Controller;
 
 class TransectController extends Controller
@@ -14,11 +16,12 @@ class TransectController extends Controller
     /**
      * Shows the create transect page.
      *
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        $project = Project::findOrFail($this->request->input('project'));
+        $project = Project::findOrFail($request->input('project'));
         $this->authorize('update', $project);
 
         return view('transects::create')
@@ -29,21 +32,23 @@ class TransectController extends Controller
     /**
      * Shows the transect index page.
      *
+     * @param Guard $auth
      * @param int $id transect ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function index(Guard $auth, $id)
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('access', $transect);
+        $user = $auth->user();
 
-        if ($this->user->isAdmin) {
+        if ($user->isAdmin) {
             // admins have no restrictions
             $projects = $transect->projects;
         } else {
             // all projects that the user and the transect have in common
-            $projects = $this->user->projects()
+            $projects = $user->projects()
                 ->whereIn('id', function ($query) use ($transect) {
                     $query->select('project_transect.project_id')
                         ->from('project_transect')
@@ -69,7 +74,7 @@ class TransectController extends Controller
             ->pluck('id');
 
         return view('transects::index')
-            ->with('user', $this->user)
+            ->with('user', $user)
             ->with('transect', $transect)
             ->with('labelTrees', $labelTrees)
             ->with('projects', $projects)

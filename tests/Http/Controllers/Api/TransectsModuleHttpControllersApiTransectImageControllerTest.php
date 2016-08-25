@@ -16,17 +16,11 @@ class TransectsModuleHttpControllersApiTransectImageControllerTest extends ApiTe
         $this->get("/api/v1/transects/{$id}/images/order-by/filename");
         $this->assertResponseStatus(403);
 
-        if ($this->isSqlite()) {
-            $expect = "[\"{$image2->id}\",\"{$image1->id}\"]";
-        } else {
-            $expect = "[{$image2->id},{$image1->id}]";
-        }
-
         $this->beGuest();
         $this->get("/api/v1/transects/{$id}/images/order-by/filename")
             ->assertResponseOk();
         // ordering is crucial, so we can't simply use seeJsonEquals!
-        $this->assertEquals($expect, $this->response->getContent());
+        $this->assertEquals("[{$image2->id},{$image1->id}]", $this->response->getContent());
     }
 
     public function testHasAnnotation() {
@@ -47,14 +41,8 @@ class TransectsModuleHttpControllersApiTransectImageControllerTest extends ApiTe
         $this->get("/api/v1/transects/{$id}/images/filter/labels");
         $this->assertResponseOk();
 
-        if ($this->isSqlite()) {
-            $expect = ["{$image->id}"];
-        } else {
-            $expect = [$image->id];
-        }
-
         $this->get("/api/v1/transects/{$id}/images/filter/labels")
-            ->seeJsonEquals($expect);
+            ->seeJsonEquals([$image->id]);
     }
 
     public function testHasImageLabelUser() {
