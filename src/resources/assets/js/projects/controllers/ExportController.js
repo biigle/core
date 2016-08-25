@@ -11,11 +11,18 @@ angular.module('dias.projects').controller('ExportController', function ($scope,
         var requested = false;
 
         var types = {
-            basic: Report.getBasic,
-            extended: Report.getExtended,
-            full: Report.getFull,
+            'basic annotation': Report.getBasic,
+            'extended annotation': Report.getExtended,
+            'full annotation': Report.getFull,
             'image label': Report.getImageLabel
         };
+
+        // all reports that can have the "restrict to export area" option
+        var restrictable = [
+            'basic annotation',
+            'extended annotation',
+            'full annotation'
+        ];
 
         var handleSuccess = function () {
             requested = true;
@@ -27,13 +34,24 @@ angular.module('dias.projects').controller('ExportController', function ($scope,
         };
 
         $scope.selected = {
-            type: 'basic'
+            type: 'basic annotation',
+            restrict: false
+        };
+
+        $scope.canBeRestricted = function () {
+            return restrictable.indexOf($scope.selected.type) !== -1;
         };
 
         $scope.requestReport = function () {
             if (!$scope.selected.type) return;
 
-            types[$scope.selected.type]({project_id: PROJECT.id}, {}, handleSuccess, handleError);
+            var data = {};
+
+            if ($scope.canBeRestricted()) {
+                data.restrict = $scope.selected.restrict ? '1' : '0';
+            }
+
+            types[$scope.selected.type]({project_id: PROJECT.id}, data, handleSuccess, handleError);
         };
 
         $scope.isRequested = function () {

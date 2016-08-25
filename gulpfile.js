@@ -10,9 +10,10 @@ elixir(function (mix) {
 	process.chdir('src');
 	// mix.sass('main.scss', 'public/assets/styles/main.css');
 	mix.angular('resources/assets/js/projects/', 'public/assets/scripts', 'projects.js');
+    mix.angular('resources/assets/js/annotations/', 'public/assets/scripts', 'annotations.js');
     mix.task('publish', 'public/assets/**/*');
 });
 
 gulp.task('publish', function () {
-    gulp.src('').pipe(shell('php ../../../../artisan vendor:publish --provider="Dias\\Modules\\Export\\ExportServiceProvider" --force --tag=public'));
+    gulp.src('').pipe(shell('php ../../../../artisan vendor:publish --provider="Dias\\Modules\\Export\\ExportServiceProvider" --tag public --force'));
 });

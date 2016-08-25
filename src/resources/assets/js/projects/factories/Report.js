@@ -6,13 +6,13 @@
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
  * @example
-// request a basic report
-Report.getBasic({project_id: 1}, {});
+// request a basic report with restricted annotation area
+Report.getBasic({project_id: 1}, {restrict: 1});
 
-// request a extended report
-Report.getExtended({project_id: 1}, {});
+// request a extended report without restricted annotation area
+Report.getExtended({project_id: 1}, {restrict: 0});
 
-// request a full report
+// request a full report without restricted annotation area
 Report.getFull({project_id: 1}, {});
 
 // request an image label report

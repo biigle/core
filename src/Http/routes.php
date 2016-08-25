@@ -7,23 +7,37 @@ $router->group([
 ], function ($router) {
 
     $router->post('projects/{id}/reports/basic', [
-        'uses' => 'ReportsController@basic',
+        'uses' => 'BasicAnnotationReportController@store',
     ]);
 
     $router->post('projects/{id}/reports/extended', [
-        'uses' => 'ReportsController@extended',
+        'uses' => 'ExtendedAnnotationReportController@store',
     ]);
 
     $router->post('projects/{id}/reports/full', [
-        'uses' => 'ReportsController@full',
+        'uses' => 'FullAnnotationReportController@store',
     ]);
 
     $router->post('projects/{id}/reports/image-labels', [
-        'uses' => 'ReportsController@storeImageLabelReport',
+        'uses' => 'ImageLabelReportController@store',
+    ]);
+
+    $router->get('transects/{id}/export-area', [
+        'uses' => 'TransectExportAreaController@show',
+    ]);
+
+    $router->post('transects/{id}/export-area', [
+        'uses' => 'TransectExportAreaController@store',
+    ]);
+
+    $router->delete('transects/{id}/export-area', [
+        'uses' => 'TransectExportAreaController@destroy',
     ]);
 });
 
 // this route should be public (is protected by random uids)
 $router->get('api/v1/reports/{uid}/{filename}', [
-    'uses' => 'Api\ReportsController@show',
+    'as' => 'download_report',
+    'uses' => 'Api\AvailableReportController@show',
 ]);
+
