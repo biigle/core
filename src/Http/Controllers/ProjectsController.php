@@ -4,6 +4,8 @@ namespace Dias\Modules\Projects\Http\Controllers;
 
 use Dias\Role;
 use Dias\Project;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 use Dias\Http\Controllers\Views\Controller;
 
 class ProjectsController extends Controller
@@ -21,10 +23,11 @@ class ProjectsController extends Controller
     /**
      * Shows the project show page.
      *
+     * @param Guard $auth
      * @param int $id project ID
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Guard $auth, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
@@ -51,7 +54,7 @@ class ProjectsController extends Controller
 
         return view('projects::show', [
             'project' => $project,
-            'user' => $this->user,
+            'user' => $auth->user(),
             'roles' => $roles,
             'labelTrees' => $labelTrees,
             'transects' => $transects,
@@ -62,32 +65,35 @@ class ProjectsController extends Controller
     /**
      * Show the project list
      *
+     * @param Request $request
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index(Request $request, Guard $auth) {
         $query = Project::query();
+        $user = $auth->user();
 
         // search for trees with similar name to the query string
-        if ($this->request->has('query')) {
+        if ($request->has('query')) {
             if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
                 $operator = 'ilike';
             } else {
                 $operator = 'like';
             }
 
-            $pattern = $this->request->input('query');
+            $pattern = $request->input('query');
             $query = $query->where('name', $operator, "%{$pattern}%");
-            $this->request->flash();
+            $request->flash();
         } else {
-            $this->request->flush();
+            $request->flush();
         }
 
         // non admins can only see public trees and private ones they are member of
-        if (!$this->user->isAdmin) {
-            $query = $query->whereIn('id', function ($query) {
+        if (!$user->isAdmin) {
+            $query = $query->whereIn('id', function ($query) use ($user) {
                 $query->select('project_id')
                     ->from('project_user')
-                    ->where('user_id', $this->user->id);
+                    ->where('user_id', $user->id);
             });
         }
 

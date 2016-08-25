@@ -49,7 +49,7 @@ class ProjectsModuleHttpControllersProjectsControllerTest extends TestCase {
         $project->addUserId($user->id, Role::$guest->id);
         $project2->addUserId($user->id, Role::$admin->id);
 
-        $this->visit("projects")->seePageIs('auth/login');
+        $this->visit("projects")->seePageIs('login');
 
         $this->be($user);
         $this->get("projects")->assertResponseOk();
