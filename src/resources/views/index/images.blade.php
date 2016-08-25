@@ -5,11 +5,10 @@
         @else
             <div title="@{{isInLabelMode() ? 'Attach the selected label' : ''}}" data-ng-click="handleClick($event)">
         @endif
-                <div class="transect-figure__flags" data-ng-show="hasFlag()">
-                    <span class="figure-flag" title="This image matches the filter rules"></span>
-                </div>
-                <img src="{{ asset(config('thumbnails.empty_url')) }}" data-ng-src="{{ url('api/v1/images/') }}/@{{ id }}/thumb" data-fallback-src="{{ asset(config('thumbnails.empty_url')) }}">
-                {{--<img src="{{ asset(config('thumbnails.empty_url')) }}" data-ng-src="{{ url('thumbs/') }}/@{{ id }}.jpg" data-fallback-src="{{ asset(config('thumbnails.empty_url')) }}">--}}
+            <div class="transect-figure__flags" data-ng-show="hasFlag()">
+                <span class="figure-flag" title="This image matches the filter rules"></span>
+            </div>
+            <img src="{{ asset(config('thumbnails.empty_url')) }}" data-ng-src="{{  asset(config('thumbnails.uri')) }}/@{{uuid}}.{{ config('thumbnails.format') }}" data-fallback-src="{{ asset(config('thumbnails.empty_url')) }}">
         @if (Route::has('annotate'))
             </a>
         @else

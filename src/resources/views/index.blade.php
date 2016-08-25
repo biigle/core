@@ -6,7 +6,9 @@
 @push('scripts')
     <script src="{{ asset('vendor/transects/scripts/main.js') }}"></script>
     <script type="text/javascript">
-        angular.module('dias.transects').constant('TRANSECT_IMAGES', {{$imageIds}});
+        {{-- Add image IDs as array, too, because the ordering is important! --}}
+        angular.module('dias.transects').constant('TRANSECT_IMAGES', {!!$imageIds->keys()!!});
+        angular.module('dias.transects').constant('IMAGES_UUIDS', {!!$imageIds!!});
         angular.module('dias.transects').constant('TRANSECT_ID', {{$transect->id}});
         angular.module('dias.transects').constant('THUMB_DIMENSION', {WIDTH: {{config('thumbnails.width')}}, HEIGHT: {{config('thumbnails.height')}} });
         angular.module('dias.transects').constant('USER_ID', {{$user->id}});

@@ -71,7 +71,7 @@ class TransectController extends Controller
 
         $imageIds = $transect->images()
             ->orderBy('filename', 'asc')
-            ->pluck('id');
+            ->pluck('uuid', 'id');
 
         return view('transects::index')
             ->with('user', $user)
