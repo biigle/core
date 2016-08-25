@@ -15,8 +15,16 @@ class ImageTest extends ModelTestCase
         $this->assertNotNull($this->model->transect_id);
         $this->assertNotNull($this->model->thumbPath);
         $this->assertNotNull($this->model->url);
+        $this->assertNotNull($this->model->uuid);
         $this->assertNull($this->model->created_at);
         $this->assertNull($this->model->updated_at);
+    }
+
+    public function testThumbPath()
+    {
+        $path = $this->model->thumbPath;
+        $contains = $this->model->uuid.'.'.config('thumbnails.format');
+        $this->assertContains($contains, $path);
     }
 
     public function testHiddenAttributes()
@@ -42,6 +50,9 @@ class ImageTest extends ModelTestCase
 
     public function testTransectOnDeleteCascade()
     {
+        if ($this->isSqlite()) {
+            $this->markTestSkipped('Can\'t test with SQLite because altering foreign key constraints is not supported.');
+        }
         $this->model->transect->delete();
         $this->assertNull($this->model->fresh());
     }
@@ -98,7 +109,7 @@ class ImageTest extends ModelTestCase
     {
         Event::shouldReceive('fire')
             ->once()
-            ->with('images.cleanup', [[$this->model->id]]);
+            ->with('images.cleanup', [[$this->model->uuid]]);
         Event::shouldReceive('fire'); // catch other events
 
         $this->model->transect->delete();
@@ -129,7 +140,7 @@ class ImageTest extends ModelTestCase
     {
         Event::shouldReceive('fire')
             ->once()
-            ->with('images.cleanup', [[$this->model->id]]);
+            ->with('images.cleanup', [[$this->model->uuid]]);
         Event::shouldReceive('fire'); // catch other events
 
         $this->model->delete();

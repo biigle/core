@@ -4,6 +4,7 @@ namespace Dias;
 
 use Exception;
 use Dias\Image;
+use Ramsey\Uuid\Uuid;
 use Dias\Jobs\GenerateThumbnails;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -173,6 +174,7 @@ class Transect extends Model
      *
      * @throws QueryException If there was an error creating the images (e.g. if there were
      * duplicate filenames).
+     * @throws \Ramsey\Uuid\Exception\UnsatisfiedDependencyException If the UUID generator cannot be executed for some reason.
      *
      * @return bool
      */
@@ -180,7 +182,11 @@ class Transect extends Model
     {
         $images = [];
         foreach ($filenames as $filename) {
-            $images[] = ['filename' => $filename, 'transect_id' => $this->id];
+            $images[] = [
+                'filename' => $filename,
+                'transect_id' => $this->id,
+                'uuid' => Uuid::uuid4(),
+            ];
         }
 
         return Image::insert($images);

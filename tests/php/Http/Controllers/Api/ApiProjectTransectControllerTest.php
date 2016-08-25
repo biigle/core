@@ -168,7 +168,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         Event::shouldReceive('fire')
             ->once()
-            ->with('images.cleanup', [[$image->id]]);
+            ->with('images.cleanup', [[$image->uuid]]);
 
         Event::shouldReceive('fire'); // catch other events
 

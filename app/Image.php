@@ -2,9 +2,9 @@
 
 namespace Dias;
 
-use Illuminate\Database\Eloquent\Model;
 use Response;
 use ErrorException;
+use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
@@ -12,13 +12,6 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
  */
 class Image extends Model
 {
-    /**
-     * Image file format for the thumbnail images.
-     *
-     * @var string
-     */
-    const THUMB_FORMAT = 'jpg';
-
     /**
      * Validation rules for attaching a label to an image.
      *
@@ -138,7 +131,7 @@ class Image extends Model
      */
     public function getThumbPathAttribute()
     {
-        return config('thumbnails.storage').'/'.$this->id.'.'.self::THUMB_FORMAT;
+        return public_path(config('thumbnails.uri').'/'.$this->uuid.'.'.config('thumbnails.format'));
     }
 
     /**

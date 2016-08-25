@@ -16,7 +16,7 @@ class ImageObserver
      */
     public function deleting(Image $image)
     {
-        Event::fire('images.cleanup', [[$image->id]]);
+        Event::fire('images.cleanup', [[$image->uuid]]);
 
         return true;
     }

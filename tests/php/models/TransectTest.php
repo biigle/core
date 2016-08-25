@@ -169,4 +169,11 @@ class TransectTest extends ModelTestCase
 
         $this->model->delete();
     }
+
+    public function testCreateImagesCreatesUuids()
+    {
+        $this->model->createImages(['1.jpg']);
+        $image = $this->model->images()->first();
+        $this->assertNotNull($image->uuid);
+    }
 }

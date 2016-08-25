@@ -2,10 +2,10 @@
 
 namespace Dias\Services\Thumbnails;
 
-use Dias\Contracts\ThumbnailService;
-use Dias\Transect;
 use Dias\Image;
+use Dias\Transect;
 use InterventionImage as IImage;
+use Dias\Contracts\ThumbnailService;
 
 /**
  * The default Dias thumbnails service using the InterventionImage package
@@ -47,7 +47,7 @@ class InterventionImage implements ThumbnailService
                 // resize images proportionally
                 $constraint->aspectRatio();
             })
-            ->encode(Image::THUMB_FORMAT)
+            ->encode(config('thumbnails.format'))
             ->save($image->thumbPath)
             // free memory; very important for scaling 1000s of images!!
             ->destroy();
