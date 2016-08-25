@@ -1,7 +1,7 @@
 {
     "name": "dias/export",
     "require": {
-        "dias/projects": "^0.4.1"
+        "dias/projects": "~1.0"
     },
     "require-dev": {
     },
