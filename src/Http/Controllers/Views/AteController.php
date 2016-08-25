@@ -8,6 +8,7 @@ use Dias\Project;
 use Dias\Transect;
 use Dias\LabelTree;
 use Dias\Annotation;
+use Illuminate\Contracts\Auth\Guard;
 use Dias\Http\Controllers\Views\Controller;
 
 class AteController extends Controller
@@ -15,21 +16,23 @@ class AteController extends Controller
     /**
      * Show the the ATE view for a transect
      *
+     * @param Guard $auth
      * @param int $id Transect ID
      * @return \Illuminate\Http\Response
      */
-    public function indexTransect($id)
+    public function indexTransect(Guard $auth, $id)
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('edit-in', $transect);
+        $user = $auth->user();
 
-        if ($this->user->isAdmin) {
+        if ($user->isAdmin) {
             // admins have no restrictions
             $projects = $transect->projects;
         } else {
             // all projects that the user and the transect have in common
             // and where the user is editor or admin
-            $projects = $this->user->projects()
+            $projects = $user->projects()
                 ->whereIn('id', function ($query) use ($transect) {
                     $query->select('project_transect.project_id')
                         ->from('project_transect')
@@ -51,7 +54,7 @@ class AteController extends Controller
             ->get();
 
         return view('ate::index', [
-            'user' => $this->user,
+            'user' => $user,
             'transect' => $transect,
             'projects' => $projects,
             'labelTrees' => $labelTrees,
@@ -61,13 +64,15 @@ class AteController extends Controller
     /**
      * Show the ATE view for a project
      *
+     * @param Guard $auth
      * @param int $id Project ID
      * @return \Illuminate\Http\Response
      */
-    public function indexProject($id)
+    public function indexProject(Guard $auth, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('edit-in', $project);
+        $user = $auth->user();
 
         $labelTrees = $project->labelTrees()
             ->with('labels')
@@ -75,7 +80,7 @@ class AteController extends Controller
             ->get();
 
         return view('ate::project', [
-            'user' => $this->user,
+            'user' => $user,
             'project' => $project,
             'labelTrees' => $labelTrees,
         ]);

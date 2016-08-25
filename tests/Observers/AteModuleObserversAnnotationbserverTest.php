@@ -21,8 +21,6 @@ class AteModuleObserversAnnotationObserverTest extends TestCase
     public function testSaved()
     {
         $annotation = AnnotationTest::create();
-        // clear
-        $this->dispatchedJobs = [];
         $this->expectsJobs(GenerateAnnotationPatch::class);
         $annotation->save();
     }

@@ -9,6 +9,8 @@ use Dias\Project;
 use Dias\Transect;
 use Dias\Annotation;
 use Dias\AnnotationLabel;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 use Dias\Http\Controllers\Api\Controller;
 use Dias\Modules\Ate\Jobs\RemoveAnnotationPatches;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -72,17 +74,21 @@ class AteController extends Controller
      *    }
      * }
      *
+     * @param Request $request
+     * @param Guard $auth
      * @param int $id Transect ID
      * @return \Illuminate\Http\Response
      */
-    public function saveTransect($id)
+    public function saveTransect(Request $request, Guard $auth, $id)
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('edit-in', $transect);
-        $this->validateAteInput();
+        $this->validateAteInput($request);
 
-        $dismissed = $this->request->input('dismissed', []);
-        $changed = $this->request->input('changed', []);
+        $user = $auth->user();
+
+        $dismissed = $request->input('dismissed', []);
+        $changed = $request->input('changed', []);
 
         $affectedAnnotations = $this->getAffectedAnnotations($dismissed, $changed);
 
@@ -90,13 +96,13 @@ class AteController extends Controller
             abort(400, 'All annotations must belong to the specified transect.');
         }
 
-        if ($this->user->isAdmin) {
+        if ($user->isAdmin) {
             // admins have no restrictions
             $projects = $transect->projects()->pluck('id');
         } else {
             // all projects that the user and the transect have in common
             // and where the user is editor or admin
-            $projects = $this->user->projects()
+            $projects = $user->projects()
                 ->whereIn('id', function ($query) use ($transect) {
                     $query->select('project_transect.project_id')
                         ->from('project_transect')
@@ -117,7 +123,7 @@ class AteController extends Controller
             throw new AuthorizationException('You may only attach labels that belong to one of the label trees available for the specified transect.');
         }
 
-        $this->save($dismissed, $changed);
+        $this->save($user, $dismissed, $changed);
 
         // remove annotations that now have no more labels attached
         $toDelete = Annotation::whereIn('id', $affectedAnnotations)
@@ -144,19 +150,21 @@ class AteController extends Controller
      * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of annotations from which this label should be detached.
      * @apiParam (Optional arguments) {Object} changed Map from annotation ID to a label ID that should be attached to the annotation.
      *
+     * @param Request $request
+     * @param Guard $auth
      * @param int $id Project ID
      * @return \Illuminate\Http\Response
      */
-    public function saveProject($id)
+    public function saveProject(Request $request, Guard $auth, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('edit-in', $project);
-        $this->validateAteInput();
+        $this->validateAteInput($request);
 
         $transectIds = $project->transects()->pluck('id');
 
-        $dismissed = $this->request->input('dismissed', []);
-        $changed = $this->request->input('changed', []);
+        $dismissed = $request->input('dismissed', []);
+        $changed = $request->input('changed', []);
 
         $affectedAnnotations = $this->getAffectedAnnotations($dismissed, $changed);
 
@@ -171,7 +179,7 @@ class AteController extends Controller
             throw new AuthorizationException('You may only attach labels that belong to one of the label trees available for the project.');
         }
 
-        $this->save($dismissed, $changed);
+        $this->save($auth->user(), $dismissed, $changed);
 
         // remove annotations that now have no more labels attached
         $toDelete = Annotation::join('images', 'images.id', '=', 'annotations.image_id')
@@ -194,10 +202,12 @@ class AteController extends Controller
 
     /**
      * Validates the input for saving an ATE session
+     *
+     * @param Request $request
      */
-    protected function validateAteInput()
+    protected function validateAteInput(Request $request)
     {
-        $this->validate($this->request, [
+        $this->validate($request, [
             'dismissed' => 'array',
             'changed' => 'array',
         ]);
@@ -255,12 +265,13 @@ class AteController extends Controller
      *
      * Removes the dismissed annotation labels and creates the changed annotation labels.
      *
+     * @param \Dias\User $user
      * @param array $dismissed Array of all dismissed annotation IDs for each label
      * @param array $changed Array of IDs of changed annotations
      */
-    protected function save($dismissed, $changed)
+    protected function save($user, $dismissed, $changed)
     {
-        $userId = $this->user->id;
+        $userId = $user->id;
         // remove dismissed annotation labels
         foreach ($dismissed as $labelId => $annotationIds) {
             AnnotationLabel::whereIn('annotation_id', $annotationIds)
@@ -271,7 +282,7 @@ class AteController extends Controller
 
         // create new 'changed' annotation labels
         $newAnnotationLabels = [];
-        $now = new \Carbon\Carbon;
+        $now = \Carbon\Carbon::now();
 
         // Get all labels that are already there exactly like they should be created
         // in the next step.
@@ -296,8 +307,8 @@ class AteController extends Controller
         $alreadyThere = $alreadyThereQuery->get();
 
         foreach ($changed as $annotationId => $labelId) {
-            $skip = !$alreadyThere->whereLoose('annotation_id', $annotationId)
-                ->whereLoose('label_id', $labelId)
+            $skip = !$alreadyThere->where('annotation_id', $annotationId)
+                ->where('label_id', $labelId)
                 ->isEmpty();
 
             if ($skip) {

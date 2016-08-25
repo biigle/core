@@ -5,6 +5,7 @@ namespace Dias\Modules\Ate\Http\Controllers\Api;
 use Dias\Project;
 use Dias\Transect;
 use Dias\Annotation;
+use Illuminate\Http\Request;
 use Dias\Http\Controllers\Api\Controller;
 
 class ProjectsAnnotationsController extends Controller
@@ -21,16 +22,17 @@ class ProjectsAnnotationsController extends Controller
      * @apiPermission projectMember
      * @apiDescription Returns a list of annotation IDs
      *
+     * @param Request $request
      * @param  int  $pid Project ID
      * @param int $lid Label ID
      * @return \Illuminate\Http\Response
      */
-    public function filter($pid, $lid)
+    public function filter(Request $request, $pid, $lid)
     {
         $project = Project::findOrFail($pid);
         $this->authorize('access', $project);
-        $this->validate($this->request, ['take' => 'integer']);
-        $take = $this->request->input('take');
+        $this->validate($request, ['take' => 'integer']);
+        $take = $request->input('take');
 
         return Annotation::join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
             ->whereIn('annotations.image_id', function ($query) use ($pid) {
