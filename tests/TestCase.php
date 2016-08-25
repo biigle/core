@@ -4,6 +4,8 @@ use Dias\Transect;
 
 class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
+    protected static $pdo;
+
     protected $baseUrl = 'http://localhost';
 
     /**
@@ -13,25 +15,21 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     {
         parent::setUp();
 
-        // activate sqlite foreign key integrity checks on SQLite
-        if ($this->isSqlite()) {
-            DB::statement('PRAGMA foreign_keys = ON;');
+        // reuse connection, else too many tests will reach the connection limit
+        if (!static::$pdo) {
+            if ($this->isSqlite()) {
+                // activate foreign key integrity checks on SQLite
+                DB::statement('PRAGMA foreign_keys = ON;');
+            }
+            static::$pdo = DB::getPdo();
             $this->artisan('migrate');
         } else {
-            // in case the real DB connection should be tested
+            DB::setPdo(static::$pdo);
             $this->artisan('migrate:refresh');
         }
 
         // $this->withoutEvents();
         $this->withoutJobs();
-    }
-
-    public function tearDown()
-    {
-        if (!$this->isSqlite()) {
-            DB::disconnect();
-        }
-        parent::tearDown();
     }
 
     /**

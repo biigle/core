@@ -47,7 +47,11 @@ class AddImagesUuidColumn extends Migration
     public function down()
     {
         Schema::table('images', function (Blueprint $table) {
+            // do this in its own transaction, else it would clash with dropColumn
             $table->dropUnique('images_uuid_unique');
+        });
+
+        Schema::table('images', function (Blueprint $table) {
             $table->dropColumn('uuid');
         });
     }

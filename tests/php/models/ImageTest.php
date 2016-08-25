@@ -51,7 +51,7 @@ class ImageTest extends ModelTestCase
     public function testTransectOnDeleteCascade()
     {
         if ($this->isSqlite()) {
-            $this->markTestSkipped('Can\'t test wit SQLite because altering foreign key constraints is not supported.');
+            $this->markTestSkipped('Can\'t test with SQLite because altering foreign key constraints is not supported.');
         }
         $this->model->transect->delete();
         $this->assertNull($this->model->fresh());

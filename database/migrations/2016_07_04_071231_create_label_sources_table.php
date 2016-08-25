@@ -89,8 +89,15 @@ class CreateLabelSourcesTable extends Migration
         });
 
         Schema::table('labels', function (Blueprint $table) {
+            // do this in its own transaction, else it would clash with dropColumn
             $table->dropForeign('labels_label_source_id_foreign');
+        });
+
+        Schema::table('labels', function (Blueprint $table) {
             $table->dropColumn('label_source_id');
+        });
+
+        Schema::table('labels', function (Blueprint $table) {
             $table->dropColumn('source_id');
         });
 

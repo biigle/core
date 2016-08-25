@@ -29,10 +29,6 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
         $this->get('/api/v1/annotations/1/labels');
         $this->assertResponseOk();
 
-        $this->beGuest();
-        $this->get('/api/v1/annotations/1/labels');
-
-        $this->assertResponseOk();
         $content = $this->response->getContent();
         $this->assertStringStartsWith('[{', $content);
         $this->assertStringEndsWith('}]', $content);
