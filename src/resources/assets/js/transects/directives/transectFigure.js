@@ -11,7 +11,7 @@ angular.module('dias.transects').directive('transectFigure', function () {
         return {
             restrict: 'A',
 
-            controller: function ($scope, labels, filter, msg, $timeout, images) {
+            controller: function ($scope, labels, filter, msg, $timeout, images, IMAGES_UUIDS) {
                 var saved = false;
                 var saving = false;
                 var error = false;
@@ -35,6 +35,8 @@ angular.module('dias.transects').directive('transectFigure', function () {
                     error = true;
                     msg.responseError(response);
                 };
+
+                $scope.uuid = IMAGES_UUIDS[$scope.id];
 
                 $scope.hasFlag = function () {
                     return filter.hasFlag($scope.id);
