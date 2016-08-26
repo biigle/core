@@ -10,6 +10,7 @@
         "ext-pgsql": "*",
         "ext-gd": "*",
         "ext-exif": "*",
+        "ext-pcntl": "*",
         "laravel/framework": "5.3.*",
         "intervention/image": "~2.1",
         "ramsey/uuid": "^3.5"

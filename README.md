@@ -13,6 +13,7 @@ Additionally:
 - PHP PGSQL extension
 - PHP Fileinfo extension
 - PHP EXIF extension
+- PHP PCNTL extension
 - PHP GD Library (>=2.0)
 - PostgreSQL
 - Git
