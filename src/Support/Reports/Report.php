@@ -98,6 +98,16 @@ class Report
     }
 
     /**
+     * Get the name of the project belonging to this report
+     *
+     * @return string
+     */
+    public function getProjectName()
+    {
+        return $this->project->name;
+    }
+
+    /**
      * Get the download URL for this report.
      *
      * @return string
