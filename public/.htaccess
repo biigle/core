@@ -5,6 +5,9 @@
 
     RewriteEngine On
 
+    # Disable rewrite for directories with static files
+    RewriteRule ^(thumbs|doc|assets)($|/) - [L]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)/$ /$1 [L,R=301]
