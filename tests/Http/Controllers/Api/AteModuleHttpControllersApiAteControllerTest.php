@@ -269,4 +269,42 @@ class AteModuleHttpControllersApiAteControllerTest extends ApiTestCase {
         $this->assertEquals(1, $a1->labels()->count());
         $this->assertEquals($l2->id, $a1->labels()->first()->id);
     }
+
+    public function testAnnotationMeanwhileDeleted()
+    {
+        $id = $this->transect()->id;
+        $image = ImageTest::create(['transect_id' => $this->transect()->id]);
+        $a1 = AnnotationTest::create(['image_id' => $image->id]);
+        $a2 = AnnotationTest::create(['image_id' => $image->id]);
+
+        $l1 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $this->editor()->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+
+        $l2 = AnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $this->editor()->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+
+        $request = [
+            'dismissed' => [
+                $l1->label_id => [$a1->id, $a2->id],
+            ],
+            'changed' => [
+                $a1->id => $this->labelChild()->id,
+                $a2->id => $this->labelChild()->id,
+            ]
+        ];
+
+        // annotation was deleted during the Ate session but saving should still work
+        $a2->delete();
+
+        $this->beEditor();
+        $this->post("/api/v1/transects/{$id}/ate", $request);
+        $this->assertResponseOk();
+        $this->assertEquals($this->labelChild()->id, $a1->labels()->first()->label_id);
+    }
 }

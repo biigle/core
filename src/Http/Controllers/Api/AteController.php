@@ -306,13 +306,19 @@ class AteController extends Controller
 
         $alreadyThere = $alreadyThereQuery->get();
 
+        $existingAnnotations = Annotation::whereIn('id', array_keys($changed))
+            ->pluck('id')
+            ->toArray();
+
         foreach ($changed as $annotationId => $labelId) {
-            $skip = !$alreadyThere->where('annotation_id', $annotationId)
-                ->where('label_id', $labelId)
-                ->isEmpty();
+            // skip all new annotation labels if their annotation no longer exists
+            // or if they already exist exactly like they should be created
+            $skip = !in_array($annotationId, $existingAnnotations)
+                || !$alreadyThere->where('annotation_id', $annotationId)
+                    ->where('label_id', $labelId)
+                    ->isEmpty();
 
             if ($skip) {
-                // don't add new annotation labels if they already exist exactly the same
                 continue;
             }
 
