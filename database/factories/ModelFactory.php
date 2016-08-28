@@ -13,23 +13,24 @@
 
 $factory->define(Dias\Role::class, function ($faker) {
     return [
-        'name' => str_random(10),
+        'name' => $faker->word(),
     ];
 });
 
 $factory->define(Dias\User::class, function ($faker) {
     return [
-        'firstname' => $faker->firstName,
-        'lastname' => $faker->lastName,
-        'password' => bcrypt(str_random(10)),
-        'email' => $faker->email,
-        'remember_token' => str_random(10),
+        'firstname' => $faker->firstName(),
+        'lastname' => $faker->lastName(),
+        // 'password'
+        'password' => '$2y$10$CD13uR2iKSZ2Eyuro5H4yu9sflwe/AA2GAJsdrzRyKnkV9qaz1FaK',
+        'email' => $faker->email(),
+        'remember_token' => 'abc',
     ];
 });
 
 $factory->define(Dias\Project::class, function ($faker) {
     return [
-        'name' => str_random(10),
+        'name' => $faker->company(),
         'description' => $faker->sentence(),
         'creator_id' => function () {
             return factory(Dias\User::class)->create()->id;
@@ -39,13 +40,13 @@ $factory->define(Dias\Project::class, function ($faker) {
 
 $factory->define(Dias\MediaType::class, function ($faker) {
     return [
-        'name' => str_random(10),
+        'name' => $faker->word(),
     ];
 });
 
 $factory->define(Dias\Transect::class, function ($faker) {
     return [
-        'name' => str_random(10),
+        'name' => $faker->company(),
         'media_type_id' => function () {
             return factory(Dias\MediaType::class)->create()->id;
         },
@@ -68,7 +69,7 @@ $factory->define(Dias\Image::class, function ($faker) {
 
 $factory->define(Dias\Label::class, function ($faker) {
     return [
-        'name' => str_random(10),
+        'name' => $faker->word(),
         'color' => '0099ff',
         'parent_id' => null,
         'label_tree_id' => function () {
@@ -79,7 +80,7 @@ $factory->define(Dias\Label::class, function ($faker) {
 
 $factory->define(Dias\Shape::class, function ($faker) {
     return [
-        'name' => str_random(10),
+        'name' => $faker->word(),
     ];
 });
 
@@ -116,19 +117,20 @@ $factory->define(Dias\ApiToken::class, function ($faker) {
             return factory(Dias\User::class)->create()->id;
         },
         'purpose' => $faker->sentence(),
-        'hash' => bcrypt(str_random(10)),
+        // 'password'
+        'hash' => '$2y$10$CD13uR2iKSZ2Eyuro5H4yu9sflwe/AA2GAJsdrzRyKnkV9qaz1FaK',
     ];
 });
 
 $factory->define(Dias\Visibility::class, function ($faker) {
     return [
-        'name' => str_random(10),
+        'name' => $faker->word(),
     ];
 });
 
 $factory->define(Dias\LabelTree::class, function ($faker) {
     return [
-        'name' => str_random(10),
+        'name' => $faker->word(),
         'description' => $faker->sentence(),
         'visibility_id' => Dias\Visibility::$public->id,
     ];
@@ -150,7 +152,7 @@ $factory->define(Dias\ImageLabel::class, function ($faker) {
 
 $factory->define(Dias\LabelSource::class, function ($faker) {
     return [
-        'name' => str_random(10),
+        'name' => $faker->word(),
         'description' => $faker->sentence(),
     ];
 });
