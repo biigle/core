@@ -5,7 +5,7 @@ return [
     /*
     | Path to the Python executable.
     */
-    'python' => '/usr/bin/python',
+    'python' => '/usr/bin/env python',
 
     /*
     | Paths to the python scripts.
@@ -25,5 +25,5 @@ return [
     /*
     | Directory to store temporary files to
     */
-    'tmp_storage' => '/tmp',
+    'tmp_storage' => sys_get_temp_dir(),
 ];
