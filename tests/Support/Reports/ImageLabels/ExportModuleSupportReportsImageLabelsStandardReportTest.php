@@ -31,9 +31,9 @@ class ExportModuleSupportReportsImageLabelsStandardReportTest extends TestCase {
             ])->id
         ]);
 
-        // once for the StoredReport and one for the CsvFile
+        // for the AvailableReport
         File::shouldReceive('exists')
-            ->twice()
+            ->once()
             ->andReturn(false);
 
         $mock = Mockery::mock();

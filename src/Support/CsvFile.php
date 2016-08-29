@@ -2,6 +2,7 @@
 
 namespace Dias\Modules\Export\Support;
 
+use App;
 use File;
 
 class CsvFile
@@ -44,14 +45,19 @@ class CsvFile
     /**
      * Create a new CSV file
      *
-     * @param string $path File path
+     * @param string $path File path. If not set, a temporary file will be created.
      * @param string $delimiter Optional field delimiter
      * @param string $enclosure Optional string enclosure character
      * @param string $escape_char Oprional escape character
      */
-    public function __construct($path, $delimiter = ',', $enclosure = '"', $escape_char = '\\')
+    public function __construct($path = null, $delimiter = ',', $enclosure = '"', $escape_char = '\\')
     {
-        $this->path = $path;
+        if (is_null($path)) {
+            $this->path = tempnam(config('export.tmp_storage').'/', 'dias-export-csv-');
+        } else {
+            $this->path = $path;
+        }
+
         $this->delimiter = $delimiter;
         $this->enclosure = $enclosure;
         $this->escape_char = $escape_char;
@@ -64,17 +70,13 @@ class CsvFile
     }
 
     /**
-     * Creates a new CsvFile in the temporary storage
+     * Creates a new temporary CsvFile
      *
      * @return CsvFile
      */
     public static function makeTmp()
     {
-        do {
-            $path = uniqid(config('export.tmp_storage').'/');
-        } while (File::exists($path));
-
-        return app()->make(self::class, [$path]);
+        return App::make(static::class);
     }
 
     /**
@@ -94,26 +96,6 @@ class CsvFile
     {
         $this->close();
         File::delete($this->path);
-    }
-
-    /**
-     * Return the basename of this file
-     *
-     * @return string
-     */
-    public function basename()
-    {
-        return File::basename($this->path);
-    }
-
-    /**
-     * Return the dirname of this file
-     *
-     * @return string
-     */
-    public function dirname()
-    {
-        return File::dirname($this->path);
     }
 
     /**

@@ -20,9 +20,9 @@ class ExportModuleSupportReportsAnnotationsFullReportTest extends TestCase {
         $al->annotation->image->attrs = ['image' => 'attrs'];
         $al->annotation->image->save();
 
-        // once for the StoredReport and one for the CsvFile
+        // for the AvailableReport
         File::shouldReceive('exists')
-            ->twice()
+            ->once()
             ->andReturn(false);
 
         $mock = Mockery::mock();

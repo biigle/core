@@ -25,9 +25,9 @@ class ExportModuleSupportReportsAnnotationsBasicReportTest extends TestCase {
 
         $al2 = AnnotationLabelTest::create(['annotation_id' => $al->annotation_id]);
 
-        // once for the StoredReport and one for the CsvFile
+        // for the AvailableReport
         File::shouldReceive('exists')
-            ->twice()
+            ->once()
             ->andReturn(false);
 
         $mock = Mockery::mock();
