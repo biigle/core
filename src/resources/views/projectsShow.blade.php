@@ -1,5 +1,6 @@
 <div class="panel panel-default" data-ng-controller="ExportController">
-    <div class="panel-heading">
+    <div class="panel-heading clearfix">
+        <a href="{{route('manual-tutorials-export', 'reports-schema')}}" class="pull-right" title="Show more information on reports" target="_blank"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>
         Reports
     </div>
     <div class="panel-body" data-ng-switch="isRequested()">

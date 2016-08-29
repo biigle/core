@@ -39,6 +39,7 @@ class ExportServiceProvider extends ServiceProvider {
         $modules->addMixin('export', 'projectsShowScripts');
         $modules->addMixin('export', 'annotationsSettings');
         $modules->addMixin('export', 'annotationsScripts');
+        $modules->addMixin('export', 'manualTutorial');
     }
 
     /**

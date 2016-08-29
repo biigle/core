@@ -11,6 +11,7 @@ elixir(function (mix) {
 	// mix.sass('main.scss', 'public/assets/styles/main.css');
 	mix.angular('resources/assets/js/projects/', 'public/assets/scripts', 'projects.js');
     mix.angular('resources/assets/js/annotations/', 'public/assets/scripts', 'annotations.js');
+
     mix.task('publish', 'public/assets/**/*');
 });
 
