@@ -3,13 +3,14 @@
 namespace Dias\Modules\Export\Support\Reports\Annotations;
 
 use DB;
-use App;
 use Dias\Project;
-use Dias\Modules\Export\Support\Exec;
 use Dias\Modules\Export\Support\CsvFile;
+use Dias\Modules\Export\Support\Reports\ExecutesPythonScript;
 
 class BasicReport extends AnnotationReport
 {
+    use ExecutesPythonScript;
+
     /**
      * Create an image label report instance.
      *
@@ -55,7 +56,7 @@ class BasicReport extends AnnotationReport
             $csv->close();
         }
 
-        $this->executeScript();
+        $this->executeScript('basic_report');
     }
 
     /**
@@ -77,26 +78,5 @@ class BasicReport extends AnnotationReport
             })
             ->select(DB::raw('labels.name, labels.color, count(labels.id) as count'))
             ->groupBy('labels.id');
-    }
-
-    /**
-     * Execute the external report parsing script
-     */
-    protected function executeScript()
-    {
-        $python = config('export.python');
-        $script = config('export.scripts.basic_report');
-
-        $csvs = implode(' ', array_map(function ($csv) {
-            return $csv->path;
-        }, $this->tmpFiles));
-
-        $exec = App::make(Exec::class, [
-            'command' => "{$python} {$script} \"{$this->project->name}\" {$this->availableReport->path} {$csvs}",
-        ]);
-
-        if ($exec->code !== 0) {
-            throw new \Exception("Basic annotation report generation failed with exit code {$exec->code}:\n".implode("\n", $exec->lines));
-        }
     }
 }

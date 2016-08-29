@@ -14,10 +14,11 @@
                     <option value="1">annotations (extended)</option>
                     <option value="2">annotations (full)</option>
                     <option value="3">annotations (csv)</option>
-                    <option value="4">image labels</option>
+                    <option value="4">image labels (basic)</option>
+                    <option value="5">image labels (csv)</option>
                 </select>
             </div>
-            <div class="checkbox ng-cloak" data-ng-if="canBeRestricted()">
+            <div class="checkbox" data-ng-if="canBeRestricted()">
                 <label>
                     <input type="checkbox" data-ng-model="selected.restrict" title="Discard annotations outside of the annotation area"> Restrict to export area
                 </label>
@@ -39,7 +40,10 @@
                     The CSV annotation report is intended for subsequent processing and lists the annotation labels of all transects of this project at the highest possible resolution (as CSV files in a ZIP archive).
                 </div>
                 <div class="help-block ng-cloak" data-ng-switch-when="4">
-                    The image label report lists the image labels of all images of all transects of this project (as XLSX).
+                    The basic image label report lists the image labels of all images of all transects of this project (as XLSX).
+                </div>
+                <div class="help-block ng-cloak" data-ng-switch-when="5">
+                    The CSV image label report is intended for subsequent processing and lists the image labels of all transects of this project at the highest possible resolution (as CSV files in a ZIP archive).
                 </div>
             </div>
             <div class="ng-cloak help-block" data-ng-if="selected.restrict && canBeRestricted()">

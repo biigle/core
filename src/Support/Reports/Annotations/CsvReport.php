@@ -3,15 +3,14 @@
 namespace Dias\Modules\Export\Support\Reports\Annotations;
 
 use DB;
-use App;
-use Exception;
-use ZipArchive;
 use Dias\Project;
-use Illuminate\Support\Str;
 use Dias\Modules\Export\Support\CsvFile;
+use Dias\Modules\Export\Support\Reports\MakesZipArchives;
 
 class CsvReport extends AnnotationReport
 {
+    use MakesZipArchives;
+
     /**
      * Create an image label report instance.
      *
@@ -64,23 +63,7 @@ class CsvReport extends AnnotationReport
             $csv->close();
         }
 
-        $zip = App::make(ZipArchive::class);
-        $open = $zip->open($this->availableReport->path, ZipArchive::CREATE);
-
-        if ($open !== true) {
-            throw new Exception("Could not open ZIP file '{$this->availableReport->path}'.");
-        }
-
-        try {
-            foreach ($transects as $id => $name) {
-                $zip->addFile(
-                    $this->tmpFiles[$id]->path,
-                    $id.'_'.Str::slug($name).'.csv'
-                );
-            }
-        } finally {
-            $zip->close();
-        }
+        $this->makeZip($transects);
     }
 
     /**

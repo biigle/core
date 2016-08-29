@@ -14,8 +14,9 @@ angular.module('dias.projects').controller('ExportController', function ($scope,
             'basic annotation',
             'extended annotation',
             'full annotation',
-            'csv annotation',
-            'image label'
+            'annotation CSV',
+            'basic image label',
+            'image label CSV'
         ];
 
         var resources = [
@@ -23,7 +24,8 @@ angular.module('dias.projects').controller('ExportController', function ($scope,
             Report.getExtended,
             Report.getFull,
             Report.getCsv,
-            Report.getImageLabel
+            Report.getImageLabel,
+            Report.getImageLabelCsv
         ];
 
         // all reports that can have the "restrict to export area" option

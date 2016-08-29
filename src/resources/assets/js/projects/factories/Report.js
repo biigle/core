@@ -27,6 +27,7 @@ angular.module('dias.projects').factory('Report', function ($resource, URL) {
         getExtended: {method: 'POST', params: {type: 'annotations/extended'}},
         getFull: {method: 'POST', params: {type: 'annotations/full'}},
         getCsv: {method: 'POST', params: {type: 'annotations/csv'}},
-        getImageLabel: {method: 'POST', params: {type: 'image-labels/standard'}}
+        getImageLabel: {method: 'POST', params: {type: 'image-labels/basic'}},
+        getImageLabelCsv: {method: 'POST', params: {type: 'image-labels/csv'}}
     });
 });

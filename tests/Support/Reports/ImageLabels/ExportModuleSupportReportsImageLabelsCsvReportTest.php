@@ -2,9 +2,9 @@
 
 use Dias\Modules\Export\Support\Exec;
 use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\ImageLabels\StandardReport;
+use Dias\Modules\Export\Support\Reports\ImageLabels\CsvReport;
 
-class ExportModuleSupportReportsImageLabelsStandardReportTest extends TestCase {
+class ExportModuleSupportReportsImageLabelsCsvReportTest extends TestCase {
 
     public function testGenerateReport()
     {
@@ -20,17 +20,6 @@ class ExportModuleSupportReportsImageLabelsStandardReportTest extends TestCase {
             ])->id
         ]);
 
-        $il2 = ImageLabelTest::create([
-            'image_id' => $il->image_id,
-        ]);
-
-        $il3 = ImageLabelTest::create([
-            'image_id' => ImageTest::create([
-                'transect_id' => $transect->id,
-                'filename' => 'bar.jpg',
-            ])->id
-        ]);
-
         // for the AvailableReport
         File::shouldReceive('exists')
             ->once()
@@ -41,15 +30,16 @@ class ExportModuleSupportReportsImageLabelsStandardReportTest extends TestCase {
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$transect->name]);
-
-        $mock->shouldReceive('put')
-            ->once()
-            ->with([$il->image->id, $il->image->filename, "{$il->label->name}, {$il2->label->name}"]);
-
-        $mock->shouldReceive('put')
-            ->once()
-            ->with([$il3->image->id, $il3->image->filename, $il3->label->name]);
+            ->with([
+                $il->id,
+                $il->image_id,
+                $il->image->filename,
+                $il->user_id,
+                $il->user->firstname,
+                $il->user->lastname,
+                $il->label_id,
+                $il->label->name,
+            ]);
 
         $mock->shouldReceive('close')
             ->once();
@@ -59,11 +49,18 @@ class ExportModuleSupportReportsImageLabelsStandardReportTest extends TestCase {
         });
 
         $mock = Mockery::mock();
-        $mock->code = 0;
-        App::singleton(Exec::class, function () use ($mock) {
+
+        $mock->shouldReceive('open')
+            ->once()
+            ->andReturn(true);
+
+        $mock->shouldReceive('addFile')->once();
+        $mock->shouldReceive('close')->once();
+
+        App::singleton(ZipArchive::class, function () use ($mock) {
             return $mock;
         });
 
-        with(new StandardReport($project))->generateReport();
+        with(new CsvReport($project))->generateReport();
     }
 }

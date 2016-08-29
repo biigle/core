@@ -25,7 +25,7 @@
             The bars of the plot are color-coded based on the colors of the labels they represent. If any label occurs more than a hundred times, a logarithmic scale is applied for the transect.
         </p>
 
-        <h4>Extended</h4>
+        <h4><a name="annotation-extended-report"></a>Extended</h4>
 
         <p>
             The extended annotation report is an XLSX spreadsheet with one sheet for every transect of the project. Transects without annotations are ommitted. The report contains a list of the abundances of each label <em>per image</em>.
@@ -42,7 +42,7 @@
         <h4>Full</h4>
 
         <p>
-            The full annotation report is an XLSX spreadsheet similar to the extended report. It contains a list of all annotations and their labels for each transect.
+            The full annotation report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended report</a>. It contains a list of all annotations and their labels for each transect.
         </p>
         <p>
             Each sheet contains the name of the transect as the first line. The columns are as follows:
@@ -77,12 +77,12 @@
             </li>
         </ul>
 
-        <h4>CSV</h4>
+        <h4><a name="annotation-csv-report"></a>CSV</h4>
         <p>
             The CSV report is intended for subsequent processing. If you want the data in a machine readable format, choose this report. The report is a ZIP archive, containing a CSV file for each transect of the project. Each CSV file name consists of the transect ID and the transect name (cleaned up so it can be a file name) separated by an underscore.
         </p>
         <p>
-            The CSV files contain one row for each annotation label. Since an annotation can have multiple labels, there may be multiple rows for a single annotation. The columns are as follows:
+            The CSV files contains one row for each annotation label. Since an annotation can have multiple labels, there may be multiple rows for a single annotation. The columns are as follows:
         </p>
         <ol>
             <li>Annotation label ID (not the annotation ID)</li>
@@ -106,13 +106,32 @@
         </p>
 
         <h3>Image label report</h3>
+        <h4>Basic</h4>
         <p>
-            The image label report is an XLSX spreadsheet similar to the extended annotation report. It contains a list of all labels attached to each image of a transect. The columns are as follows:
+            The basic image label report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended annotation report</a>. It contains a list of all labels attached to each image of a transect. The columns are as follows:
         </p>
         <ol>
             <li>Image ID</li>
             <li>Image filename</li>
             <li>Comma separated list of label names</li>
+        </ol>
+
+        <h4>CSV</h4>
+        <p>
+            The CSV report is similar to the <a href="#annotation-csv-report">annotation CSV report</a>. If you want the data in a machine readable format, choose this report.
+        </p>
+        <p>
+            The CSV files contains one row for each image label. Since an image can have multiple different labels, there may be multiple rows for a single image. The columns are as follows:
+        </p>
+        <ol>
+            <li>Image label ID</li>
+            <li>Image ID</li>
+            <li>Image filename</li>
+            <li>ID of the user who attached the image label</li>
+            <li>User firstname</li>
+            <li>User lastname</li>
+            <li>Label ID</li>
+            <li>Label name</li>
         </ol>
     </div>
 @endsection

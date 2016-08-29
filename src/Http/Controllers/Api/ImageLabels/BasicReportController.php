@@ -6,9 +6,9 @@ use Dias\Project;
 use Illuminate\Contracts\Auth\Guard;
 use Dias\Http\Controllers\Api\Controller;
 use Dias\Modules\Export\Jobs\GenerateReportJob;
-use Dias\Modules\Export\Support\Reports\ImageLabels\StandardReport;
+use Dias\Modules\Export\Support\Reports\ImageLabels\BasicReport;
 
-class StandardReportController extends Controller
+class BasicReportController extends Controller
 {
     /**
      * Generate an image label report
@@ -28,8 +28,6 @@ class StandardReportController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
-        $this->dispatch(
-            new GenerateReportJob(new StandardReport($project), $auth->user())
-        );
+        $this->dispatch(new GenerateReportJob(new BasicReport($project), $auth->user()));
     }
 }

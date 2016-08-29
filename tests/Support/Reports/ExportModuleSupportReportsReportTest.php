@@ -44,7 +44,7 @@ class ReportThrowNoExceptionStub extends Report
     public function __construct($project)
     {
         parent::__construct($project);
-        $this->filename = 'ab_cd';
+        $this->filename = 'ab_cd_report';
         $this->extension = 'txt';
     }
 

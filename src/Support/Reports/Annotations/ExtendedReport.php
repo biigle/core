@@ -3,13 +3,14 @@
 namespace Dias\Modules\Export\Support\Reports\Annotations;
 
 use DB;
-use App;
 use Dias\Project;
-use Dias\Modules\Export\Support\Exec;
 use Dias\Modules\Export\Support\CsvFile;
+use Dias\Modules\Export\Support\Reports\ExecutesPythonScript;
 
 class ExtendedReport extends AnnotationReport
 {
+    use ExecutesPythonScript;
+
     /**
      * Create an image label report instance.
      *
@@ -56,7 +57,7 @@ class ExtendedReport extends AnnotationReport
             $csv->close();
         }
 
-        $this->executeScript();
+        $this->executeScript('extended_report');
     }
 
     /**
@@ -82,26 +83,5 @@ class ExtendedReport extends AnnotationReport
             // order by is essential for chunking!
             ->orderBy('images.id')
             ->orderBy('labels.id');
-    }
-
-    /**
-     * Execute the external report parsing script
-     */
-    protected function executeScript()
-    {
-        $python = config('export.python');
-        $script = config('export.scripts.extended_report');
-
-        $csvs = implode(' ', array_map(function ($csv) {
-            return $csv->path;
-        }, $this->tmpFiles));
-
-        $exec = App::make(Exec::class, [
-            'command' => "{$python} {$script} \"{$this->project->name}\" {$this->availableReport->path} {$csvs}",
-        ]);
-
-        if ($exec->code !== 0) {
-            throw new \Exception("Extended annotation report generation failed with exit code {$exec->code}:\n".implode("\n", $exec->lines));
-        }
     }
 }

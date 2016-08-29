@@ -3,14 +3,15 @@
 namespace Dias\Modules\Export\Support\Reports\ImageLabels;
 
 use DB;
-use App;
 use Dias\Project;
-use Dias\Modules\Export\Support\Exec;
 use Dias\Modules\Export\Support\CsvFile;
 use Dias\Modules\Export\Support\Reports\Report;
+use Dias\Modules\Export\Support\Reports\ExecutesPythonScript;
 
-class StandardReport extends Report
+class BasicReport extends Report
 {
+    use ExecutesPythonScript;
+
     /**
      * Create an image label report instance.
      *
@@ -19,8 +20,8 @@ class StandardReport extends Report
     public function __construct(Project $project)
     {
         parent::__construct($project);
-        $this->name = 'image label report';
-        $this->filename = 'image_label_report';
+        $this->name = 'standard image label report';
+        $this->filename = 'standard_image_label_report';
         $this->extension = 'xlsx';
     }
 
@@ -57,7 +58,7 @@ class StandardReport extends Report
             $csv->close();
         }
 
-        $this->executeScript();
+        $this->executeScript('image_labels_standard_report');
     }
 
     /**
@@ -74,26 +75,5 @@ class StandardReport extends Report
             ->select('images.id', 'images.filename', 'labels.name')
             ->where('images.transect_id', $id)
             ->orderBy('images.filename');
-    }
-
-    /**
-     * Execute the external report parsing script
-     */
-    protected function executeScript()
-    {
-        $python = config('export.python');
-        $script = config('export.scripts.image_labels_standard_report');
-
-        $csvs = implode(' ', array_map(function ($csv) {
-            return $csv->path;
-        }, $this->tmpFiles));
-
-        $exec = App::make(Exec::class, [
-            'command' => "{$python} {$script} \"{$this->project->name}\" {$this->availableReport->path} {$csvs}",
-        ]);
-
-        if ($exec->code !== 0) {
-            throw new \Exception("Standard image label report generation failed with exit code {$exec->code}:\n".implode("\n", $exec->lines));
-        }
     }
 }

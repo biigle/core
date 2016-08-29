@@ -22,8 +22,12 @@ $router->group([
         'uses' => 'Annotations\CsvReportController@store',
     ]);
 
-    $router->post('projects/{id}/reports/image-labels/standard', [
-        'uses' => 'ImageLabels\StandardReportController@store',
+    $router->post('projects/{id}/reports/image-labels/basic', [
+        'uses' => 'ImageLabels\BasicReportController@store',
+    ]);
+
+    $router->post('projects/{id}/reports/image-labels/csv', [
+        'uses' => 'ImageLabels\CsvReportController@store',
     ]);
 
     $router->get('transects/{id}/export-area', [
