@@ -137,6 +137,6 @@ class Report
      */
     public function getDownloadFilename()
     {
-        return "biigle_{$this->project->id}_{$this->getFilename()}_report.{$this->extension}";
+        return "biigle_{$this->project->id}_{$this->getFilename()}.{$this->extension}";
     }
 }

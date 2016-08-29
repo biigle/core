@@ -1,22 +1,22 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers\Api;
+namespace Dias\Modules\Export\Http\Controllers\Api\Annotations;
 
 use Dias\Project;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Dias\Http\Controllers\Api\Controller;
 use Dias\Modules\Export\Jobs\GenerateReportJob;
-use Dias\Modules\Export\Support\Reports\Annotations\FullReport;
+use Dias\Modules\Export\Support\Reports\Annotations\BasicReport;
 
-class FullAnnotationReportController extends Controller
+class BasicReportController extends Controller
 {
     /**
-     * Generate a full report
+     * Generate a basic report
      *
-     * @api {post} projects/:id/reports/full Generate a new full report
+     * @api {post} projects/:id/reports/basic Generate a new basic annotation report
      * @apiGroup Projects
-     * @apiName GenerateFullProjectReport
+     * @apiName GenerateBasicProjectReport
      * @apiParam (Optional arguments) {Boolean} restrict If `1`, restrict the report to the export area defined for the individual transects.
      * @apiPermission projectMember
      *
@@ -33,7 +33,7 @@ class FullAnnotationReportController extends Controller
         $this->authorize('access', $project);
         $this->validate($request, ['restrict' => 'boolean']);
         $this->dispatch(new GenerateReportJob(
-            new FullReport($project, (bool) $request->input('restrict', false)),
+            new BasicReport($project, (bool) $request->input('restrict', false)),
             $auth->user()
         ));
     }

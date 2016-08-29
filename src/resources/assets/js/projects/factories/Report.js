@@ -23,9 +23,10 @@ angular.module('dias.projects').factory('Report', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/projects/:project_id/reports/:type', {}, {
-        getBasic: {method: 'POST', params: {type: 'basic'}},
-        getExtended: {method: 'POST', params: {type: 'extended'}},
-        getFull: {method: 'POST', params: {type: 'full'}},
-        getImageLabel: {method: 'POST', params: {type: 'image-labels'}}
+        getBasic: {method: 'POST', params: {type: 'annotations/basic'}},
+        getExtended: {method: 'POST', params: {type: 'annotations/extended'}},
+        getFull: {method: 'POST', params: {type: 'annotations/full'}},
+        getCsv: {method: 'POST', params: {type: 'annotations/csv'}},
+        getImageLabel: {method: 'POST', params: {type: 'image-labels/standard'}}
     });
 });

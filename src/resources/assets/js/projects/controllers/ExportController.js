@@ -10,19 +10,24 @@ angular.module('dias.projects').controller('ExportController', function ($scope,
 
         var requested = false;
 
-        var types = {
-            'basic annotation': Report.getBasic,
-            'extended annotation': Report.getExtended,
-            'full annotation': Report.getFull,
-            'image label': Report.getImageLabel
-        };
-
-        // all reports that can have the "restrict to export area" option
-        var restrictable = [
+        var names = [
             'basic annotation',
             'extended annotation',
-            'full annotation'
+            'full annotation',
+            'csv annotation',
+            'image label'
         ];
+
+        var resources = [
+            Report.getBasic,
+            Report.getExtended,
+            Report.getFull,
+            Report.getCsv,
+            Report.getImageLabel
+        ];
+
+        // all reports that can have the "restrict to export area" option
+        var restrictable = [0, 1, 2, 3];
 
         var handleSuccess = function () {
             requested = true;
@@ -34,16 +39,17 @@ angular.module('dias.projects').controller('ExportController', function ($scope,
         };
 
         $scope.selected = {
-            type: 'basic annotation',
+            index: 0,
+            option: '0',
             restrict: false
         };
 
         $scope.canBeRestricted = function () {
-            return restrictable.indexOf($scope.selected.type) !== -1;
+            return restrictable.indexOf($scope.selected.index) !== -1;
         };
 
         $scope.requestReport = function () {
-            if (!$scope.selected.type) return;
+            if ($scope.selected.index === undefined) return;
 
             var data = {};
 
@@ -51,11 +57,19 @@ angular.module('dias.projects').controller('ExportController', function ($scope,
                 data.restrict = $scope.selected.restrict ? '1' : '0';
             }
 
-            types[$scope.selected.type]({project_id: PROJECT.id}, data, handleSuccess, handleError);
+            resources[$scope.selected.index]({project_id: PROJECT.id}, data, handleSuccess, handleError);
         };
 
         $scope.isRequested = function () {
             return requested;
         };
+
+        $scope.getSelectedName = function () {
+            return names[$scope.selected.index];
+        };
+
+        $scope.$watch('selected.option', function (option) {
+            $scope.selected.index = parseInt(option);
+        });
     }
 );

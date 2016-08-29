@@ -6,20 +6,24 @@ $router->group([
     'middleware' => 'auth.api',
 ], function ($router) {
 
-    $router->post('projects/{id}/reports/basic', [
-        'uses' => 'BasicAnnotationReportController@store',
+    $router->post('projects/{id}/reports/annotations/basic', [
+        'uses' => 'Annotations\BasicReportController@store',
     ]);
 
-    $router->post('projects/{id}/reports/extended', [
-        'uses' => 'ExtendedAnnotationReportController@store',
+    $router->post('projects/{id}/reports/annotations/extended', [
+        'uses' => 'Annotations\ExtendedReportController@store',
     ]);
 
-    $router->post('projects/{id}/reports/full', [
-        'uses' => 'FullAnnotationReportController@store',
+    $router->post('projects/{id}/reports/annotations/full', [
+        'uses' => 'Annotations\FullReportController@store',
     ]);
 
-    $router->post('projects/{id}/reports/image-labels', [
-        'uses' => 'ImageLabelReportController@store',
+    $router->post('projects/{id}/reports/annotations/csv', [
+        'uses' => 'Annotations\CsvReportController@store',
+    ]);
+
+    $router->post('projects/{id}/reports/image-labels/standard', [
+        'uses' => 'ImageLabels\StandardReportController@store',
     ]);
 
     $router->get('transects/{id}/export-area', [

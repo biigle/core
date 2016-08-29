@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers\Api;
+namespace Dias\Modules\Export\Http\Controllers\Api\ImageLabels;
 
 use Dias\Project;
 use Illuminate\Contracts\Auth\Guard;
@@ -8,7 +8,7 @@ use Dias\Http\Controllers\Api\Controller;
 use Dias\Modules\Export\Jobs\GenerateReportJob;
 use Dias\Modules\Export\Support\Reports\ImageLabels\StandardReport;
 
-class ImageLabelReportController extends Controller
+class StandardReportController extends Controller
 {
     /**
      * Generate an image label report
