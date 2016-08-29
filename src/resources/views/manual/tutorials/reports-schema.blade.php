@@ -105,7 +105,7 @@
             The additional attributes of the image are encoded as a JSON object. The content may vary depending on the DIAS modules that are installed and the operations performed on the image (e.g. a laserpoint detection to calculate the area of an image).
         </p>
 
-        <h3>Image label report</h3>
+        <h3>Image label reports</h3>
         <h4>Basic</h4>
         <p>
             The basic image label report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended annotation report</a>. It contains a list of all labels attached to each image of a transect. The columns are as follows:
