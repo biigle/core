@@ -49,7 +49,7 @@ class Report
      *
      * @var AvailableReport
      */
-    protected $storedReport;
+    protected $availableReport;
 
     /**
      * Create a report instance.
@@ -63,7 +63,7 @@ class Report
         $this->name = '';
         $this->filename = '';
         $this->extension = '';
-        $this->storedReport = new AvailableReport;
+        $this->availableReport = new AvailableReport;
     }
 
     /**
@@ -76,8 +76,8 @@ class Report
         try {
             $this->generateReport();
         } catch (Exception $e) {
-            if (isset($this->storedReport)) {
-                $this->storedReport->delete();
+            if (isset($this->availableReport)) {
+                $this->availableReport->delete();
                 throw $e;
             }
         } finally {
@@ -115,8 +115,8 @@ class Report
     public function getUrl()
     {
         return route('download_report', [
-            $this->storedReport->basename(),
-            "biigle_{$this->project->id}_{$this->getFilename()}_report.{$this->extension}"
+            $this->availableReport->basename(),
+            $this->getDownloadFilename(),
         ]);
     }
 
@@ -128,5 +128,15 @@ class Report
     public function getFilename()
     {
         return $this->filename;
+    }
+
+    /**
+     * Get the filename used for downloading the report
+     *
+     * @return string
+     */
+    public function getDownloadFilename()
+    {
+        return "biigle_{$this->project->id}_{$this->getFilename()}_report.{$this->extension}";
     }
 }

@@ -108,7 +108,7 @@ class FullReport extends AnnotationReport
         }, $this->tmpFiles));
 
         $exec = App::make(Exec::class, [
-            'command' => "{$python} {$script} \"{$this->project->name}\" {$this->storedReport->path} {$csvs}",
+            'command' => "{$python} {$script} \"{$this->project->name}\" {$this->availableReport->path} {$csvs}",
         ]);
 
         if ($exec->code !== 0) {

@@ -29,8 +29,8 @@ class ReportThrowExceptionStub extends Report
 {
     public function generateReport()
     {
-        $this->storedReport = Mockery::mock();
-        $this->storedReport->shouldReceive('delete')->once();
+        $this->availableReport = Mockery::mock();
+        $this->availableReport->shouldReceive('delete')->once();
 
         $this->tmpFiles[] = Mockery::mock();
         $this->tmpFiles[0]->shouldReceive('delete')->once();
@@ -50,8 +50,8 @@ class ReportThrowNoExceptionStub extends Report
 
     public function generateReport()
     {
-        $this->storedReport = Mockery::mock();
-        $this->storedReport->shouldReceive('delete')->never();
+        $this->availableReport = Mockery::mock();
+        $this->availableReport->shouldReceive('delete')->never();
 
         $this->tmpFiles[] = Mockery::mock();
         $this->tmpFiles[0]->shouldReceive('delete')->once();
