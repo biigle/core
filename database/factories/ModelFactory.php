@@ -13,7 +13,7 @@
 
 $factory->define(Dias\Role::class, function ($faker) {
     return [
-        'name' => $faker->word(),
+        'name' => $faker->username(),
     ];
 });
 
@@ -40,7 +40,7 @@ $factory->define(Dias\Project::class, function ($faker) {
 
 $factory->define(Dias\MediaType::class, function ($faker) {
     return [
-        'name' => $faker->word(),
+        'name' => $faker->username(),
     ];
 });
 
@@ -69,7 +69,7 @@ $factory->define(Dias\Image::class, function ($faker) {
 
 $factory->define(Dias\Label::class, function ($faker) {
     return [
-        'name' => $faker->word(),
+        'name' => $faker->username(),
         'color' => '0099ff',
         'parent_id' => null,
         'label_tree_id' => function () {
@@ -80,7 +80,7 @@ $factory->define(Dias\Label::class, function ($faker) {
 
 $factory->define(Dias\Shape::class, function ($faker) {
     return [
-        'name' => $faker->word(),
+        'name' => $faker->username(),
     ];
 });
 
@@ -124,13 +124,13 @@ $factory->define(Dias\ApiToken::class, function ($faker) {
 
 $factory->define(Dias\Visibility::class, function ($faker) {
     return [
-        'name' => $faker->word(),
+        'name' => $faker->username(),
     ];
 });
 
 $factory->define(Dias\LabelTree::class, function ($faker) {
     return [
-        'name' => $faker->word(),
+        'name' => $faker->username(),
         'description' => $faker->sentence(),
         'visibility_id' => Dias\Visibility::$public->id,
     ];
@@ -152,7 +152,7 @@ $factory->define(Dias\ImageLabel::class, function ($faker) {
 
 $factory->define(Dias\LabelSource::class, function ($faker) {
     return [
-        'name' => $faker->word(),
+        'name' => $faker->username(),
         'description' => $faker->sentence(),
     ];
 });
