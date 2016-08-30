@@ -10,6 +10,8 @@ angular.module('dias.transects').controller('AnnotationsFilterController', funct
 
         filter.add({
             name: 'annotations',
+            helpText: 'All images that contain one or more annotations.',
+            helpTextNegate: 'All images that contain no annotations.',
             template: 'annotationsFilterRule.html',
             resource: AnnotationImage,
             typeahead: null,

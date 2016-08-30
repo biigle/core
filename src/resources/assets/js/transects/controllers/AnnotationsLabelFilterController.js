@@ -10,6 +10,8 @@ angular.module('dias.transects').controller('AnnotationsLabelFilterController', 
 
         filter.add({
             name: 'annotation with label',
+            helpText: 'All images that contain one or more annotations with the given label.',
+            helpTextNegate: 'All images that contain no annotations with the given label.',
             template: 'annotationWithLabelFilterRule.html',
             resource: AnnotationLabelImage,
             typeahead: 'annotationLabelFilterTypeahead.html',
