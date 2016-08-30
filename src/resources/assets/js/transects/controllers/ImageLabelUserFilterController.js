@@ -10,6 +10,8 @@ angular.module('dias.transects').controller('ImageLabelUserFilterController', fu
 
         filter.add({
             name: 'image label by user',
+            helpText: 'All images that have one or more image labels attached by the given user.',
+            helpTextNegate: 'All images that don\'t have image labels attached by the given user.',
             template: 'imageLabelByUserFilterRule.html',
             resource: ImageLabelUserImage,
             typeahead: 'imageLabelUserFilterTypeahead.html',

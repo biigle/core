@@ -10,6 +10,8 @@ angular.module('dias.transects').controller('ImageLabelFilterController', functi
 
         filter.add({
             name: 'image label',
+            helpText: 'All images that have the given image label attached.',
+            helpTextNegate: 'All images that don\'t have the given image label attached.',
             template: 'imageWithLabelFilterRule.html',
             resource: ImageLabelImage,
             typeahead: 'imageLabelFilterTypeahead.html',

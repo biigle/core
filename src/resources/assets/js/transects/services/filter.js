@@ -76,6 +76,8 @@ angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSE
 
             filters.push({
                 name: newFilter.name,
+                helpText: newFilter.helpText || '',
+                helpTextNegate: newFilter.helpTextNegate || '',
                 resource: newFilter.resource,
                 template: newFilter.template,
                 typeahead: newFilter.typeahead,

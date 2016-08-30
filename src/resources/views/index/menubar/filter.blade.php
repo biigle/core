@@ -66,6 +66,7 @@
             <div class="form-group" data-ng-include="data.filter.typeahead"></div>
 
             <button type="submit" class="btn btn-default">Add</button>
+            <p class="help-block" data-ng-bind="getHelpText()"></p>
         </form>
     </div>
 </script>

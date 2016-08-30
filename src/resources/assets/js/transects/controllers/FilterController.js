@@ -61,5 +61,17 @@ angular.module('dias.transects').controller('FilterController', function ($scope
             filter.reset();
             images.updateFiltering();
         };
+
+        $scope.getHelpText = function () {
+            if ($scope.data.filter) {
+                if ($scope.data.negate === 'false') {
+                    return $scope.data.filter.helpText;
+                } else {
+                    return $scope.data.filter.helpTextNegate;
+                }
+            }
+
+            return '';
+        };
     }
 );
