@@ -22,12 +22,30 @@ Report.getImageLabel({project_id: 1}, {});
 angular.module('dias.projects').factory('Report', function ($resource, URL) {
     "use strict";
 
-    return $resource(URL + '/api/v1/projects/:project_id/reports/:type', {}, {
-        getBasic: {method: 'POST', params: {type: 'annotations/basic'}},
-        getExtended: {method: 'POST', params: {type: 'annotations/extended'}},
-        getFull: {method: 'POST', params: {type: 'annotations/full'}},
-        getCsv: {method: 'POST', params: {type: 'annotations/csv'}},
-        getImageLabel: {method: 'POST', params: {type: 'image-labels/basic'}},
-        getImageLabelCsv: {method: 'POST', params: {type: 'image-labels/csv'}}
+    return $resource(URL + '/api/v1/projects/:project_id/reports/:type/:variant', {}, {
+        getBasic: {
+            method: 'POST',
+            params: {type: 'annotations', variant: 'basic'}
+        },
+        getExtended: {
+            method: 'POST',
+            params: {type: 'annotations', variant: 'extended'}
+        },
+        getFull: {
+            method: 'POST',
+            params: {type: 'annotations', variant: 'full'}
+        },
+        getCsv: {
+            method: 'POST',
+            params: {type: 'annotations', variant: 'csv'}
+        },
+        getImageLabel: {
+            method: 'POST',
+            params: {type: 'image-labels', variant: 'basic'}
+        },
+        getImageLabelCsv: {
+            method: 'POST',
+            params: {type: 'image-labels', variant: 'csv'
+        }}
     });
 });
