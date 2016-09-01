@@ -15,6 +15,13 @@ class GenerateReportJob extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     /**
+     * Memory limit to set during generating a report.
+     *
+     * @var string
+     */
+    const MEMORY_LIMIT = '512M';
+
+    /**
      * The user to notify of the finished report.
      *
      * @var User
@@ -45,7 +52,14 @@ class GenerateReportJob extends Job implements ShouldQueue
      */
     public function handle()
     {
+        $memoryLimit = ini_get('memory_limit');
+        // increase memory limit for generating large reports
+        ini_set('memory_limit', self::MEMORY_LIMIT);
+
         $this->report->generate();
         $this->user->notify(new ReportReady($this->report));
+
+        // restore default memory limit
+        ini_set('memory_limit', $memoryLimit);
     }
 }
