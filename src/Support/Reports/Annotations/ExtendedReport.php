@@ -45,16 +45,14 @@ class ExtendedReport extends AnnotationReport
             $query = $this->query($id);
             $rows = $query->get();
 
-            // CHUNKING IS BROKEN SOMEHOW!
-            // $query->chunkById(500, function ($rows) use ($csv) {
-                foreach ($rows as $row) {
-                    $csv->put([
-                        $row->filename,
-                        $row->name,
-                        $row->count,
-                    ]);
-                }
-            // }, 'images.id', 'images_id');
+            // DO NOT USE CHUNK BECAUSE IT DESTROYS groupBy!
+            foreach ($rows as $row) {
+                $csv->put([
+                    $row->filename,
+                    $row->name,
+                    $row->count,
+                ]);
+            }
 
             $csv->close();
         }
