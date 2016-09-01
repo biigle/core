@@ -40,8 +40,10 @@ class CsvReport extends Report
             $this->tmpFiles[$id] = $csv;
 
             $query = $this->query($id);
+            $rows = $query->get();
 
-            $query->chunkById(500, function ($rows) use ($csv) {
+            // CHUNKING IS BROKEN SOMEHOW!
+            // $query->chunkById(500, function ($rows) use ($csv) {
                 foreach ($rows as $row) {
                     $csv->put([
                         $row->image_label_id,
@@ -54,7 +56,7 @@ class CsvReport extends Report
                         $row->label_name,
                     ]);
                 }
-            }, 'image_labels.id', 'image_label_id');
+            // }, 'image_labels.id', 'image_label_id');
 
             $csv->close();
         }
@@ -85,7 +87,6 @@ class CsvReport extends Report
                 'labels.name as label_name',
             ])
             ->where('images.transect_id', $id)
-            ->orderBy('images.filename')
-            ->orderBy('image_labels.label_id');
+            ->orderBy('images.filename');
     }
 }

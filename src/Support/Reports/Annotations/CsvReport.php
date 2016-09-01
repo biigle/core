@@ -40,8 +40,10 @@ class CsvReport extends AnnotationReport
             $this->tmpFiles[$id] = $csv;
 
             $query = $this->query($id);
+            $rows = $query->get();
 
-            $query->chunkById(500, function ($rows) use ($csv) {
+            // CHUNKING IS BROKEN SOMEHOW!
+            // $query->chunkById(500, function ($rows) use ($csv) {
                 foreach ($rows as $row) {
                     $csv->put([
                         $row->annotation_label_id,
@@ -58,7 +60,7 @@ class CsvReport extends AnnotationReport
                         $row->attrs,
                     ]);
                 }
-            }, 'annotation_labels.id', 'annotation_label_id');
+            // }, 'annotation_labels.id', 'annotation_label_id');
 
             $csv->close();
         }

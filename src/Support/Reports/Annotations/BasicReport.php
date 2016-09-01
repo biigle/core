@@ -77,6 +77,7 @@ class BasicReport extends AnnotationReport
                 return $query->whereNotIn('annotations.id', $this->getSkipIds($id));
             })
             ->select(DB::raw('labels.name, labels.color, count(labels.id) as count'))
-            ->groupBy('labels.id');
+            ->groupBy('labels.id')
+            ->orderBy('labels.id');
     }
 }

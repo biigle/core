@@ -43,8 +43,10 @@ class FullReport extends AnnotationReport
             $csv->put([$name]);
 
             $query = $this->query($id);
+            $rows = $query->get();
 
-            $query->chunkById(500, function ($rows) use ($csv) {
+            // CHUNKING IS BROKEN SOMEHOW!
+            // $query->chunkById(500, function ($rows) use ($csv) {
                 foreach ($rows as $row) {
                     $csv->put([
                         $row->filename,
@@ -55,7 +57,7 @@ class FullReport extends AnnotationReport
                         $row->attrs
                     ]);
                 }
-            }, 'annotation_labels.id', 'annotation_labels_id');
+            // }, 'annotation_labels.id', 'annotation_labels_id');
 
             $csv->close();
         }
@@ -90,9 +92,6 @@ class FullReport extends AnnotationReport
             ->when($this->restricted, function ($query) use ($id) {
                 return $query->whereNotIn('annotations.id', $this->getSkipIds($id));
             })
-            // order by is essential for chunking!
-            ->orderBy('annotations.id')
-            ->orderBy('labels.id')
-            ->orderBy('annotation_labels.user_id');
+            ->orderBy('annotations.id');
     }
 }
