@@ -4,6 +4,7 @@ namespace Dias;
 
 use Exception;
 use Dias\Image;
+use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use Dias\Jobs\GenerateThumbnails;
 use Illuminate\Database\Eloquent\Model;
@@ -211,5 +212,58 @@ class Transect extends Model
     public function projects()
     {
         return $this->belongsToMany('Dias\Project');
+    }
+
+    /**
+     * The annotation sessions of this transect
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function annotationSessions()
+    {
+        return $this->hasMany('Dias\AnnotationSession');
+    }
+
+    /**
+     * The active annotation sessions of this transect (if any)
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function activeAnnotationSession()
+    {
+        $now = Carbon::now();
+        return $this->hasOne('Dias\AnnotationSession')
+            ->where('starts_at', '<=', $now)
+            ->where('ends_at', '>', $now)
+            ->limit(1);
+    }
+
+    /**
+     * Check if the given annotation session is in conflict with existing ones
+     *
+     * A conflict exists if the active time period of two sessions overlaps.
+     *
+     * @param AnnotationSession $session The annotation session to check
+     *
+     * @return bool
+     */
+    public function hasConflictingAnnotationSession(AnnotationSession $session)
+    {
+        return $this->annotationSessions()
+            ->when(!is_null($session->id), function ($query) use ($session) {
+                return $query->where('id', '!=', $session->id);
+            })
+            ->where(function ($query) use ($session) {
+                $query->where(function ($query) use ($session) {
+                    $query->where('starts_at', '<=', $session->starts_at)
+                        ->where('ends_at', '>', $session->starts_at);
+                });
+                $query->orWhere(function ($query) use ($session) {
+                    // ends_at is exclusive so it may equal starts_at of another session
+                    $query->where('starts_at', '<', $session->ends_at)
+                        ->where('ends_at', '>=', $session->ends_at);
+                });
+            })
+            ->exists();
     }
 }

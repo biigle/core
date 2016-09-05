@@ -1,6 +1,7 @@
 <?php
 
 use Dias\Transect;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 
@@ -175,5 +176,67 @@ class TransectTest extends ModelTestCase
         $this->model->createImages(['1.jpg']);
         $image = $this->model->images()->first();
         $this->assertNotNull($image->uuid);
+    }
+
+    public function testAnnotationSessions()
+    {
+        $this->assertFalse($this->model->annotationSessions()->exists());
+        $session = AnnotationSessionTest::create(['transect_id' => $this->model->id]);
+        $this->assertTrue($this->model->annotationSessions()->exists());
+    }
+
+    public function testActiveAnnotationSession()
+    {
+        $active = AnnotationSessionTest::create([
+            'transect_id' => $this->model->id,
+            'starts_at' => Carbon::yesterday(),
+            'ends_at' => Carbon::tomorrow(),
+        ]);
+
+        AnnotationSessionTest::create([
+            'transect_id' => $this->model->id,
+            'starts_at' => Carbon::yesterday()->subDay(),
+            'ends_at' => Carbon::yesterday(),
+        ]);
+
+        $this->assertEquals($active->id, $this->model->activeAnnotationSession->id);
+    }
+
+    public function testHasConflictingAnnotationSession()
+    {
+        $a1 = AnnotationSessionTest::create([
+            'transect_id' => $this->model->id,
+            'starts_at' => '2016-09-04',
+            'ends_at' => '2016-09-06',
+        ]);
+
+        $a2 = AnnotationSessionTest::make([
+            'transect_id' => $this->model->id,
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+        ]);
+
+        $this->assertTrue($this->model->hasConflictingAnnotationSession($a2));
+
+        $a3 = AnnotationSessionTest::make([
+            'transect_id' => $this->model->id,
+            'starts_at' => '2016-09-03',
+            'ends_at' => '2016-09-04',
+        ]);
+
+        $this->assertFalse($this->model->hasConflictingAnnotationSession($a3));
+
+        $a4 = AnnotationSessionTest::make([
+            'transect_id' => $this->model->id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+        ]);
+
+        $this->assertFalse($this->model->hasConflictingAnnotationSession($a4));
+
+        $a4->save();
+        $a4 = $a4->fresh();
+        // should not count the own annotation session (for updating)
+        $this->assertFalse($this->model->hasConflictingAnnotationSession($a4));
     }
 }

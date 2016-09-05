@@ -106,6 +106,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'only' => ['update', 'destroy'],
     ]);
 
+    $router->resource('annotation-sessions', 'AnnotationSessionController', [
+        'only' => ['update', 'destroy'],
+    ]);
+
     $router->get('images/{id}/thumb', 'ImageController@showThumb');
     $router->get('images/{id}/file', 'ImageController@showFile');
     $router->resource('images', 'ImageController', [
@@ -189,6 +193,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
 
     $router->resource('transects', 'TransectController', [
         'only' => ['show', 'update'],
+    ]);
+
+    $router->resource('transects.annotation-sessions', 'TransectAnnotationSessionController', [
+        'only' => ['index', 'store'],
     ]);
 
     $router->resource('transects.images', 'TransectImageController', [
