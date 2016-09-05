@@ -195,10 +195,6 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'only' => ['index', 'store'],
     ]);
 
-    $router->resource('transects.annotations', 'TransectAnnotationController', [
-        'only' => ['index'],
-    ]);
-
     $router->get('users/find/{pattern}', 'UserController@find');
 
     $router->get('users/my', 'UserController@showOwn');
