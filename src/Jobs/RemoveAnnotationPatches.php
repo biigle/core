@@ -2,8 +2,10 @@
 
 namespace Dias\Modules\Ate\Jobs;
 
+use App;
 use File;
 use Dias\Jobs\Job;
+use FilesystemIterator;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -56,7 +58,10 @@ class RemoveAnnotationPatches extends Job implements ShouldQueue
             File::delete("{$prefix}/{$id}.{$format}");
         }
 
-        if (empty(File::files($prefix))) {
+        // If the iterator is not valid, there are no files in the directory any more.
+        // Use the iterator because there may be *lots* of files in the directory
+        // and most other methods fetch/count them all.
+        if (!App::make(FilesystemIterator::class, [$prefix, null])->valid()) {
             File::deleteDirectory($prefix);
         }
     }

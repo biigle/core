@@ -15,10 +15,12 @@ class RemoveAnnotationPatchesTest extends TestCase
             ->with($patchPath)
             ->once();
 
-        File::shouldReceive('files')
-            ->with($path)
-            ->once()
-            ->andReturn([]);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('valid')->once()->andReturn(false);
+        App::bind(FilesystemIterator::class, function ($app, $args) use ($path, $mock) {
+            $this->assertEquals([$path, null], $args);
+            return $mock;
+        });
 
         File::shouldReceive('deleteDirectory')
             ->with($path)
@@ -38,10 +40,11 @@ class RemoveAnnotationPatchesTest extends TestCase
             ->with($patchPath)
             ->once();
 
-        File::shouldReceive('files')
-            ->with($path)
-            ->once()
-            ->andReturn(['123.jpg']);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('valid')->once()->andReturn(true);
+        App::bind(FilesystemIterator::class, function () use ($mock) {
+            return $mock;
+        });
 
         File::shouldReceive('deleteDirectory')
             ->never();
