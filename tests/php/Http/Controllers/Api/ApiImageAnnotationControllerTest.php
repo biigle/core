@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 class ApiImageAnnotationControllerTest extends ApiTestCase
 {
     private $image;
@@ -7,8 +9,9 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->image = ImageTest::create();
-        $this->project()->addTransectId($this->image->transect->id);
+        $this->image = ImageTest::create([
+            'transect_id' => $this->transect()->id,
+        ]);
     }
 
     public function testIndex()
@@ -40,6 +43,23 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             ->seeJson(['points' => [10, 20, 30, 40]])
             ->seeJson(['color' => 'bada55'])
             ->seeJson(['name' => 'My label']);
+        $this->assertResponseOk();
+    }
+
+    public function testIndexAnnotationSessionHideOwn()
+    {
+        $session = AnnotationSessionTest::create([
+            'transect_id' => $this->transect()->id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+        ]);
+
+        $this->beEditor();
+        App::shouldReceive('call')
+            ->once()
+            ->andReturn(['abc']);
+        $this->get("/api/v1/images/{$this->image->id}/annotations")
+            ->seeJsonEquals(['abc']);
         $this->assertResponseOk();
     }
 

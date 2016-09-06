@@ -2,6 +2,7 @@
 
 namespace Dias\Http\Controllers\Api;
 
+use App;
 use Exception;
 use Dias\Image;
 use Dias\Shape;
@@ -55,12 +56,18 @@ class ImageAnnotationController extends Controller
      * ]
      *
      * @param int $id image id
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function index($id, Guard $auth)
     {
         $image = Image::findOrFail($id);
         $this->authorize('access', $image);
+        $session = $image->transect->activeAnnotationSession;
+
+        if ($session) {
+            return App::call([$session, 'getImageAnnotations'], [$image, $auth->user()]);
+        }
 
         return $image->annotations()->with('labels')->get();
     }
