@@ -1,6 +1,7 @@
 <?php
 
 use Dias\Role;
+use Carbon\Carbon;
 
 class AnnotationsModuleHttpControllersAnnotationControllerTest extends ApiTestCase {
 
@@ -41,4 +42,25 @@ class AnnotationsModuleHttpControllersAnnotationControllerTest extends ApiTestCa
         $this->get('annotations/'.$annotation->id);
         $this->assertRedirectedTo('annotate/'.$annotation->image_id.'?annotation='.$annotation->id);
     }
+
+    public function testShowAnnotationSession()
+    {
+        $annotation = AnnotationTest::create([
+            'created_at' => Carbon::yesterday(),
+        ]);
+        $this->project()->addTransectId($annotation->image->transect_id);
+
+        AnnotationSessionTest::create([
+            'transect_id' => $annotation->image->transect_id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+
+        $this->beAdmin();
+        $this->get("annotations/{$annotation->id}");
+        $this->assertResponseStatus(403);
+    }
+
 }
