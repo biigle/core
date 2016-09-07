@@ -52,14 +52,36 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             'transect_id' => $this->transect()->id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $a1 = AnnotationTest::create([
+            'image_id' => $this->image->id,
+            'created_at' => Carbon::yesterday(),
+            'points' => [10, 20],
+        ]);
+
+        $al1 = AnnotationLabelTest::create([
+            'user_id' => $this->editor()->id,
+            'annotation_id' => $a1->id,
+        ]);
+
+        $a2 = AnnotationTest::create([
+            'image_id' => $this->image->id,
+            'created_at' => Carbon::today(),
+            'points' => [20, 30],
+        ]);
+
+        $al2 = AnnotationLabelTest::create([
+            'user_id' => $this->editor()->id,
+            'annotation_id' => $a2->id,
         ]);
 
         $this->beEditor();
-        App::shouldReceive('call')
-            ->once()
-            ->andReturn(['abc']);
         $this->get("/api/v1/images/{$this->image->id}/annotations")
-            ->seeJsonEquals(['abc']);
+            ->dontSeeJson(['points' => [10, 20]])
+            ->seeJson(['points' => [20, 30]]);
         $this->assertResponseOk();
     }
 
