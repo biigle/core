@@ -73,6 +73,7 @@ class AnnotationSession extends Model
         $query = $image->annotations();
 
         if ($this->hide_own_annotations && $this->hide_other_users_annotations) {
+
             // take only annotations of this session
             $query->where('created_at', '>=', $this->starts_at)
             ->where('created_at', '<', $this->ends_at)
@@ -87,7 +88,9 @@ class AnnotationSession extends Model
             ->with(['labels' => function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             }]);
+
         } else if ($this->hide_own_annotations) {
+
             // wrap in single where because the existing query already has conditions
             $query->where(function ($query) use ($user) {
                 // take all annotations of this session
@@ -111,19 +114,50 @@ class AnnotationSession extends Model
             }]);
 
         } else if ($this->hide_other_users_annotations) {
+
             // take only annotations with labels of the current user
             $query->whereExists(function ($query) use ($user) {
                 $query->select(DB::raw(1))
-                ->from('annotation_labels')
-                ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                ->where('annotation_labels.user_id', $user->id);
+                    ->from('annotation_labels')
+                    ->whereRaw('annotation_labels.annotation_id = annotations.id')
+                    ->where('annotation_labels.user_id', $user->id);
             })
             // take only labels of the current user
             ->with(['labels' => function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             }]);
+
         }
 
         return $query->get();
+    }
+
+    /**
+     * Check if the given user is allowed to access the annotation if this annotation session is active
+     *
+     * @param Annotation $annotation
+     * @param User $user
+     * @return bool
+     */
+    public function allowsAccess(Annotation $annotation, User $user)
+    {
+        if ($this->hide_own_annotations && $this->hide_other_users_annotations) {
+
+            return $annotation->created_at >= $this->starts_at &&
+                $annotation->created_at < $this->ends_at &&
+                $annotation->labels()->where('user_id', $user->id)->exists();
+
+        } else if ($this->hide_own_annotations) {
+
+            return ($annotation->created_at >= $this->starts_at && $annotation->created_at < $this->ends_at) ||
+                $annotation->labels()->where('user_id', '!=', $user->id)->exists();
+
+        } else if ($this->hide_other_users_annotations) {
+
+            return $annotation->labels()->where('user_id', $user->id)->exists();
+
+        }
+
+        return true;
     }
 }

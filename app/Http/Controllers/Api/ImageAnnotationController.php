@@ -20,6 +20,7 @@ class ImageAnnotationController extends Controller
      * @apiGroup Images
      * @apiName IndexImageAnnotations
      * @apiPermission projectMember
+     * @apiDescription If there is an active annotation session for the transect of this image, only those annotations will be returned that the user is allowed to access.
      *
      * @apiParam {Number} id The image ID.
      *

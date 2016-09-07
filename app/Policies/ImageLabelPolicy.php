@@ -2,10 +2,10 @@
 
 namespace Dias\Policies;
 
-use Dias\ImageLabel;
+use DB;
 use Dias\User;
 use Dias\Role;
-use DB;
+use Dias\ImageLabel;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ImageLabelPolicy extends CachedPolicy

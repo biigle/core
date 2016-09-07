@@ -1,15 +1,16 @@
 <?php
 
 use Dias\Role;
+use Carbon\Carbon;
 
 class PoliciesAnnotationPolicyTest extends TestCase
 {
-    private $annotation;
-    private $project;
     private $user;
     private $guest;
-    private $editor;
     private $admin;
+    private $editor;
+    private $project;
+    private $annotation;
     private $globalAdmin;
 
     public function setUp()
@@ -35,6 +36,26 @@ class PoliciesAnnotationPolicyTest extends TestCase
         $this->assertTrue($this->guest->can('access', $this->annotation));
         $this->assertTrue($this->editor->can('access', $this->annotation));
         $this->assertTrue($this->admin->can('access', $this->annotation));
+        $this->assertTrue($this->globalAdmin->can('access', $this->annotation));
+    }
+
+    public function testAccessAnnotationSession()
+    {
+        $this->annotation->created_at = Carbon::yesterday();
+        $this->annotation->save();
+
+        AnnotationSessionTest::create([
+            'transect_id' => $this->annotation->image->transect_id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+
+        $this->assertFalse($this->user->can('access', $this->annotation));
+        $this->assertFalse($this->guest->can('access', $this->annotation));
+        $this->assertFalse($this->editor->can('access', $this->annotation));
+        $this->assertFalse($this->admin->can('access', $this->annotation));
         $this->assertTrue($this->globalAdmin->can('access', $this->annotation));
     }
 

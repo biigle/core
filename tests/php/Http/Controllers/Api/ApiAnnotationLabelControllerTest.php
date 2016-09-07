@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 class ApiAnnotationLabelControllerTest extends ApiTestCase
 {
     private $annotation;
@@ -32,6 +34,24 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
         $content = $this->response->getContent();
         $this->assertStringStartsWith('[{', $content);
         $this->assertStringEndsWith('}]', $content);
+    }
+
+    public function testIndexAnnotationSession()
+    {
+        $this->annotation->created_at = Carbon::yesterday();
+        $this->annotation->save();
+
+        AnnotationSessionTest::create([
+            'transect_id' => $this->annotation->image->transect_id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+
+        $this->beAdmin();
+        $this->get("api/v1/annotations/{$this->annotation->id}/labels");
+        $this->assertResponseStatus(403);
     }
 
     public function testStore()

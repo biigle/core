@@ -2,10 +2,10 @@
 
 namespace Dias\Policies;
 
-use Dias\Project;
+use DB;
 use Dias\User;
 use Dias\Role;
-use DB;
+use Dias\Project;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ProjectPolicy extends CachedPolicy

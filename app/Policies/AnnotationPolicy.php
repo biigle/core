@@ -2,12 +2,13 @@
 
 namespace Dias\Policies;
 
-use Dias\Annotation;
-use Dias\AnnotationLabel;
-use Dias\Label;
+use DB;
 use Dias\User;
 use Dias\Role;
-use DB;
+use Dias\Label;
+use Dias\Transect;
+use Dias\Annotation;
+use Dias\AnnotationLabel;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AnnotationPolicy extends CachedPolicy
@@ -38,16 +39,23 @@ class AnnotationPolicy extends CachedPolicy
     public function access(User $user, Annotation $annotation)
     {
         return $this->remember("annotation-can-access-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
-            // user must be member of one of the projects, the annotation belongs to
-            return DB::table('project_user')
-                ->where('user_id', $user->id)
-                ->whereIn('project_id', function ($query) use ($annotation) {
-                    $query->select('project_transect.project_id')
-                        ->from('project_transect')
-                        ->join('images', 'project_transect.transect_id', '=', 'images.transect_id')
-                        ->where('images.id', $annotation->image_id);
-                })
-                ->exists();
+            $transect = Transect::join('images', 'images.transect_id', '=', 'transects.id')
+                ->where('images.id', $annotation->image_id)
+                ->first();
+
+            $session = $transect->activeAnnotationSession;
+            $sessionAccess = !$session || $session->allowsAccess($annotation, $user);
+
+            return $sessionAccess &&
+                // user must be member of one of the projects, the annotation belongs to
+                DB::table('project_user')
+                    ->where('user_id', $user->id)
+                    ->whereIn('project_id', function ($query) use ($transect) {
+                        $query->select('project_id')
+                            ->from('project_transect')
+                            ->where('transect_id', $transect->id);
+                    })
+                    ->exists();
         });
     }
 

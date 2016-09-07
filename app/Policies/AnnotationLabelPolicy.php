@@ -2,10 +2,10 @@
 
 namespace Dias\Policies;
 
-use Dias\AnnotationLabel;
+use DB;
 use Dias\User;
 use Dias\Role;
-use DB;
+use Dias\AnnotationLabel;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AnnotationLabelPolicy extends CachedPolicy

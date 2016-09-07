@@ -2,10 +2,10 @@
 
 namespace Dias\Policies;
 
-use Dias\Label;
+use DB;
 use Dias\User;
 use Dias\Role;
-use DB;
+use Dias\Label;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LabelPolicy extends CachedPolicy

@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 class ApiAnnotationControllerTest extends ApiTestCase
 {
     private $annotation;
@@ -8,7 +10,7 @@ class ApiAnnotationControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->annotation = AnnotationTest::create();
-        $this->project()->addTransectId($this->annotation->image->transect->id);
+        $this->project()->addTransectId($this->annotation->image->transect_id);
     }
 
     public function testShow()
@@ -39,6 +41,24 @@ class ApiAnnotationControllerTest extends ApiTestCase
         // included in the output
         $this->assertNotContains('"image"', $this->response->getContent());
         $this->assertNotContains('transect', $this->response->getContent());
+    }
+
+    public function testShowAnnotationSession()
+    {
+        $this->annotation->created_at = Carbon::yesterday();
+        $this->annotation->save();
+
+        AnnotationSessionTest::create([
+            'transect_id' => $this->annotation->image->transect_id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+
+        $this->beAdmin();
+        $this->get("api/v1/annotations/{$this->annotation->id}");
+        $this->assertResponseStatus(403);
     }
 
     public function testUpdate()
