@@ -65,7 +65,7 @@ class AnnotationTest extends ModelTestCase
     public function testValidatePointsPoint()
     {
         $this->model->shape_id = Shape::$pointId;
-        $this->model->validatePoints([10, 10]);
+        $this->model->validatePoints([10.5, 10.5]);
         $this->setExpectedException('Exception');
         $this->model->validatePoints([10, 10, 20, 20]);
     }

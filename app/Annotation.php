@@ -23,16 +23,6 @@ class Annotation extends Model
     ];
 
     /**
-     * Validation rules for creating a point for an annotation.
-     *
-     * @var array
-     */
-    public static $createPointRules = [
-        'x' => 'required|numeric',
-        'y' => 'required|numeric',
-    ];
-
-    /**
      * The attributes excluded from the model's JSON form.
      *
      * @var array
@@ -54,18 +44,18 @@ class Annotation extends Model
     /**
      * Validates a points array for the shape of this annotation
      *
-     * @param array $points Points array (a point may be an array or an object with 'x' and 'y')
+     * @param array $points Points array like `[x1, y1, x2, y2, x3, y3, ...]`
      * @throws Exception If the points array is invalid
      */
     public function validatePoints(array $points)
     {
         // check if all elements are integer
         $valid = array_reduce($points, function ($carry, $point) {
-            return $carry && is_int($point);
+            return $carry && (is_float($point) || is_int($point));
         }, true);
 
         if (!$valid) {
-            throw new Exception("Point coordinates must be of type integer.");
+            throw new Exception("Point coordinates must be of type float or integer.");
         }
 
         $size = sizeof($points);
