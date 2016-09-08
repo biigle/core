@@ -88,9 +88,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			}
 
             // merge the individual point arrays to a single array
-            // round the coordinates to integers
             return Array.prototype.concat.apply([], coordinates)
-                .map(Math.round)
                 .map(convertFromOLPoint);
 		};
 
