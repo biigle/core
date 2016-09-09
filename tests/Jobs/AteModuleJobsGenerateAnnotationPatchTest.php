@@ -49,7 +49,8 @@ class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
     public function testHandleCircle()
     {
         $annotation = AnnotationTest::create([
-            'points' => [100, 100, 20],
+            // should handle floats correctly
+            'points' => [100.4, 100.4, 20],
             'shape_id' => Shape::$circleId,
         ]);
         $job = new GenerateAnnotationPatch($annotation);

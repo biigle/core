@@ -117,6 +117,12 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
             $width = $newWidth;
         }
 
+        // crop() only accepts integer arguments
+        $width = intval(round($width));
+        $height = intval(round($height));
+        $xmin = intval(round($xmin));
+        $ymin = intval(round($ymin));
+
         $memoryLimit = ini_get('memory_limit');
 
         // increase memory limit for modifying large images
