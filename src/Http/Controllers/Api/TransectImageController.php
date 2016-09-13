@@ -92,23 +92,29 @@ class TransectImageController extends Controller
      * @apiSuccessExample {json} Success response:
      * [1, 5, 6]
      *
+     * @param Guard $auth
      * @param  int  $tid
      * @param  int  $lid
      * @return \Illuminate\Http\Response
      */
-    public function hasAnnotationLabel($tid, $lid)
+    public function hasAnnotationLabel(Guard $auth, $tid, $lid)
     {
         $transect = Transect::findOrFail($tid);
         $this->authorize('access', $transect);
 
-        return Image::where('transect_id', $tid)
-            ->whereExists(function ($query) use ($lid) {
-                $query->select(DB::raw(1))
-                      ->from('annotations')
-                      ->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-                      ->where('annotation_labels.label_id', $lid)
-                      ->whereRaw('annotations.image_id = images.id');
-            })
-            ->pluck('id');
+        $session = $transect->activeAnnotationSession;
+
+        if ($session) {
+            $query = Annotation::allowedBySession($session, $auth->user());
+        } else {
+            $query = Annotation::getQuery();
+        }
+
+        return $query->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
+                ->where('annotation_labels.label_id', $lid)
+                ->join('images', 'annotations.image_id', '=', 'images.id')
+                ->where('images.transect_id', $tid)
+                ->groupBy('images.id')
+                ->pluck('images.id');
     }
 }
