@@ -76,8 +76,8 @@ class AnnotationSession extends Model
         if ($this->hide_own_annotations && $this->hide_other_users_annotations) {
 
             // take only annotations of this session
-            $query->where('created_at', '>=', $this->starts_at)
-                ->where('created_at', '<', $this->ends_at)
+            $query->where('annotations.created_at', '>=', $this->starts_at)
+                ->where('annotations.created_at', '<', $this->ends_at)
                 // which have at least one label of the current user
                 ->whereExists(function ($query) use ($user) {
                     $query->select(DB::raw(1))
@@ -90,8 +90,8 @@ class AnnotationSession extends Model
 
             $query->where(function ($query) use ($user) {
                 // take all annotations of this session
-                $query->where('created_at', '>=', $this->starts_at)
-                    ->where('created_at', '<', $this->ends_at)
+                $query->where('annotations.created_at', '>=', $this->starts_at)
+                    ->where('annotations.created_at', '<', $this->ends_at)
                     // or older annotations with at least one label of another user
                     ->orWhereExists(function ($query) use ($user) {
                         $query->select(DB::raw(1))
