@@ -38,7 +38,7 @@ class TransectsAnnotationsController extends Controller
         $session = $transect->activeAnnotationSession;
 
         if ($session) {
-            $query = $session->annotations($auth->user());
+            $query = Annotation::allowedBySession($session, $auth->user());
         } else {
             $query = Annotation::query();
         }
