@@ -2,9 +2,10 @@
 
 namespace Dias;
 
-use Illuminate\Database\Eloquent\Model;
+use DB;
 use Exception;
 use Dias\Shape;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * An annotation is a region of an image that can be labeled by the users.
@@ -50,6 +51,58 @@ class Annotation extends Model
     protected $casts = [
         'points' => 'array',
     ];
+
+    /**
+     * Scope a query to only include annotations allowed by the session for the user
+     *
+     * @param AnnotationSession $session
+     * @param User $user The user to whom the restrictions should apply ('own' user)
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeAllowedBySession($query, AnnotationSession $session, User $user)
+    {
+        if ($session->hide_own_annotations && $session->hide_other_users_annotations) {
+
+            // take only annotations of this session
+            $query->where('annotations.created_at', '>=', $session->starts_at)
+                ->where('annotations.created_at', '<', $session->ends_at)
+                // which have at least one label of the current user
+                ->whereExists(function ($query) use ($user) {
+                    $query->select(DB::raw(1))
+                        ->from('annotation_labels')
+                        ->whereRaw('annotation_labels.annotation_id = annotations.id')
+                        ->where('annotation_labels.user_id', $user->id);
+                });
+
+        } else if ($session->hide_own_annotations) {
+
+            $query->where(function ($query) use ($session, $user) {
+                // take all annotations of this session
+                $query->where('annotations.created_at', '>=', $session->starts_at)
+                    ->where('annotations.created_at', '<', $session->ends_at)
+                    // or older annotations with at least one label of another user
+                    ->orWhereExists(function ($query) use ($user) {
+                        $query->select(DB::raw(1))
+                            ->from('annotation_labels')
+                            ->whereRaw('annotation_labels.annotation_id = annotations.id')
+                            ->where('annotation_labels.user_id', '!=', $user->id);
+                    });
+            });
+
+        } else if ($session->hide_other_users_annotations) {
+
+            // take only annotations with labels of the current user
+            $query->whereExists(function ($query) use ($user) {
+                $query->select(DB::raw(1))
+                    ->from('annotation_labels')
+                    ->whereRaw('annotation_labels.annotation_id = annotations.id')
+                    ->where('annotation_labels.user_id', $user->id);
+            });
+
+        }
+
+        return $query;
+    }
 
     /**
      * Validates a points array for the shape of this annotation

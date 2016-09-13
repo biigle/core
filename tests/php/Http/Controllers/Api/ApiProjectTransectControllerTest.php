@@ -165,7 +165,6 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         // does not belong to the project
         $this->assertResponseStatus(404);
 
-
         Event::shouldReceive('fire')
             ->once()
             ->with('images.cleanup', [[$image->uuid]]);

@@ -61,62 +61,6 @@ class AnnotationSession extends Model
     }
 
     /**
-     * Query for all annotations filtered by the restrictions of this annotation session.
-     *
-     * Does *not* restrict the annotations e.g. to the transect, this annotation session
-     * belongs to. Only filters by creation date and existing labels.
-     *
-     * @param User $user The user to whom the restrictions should apply ('own' user)
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function annotations(User $user)
-    {
-        $query = Annotation::query();
-
-        if ($this->hide_own_annotations && $this->hide_other_users_annotations) {
-
-            // take only annotations of this session
-            $query->where('annotations.created_at', '>=', $this->starts_at)
-                ->where('annotations.created_at', '<', $this->ends_at)
-                // which have at least one label of the current user
-                ->whereExists(function ($query) use ($user) {
-                    $query->select(DB::raw(1))
-                        ->from('annotation_labels')
-                        ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                        ->where('annotation_labels.user_id', $user->id);
-                });
-
-        } else if ($this->hide_own_annotations) {
-
-            $query->where(function ($query) use ($user) {
-                // take all annotations of this session
-                $query->where('annotations.created_at', '>=', $this->starts_at)
-                    ->where('annotations.created_at', '<', $this->ends_at)
-                    // or older annotations with at least one label of another user
-                    ->orWhereExists(function ($query) use ($user) {
-                        $query->select(DB::raw(1))
-                            ->from('annotation_labels')
-                            ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                            ->where('annotation_labels.user_id', '!=', $user->id);
-                    });
-            });
-
-        } else if ($this->hide_other_users_annotations) {
-
-            // take only annotations with labels of the current user
-            $query->whereExists(function ($query) use ($user) {
-                $query->select(DB::raw(1))
-                    ->from('annotation_labels')
-                    ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                    ->where('annotation_labels.user_id', $user->id);
-            });
-
-        }
-
-        return $query;
-    }
-
-    /**
      * Get the annotations of the image (with labels), filtered by the restrictions of this annotation session.
      *
      * @param Image $image The image to get the annotations from
@@ -126,7 +70,8 @@ class AnnotationSession extends Model
      */
     public function getImageAnnotations(Image $image, User $user)
     {
-        $query = $this->annotations($user)->where('annotations.image_id', $image->id);
+        $query = Annotation::allowedBySession($this, $user)
+            ->where('annotations.image_id', $image->id);
 
         if ($this->hide_other_users_annotations) {
 

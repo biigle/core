@@ -49,57 +49,6 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertNull($this->model->fresh());
     }
 
-    public function testAnnotationsHideOwn()
-    {
-        $ownUser = UserTest::create();
-        $otherUser = UserTest::create();
-        $image = ImageTest::create();
-
-        // this should not be shown
-        $a1 = AnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-09-05',
-        ]);
-        $al1 = AnnotationLabelTest::create([
-            'annotation_id' => $a1->id,
-            'user_id' => $ownUser->id,
-            'created_at' => '2016-09-05',
-        ]);
-
-        // this should be shown
-        $a2 = AnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-09-05',
-        ]);
-        $al2 = AnnotationLabelTest::create([
-            'annotation_id' => $a2->id,
-            'user_id' => $otherUser->id,
-            'created_at' => '2016-09-05',
-        ]);
-
-        // this should be shown
-        $a3 = AnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-09-06',
-        ]);
-        $al3 = AnnotationLabelTest::create([
-            'annotation_id' => $a3->id,
-            'user_id' => $ownUser->id,
-            'created_at' => '2016-09-06',
-        ]);
-
-        $session = static::create([
-            'transect_id' => $image->transect->id,
-            'starts_at' => '2016-09-06',
-            'ends_at' => '2016-09-07',
-            'hide_own_annotations' => true,
-            'hide_other_users_annotations' => false,
-        ]);
-
-        $ids = $session->annotations($ownUser)->pluck('id')->toArray();
-        $this->assertEquals([$a2->id, $a3->id], $ids);
-    }
-
     public function testGetImageAnnotationsHideOwn()
     {
         $ownUser = UserTest::create();
@@ -155,68 +104,6 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertTrue($annotations->contains('labels', [$al2->load('user', 'label')->toArray()]));
     }
 
-    public function testAnnotationsHideOther()
-    {
-        $ownUser = UserTest::create();
-        $otherUser = UserTest::create();
-        $image = ImageTest::create();
-
-        // this should be shown
-        $a1 = AnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-09-05',
-        ]);
-        $al1 = AnnotationLabelTest::create([
-            'annotation_id' => $a1->id,
-            'user_id' => $ownUser->id,
-            'created_at' => '2016-09-05',
-        ]);
-
-        // this should not be shown
-        $a2 = AnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-09-05',
-        ]);
-        $al2 = AnnotationLabelTest::create([
-            'annotation_id' => $a2->id,
-            'user_id' => $otherUser->id,
-            'created_at' => '2016-09-05',
-        ]);
-
-        // this should be shown
-        $a3 = AnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-09-06',
-        ]);
-        $al3 = AnnotationLabelTest::create([
-            'annotation_id' => $a3->id,
-            'user_id' => $ownUser->id,
-            'created_at' => '2016-09-06',
-        ]);
-
-        // this should not be shown
-        $a4 = AnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-09-06',
-        ]);
-        $al4 = AnnotationLabelTest::create([
-            'annotation_id' => $a4->id,
-            'user_id' => $otherUser->id,
-            'created_at' => '2016-09-06',
-        ]);
-
-        $session = static::create([
-            'transect_id' => $image->transect->id,
-            'starts_at' => '2016-09-06',
-            'ends_at' => '2016-09-07',
-            'hide_own_annotations' => false,
-            'hide_other_users_annotations' => true,
-        ]);
-
-        $ids = $session->annotations($ownUser)->pluck('id')->toArray();
-        $this->assertEquals([$a1->id, $a3->id], $ids);
-    }
-
     public function testGetImageAnnotationsHideOther()
     {
         $ownUser = UserTest::create();
@@ -255,68 +142,6 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertTrue($annotations->contains('points', [20, 30, 40]));
         $this->assertFalse($annotations->contains('labels', [$al1->load('user', 'label')->toArray()]));
         $this->assertTrue($annotations->contains('labels', [$al2->load('user', 'label')->toArray()]));
-    }
-
-    public function testAnnotationsHideBoth()
-    {
-        $ownUser = UserTest::create();
-        $otherUser = UserTest::create();
-        $image = ImageTest::create();
-
-        // this should not be shown
-        $a1 = AnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-09-05',
-        ]);
-        $al1 = AnnotationLabelTest::create([
-            'annotation_id' => $a1->id,
-            'user_id' => $ownUser->id,
-            'created_at' => '2016-09-05',
-        ]);
-
-        // this should not be shown
-        $a2 = AnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-09-05',
-        ]);
-        $al2 = AnnotationLabelTest::create([
-            'annotation_id' => $a2->id,
-            'user_id' => $otherUser->id,
-            'created_at' => '2016-09-05',
-        ]);
-
-        // this should be shown
-        $a3 = AnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-09-06',
-        ]);
-        $al3 = AnnotationLabelTest::create([
-            'annotation_id' => $a3->id,
-            'user_id' => $ownUser->id,
-            'created_at' => '2016-09-06',
-        ]);
-
-        // this should not be shown
-        $a4 = AnnotationTest::create([
-            'image_id' => $image->id,
-            'created_at' => '2016-09-06',
-        ]);
-        $al4 = AnnotationLabelTest::create([
-            'annotation_id' => $a4->id,
-            'user_id' => $otherUser->id,
-            'created_at' => '2016-09-06',
-        ]);
-
-        $session = static::create([
-            'transect_id' => $image->transect->id,
-            'starts_at' => '2016-09-06',
-            'ends_at' => '2016-09-07',
-            'hide_own_annotations' => true,
-            'hide_other_users_annotations' => true,
-        ]);
-
-        $ids = $session->annotations($ownUser)->pluck('id')->toArray();
-        $this->assertEquals([$a3->id], $ids);
     }
 
     public function testGetImageAnnotationsHideBoth()
