@@ -35,17 +35,14 @@ class ProjectsAnnotationsController extends Controller
         $take = $request->input('take');
 
         return Annotation::join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-            ->whereIn('annotations.image_id', function ($query) use ($pid) {
-                $query->select('id')
-                    ->from('images')
-                    ->whereIn('transect_id', function ($query) use ($pid) {
-                        $query->select('transect_id')
-                            ->from('project_transect')
-                            ->where('project_id', $pid);
-                    });
+            ->join('images', 'annotations.image_id', '=', 'images.id')
+            ->whereIn('images.transect_id', function ($query) use ($pid) {
+                $query->select('transect_id')
+                    ->from('project_transect')
+                    ->where('project_id', $pid);
             })
             ->where('annotation_labels.label_id', $lid)
-            ->when($take !== null, function ($query) use ($take) {
+            ->when(!is_null($take), function ($query) use ($take) {
                 return $query->orderBy('annotations.created_at', 'desc')
                     ->take($take);
             })
