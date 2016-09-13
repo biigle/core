@@ -5,6 +5,7 @@ namespace Dias\Modules\Ate\Http\Controllers\Api;
 use Dias\Transect;
 use Dias\Annotation;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 use Dias\Http\Controllers\Api\Controller;
 
 class TransectsAnnotationsController extends Controller
@@ -22,25 +23,34 @@ class TransectsAnnotationsController extends Controller
      * @apiDescription Returns a list of annotation IDs
      *
      * @param Request $request
+     * @param Guard $auth
      * @param  int  $tid Transect ID
      * @param int $lid Label ID
      * @return \Illuminate\Http\Response
      */
-    public function filter(Request $request, $tid, $lid)
+    public function filter(Request $request, Guard $auth, $tid, $lid)
     {
         $transect = Transect::findOrFail($tid);
         $this->authorize('access', $transect);
         $this->validate($request, ['take' => 'integer']);
         $take = $request->input('take');
 
-        return Annotation::join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
+        $session = $transect->activeAnnotationSession;
+
+        if ($session) {
+            $query = $session->annotations($auth->user());
+        } else {
+            $query = Annotation::query();
+        }
+
+        return $query->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
             ->whereIn('annotations.image_id', function ($query) use ($tid) {
                 $query->select('id')
                     ->from('images')
                     ->where('transect_id', $tid);
             })
             ->where('annotation_labels.label_id', $lid)
-            ->when($take !== null, function ($query) use ($take) {
+            ->when(!is_null($take), function ($query) use ($take) {
                 return $query->orderBy('annotations.created_at', 'desc')
                     ->take($take);
             })

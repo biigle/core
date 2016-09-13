@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 
 class AteModuleHttpControllersApiTransectsAnnotationsControllerTest extends ApiTestCase {
 
@@ -50,5 +51,90 @@ class AteModuleHttpControllersApiTransectsAnnotationsControllerTest extends ApiT
         $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}?take=1");
         $this->assertResponseOk();
         $this->seeJsonEquals($expect3);
+    }
+
+    public function testFilterAnnotationSession()
+    {
+        $id = $this->transect()->id;
+        $image = ImageTest::create(['transect_id' => $id]);
+
+        $a1 = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => Carbon::yesterday(),
+        ]);
+
+        $a2 = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => Carbon::today(),
+        ]);
+
+        $a3 = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => Carbon::yesterday(),
+        ]);
+
+        $l1 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $this->editor()->id,
+        ]);
+
+        $l2 = AnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'label_id' => $l1->label_id,
+            'user_id' => $this->editor()->id,
+        ]);
+
+        $l3 = AnnotationLabelTest::create([
+            'annotation_id' => $a3->id,
+            'label_id' => $l1->label_id,
+            'user_id' => $this->admin()->id,
+        ]);
+
+        $this->beEditor();
+
+        // test hide own
+        $session = AnnotationSessionTest::create([
+            'transect_id' => $id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $expect = [$a2->id, $a3->id];
+        if ($this->isSqlite()) {
+            $expect = array_map('strval', $expect);
+        }
+
+        $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
+        $this->assertResponseOk();
+        $this->seeJsonEquals($expect);
+
+        // test hide other
+        $session->hide_own_annotations = false;
+        $session->hide_other_users_annotations = true;
+        $session->save();
+
+        $expect = [$a1->id, $a2->id];
+        if ($this->isSqlite()) {
+            $expect = array_map('strval', $expect);
+        }
+
+        $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
+        $this->assertResponseOk();
+        $this->seeJsonEquals($expect);
+
+        // test hide both
+        $session->hide_own_annotations = true;
+        $session->save();
+
+        $expect = [$a2->id];
+        if ($this->isSqlite()) {
+            $expect = array_map('strval', $expect);
+        }
+
+        $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
+        $this->assertResponseOk();
+        $this->seeJsonEquals($expect);
     }
 }
