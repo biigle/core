@@ -1,2 +1,7 @@
 User-agent: *
-Disallow:
+Disallow: /
+# allow public routes
+Allow: /login/
+Allow: /password/
+#Allow: /register/
+Allow: /manual/
