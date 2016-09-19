@@ -28,6 +28,17 @@ class Label extends Model
     ];
 
     /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'parent_id' => 'int',
+        'label_tree_id' => 'int',
+        'label_source_id' => 'int',
+    ];
+
+    /**
      * Don't maintain timestamps for this model.
      *
      * @var bool

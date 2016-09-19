@@ -44,6 +44,59 @@ class LabelTreeController extends Controller
     }
 
     /**
+     * Shows a label tree
+     *
+     * @api {get} label-trees/:id Show a label tree
+     * @apiGroup Label Trees
+     * @apiName ShowLabelTrees
+     * @apiPermission labelTreeMemberIfPrivate
+     *
+     * @apiParam {Number} id The label tree ID
+     *
+     * @apiDescription The `role_id` of the members is their role in this label tree and not their global role.
+     *
+     * @apiSuccessExample {json} Success response:
+     *
+     * {
+     *    "id": 1,
+     *    "name": "My Label Tree",
+     *    "description": "My private label tree.",
+     *    "visibility_id": 2,
+     *    "created_at": "2015-02-10 09:45:30",
+     *    "updated_at": "2015-02-10 09:45:30",
+     *    "labels": [
+     *       {
+     *          "id": 1,
+     *          "name": "Trash",
+     *          "color": "bada55",
+     *          "parent_id": null,
+     *          "label_tree_id": 1,
+     *          "source_id": null,
+     *          "label_source_id": null
+     *       }
+     *    ],
+     *    "members": [
+     *       {
+     *          "id": 1,
+     *          "firstname": "Cesar",
+     *          "lastname": "Beier",
+     *          "role_id": 2
+     *       }
+     *    ]
+     * }
+     *
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $tree = LabelTree::findOrFail($id);
+        $this->authorize('access', $tree);
+
+        return $tree->load('labels', 'members');
+    }
+
+    /**
      * Updates the attributes of the specified label tree
      *
      * @api {put} label-trees/:id Update a label tree

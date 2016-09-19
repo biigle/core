@@ -131,7 +131,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
     $router->get('label-sources/{id}/find', 'LabelSourceController@find');
 
     $router->resource('label-trees', 'LabelTreeController', [
-        'only' => ['index', 'store', 'update', 'destroy'],
+        'only' => ['index', 'show', 'store', 'update', 'destroy'],
     ]);
 
     $router->resource('label-trees.authorized-projects', 'LabelTreeAuthorizedProjectController', [

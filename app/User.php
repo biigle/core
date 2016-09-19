@@ -64,6 +64,15 @@ class User extends Authenticatable
     ];
 
     /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'role_id' => 'int',
+    ];
+
+    /**
      * The attributes that should be mutated to dates.
      *
      * @var array

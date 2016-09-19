@@ -23,6 +23,50 @@ class ApiLabelTreeControllerTest extends ApiTestCase
 
     }
 
+    public function testShow()
+    {
+        $tree = LabelTreeTest::create([
+            'name' => '123',
+            'description' => '123',
+            'visibility_id' => Visibility::$private->id,
+        ]);
+
+        $label = LabelTest::create([
+            'label_tree_id' => $tree->id,
+        ]);
+
+        $tree->addMember($this->editor(), Role::$editor);
+
+        $this->doTestApiRoute('GET', "/api/v1/label-trees/{$tree->id}");
+
+        $this->beUser();
+        $this->get("/api/v1/label-trees/{$tree->id}");
+        $this->assertResponseStatus(403);
+
+        $this->beEditor();
+        $this->get("/api/v1/label-trees/{$tree->id}")
+        ->seeJson([
+            'id' => $tree->id,
+            'name' => $tree->name,
+            'description' => $tree->description,
+            'created_at' => (string) $tree->created_at,
+            'updated_at' => (string) $tree->updated_at,
+        ])
+        ->seeJson([
+            'id' => $label->id,
+            'name' => $label->name,
+            'parent_id' => $label->parent_id,
+            'label_tree_id' => $tree->id,
+        ])
+        ->seeJson([
+            'id' => $this->editor()->id,
+            'firstname' => $this->editor()->firstname,
+            'lastname' => $this->editor()->lastname,
+            'role_id' => Role::$editor->id,
+        ]);
+
+    }
+
 
     public function testUpdate()
     {

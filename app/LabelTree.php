@@ -75,6 +75,15 @@ class LabelTree extends Model
     ];
 
     /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'visibility_id' => 'int',
+    ];
+
+    /**
      * Check if a member can loose their admin status
      *
      * @param User $member

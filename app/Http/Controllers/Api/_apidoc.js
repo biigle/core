@@ -26,6 +26,11 @@
  */
 
 /**
+ * @apiDefine labelTreeMemberIfPrivate Label tree member
+ * The authenticated user needs to be editor or admin of the label tree if the label tree is private.
+ */
+
+/**
  * @apiDefine labelTreeEditor Label tree editor
  * The authenticated user needs to be editor or admin of the label tree.
  */
