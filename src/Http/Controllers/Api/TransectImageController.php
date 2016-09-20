@@ -18,22 +18,34 @@ class TransectImageController extends Controller
      * @apiGroup Transects
      * @apiName TransectImagesHasAnnotation
      * @apiPermission projectMember
-     * @apiDescription Returns IDs of images having one or more annotations
+     * @apiDescription Returns IDs of images having one or more annotations. If there is an active annotation session, images with annotations hidden by the session are not returned.
      *
      * @apiParam {Number} id The transect ID
      *
      * @apiSuccessExample {json} Success response:
      * [1, 5, 6]
      *
+     * @param Guard $auth
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function hasAnnotation($id)
+    public function hasAnnotation(Guard $auth, $id)
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('access', $transect);
 
-        return $transect->images()->has('annotations')->pluck('id');
+        $session = $transect->activeAnnotationSession;
+
+        if ($session) {
+            $query = Annotation::allowedBySession($session, $auth->user());
+        } else {
+            $query = Annotation::getQuery();
+        }
+
+        return $query->join('images', 'images.id', '=', 'annotations.image_id')
+            ->where('images.transect_id', $id)
+            ->groupBy('images.id')
+            ->pluck('images.id');
     }
 
     /**
@@ -43,7 +55,7 @@ class TransectImageController extends Controller
      * @apiGroup Transects
      * @apiName TransectImagesHasUser
      * @apiPermission projectMember
-     * @apiDescription Returns IDs of images having one or more annotations of the specified user.
+     * @apiDescription Returns IDs of images having one or more annotations of the specified user. If there is an active annotation session, images with annotations hidden by the session are not returned.
      *
      * @apiParam {Number} tid The transect ID
      * @apiParam {Number} uid The user ID
@@ -84,7 +96,7 @@ class TransectImageController extends Controller
      * @apiGroup Transects
      * @apiName TransectImagesHasLabel
      * @apiPermission projectMember
-     * @apiDescription Returns IDs of images having one or more annotations with the specified label.
+     * @apiDescription Returns IDs of images having one or more annotations with the specified label. If there is an active annotation session, images with annotations hidden by the session are not returned.
      *
      * @apiParam {Number} tid The transect ID
      * @apiParam {Number} lid The label ID

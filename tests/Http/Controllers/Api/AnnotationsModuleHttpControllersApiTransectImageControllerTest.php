@@ -18,10 +18,59 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
         $this->get("/api/v1/transects/{$id}/images/filter/annotations");
         $this->assertResponseStatus(403);
 
+        $expect = [$image->id];
+        if ($this->isSqlite()) {
+            $expect = array_map('strval', $expect);
+        }
+
         $this->beGuest();
         $this->get("/api/v1/transects/{$id}/images/filter/annotations")
-            ->seeJsonEquals([$image->id]);
+            ->seeJsonEquals($expect);
         $this->assertResponseOk();
+    }
+
+    public function testHasAnnotationAnnotationSession()
+    {
+        $id = $this->transect()->id;
+
+        $image = ImageTest::create(['transect_id' => $id]);
+        $a = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2010-01-01',
+        ]);
+        AnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $this->guest()->id,
+        ]);
+
+        AnnotationSessionTest::create([
+            'transect_id' => $id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $this->beGuest();
+        $this->get("/api/v1/transects/{$id}/images/filter/annotations")
+            ->seeJsonEquals([]);
+
+        $a = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => Carbon::today(),
+        ]);
+        AnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $this->guest()->id,
+        ]);
+
+        $expect = [$image->id];
+        if ($this->isSqlite()) {
+            $expect = array_map('strval', $expect);
+        }
+
+        $this->get("/api/v1/transects/{$id}/images/filter/annotations")
+            ->seeJsonEquals($expect);
     }
 
     public function testHasAnnotationUser() {
