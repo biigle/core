@@ -51,7 +51,8 @@
     @else
         <a href="{{route('project', $projects->first()->id)}}" class="navbar-link" title="Show project {{$projects->first()->name}}">{{$projects->first()->name}}</a>
     @endif
-    / <strong>{{$transect->name}}</strong> <small>({{ sizeof($imageIds) }}&nbsp;images)</small>
+    / <strong>{{$transect->name}}</strong> <small>({{ $imageIds->count() }}&nbsp;images)</small>
+    {{--<span class="text-info glyphicon glyphicon-time" aria-hidden="true" title="Annotation session in progress"></span>--}}
 </div>
 @endsection
 

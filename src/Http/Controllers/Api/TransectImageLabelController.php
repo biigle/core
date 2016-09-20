@@ -3,8 +3,8 @@
 namespace Dias\Modules\Transects\Http\Controllers\Api;
 
 use DB;
-use Dias\Transect;
 use Dias\Label;
+use Dias\Transect;
 use Dias\Http\Controllers\Api\Controller;
 
 class TransectImageLabelController extends Controller

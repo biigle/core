@@ -5,6 +5,7 @@ namespace Dias\Modules\Transects\Http\Controllers;
 use Dias\Role;
 use Dias\Project;
 use Dias\Transect;
+use Carbon\Carbon;
 use Dias\LabelTree;
 use Dias\MediaType;
 use Illuminate\Http\Request;
@@ -93,9 +94,12 @@ class TransectController extends Controller
         $transect = Transect::with('projects')->findOrFail($id);
         $this->authorize('update', $transect);
 
-        return view('transects::edit')
-            ->withTransect($transect)
-            ->with('images', $transect->images()->pluck('filename', 'id'))
-            ->with('mediaTypes', MediaType::all());
+        return view('transects::edit', [
+            'transect' => $transect,
+            'images' => $transect->images()->pluck('filename', 'id'),
+            'mediaTypes' => MediaType::all(),
+            'annotationSessions' => $transect->annotationSessions,
+            'today' => Carbon::today()
+        ]);
     }
 }
