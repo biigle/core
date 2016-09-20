@@ -20,7 +20,7 @@ class TransectsAnnotationsController extends Controller
      * @apiParam {Number} lit The Label ID
      * @apiParam (Optional arguments) {Number} take Number of annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited and unordered.
      * @apiPermission projectMember
-     * @apiDescription Returns a list of annotation IDs
+     * @apiDescription Returns a list of annotation IDs. If there is an active annotation session, images with annotations hidden by the session are not returned.
      *
      * @param Request $request
      * @param Guard $auth
