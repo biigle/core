@@ -22,7 +22,16 @@ class TransectAnnotationSessionController extends Controller
      * @apiSuccessExample {json} Success response:
      * [
      *    {
-     *
+     *       "id": 1,
+     *       "name": "My first annotation session",
+     *       "description": "This is my first annotation session lasting two days.",
+     *       "transect_id": 1,
+     *       "created_at": "2016-09-05 13:52:30",
+     *       "updated_at": "2016-09-05 13:52:30",
+     *       "starts_at": "2016-09-05 00:00:00",
+     *       "ends_at": "2016-09-07 00:00:00",
+     *       "hide_other_users_annotations": true,
+     *       "hide_own_annotations": false
      *    }
      * ]
      *
