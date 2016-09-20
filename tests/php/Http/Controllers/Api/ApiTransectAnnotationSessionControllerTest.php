@@ -88,4 +88,21 @@ class ApiTransectAnnotationSessionControllerTest extends ApiTestCase
         $session = $this->transect()->annotationSessions()->orderBy('id', 'desc')->first();
         $this->seeJsonEquals($session->toArray());
     }
+
+    public function testStoreTimezones()
+    {
+        $id = $this->transect()->id;
+        $this->beAdmin();
+        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-20T00:00:00.000+02:00',
+            'ends_at' => '2016-09-21T00:00:00.000+02:00',
+        ]);
+        $this->assertResponseOk();
+
+        $session = $this->transect()->annotationSessions()->first();
+
+        $this->assertTrue(Carbon::parse('2016-09-19T22:00:00.000Z')->eq($session->starts_at));
+        $this->assertTrue(Carbon::parse('2016-09-20T22:00:00.000Z')->eq($session->ends_at));
+    }
 }

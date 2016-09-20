@@ -21,8 +21,8 @@ class AnnotationSessionController extends Controller
      *
      * @apiParam (Attributes that can be updated) {String} name Name of the annotation session.
      * @apiParam (Attributes that can be updated) {String} Short description of the annotation session.
-     * @apiParam (Attributes that can be updated) {Date} starts_at Day when the annotation session should start. Format `YYYY-MM-DD`.
-     * @apiParam (Attributes that can be updated) {Date} ends_at Day when the annotation session should end. The session ends once this day has started. Format `YYYY-MM-DD`.
+     * @apiParam (Attributes that can be updated) {Date} starts_at Day when the annotation session should start. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. The date returned by this endpoint is in the timezone of the Dias instance.
+     * @apiParam (Attributes that can be updated) {Date} ends_at Day when the annotation session should end. The session ends once this day has started. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. The date returned by this endpoint is in the timezone of the Dias instance.
      * @apiParam (Attributes that can be updated) {Boolean} hide_other_users_annotations Whether to hide annotations of other users while the annotation session is active.
      * @apiParam (Attributes that can be updated) {Boolean} hide_own_annotations Whether to hide annotations of the own user that were created before the annotation session started while the annotation session is active.
      *
@@ -30,8 +30,8 @@ class AnnotationSessionController extends Controller
      * {
      *    "name": "My first annotation session",
      *    "description": "This is my first annotation session lasting two days.",
-     *    "starts_at": "2016-09-05",
-     *    "ends_at": "2016-09-07",
+     *    "starts_at": "2016-09-05T00:00:00.000+02:00",
+     *    "ends_at": "2016-09-07T00:00:00.000+02:00",
      *    "hide_other_users_annotations": true,
      *    "hide_own_annotations": false
      * }
@@ -49,8 +49,14 @@ class AnnotationSessionController extends Controller
         $session->name = $request->input('name', $session->name);
         $session->description = $request->input('description', $session->description);
 
-        $session->starts_at = new Carbon($request->input('starts_at', $session->starts_at));
-        $session->ends_at = new Carbon($request->input('ends_at', $session->ends_at));
+        $tz = config('app.timezone');
+        if ($request->has('starts_at')) {
+            $session->starts_at = Carbon::parse($request->input('starts_at'))->tz($tz);
+        }
+
+        if ($request->has('ends_at')) {
+            $session->ends_at = Carbon::parse($request->input('ends_at'))->tz($tz);
+        }
 
         $session->hide_other_users_annotations = $request->input('hide_other_users_annotations', $session->hide_other_users_annotations);
         $session->hide_own_annotations = $request->input('hide_own_annotations', $session->hide_own_annotations);

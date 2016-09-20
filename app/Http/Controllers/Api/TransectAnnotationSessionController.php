@@ -59,8 +59,8 @@ class TransectAnnotationSessionController extends Controller
      * @apiParam {Number} id The transect ID.
      *
      * @apiParam (Required arguments) {String} name Name of the annotation session.
-     * @apiParam (Required arguments) {Date} starts_at Day when the annotation session should start. Format `YYYY-MM-DD`.
-     * @apiParam (Required arguments) {Date} ends_at Day when the annotation session should end. The session ends once this day has started. Format `YYYY-MM-DD`.
+     * @apiParam (Required arguments) {Date} starts_at Day when the annotation session should start. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. The date returned by this endpoint is in the timezone of the Dias instance.
+     * @apiParam (Required arguments) {Date} ends_at Day when the annotation session should end. The session ends once this day has started. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. The date returned by this endpoint is in the timezone of the Dias instance.
      *
      * @apiParam (Optional arguments) {String} description Short description of the annotation session.
      * @apiParam (Optional arguments) {Boolean} hide_other_users_annotations Whether to hide annotations of other users while the annotation session is active. Default is `false`.
@@ -70,8 +70,8 @@ class TransectAnnotationSessionController extends Controller
      * {
      *    "name": "My first annotation session",
      *    "description": "This is my first annotation session lasting two days.",
-     *    "starts_at": "2016-09-05",
-     *    "ends_at": "2016-09-07",
+     *    "starts_at": "2016-09-20T00:00:00.000+02:00",
+     *    "ends_at": "2016-09-25T00:00:00.000+02:00",
      *    "hide_other_users_annotations": true
      * }
      *
@@ -81,10 +81,10 @@ class TransectAnnotationSessionController extends Controller
      *     "name": "My first annotation session",
      *     "description": "This is my first annotation session lasting two days.",
      *     "transect_id": 1,
-     *     "created_at": "2016-09-05 13:52:30",
-     *     "updated_at": "2016-09-05 13:52:30",
-     *     "starts_at": "2016-09-05 00:00:00",
-     *     "ends_at": "2016-09-07 00:00:00",
+     *     "created_at": "2016-09-18 13:52:30",
+     *     "updated_at": "2016-09-18 13:52:30",
+     *     "starts_at": "2016-09-19 22:00:00",
+     *     "ends_at": "2016-09-24 22:00:00",
      *     "hide_other_users_annotations": true,
      *     "hide_own_annotations": false
      * }
@@ -103,8 +103,12 @@ class TransectAnnotationSessionController extends Controller
         $session = new AnnotationSession;
         $session->name = $request->input('name');
         $session->description = $request->input('description');
-        $session->starts_at = $request->input('starts_at');
-        $session->ends_at = $request->input('ends_at');
+
+        $tz = config('app.timezone');
+        // convert the timezone of the user input to the timezone of this Dias instance
+        $session->starts_at = Carbon::parse($request->input('starts_at'))->tz($tz);
+        $session->ends_at = Carbon::parse($request->input('ends_at'))->tz($tz);
+
         $session->hide_other_users_annotations = $request->input('hide_other_users_annotations', false);
         $session->hide_own_annotations = $request->input('hide_own_annotations', false);
 

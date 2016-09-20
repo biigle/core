@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 class ApiAnnotationSessionControllerTest extends ApiTestCase
 {
     public function testUpdate()
@@ -56,6 +58,25 @@ class ApiAnnotationSessionControllerTest extends ApiTestCase
         $this->assertResponseOk();
 
         $this->assertEquals('my cool name', $session->fresh()->name);
+    }
+
+    public function testUpdateTimezones()
+    {
+        $session = AnnotationSessionTest::create([
+            'transect_id' => $this->transect()->id,
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+        ]);
+
+        $this->beAdmin();
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'ends_at' => '2016-09-07T00:00:00.000+02:00',
+        ]);
+        $this->assertResponseOk();
+
+        $session = $session->fresh();
+
+        $this->assertTrue(Carbon::parse('2016-09-06T22:00:00.000Z')->eq($session->ends_at));
     }
 
     public function testDestroy()
