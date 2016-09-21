@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Dias\AnnotationSession;
 
 class AnnotationSessionTest extends ModelTestCase
@@ -264,5 +265,30 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertFalse($session->allowsAccess($a2, $ownUser));
         $this->assertTrue($session->allowsAccess($a3, $ownUser));
         $this->assertFalse($session->allowsAccess($a4, $ownUser));
+    }
+
+    public function testStartsAtEndsAtMutator()
+    {
+        $session = self::create([
+            'starts_at' => '2016-09-05T00:00:00.000+02:00',
+            'ends_at' => '2016-09-07T00:00:00.000+02:00',
+        ]);
+
+        $this->assertTrue(Carbon::parse('2016-09-04T22:00:00.000Z')->eq($session->starts_at));
+        $this->assertTrue(Carbon::parse('2016-09-06T22:00:00.000Z')->eq($session->ends_at));
+    }
+
+    public function testStartsAtEndsAtISO8601()
+    {
+        $session = self::create([
+            'starts_at' => '2016-09-05T00:00:00.000+02:00',
+            'ends_at' => '2016-09-07T00:00:00.000+02:00',
+        ]);
+
+        $this->assertEquals('2016-09-04T22:00:00+0000', $session->starts_at_iso8601);
+        $this->assertEquals('2016-09-06T22:00:00+0000', $session->ends_at_iso8601);
+
+        $this->assertArrayHasKey('starts_at_iso8601', $session->toArray());
+        $this->assertArrayHasKey('ends_at_iso8601', $session->toArray());
     }
 }

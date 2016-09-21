@@ -3,6 +3,7 @@
 namespace Dias;
 
 use DB;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -48,6 +49,16 @@ class AnnotationSession extends Model
         'hide_other_users_annotations' => 'boolean',
         'hide_own_annotations' => 'boolean',
         'transect_id' => 'int',
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'starts_at_iso8601',
+        'ends_at_iso8601',
     ];
 
     /**
@@ -123,5 +134,53 @@ class AnnotationSession extends Model
         }
 
         return true;
+    }
+
+    /**
+     * Set the start date
+     *
+     * @param mixed $value The date (must be parseable by Carbon)
+     */
+    public function setStartsAtAttribute($value)
+    {
+        if (is_null($value)) {
+            $this->attributes['starts_at'] = null;
+        } else {
+            $this->attributes['starts_at'] = Carbon::parse($value)->tz(config('app.timezone'));
+        }
+    }
+
+    /**
+     * Set the end date
+     *
+     * @param mixed $value The date (must be parseable by Carbon)
+     */
+    public function setEndsAtAttribute($value)
+    {
+        if (is_null($value)) {
+            $this->attributes['ends_at'] = null;
+        } else {
+            $this->attributes['ends_at'] = Carbon::parse($value)->tz(config('app.timezone'));
+        }
+    }
+
+    /**
+     * Get the start date formatted as ISO8601 string
+     *
+     * @return string
+     */
+    public function getStartsAtIso8601Attribute()
+    {
+        return $this->starts_at->toIso8601String();
+    }
+
+    /**
+     * Get the end date formatted as ISO8601 string
+     *
+     * @return string
+     */
+    public function getEndsAtIso8601Attribute()
+    {
+        return $this->ends_at->toIso8601String();
     }
 }

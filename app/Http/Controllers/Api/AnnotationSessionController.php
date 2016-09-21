@@ -21,8 +21,8 @@ class AnnotationSessionController extends Controller
      *
      * @apiParam (Attributes that can be updated) {String} name Name of the annotation session.
      * @apiParam (Attributes that can be updated) {String} Short description of the annotation session.
-     * @apiParam (Attributes that can be updated) {Date} starts_at Day when the annotation session should start. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. The date returned by this endpoint is in the timezone of the Dias instance.
-     * @apiParam (Attributes that can be updated) {Date} ends_at Day when the annotation session should end. The session ends once this day has started. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. The date returned by this endpoint is in the timezone of the Dias instance.
+     * @apiParam (Attributes that can be updated) {Date} starts_at Day when the annotation session should start. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. This endpoint returns a special `starts_at_iso8601` attribute which is parseable independently from the timezone of the Dias instance.
+     * @apiParam (Attributes that can be updated) {Date} ends_at Day when the annotation session should end. The session ends once this day has started. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. This endpoint returns a special `ends_at_iso8601` attribute which is parseable independently from the timezone of the Dias instance.
      * @apiParam (Attributes that can be updated) {Boolean} hide_other_users_annotations Whether to hide annotations of other users while the annotation session is active.
      * @apiParam (Attributes that can be updated) {Boolean} hide_own_annotations Whether to hide annotations of the own user that were created before the annotation session started while the annotation session is active.
      *
@@ -49,14 +49,8 @@ class AnnotationSessionController extends Controller
         $session->name = $request->input('name', $session->name);
         $session->description = $request->input('description', $session->description);
 
-        $tz = config('app.timezone');
-        if ($request->has('starts_at')) {
-            $session->starts_at = Carbon::parse($request->input('starts_at'))->tz($tz);
-        }
-
-        if ($request->has('ends_at')) {
-            $session->ends_at = Carbon::parse($request->input('ends_at'))->tz($tz);
-        }
+        $session->starts_at = $request->input('starts_at', $session->starts_at);
+        $session->ends_at = $request->input('ends_at', $session->ends_at);
 
         $session->hide_other_users_annotations = $request->input('hide_other_users_annotations', $session->hide_other_users_annotations);
         $session->hide_own_annotations = $request->input('hide_own_annotations', $session->hide_own_annotations);
