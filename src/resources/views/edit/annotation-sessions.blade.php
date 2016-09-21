@@ -63,14 +63,21 @@
                 </div>
             </div>
             <button type="submit" class="btn btn-success" title="Create new annotation session">Create</button>
-            <span class="help-block"></span>
         </form>
     </div>
-    <div class="panel-body">
-        @forelse($annotationSessions as $session)
-            {{$session->name}}
-        @empty
-            <span class="text-muted">There are no annotation sessions.</span>
-        @endforelse
-    </div>
+    <ul class="list-group images-list ng-cloak">
+            <li class="list-group-item session" data-ng-repeat="session in getSessions() | orderBy: 'starts_at_iso8691':dateComparator track by session.id" data-ng-if="hasSessions()" data-ng-class="{'session--active':isActive(session)}">
+                <div class="clearfix">
+                    <span class="session__dates"><span data-ng-bind="session.starts_at_iso8601 | date: 'yyyy-MM-dd HH:mm'"></span> - <span data-ng-bind="session.ends_at_iso8601 | date: 'yyyy-MM-dd HH:mm'"></span></span> <strong data-ng-bind="session.name"></strong>
+                    <button type="button" class="close" title="Delete this annotation session" data-ng-click="confirm('Are you sure you want to delete the annotation session \'' + session.name + '\'?') && deleteSession(session)" data-ng-if="isEditing()"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div data-ng-bind="session.description">
+                </div>
+                <div>
+                    <span class="label label-default" data-ng-if="session.hide_other_users_annotations" title="Hide annotations of other users while this annotation session is active">hide&nbsp;other</span>
+                    <span class="label label-default" data-ng-if="session.hide_own_annotations" title="Hide own annotations that were created before this annotation session started while it is active">hide&nbsp;own</span>
+                </div>
+            </li>
+            <li class="list-group-item text-muted" data-ng-if="!hasSessions()">There are no annotation sessions.</li>
+    </ul>
 </div>

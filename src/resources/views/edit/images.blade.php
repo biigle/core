@@ -11,10 +11,11 @@
     <div class="panel-body ng-cloak" data-ng-if="data.addingNewImages">
         <form role="form" class="form-inline" data-ng-submit="addNewImages()">
             <div class="form-group">
-                <input type="text" class="form-control" name="filename" id="images" placeholder="New image filename(s)" data-ng-model="data.filenames" required>
+                <label>Filename(s):&nbsp;</label>
+                <input type="text" class="form-control" name="filename" id="images" placeholder="1.jpg, 2.jpg, 3.jpg" data-ng-model="data.filenames" required>
             </div>
             <button type="submit" class="btn btn-success">Add image(s)</button>
-            <span class="help-block">Mutliple images may be added by submitting the image filenames as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>.</span>
+            <span class="help-block">Mutliple images may be added by submitting the image filenames as comma separated values.</span>
         </form>
     </div>
     <ul class="list-group images-list">

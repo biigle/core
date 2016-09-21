@@ -7,6 +7,7 @@
     <script src="{{ asset('vendor/transects/scripts/edit.js') }}"></script>
     <script type="text/javascript">
         angular.module('dias.transects.edit').constant('TRANSECT_ID', {!!$transect->id!!});
+        angular.module('dias.transects.edit').constant('ANNOTATION_SESSIONS', {!!$annotationSessions!!});
     </script>
     @foreach ($modules->getMixins('transectsEditScripts') as $module => $nestedMixins)
         @include($module.'::transectsEditScripts', ['mixins' => $nestedMixins])

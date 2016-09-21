@@ -12,7 +12,7 @@
             <div class="row">
                 <div class="form-group col-sm-6{{ $errors->has('name') ? ' has-error' : '' }}">
                     <label for="name">Name</label>
-                    <input type="text" class="form-control" name="name" id="name" value="{{ old('name', $transect->name) }}" required>
+                    <input type="text" class="form-control" name="name" id="name" value="{{ old('name', $transect->name) }}" placeholder="My transect" required>
                     @if($errors->has('name'))
                         <span class="help-block">{{ $errors->first('name') }}</span>
                     @endif
@@ -32,7 +32,7 @@
             <div class="row">
                 <div class="form-group col-xs-12{{ $errors->has('url') ? ' has-error' : '' }}">
                     <label for="url">URL</label>
-                    <input type="text" class="form-control" name="url" id="url" value="{{ old('url', $transect->url) }}" required>
+                    <input type="text" class="form-control" name="url" id="url" value="{{ old('url', $transect->url) }}" placeholder="/vol/images/transect" required>
                     <p class="help-block">
                         The directory containing the transect images.{{-- Can be local like <code>/vol/images/transect</code> or remote like <code>https://my-domain.tld/transect</code>.--}} Should be a local path like <code>/vol/images/transect</code>.
                     </p>
