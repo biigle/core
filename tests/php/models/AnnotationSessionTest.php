@@ -280,6 +280,9 @@ class AnnotationSessionTest extends ModelTestCase
 
     public function testStartsAtEndsAtISO8601()
     {
+        // the timezone may vary between different Dias instances that run this test
+        config(['app.timezone' => 'UTC']);
+
         $session = self::create([
             'starts_at' => '2016-09-05T00:00:00.000+02:00',
             'ends_at' => '2016-09-07T00:00:00.000+02:00',
