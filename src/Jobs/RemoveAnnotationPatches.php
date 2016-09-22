@@ -61,7 +61,7 @@ class RemoveAnnotationPatches extends Job implements ShouldQueue
         // If the iterator is not valid, there are no files in the directory any more.
         // Use the iterator because there may be *lots* of files in the directory
         // and most other methods fetch/count them all.
-        if (!App::make(FilesystemIterator::class, [$prefix, null])->valid()) {
+        if (File::exists($prefix) && !App::make(FilesystemIterator::class, [$prefix, null])->valid()) {
             File::deleteDirectory($prefix);
         }
     }

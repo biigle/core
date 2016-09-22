@@ -15,6 +15,11 @@ class RemoveAnnotationPatchesTest extends TestCase
             ->with($patchPath)
             ->once();
 
+        File::shouldReceive('exists')
+            ->with($path)
+            ->once()
+            ->andReturn(true);
+
         $mock = Mockery::mock();
         $mock->shouldReceive('valid')->once()->andReturn(false);
         App::bind(FilesystemIterator::class, function ($app, $args) use ($path, $mock) {
@@ -40,6 +45,11 @@ class RemoveAnnotationPatchesTest extends TestCase
             ->with($patchPath)
             ->once();
 
+        File::shouldReceive('exists')
+            ->with($path)
+            ->once()
+            ->andReturn(true);
+
         $mock = Mockery::mock();
         $mock->shouldReceive('valid')->once()->andReturn(true);
         App::bind(FilesystemIterator::class, function () use ($mock) {
@@ -49,6 +59,32 @@ class RemoveAnnotationPatchesTest extends TestCase
         File::shouldReceive('deleteDirectory')
             ->never();
 
+        with(new RemoveAnnotationPatches($transectId, [$annotationId]))->handle();
+    }
+
+    public function testHandleThrowsException()
+    {
+        $transectId = rand();
+        $annotationId = rand();
+        $path = config('ate.patch_storage').'/'.$transectId;
+        $patchPath = $path.'/'.$annotationId.'.'.config('ate.patch_format');
+
+        File::shouldReceive('delete')
+            ->with($patchPath)
+            ->once();
+
+        File::shouldReceive('exists')
+            ->with($path)
+            ->once()
+            ->andReturn(false);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('valid')->never();
+        App::bind(FilesystemIterator::class, function () use ($mock) {
+            return $mock;
+        });
+
+        // no exception should be thrown
         with(new RemoveAnnotationPatches($transectId, [$annotationId]))->handle();
     }
 }
