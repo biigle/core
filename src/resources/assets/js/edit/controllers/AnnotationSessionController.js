@@ -7,60 +7,83 @@
  */
 angular.module('dias.transects.edit').controller('AnnotationSessionController', function ($scope, AnnotationSession, TRANSECT_ID, ANNOTATION_SESSIONS, msg) {
 		"use strict";
-        var editing = true;
+        var editing = false;
+        var loading = false;
 
         var errors = {};
 
-        var dateFormat = {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-        };
-
         var now = new Date();
 
-        var handleAddSuccess = function (session) {
-            ANNOTATION_SESSIONS.push(session);
-            for (var key in $scope.newSession) {
-                if ($scope.newSession.hasOwnProperty(key)) {
-                    $scope.newSession[key] = null;
+        var handleCreateSuccess = function (session) {
+            ANNOTATION_SESSIONS.push(processSession(session));
+            $scope.clearNewSession();
+            loading = false;
+        };
+
+        var handleSaveSuccess = function () {
+            for (var i = ANNOTATION_SESSIONS.length - 1; i >= 0; i--) {
+                if (ANNOTATION_SESSIONS[i].id === $scope.newSession.id) {
+                    ANNOTATION_SESSIONS[i] = $scope.newSession;
+                    break;
                 }
             }
+            $scope.clearNewSession();
+            loading = false;
         };
 
-        var handleAddError = function (response) {
+        var handleFormError = function (response) {
             errors = response.data;
+            loading = false;
         };
 
-        var handleDeleteSuccess = function (session) {
-            var index = ANNOTATION_SESSIONS.indexOf(session);
-            if (index > -1) {
-                ANNOTATION_SESSIONS.splice(index, 1);
+        var handleDeleteSuccess = function () {
+            for (var i = ANNOTATION_SESSIONS.length - 1; i >= 0; i--) {
+                if (ANNOTATION_SESSIONS[i].id === $scope.newSession.id) {
+                    ANNOTATION_SESSIONS.splice(i, 1);
+                    break;
+                }
             }
+            $scope.clearNewSession();
+            loading = false;
+        };
+
+        var handleError = function (response) {
+            msr.responseError(response);
+            loading = false;
         };
 
         var clearErrors = function () {
             errors = {};
         };
 
+        var processSession = function (session) {
+            session.starts_at = new Date(session.starts_at);
+            session.starts_at_iso8601 = new Date(session.starts_at_iso8601);
+            session.ends_at = new Date(session.ends_at);
+            session.ends_at_iso8601 = new Date(session.ends_at_iso8601);
+
+            return session;
+        };
+
+        var emptySession = {
+            name: null,
+            description: null,
+            starts_at_iso8601: null,
+            ends_at_iso8601: null,
+            hide_other_users_annotations: false,
+            hide_own_annotations: false
+        };
+
         // alternative date input formats
         $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy'];
 
+        // open state of the date chooser popovers
         $scope.open = {
             starts_at: false,
             ends_at: false
         };
 
-        $scope.newSession = {
-            name: null,
-            description: null,
-            starts_at: null,
-            ends_at: null,
-            hide_other_users_annotations: false,
-            hide_own_annotations: false
-        };
+        $scope.newSession = angular.copy(emptySession);
 
         $scope.confirm = function () {
             return confirm.apply(window, arguments);
@@ -70,8 +93,15 @@ angular.module('dias.transects.edit').controller('AnnotationSessionController', 
             return editing;
         };
 
+        $scope.isLoading = function () {
+            return loading;
+        };
+
         $scope.toggleEditing = function () {
             editing = !editing;
+            if (!editing) {
+                $scope.clearNewSession();
+            }
         };
 
         $scope.openStartsAt = function () {
@@ -103,24 +133,45 @@ angular.module('dias.transects.edit').controller('AnnotationSessionController', 
         };
 
         $scope.isActive = function (session) {
-            return (new Date(session.starts_at_iso8601)) < now && (new Date(session.ends_at_iso8601)) >= now;
+            return session.starts_at_iso8601 < now && session.ends_at_iso8601 >= now;
         };
 
-        $scope.dateComparator = function (a, b) {
-            return (new Date(a)) < (new Date(b)) ? -1 : 1;
+        $scope.dateComparator = function (session) {
+            return session.starts_at_iso8601.getTime();
         };
 
-        $scope.addSession = function () {
+        $scope.submit = function () {
             clearErrors();
-            // Date objects are automatically parsed to ISO 8601 strings with timezone
-            // so the enpoint can handle the timezones correctly.
-            AnnotationSession.create({transect_id: TRANSECT_ID}, $scope.newSession, handleAddSuccess, handleAddError);
+            loading = true;
+
+            // update regular timestamps
+            $scope.newSession.starts_at = $scope.newSession.starts_at_iso8601;
+            $scope.newSession.ends_at = $scope.newSession.ends_at_iso8601;
+
+            if ($scope.newSession.id) {
+                AnnotationSession.save($scope.newSession, handleSaveSuccess, handleFormError);
+            } else {
+                // Date objects are automatically parsed to ISO8601 strings with timezone
+                // so the enpoint can handle the timezones correctly.
+                AnnotationSession.create({transect_id: TRANSECT_ID}, $scope.newSession, handleCreateSuccess, handleFormError);
+            }
         };
 
-        $scope.deleteSession = function (session) {
-            AnnotationSession.delete({id: session.id}, function () {
-                handleDeleteSuccess(session);
-            }, msg.responseError);
+        $scope.deleteSession = function () {
+            loading = true;
+            AnnotationSession.delete({id: $scope.newSession.id}, handleDeleteSuccess, handleError);
         };
+
+        $scope.clearNewSession = function () {
+            clearErrors();
+            $scope.newSession = angular.copy(emptySession);
+        };
+
+        $scope.editSession = function (session) {
+            $scope.newSession = angular.copy(session);
+        };
+
+        // convert the relevant dates
+        ANNOTATION_SESSIONS.forEach(processSession);
 	}
 );

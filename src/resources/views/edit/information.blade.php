@@ -1,6 +1,6 @@
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title">Transect information</h3>
+        Transect information
     </div>
     <div class="panel-body">
         @if (session('saved'))

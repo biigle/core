@@ -7,6 +7,22 @@
     }
 }
 
+.panel {
+    &:not(.panel--editing) {
+        .session {
+            border: 0;
+        }
+    }
+
+    &.panel--editing {
+        .session {
+            &:hover {
+                background-color: $state-info-bg;
+                cursor: pointer;
+            }
+        }
+    }
+}
 .session {
     position: relative;
     padding-left: 34px;
