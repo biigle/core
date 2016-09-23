@@ -19,20 +19,7 @@
 
 @section('navbar')
 <div class="navbar-text navbar-ate-breadcrumbs">
-    @if ($projects->count() > 1)
-        <span class="dropdown">
-            <a href="#" class="dropdown-toggle navbar-link">Projects <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-                @foreach ($projects as $project)
-                    <li><a href="{{route('project', $project->id)}}">{{$project->name}}</a></li>
-                @endforeach
-            </ul>
-        </span>
-    @else
-        <a href="{{route('project', $projects->first()->id)}}" class="navbar-link" title="Show project {{$projects->first()->name}}">{{$projects->first()->name}}</a>
-    @endif
-    / <a href="{{route('transect', $transect->id)}}" title="Show transect {{$transect->name}}">{{$transect->name}}</a>
-    / <strong id="dismiss-mode-title">ATE - dismiss existing annotations</strong><strong id="re-labelling-mode-title" class="ng-hide">ATE - re-label dismissed annotations</strong> <small>(<span id="annotation-count">0</span>&nbsp;annotations)</small>
+    @include('transects::partials.projectsBreadcrumb') / <a href="{{route('transect', $transect->id)}}" title="Show transect {{$transect->name}}">{{$transect->name}}</a> / <strong id="dismiss-mode-title">ATE - dismiss existing annotations</strong><strong id="re-labelling-mode-title" class="ng-hide">ATE - re-label dismissed annotations</strong> <small>(<span id="annotation-count">0</span>&nbsp;annotations)</small> @include('transects::partials.annotationSessionIndicator')
 </div>
 @endsection
 
