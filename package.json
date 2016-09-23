@@ -2,6 +2,7 @@
   "private": true,
   "devDependencies": {
     "angular-jsdoc": "~0.3.2",
+    "bootstrap-sass": "^3.3.7",
     "gulp": "^3.9.1",
     "gulp-apidoc": "~0.1.2",
     "gulp-helpers": "git+https://github.com/mzur/gulp-helpers.git",
