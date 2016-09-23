@@ -136,7 +136,7 @@ $table-bg:                      transparent !default;
 //** Background color used for `.table-striped`.
 $table-bg-accent:               #292929 !default;
 //** Background color used for `.table-hover`.
-$table-bg-hover:                #252525 !default;
+$table-bg-hover:                #292929 !default;
 $table-bg-active:               $table-bg-hover !default;
 
 //** Border color for table and cell borders.
@@ -501,20 +501,20 @@ $jumbotron-heading-font-size:    ceil(($font-size-base * 4.5)) !default;
 //
 //## Define colors for form feedback states and, by default, alerts.
 
-$state-success-text:             lighten(#3c763d, 20%) !default;
-$state-success-bg:               mix(#3c763d, $body-bg, 30%) !default;  //#dff0d8
+$state-success-text:             lighten($brand-success, 5%) !default;
+$state-success-bg:               mix($brand-success, $body-bg, 30%) !default;  //#dff0d8
 $state-success-border:           lighten(adjust-hue($state-success-bg, -10), 5%) !default;
 
-$state-info-text:                lighten(#31708f, 20%) !default;
-$state-info-bg:                  mix(#31708f, $body-bg, 30%) !default; //#d9edf7
+$state-info-text:                lighten($brand-info, 5%) !default;
+$state-info-bg:                  mix($brand-info, $body-bg, 30%) !default; //#d9edf7
 $state-info-border:              lighten(adjust-hue($state-info-bg, -10), 7%) !default;
 
-$state-warning-text:             lighten(#8a6d3b, 20%) !default;
-$state-warning-bg:               mix(#8a6d3b, $body-bg, 30%) !default; //#fcf8e3
+$state-warning-text:             lighten($brand-warning, 5%) !default;
+$state-warning-bg:               mix($brand-warning, $body-bg, 30%) !default; //#fcf8e3
 $state-warning-border:           lighten(adjust-hue($state-warning-bg, -10), 5%) !default;
 
-$state-danger-text:              lighten(#a94442, 20%) !default;
-$state-danger-bg:                mix(#a94442, $body-bg, 30%) !default; //#f2dede
+$state-danger-text:              lighten($brand-danger, 5%) !default;
+$state-danger-bg:                mix($brand-danger, $body-bg, 30%) !default; //#f2dede
 $state-danger-border:            lighten(adjust-hue($state-danger-bg, -10), 5%) !default;
 
 
