@@ -185,6 +185,47 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertFalse($annotations->contains('labels', [$al2->load('user', 'label')->toArray()]));
     }
 
+    public function testGetImageAnnotationsHideNothing()
+    {
+        $ownUser = UserTest::create();
+        $otherUser = UserTest::create();
+        $image = ImageTest::create();
+
+        $a = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+            'points' => [40, 50, 60],
+        ]);
+        $al1 = AnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al2 = AnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $session = static::create([
+            'transect_id' => $image->transect->id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => false,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $annotations = $session->getImageAnnotations($image, $ownUser);
+        // expand the models in the collection so we can make assertions
+        $annotations = collect($annotations->toArray());
+
+        $this->assertTrue($annotations->contains('points', [40, 50, 60]));
+        $this->assertTrue($annotations->contains('labels', [
+            $al1->load('user', 'label')->toArray(),
+            $al2->load('user', 'label')->toArray()
+        ]));
+    }
+
     public function testAllowsAccess()
     {
         $ownUser = UserTest::create();

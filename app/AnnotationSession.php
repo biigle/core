@@ -84,6 +84,14 @@ class AnnotationSession extends Model
         $query = Annotation::allowedBySession($this, $user)
             ->where('annotations.image_id', $image->id);
 
+        /*
+         * If both hide_other_users_annotations and hide_own_annotations is true,
+         * allowedBySession already filters out all old annotations and only those
+         * annotations are kept, that belong to this session. We therefore only need
+         * to perform the hide_other_users_annotations filtering.
+         * This is the reason why there is no special case for both true in the following
+         * if else block.
+         */
         if ($this->hide_other_users_annotations) {
 
             // hide all annotation labels of other users
@@ -102,6 +110,8 @@ class AnnotationSession extends Model
                     ->orWhere('user_id', '!=', $user->id);
             }]);
 
+        } else {
+            $query->with('labels');
         }
 
         return $query->get();
