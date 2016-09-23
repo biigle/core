@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Provides functions that filter annotations based on different properties
  */
-angular.module('dias.annotations').factory('AnnotationFilters', function () {
+angular.module('dias.annotations').factory('AnnotationFilters', function (ANNOTATION_SESSIONS) {
     "use strict";
 
     /*
@@ -92,6 +92,60 @@ angular.module('dias.annotations').factory('AnnotationFilters', function () {
 
                 var flat = input.flat.filter(function (item) {
                     return item.shape_id === shapeId;
+                });
+
+                return {
+                    groupedByLabel: groupedByLabel,
+                    flat: flat
+                };
+            };
+        },
+        session: function (sessionId) {
+            var session;
+            for (var i = ANNOTATION_SESSIONS.length - 1; i >= 0; i--) {
+                if (ANNOTATION_SESSIONS[i].id === sessionId) {
+                    session = ANNOTATION_SESSIONS[i];
+                    break;
+                }
+            }
+
+            session.starts_at = new Date(session.starts_at);
+            session.ends_at = new Date(session.ends_at);
+
+            return function (input) {
+                var groupedByLabel = input.groupedByLabel;
+                var annotations;
+                var created_at;
+                for (var id in groupedByLabel) {
+                    if (groupedByLabel.hasOwnProperty(id)) {
+                        annotations = groupedByLabel[id].annotations;
+                        for (var i = annotations.length - 1; i >= 0; i--) {
+                            created_at = new Date(annotations[i].annotation.created_at);
+                            /*
+                             * Dates without timezone (like these) are interpreted
+                             * as dates of the timezone of the browser. Since the
+                             * application can run in any timezone, these dates may
+                             * not be interpreted correctly. But since the dates of the
+                             * annotation session are not interpreted correctly, too
+                             * (in the same way), we can compare them anyway.
+                             * Just be sure not to use the iso_8601 dates of the
+                             * annotation session for comparison with the dates of
+                             * the annotations.
+                             */
+                            if (created_at < session.starts_at || created_at >= session.ends_at) {
+                                annotations.splice(i, 1);
+                            }
+                        }
+
+                        if (annotations.length === 0) {
+                            delete groupedByLabel[id];
+                        }
+                    }
+                }
+
+                var flat = input.flat.filter(function (item) {
+                    var created_at = new Date(item.created_at);
+                    return created_at >= session.starts_at && created_at < session.ends_at;
                 });
 
                 return {

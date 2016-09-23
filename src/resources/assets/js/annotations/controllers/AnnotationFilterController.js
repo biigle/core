@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Controller for the annotations filter function in the sidebar
  */
-angular.module('dias.annotations').controller('AnnotationFilterController', function ($scope, annotations, AnnotationFilters) {
+angular.module('dias.annotations').controller('AnnotationFilterController', function ($scope, annotations, AnnotationFilters, ANNOTATION_SESSIONS) {
     "use strict";
 
     var clearFilter = function () {
@@ -39,6 +39,13 @@ angular.module('dias.annotations').controller('AnnotationFilterController', func
                 name: 'shape',
                 typeahead: annotations.getAvailableShapes,
                 create: AnnotationFilters.shape
+            },
+            {
+                name: 'session',
+                typeahead: function () {
+                    return ANNOTATION_SESSIONS;
+                },
+                create: AnnotationFilters.session
             }
         ]
     };
