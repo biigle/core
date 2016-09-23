@@ -73,7 +73,7 @@
     </div>
     <ul class="list-group images-list ng-cloak">
             <li class="list-group-item session" title="@{{isEditing() ? 'Edit this annotation session' : session.name}}" data-ng-repeat="session in getSessions() | orderBy:dateComparator:true track by session.id" data-ng-if="hasSessions()" data-ng-class="{'session--active': isActive(session), 'list-group-item-info': newSession.id === session.id}" data-ng-click="isEditing() && editSession(session)">
-                <div class="clearfix">
+                <div>
                     <span class="session__dates"><span title="@{{session.starts_at_iso8601}}" data-ng-bind="session.starts_at_iso8601 | date: 'yyyy-MM-dd'"></span> - <span title="@{{session.starts_at_iso8601}}" data-ng-bind="session.ends_at_iso8601 | date: 'yyyy-MM-dd'"></span></span> <strong data-ng-bind="session.name"></strong>
                 </div>
                 <div data-ng-bind="session.description">
