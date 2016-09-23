@@ -103,11 +103,14 @@ class AnnotationSession extends Model
 
             // take only labels of this session or any labels of other users
             $query->with(['labels' => function ($query) use ($user) {
-                $query->where(function ($query) {
+                // wrap this in a where because the default query already has a where
+                $query->where(function ($query) use ($user) {
+                    $query->where(function ($query) {
                         $query->where('created_at', '>=', $this->starts_at)
                             ->where('created_at', '<', $this->ends_at);
                     })
                     ->orWhere('user_id', '!=', $user->id);
+                });
             }]);
 
         } else {
