@@ -39,6 +39,18 @@ class CsvReport extends Report
             $csv = CsvFile::makeTmp();
             $this->tmpFiles[$id] = $csv;
 
+            // add column headers
+            $csv->put([
+                'image_label_id',
+                'image_id',
+                'filename',
+                'user_id',
+                'firstname',
+                'lastname',
+                'label_id',
+                'label_name',
+            ]);
+
             $query = $this->query($id);
             $rows = $query->get();
 

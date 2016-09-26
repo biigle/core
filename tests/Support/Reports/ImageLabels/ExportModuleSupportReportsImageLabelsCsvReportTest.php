@@ -31,6 +31,19 @@ class ExportModuleSupportReportsImageLabelsCsvReportTest extends TestCase {
         $mock->shouldReceive('put')
             ->once()
             ->with([
+                'image_label_id',
+                'image_id',
+                'filename',
+                'user_id',
+                'firstname',
+                'lastname',
+                'label_id',
+                'label_name',
+            ]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
                 $il->id,
                 $il->image_id,
                 $il->image->filename,

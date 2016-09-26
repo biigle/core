@@ -39,6 +39,22 @@ class CsvReport extends AnnotationReport
             $csv = CsvFile::makeTmp();
             $this->tmpFiles[$id] = $csv;
 
+            // add column headers
+            $csv->put([
+                'annotation_label_id',
+                'label_id',
+                'label_name',
+                'user_id',
+                'firstname',
+                'lastname',
+                'image_id',
+                'filename',
+                'shape_id',
+                'shape_name',
+                'points',
+                'attributes',
+            ]);
+
             $query = $this->query($id);
             $rows = $query->get();
 

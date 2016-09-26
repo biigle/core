@@ -29,6 +29,23 @@ class ExportModuleSupportReportsAnnotationsCsvReportTest extends TestCase {
         $mock->shouldReceive('put')
             ->once()
             ->with([
+                'annotation_label_id',
+                'label_id',
+                'label_name',
+                'user_id',
+                'firstname',
+                'lastname',
+                'image_id',
+                'filename',
+                'shape_id',
+                'shape_name',
+                'points',
+                'attributes',
+            ]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
                 $al->id,
                 $al->label_id,
                 $al->label->name,
