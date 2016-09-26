@@ -9,7 +9,7 @@
         </p>
 
         <h3>Annotation reports</h3>
-        <h4>Basic</h4>
+        <h4><a name="annotation-basic-report"></a>Basic</h4>
         <p>
             The basic annotation report contains graphical plots of abundances of the different annotation labels (annotations can have multiple different labels by different users). The report is generated as a single PDF file, containing one page and plot for each transect of the project.
         </p>
@@ -51,7 +51,7 @@ Animalia
             <li><strong>Label abundance</strong></li>
         </ol>
 
-        <h4>Full</h4>
+        <h4><a name="annotation-full-report"></a>Full</h4>
 
         <p>
             The full annotation report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended report</a>. It contains a list of all annotations and their labels for each transect.
@@ -122,7 +122,7 @@ Animalia
         </ol>
 
         <h3>Image label reports</h3>
-        <h4>Basic</h4>
+        <h4><a name="image-label-basic-report"></a>Basic</h4>
         <p>
             The basic image label report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended annotation report</a>. It contains a list of all labels attached to each image of a transect. The columns are as follows:
         </p>
@@ -132,7 +132,7 @@ Animalia
             <li><strong>Comma separated list of label names</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label name)</li>
         </ol>
 
-        <h4>CSV</h4>
+        <h4><a name="image-label-csv-report"></a>CSV</h4>
         <p>
             The CSV report is similar to the <a href="#annotation-csv-report">annotation CSV report</a>. If you want the data in a machine readable format, choose this report.
         </p>

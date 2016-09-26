@@ -1,6 +1,5 @@
 <div class="panel panel-default" data-ng-controller="ExportController">
     <div class="panel-heading clearfix">
-        <a href="{{route('manual-tutorials-export', 'reports-schema')}}" class="pull-right" title="Show more information on reports" target="_blank"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></a>
         Reports
     </div>
     <div class="panel-body" data-ng-switch="isRequested()">
@@ -28,22 +27,22 @@
             </div>
             <div data-ng-switch="selected.index">
                 <div class="help-block" data-ng-switch-when="0">
-                    The basic annotation report contains graphical plots of abundances of the different annotation labels for each transect of this project (as PDF).
+                    The basic annotation report contains graphical plots of abundances of the different annotation labels for each transect of this project (as PDF). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#annotation-basic-report')}}">report schema</a>.
                 </div>
                 <div class="help-block ng-cloak" data-ng-switch-when="1">
-                    The extended annotation report lists the abundances of annotation labels for each image in all transects of this project (as XLSX).
+                    The extended annotation report lists the abundances of annotation labels for each image in all transects of this project (as XLSX). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#annotation-extended-report')}}">report schema</a>.
                 </div>
                 <div class="help-block ng-cloak" data-ng-switch-when="2">
-                    The full annotation report lists the labels, shape and coordinates of all annotations in all transects of this project (as XLSX).
+                    The full annotation report lists the labels, shape and coordinates of all annotations in all transects of this project (as XLSX). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#annotation-full-report')}}">report schema</a>.
                 </div>
                 <div class="help-block ng-cloak" data-ng-switch-when="3">
-                    The CSV annotation report is intended for subsequent processing and lists the annotation labels of all transects of this project at the highest possible resolution (as CSV files in a ZIP archive).
+                    The CSV annotation report is intended for subsequent processing and lists the annotation labels of all transects of this project at the highest possible resolution (as CSV files in a ZIP archive). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#annotation-csv-report')}}">report schema</a>.
                 </div>
                 <div class="help-block ng-cloak" data-ng-switch-when="4">
-                    The basic image label report lists the image labels of all images of all transects of this project (as XLSX).
+                    The basic image label report lists the image labels of all images of all transects of this project (as XLSX). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#image-label-basic-report')}}">report schema</a>.
                 </div>
                 <div class="help-block ng-cloak" data-ng-switch-when="5">
-                    The CSV image label report is intended for subsequent processing and lists the image labels of all transects of this project at the highest possible resolution (as CSV files in a ZIP archive).
+                    The CSV image label report is intended for subsequent processing and lists the image labels of all transects of this project at the highest possible resolution (as CSV files in a ZIP archive). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#image-label-csv-report')}}">report schema</a>.
                 </div>
             </div>
             <div class="ng-cloak help-block" data-ng-if="selected.restrict && canBeRestricted()">
