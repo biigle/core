@@ -6,7 +6,15 @@ use Dias\Modules\Export\Support\Exec;
 use Dias\Modules\Export\Support\CsvFile;
 use Dias\Modules\Export\Support\Reports\Annotations\ExtendedReport;
 
-class ExportModuleSupportReportsAnnotationsExtendedReportTest extends TestCase {
+class ExportModuleSupportReportsAnnotationsExtendedReportTest extends TestCase
+{
+    public function testProperties()
+    {
+        $report = new ExtendedReport(ProjectTest::make());
+        $this->assertEquals('extended annotation report', $report->getName());
+        $this->assertEquals('extended_annotation_report', $report->getFilename());
+        $this->assertEquals('xlsx', $report->getExtension());
+    }
 
     public function testGenerateReport()
     {

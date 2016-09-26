@@ -79,9 +79,6 @@ class Report
         $this->project = $project;
         $this->options = collect($options);
         $this->tmpFiles = [];
-        $this->name = '';
-        $this->filename = '';
-        $this->extension = '';
         $this->availableReport = new AvailableReport;
     }
 
@@ -150,13 +147,23 @@ class Report
     }
 
     /**
+     * Get the file extension
+     *
+     * @return string
+     */
+    public function getExtension()
+    {
+        return $this->extension;
+    }
+
+    /**
      * Get the filename used for downloading the report
      *
      * @return string
      */
     public function getDownloadFilename()
     {
-        return "biigle_{$this->project->id}_{$this->getFilename()}.{$this->extension}";
+        return "biigle_{$this->project->id}_{$this->getFilename()}.{$this->getExtension()}";
     }
 
     /**

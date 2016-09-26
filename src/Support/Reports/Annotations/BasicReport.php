@@ -12,18 +12,25 @@ class BasicReport extends AnnotationReport
     use ExecutesPythonScript;
 
     /**
-     * Create an image label report instance.
+     * Name of the report for use in text.
      *
-     * @param Project $project The project for which the report should be generated.
-     * @param array $options Options for the report
+     * @var string
      */
-    public function __construct(Project $project, $options = [])
-    {
-        parent::__construct($project, $options);
-        $this->name = 'basic annotation report';
-        $this->filename = 'basic_annotation_report';
-        $this->extension = 'pdf';
-    }
+    protected $name = 'basic annotation report';
+
+    /**
+     * Name of the report for use as (part of) a filename.
+     *
+     * @var string
+     */
+    protected $filename = 'basic_annotation_report';
+
+    /**
+     * File extension of the report file.
+     *
+     * @var string
+     */
+    protected $extension = 'pdf';
 
     /**
      * Generate the report.

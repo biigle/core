@@ -4,7 +4,15 @@ use Dias\Modules\Export\Support\Exec;
 use Dias\Modules\Export\Support\CsvFile;
 use Dias\Modules\Export\Support\Reports\ImageLabels\CsvReport;
 
-class ExportModuleSupportReportsImageLabelsCsvReportTest extends TestCase {
+class ExportModuleSupportReportsImageLabelsCsvReportTest extends TestCase
+{
+    public function testProperties()
+    {
+        $report = new CsvReport(ProjectTest::make());
+        $this->assertEquals('CSV image label report', $report->getName());
+        $this->assertEquals('csv_image_label_report', $report->getFilename());
+        $this->assertEquals('zip', $report->getExtension());
+    }
 
     public function testGenerateReport()
     {

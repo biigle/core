@@ -3,7 +3,15 @@
 use Dias\Modules\Export\Support\CsvFile;
 use Dias\Modules\Export\Support\Reports\Annotations\CsvReport;
 
-class ExportModuleSupportReportsAnnotationsCsvReportTest extends TestCase {
+class ExportModuleSupportReportsAnnotationsCsvReportTest extends TestCase
+{
+    public function testProperties()
+    {
+        $report = new CsvReport(ProjectTest::make());
+        $this->assertEquals('CSV annotation report', $report->getName());
+        $this->assertEquals('csv_annotation_report', $report->getFilename());
+        $this->assertEquals('zip', $report->getExtension());
+    }
 
     public function testGenerateReport()
     {

@@ -13,18 +13,25 @@ class CsvReport extends Report
     use MakesZipArchives;
 
     /**
-     * Create an image label report instance.
+     * Name of the report for use in text.
      *
-     * @param Project $project The project for which the report should be generated.
-     * @param array $options Options for the report
+     * @var string
      */
-    public function __construct(Project $project, $options = [])
-    {
-        parent::__construct($project, $options);
-        $this->name = 'CSV image label report';
-        $this->filename = 'csv_image_label_report';
-        $this->extension = 'zip';
-    }
+    protected $name = 'CSV image label report';
+
+    /**
+     * Name of the report for use as (part of) a filename.
+     *
+     * @var string
+     */
+    protected $filename = 'csv_image_label_report';
+
+    /**
+     * File extension of the report file.
+     *
+     * @var string
+     */
+    protected $extension = 'zip';
 
     /**
      * Generate the report.

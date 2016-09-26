@@ -4,7 +4,15 @@ use Dias\Modules\Export\Support\Exec;
 use Dias\Modules\Export\Support\CsvFile;
 use Dias\Modules\Export\Support\Reports\ImageLabels\BasicReport;
 
-class ExportModuleSupportReportsImageLabelsBasicReportTest extends TestCase {
+class ExportModuleSupportReportsImageLabelsBasicReportTest extends TestCase
+{
+    public function testProperties()
+    {
+        $report = new BasicReport(ProjectTest::make());
+        $this->assertEquals('basic image label report', $report->getName());
+        $this->assertEquals('basic_image_label_report', $report->getFilename());
+        $this->assertEquals('xlsx', $report->getExtension());
+    }
 
     public function testGenerateReport()
     {

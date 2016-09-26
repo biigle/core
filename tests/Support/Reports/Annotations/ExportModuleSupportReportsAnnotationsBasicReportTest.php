@@ -6,7 +6,16 @@ use Dias\Modules\Export\Support\Exec;
 use Dias\Modules\Export\Support\CsvFile;
 use Dias\Modules\Export\Support\Reports\Annotations\BasicReport;
 
-class ExportModuleSupportReportsAnnotationsBasicReportTest extends TestCase {
+class ExportModuleSupportReportsAnnotationsBasicReportTest extends TestCase
+{
+
+    public function testProperties()
+    {
+        $report = new BasicReport(ProjectTest::make());
+        $this->assertEquals('basic annotation report', $report->getName());
+        $this->assertEquals('basic_annotation_report', $report->getFilename());
+        $this->assertEquals('pdf', $report->getExtension());
+    }
 
     public function testGenerateReport()
     {

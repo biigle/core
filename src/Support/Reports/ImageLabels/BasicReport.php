@@ -13,18 +13,25 @@ class BasicReport extends Report
     use ExecutesPythonScript;
 
     /**
-     * Create an image label report instance.
+     * Name of the report for use in text.
      *
-     * @param Project $project The project for which the report should be generated.
-     * @param array $options Options for the report
+     * @var string
      */
-    public function __construct(Project $project, $options = [])
-    {
-        parent::__construct($project, $options);
-        $this->name = 'standard image label report';
-        $this->filename = 'standard_image_label_report';
-        $this->extension = 'xlsx';
-    }
+    protected $name = 'basic image label report';
+
+    /**
+     * Name of the report for use as (part of) a filename.
+     *
+     * @var string
+     */
+    protected $filename = 'basic_image_label_report';
+
+    /**
+     * File extension of the report file.
+     *
+     * @var string
+     */
+    protected $extension = 'xlsx';
 
     /**
      * Generate the report.
