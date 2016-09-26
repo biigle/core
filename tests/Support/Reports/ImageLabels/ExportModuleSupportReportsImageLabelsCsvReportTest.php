@@ -13,11 +13,18 @@ class ExportModuleSupportReportsImageLabelsCsvReportTest extends TestCase {
         $project->transects()->attach($transect);
         $user = UserTest::create();
 
+        $root = LabelTest::create();
+        $child = LabelTest::create([
+            'parent_id' => $root->id,
+            'label_tree_id' => $root->label_tree_id,
+        ]);
+
         $il = ImageLabelTest::create([
             'image_id' => ImageTest::create([
                 'transect_id' => $transect->id,
                 'filename' => 'foo.jpg',
-            ])->id
+            ])->id,
+            'label_id' => $child->id,
         ]);
 
         // for the AvailableReport
@@ -51,7 +58,7 @@ class ExportModuleSupportReportsImageLabelsCsvReportTest extends TestCase {
                 $il->user->firstname,
                 $il->user->lastname,
                 $il->label_id,
-                $il->label->name,
+                "{$root->name} > {$child->name}",
             ]);
 
         $mock->shouldReceive('close')

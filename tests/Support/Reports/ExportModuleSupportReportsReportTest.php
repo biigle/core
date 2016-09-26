@@ -23,6 +23,36 @@ class ExportModuleSupportReportsReportTest extends TestCase {
         $url = with(new ReportThrowNoExceptionStub($project))->getUrl();
         $this->assertTrue(ends_with($url, 'ab_cd_report.txt'));
     }
+
+    public function testExpandLabelNameOwnTree()
+    {
+        $project = ProjectTest::create();
+        $root = LabelTest::create();
+        $child = LabelTest::create([
+            'parent_id' => $root->id,
+            'label_tree_id' => $root->label_tree_id,
+        ]);
+        $project->labelTrees()->attach($root->tree);
+
+        $report = new Report($project);
+
+        $this->assertEquals("{$root->name} > {$child->name}", $report->expandLabelName($child->id));
+    }
+
+    public function testExpandLabelNameOtherTree()
+    {
+        $project = ProjectTest::create();
+        // these labels do NOT belong to a label tree attached to the project
+        $root = LabelTest::create();
+        $child = LabelTest::create([
+            'parent_id' => $root->id,
+            'label_tree_id' => $root->label_tree_id,
+        ]);
+
+        $report = new Report($project);
+
+        $this->assertEquals("{$root->name} > {$child->name}", $report->expandLabelName($child->id));
+    }
 }
 
 class ReportThrowExceptionStub extends Report

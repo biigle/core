@@ -34,9 +34,21 @@
             Each sheet contains the name of the transect as the first line. The columns are as follows:
         </p>
         <ol>
-            <li>Image filename</li>
-            <li>Label name</li>
-            <li>Label abundance</li>
+            <li><strong>Image filename</strong></li>
+            <li>
+                <strong>Label name</strong>
+                <p>
+                    The label name contains all label names from the root label to the child label, separated by a <code>&gt;</code>. If we have the following label tree:
+<pre>
+Animalia
+└─ Annelida
+   └─ Polychaeta
+      └─ Buskiella sp
+</pre>
+                    Then the content of the "label name" column for annotations with the label "Buskiella sp" will be <code>Animalia > Annelida > Polychaeta > Buskiella sp</code>.
+                </p>
+            </li>
+            <li><strong>Label abundance</strong></li>
         </ol>
 
         <h4>Full</h4>
@@ -48,13 +60,13 @@
             Each sheet contains the name of the transect as the first line. The columns are as follows:
         </p>
         <ol>
-            <li>Image filename</li>
-            <li>Annotation ID</li>
-            <li>Annotation shape name</li>
-            <li>X-Coordinate(s) of the annotation (may span multiple lines)</li>
-            <li>Y-Coordinate(s) of the annotation (may span multiple lines)</li>
-            <li>Labels of the annotation in a comma separated list</li>
-            <li>The area of the image in m² if available</li>
+            <li><strong>Image filename</strong></li>
+            <li><strong>Annotation ID</strong></li>
+            <li><strong>Annotation shape name</strong></li>
+            <li><strong>X-Coordinate(s) of the annotation</strong> (may span multiple lines)</li>
+            <li><strong>Y-Coordinate(s) of the annotation</strong> (may span multiple lines)</li>
+            <li><strong>Comma separated list of label names</strong> (see the <a href="#annotation-extended-report">extended report</a> on how to interpret a label name)</li>
+            <li><strong>The area of the image</strong> in m² if available</li>
         </ol>
         <p>
             For the different annotation shapes, the coordinates are interpreted as follows:
@@ -85,25 +97,29 @@
             The CSV files contains one row for each annotation label. Since an annotation can have multiple labels, there may be multiple rows for a single annotation. The columns are as follows:
         </p>
         <ol>
-            <li>Annotation label ID (not the annotation ID)</li>
-            <li>Label ID</li>
-            <li>Label name</li>
-            <li>ID of the user who created/attached the annotation label</li>
-            <li>User firstname</li>
-            <li>User lastname</li>
-            <li>Image ID</li>
-            <li>Image filename</li>
-            <li>Annotation shape ID</li>
-            <li>Annotation shape name</li>
-            <li>Annotation points</li>
-            <li>Additional attributes of the image</li>
+            <li><strong>Annotation label ID</strong> (not the annotation ID)</li>
+            <li><strong>Label ID</strong></li>
+            <li><strong>Label name</strong> (see the <a href="#annotation-extended-report">extended report</a> on how to interpret a label name)</li>
+            <li><strong>ID of the user who created/attached the annotation label</strong></li>
+            <li><strong>User firstname</strong></li>
+            <li><strong>User lastname</strong></li>
+            <li><strong>Image ID</strong></li>
+            <li><strong>Image filename</strong></li>
+            <li><strong>Annotation shape ID</strong></li>
+            <li><strong>Annotation shape name</strong></li>
+            <li>
+                <strong>Annotation points</strong>
+                <p>
+                    The annotation points are encoded as a JSON array of alternating x and y values (e.g. <code>[x1,y1,x2,y2,...]</code>). For circles, the third value of the points array is the radius of the circle.
+                </p>
+            </li>
+            <li>
+                <strong>Additional attributes of the image</strong>
+                <p>
+                    The additional attributes of the image are encoded as a JSON object. The content may vary depending on the DIAS modules that are installed and the operations performed on the image (e.g. a laserpoint detection to calculate the area of an image).
+                </p>
+            </li>
         </ol>
-        <p>
-            The annotation points are encoded as a JSON array of alternating x and y values (e.g. <code>[x1,y1,x2,y2,...]</code>). For circles, the third value of the points array is the radius of the circle.
-        </p>
-        <p>
-            The additional attributes of the image are encoded as a JSON object. The content may vary depending on the DIAS modules that are installed and the operations performed on the image (e.g. a laserpoint detection to calculate the area of an image).
-        </p>
 
         <h3>Image label reports</h3>
         <h4>Basic</h4>
@@ -111,9 +127,9 @@
             The basic image label report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended annotation report</a>. It contains a list of all labels attached to each image of a transect. The columns are as follows:
         </p>
         <ol>
-            <li>Image ID</li>
-            <li>Image filename</li>
-            <li>Comma separated list of label names</li>
+            <li><strong>Image ID</strong></li>
+            <li><strong>Image filename</strong></li>
+            <li><strong>Comma separated list of label names</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label name)</li>
         </ol>
 
         <h4>CSV</h4>
@@ -124,14 +140,14 @@
             The CSV files contains one row for each image label. Since an image can have multiple different labels, there may be multiple rows for a single image. The columns are as follows:
         </p>
         <ol>
-            <li>Image label ID</li>
-            <li>Image ID</li>
-            <li>Image filename</li>
-            <li>ID of the user who attached the image label</li>
-            <li>User firstname</li>
-            <li>User lastname</li>
-            <li>Label ID</li>
-            <li>Label name</li>
+            <li><strong>Image label ID</strong></li>
+            <li><strong>Image ID</strong></li>
+            <li><strong>Image filename</strong></li>
+            <li><strong>ID of the user who attached the image label</strong></li>
+            <li><strong>User firstname</strong></li>
+            <li><strong>User lastname</strong></li>
+            <li><strong>Label ID</strong></li>
+            <li><strong>Label name</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label name)</li>
         </ol>
     </div>
 @endsection

@@ -50,7 +50,7 @@ class BasicReport extends Report
                     $row[0]->id,
                     $row[0]->filename,
                     $row->map(function ($row) {
-                        return $row->name;
+                        return $this->expandLabelName($row->label_id);
                     })->implode(', '),
                 ]);
             }
@@ -71,8 +71,7 @@ class BasicReport extends Report
     {
         return DB::table('image_labels')
             ->join('images', 'image_labels.image_id', '=', 'images.id')
-            ->join('labels', 'image_labels.label_id', '=', 'labels.id')
-            ->select('images.id', 'images.filename', 'labels.name')
+            ->select('images.id', 'images.filename', 'image_labels.label_id')
             ->where('images.transect_id', $id)
             ->orderBy('images.filename');
     }

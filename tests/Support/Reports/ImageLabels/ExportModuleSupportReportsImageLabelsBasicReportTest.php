@@ -24,11 +24,18 @@ class ExportModuleSupportReportsImageLabelsBasicReportTest extends TestCase {
             'image_id' => $il->image_id,
         ]);
 
+        $root = LabelTest::create();
+        $child = LabelTest::create([
+            'parent_id' => $root->id,
+            'label_tree_id' => $root->label_tree_id,
+        ]);
+
         $il3 = ImageLabelTest::create([
             'image_id' => ImageTest::create([
                 'transect_id' => $transect->id,
                 'filename' => 'bar.jpg',
-            ])->id
+            ])->id,
+            'label_id' => $child->id,
         ]);
 
         // for the AvailableReport
@@ -49,7 +56,7 @@ class ExportModuleSupportReportsImageLabelsBasicReportTest extends TestCase {
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$il3->image->id, $il3->image->filename, $il3->label->name]);
+            ->with([$il3->image->id, $il3->image->filename, "{$root->name} > {$child->name}"]);
 
         $mock->shouldReceive('close')
             ->once();

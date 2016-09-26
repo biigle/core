@@ -49,7 +49,7 @@ class ExtendedReport extends AnnotationReport
             foreach ($rows as $row) {
                 $csv->put([
                     $row->filename,
-                    $row->name,
+                    $this->expandLabelName($row->label_id),
                     $row->count,
                 ]);
             }
@@ -72,10 +72,8 @@ class ExtendedReport extends AnnotationReport
         return DB::table('images')
             ->join('annotations', 'annotations.image_id', '=', 'images.id')
             ->join('annotation_labels', 'annotation_labels.annotation_id', '=', 'annotations.id')
-            ->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
-            // images.id is required for chunkById
-            ->select(DB::raw('images.id as images_id, images.filename, labels.name, count(labels.id) as count'))
-            ->groupBy('labels.id', 'images.id')
+            ->select(DB::raw('images.filename, annotation_labels.label_id, count(annotation_labels.label_id) as count'))
+            ->groupBy('annotation_labels.label_id', 'images.id')
             ->where('images.transect_id', $id)
             ->when($this->restricted, function ($query) use ($id) {
                 return $query->whereNotIn('annotations.id', $this->getSkipIds($id));

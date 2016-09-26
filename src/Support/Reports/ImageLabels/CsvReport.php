@@ -65,7 +65,7 @@ class CsvReport extends Report
                         $row->firstname,
                         $row->lastname,
                         $row->label_id,
-                        $row->label_name,
+                        $this->expandLabelName($row->label_id),
                     ]);
                 }
             // }, 'image_labels.id', 'image_label_id');
@@ -86,7 +86,6 @@ class CsvReport extends Report
     {
         return DB::table('image_labels')
             ->join('images', 'image_labels.image_id', '=', 'images.id')
-            ->join('labels', 'image_labels.label_id', '=', 'labels.id')
             ->join('users', 'image_labels.user_id', '=', 'users.id')
             ->select([
                 'image_labels.id as image_label_id',
@@ -96,7 +95,6 @@ class CsvReport extends Report
                 'users.firstname',
                 'users.lastname',
                 'image_labels.label_id',
-                'labels.name as label_name',
             ])
             ->where('images.transect_id', $id)
             ->orderBy('images.filename');

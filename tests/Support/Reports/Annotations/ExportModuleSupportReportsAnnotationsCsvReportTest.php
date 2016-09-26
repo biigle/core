@@ -13,10 +13,19 @@ class ExportModuleSupportReportsAnnotationsCsvReportTest extends TestCase {
         ]);
         $project->transects()->attach($transect);
 
-        $al = AnnotationLabelTest::create();
+        $root = LabelTest::create();
+        $child = LabelTest::create([
+            'parent_id' => $root->id,
+            'label_tree_id' => $root->label_tree_id,
+        ]);
+
+        $al = AnnotationLabelTest::create([
+            'label_id' => $child->id,
+        ]);
         $al->annotation->image->transect_id = $transect->id;
         $al->annotation->image->attrs = ['image' => 'attrs'];
         $al->annotation->image->save();
+
 
         // for the AvailableReport
         File::shouldReceive('exists')
@@ -47,8 +56,8 @@ class ExportModuleSupportReportsAnnotationsCsvReportTest extends TestCase {
             ->once()
             ->with([
                 $al->id,
-                $al->label_id,
-                $al->label->name,
+                $child->id,
+                "{$root->name} > {$child->name}",
                 $al->user_id,
                 $al->user->firstname,
                 $al->user->lastname,

@@ -64,7 +64,7 @@ class CsvReport extends AnnotationReport
                     $csv->put([
                         $row->annotation_label_id,
                         $row->label_id,
-                        $row->label_name,
+                        $this->expandLabelName($row->label_id),
                         $row->user_id,
                         $row->firstname,
                         $row->lastname,
@@ -94,15 +94,13 @@ class CsvReport extends AnnotationReport
     protected function query($id)
     {
         return DB::table('annotation_labels')
-            ->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
             ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
             ->join('images', 'annotations.image_id', '=', 'images.id')
             ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
             ->join('users', 'annotation_labels.user_id', '=', 'users.id')
             ->select([
                 'annotation_labels.id as annotation_label_id',
-                'labels.id as label_id',
-                'labels.name as label_name',
+                'annotation_labels.label_id',
                 'users.id as user_id',
                 'users.firstname',
                 'users.lastname',

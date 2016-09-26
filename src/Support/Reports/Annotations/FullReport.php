@@ -51,7 +51,7 @@ class FullReport extends AnnotationReport
                     $csv->put([
                         $row->filename,
                         $row->annotation_id,
-                        $row->label_name,
+                        $this->expandLabelName($row->label_id),
                         $row->shape_name,
                         $row->points,
                         $row->attrs
@@ -75,7 +75,6 @@ class FullReport extends AnnotationReport
     protected function query($id)
     {
         return DB::table('annotation_labels')
-            ->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
             ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
             ->join('images', 'annotations.image_id', '=', 'images.id')
             ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
@@ -83,7 +82,7 @@ class FullReport extends AnnotationReport
                 'annotation_labels.id as annotation_labels_id', // required for chunkById
                 'images.filename',
                 'annotations.id as annotation_id',
-                'labels.name as label_name',
+                'annotation_labels.label_id',
                 'shapes.name as shape_name',
                 'annotations.points',
                 'images.attrs'

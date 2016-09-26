@@ -15,9 +15,18 @@ class ExportModuleSupportReportsAnnotationsExtendedReportTest extends TestCase {
         $project->transects()->attach($transect);
         $user = UserTest::create();
 
-        $al = AnnotationLabelTest::create();
+        $root = LabelTest::create();
+        $child = LabelTest::create([
+            'parent_id' => $root->id,
+            'label_tree_id' => $root->label_tree_id,
+        ]);
+
+        $al = AnnotationLabelTest::create([
+            'label_id' => $child->id,
+        ]);
         $al->annotation->image->transect_id = $transect->id;
         $al->annotation->image->save();
+
         AnnotationLabelTest::create([
             'annotation_id' => $al->annotation_id,
             'label_id' => $al->label_id,
@@ -39,7 +48,7 @@ class ExportModuleSupportReportsAnnotationsExtendedReportTest extends TestCase {
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$al->annotation->image->filename, $al->label->name, 2]);
+            ->with([$al->annotation->image->filename, "{$root->name} > {$child->name}", 2]);
 
         $mock->shouldReceive('put')
             ->once()
