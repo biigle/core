@@ -10,32 +10,13 @@ use Dias\Modules\Export\Support\Reports\Report;
 class AnnotationReport extends Report
 {
     /**
-     * Specifies if the report is restricted to the export area
-     *
-     * @var bool
-     */
-    protected $restricted;
-
-    /**
-     * Create a report instance.
-     *
-     * @param Project $project The project for which the report should be generated.
-     * @param bool $restricted Is the report restricted to the export area?
-     */
-    public function __construct(Project $project, $restricted)
-    {
-        parent::__construct($project);
-        $this->restricted = $restricted;
-    }
-
-    /**
      * Get the report name
      *
      * @return string
      */
     public function getName()
     {
-        if ($this->restricted) {
+        if ($this->isRestricted()) {
             return "{$this->name} (restricted to export area)";
         }
 
@@ -49,7 +30,7 @@ class AnnotationReport extends Report
      */
     public function getFilename()
     {
-        if ($this->restricted) {
+        if ($this->isRestricted()) {
             return "{$this->filename}_restricted";
         }
 
@@ -114,5 +95,15 @@ class AnnotationReport extends Report
             ->chunkById(500, $handleChunk, 'annotations.id', 'id');
 
         return $skip;
+    }
+
+    /**
+     * Should this report be restricted to the export area?
+     *
+     * @return boolean
+     */
+    protected function isRestricted()
+    {
+        return $this->options->get('restricted', false);
     }
 }

@@ -15,11 +15,11 @@ class CsvReport extends AnnotationReport
      * Create an image label report instance.
      *
      * @param Project $project The project for which the report should be generated.
-     * @param bool $restricted Is the report restricted to the export area?
+     * @param array $options Options for the report
      */
-    public function __construct(Project $project, $restricted)
+    public function __construct(Project $project, $options = [])
     {
-        parent::__construct($project, $restricted);
+        parent::__construct($project, $options);
         $this->name = 'CSV annotation report';
         $this->filename = 'csv_annotation_report';
         $this->extension = 'zip';
@@ -112,7 +112,7 @@ class CsvReport extends AnnotationReport
                 'images.attrs',
             ])
             ->where('images.transect_id', $id)
-            ->when($this->restricted, function ($query) use ($id) {
+            ->when($this->isRestricted(), function ($query) use ($id) {
                 return $query->whereNotIn('annotations.id', $this->getSkipIds($id));
             })
             ->orderBy('annotation_labels.id');

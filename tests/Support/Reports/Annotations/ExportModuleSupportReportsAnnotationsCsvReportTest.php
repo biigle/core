@@ -92,6 +92,6 @@ class ExportModuleSupportReportsAnnotationsCsvReportTest extends TestCase {
             return $mock;
         });
 
-        with(new CsvReport($project, false))->generateReport();
+        with(new CsvReport($project))->generateReport();
     }
 }

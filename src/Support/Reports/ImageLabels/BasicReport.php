@@ -16,10 +16,11 @@ class BasicReport extends Report
      * Create an image label report instance.
      *
      * @param Project $project The project for which the report should be generated.
+     * @param array $options Options for the report
      */
-    public function __construct(Project $project)
+    public function __construct(Project $project, $options = [])
     {
-        parent::__construct($project);
+        parent::__construct($project, $options);
         $this->name = 'standard image label report';
         $this->filename = 'standard_image_label_report';
         $this->extension = 'xlsx';

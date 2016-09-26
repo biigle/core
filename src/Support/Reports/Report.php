@@ -15,7 +15,14 @@ class Report
      *
      * @var Project
      */
-    protected $project;
+    public $project;
+
+    /**
+     * Options for this report.
+     *
+     * @var \Illuminate\Support\Collection
+     */
+    public $options;
 
     /**
      * Name of the report for use in text.
@@ -65,10 +72,12 @@ class Report
      * Create a report instance.
      *
      * @param Project $project The project for which the report should be generated.
+     * @param array $options Options for the report
      */
-    public function __construct(Project $project)
+    public function __construct(Project $project, $options = [])
     {
         $this->project = $project;
+        $this->options = collect($options);
         $this->tmpFiles = [];
         $this->name = '';
         $this->filename = '';

@@ -64,6 +64,6 @@ class ExportModuleSupportReportsAnnotationsFullReportTest extends TestCase {
             return $mock;
         });
 
-        with(new FullReport($project, false))->generateReport();
+        with(new FullReport($project))->generateReport();
     }
 }

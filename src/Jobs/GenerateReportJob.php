@@ -26,14 +26,14 @@ class GenerateReportJob extends Job implements ShouldQueue
      *
      * @var User
      */
-    protected $user;
+    public $user;
 
     /**
      * The report that should be generated.
      *
      * @var Report
      */
-    protected $report;
+    public $report;
 
     /**
      * Create a new job instance.

@@ -15,11 +15,11 @@ class BasicReport extends AnnotationReport
      * Create an image label report instance.
      *
      * @param Project $project The project for which the report should be generated.
-     * @param bool $restricted Is the report restricted to the export area?
+     * @param array $options Options for the report
      */
-    public function __construct(Project $project, $restricted)
+    public function __construct(Project $project, $options = [])
     {
-        parent::__construct($project, $restricted);
+        parent::__construct($project, $options);
         $this->name = 'basic annotation report';
         $this->filename = 'basic_annotation_report';
         $this->extension = 'pdf';
@@ -73,7 +73,7 @@ class BasicReport extends AnnotationReport
             ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
             ->join('images', 'annotations.image_id', '=', 'images.id')
             ->where('images.transect_id', $id)
-            ->when($this->restricted, function ($query) use ($id) {
+            ->when($this->isRestricted(), function ($query) use ($id) {
                 return $query->whereNotIn('annotations.id', $this->getSkipIds($id));
             })
             ->select(DB::raw('labels.name, labels.color, count(labels.id) as count'))

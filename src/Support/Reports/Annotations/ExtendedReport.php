@@ -15,11 +15,11 @@ class ExtendedReport extends AnnotationReport
      * Create an image label report instance.
      *
      * @param Project $project The project for which the report should be generated.
-     * @param bool $restricted Is the report restricted to the export area?
+     * @param array $options Options for the report
      */
-    public function __construct(Project $project, $restricted)
+    public function __construct(Project $project, $options = [])
     {
-        parent::__construct($project, $restricted);
+        parent::__construct($project, $options);
         $this->name = 'extended annotation report';
         $this->filename = 'extended_annotation_report';
         $this->extension = 'xlsx';
@@ -75,7 +75,7 @@ class ExtendedReport extends AnnotationReport
             ->select(DB::raw('images.filename, annotation_labels.label_id, count(annotation_labels.label_id) as count'))
             ->groupBy('annotation_labels.label_id', 'images.id')
             ->where('images.transect_id', $id)
-            ->when($this->restricted, function ($query) use ($id) {
+            ->when($this->isRestricted(), function ($query) use ($id) {
                 return $query->whereNotIn('annotations.id', $this->getSkipIds($id));
             })
             ->orderBy('images.filename');

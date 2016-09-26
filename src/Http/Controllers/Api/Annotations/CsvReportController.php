@@ -32,9 +32,9 @@ class CsvReportController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
         $this->validate($request, ['restrict' => 'boolean']);
-        $this->dispatch(new GenerateReportJob(
-            new CsvReport($project, (bool) $request->input('restrict', false)),
-            $auth->user()
-        ));
+        $report = new CsvReport($project, [
+            'restricted' => (bool) $request->input('restrict', false),
+        ]);
+        $this->dispatch(new GenerateReportJob($report, $auth->user()));
     }
 }

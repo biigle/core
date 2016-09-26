@@ -99,6 +99,6 @@ class ExportModuleSupportReportsAnnotationsAnnotationReportTest extends TestCase
             return $mock;
         });
 
-        with(new BasicReport($project, true))->generateReport();
+        with(new BasicReport($project, ['restricted' => true]))->generateReport();
     }
 }

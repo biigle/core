@@ -67,6 +67,6 @@ class ExportModuleSupportReportsAnnotationsExtendedReportTest extends TestCase {
             return $mock;
         });
 
-        with(new ExtendedReport($project, false))->generateReport();
+        with(new ExtendedReport($project))->generateReport();
     }
 }
