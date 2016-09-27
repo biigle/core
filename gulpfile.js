@@ -1,20 +1,32 @@
-"use strict";
-process.env.DISABLE_NOTIFIER = true;
+"use strict"
 
-var gulp    = require('gulp');
-var elixir  = require('laravel-elixir');
-var angular = require('laravel-elixir-angular');
-var shell   = require('gulp-shell');
+var gulp = require('gulp');
+var h = require('gulp-helpers');
+var publish = h.publish('Dias\\Modules\\Export\\ExportServiceProvider', 'public');
 
-elixir(function (mix) {
-	process.chdir('src');
-	// mix.sass('main.scss', 'public/assets/styles/main.css');
-	mix.angular('resources/assets/js/projects/', 'public/assets/scripts', 'projects.js');
-    mix.angular('resources/assets/js/annotations/', 'public/assets/scripts', 'annotations.js');
+h.paths.sass = 'src/resources/assets/sass/';
+h.paths.js = 'src/resources/assets/js/';
+h.paths.public = 'src/public/assets/';
 
-    mix.task('publish', 'public/assets/**/*');
+gulp.task('sass', function () {
+    // h.sass('main.scss', 'main.css');
 });
 
-gulp.task('publish', function () {
-    gulp.src('').pipe(shell('php ../../../../artisan vendor:publish --provider="Dias\\Modules\\Export\\ExportServiceProvider" --tag public --force'));
+gulp.task('js-main', function (cb) {
+    h.angular('export/**/*.js', 'main.js', cb);
 });
+
+gulp.task('js-annotations', function (cb) {
+    h.angular('annotations/**/*.js', 'annotations.js', cb);
+});
+
+gulp.task('js', ['js-main', 'js-annotations']);
+
+gulp.task('watch', function () {
+    gulp.watch(h.paths.sass + '**/*.scss', ['sass']);
+    gulp.watch(h.paths.js + 'export/**/*.js', ['js-main']);
+    gulp.watch(h.paths.js + 'annotations/**/*.js', ['js-annotations']);
+    gulp.watch(h.paths.public + '**/*', publish);
+});
+
+gulp.task('default', ['sass', 'js'], publish)

@@ -51,6 +51,16 @@ $router->group([
 
 });
 
+$router->group([
+    'namespace' => 'Views',
+    'middleware' => 'auth',
+], function ($router) {
+    $router->get('transects/{id}/reports', [
+        'uses' => 'Transects\ReportsController@show',
+        'as' => 'transect-reports',
+    ]);
+});
+
 // this route should be public (is protected by random uids)
 $router->get('api/v1/reports/{uid}/{filename}', [
     'as' => 'download_report',
@@ -59,5 +69,5 @@ $router->get('api/v1/reports/{uid}/{filename}', [
 
 $router->get('manual/tutorials/export/{name}', [
     'as'   => 'manual-tutorials-export',
-    'uses' => 'TutorialController@show',
+    'uses' => 'Views\TutorialController@show',
 ]);

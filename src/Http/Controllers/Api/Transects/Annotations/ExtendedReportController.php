@@ -17,7 +17,7 @@ class ExtendedReportController extends Controller
      * @api {post} transects/:id/reports/extended Generate a new extended report
      * @apiGroup Transects
      * @apiName GenerateExtendedTransectReport
-     * @apiParam (Optional arguments) {Boolean} restrict If `1`, restrict the report to the export area defined for the individual transects.
+     * @apiParam (Optional arguments) {Boolean} exportArea If `1`, restrict the report to the export area defined for the individual transects.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The transect ID.
@@ -31,9 +31,9 @@ class ExtendedReportController extends Controller
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('access', $transect);
-        $this->validate($request, ['restrict' => 'boolean']);
+        $this->validate($request, ['exportArea' => 'boolean']);
         $report = new ExtendedReport($transect, [
-            'restricted' => (bool) $request->input('restrict', false),
+            'restricted' => (bool) $request->input('exportArea', false),
         ]);
         $this->dispatch(new GenerateReportJob($report, $auth->user()));
     }

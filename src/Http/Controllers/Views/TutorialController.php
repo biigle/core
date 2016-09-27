@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers;
+namespace Dias\Modules\Export\Http\Controllers\Views;
 
 use Dias\Http\Controllers\Views\Controller;
 

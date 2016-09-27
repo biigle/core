@@ -17,7 +17,7 @@ class BasicReportController extends Controller
      * @api {post} transects/:id/reports/basic Generate a new basic annotation report
      * @apiGroup Transects
      * @apiName GenerateBasicTransectReport
-     * @apiParam (Optional arguments) {Boolean} restrict If `1`, restrict the report to the export area of the transect.
+     * @apiParam (Optional arguments) {Boolean} exportArea If `1`, restrict the report to the export area of the transect.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The transect ID.
@@ -31,9 +31,9 @@ class BasicReportController extends Controller
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('access', $transect);
-        $this->validate($request, ['restrict' => 'boolean']);
+        $this->validate($request, ['exportArea' => 'boolean']);
         $report = new BasicReport($transect, [
-            'restricted' => (bool) $request->input('restrict', false),
+            'restricted' => (bool) $request->input('exportArea', false),
         ]);
         $this->dispatch(new GenerateReportJob($report, $auth->user()));
     }

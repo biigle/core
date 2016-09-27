@@ -17,7 +17,7 @@ class CsvReportController extends Controller
      * @api {post} transects/:id/reports/annotations/full Generate a machine readable report (CSV)
      * @apiGroup Transects
      * @apiName GenerateCsvTransectReport
-     * @apiParam (Optional arguments) {Boolean} restrict If `1`, restrict the report to the export area of the transect.
+     * @apiParam (Optional arguments) {Boolean} exportArea If `1`, restrict the report to the export area of the transect.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The transect ID.
@@ -31,9 +31,9 @@ class CsvReportController extends Controller
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('access', $transect);
-        $this->validate($request, ['restrict' => 'boolean']);
+        $this->validate($request, ['exportArea' => 'boolean']);
         $report = new CsvReport($transect, [
-            'restricted' => (bool) $request->input('restrict', false),
+            'restricted' => (bool) $request->input('exportArea', false),
         ]);
         $this->dispatch(new GenerateReportJob($report, $auth->user()));
     }

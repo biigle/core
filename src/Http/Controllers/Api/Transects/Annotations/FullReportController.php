@@ -17,7 +17,7 @@ class FullReportController extends Controller
      * @api {post} transects/:id/reports/full Generate a new full report
      * @apiGroup Transects
      * @apiName GenerateFullTransectReport
-     * @apiParam (Optional arguments) {Boolean} restrict If `1`, restrict the report to the export area of the transect.
+     * @apiParam (Optional arguments) {Boolean} exportArea If `1`, restrict the report to the export area of the transect.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The transect ID.
@@ -31,9 +31,9 @@ class FullReportController extends Controller
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('access', $transect);
-        $this->validate($request, ['restrict' => 'boolean']);
+        $this->validate($request, ['exportArea' => 'boolean']);
         $report = new FullReport($transect, [
-            'restricted' => (bool) $request->input('restrict', false),
+            'restricted' => (bool) $request->input('exportArea', false),
         ]);
         $this->dispatch(new GenerateReportJob($report, $auth->user()));
     }
