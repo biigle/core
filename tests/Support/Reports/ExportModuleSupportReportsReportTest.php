@@ -6,50 +6,30 @@ class ExportModuleSupportReportsReportTest extends TestCase {
 
     public function testHandleException()
     {
-        $project = ProjectTest::make();
         $this->setExpectedException(Exception::class);
-        with(new ReportThrowExceptionStub($project))->generate();
+        with(new ReportThrowExceptionStub())->generate();
     }
 
     public function testHandleRegular()
     {
-        $project = ProjectTest::make();
-        with(new ReportThrowNoExceptionStub($project))->generate();
+        with(new ReportThrowNoExceptionStub())->generate();
     }
 
     public function testGetUrl()
     {
-        $project = ProjectTest::make();
-        $url = with(new ReportThrowNoExceptionStub($project))->getUrl();
+        $url = with(new ReportThrowNoExceptionStub())->getUrl();
         $this->assertTrue(ends_with($url, 'ab_cd_report.txt'));
     }
 
-    public function testExpandLabelNameOwnTree()
+    public function testExpandLabelName()
     {
-        $project = ProjectTest::create();
-        $root = LabelTest::create();
-        $child = LabelTest::create([
-            'parent_id' => $root->id,
-            'label_tree_id' => $root->label_tree_id,
-        ]);
-        $project->labelTrees()->attach($root->tree);
-
-        $report = new Report($project);
-
-        $this->assertEquals("{$root->name} > {$child->name}", $report->expandLabelName($child->id));
-    }
-
-    public function testExpandLabelNameOtherTree()
-    {
-        $project = ProjectTest::create();
-        // these labels do NOT belong to a label tree attached to the project
         $root = LabelTest::create();
         $child = LabelTest::create([
             'parent_id' => $root->id,
             'label_tree_id' => $root->label_tree_id,
         ]);
 
-        $report = new Report($project);
+        $report = new Report();
 
         $this->assertEquals("{$root->name} > {$child->name}", $report->expandLabelName($child->id));
     }
@@ -71,12 +51,8 @@ class ReportThrowExceptionStub extends Report
 
 class ReportThrowNoExceptionStub extends Report
 {
-    public function __construct($project)
-    {
-        parent::__construct($project);
-        $this->filename = 'ab_cd_report';
-        $this->extension = 'txt';
-    }
+    protected $filename = 'ab_cd_report';
+    protected $extension = 'txt';
 
     public function generateReport()
     {

@@ -5,9 +5,8 @@ import csv
 import ast
 import json
 
-project_name = sys.argv[1]
 target_file = sys.argv[2]
-transect_csvs = sys.argv[3:]
+csvs = sys.argv[3:]
 
 workbook = Workbook()
 numSheets = 0
@@ -16,17 +15,17 @@ numSheets = 0
 def addRow(x="", y="", label="", filename="", annotation_id="", shape="", area=""):
     return [filename, annotation_id, shape, x, y, label, area]
 
-for path in transect_csvs:
+for path in csvs:
     f = open(path, 'r')
-    transect_csv = csv.reader(f)
-    transect_name = transect_csv.next()[0]
-    rows = np.array(list(transect_csv))
+    csv_file = csv.reader(f)
+    csv_title = csv_file.next()[0]
+    rows = np.array(list(csv_file))
     f.close()
     if rows.shape[0] == 0:
         continue
     numSheets += 1
     # rows have the content: image_filename, annotation_id, label_name, shape_name, points
-    celldata = [[transect_name]]
+    celldata = [[csv_title]]
     celldata.append(addRow("x/radius", "y", "labels", "filename", "annotation_id", "shape", "area in m^2"))
 
     uniqueimages = np.unique(rows[:, 0])
@@ -57,7 +56,7 @@ for path in transect_csvs:
                 # add radius
                 celldata.append(addRow(points[-1], ""))
 
-    ws = workbook.new_sheet("transect " + str(numSheets), data=celldata)
+    ws = workbook.new_sheet("sheet " + str(numSheets), data=celldata)
     ws.set_row_style(1, Style(font=Font(bold=True)))
     ws.set_row_style(2, Style(font=Font(bold=True)))
 

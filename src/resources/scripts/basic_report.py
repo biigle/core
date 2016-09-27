@@ -10,7 +10,7 @@ import sys
 import numpy as np
 import csv
 
-project_name = sys.argv[1]
+title = sys.argv[1]
 target_file = sys.argv[2]
 transect_csvs = sys.argv[3:]
 
@@ -33,7 +33,7 @@ def TitleSlide(text):
     return fig
 
 pdf = PdfPages(target_file)
-fig = TitleSlide("BIIGLE DIAS basic report for project\n" + project_name.decode('UTF-8'))
+fig = TitleSlide("BIIGLE DIAS basic report for transect\n" + title.decode('UTF-8'))
 pdf.savefig(fig)
 width = 1.
 
@@ -65,9 +65,9 @@ for path in transect_csvs:
     pdf.savefig()
 
 d = pdf.infodict()
-d['Title'] = "BIIGLE DIAS basic report for project " + project_name.decode('UTF-8')
+d['Title'] = "BIIGLE DIAS basic report for transect " + title.decode('UTF-8')
 d['Author'] = 'Biodata Mining Group, Bielefeld University'
-d['Subject'] = 'Histograms of label distribution in all transects of the project'
+d['Subject'] = 'Histogram of label distribution of the transect'
 d['Keywords'] = ''
 d['CreationDate'] = datetime.datetime.today()
 d['ModDate'] = datetime.datetime.today()

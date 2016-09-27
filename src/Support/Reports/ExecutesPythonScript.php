@@ -12,9 +12,10 @@ trait ExecutesPythonScript
      * Execute the external report parsing Python script
      *
      * @param string $name Name of the script to execute (in the `export.scripts` config namespace)
+     * @param string $title Title to use for the report
      * @throws Exception If the script returned an error code.
      */
-    protected function executeScript($name)
+    protected function executeScript($name, $title)
     {
         $python = config('export.python');
         $script = config("export.scripts.{$name}");
@@ -24,7 +25,7 @@ trait ExecutesPythonScript
         }, $this->tmpFiles));
 
         $exec = App::make(Exec::class, [
-            'command' => "{$python} {$script} \"{$this->project->name}\" {$this->availableReport->path} {$csvs}",
+            'command' => "{$python} {$script} \"{$title}\" {$this->availableReport->path} {$csvs}",
         ]);
 
         if ($exec->code !== 0) {

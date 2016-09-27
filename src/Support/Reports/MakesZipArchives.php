@@ -12,12 +12,12 @@ trait MakesZipArchives
     /**
      * Create a ZIP archive as a report.
      *
-     * This function will create a ZIP archive at `$this->availableReport->path` and put the CSV files of `$this->tmpFiles`, indexed by the transect IDs, into it.
+     * This function will create a ZIP archive at `$this->availableReport->path`.
      *
-     * @param array $transects Array of transects, with transect IDs as keys and transect names as values.
+     * @param array $files Array of files, with source path as keys and target filenames (in the ZIP) as values.
      * @throws Exception If the ZIP file could not be created.
      */
-    protected function makeZip($transects)
+    protected function makeZip($files)
     {
         $zip = App::make(ZipArchive::class);
         $open = $zip->open($this->availableReport->path, ZipArchive::CREATE);
@@ -27,14 +27,24 @@ trait MakesZipArchives
         }
 
         try {
-            foreach ($transects as $id => $name) {
-                $zip->addFile(
-                    $this->tmpFiles[$id]->path,
-                    $id.'_'.Str::slug($name).'.csv'
-                );
+            foreach ($files as $source => $target) {
+                $zip->addFile($source, $target);
             }
         } finally {
             $zip->close();
         }
+    }
+
+    /**
+     * Sanitizes a filename
+     *
+     * @param string $name Filename to sanitize
+     * @param string $extension File extension to use (since dots are sanitized, too)
+     *
+     * @return string
+     */
+    protected function sanitizeFilename($name, $extension)
+    {
+        return Str::slug($name).'.'.$extension;
     }
 }

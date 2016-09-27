@@ -6,41 +6,49 @@ $router->group([
     'middleware' => 'auth.api',
 ], function ($router) {
 
-    $router->post('projects/{id}/reports/annotations/basic', [
-        'uses' => 'Annotations\BasicReportController@store',
-    ]);
+    $router->group([
+        'namespace' => 'Transects',
+        'prefix' => 'transects',
+    ], function ($router) {
 
-    $router->post('projects/{id}/reports/annotations/extended', [
-        'uses' => 'Annotations\ExtendedReportController@store',
-    ]);
+        $router->post('{id}/reports/annotations/basic', [
+            'uses' => 'Annotations\BasicReportController@store',
+        ]);
 
-    $router->post('projects/{id}/reports/annotations/full', [
-        'uses' => 'Annotations\FullReportController@store',
-    ]);
+        $router->post('{id}/reports/annotations/extended', [
+            'uses' => 'Annotations\ExtendedReportController@store',
+        ]);
 
-    $router->post('projects/{id}/reports/annotations/csv', [
-        'uses' => 'Annotations\CsvReportController@store',
-    ]);
+        $router->post('{id}/reports/annotations/full', [
+            'uses' => 'Annotations\FullReportController@store',
+        ]);
 
-    $router->post('projects/{id}/reports/image-labels/basic', [
-        'uses' => 'ImageLabels\BasicReportController@store',
-    ]);
+        $router->post('{id}/reports/annotations/csv', [
+            'uses' => 'Annotations\CsvReportController@store',
+        ]);
 
-    $router->post('projects/{id}/reports/image-labels/csv', [
-        'uses' => 'ImageLabels\CsvReportController@store',
-    ]);
+        $router->post('{id}/reports/image-labels/basic', [
+            'uses' => 'ImageLabels\BasicReportController@store',
+        ]);
 
-    $router->get('transects/{id}/export-area', [
-        'uses' => 'TransectExportAreaController@show',
-    ]);
+        $router->post('{id}/reports/image-labels/csv', [
+            'uses' => 'ImageLabels\CsvReportController@store',
+        ]);
 
-    $router->post('transects/{id}/export-area', [
-        'uses' => 'TransectExportAreaController@store',
-    ]);
+        $router->get('{id}/export-area', [
+            'uses' => 'ExportAreaController@show',
+        ]);
 
-    $router->delete('transects/{id}/export-area', [
-        'uses' => 'TransectExportAreaController@destroy',
-    ]);
+        $router->post('{id}/export-area', [
+            'uses' => 'ExportAreaController@store',
+        ]);
+
+        $router->delete('{id}/export-area', [
+            'uses' => 'ExportAreaController@destroy',
+        ]);
+
+    });
+
 });
 
 // this route should be public (is protected by random uids)

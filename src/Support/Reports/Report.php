@@ -5,18 +5,10 @@ namespace Dias\Modules\Export\Support\Reports;
 use File;
 use Exception;
 use Dias\Label;
-use Dias\Project;
 use Dias\Modules\Export\AvailableReport;
 
 class Report
 {
-    /**
-     * The project for which the report should be generated.
-     *
-     * @var Project
-     */
-    public $project;
-
     /**
      * Options for this report.
      *
@@ -60,9 +52,7 @@ class Report
     protected $availableReport;
 
     /**
-     * Cache for labels of all label trees that were used in this project.
-     *
-     * Not necessarily only the label trees that are currently attached to the project!
+     * Cache for labels of all label trees that are used for this report.
      *
      * @var \Illuminate\Support\Collection
      */
@@ -71,12 +61,10 @@ class Report
     /**
      * Create a report instance.
      *
-     * @param Project $project The project for which the report should be generated.
      * @param array $options Options for the report
      */
-    public function __construct(Project $project, $options = [])
+    public function __construct($options = [])
     {
-        $this->project = $project;
         $this->options = collect($options);
         $this->tmpFiles = [];
         $this->availableReport = new AvailableReport;
@@ -84,8 +72,6 @@ class Report
 
     /**
      * Generate the report.
-     *
-     * @return void
      */
     public function generate()
     {
@@ -104,6 +90,16 @@ class Report
     }
 
     /**
+     * Internal function to generate the report.
+     *
+     * (public for better testability)
+     */
+    public function generateReport()
+    {
+        //
+    }
+
+    /**
      * Get the report name
      *
      * @return string
@@ -111,16 +107,6 @@ class Report
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Get the name of the project belonging to this report
-     *
-     * @return string
-     */
-    public function getProjectName()
-    {
-        return $this->project->name;
     }
 
     /**
@@ -157,13 +143,33 @@ class Report
     }
 
     /**
+     * Get the ID associated with this report (e.g. project ID)
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return 0;
+    }
+
+    /**
      * Get the filename used for downloading the report
      *
      * @return string
      */
     public function getDownloadFilename()
     {
-        return "biigle_{$this->project->id}_{$this->getFilename()}.{$this->getExtension()}";
+        return "biigle_{$this->getId()}_{$this->getFilename()}.{$this->getExtension()}";
+    }
+
+    /**
+     * Description of the subject of this report (e.g. `project xyz`).
+     *
+     * @return string
+     */
+    public function getSubject()
+    {
+        return  '';
     }
 
     /**
@@ -177,9 +183,7 @@ class Report
     public function expandLabelName($id)
     {
         if (is_null($this->labels)) {
-            // We expect most of the used labels to belong to a label tree currently
-            // attached to the project.
-            $this->labels = $this->getProjectLabels()->keyBy('id');
+            $this->labels = collect();
         }
 
         if (!$this->labels->has($id)) {
@@ -199,22 +203,6 @@ class Report
         }
 
         return $name;
-    }
-
-    /**
-     * Get all labels that are attached to the project of this report (through label trees).
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    protected function getProjectLabels()
-    {
-        return Label::select('id', 'name', 'parent_id')
-            ->whereIn('label_tree_id', function ($query) {
-                $query->select('label_tree_id')
-                    ->from('label_tree_project')
-                    ->where('project_id', $this->project->id);
-            })
-            ->get();
     }
 
     /**
