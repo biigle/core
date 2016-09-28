@@ -32,7 +32,7 @@ angular.module('dias.export').controller('TransectReportRequestController', func
             ]
         };
 
-        $scope.form = {
+        var defaultForm = {
             type: 'annotations',
             variant: 'basic',
             options: {
@@ -42,7 +42,33 @@ angular.module('dias.export').controller('TransectReportRequestController', func
             }
         };
 
+        $scope.form = angular.copy(defaultForm);
+
+        $scope.state = {
+            success: false,
+            loading: false
+        };
+
+        $scope.error = {};
+
         $scope.availableVariants = variants[$scope.form.type];
+
+        var handleRequestSuccess = function () {
+            $scope.state.success = true;
+            $scope.state.loading = false;
+            $scope.form = angular.copy(defaultForm);
+            $scope.error = {};
+        };
+
+        var handleRequestError = function (response) {
+            $scope.state.loading = false;
+            $scope.success = false;
+            if (response.status === 422) {
+                $scope.error = response.data;
+            } else {
+                msg.responseError(response);
+            }
+        };
 
         $scope.selectType = function (type) {
             $scope.form.type = type;
@@ -63,11 +89,12 @@ angular.module('dias.export').controller('TransectReportRequestController', func
                 options[allowed[i]] = $scope.form.options[allowed[i]];
             }
 
+            $scope.state.loading = true;
             TransectReport.requestGenericReport({
                 transect_id: TRANSECT_ID,
                 type: $scope.form.type,
                 variant: $scope.form.variant,
-            }, options);
+            }, options, handleRequestSuccess, handleRequestError);
         };
 
         $scope.$watch('form.type', function (type) {
