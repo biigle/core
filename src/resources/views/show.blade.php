@@ -27,6 +27,7 @@
 @section('content')
 <div class="container" data-ng-app="dias.projects">
     @include('projects::show.title')
+    @include('projects::show.toolbar')
     <div class="col-md-6">
         @include('projects::show.transects')
     </div>
