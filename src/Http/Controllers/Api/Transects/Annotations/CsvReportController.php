@@ -2,39 +2,25 @@
 
 namespace Dias\Modules\Export\Http\Controllers\Api\Transects\Annotations;
 
-use Dias\Transect;
-use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Api\Controller;
-use Dias\Modules\Export\Jobs\GenerateReportJob;
 use Dias\Modules\Export\Support\Reports\Transects\Annotations\CsvReport;
+use Dias\Modules\Export\Http\Controllers\Api\Transects\TransectReportController;
 
-class CsvReportController extends Controller
+class CsvReportController extends TransectReportController
 {
     /**
-     * Generate a machine readable report in CSV format
+     * The report classname
      *
-     * @api {post} transects/:id/reports/annotations/full Generate a machine readable report (CSV)
+     * @var string
+     */
+    protected $report = CsvReport::class;
+
+    /**
+     * @api {post} transects/:id/reports/annotations/csv Generate a new csv annotation report
      * @apiGroup Transects
-     * @apiName GenerateCsvTransectReport
+     * @apiName GenerateCsvTransectAnnotationReport
      * @apiParam (Optional arguments) {Boolean} exportArea If `1`, restrict the report to the export area of the transect.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The transect ID.
-     *
-     * @param Request $request
-     * @param Guard $auth
-     * @param int $id transect id
-     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Guard $auth, $id)
-    {
-        $transect = Transect::findOrFail($id);
-        $this->authorize('access', $transect);
-        $this->validate($request, ['exportArea' => 'boolean']);
-        $report = new CsvReport($transect, [
-            'restricted' => (bool) $request->input('exportArea', false),
-        ]);
-        $this->dispatch(new GenerateReportJob($report, $auth->user()));
-    }
 }

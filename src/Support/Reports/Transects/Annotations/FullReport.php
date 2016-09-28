@@ -4,12 +4,9 @@ namespace Dias\Modules\Export\Support\Reports\Transects\Annotations;
 
 use DB;
 use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\ExecutesPythonScript;
 
 class FullReport extends Report
 {
-    use ExecutesPythonScript;
-
     /**
      * Name of the report for use in text.
      *
@@ -62,7 +59,7 @@ class FullReport extends Report
 
         $csv->close();
 
-        $this->executeScript('full_report', $this->transect->name);
+        $this->executeScript('full_report');
     }
 
     /**

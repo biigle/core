@@ -2,32 +2,25 @@
 
 namespace Dias\Modules\Export\Http\Controllers\Api\Transects\ImageLabels;
 
-use Dias\Transect;
-use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Api\Controller;
-use Dias\Modules\Export\Jobs\GenerateReportJob;
 use Dias\Modules\Export\Support\Reports\Transects\ImageLabels\BasicReport;
+use Dias\Modules\Export\Http\Controllers\Api\Transects\TransectReportController;
 
-class BasicReportController extends Controller
+class BasicReportController extends TransectReportController
 {
     /**
-     * Generate an image label report
+     * The report classname
      *
-     * @api {post} transects/:id/reports/image-labels Generate a new image label report
+     * @var string
+     */
+    protected $report = BasicReport::class;
+
+    /**
+     * @api {post} transects/:id/reports/image-labels/basic Generate a new basic image label report
      * @apiGroup Transects
-     * @apiName GenerateImageLabelTransectReport
+     * @apiName GenerateBasicTransectImageLabelReport
+     * @apiParam (Optional arguments) {Boolean} exportArea If `1`, restrict the report to the export area of the transect.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The transect ID.
-     *
-     * @param Guard $auth
-     * @param int $id transect id
-     * @return \Illuminate\Http\Response
      */
-    public function store(Guard $auth, $id)
-    {
-        $transect = Transect::findOrFail($id);
-        $this->authorize('access', $transect);
-        $this->dispatch(new GenerateReportJob(new BasicReport($transect), $auth->user()));
-    }
 }

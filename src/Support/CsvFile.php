@@ -4,8 +4,9 @@ namespace Dias\Modules\Export\Support;
 
 use App;
 use File;
+use Dias\Modules\Export\Contracts\DeletableContract;
 
-class CsvFile
+class CsvFile implements DeletableContract
 {
     /**
      * File path

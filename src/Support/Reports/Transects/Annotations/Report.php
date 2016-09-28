@@ -101,6 +101,6 @@ class Report extends BaseReport
      */
     protected function isRestricted()
     {
-        return $this->options->get('restricted', false);
+        return $this->options->get('exportArea', false);
     }
 }

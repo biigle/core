@@ -4,12 +4,9 @@ namespace Dias\Modules\Export\Support\Reports\Transects\Annotations;
 
 use DB;
 use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\ExecutesPythonScript;
 
 class BasicReport extends Report
 {
-    use ExecutesPythonScript;
-
     /**
      * Name of the report for use in text.
      *
@@ -52,7 +49,7 @@ class BasicReport extends Report
 
         $csv->close();
 
-        $this->executeScript('basic_report', $this->transect->name);
+        $this->executeScript('basic_report');
     }
 
     /**

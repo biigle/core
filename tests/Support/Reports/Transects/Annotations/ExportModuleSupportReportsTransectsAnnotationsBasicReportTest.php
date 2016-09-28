@@ -6,7 +6,7 @@ use Dias\Modules\Export\Support\Exec;
 use Dias\Modules\Export\Support\CsvFile;
 use Dias\Modules\Export\Support\Reports\Transects\Annotations\BasicReport;
 
-class ExportModuleSupportReportstransectsAnnotationsBasicReportTest extends TestCase
+class ExportModuleSupportReportsTransectsAnnotationsBasicReportTest extends TestCase
 {
 
     public function testProperties()
