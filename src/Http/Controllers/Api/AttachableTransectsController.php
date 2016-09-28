@@ -6,6 +6,7 @@ use DB;
 use Dias\Role;
 use Dias\Project;
 use Dias\Transect;
+use Illuminate\Contracts\Auth\Guard;
 use Dias\Http\Controllers\Api\Controller;
 
 class AttachableTransectsController extends Controller
@@ -28,24 +29,25 @@ class AttachableTransectsController extends Controller
      *    }
      * ]
      *
+     * @param Guard $auth
      * @param id $id Project ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function index(Guard $auth, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
 
         return Transect::select('id', 'name')
             // All transects of other projects where the user has admin rights on.
-            ->whereIn('id', function ($query) use ($id) {
+            ->whereIn('id', function ($query) use ($auth, $id) {
                 return $query->select('transect_id')
                     ->from('project_transect')
-                    ->whereIn('project_id', function ($query) use ($id) {
+                    ->whereIn('project_id', function ($query) use ($auth, $id) {
                         return $query->select('project_id')
                             ->from('project_user')
-                            ->where('user_id', $this->user->id)
+                            ->where('user_id', $auth->user()->id)
                             ->where('project_role_id', Role::$admin->id)
                             ->where('project_id', '!=', $id);
                     });
