@@ -19,7 +19,7 @@
 
 @section('navbar')
 <div class="navbar-text navbar-ate-breadcrumbs">
-    @include('transects::partials.projectsBreadcrumb') / <a href="{{route('transect', $transect->id)}}" title="Show transect {{$transect->name}}">{{$transect->name}}</a> / <strong id="dismiss-mode-title">ATE - dismiss existing annotations</strong><strong id="re-labelling-mode-title" class="ng-hide">ATE - re-label dismissed annotations</strong> <small>(<span id="annotation-count">0</span>&nbsp;annotations)</small> @include('transects::partials.annotationSessionIndicator')
+    @include('transects::partials.projectsBreadcrumb') / <a href="{{route('transect', $transect->id)}}" title="Show transect {{$transect->name}}" class="navbar-link">{{$transect->name}}</a> / <strong id="dismiss-mode-title">ATE - dismiss existing annotations</strong><strong id="re-labelling-mode-title" class="ng-hide">ATE - re-label dismissed annotations</strong> <small>(<span id="annotation-count">0</span>&nbsp;annotations)</small> @include('transects::partials.annotationSessionIndicator')
 </div>
 @endsection
 
