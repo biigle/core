@@ -45,7 +45,7 @@ class AteServiceProvider extends ServiceProvider {
         $modules->addMixin('ate', 'annotationsStyles');
         $modules->addMixin('ate', 'annotationsSidebar');
         $modules->addMixin('ate', 'annotationsSettings');
-        $modules->addMixin('ate', 'projectsShow');
+        $modules->addMixin('ate', 'projectsShowToolbar');
     }
 
     /**
