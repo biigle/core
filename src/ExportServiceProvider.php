@@ -35,8 +35,7 @@ class ExportServiceProvider extends ServiceProvider {
             __DIR__.'/config/export.php' => config_path('export.php'),
         ], 'config');
 
-        $modules->addMixin('export', 'projectsShow');
-        $modules->addMixin('export', 'projectsShowScripts');
+        $modules->addMixin('export', 'projectsShowToolbar');
         $modules->addMixin('export', 'annotationsSettings');
         $modules->addMixin('export', 'annotationsScripts');
         $modules->addMixin('export', 'manualTutorial');

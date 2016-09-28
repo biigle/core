@@ -1,11 +1,11 @@
 /**
  * @namespace dias.export
  * @ngdoc controller
- * @name TransectReportRequestController
+ * @name ProjectReportRequestController
  * @memberOf dias.export
  * @description Controller for requesting a new transect report
  */
-angular.module('dias.export').controller('TransectReportRequestController', function ($scope, TransectReport, ReportForm, TRANSECT_ID) {
+angular.module('dias.export').controller('ProjectReportRequestController', function ($scope, ProjectReport, ReportForm, PROJECT_ID) {
         "use strict";
 
         var variants = {
@@ -24,12 +24,10 @@ angular.module('dias.export').controller('TransectReportRequestController', func
         var allowedOptions = {
             'annotations': [
                 'exportArea',
-                'separateLabelTrees',
-                'annotationSession'
+                'separateLabelTrees'
             ],
             'image-labels': [
-                'separateLabelTrees',
-                'annotationSession'
+                'separateLabelTrees'
             ]
         };
 
@@ -38,16 +36,15 @@ angular.module('dias.export').controller('TransectReportRequestController', func
             variant: 'basic',
             options: {
                 exportArea: false,
-                separateLabelTrees: false,
-                annotationSession: null
+                separateLabelTrees: false
             }
         };
 
         $scope.form = new ReportForm(variants, allowedOptions, defaultForm);
 
         $scope.submit = function () {
-            $scope.form.submit(TransectReport, {
-                transect_id: TRANSECT_ID
+            $scope.form.submit(ProjectReport, {
+                project_id: PROJECT_ID
             });
         };
     }

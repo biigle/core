@@ -19,7 +19,7 @@ abstract class TransectReportController extends ReportController
         $options = parent::getOptions($request);
 
         $this->validate($request, [
-            'annotationSession' => "exists:annotation_sessions,id,transect_id,{$this->model->id}"
+            'annotationSession' => "nullable|exists:annotation_sessions,id,transect_id,{$this->model->id}"
         ]);
 
         return array_merge($options, [

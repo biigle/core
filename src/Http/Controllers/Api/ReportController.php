@@ -48,8 +48,8 @@ abstract class ReportController extends Controller
     protected function getOptions(Request $request)
     {
         $this->validate($request, [
-            'separateLabelTrees' => 'boolean',
-            'exportArea' => 'boolean',
+            'separateLabelTrees' => 'nullable|boolean',
+            'exportArea' => 'nullable|boolean',
         ]);
 
         return [

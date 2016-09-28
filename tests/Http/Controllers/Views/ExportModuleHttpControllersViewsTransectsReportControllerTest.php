@@ -1,7 +1,5 @@
 <?php
 
-use Dias\Modules\Export\Transect;
-
 class ExportModuleHttpControllersViewsTransectsReportControllerTest extends ApiTestCase {
 
     public function testShow()

@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers\Views\Transects;
+namespace Dias\Modules\Export\Http\Controllers\Views;
 
 use Dias\Transect;
 use Dias\Http\Controllers\Views\Controller;
 
-class ReportsController extends Controller
+class TransectReportsController extends Controller
 {
     /**
      * Show the transects reports view.

@@ -87,8 +87,13 @@ $router->group([
     'middleware' => 'auth',
 ], function ($router) {
     $router->get('transects/{id}/reports', [
-        'uses' => 'Transects\ReportsController@show',
+        'uses' => 'TransectReportsController@show',
         'as' => 'transect-reports',
+    ]);
+
+    $router->get('projects/{id}/reports', [
+        'uses' => 'ProjectReportsController@show',
+        'as' => 'project-reports',
     ]);
 });
 

@@ -88,39 +88,4 @@ class Report extends BaseReport
 
         $this->makeZip($filesForZip);
     }
-
-    /**
-     * Constructs a label name from the names of all parent labels and the label itself.
-     *
-     * Example: `Animalia > Annelida > Polychaeta > Buskiella sp`
-     *
-     * @param int  $id  Label ID
-     * @return string
-     */
-    public function expandLabelName($id)
-    {
-        if (is_null($this->labels)) {
-            // We expect most of the used labels to belong to a label tree currently
-            // attached to the project.
-            $this->labels = $this->getProjectLabels()->keyBy('id');
-        }
-
-        return parent::expandLabelName($id);
-    }
-
-    /**
-     * Get all labels that are attached to the project.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    protected function getProjectLabels()
-    {
-        return Label::select('id', 'name', 'parent_id')
-            ->whereIn('label_tree_id', function ($query) {
-                $query->select('label_tree_id')
-                    ->from('label_tree_project')
-                    ->where('project_id', $this->project->id);
-            })
-            ->get();
-    }
 }

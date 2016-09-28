@@ -1,11 +1,11 @@
 @extends('app')
 
-@section('title')Reports for {{ $transect->name }}@stop
+@section('title')Reports for {{ $project->name }}@stop
 
 @push('scripts')
     <script src="{{ asset('vendor/export/scripts/main.js') }}"></script>
     <script type="text/javascript">
-        angular.module('dias.export').constant('TRANSECT_ID', {{$transect->id}});
+        angular.module('dias.export').constant('PROJECT_ID', {{$project->id}});
     </script>
 @endpush
 
@@ -15,7 +15,7 @@
 
 @section('navbar')
 <div class="navbar-text navbar-transects-breadcrumbs">
-    @include('transects::partials.projectsBreadcrumb') / <a href="{{route('transect', $transect->id)}}" title="Show transect {{$transect->name}}" class="navbar-link">{{$transect->name}}</a> / <strong>Reports</strong> @include('transects::partials.annotationSessionIndicator')
+    <a href="{{route('project', $project->id)}}" class="navbar-link" title="Show project {{$project->name}}">{{$project->name}}</a> / <strong>Reports</strong>
 </div>
 @endsection
 
@@ -23,11 +23,11 @@
 <div class="container" data-ng-app="dias.export">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
-            <h2>Request report for {{$transect->name}}</h2>
+            <h2>Request report for {{$project->name}}</h2>
             <p>
-                Request a transect report to consolidate data of the transect into downloadable files.
+                Request a project report to consolidate data of all transects of the project into downloadable files.
             </p>
-            <form data-ng-controller="TransectReportRequestController" data-ng-submit="submit()">
+            <form data-ng-controller="ProjectReportRequestController" data-ng-submit="submit()">
                 <div class="row">
                     <div class="col-sm-7">
                         <div class="form-group">
@@ -50,40 +50,23 @@
                     </div>
                     <div class="col-sm-5">
                         <div class="help-block" data-ng-if="form.wantsCombination('annotations', 'basic')">
-                            The basic annotation report contains graphical plots of abundances of the different annotation labels (as PDF). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#annotation-basic-report')}}">report schema</a>.
+                            The basic annotation report contains graphical plots of abundances of the different annotation labels (as PDF for each transect). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#annotation-basic-report')}}">report schema</a>.
                         </div>
                         <div class="help-block ng-cloak" data-ng-if="form.wantsCombination('annotations', 'extended')">
-                            The extended annotation report lists the abundances of annotation labels for each image of this transect (as XLSX). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#annotation-extended-report')}}">report schema</a>.
+                            The extended annotation report lists the abundances of annotation labels for each image of this transect (as XLSX for each transect). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#annotation-extended-report')}}">report schema</a>.
                         </div>
                         <div class="help-block ng-cloak" data-ng-if="form.wantsCombination('annotations', 'full')">
-                            The full annotation report lists the labels, shape and coordinates of all annotations of this transect (as XLSX). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#annotation-full-report')}}">report schema</a>.
+                            The full annotation report lists the labels, shape and coordinates of all annotations of this transect (as XLSX for each transect). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#annotation-full-report')}}">report schema</a>.
                         </div>
                         <div class="help-block ng-cloak" data-ng-if="form.wantsCombination('annotations', 'csv')">
-                            The CSV annotation report is intended for subsequent processing and lists the annotation labels of this transect at the highest possible resolution (as CSV files in a ZIP archive). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#annotation-csv-report')}}">report schema</a>.
+                            The CSV annotation report is intended for subsequent processing and lists the annotation labels of this transect at the highest possible resolution (as CSV files in a ZIP archive for each transect). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#annotation-csv-report')}}">report schema</a>.
                         </div>
                         <div class="help-block ng-cloak" data-ng-if="form.wantsCombination('image-labels', 'basic')">
-                            The basic image label report lists the image labels of all images of this transect (as XLSX). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#image-label-basic-report')}}">report schema</a>.
+                            The basic image label report lists the image labels of all images of this transect (as XLSX for each transect). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#image-label-basic-report')}}">report schema</a>.
                         </div>
                         <div class="help-block ng-cloak" data-ng-if="form.wantsCombination('image-labels', 'csv')">
-                            The CSV image label report is intended for subsequent processing and lists the image labels of this transect at the highest possible resolution (as CSV files in a ZIP archive). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#image-label-csv-report')}}">report schema</a>.
+                            The CSV image label report is intended for subsequent processing and lists the image labels of this transect at the highest possible resolution (as CSV files in a ZIP archive for each transect). See the manual for the <a target="_blank" href="{{route('manual-tutorials-export', 'reports-schema#image-label-csv-report')}}">report schema</a>.
                         </div>
-                    </div>
-                </div>
-                <div class="row" data-ng-if="form.wantsType('annotations')">
-                    <div class="col-sm-7">
-                        <div class="form-group" data-ng-class="{'has-error':form.error.annotationSession}">
-                            <label for="annotation-session">Restrict to annotation session</label>
-                            <select id="annotation-session" class="form-control" data-ng-model="form.data.options.annotationSession">
-                                <option value="">-- none --</option>
-                                @foreach ($annotationSessions as $session)
-                                    <option value="{{$session->id}}">{{$session->name}}</option>
-                                @endforeach
-                            </select>
-                            <div class="ng-cloak help-block" data-ng-if="form.error.annotationSession" data-ng-bind="form.error.annotationSession"></div>
-                        </div>
-                    </div>
-                    <div class="col-sm-5 help-block ng-cloak" data-ng-if="form.data.options.annotationSession">
-                        Only annotations that were created during the selected annotation session will be included in the report.
                     </div>
                 </div>
                 <div class="row">
@@ -113,15 +96,15 @@
                     </div>
                 </div>
                 <div class="ng-cloak alert alert-success" data-ng-if="form.state.success">
-                    The requested report will be prepared. You will get notified by email when it is ready. Now you can request a new report or <a href="{{route('transect', $transect->id)}}" title="Back to {{$transect->name}}" class="alert-link">go back</a> to the transect.
+                    The requested report will be prepared. You will get notified by email when it is ready. Now you can request a new report or <a href="{{route('project', $project->id)}}" title="Back to {{$project->name}}" class="alert-link">go back</a> to the project.
                 </div>
                 <div class="form-group">
-                    <a href="{{route('transect', $transect->id)}}" title="Back to {{$transect->name}}" class="btn btn-default">back</a>
+                    <a href="{{route('project', $project->id)}}" title="Back to {{$project->name}}" class="btn btn-default">back</a>
                     <input type="submit" name="submit" value="Request this report" title="Request this report" class="btn btn-success pull-right" data-ng-disabled="form.state.loading">
                 </div>
             </form>
             <p class="text-muted">
-                ProTip: You can request reports for a whole project from the project overview page.
+                ProTip: You can request reports for individual transects from the transect overview page.
             </p>
         </div>
     </div>
