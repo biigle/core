@@ -1,11 +1,11 @@
 @extends('manual.base')
 
-@section('manual-title') Effectively annotate images @stop
+@section('manual-title') Efficiently annotate images @stop
 
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            See how to use the image section cycle mode to effectively annotate an image.
+            See how to use the image section cycle mode to efficiently annotate an image.
         </p>
 
         <div class="embed-responsive embed-responsive-16by9">
