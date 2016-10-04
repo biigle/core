@@ -6,6 +6,8 @@ use Dias\Modules\Export\Support\Reports\Transects\ImageLabels\BasicReport;
 
 class ExportModuleSupportReportsTransectsImageLabelsBasicReportTest extends TestCase
 {
+    private $columns = ['image_id', 'image_filename', 'label_names'];
+
     public function testProperties()
     {
         $report = new BasicReport(TransectTest::make());
@@ -17,7 +19,6 @@ class ExportModuleSupportReportsTransectsImageLabelsBasicReportTest extends Test
     public function testGenerateReport()
     {
         $transect = TransectTest::create();
-        $user = UserTest::create();
 
         $il = ImageLabelTest::create([
             'image_id' => ImageTest::create([
@@ -50,7 +51,10 @@ class ExportModuleSupportReportsTransectsImageLabelsBasicReportTest extends Test
             ->andReturn(false);
 
         $mock = Mockery::mock();
-        $mock->path = 'abc';
+
+        $mock->shouldReceive('getPath')
+            ->once()
+            ->andReturn('abc');
 
         $mock->shouldReceive('put')
             ->once()
@@ -58,7 +62,7 @@ class ExportModuleSupportReportsTransectsImageLabelsBasicReportTest extends Test
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(['image_id', 'image_filename', 'label_names']);
+            ->with($this->columns);
 
         $mock->shouldReceive('put')
             ->once()
@@ -82,5 +86,67 @@ class ExportModuleSupportReportsTransectsImageLabelsBasicReportTest extends Test
         });
 
         with(new BasicReport($transect))->generateReport();
+    }
+
+    public function testGenerateReportSeparateLabelTrees()
+    {
+        $label1 = LabelTest::create();
+        $label2 = LabelTest::create();
+
+        $image = ImageTest::create();
+
+        ImageLabelTest::create([
+            'image_id' => $image->id,
+            'label_id' => $label1->id,
+        ]);
+        ImageLabelTest::create([
+            'image_id' => $image->id,
+            'label_id' => $label2->id,
+        ]);
+
+        File::shouldReceive('exists')
+            ->once()
+            ->andReturn(false);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getPath')
+            ->twice()
+            ->andReturn('abc', 'def');
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$label1->tree->name]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$label2->tree->name]);
+
+        $mock->shouldReceive('put')
+            ->twice()
+            ->with($this->columns);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$image->id, $image->filename, $label1->name]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$image->id, $image->filename, $label2->name]);;
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+        $mock->code = 0;
+        App::singleton(Exec::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $report = new BasicReport($image->transect, ['separateLabelTrees' => true]);
+        $report->generateReport();
     }
 }

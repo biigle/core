@@ -3,6 +3,7 @@
 namespace Dias\Modules\Export\Support\Reports\Transects\Annotations;
 
 use DB;
+use Dias\LabelTree;
 use Dias\Modules\Export\Support\CsvFile;
 
 class ExtendedReport extends Report
@@ -35,24 +36,19 @@ class ExtendedReport extends Report
      */
     public function generateReport()
     {
-        $csv = CsvFile::makeTmp();
-        $this->tmpFiles[] = $csv;
-
-        $csv->put([$this->transect->name]);
-        $csv->put(['image_filename', 'label_name', 'annotation_count']);
-
         $rows = $this->query()->get();
 
-        // DO NOT USE CHUNK BECAUSE IT DESTROYS groupBy!
-        foreach ($rows as $row) {
-            $csv->put([
-                $row->filename,
-                $this->expandLabelName($row->label_id),
-                $row->count,
-            ]);
-        }
+        if ($this->shouldSeparateLabelTrees()) {
+            $rows = $rows->groupBy('label_tree_id');
+            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
 
-        $csv->close();
+            foreach ($trees as $id => $name) {
+                $this->tmpFiles[] = $this->createCsv($rows->get($id), $name);
+            }
+
+        } else {
+            $this->tmpFiles[] = $this->createCsv($rows, $this->transect->name);
+        }
 
         $this->executeScript('extended_report');
     }
@@ -64,15 +60,51 @@ class ExtendedReport extends Report
      */
     protected function query()
     {
-        return DB::table('images')
+        $query = DB::table('images')
             ->join('annotations', 'annotations.image_id', '=', 'images.id')
             ->join('annotation_labels', 'annotation_labels.annotation_id', '=', 'annotations.id')
-            ->select(DB::raw('images.filename, annotation_labels.label_id, count(annotation_labels.label_id) as count'))
-            ->groupBy('annotation_labels.label_id', 'images.id')
             ->where('images.transect_id', $this->transect->id)
             ->when($this->isRestricted(), function ($query) {
                 return $query->whereNotIn('annotations.id', $this->getSkipIds());
             })
             ->orderBy('images.filename');
+
+        if ($this->shouldSeparateLabelTrees()) {
+            $query->join('labels', 'labels.id', '=', 'annotation_labels.label_id')
+                ->select(DB::raw('images.filename, annotation_labels.label_id, count(annotation_labels.label_id) as count, labels.label_tree_id'))
+                ->groupBy('annotation_labels.label_id', 'images.id', 'labels.label_tree_id');
+        } else {
+            $query->select(DB::raw('images.filename, annotation_labels.label_id, count(annotation_labels.label_id) as count'))
+                ->groupBy('annotation_labels.label_id', 'images.id');
+        }
+
+        return $query;
     }
+
+    /**
+     * Create a CSV file for a single sheet of the spreadsheet of this report
+     *
+     * @param \Illuminate\Support\Collection $rows The rows for the CSV
+     * @param string $title The title to put in the first row of the CSV
+     * @return CsvFile
+     */
+    protected function createCsv($rows, $title = '')
+    {
+        $csv = CsvFile::makeTmp();
+        $csv->put([$title]);
+        $csv->put(['image_filename', 'label_name', 'annotation_count']);
+
+        foreach ($rows as $row) {
+            $csv->put([
+                $row->filename,
+                $this->expandLabelName($row->label_id),
+                $row->count,
+            ]);
+        }
+
+        $csv->close();
+
+        return $csv;
+    }
+
 }

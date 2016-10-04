@@ -12,8 +12,7 @@ import csv
 
 title = sys.argv[1]
 target_file = sys.argv[2]
-transect_csvs = sys.argv[3:]
-
+data_csvs = sys.argv[3:]
 
 def TitleSlide(text):
     fig = plt.figure(figsize=(10, 4))
@@ -37,11 +36,11 @@ fig = TitleSlide("BIIGLE DIAS basic report for transect\n" + title.decode('UTF-8
 pdf.savefig(fig)
 width = 1.
 
-for path in transect_csvs:
+for path in data_csvs:
     f = open(path, 'r')
-    transect_csv = csv.reader(f)
-    transect_name = transect_csv.next()[0]
-    rows = np.array(list(transect_csv))
+    data_csv = csv.reader(f)
+    plot_title = data_csv.next()
+    rows = np.array(list(data_csv))
     f.close()
     if rows.shape[0] == 0:
         continue
@@ -59,8 +58,9 @@ for path in transect_csvs:
     ax.bar(ind, counts, width, color=np.core.defchararray.add(hashes, rows[:, 1]), log=counts.max() > 100)
 
     ax.set_xticks(ind + width / 2)
-    ax.set_xticklabels(rows[:, 0], rotation=45, fontsize=8)
-    plt.title(transect_name.decode('UTF-8'))
+    ax.set_xticklabels(rows[:, 0], rotation=45, fontsize=8, ha = 'right')
+    if plot_title:
+        plt.title(plot_title[0].decode('UTF-8'))
     plt.xlim([0, ind.size])
     pdf.savefig()
 

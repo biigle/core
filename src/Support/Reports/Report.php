@@ -187,7 +187,7 @@ class Report
         }
 
         if (!$this->labels->has($id)) {
-            // If another label tree was used, fetch it separately.
+            // Fetch the whole label tree for each label that wasn't already loaded.
             $labels = $this->getSiblingLabels($id);
             $this->labels = $this->labels->merge($labels)->keyBy('id');
         }
@@ -220,5 +220,15 @@ class Report
                     ->where('id', $id);
             })
             ->get();
+    }
+
+    /**
+     * Should this report separate the output files for different label trees?
+     *
+     * @return boolean
+     */
+    protected function shouldSeparateLabelTrees()
+    {
+        return $this->options->get('separateLabelTrees', false);
     }
 }

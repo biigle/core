@@ -13,35 +13,35 @@ class CsvFile implements DeletableContract
      *
      * @var string
      */
-    public $path;
+    protected $path;
 
     /**
      * File handle for the CSV file
      *
      * @var resource
      */
-    private $handle;
+    protected $handle;
 
     /**
      * Field delimiter
      *
      * @var string
      */
-    private $delimiter;
+    protected $delimiter;
 
     /**
      * String enclosure character
      *
      * @var string
      */
-    private $enclosure;
+    protected $enclosure;
 
     /**
      * Escape character
      *
      * @var string
      */
-    private $escape_char;
+    protected $escape_char;
 
     /**
      * Create a new CSV file
@@ -109,5 +109,15 @@ class CsvFile implements DeletableContract
         } catch (\Exception $e) {
             //
         }
+    }
+
+    /**
+     * Returns the path of the CSV file
+     *
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->path;
     }
 }

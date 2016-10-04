@@ -3,6 +3,7 @@
 namespace Dias\Modules\Export\Support\Reports\Transects\Annotations;
 
 use DB;
+use Dias\LabelTree;
 use Dias\Modules\Export\Support\CsvFile;
 
 class BasicReport extends Report
@@ -35,19 +36,19 @@ class BasicReport extends Report
      */
     public function generateReport()
     {
-        $csv = CsvFile::makeTmp();
-        $this->tmpFiles[] = $csv;
+        $labels = $this->query()->get();
 
-        // put transect name to first line
-        $csv->put([$this->transect->name]);
+        if ($this->shouldSeparateLabelTrees()) {
+            $labels = $labels->groupBy('label_tree_id');
+            $trees = LabelTree::whereIn('id', $labels->keys())->pluck('name', 'id');
 
-        $rows = $this->query()->get();
+            foreach ($trees as $id => $name) {
+                $this->tmpFiles[] = $this->createCsv($labels->get($id), $name);
+            }
 
-        foreach ($rows as $row) {
-            $csv->put([$row->name, $row->color, $row->count]);
+        } else {
+            $this->tmpFiles[] = $this->createCsv($labels);
         }
-
-        $csv->close();
 
         $this->executeScript('basic_report');
     }
@@ -67,8 +68,29 @@ class BasicReport extends Report
             ->when($this->isRestricted(), function ($query) {
                 return $query->whereNotIn('annotations.id', $this->getSkipIds());
             })
-            ->select(DB::raw('labels.name, labels.color, count(labels.id) as count'))
+            ->select(DB::raw('labels.name, labels.color, count(labels.id) as count, labels.label_tree_id'))
             ->groupBy('labels.id')
             ->orderBy('labels.id');
+    }
+
+    /**
+     * Create a CSV file for a single plot of this report
+     *
+     * @param \Illuminate\Support\Collection $labels The labels/rows for the CSV
+     * @param string $title The title to put in the first row of the CSV
+     * @return CsvFile
+     */
+    protected function createCsv($labels, $title = '')
+    {
+        $csv = CsvFile::makeTmp();
+        $csv->put([$title]);
+
+        foreach ($labels as $label) {
+            $csv->put([$label->name, $label->color, $label->count]);
+        }
+
+        $csv->close();
+
+        return $csv;
     }
 }

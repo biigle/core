@@ -8,6 +8,8 @@ use Dias\Modules\Export\Support\Reports\Transects\Annotations\ExtendedReport;
 
 class ExportModuleSupportReportstransectsAnnotationsExtendedReportTest extends TestCase
 {
+    private $columns = ['image_filename', 'label_name', 'annotation_count'];
+
     public function testProperties()
     {
         $report = new ExtendedReport(TransectTest::make());
@@ -19,7 +21,6 @@ class ExportModuleSupportReportstransectsAnnotationsExtendedReportTest extends T
     public function testGenerateReport()
     {
         $transect = TransectTest::create();
-        $user = UserTest::create();
 
         $root = LabelTest::create();
         $child = LabelTest::create([
@@ -46,7 +47,10 @@ class ExportModuleSupportReportstransectsAnnotationsExtendedReportTest extends T
             ->andReturn(false);
 
         $mock = Mockery::mock();
-        $mock->path = 'abc';
+
+        $mock->shouldReceive('getPath')
+            ->once()
+            ->andReturn('abc');
 
         $mock->shouldReceive('put')
             ->once()
@@ -54,7 +58,7 @@ class ExportModuleSupportReportstransectsAnnotationsExtendedReportTest extends T
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(['image_filename', 'label_name', 'annotation_count']);
+            ->with($this->columns);
 
         $mock->shouldReceive('put')
             ->once()
@@ -78,5 +82,71 @@ class ExportModuleSupportReportstransectsAnnotationsExtendedReportTest extends T
         });
 
         with(new ExtendedReport($transect))->generateReport();
+    }
+
+    public function testGenerateReportSeparateLabelTrees()
+    {
+        $label1 = LabelTest::create();
+        $label2 = LabelTest::create();
+
+        $image = ImageTest::create();
+
+        $annotation = AnnotationTest::create([
+            'image_id' => $image->id,
+        ]);
+
+        $al1 = AnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'label_id' => $label1->id,
+        ]);
+        $al2 = AnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'label_id' => $label2->id,
+        ]);
+
+        File::shouldReceive('exists')
+            ->once()
+            ->andReturn(false);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getPath')
+            ->twice()
+            ->andReturn('abc', 'def');
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$label1->tree->name]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$label2->tree->name]);
+
+        $mock->shouldReceive('put')
+            ->twice()
+            ->with($this->columns);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$image->filename, $label1->name, 1]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$image->filename, $label2->name, 1]);
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+        $mock->code = 0;
+        App::singleton(Exec::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $report = new ExtendedReport($image->transect, ['separateLabelTrees' => true]);
+        $report->generateReport();
     }
 }

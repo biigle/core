@@ -3,6 +3,7 @@
 namespace Dias\Modules\Export\Support\Reports\Transects\Annotations;
 
 use DB;
+use Dias\LabelTree;
 use Dias\Modules\Export\Support\CsvFile;
 
 class FullReport extends Report
@@ -35,29 +36,19 @@ class FullReport extends Report
      */
     public function generateReport()
     {
-        $csv = CsvFile::makeTmp();
-        $this->tmpFiles[] = $csv;
-
-        // put transect name to first line
-        $csv->put([$this->transect->name]);
-
         $rows = $this->query()->get();
 
-        // CHUNKING IS BROKEN SOMEHOW!
-        // $query->chunkById(500, function ($rows) use ($csv) {
-            foreach ($rows as $row) {
-                $csv->put([
-                    $row->filename,
-                    $row->annotation_id,
-                    $this->expandLabelName($row->label_id),
-                    $row->shape_name,
-                    $row->points,
-                    $row->attrs
-                ]);
-            }
-        // }, 'annotation_labels.id', 'annotation_labels_id');
+        if ($this->shouldSeparateLabelTrees()) {
+            $rows = $rows->groupBy('label_tree_id');
+            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
 
-        $csv->close();
+            foreach ($trees as $id => $name) {
+                $this->tmpFiles[] = $this->createCsv($rows->get($id), $name);
+            }
+
+        } else {
+            $this->tmpFiles[] = $this->createCsv($rows, $this->transect->name);
+        }
 
         $this->executeScript('full_report');
     }
@@ -69,12 +60,11 @@ class FullReport extends Report
      */
     protected function query()
     {
-        return DB::table('annotation_labels')
+        $query = DB::table('annotation_labels')
             ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
             ->join('images', 'annotations.image_id', '=', 'images.id')
             ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
             ->select(
-                // 'annotation_labels.id as annotation_labels_id', // required for chunkById
                 'images.filename',
                 'annotations.id as annotation_id',
                 'annotation_labels.label_id',
@@ -87,5 +77,40 @@ class FullReport extends Report
                 return $query->whereNotIn('annotations.id', $this->getSkipIds());
             })
             ->orderBy('annotations.id');
+
+        if ($this->shouldSeparateLabelTrees()) {
+            $query->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
+                ->addSelect('labels.label_tree_id');
+        }
+
+        return $query;
+    }
+
+    /**
+     * Create a CSV file for a single sheet of the spreadsheet of this report
+     *
+     * @param \Illuminate\Support\Collection $rows The rows for the CSV
+     * @param string $title The title to put in the first row of the CSV
+     * @return CsvFile
+     */
+    protected function createCsv($rows, $title = '')
+    {
+        $csv = CsvFile::makeTmp();
+        $csv->put([$title]);
+
+        foreach ($rows as $row) {
+            $csv->put([
+                $row->filename,
+                $row->annotation_id,
+                $this->expandLabelName($row->label_id),
+                $row->shape_name,
+                $row->points,
+                $row->attrs
+            ]);
+        }
+
+        $csv->close();
+
+        return $csv;
     }
 }

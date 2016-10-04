@@ -3,6 +3,7 @@
 namespace Dias\Modules\Export\Support\Reports\Transects\ImageLabels;
 
 use DB;
+use Dias\LabelTree;
 use Dias\Modules\Export\Support\CsvFile;
 use Dias\Modules\Export\Support\Reports\Transects\Report;
 use Dias\Modules\Export\Support\Reports\MakesZipArchives;
@@ -39,44 +40,26 @@ class CsvReport extends Report
      */
     public function generateReport()
     {
-        $csv = CsvFile::makeTmp();
-        $this->tmpFiles[] = $csv;
-
-        // add column headers
-        $csv->put([
-            'image_label_id',
-            'image_id',
-            'filename',
-            'user_id',
-            'firstname',
-            'lastname',
-            'label_id',
-            'label_name',
-        ]);
-
         $rows = $this->query()->get();
+        $toZip = [];
 
-        // CHUNKING IS BROKEN SOMEHOW!
-        // $query->chunkById(500, function ($rows) use ($csv) {
-            foreach ($rows as $row) {
-                $csv->put([
-                    $row->image_label_id,
-                    $row->image_id,
-                    $row->filename,
-                    $row->user_id,
-                    $row->firstname,
-                    $row->lastname,
-                    $row->label_id,
-                    $this->expandLabelName($row->label_id),
-                ]);
+        if ($this->shouldSeparateLabelTrees()) {
+            $rows = $rows->groupBy('label_tree_id');
+            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
+
+            foreach ($trees as $id => $name) {
+                $csv = $this->createCsv($rows->get($id));
+                $this->tmpFiles[] = $csv;
+                $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'csv');
             }
-        // }, 'image_labels.id', 'image_label_id');
 
-        $csv->close();
+        } else {
+            $csv = $this->createCsv($rows);
+            $this->tmpFiles[] = $csv;
+            $toZip[$csv->getPath()] = $this->sanitizeFilename("{$this->transect->id}-{$this->transect->name}", 'csv');
+        }
 
-        $this->makeZip([
-            $csv->path => $this->sanitizeFilename("{$this->transect->id}-{$this->transect->name}", 'csv'),
-        ]);
+        $this->makeZip($toZip);
     }
 
     /**
@@ -86,7 +69,7 @@ class CsvReport extends Report
      */
     protected function query()
     {
-        return DB::table('image_labels')
+        $query = DB::table('image_labels')
             ->join('images', 'image_labels.image_id', '=', 'images.id')
             ->join('users', 'image_labels.user_id', '=', 'users.id')
             ->select([
@@ -100,5 +83,51 @@ class CsvReport extends Report
             ])
             ->where('images.transect_id', $this->transect->id)
             ->orderBy('images.filename');
+
+        if ($this->shouldSeparateLabelTrees()) {
+            $query->join('labels', 'labels.id', '=', 'image_labels.label_id')
+                ->addSelect('labels.label_tree_id');
+        }
+
+        return $query;
+    }
+
+        /**
+     * Create a CSV file for this report
+     *
+     * @param \Illuminate\Support\Collection $rows The rows for the CSV
+     * @return CsvFile
+     */
+    protected function createCsv($rows)
+    {
+        $csv = CsvFile::makeTmp();
+        // column headers
+        $csv->put([
+            'image_label_id',
+            'image_id',
+            'filename',
+            'user_id',
+            'firstname',
+            'lastname',
+            'label_id',
+            'label_name',
+        ]);
+
+        foreach ($rows as $row) {
+            $csv->put([
+                $row->image_label_id,
+                $row->image_id,
+                $row->filename,
+                $row->user_id,
+                $row->firstname,
+                $row->lastname,
+                $row->label_id,
+                $this->expandLabelName($row->label_id),
+            ]);
+        }
+
+        $csv->close();
+
+        return $csv;
     }
 }

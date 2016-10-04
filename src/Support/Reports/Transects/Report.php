@@ -101,7 +101,7 @@ class Report extends BaseReport
         $script = config("export.scripts.{$name}");
 
         $csvs = implode(' ', array_map(function ($csv) {
-            return $csv->path;
+            return $csv->getPath();
         }, $this->tmpFiles));
 
         $exec = App::make(Exec::class, [

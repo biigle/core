@@ -12,7 +12,6 @@ class ExportModuleSupportReportsTransectsAnnotationsReportTest extends TestCase
     public function testGenerateReportRestrict()
     {
         $transect = Transect::convert(TransectTest::create());
-        $user = UserTest::create();
 
         $transect->exportArea = [100, 100, 200, 200];
         $transect->save();

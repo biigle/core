@@ -86,20 +86,7 @@
                         Only annotations that were created during the selected annotation session will be included in the report.
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-7" data-ng-class="{'has-error':form.error.separateLabelTrees}">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" data-ng-model="form.data.options.separateLabelTrees"> Separate label trees
-                            </label>
-                        </div>
-                        <div class="ng-cloak help-block" data-ng-if="form.error.separateLabelTrees" data-ng-bind="form.error.separateLabelTrees"></div>
-                    </div>
-                    <div class="col-sm-5 help-block ng-cloak" data-ng-if="form.data.options.separateLabelTrees">
-                        Annotations belonging to different label trees will be separated to different files/sheets.
-                    </div>
-                </div>
-                <div class="row form-group" data-ng-if="form.wantsType('annotations')">
+                <div class="row" data-ng-if="form.wantsType('annotations')">
                     <div class="col-sm-7" data-ng-class="{'has-error':form.error.exportArea}">
                         <div class="checkbox">
                             <label>
@@ -110,6 +97,19 @@
                     </div>
                     <div class="col-sm-5 help-block ng-cloak" data-ng-if="form.data.options.exportArea">
                         Annotations that are outside of the export area will be discarded for this report.
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-7" data-ng-class="{'has-error':form.error.separateLabelTrees}">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" data-ng-model="form.data.options.separateLabelTrees"> Separate label trees
+                            </label>
+                        </div>
+                        <div class="ng-cloak help-block" data-ng-if="form.error.separateLabelTrees" data-ng-bind="form.error.separateLabelTrees"></div>
+                    </div>
+                    <div class="col-sm-5 help-block ng-cloak" data-ng-if="form.data.options.separateLabelTrees">
+                        Annotations belonging to different label trees will be separated to different files/sheets.
                     </div>
                 </div>
                 <div class="ng-cloak alert alert-success" data-ng-if="form.state.success">

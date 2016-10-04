@@ -19,7 +19,6 @@ class ExportModuleSupportReportsTransectsAnnotationsFullReportTest extends TestC
     public function testGenerateReport()
     {
         $transect = TransectTest::create();
-        $user = UserTest::create();
 
         $root = LabelTest::create();
         $child = LabelTest::create([
@@ -40,7 +39,10 @@ class ExportModuleSupportReportsTransectsAnnotationsFullReportTest extends TestC
             ->andReturn(false);
 
         $mock = Mockery::mock();
-        $mock->path = 'abc';
+
+        $mock->shouldReceive('getPath')
+            ->once()
+            ->andReturn('abc');
 
         $mock->shouldReceive('put')
             ->once()
@@ -72,4 +74,81 @@ class ExportModuleSupportReportsTransectsAnnotationsFullReportTest extends TestC
 
         with(new FullReport($transect))->generateReport();
     }
+
+    public function testGenerateReportSeparateLabelTrees()
+    {
+        $label1 = LabelTest::create();
+        $label2 = LabelTest::create();
+
+        $image = ImageTest::create();
+
+        $annotation = AnnotationTest::create([
+            'image_id' => $image->id,
+        ]);
+
+        $al1 = AnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'label_id' => $label1->id,
+        ]);
+        $al2 = AnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'label_id' => $label2->id,
+        ]);
+
+        File::shouldReceive('exists')
+            ->once()
+            ->andReturn(false);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getPath')
+            ->twice()
+            ->andReturn('abc', 'def');
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$label1->tree->name]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$label2->tree->name]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $image->filename,
+                $annotation->id,
+                $label1->name,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null,
+            ]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $image->filename,
+                $annotation->id,
+                $label2->name,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null,
+            ]);
+
+        $mock->shouldReceive('close')
+            ->twice();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $mock = Mockery::mock();
+        $mock->code = 0;
+        App::singleton(Exec::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $report = new FullReport($image->transect, ['separateLabelTrees' => true]);
+        $report->generateReport();
+    }
+
 }

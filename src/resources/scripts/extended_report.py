@@ -28,6 +28,6 @@ for path in csvs:
     ws.set_row_style(2, Style(font=Font(bold=True)))
 
 if not numSheets:
-    ws = workbook.new_sheet("No labels found")
+    ws = workbook.new_sheet("No labels found", data=[['No labels found']])
 
 workbook.save(target_file)
