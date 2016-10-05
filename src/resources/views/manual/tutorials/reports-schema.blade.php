@@ -1,17 +1,24 @@
 @extends('manual.base')
 
-@section('manual-title') Schema of exported reports @stop
+@section('manual-title') Reports schema @stop
 
 @section('manual-content')
     <div class="row">
         <p class="lead">
             A description of the file formats of the different available reports.
         </p>
+        <h3>Project and transect reports</h3>
+        <p>
+            Most report types can be requested for a whole project as well as for individual transects. A project report is a convenience feature which requests reports for all individual transects of the project at once and provides a ZIP file containing the transect reports for download. However, not all configuration options may be available for project reports.
+        </p>
+        <p>
+            The following sections describe the different types of transect reports but, per definition, apply for project reports as well.
+        </p>
 
         <h3>Annotation reports</h3>
         <h4><a name="annotation-basic-report"></a>Basic</h4>
         <p>
-            The basic annotation report contains graphical plots of abundances of the different annotation labels (annotations can have multiple different labels by different users). The report is generated as a single PDF file, containing one page and plot for each transect of the project.
+            The basic annotation report contains a graphical plot of abundances of the different annotation labels (annotations can have multiple labels by different users). If the annotations should be separated by label tree, there will be one plot for each label tree that was used.
         </p>
         <p>
             Example plot:
@@ -22,16 +29,16 @@
             </figure>
         </p>
         <p>
-            The bars of the plot are color-coded based on the colors of the labels they represent. If any label occurs more than a hundred times, a logarithmic scale is applied for the transect.
+            The bars of the plot are color-coded based on the colors of the labels they represent. If any label occurs more than a hundred times, a logarithmic scale is applied.
         </p>
 
         <h4><a name="annotation-extended-report"></a>Extended</h4>
 
         <p>
-            The extended annotation report is an XLSX spreadsheet with one sheet for every transect of the project. Transects without annotations are ommitted. The report contains a list of the abundances of each label <em>per image</em>.
+            The extended annotation report is an XLSX spreadsheet which contains a list of the abundances of each label and image. If the annotations should be separated by label tree, there will be one worksheet for each label tree that was used.
         </p>
         <p>
-            Each sheet contains the name of the transect as the first line. The columns are as follows:
+            For a single worksheet (not separated by label tree) the first line contains the transect name. For multiple worksheets the first lines contain the name of the respective label tree. The second line always contains the column headers. The columns are as follows:
         </p>
         <ol>
             <li><strong>Image filename</strong></li>
@@ -54,10 +61,10 @@ Animalia
         <h4><a name="annotation-full-report"></a>Full</h4>
 
         <p>
-            The full annotation report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended report</a>. It contains a list of all annotations and their labels for each transect.
+            The full annotation report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended report</a>. It contains a list of all annotations and their labels.
         </p>
         <p>
-            Each sheet contains the name of the transect as the first line. The columns are as follows:
+            The columns are as follows:
         </p>
         <ol>
             <li><strong>Image filename</strong></li>
@@ -91,10 +98,10 @@ Animalia
 
         <h4><a name="annotation-csv-report"></a>CSV</h4>
         <p>
-            The CSV report is intended for subsequent processing. If you want the data in a machine readable format, choose this report. The report is a ZIP archive, containing a CSV file for each transect of the project. Each CSV file name consists of the transect ID and the transect name (cleaned up so it can be a file name) separated by an underscore.
+            The CSV report is intended for subsequent processing. If you want the data in a machine readable format, choose this report. The report is a ZIP archive, containing a CSV file. The CSV file name consists of the transect ID and the transect name (cleaned up so it can be a file name) separated by an underscore. If the annotations should be separated by label tree, there will be one CSV file for each label tree and the CSV file name will consist of the label tree ID and name instead.
         </p>
         <p>
-            The CSV files contains one row for each annotation label. Since an annotation can have multiple labels, there may be multiple rows for a single annotation. The columns are as follows:
+            Each CSV file contains one row for each annotation label. Since an annotation can have multiple labels, there may be multiple rows for a single annotation. The first row always contains the column headers. The columns are as follows:
         </p>
         <ol>
             <li><strong>Annotation label ID</strong> (not the annotation ID)</li>
@@ -124,7 +131,7 @@ Animalia
         <h3>Image label reports</h3>
         <h4><a name="image-label-basic-report"></a>Basic</h4>
         <p>
-            The basic image label report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended annotation report</a>. It contains a list of all labels attached to each image of a transect. The columns are as follows:
+            The basic image label report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended annotation report</a>. It contains a list of all labels attached to each image of the transect. The columns are as follows:
         </p>
         <ol>
             <li><strong>Image ID</strong></li>
@@ -137,7 +144,7 @@ Animalia
             The CSV report is similar to the <a href="#annotation-csv-report">annotation CSV report</a>. If you want the data in a machine readable format, choose this report.
         </p>
         <p>
-            The CSV files contains one row for each image label. Since an image can have multiple different labels, there may be multiple rows for a single image. The columns are as follows:
+            Each CSV file contains one row for each image label. Since an image can have multiple different labels, there may be multiple rows for a single image. The columns are as follows:
         </p>
         <ol>
             <li><strong>Image label ID</strong></li>

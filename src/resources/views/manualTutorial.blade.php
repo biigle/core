@@ -1,5 +1,5 @@
 <h4>
-    <a href="{{route('manual-tutorials-export', 'reports-schema')}}">Schema of exported reports</a>
+    <a href="{{route('manual-tutorials-export', 'reports-schema')}}">Reports schema</a>
 </h4>
 
 <p>
