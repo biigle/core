@@ -1,6 +1,8 @@
 <?php
 
 use Dias\Shape;
+use Dias\Annotation;
+use Dias\AnnotationLabel;
 use Dias\Modules\Export\Transect;
 use Dias\Modules\Export\Support\Exec;
 use Dias\Modules\Export\Support\CsvFile;
@@ -8,8 +10,7 @@ use Dias\Modules\Export\Support\Reports\Transects\Annotations\Report;
 
 class ExportModuleSupportReportsTransectsAnnotationsReportTest extends TestCase
 {
-
-    public function testGenerateReportRestrict()
+    public function testRestrictToExportAreaQuery()
     {
         $transect = Transect::convert(TransectTest::create());
 
@@ -57,16 +58,76 @@ class ExportModuleSupportReportsTransectsAnnotationsReportTest extends TestCase
         $inside = [$annotations[0]->id, $annotations[1]->id, $annotations[4]->id];
         $outside = [$annotations[2]->id, $annotations[3]->id, $annotations[5]->id];
 
-        $ids = with(new Report($transect, ['restricted' => true]))->getSkipIds();
+        $report = new Report($transect);
+
+        $ids = Annotation::when(true, [$report, 'restrictToExportAreaQuery'])->pluck('id')->toArray();
         $ids = array_map('intval', $ids);
 
-        sort($outside);
+        sort($inside);
         sort($ids);
 
-        $this->assertEquals($outside, $ids);
+        $this->assertEquals($inside, $ids);
 
-        foreach ($inside as $id) {
+        foreach ($outside as $id) {
             $this->assertNotContains($id, $ids);
         }
+    }
+
+    public function testGetName()
+    {
+        $session = AnnotationSessionTest::create();
+
+        $report = new Report($session->transect, [
+            'exportArea' => true,
+        ]);
+
+        $this->assertContains('restricted to export area', $report->getName());
+        $this->assertContains('restricted_to_export_area', $report->getFilename());
+
+        $report = new Report($session->transect, [
+            'annotationSession' => $session->id,
+        ]);
+
+        $this->assertContains('restricted to annotation session', $report->getName());
+        $this->assertContains($session->name, $report->getName());
+        $this->assertContains('restricted_to_annotation_session', $report->getFilename());
+
+        $report = new Report($session->transect, [
+            'exportArea' => true,
+            'annotationSession' => $session->id,
+        ]);
+
+        $this->assertContains('export area', $report->getName());
+        $this->assertContains('export_area', $report->getFilename());
+        $this->assertContains('annotation session', $report->getName());
+        $this->assertContains($session->name, $report->getName());
+        $this->assertContains('annotation_session', $report->getFilename());
+    }
+
+    public function testRestrictToAnnotationSessionQuery()
+    {
+        $session = AnnotationSessionTest::create([
+            'starts_at' => '2016-10-05',
+            'ends_at' => '2016-10-06',
+        ]);
+
+        $a = AnnotationTest::create();
+        $a->image->transect_id = $session->transect_id;
+
+        $al1 = AnnotationLabelTest::create([
+            'created_at' => '2016-10-04',
+            'annotation_id' => $a->id,
+        ]);
+
+        $al2 = AnnotationLabelTest::create([
+            'created_at' => '2016-10-05',
+            'annotation_id' => $a->id,
+        ]);
+
+        $report = new Report($session->transect, ['annotationSession' => $session->id]);
+        $results = AnnotationLabel::when(true, [$report, 'restrictToAnnotationSessionQuery'])->get();
+
+        $this->assertEquals(1, count($results));
+        $this->assertEquals($al2->id, $results[0]->id);
     }
 }

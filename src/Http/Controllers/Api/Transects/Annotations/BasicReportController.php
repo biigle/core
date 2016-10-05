@@ -18,7 +18,9 @@ class BasicReportController extends TransectReportController
      * @api {post} transects/:id/reports/annotations/basic Generate a new basic annotation report
      * @apiGroup Transects
      * @apiName GenerateBasicTransectAnnotationReport
-     * @apiParam (Optional arguments) {Boolean} exportArea If `1`, restrict the report to the export area of the transect.
+     * @apiParam (Optional arguments) {Boolean} exportArea If `true`, restrict the report to the export area of the transect.
+     * @apiParam (Optional arguments) {Boolean} separateLabelTrees If `true`, separate annotations with labels of different label trees to different plots.
+     * @apiParam (Optional arguments) {Number} annotationSession ID of an annotation session of the transect. If given, only annotations belonging to the annotation session are included in the report.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The transect ID.

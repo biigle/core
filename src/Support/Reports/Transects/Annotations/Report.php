@@ -3,11 +3,19 @@
 namespace Dias\Modules\Export\Support\Reports\Transects\Annotations;
 
 use DB;
+use Illuminate\Support\Str;
 use Dias\Modules\Export\Transect;
 use Dias\Modules\Export\Support\Reports\Transects\Report as BaseReport;
 
 class Report extends BaseReport
 {
+    /**
+     * Cache for the annotation session this report may be restricted to
+     *
+     * @var Dias\AnnotationSession
+     */
+    protected $annotationSession;
+
     /**
      * Get the report name
      *
@@ -15,8 +23,14 @@ class Report extends BaseReport
      */
     public function getName()
     {
-        if ($this->isRestricted()) {
+        if ($this->isRestrictedToExportArea() && $this->isRestrictedToAnnotationSession()) {
+            $name = $this->getAnnotationSession()->name;
+            return "{$this->name} (restricted to export area and annotation session {$name})";
+        } else if ($this->isRestrictedToExportArea()) {
             return "{$this->name} (restricted to export area)";
+        } else if ($this->isRestrictedToAnnotationSession()) {
+            $name = $this->getAnnotationSession()->name;
+            return "{$this->name} (restricted to annotation session {$name})";
         }
 
         return $this->name;
@@ -29,11 +43,48 @@ class Report extends BaseReport
      */
     public function getFilename()
     {
-        if ($this->isRestricted()) {
-            return "{$this->filename}_restricted";
+        if ($this->hasRestriction()) {
+            $suffix = '_restricted_to';
+
+            if ($this->isRestrictedToExportArea()) {
+                $suffix .= "_export_area";
+            }
+
+            if ($this->isRestrictedToAnnotationSession()) {
+                $name = Str::slug($this->getAnnotationSession()->name);
+                $suffix .= "_annotation_session_{$name}";
+            }
+
+            return "{$this->filename}{$suffix}";
         }
 
         return $this->filename;
+    }
+
+    /**
+     * Callback to be used in a `when` query statement that restricts the resulting annotations to the export area of the reansect of this report (if there is any).
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function restrictToExportAreaQuery($query)
+    {
+        return $query->whereNotIn('annotations.id', $this->getSkipIds());
+    }
+
+    /**
+     * Callback to be used in a `when` query statement that restricts the resulting annotation labels to the annotation session of this report.
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function restrictToAnnotationSessionQuery($query)
+    {
+        $session = $this->getAnnotationSession();
+        return $query->where([
+            ['annotation_labels.created_at', '>=', $session->starts_at],
+            ['annotation_labels.created_at', '<', $session->ends_at],
+        ]);
     }
 
     /**
@@ -44,7 +95,7 @@ class Report extends BaseReport
      *
      * @return array Annotation IDs
      */
-    public function getSkipIds()
+    protected function getSkipIds()
     {
         $skip = [];
         $exportArea = Transect::convert($this->transect)->exportArea;
@@ -95,12 +146,48 @@ class Report extends BaseReport
     }
 
     /**
+     * Is this report restricted in any way?
+     *
+     * @return boolean
+     */
+    protected function hasRestriction()
+    {
+        return $this->isRestrictedToExportArea() || $this->isRestrictedToAnnotationSession();
+    }
+
+    /**
      * Should this report be restricted to the export area?
      *
      * @return boolean
      */
-    protected function isRestricted()
+    protected function isRestrictedToExportArea()
     {
         return $this->options->get('exportArea', false);
+    }
+
+    /**
+     * Should this report be restricted an annotation session?
+     *
+     * @return boolean
+     */
+    protected function isRestrictedToAnnotationSession()
+    {
+        return !is_null($this->options->get('annotationSession', null));
+    }
+
+    /**
+     * Returns the annotation session this report should be restricted to
+     *
+     * @return Dias\AnnotationSession|null
+     */
+    protected function getAnnotationSession()
+    {
+        if (!$this->annotationSession) {
+            $this->annotationSession = $this->transect
+                ->annotationSessions()
+                ->find($this->options->get('annotationSession', null));
+        }
+
+        return $this->annotationSession;
     }
 }

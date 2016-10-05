@@ -18,7 +18,8 @@ class BasicReportController extends TransectReportController
      * @api {post} transects/:id/reports/image-labels/basic Generate a new basic image label report
      * @apiGroup Transects
      * @apiName GenerateBasicTransectImageLabelReport
-     * @apiParam (Optional arguments) {Boolean} exportArea If `1`, restrict the report to the export area of the transect.
+     * @apiParam (Optional arguments) {Boolean} exportArea If `true`, restrict the report to the export area of the transect.
+     * @apiParam (Optional arguments) {Boolean} separateLabelTrees If `true`, separate image labels of different label trees to different sheets of the spreadsheet.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The transect ID.

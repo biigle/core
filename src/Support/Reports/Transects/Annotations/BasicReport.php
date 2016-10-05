@@ -65,9 +65,8 @@ class BasicReport extends Report
             ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
             ->join('images', 'annotations.image_id', '=', 'images.id')
             ->where('images.transect_id', $this->transect->id)
-            ->when($this->isRestricted(), function ($query) {
-                return $query->whereNotIn('annotations.id', $this->getSkipIds());
-            })
+            ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
+            ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
             ->select(DB::raw('labels.name, labels.color, count(labels.id) as count, labels.label_tree_id'))
             ->groupBy('labels.id')
             ->orderBy('labels.id');

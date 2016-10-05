@@ -18,7 +18,8 @@ class CsvReportController extends TransectReportController
      * @api {post} transects/:id/reports/image-labels/csv Generate a new csv image label report
      * @apiGroup Transects
      * @apiName GenerateCsvTransectImageLabelReport
-     * @apiParam (Optional arguments) {Boolean} exportArea If `1`, restrict the report to the export area of the transect.
+     * @apiParam (Optional arguments) {Boolean} exportArea If `true`, restrict the report to the export area of the transect.
+     * @apiParam (Optional arguments) {Boolean} separateLabelTrees If `true`, separate image labels of different label trees to different CSV files.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The transect ID.

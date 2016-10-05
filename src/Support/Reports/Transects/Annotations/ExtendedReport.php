@@ -64,9 +64,8 @@ class ExtendedReport extends Report
             ->join('annotations', 'annotations.image_id', '=', 'images.id')
             ->join('annotation_labels', 'annotation_labels.annotation_id', '=', 'annotations.id')
             ->where('images.transect_id', $this->transect->id)
-            ->when($this->isRestricted(), function ($query) {
-                return $query->whereNotIn('annotations.id', $this->getSkipIds());
-            })
+            ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
+            ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
             ->orderBy('images.filename');
 
         if ($this->shouldSeparateLabelTrees()) {

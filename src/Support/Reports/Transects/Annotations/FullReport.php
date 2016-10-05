@@ -73,9 +73,8 @@ class FullReport extends Report
                 'images.attrs'
             )
             ->where('images.transect_id', $this->transect->id)
-            ->when($this->isRestricted(), function ($query) {
-                return $query->whereNotIn('annotations.id', $this->getSkipIds());
-            })
+            ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
+            ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
             ->orderBy('annotations.id');
 
         if ($this->shouldSeparateLabelTrees()) {

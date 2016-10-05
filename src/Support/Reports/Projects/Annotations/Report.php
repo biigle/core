@@ -15,7 +15,7 @@ class Report extends BaseReport
      */
     public function getName()
     {
-        if ($this->isRestricted()) {
+        if ($this->isRestrictedToExportArea()) {
             return "{$this->name} (restricted to export area)";
         }
 
@@ -29,8 +29,8 @@ class Report extends BaseReport
      */
     public function getFilename()
     {
-        if ($this->isRestricted()) {
-            return "{$this->filename}_restricted";
+        if ($this->isRestrictedToExportArea()) {
+            return "{$this->filename}_restricted_to_export_area";
         }
 
         return $this->filename;
@@ -41,7 +41,7 @@ class Report extends BaseReport
      *
      * @return boolean
      */
-    protected function isRestricted()
+    protected function isRestrictedToExportArea()
     {
         return $this->options->get('exportArea', false);
     }

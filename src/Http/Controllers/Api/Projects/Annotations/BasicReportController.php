@@ -18,7 +18,8 @@ class BasicReportController extends ProjectReportController
      * @api {post} projects/:id/reports/annotations/basic Generate a new basic annotation report
      * @apiGroup Projects
      * @apiName GenerateBasicProjectAnnotationReport
-     * @apiParam (Optional arguments) {Boolean} exportArea If `1`, restrict the report to the export area of the individual transects of the project.
+     * @apiParam (Optional arguments) {Boolean} exportArea If `true`, restrict the report to the export area of the individual transects of the project.
+     * @apiParam (Optional arguments) {Boolean} separateLabelTrees If `true`, separate annotations with labels of different label trees to different plots for each transect.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The project ID.

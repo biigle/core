@@ -17,11 +17,12 @@ class TransectReportsController extends Controller
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('access', $transect);
+        $sessions = $transect->annotationSessions()->orderBy('starts_at', 'desc')->get();
 
         return view('export::transectReports', [
             'projects' => $transect->projects,
             'transect' => $transect,
-            'annotationSessions' => $transect->annotationSessions,
+            'annotationSessions' => $sessions,
         ]);
     }
 }
