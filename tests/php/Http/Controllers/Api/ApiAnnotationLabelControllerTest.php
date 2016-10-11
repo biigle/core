@@ -41,7 +41,7 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
         $this->annotation->created_at = Carbon::yesterday();
         $this->annotation->save();
 
-        AnnotationSessionTest::create([
+        $session = AnnotationSessionTest::create([
             'transect_id' => $this->annotation->image->transect_id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
@@ -50,6 +50,12 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
         ]);
 
         $this->beAdmin();
+        $this->get("api/v1/annotations/{$this->annotation->id}/labels");
+        $this->assertResponseOk();
+
+        $session->users()->attach($this->admin());
+        Cache::flush();
+
         $this->get("api/v1/annotations/{$this->annotation->id}/labels");
         $this->assertResponseStatus(403);
     }

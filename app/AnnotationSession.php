@@ -72,6 +72,16 @@ class AnnotationSession extends Model
     }
 
     /**
+     * The users, this annotation session is restricted to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function users()
+    {
+        return $this->belongsToMany('Dias\User');
+    }
+
+    /**
      * Get the annotations of the image (with labels), filtered by the restrictions of this annotation session.
      *
      * @param Image $image The image to get the annotations from

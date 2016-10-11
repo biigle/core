@@ -47,6 +47,27 @@ class AddAnnotationSessionsTable extends Migration
             // a given transect. This index should enhance these kinds of queries.
             $table->index(['transect_id', 'starts_at', 'ends_at']);
         });
+
+        /*
+        | Annotation sessions are always restricted to a set of users. A session is only
+        | active for the users it is restricted to.
+        */
+        Schema::create('annotation_session_user', function (Blueprint $table) {
+            $table->integer('annotation_session_id')->unsigned();
+            $table->foreign('annotation_session_id')
+                  ->references('id')
+                  ->on('annotation_sessions')
+                  ->onDelete('cascade');
+
+            $table->integer('user_id')->unsigned();
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('cascade');
+
+            // each user must not be added twice
+            $table->unique(['annotation_session_id', 'user_id']);
+        });
     }
 
     /**
@@ -56,6 +77,7 @@ class AddAnnotationSessionsTable extends Migration
      */
     public function down()
     {
+        Schema::drop('annotation_session_user');
         Schema::drop('annotation_sessions');
     }
 }

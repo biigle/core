@@ -50,6 +50,16 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertNull($this->model->fresh());
     }
 
+    public function testUsers()
+    {
+        $user = UserTest::create();
+        $this->model->users()->attach($user);
+        $this->assertEquals($user->id, $this->model->users()->first()->id);
+
+        $user->delete();
+        $this->assertEmpty($this->model->users()->get());
+    }
+
     public function testGetImageAnnotationsHideOwn()
     {
         $ownUser = UserTest::create();

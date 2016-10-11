@@ -63,10 +63,11 @@ class ImageAnnotationController extends Controller
     {
         $image = Image::findOrFail($id);
         $this->authorize('access', $image);
-        $session = $image->transect->activeAnnotationSession;
+        $user = $auth->user();
+        $session = $image->transect->getActiveAnnotationSession($user);
 
         if ($session) {
-            return $session->getImageAnnotations($image, $auth->user());
+            return $session->getImageAnnotations($image, $user);
         }
 
         return $image->annotations()->with('labels')->get();

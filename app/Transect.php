@@ -2,6 +2,7 @@
 
 namespace Dias;
 
+use DB;
 use Exception;
 use Dias\Image;
 use Carbon\Carbon;
@@ -236,6 +237,27 @@ class Transect extends Model
             ->where('starts_at', '<=', $now)
             ->where('ends_at', '>', $now)
             ->limit(1);
+    }
+
+    /**
+     * Returns the active annotation session of this transect for the given user
+     *
+     * An annotation session may be active for a transect but it is only also active for
+     * a user, if the user belongs to the set of restricted users of the annotation
+     * session.
+     *
+     * @param User $user
+     * @return AnnotationSession
+     */
+    public function getActiveAnnotationSession(User $user)
+    {
+        return $this->activeAnnotationSession()
+            ->whereExists(function ($query) use ($user) {
+                $query->select(DB::raw(1))
+                    ->from('annotation_session_user')
+                    ->where('annotation_session_user.user_id', $user->id)
+                    ->whereRaw('annotation_session_user.annotation_session_id = annotation_sessions.id');
+            })->first();
     }
 
     /**

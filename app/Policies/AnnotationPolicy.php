@@ -43,7 +43,7 @@ class AnnotationPolicy extends CachedPolicy
                 ->where('images.id', $annotation->image_id)
                 ->first();
 
-            $session = $transect->activeAnnotationSession;
+            $session = $transect->getActiveAnnotationSession($user);
             $sessionAccess = !$session || $session->allowsAccess($annotation, $user);
 
             return $sessionAccess &&

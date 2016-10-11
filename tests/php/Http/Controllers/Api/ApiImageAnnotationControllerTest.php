@@ -80,6 +80,14 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
 
         $this->beEditor();
         $this->get("/api/v1/images/{$this->image->id}/annotations")
+            ->seeJson(['points' => [10, 20]])
+            ->seeJson(['points' => [20, 30]]);
+        $this->assertResponseOk();
+
+        $session->users()->attach($this->editor());
+        Cache::flush();
+
+        $this->get("/api/v1/images/{$this->image->id}/annotations")
             ->dontSeeJson(['points' => [10, 20]])
             ->seeJson(['points' => [20, 30]]);
         $this->assertResponseOk();
