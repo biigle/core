@@ -1,7 +1,8 @@
 <?php
 
-use Dias\Project;
 use Dias\Role;
+use Dias\Project;
+use Illuminate\Database\QueryException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectTest extends ModelTestCase
@@ -29,14 +30,14 @@ class ProjectTest extends ModelTestCase
     public function testNameRequired()
     {
         $this->model->name = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->setExpectedException(QueryException::class);
         $this->model->save();
     }
 
     public function testDescriptionRequired()
     {
         $this->model->description = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->setExpectedException(QueryException::class);
         $this->model->save();
     }
 
@@ -135,7 +136,7 @@ class ProjectTest extends ModelTestCase
         $this->assertEquals(Role::$editor->id, $user->project_role_id);
 
         // a user can only be added once regardless the role
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->setExpectedException(HttpException::class);
         $this->model->addUserId($user->id, Role::$admin->id);
     }
 
@@ -148,7 +149,7 @@ class ProjectTest extends ModelTestCase
         $this->assertNull($this->model->users()->find($admin->id));
 
         // the last admin mustn't be removed
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->setExpectedException(HttpException::class);
         $this->model->removeUserId($this->model->creator->id);
     }
 
@@ -158,7 +159,7 @@ class ProjectTest extends ModelTestCase
         $this->model->addUserId($user->id, Role::$editor->id);
         $this->model->checkUserCanBeRemoved($user->id);
         // the last admin mustn't be removed
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->setExpectedException(HttpException::class);
         $this->model->checkUserCanBeRemoved($this->model->creator->id);
     }
 
@@ -181,21 +182,8 @@ class ProjectTest extends ModelTestCase
         $this->assertEquals(Role::$editor->id, $this->model->users()->find($user->id)->project_role_id);
 
         // attempt to change the last admin to an editor
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->setExpectedException(HttpException::class);
         $this->model->changeRole($admin->id, Role::$editor->id);
-    }
-
-    public function testAddTransect()
-    {
-        $transect = TransectTest::create();
-        $this->assertEquals(0, $this->model->transects()->count());
-        $this->model->addTransectId($transect->id);
-        $this->assertEquals(1, $this->model->transects()->count());
-
-        // transect shouldn't be added again but the QueryException shouldn't
-        // be trown up either
-        $this->model->addTransectId($transect->id);
-        $this->assertEquals(1, $this->model->transects()->count());
     }
 
     public function testRemoveTransect()
@@ -203,8 +191,8 @@ class ProjectTest extends ModelTestCase
         $secondProject = self::create();
         $secondProject->save();
         $transect = TransectTest::create();
-        $this->model->addTransectId($transect->id);
-        $secondProject->addTransectId($transect->id);
+        $this->model->transects()->attach($transect);
+        $secondProject->transects()->attach($transect);
 
         $this->assertNotEmpty($secondProject->fresh()->transects);
         $secondProject->removeTransect($transect);
@@ -229,8 +217,8 @@ class ProjectTest extends ModelTestCase
         $secondProject = self::create();
         $secondProject->save();
         $transect = TransectTest::create();
-        $this->model->addTransectId($transect->id);
-        $secondProject->addTransectId($transect->id);
+        $this->model->transects()->attach($transect);
+        $secondProject->transects()->attach($transect);
 
         $this->assertNotEmpty($secondProject->fresh()->transects);
         $secondProject->removeAllTransects();

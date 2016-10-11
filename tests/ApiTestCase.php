@@ -51,7 +51,7 @@ class ApiTestCase extends TestCase
         }
 
         $this->transect = TransectTest::create();
-        $this->project()->addTransectId($this->transect->id);
+        $this->project()->transects()->attach($this->transect);
 
         return $this->transect;
     }

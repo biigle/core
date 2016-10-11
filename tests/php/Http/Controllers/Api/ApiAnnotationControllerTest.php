@@ -10,7 +10,7 @@ class ApiAnnotationControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->annotation = AnnotationTest::create();
-        $this->project()->addTransectId($this->annotation->image->transect_id);
+        $this->project()->transects()->attach($this->annotation->image->transect_id);
     }
 
     public function testShow()
@@ -123,7 +123,7 @@ class ApiAnnotationControllerTest extends ApiTestCase
         $this->assertNull($this->annotation->fresh());
 
         $this->annotation = AnnotationTest::create();
-        $this->project()->addTransectId($this->annotation->image->transect->id);
+        $this->project()->transects()->attach($this->annotation->image->transect);
         $id = $this->annotation->id;
 
         $this->beUser();

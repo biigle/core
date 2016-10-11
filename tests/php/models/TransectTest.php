@@ -65,7 +65,7 @@ class TransectTest extends ModelTestCase
     {
         $project = ProjectTest::create();
         $this->assertEquals(0, $this->model->projects()->count());
-        $project->addTransectId($this->model->id);
+        $project->transects()->attach($this->model);
         $this->assertEquals(1, $this->model->projects()->count());
     }
 
