@@ -22,8 +22,9 @@ class ImageController extends Controller
      *    "id":1,
      *    "width":1000,
      *    "height":750,
+     *    "filename":"IMG_3275.JPG",
      *    "exif":{
-     *       "FileName":"IMG_3275.JPG"
+     *       "FileName":"IMG_3275.JPG",
      *       "FileDateTime":1411554694,
      *       "FileSize":3014886,
      *       "FileType":2,
