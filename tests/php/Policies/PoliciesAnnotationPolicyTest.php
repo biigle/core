@@ -1,6 +1,7 @@
 <?php
 
 use Dias\Role;
+use Carbon\Carbon;
 
 class PoliciesAnnotationPolicyTest extends TestCase
 {
@@ -40,13 +41,13 @@ class PoliciesAnnotationPolicyTest extends TestCase
 
     public function testAccessAnnotationSession()
     {
-        $this->annotation->created_at = '2016-10-10';
+        $this->annotation->created_at = Carbon::yesterday();
         $this->annotation->save();
 
         $session = AnnotationSessionTest::create([
             'transect_id' => $this->annotation->image->transect_id,
-            'starts_at' => '2016-10-11',
-            'ends_at' => '2016-10-12',
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
             'hide_own_annotations' => true,
             'hide_other_users_annotations' => true,
         ]);
