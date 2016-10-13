@@ -64,6 +64,7 @@ class AnnotationController extends Controller
 
         $annotationSessions = $image->transect->annotationSessions()
             ->select('id', 'name', 'starts_at', 'ends_at')
+            ->with('users')
             ->get();
 
         return view('annotations::index', [

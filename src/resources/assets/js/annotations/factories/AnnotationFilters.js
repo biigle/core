@@ -111,16 +111,21 @@ angular.module('dias.annotations').factory('AnnotationFilters', function (ANNOTA
 
             session.starts_at = new Date(session.starts_at);
             session.ends_at = new Date(session.ends_at);
+            var userIds = session.users.map(function (user) {
+                return user.id;
+            });
 
             return function (input) {
                 var groupedByLabel = input.groupedByLabel;
                 var annotations;
                 var created_at;
+                var userId;
                 for (var id in groupedByLabel) {
                     if (groupedByLabel.hasOwnProperty(id)) {
                         annotations = groupedByLabel[id].annotations;
                         for (var i = annotations.length - 1; i >= 0; i--) {
                             created_at = new Date(annotations[i].annotation.created_at);
+                            userId = annotations[i].label.user.id;
                             /*
                              * Dates without timezone (like these) are interpreted
                              * as dates of the timezone of the browser. Since the
@@ -132,7 +137,7 @@ angular.module('dias.annotations').factory('AnnotationFilters', function (ANNOTA
                              * annotation session for comparison with the dates of
                              * the annotations.
                              */
-                            if (created_at < session.starts_at || created_at >= session.ends_at) {
+                            if (created_at < session.starts_at || created_at >= session.ends_at || userIds.indexOf(userId) === -1) {
                                 annotations.splice(i, 1);
                             }
                         }
@@ -145,7 +150,15 @@ angular.module('dias.annotations').factory('AnnotationFilters', function (ANNOTA
 
                 var flat = input.flat.filter(function (item) {
                     var created_at = new Date(item.created_at);
-                    return created_at >= session.starts_at && created_at < session.ends_at;
+                    var hasValidLabel = false;
+                    for (var i = item.labels.length - 1; i >= 0; i--) {
+                        if (userIds.indexOf(item.labels[i].user.id) !== -1) {
+                            hasValidLabel = true;
+                            break;
+                        }
+                    }
+
+                    return created_at >= session.starts_at && created_at < session.ends_at && hasValidLabel;
                 });
 
                 return {
