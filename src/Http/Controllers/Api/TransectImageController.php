@@ -34,10 +34,11 @@ class TransectImageController extends Controller
         $transect = Transect::findOrFail($id);
         $this->authorize('access', $transect);
 
-        $session = $transect->activeAnnotationSession;
+        $user = $auth->user();
+        $session = $transect->getActiveAnnotationSession($user);
 
         if ($session) {
-            $query = Annotation::allowedBySession($session, $auth->user());
+            $query = Annotation::allowedBySession($session, $user);
         } else {
             $query = Annotation::getQuery();
         }
@@ -73,10 +74,11 @@ class TransectImageController extends Controller
         $transect = Transect::findOrFail($tid);
         $this->authorize('access', $transect);
 
-        $session = $transect->activeAnnotationSession;
+        $user = $auth->user();
+        $session = $transect->getActiveAnnotationSession($user);
 
         if ($session) {
-            $query = Annotation::allowedBySession($session, $auth->user());
+            $query = Annotation::allowedBySession($session, $user);
         } else {
             $query = Annotation::getQuery();
         }
@@ -114,10 +116,11 @@ class TransectImageController extends Controller
         $transect = Transect::findOrFail($tid);
         $this->authorize('access', $transect);
 
-        $session = $transect->activeAnnotationSession;
+        $user = $auth->user();
+        $session = $transect->getActiveAnnotationSession($user);
 
         if ($session) {
-            $query = Annotation::allowedBySession($session, $auth->user());
+            $query = Annotation::allowedBySession($session, $user);
         } else {
             $query = Annotation::getQuery();
         }

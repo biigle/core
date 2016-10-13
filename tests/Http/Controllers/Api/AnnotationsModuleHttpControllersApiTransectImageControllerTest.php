@@ -43,7 +43,7 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
             'user_id' => $this->guest()->id,
         ]);
 
-        AnnotationSessionTest::create([
+        $session = AnnotationSessionTest::create([
             'transect_id' => $id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
@@ -52,6 +52,10 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
         ]);
 
         $this->beGuest();
+        $this->get("/api/v1/transects/{$id}/images/filter/annotations")
+            ->dontSeeJson([]);
+
+        $session->users()->attach($this->guest());
         $this->get("/api/v1/transects/{$id}/images/filter/annotations")
             ->seeJsonEquals([]);
 
@@ -118,7 +122,7 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
     {
         $tid = $this->transect()->id;
 
-        AnnotationSessionTest::create([
+        $session = AnnotationSessionTest::create([
             'transect_id' => $tid,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
@@ -143,11 +147,11 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
             $expect = array_map('strval', $expect);
         }
 
-        $this->beGuest();
+        $this->beEditor();
         $this->get("/api/v1/transects/{$tid}/images/filter/annotation-user/{$uid}")
             ->seeJsonEquals($expect);
 
-        $this->beEditor();
+        $session->users()->attach($this->editor());
         $this->get("/api/v1/transects/{$tid}/images/filter/annotation-user/{$uid}")
             ->seeJsonEquals([]);
     }
@@ -199,7 +203,7 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
     {
         $tid = $this->transect()->id;
 
-        AnnotationSessionTest::create([
+        $session = AnnotationSessionTest::create([
             'transect_id' => $tid,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
@@ -224,11 +228,11 @@ class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends Api
             $expect = array_map('strval', $expect);
         }
 
-        $this->beGuest();
+        $this->beEditor();
         $this->get("/api/v1/transects/{$tid}/images/filter/annotation-label/{$lid}")
             ->seeJsonEquals($expect);
 
-        $this->beEditor();
+        $session->users()->attach($this->editor());
         $this->get("/api/v1/transects/{$tid}/images/filter/annotation-label/{$lid}")
             ->seeJsonEquals([]);
     }
