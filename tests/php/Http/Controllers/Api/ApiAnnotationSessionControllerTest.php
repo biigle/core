@@ -17,6 +17,7 @@ class ApiAnnotationSessionControllerTest extends ApiTestCase
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
         ]);
+        $session->users()->attach([$this->guest()->id, $this->editor()->id]);
 
         $this->doTestApiRoute('PUT', "api/v1/annotation-sessions/{$session->id}");
 
@@ -51,13 +52,36 @@ class ApiAnnotationSessionControllerTest extends ApiTestCase
         // conflict with existing session
         $this->assertResponseStatus(422);
 
+        $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
+            'users' => [999],
+        ]);
+        // user does not exist
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
+            'users' => [],
+        ]);
+        // users must not be empty
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
+            'users' => [$this->user()->id],
+        ]);
+        // user does not belong to transect
+        $this->assertResponseStatus(422);
+
         $this->put("api/v1/annotation-sessions/{$session->id}", [
             'name' => 'my cool name',
             'ends_at' => '2016-09-07',
+            'users' => [$this->admin()->id],
         ]);
         $this->assertResponseOk();
 
-        $this->assertEquals('my cool name', $session->fresh()->name);
+        $session = $session->fresh();
+
+        $this->assertEquals('my cool name', $session->name);
+        $this->assertEquals('2016-09-07', $session->ends_at->format('Y-m-d'));
+        $this->assertEquals([$this->admin()->id], $session->users()->pluck('id')->all());
     }
 
     public function testUpdateTimezones()

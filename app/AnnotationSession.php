@@ -23,6 +23,8 @@ class AnnotationSession extends Model
         'ends_at' => 'required|date|after:starts_at',
         'hide_other_users_annotations' => 'filled|boolean',
         'hide_own_annotations' => 'filled|boolean',
+        'users' => 'required|array',
+        'users.*' => 'distinct|exists:users,id',
     ];
 
     /**
@@ -36,6 +38,8 @@ class AnnotationSession extends Model
         'ends_at' => 'filled|date',
         'hide_other_users_annotations' => 'filled|boolean',
         'hide_own_annotations' => 'filled|boolean',
+        'users' => 'filled|array',
+        'users.*' => 'distinct|exists:users,id',
     ];
 
     /**
@@ -78,7 +82,8 @@ class AnnotationSession extends Model
      */
     public function users()
     {
-        return $this->belongsToMany('Dias\User');
+        return $this->belongsToMany('Dias\User')
+            ->select('id', 'firstname', 'lastname', 'email');
     }
 
     /**

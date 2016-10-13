@@ -1,5 +1,6 @@
 <?php
 
+use Dias\Role;
 use Dias\Transect;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
@@ -238,5 +239,32 @@ class TransectTest extends ModelTestCase
         $a4 = $a4->fresh();
         // should not count the own annotation session (for updating)
         $this->assertFalse($this->model->hasConflictingAnnotationSession($a4));
+    }
+
+    public function testUsers()
+    {
+        $editor = Role::$editor;
+        $u1 = UserTest::create();
+        $u2 = UserTest::create();
+        $u3 = UserTest::create();
+        $u4 = UserTest::create();
+
+        $p1 = ProjectTest::create();
+        $p1->addUserId($u1, $editor->id);
+        $p1->addUserId($u2, $editor->id);
+        $p1->transects()->attach($this->model);
+
+        $p2 = ProjectTest::create();
+        $p2->addUserId($u2, $editor->id);
+        $p2->addUserId($u3, $editor->id);
+        $p2->transects()->attach($this->model);
+
+        $users = $this->model->users()->get();
+        // project creators are counted, too
+        $this->assertEquals(5, $users->count());
+        $this->assertEquals(1, $users->where('id', $u1->id)->count());
+        $this->assertEquals(1, $users->where('id', $u2->id)->count());
+        $this->assertEquals(1, $users->where('id', $u3->id)->count());
+        $this->assertEquals(0, $users->where('id', $u4->id)->count());
     }
 }

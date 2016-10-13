@@ -142,6 +142,25 @@ class Transect extends Model
     }
 
     /**
+     * Return a query for all users associated to this transect through projects
+     *
+     * @return  \Illuminate\Database\Eloquent\Builder
+     */
+    public function users()
+    {
+        return User::whereIn('id', function ($query) {
+            $query->select('user_id')
+                ->distinct()
+                ->from('project_user')
+                ->whereIn('project_id', function ($query) {
+                    $query->select('project_id')
+                        ->from('project_transect')
+                        ->where('transect_id', $this->id);
+                });
+        });
+    }
+
+    /**
      * Check if an array of image filenames is valid.
      *
      * A valid array is not empty, contains no duplicates and has only images with JPG,
@@ -222,7 +241,7 @@ class Transect extends Model
      */
     public function annotationSessions()
     {
-        return $this->hasMany('Dias\AnnotationSession');
+        return $this->hasMany('Dias\AnnotationSession')->with('users');
     }
 
     /**

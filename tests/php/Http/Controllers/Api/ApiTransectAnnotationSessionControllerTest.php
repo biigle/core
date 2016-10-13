@@ -10,6 +10,7 @@ class ApiTransectAnnotationSessionControllerTest extends ApiTestCase
         $session = AnnotationSessionTest::create([
             'transect_id' => $this->transect()->id,
         ]);
+        $session->users()->attach($this->guest());
 
         $this->doTestApiRoute('GET', "/api/v1/transects/{$id}/annotation-sessions");
 
@@ -19,7 +20,7 @@ class ApiTransectAnnotationSessionControllerTest extends ApiTestCase
 
         $this->beGuest();
         $this->get("/api/v1/transects/{$id}/annotation-sessions")
-            ->seeJsonEquals([$session->toArray()]);
+            ->seeJsonEquals([$session->load('users')->toArray()]);
         $this->assertResponseOk();
     }
 
@@ -42,6 +43,7 @@ class ApiTransectAnnotationSessionControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
+            'users' => [$this->admin()->id],
         ]);
         // name is required
         $this->assertResponseStatus(422);
@@ -49,6 +51,7 @@ class ApiTransectAnnotationSessionControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
             'name' => 'my session',
             'ends_at' => '2016-09-06',
+            'users' => [$this->admin()->id],
         ]);
         // starts_at is required
         $this->assertResponseStatus(422);
@@ -56,6 +59,7 @@ class ApiTransectAnnotationSessionControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
             'name' => 'my session',
             'starts_at' => '2016-09-05',
+            'users' => [$this->admin()->id],
         ]);
         // ends_at is required
         $this->assertResponseStatus(422);
@@ -64,6 +68,7 @@ class ApiTransectAnnotationSessionControllerTest extends ApiTestCase
             'name' => 'my session',
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-04',
+            'users' => [$this->admin()->id],
         ]);
         // end must be after start
         $this->assertResponseStatus(422);
@@ -72,6 +77,7 @@ class ApiTransectAnnotationSessionControllerTest extends ApiTestCase
             'name' => 'my session',
             'starts_at' => '2016-09-03',
             'ends_at' => '2016-09-05',
+            'users' => [$this->admin()->id],
         ]);
         // conflict with existing session
         $this->assertResponseStatus(422);
@@ -80,12 +86,42 @@ class ApiTransectAnnotationSessionControllerTest extends ApiTestCase
             'name' => 'my session',
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
-            'hide_other_users_annotations' => true,
+        ]);
+        // users is required
+        $this->assertResponseStatus(422);
+
+        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+            'users' => [999],
+        ]);
+        // user does not exist
+        $this->assertResponseStatus(422);
+
+        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+            'users' => [$this->user()->id],
+        ]);
+        // user must belong to transect
+        $this->assertResponseStatus(422);
+
+        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+            'name' => 'my session',
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+            'users' => [$this->admin()->id],
         ]);
         $this->assertResponseOk();
         $this->assertEquals(2, $this->transect()->annotationSessions()->count());
 
-        $session = $this->transect()->annotationSessions()->orderBy('id', 'desc')->first();
+        $session = $this->transect()->annotationSessions()
+            ->with('users')
+            ->orderBy('id', 'desc')
+            ->first();
+        $this->assertTrue($session->users()->where('id', $this->admin()->id)->exists());
         $this->seeJsonEquals($session->toArray());
     }
 
@@ -97,6 +133,7 @@ class ApiTransectAnnotationSessionControllerTest extends ApiTestCase
             'name' => 'my session',
             'starts_at' => '2016-09-20T00:00:00.000+02:00',
             'ends_at' => '2016-09-21T00:00:00.000+02:00',
+            'users' => [$this->admin()->id],
         ]);
         $this->assertResponseOk();
 

@@ -54,7 +54,13 @@ class AnnotationSessionTest extends ModelTestCase
     {
         $user = UserTest::create();
         $this->model->users()->attach($user);
-        $this->assertEquals($user->id, $this->model->users()->first()->id);
+        $sessionUser = $this->model->users()->first();
+        $this->assertEquals([
+            'id' => $user->id,
+            'firstname' => $user->firstname,
+            'lastname' => $user->lastname,
+            'email' => $user->email,
+        ], $sessionUser->toArray());
 
         $user->delete();
         $this->assertEmpty($this->model->users()->get());

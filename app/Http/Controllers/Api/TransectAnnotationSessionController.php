@@ -31,11 +31,19 @@ class TransectAnnotationSessionController extends Controller
      *       "starts_at": "2016-09-05 00:00:00",
      *       "ends_at": "2016-09-07 00:00:00",
      *       "hide_other_users_annotations": true,
-     *       "hide_own_annotations": false
+     *       "hide_own_annotations": false,
+     *       "users": [
+     *           {
+     *               "id": 3,
+     *               "firstname": "Chandler",
+     *               "lastname": "Cruickshank",
+     *               "email": "pamela71@dietrich.com"
+     *           }
+     *       ]
      *    }
      * ]
      *
-     * @param int $id image id
+     * @param int $id transect id
      * @return \Illuminate\Http\Response
      */
     public function index($id)
@@ -61,6 +69,7 @@ class TransectAnnotationSessionController extends Controller
      * @apiParam (Required arguments) {String} name Name of the annotation session.
      * @apiParam (Required arguments) {Date} starts_at Day when the annotation session should start. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. This endpoint returns a special `starts_at_iso8601` attribute which is parseable independently from the timezone of the Dias instance.
      * @apiParam (Required arguments) {Date} ends_at Day when the annotation session should end. The session ends once this day has started. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. This endpoint returns a special `ends_at_iso8601` attribute which is parseable independently from the timezone of the Dias instance.
+     * @apiParam (Required arguments) {Number[]} users Array of user IDs of all users participating in the new annotation session. All other users won't be affected by the annotation session.
      *
      * @apiParam (Optional arguments) {String} description Short description of the annotation session.
      * @apiParam (Optional arguments) {Boolean} hide_other_users_annotations Whether to hide annotations of other users while the annotation session is active. Default is `false`.
@@ -72,7 +81,8 @@ class TransectAnnotationSessionController extends Controller
      *    "description": "This is my first annotation session lasting two days.",
      *    "starts_at": "2016-09-20T00:00:00.000+02:00",
      *    "ends_at": "2016-09-25T00:00:00.000+02:00",
-     *    "hide_other_users_annotations": true
+     *    "hide_other_users_annotations": true,
+     *    "users": [1, 5]
      * }
      *
      * @apiSuccessExample {json} Success response:
@@ -88,12 +98,26 @@ class TransectAnnotationSessionController extends Controller
      *     "ends_at": "2016-09-24 22:00:00",
      *     "ends_at_iso8601": "2016-09-24T22:00:00+0000",
      *     "hide_other_users_annotations": true,
-     *     "hide_own_annotations": false
+     *     "hide_own_annotations": false,
+     *     "users": [
+     *        {
+     *            "id": 1,
+     *            "firstname": "Chandler",
+     *            "lastname": "Cruickshank",
+     *            "email": "pamela71@dietrich.com"
+     *        },
+     *        {
+     *            "id": 5,
+     *            "firstname": "Chromis P.",
+     *            "lastname": "Bowerbird",
+     *            "email": "chromis@structure.com"
+     *        }
+     *     ]
      * }
      *
      * @param Request $request
      * @param Guard $auth
-     * @param int $id image ID
+     * @param int $id transect ID
      * @return Annotation
      */
     public function store(Request $request, $id)
@@ -102,6 +126,20 @@ class TransectAnnotationSessionController extends Controller
         $this->authorize('update', $transect);
         $this->validate($request, AnnotationSession::$storeRules);
 
+        $users = $request->input('users');
+        // count users of all attached projects that match the given user IDs
+        $count = $transect->users()
+            ->whereIn('id', $users)
+            ->count();
+
+        // Previous validation ensures that the user IDs are distinct so we can validate
+        // the transect users using the count.
+        if ($count !== count($users)) {
+            return $this->buildFailedValidationResponse($request, [
+                'users' => ['All users must belong to one of the projects, this transect is attached to.']
+            ]);
+        }
+
         $session = new AnnotationSession;
         $session->name = $request->input('name');
         $session->description = $request->input('description');
@@ -109,16 +147,18 @@ class TransectAnnotationSessionController extends Controller
         $session->starts_at = $request->input('starts_at');
         $session->ends_at = $request->input('ends_at');
 
-        $session->hide_other_users_annotations = $request->input('hide_other_users_annotations', false);
-        $session->hide_own_annotations = $request->input('hide_own_annotations', false);
-
         if ($transect->hasConflictingAnnotationSession($session)) {
             return $this->buildFailedValidationResponse($request, [
                 'starts_at' => ['There already is an annotation session in this time period.']
             ]);
         }
 
+        $session->hide_other_users_annotations = $request->input('hide_other_users_annotations', false);
+        $session->hide_own_annotations = $request->input('hide_own_annotations', false);
+
         $transect->annotationSessions()->save($session);
-        return $session;
+        $session->users()->attach($users);
+
+        return $session->load('users');
     }
 }
