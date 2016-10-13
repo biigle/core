@@ -81,10 +81,18 @@ class Report extends BaseReport
     public function restrictToAnnotationSessionQuery($query)
     {
         $session = $this->getAnnotationSession();
-        return $query->where([
-            ['annotation_labels.created_at', '>=', $session->starts_at],
-            ['annotation_labels.created_at', '<', $session->ends_at],
-        ]);
+        return $query->where(function ($query) use ($session) {
+            // take only annotation labels that belong to the time span...
+            $query->where('annotation_labels.created_at', '>=', $session->starts_at)
+                ->where('annotation_labels.created_at', '<', $session->ends_at)
+                // ...and to the users of the session
+                ->whereIn('annotation_labels.user_id', function ($query) use ($session) {
+                    $query->select('user_id')
+                        ->from('annotation_session_user')
+                        ->where('annotation_session_id', $session->id);
+                });
+        });
+
     }
 
     /**

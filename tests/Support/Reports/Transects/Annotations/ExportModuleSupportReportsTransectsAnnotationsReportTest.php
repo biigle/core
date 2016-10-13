@@ -106,10 +106,14 @@ class ExportModuleSupportReportsTransectsAnnotationsReportTest extends TestCase
 
     public function testRestrictToAnnotationSessionQuery()
     {
+        $user = UserTest::create();
+
         $session = AnnotationSessionTest::create([
             'starts_at' => '2016-10-05',
             'ends_at' => '2016-10-06',
         ]);
+
+        $session->users()->attach($user);
 
         $a = AnnotationTest::create();
         $a->image->transect_id = $session->transect_id;
@@ -117,9 +121,16 @@ class ExportModuleSupportReportsTransectsAnnotationsReportTest extends TestCase
         $al1 = AnnotationLabelTest::create([
             'created_at' => '2016-10-04',
             'annotation_id' => $a->id,
+            'user_id' => $user->id,
         ]);
 
         $al2 = AnnotationLabelTest::create([
+            'created_at' => '2016-10-05',
+            'annotation_id' => $a->id,
+            'user_id' => $user->id,
+        ]);
+
+        $al3 = AnnotationLabelTest::create([
             'created_at' => '2016-10-05',
             'annotation_id' => $a->id,
         ]);
