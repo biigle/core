@@ -93,12 +93,13 @@ class TransectController extends Controller
     {
         $transect = Transect::with('projects')->findOrFail($id);
         $this->authorize('update', $transect);
+        $sessions = $transect->annotationSessions()->with('users')->get();
 
         return view('transects::edit', [
             'transect' => $transect,
             'images' => $transect->images()->pluck('filename', 'id'),
             'mediaTypes' => MediaType::all(),
-            'annotationSessions' => $transect->annotationSessions,
+            'annotationSessions' => $sessions,
             'today' => Carbon::today()
         ]);
     }

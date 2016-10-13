@@ -5,10 +5,12 @@
  * @memberOf dias.transects.edit
  * @description Controller for adding, editing and deleting annotation sessions
  */
-angular.module('dias.transects.edit').controller('AnnotationSessionController', function ($scope, AnnotationSession, TRANSECT_ID, ANNOTATION_SESSIONS, msg) {
+angular.module('dias.transects.edit').controller('AnnotationSessionController', function ($scope, AnnotationSession, TRANSECT_ID, ANNOTATION_SESSIONS, msg, TransectUser) {
 		"use strict";
         var editing = false;
         var loading = false;
+
+        var transectUsers;
 
         var errors = {};
 
@@ -24,6 +26,7 @@ angular.module('dias.transects.edit').controller('AnnotationSessionController', 
             for (var i = ANNOTATION_SESSIONS.length - 1; i >= 0; i--) {
                 if (ANNOTATION_SESSIONS[i].id === $scope.newSession.id) {
                     ANNOTATION_SESSIONS[i] = $scope.newSession;
+                    ANNOTATION_SESSIONS[i].users = $scope.sessionUsers;
                     break;
                 }
             }
@@ -65,13 +68,24 @@ angular.module('dias.transects.edit').controller('AnnotationSessionController', 
             return session;
         };
 
+        var hasSessionUser = function (user) {
+            for (var i = $scope.sessionUsers.length - 1; i >= 0; i--) {
+                if ($scope.sessionUsers[i].id === user.id) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
         var emptySession = {
             name: null,
             description: null,
             starts_at_iso8601: null,
             ends_at_iso8601: null,
             hide_other_users_annotations: false,
-            hide_own_annotations: false
+            hide_own_annotations: false,
+            users: []
         };
 
         // alternative date input formats
@@ -84,6 +98,13 @@ angular.module('dias.transects.edit').controller('AnnotationSessionController', 
         };
 
         $scope.newSession = angular.copy(emptySession);
+
+        $scope.sessionUsers = [];
+
+        $scope.selected = {
+            // model for the new user typeahead
+            user: ''
+        };
 
         $scope.confirm = function () {
             return confirm.apply(window, arguments);
@@ -99,8 +120,13 @@ angular.module('dias.transects.edit').controller('AnnotationSessionController', 
 
         $scope.toggleEditing = function () {
             editing = !editing;
+
             if (!editing) {
                 $scope.clearNewSession();
+            }
+
+            if (transectUsers === undefined) {
+                transectUsers = TransectUser.query({transect_id: TRANSECT_ID});
             }
         };
 
@@ -148,6 +174,10 @@ angular.module('dias.transects.edit').controller('AnnotationSessionController', 
             $scope.newSession.starts_at = $scope.newSession.starts_at_iso8601;
             $scope.newSession.ends_at = $scope.newSession.ends_at_iso8601;
 
+            $scope.newSession.users = $scope.sessionUsers.map(function (user) {
+                return user.id;
+            });
+
             if ($scope.newSession.id) {
                 AnnotationSession.save($scope.newSession, handleSaveSuccess, handleFormError);
             } else {
@@ -165,10 +195,35 @@ angular.module('dias.transects.edit').controller('AnnotationSessionController', 
         $scope.clearNewSession = function () {
             clearErrors();
             $scope.newSession = angular.copy(emptySession);
+            $scope.sessionUsers = [];
+            $scope.selected.user = '';
         };
 
         $scope.editSession = function (session) {
             $scope.newSession = angular.copy(session);
+            $scope.sessionUsers = $scope.newSession.users;
+        };
+
+        $scope.getTransectUsers = function () {
+            return transectUsers;
+        };
+
+        $scope.addUser = function (e, user) {
+            e.preventDefault();
+
+            if (!hasSessionUser(user)) {
+                $scope.sessionUsers.push(user);
+            }
+
+            $scope.selected.user = '';
+        };
+
+        $scope.removeUser = function (user) {
+            for (var i = $scope.sessionUsers.length - 1; i >= 0; i--) {
+                if ($scope.sessionUsers[i].id === user.id) {
+                    $scope.sessionUsers.splice(i, 1);
+                }
+            }
         };
 
         // convert the relevant dates

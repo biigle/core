@@ -18,11 +18,13 @@
     </div>
     <ul class="list-group images-list">
         <li data-ng-repeat="image in data.newImages track by image.id" class="ng-cloak list-group-item list-group-item-success">
-            <span class="text-muted">#@{{image.id}}</span> @{{image.filename}} <button type="button" class="close" title="Delete image #@{{image.id}} (@{{image.filename}})" data-ng-click="deleteImage(image.id, image.filename)"><span aria-hidden="true">&times;</span></button>
+            <button type="button" class="close" title="Delete image #@{{image.id}} (@{{image.filename}})" data-ng-click="deleteImage(image.id, image.filename)"><span aria-hidden="true">&times;</span></button>
+            <span class="text-muted">#@{{image.id}}</span> @{{image.filename}}
         </li>
         @foreach ($images as $id => $filename)
             <li id="transect-image-{{$id}}" class="list-group-item">
-                <span class="text-muted">#{{$id}}</span> {{$filename}} <button type="button" class="close" title="Delete image #{{$id}}" onclick="$diasTransectsEditDeleteImage({{$id}}, '{{$filename}}')"><span>&times;</span></button>
+                <button type="button" class="close" title="Delete image #{{$id}}" onclick="$diasTransectsEditDeleteImage({{$id}}, '{{$filename}}')"><span>&times;</span></button>
+                <span class="text-muted">#{{$id}}</span> {{$filename}}
             </li>
         @endforeach
     </ul>

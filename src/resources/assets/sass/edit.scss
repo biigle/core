@@ -70,3 +70,25 @@
         color: $brand-info;
     }
 }
+
+.form-control.tag-list {
+    height: auto;
+    min-height: 34px;
+    overflow-x: auto;
+    white-space: nowrap;
+
+    .tag {
+        margin-right: 5px;
+
+        .close {
+            float: none;
+            font-size: 16px;
+            opacity: .5;
+            text-shadow: none;
+
+            &:hover {
+                opacity: .75;
+            }
+        }
+    }
+}
