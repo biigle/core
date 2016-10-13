@@ -50,13 +50,15 @@ class AnnotationsModuleHttpControllersAnnotationControllerTest extends ApiTestCa
         ]);
         $this->project()->addTransectId($annotation->image->transect_id);
 
-        AnnotationSessionTest::create([
+        $session = AnnotationSessionTest::create([
             'transect_id' => $annotation->image->transect_id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
             'hide_own_annotations' => true,
             'hide_other_users_annotations' => true,
         ]);
+
+        $session->users()->attach($this->admin());
 
         $this->beAdmin();
         $this->get("annotations/{$annotation->id}");
