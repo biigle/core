@@ -101,6 +101,8 @@ class AteModuleHttpControllersApiTransectsAnnotationsControllerTest extends ApiT
             'hide_other_users_annotations' => false,
         ]);
 
+        $session->users()->attach($this->editor());
+
         $expect = [$a2->id, $a3->id];
         if ($this->isSqlite()) {
             $expect = array_map('strval', $expect);
@@ -129,6 +131,17 @@ class AteModuleHttpControllersApiTransectsAnnotationsControllerTest extends ApiT
         $session->save();
 
         $expect = [$a2->id];
+        if ($this->isSqlite()) {
+            $expect = array_map('strval', $expect);
+        }
+
+        $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
+        $this->assertResponseOk();
+        $this->seeJsonEquals($expect);
+
+        $session->users()->detach($this->editor());
+
+        $expect = [$a1->id, $a2->id, $a3->id];
         if ($this->isSqlite()) {
             $expect = array_map('strval', $expect);
         }

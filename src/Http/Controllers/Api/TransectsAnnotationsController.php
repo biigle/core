@@ -35,10 +35,11 @@ class TransectsAnnotationsController extends Controller
         $this->validate($request, ['take' => 'integer']);
         $take = $request->input('take');
 
-        $session = $transect->activeAnnotationSession;
+        $user = $auth->user();
+        $session = $transect->getActiveAnnotationSession($user);
 
         if ($session) {
-            $query = Annotation::allowedBySession($session, $auth->user());
+            $query = Annotation::allowedBySession($session, $user);
         } else {
             $query = Annotation::query();
         }
