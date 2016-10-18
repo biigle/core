@@ -23,19 +23,17 @@ $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router
         'uses' => 'ManualController@index',
     ]);
 
-    $router->get('/tutorials', [
+    $router->get('/tutorials/{module}/{article?}', [
         'as' => 'manual-tutorials',
-        'uses' => 'ManualController@indexTutorials',
+        'uses' => 'ManualController@tutorialsArticle',
     ]);
-
-    $router->get('/tutorials/{article}', 'ManualController@tutorialsArticle');
 
     $router->get('/documentation', [
         'as' => 'manual-documentation',
         'uses' => 'ManualController@indexDocumentation',
     ]);
 
-    $router->get('/documentation/{article}', 'ManualController@documentationArticle');
+    $router->get('/documentation/{module}/{article?}', 'ManualController@documentationArticle');
 });
 
 // PROTECTED ROUTES -----------------------------------------------------------
