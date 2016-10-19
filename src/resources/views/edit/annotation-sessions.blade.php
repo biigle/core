@@ -3,6 +3,7 @@
         Annotation sessions
         <span class="pull-right">
             <span class="ng-cloak" data-ng-if="isLoading()">loading...</span>
+            <a class="btn btn-default btn-xs" href="{{route('manual-tutorials', ['transects', 'annotation-sessions'])}}" title="Learn more on annotation sessions" target="_blank"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
             <button class="btn btn-default btn-xs" title="Edit annotation sessions" data-ng-click="toggleEditing()" data-ng-class="{active: isEditing()}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
         </span>
     </div>

@@ -8,12 +8,18 @@
             Everything you need to know to get started with annotation sessions.
         </p>
         <p>
-            Annotation sessions are a way to organize annotations of a transect. An annotation session has a start date, an end date and a set of members that belong to it. Once an annotation session was created, all annotations of the transect that are created after the start date (inclusive) and before the end date (exclusive) by one of the members of the annotation session will belong to the annotation session. Annotation sessions can be created by all users who have admin access to the transect. Each transect can have multiple annotation sessions.
+            Annotation sessions are a way to organize annotations of a transect. An annotation session has a start date, an end date and a set of members that belong to it. Once an annotation session was created, all annotations of the transect that are created after the start date (inclusive) and before the end date (exclusive) by one of the members will belong to the annotation session. Annotation sessions can be created by all users who have admin access to the transect. Each transect can have multiple annotation sessions.
+        </p>
+        <p>
+            Existing annotation sessions can be used to filter <a href="{{route('manual-tutorials', ['export', 'reports-schema'])}}">transect annotation reports</a>. A report restricted to an annotation session only includes annotations that belong to this session (i.e. created by a member between the start an end dates of the annotation session).
+        </p>
+        <p>
+            Similar to filtering transect annotation reports, annotation sessions can be used to filter the displayed annotations in the annotation tool, too. Simply select the filter tool ( <button class="btn btn-default btn-xs" onclick="$diasPostMessage('info', 'Try the button in the annotation tool 🙂')"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button> ), choose the "session" filter, type the name of the annotation session and press enter. Now only annotations belonging to the annotation sessions are displayed. This can be combined with the Annotation Cycle Mode to review all annotations of an annotation session.
         </p>
         <div class="panel panel-info">
             <div class="panel-body">
                 <p>
-                    <strong class="text-info">Example:</strong>  Jane has admin, Joe and Jack both have editor access to the transect <em>T</em>. Joe already created the annotations <em>a</em> and <em>b</em> on 2016-10-17 and 2016-10-18 respectively. Jack only created one annotation <em>c</em> on 2016-10-18. Now Jane creates a new annotation session for <em>T</em>, which starts at 2016-10-18 and ends at 2016-10-20. She also adds Joe to this new session.
+                    <strong class="text-info">Example:</strong>  Jane has admin access, Joe and Jack both have editor access to the transect <em>T</em>. Joe already created the annotations <em>a</em> and <em>b</em> on 2016-10-17 and 2016-10-18 respectively. Jack only created one annotation <em>c</em> on 2016-10-18. Now Jane creates a new annotation session for transect <em>T</em>, which starts at 2016-10-18 and ends at 2016-10-20. She also adds Joe as a member to this new session.
                 </p>
                 <p>
                     Since annotation <em>a</em> was created before the annotation session started and <em>c</em> was created by Jack who is not a member of the annotation session, only annotation <em>b</em> belongs to the annotation session.
@@ -24,13 +30,13 @@
         <h3>Annotation studies</h3>
 
         <p>
-            Annotation sessions are great for grouping existing annotations but the main use case for them are annotation studies. By annotation study we mean a survey where researchers want to measure statistics like the intra- or inter observer agreement (as described in <a href="#ref1">[1]</a>). For this, annotation sessions offer some additional options that control the display of annotations during an annotation session. There are three possible scenarios for annotation studies:
+            Annotation sessions are great for grouping existing annotations but the main use case for them are annotation studies. By annotation study we mean a survey where researchers want to measure statistics like the intra- or inter observer agreement (as described in <a href="#ref1">[1]</a>). For this purpose, annotation sessions offer some additional options that control the display of annotations during an annotation session. There are three possible scenarios for annotation studies:
         </p>
 
         <h4>Scenario 1: Measure the intra observer agreement</h4>
 
         <p>
-            In this scenario you want to measure the reproducibility of the annotations of each user. For this, each user is asked to annotate all or just a subset of the objects of interest of a given transect. After a certain delay (at least 48&nbsp;h), each user is asked <em>again</em> to annotate the same (subset of) objects of interest. During the second pass the users are not able to see their annotations of the first pass. By comparing the two sets of annotations for each user, the reproducibility or intra observer agreement of their annotations can be calculated. For this type of annotation study, the annotation sessions offer the <em>hide own annotations</em> ( <span class="label label-default">hide own</span> ) option. If this option is activated, all annotations of the own user that were created before the annotation session started are invisible while the annotation session is running. This will only affect users who are member of the annotation session.
+            In this scenario you want to measure the reproducibility of the annotations of each user. Each user is asked to annotate all or just a subset of the objects of interest of a given transect. After a certain delay (at least 48&nbsp;h), each user is asked <em>again</em> to annotate the same objects of interest. During the second pass the users are not able to see their annotations of the first pass. By comparing the two sets of annotations for each user, the reproducibility or intra observer agreement of their annotations can be calculated. For this type of annotation study, the annotation sessions offer the <em>hide own annotations</em> ( <span class="label label-default">hide own</span> ) option. If this option is activated, all annotations of the own user that were created before the annotation session started are invisible while the annotation session is running. This will only affect users who are member of the annotation session.
         </p>
         <div class="panel panel-info">
             <div class="panel-body">
@@ -44,7 +50,7 @@
                     Now ask Jessica to annotate the objects of interest for 48&nbsp;h starting with the 18th of October and then all over again starting with the 24th of October. While the sessions <em>A</em> or <em>B</em> are running, Jessica will not see any of her previously created annotations which could distort the results of your study. Jacobs annotation task, on the other hand, will not be affected by the annotation sessions.
                 </p>
                 <p>
-                    Once both annotation sessions were finished you can export the two sets of annotations by creating new <a href="#" class="text-danger">transect annotation reports</a> for <em>T</em>. A transect annotation report can be restricted to an annotation session to only include annotations belonging to this session (i.e. created by a member between the start an end dates of the annotation session). With one transect annotation report for each annotation session you have the raw data to compute the intra observer agreement using a method of your choice.
+                    Once both annotation sessions were finished you can export the two sets of annotations by creating new transect annotation reports for <em>T</em> and restrict one of them to annotation session <em>A</em> and the other to <em>B</em>. With one report for each annotation session you have the raw data to compare the annotations and compute the intra observer agreement using a method of your choice.
                 </p>
             </div>
         </div>
@@ -60,10 +66,10 @@
                     <strong class="text-info">Example:</strong> You want to measure the inter observer agreement of the users Jasmine, Julia and Jake for objects of interest in the transect <em>T</em>. You need admin access and Jasmine, Julia and Jake need at least editor access to <em>T</em>.
                 </p>
                 <p>
-                    First create a new annotation session to <em>T</em> (e.g. lasting 48&nbsp;h), add the three users as members and activate the hide other annotations option. Now you ask the members to annotate objects of interest while the annotation session is running. Each user won't see the annotations of the other users.
+                    First create a new annotation session for <em>T</em> (e.g. lasting 48&nbsp;h), add the three users as members and activate the hide other annotations option. Now you ask the members to annotate objects of interest while the annotation session is running. Each user won't see the annotations of the other users.
                 </p>
                 <p>
-                    Similar to scenario 1 you finally can export a new transect annotation report for transect <em>T</em> which is restricted to your annotation session. Use the exported user IDs to separate annotations of different users and calculate the inter observer agreement with a method of your choice.
+                    Finally you can export a new transect annotation report for transect <em>T</em> which is restricted to your annotation session, similar to scenario 1. Use the exported user IDs to separate annotations of different users and calculate the inter observer agreement with a method of your choice.
                 </p>
             </div>
         </div>
