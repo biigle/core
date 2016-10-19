@@ -102,8 +102,3 @@ $router->get('api/v1/reports/{uid}/{filename}', [
     'as' => 'download_report',
     'uses' => 'Api\AvailableReportController@show',
 ]);
-
-$router->get('manual/tutorials/export/{name}', [
-    'as'   => 'manual-tutorials-export',
-    'uses' => 'Views\TutorialController@show',
-]);
