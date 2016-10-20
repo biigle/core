@@ -2,9 +2,9 @@
 
 namespace Dias\Modules\Transects;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Routing\Router;
 use Dias\Services\Modules;
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
 
 class TransectsServiceProvider extends ServiceProvider
 {
@@ -31,11 +31,12 @@ class TransectsServiceProvider extends ServiceProvider
             require __DIR__.'/Http/routes.php';
         });
 
-        $modules->addMixin('transects', 'dashboardMain.projects');
-        $modules->addMixin('transects', 'dashboardStyles');
-        $modules->addMixin('transects', 'dashboardHotBoxRight');
         $modules->addMixin('transects', 'adminMenu');
         $modules->addMixin('transects', 'adminIndex');
+        $modules->addMixin('transects', 'manualTutorial');
+        $modules->addMixin('transects', 'dashboardStyles');
+        $modules->addMixin('transects', 'dashboardHotBoxRight');
+        $modules->addMixin('transects', 'dashboardMain.projects');
     }
 
     /**

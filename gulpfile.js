@@ -1,24 +1,42 @@
-"use strict";
-process.env.DISABLE_NOTIFIER = true;
+"use strict"
 
-var gulp    = require('gulp');
-var elixir  = require('laravel-elixir');
-var angular = require('laravel-elixir-angular');
-var shell   = require('gulp-shell');
+var gulp = require('gulp');
+var h = require('gulp-helpers');
+var publish = h.publish('Dias\\Modules\\Transects\\TransectsServiceProvider', 'public');
 
-elixir(function (mix) {
-	process.chdir('src');
-	mix.sass('main.scss', 'public/assets/styles/main.css');
-	mix.angular('resources/assets/js/transects/', 'public/assets/scripts', 'main.js');
+h.paths.sass = 'src/resources/assets/sass/';
+h.paths.js = 'src/resources/assets/js/';
+h.paths.public = 'src/public/assets/';
 
-    mix.sass('dashboard.scss', 'public/assets/styles/dashboard.css')
-
-    mix.sass('edit.scss', 'public/assets/styles/edit.css')
-    mix.angular('resources/assets/js/edit/', 'public/assets/scripts', 'edit.js');
-
-    mix.task('publish', 'public/assets/**/*');
+gulp.task('sass-main', function () {
+    h.sass('main.scss', 'main.css');
 });
 
-gulp.task('publish', function () {
-    gulp.src('').pipe(shell('php ../../../../artisan vendor:publish --provider="Dias\\Modules\\Transects\\TransectsServiceProvider" --force'));
+gulp.task('sass-edit', function () {
+    h.sass('edit.scss', 'edit.css');
 });
+
+gulp.task('sass-dashboard', function () {
+    h.sass('dashboard.scss', 'dashboard.css');
+});
+
+gulp.task('sass', ['sass-main', 'sass-edit', 'sass-dashboard']);
+
+gulp.task('js-main', function (cb) {
+    h.angular('transects/**/*.js', 'main.js', cb);
+});
+
+gulp.task('js-edit', function (cb) {
+    h.angular('edit/**/*.js', 'edit.js', cb);
+});
+
+gulp.task('js', ['js-main', 'js-edit']);
+
+gulp.task('watch', function () {
+    gulp.watch(h.paths.sass + '**/*.scss', ['sass']);
+    gulp.watch(h.paths.js + 'transects/**/*.js', ['js-main']);
+    gulp.watch(h.paths.js + 'edit/**/*.js', ['js-edit']);
+    gulp.watch(h.paths.public + '**/*', publish);
+});
+
+gulp.task('default', ['sass', 'js'], publish)
