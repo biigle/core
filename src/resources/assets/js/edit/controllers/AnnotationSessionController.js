@@ -34,7 +34,20 @@ angular.module('dias.transects.edit').controller('AnnotationSessionController', 
             loading = false;
         };
 
-        var handleFormError = function (response) {
+        var handleUpdateError = function (response) {
+            if (response.status === 400) {
+                if (confirm(response.data.message + ' Use the Force and update the annotation session?')) {
+                    $scope.submit(true);
+                }
+
+                loading = false;
+            } else {
+                errors = response.data;
+                loading = false;
+            }
+        };
+
+        var handleCreateError = function (response) {
             errors = response.data;
             loading = false;
         };
@@ -50,9 +63,17 @@ angular.module('dias.transects.edit').controller('AnnotationSessionController', 
             loading = false;
         };
 
-        var handleError = function (response) {
-            msr.responseError(response);
-            loading = false;
+        var handleDeleteError = function (response) {
+            if (response.status === 400) {
+                if (confirm(response.data.message + ' Use the Force and delete the annotation session?')) {
+                    $scope.deleteSession(true);
+                }
+
+                loading = false;
+            } else {
+                msg.responseError(response);
+                loading = false;
+            }
         };
 
         var clearErrors = function () {
@@ -166,7 +187,7 @@ angular.module('dias.transects.edit').controller('AnnotationSessionController', 
             return session.starts_at_iso8601.getTime();
         };
 
-        $scope.submit = function () {
+        $scope.submit = function (force) {
             clearErrors();
             loading = true;
 
@@ -179,17 +200,31 @@ angular.module('dias.transects.edit').controller('AnnotationSessionController', 
             });
 
             if ($scope.newSession.id) {
-                AnnotationSession.save($scope.newSession, handleSaveSuccess, handleFormError);
+                var params = {};
+
+                if (force) {
+                    params.force = 1;
+                }
+
+                AnnotationSession.save(params, $scope.newSession, handleSaveSuccess, handleUpdateError);
             } else {
                 // Date objects are automatically parsed to ISO8601 strings with timezone
                 // so the enpoint can handle the timezones correctly.
-                AnnotationSession.create({transect_id: TRANSECT_ID}, $scope.newSession, handleCreateSuccess, handleFormError);
+                AnnotationSession.create({transect_id: TRANSECT_ID}, $scope.newSession, handleCreateSuccess, handleCreateError);
             }
         };
 
-        $scope.deleteSession = function () {
+        $scope.deleteSession = function (force) {
             loading = true;
-            AnnotationSession.delete({id: $scope.newSession.id}, handleDeleteSuccess, handleError);
+            var params = {
+                id: $scope.newSession.id
+            };
+
+            if (force) {
+                params.force = 1;
+            }
+
+            AnnotationSession.delete(params, handleDeleteSuccess, handleDeleteError);
         };
 
         $scope.clearNewSession = function () {
