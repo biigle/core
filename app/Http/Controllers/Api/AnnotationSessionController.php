@@ -163,7 +163,7 @@ class AnnotationSessionController extends Controller
         $this->validate($request, AnnotationSession::$destroyRules);
 
         if (!$request->input('force') && $session->annotations()->exists()) {
-            abort(400, 'There are annotations belonging to this annotation. Use the force attribute to delete anyway (the annotations will not be deleted).');
+            abort(400, 'There are annotations belonging to this annotation session. Use the force attribute to delete it anyway (the annotations will not be deleted).');
         }
 
         $session->delete();
