@@ -3,12 +3,13 @@
 namespace Dias\Modules\Export;
 
 use File;
+use Dias\Modules\Export\Contracts\DeletableContract;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * Represents the file of a generated report
  */
-class AvailableReport
+class AvailableReport implements DeletableContract
 {
     /**
      * The file path of this report

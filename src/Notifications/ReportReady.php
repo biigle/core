@@ -47,7 +47,7 @@ class ReportReady extends Notification
     {
         return (new MailMessage)
             ->subject('Your BIIGLE DIAS report is ready')
-            ->line("Your {$this->report->getName()} for project {$this->report->getProjectName()} is ready for download!")
+            ->line("Your {$this->report->getName()} for {$this->report->getSubject()} is ready for download!")
             ->line('The report will be removed once you have downloaded it.')
             ->action('Download report', $this->report->getUrl());
     }

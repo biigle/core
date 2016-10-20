@@ -2,9 +2,9 @@
 
 namespace Dias\Modules\Export;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Routing\Router;
 use Dias\Services\Modules;
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
 
 class ExportServiceProvider extends ServiceProvider {
 
@@ -35,11 +35,11 @@ class ExportServiceProvider extends ServiceProvider {
             __DIR__.'/config/export.php' => config_path('export.php'),
         ], 'config');
 
-        $modules->addMixin('export', 'projectsShow');
-        $modules->addMixin('export', 'projectsShowScripts');
+        $modules->addMixin('export', 'projectsShowToolbar');
         $modules->addMixin('export', 'annotationsSettings');
         $modules->addMixin('export', 'annotationsScripts');
         $modules->addMixin('export', 'manualTutorial');
+        $modules->addMixin('export', 'transectsMenubar');
     }
 
     /**
