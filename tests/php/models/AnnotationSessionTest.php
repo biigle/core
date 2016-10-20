@@ -102,7 +102,7 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::create([
-            'transect_id' => $image->transect->id,
+            'transect_id' => $image->transect_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => true,
@@ -145,7 +145,7 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::create([
-            'transect_id' => $image->transect->id,
+            'transect_id' => $image->transect_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => false,
@@ -185,7 +185,7 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::create([
-            'transect_id' => $image->transect->id,
+            'transect_id' => $image->transect_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => true,
@@ -224,7 +224,7 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::create([
-            'transect_id' => $image->transect->id,
+            'transect_id' => $image->transect_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => false,
@@ -350,5 +350,63 @@ class AnnotationSessionTest extends ModelTestCase
 
         $this->assertArrayHasKey('starts_at_iso8601', $session->toArray());
         $this->assertArrayHasKey('ends_at_iso8601', $session->toArray());
+    }
+
+    public function testAnnotations()
+    {
+        $ownUser = UserTest::create();
+        $otherUser = UserTest::create();
+        $image = ImageTest::create();
+
+        $a1 = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al1 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $a2 = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-05',
+        ]);
+        $al2 = AnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+
+        $a3 = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al3 = AnnotationLabelTest::create([
+            'annotation_id' => $a3->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $a4 = AnnotationTest::create([
+            'created_at' => '2016-09-06',
+        ]);
+        $al4 = AnnotationLabelTest::create([
+            'annotation_id' => $a4->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $session = static::create([
+            'transect_id' => $image->transect_id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+        ]);
+        $session->users()->attach($ownUser);
+
+        $this->assertTrue($session->annotations()->where('id', $a1->id)->exists());
+        $this->assertFalse($session->annotations()->where('id', $a2->id)->exists());
+        $this->assertFalse($session->annotations()->where('id', $a3->id)->exists());
+        $this->assertFalse($session->annotations()->where('id', $a4->id)->exists());
     }
 }

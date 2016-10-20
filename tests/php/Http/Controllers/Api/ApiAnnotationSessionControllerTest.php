@@ -103,6 +103,120 @@ class ApiAnnotationSessionControllerTest extends ApiTestCase
         $this->assertTrue(Carbon::parse('2016-09-06T22:00:00.000Z')->eq($session->ends_at));
     }
 
+    public function testUpdateForceStartDate()
+    {
+        $session = AnnotationSessionTest::create([
+            'transect_id' => $this->transect()->id,
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-07',
+        ]);
+
+        $session->users()->attach($this->editor());
+
+        $image = ImageTest::create([
+            'transect_id' => $session->transect_id,
+        ]);
+
+        $annotation = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-05',
+        ]);
+
+        $label = AnnotationLabelTest::create([
+            'user_id' => $this->editor()->id,
+            'annotation_id' => $annotation->id,
+        ]);
+
+        $this->beAdmin();
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'starts_at' => '2016-09-06',
+        ]);
+        // the annotation would no longer belong to the session
+        $this->assertResponseStatus(400);
+
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'starts_at' => '2016-09-06',
+            'force' => true,
+        ]);
+        $this->assertResponseOk();
+    }
+
+    public function testUpdateForceEndDate()
+    {
+        $session = AnnotationSessionTest::create([
+            'transect_id' => $this->transect()->id,
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-07',
+        ]);
+
+        $session->users()->attach($this->editor());
+
+        $image = ImageTest::create([
+            'transect_id' => $session->transect_id,
+        ]);
+
+        $annotation = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $label = AnnotationLabelTest::create([
+            'user_id' => $this->editor()->id,
+            'annotation_id' => $annotation->id,
+        ]);
+
+        $this->beAdmin();
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'ends_at' => '2016-09-06',
+        ]);
+        // the annotation would no longer belong to the session
+        $this->assertResponseStatus(400);
+
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'ends_at' => '2016-09-06',
+            'force' => true,
+        ]);
+        $this->assertResponseOk();
+    }
+
+    public function testUpdateForceUsers()
+    {
+        $session = AnnotationSessionTest::create([
+            'transect_id' => $this->transect()->id,
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-07',
+        ]);
+
+        $session->users()->attach($this->editor());
+
+        $image = ImageTest::create([
+            'transect_id' => $session->transect_id,
+        ]);
+
+        $annotation = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $label = AnnotationLabelTest::create([
+            'user_id' => $this->editor()->id,
+            'annotation_id' => $annotation->id,
+        ]);
+
+        $this->beAdmin();
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'users' => [$this->admin()->id],
+        ]);
+        // the annotation would no longer belong to the session
+        $this->assertResponseStatus(400);
+
+        $this->put("api/v1/annotation-sessions/{$session->id}", [
+            'users' => [$this->admin()->id],
+            'force' => true,
+        ]);
+        $this->assertResponseOk();
+    }
+
     public function testDestroy()
     {
         $session = AnnotationSessionTest::create([
@@ -120,5 +234,40 @@ class ApiAnnotationSessionControllerTest extends ApiTestCase
         $this->assertResponseOk();
 
         $this->assertNull($session->fresh());
+    }
+
+    public function testDestroyForce()
+    {
+        $session = AnnotationSessionTest::create([
+            'transect_id' => $this->transect()->id,
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-07',
+        ]);
+
+        $session->users()->attach($this->editor());
+
+        $image = ImageTest::create([
+            'transect_id' => $session->transect_id,
+        ]);
+
+        $annotation = AnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $label = AnnotationLabelTest::create([
+            'user_id' => $this->editor()->id,
+            'annotation_id' => $annotation->id,
+        ]);
+
+        $this->beAdmin();
+        $this->delete("api/v1/annotation-sessions/{$session->id}");
+        // there are annotations belonging to this session
+        $this->assertResponseStatus(400);
+
+        $this->delete("api/v1/annotation-sessions/{$session->id}", [
+            'force' => true,
+        ]);
+        $this->assertResponseOk();
     }
 }

@@ -4,6 +4,7 @@ namespace Dias;
 
 use DB;
 use Carbon\Carbon;
+use Dias\Annotation;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -40,6 +41,16 @@ class AnnotationSession extends Model
         'hide_own_annotations' => 'filled|boolean',
         'users' => 'filled|array',
         'users.*' => 'distinct|exists:users,id',
+        'force' => 'filled|boolean',
+    ];
+
+    /**
+     * Validation rules for destroying an annotation session.
+     *
+     * @var array
+     */
+    public static $destroyRules = [
+        'force' => 'filled|boolean',
     ];
 
     /**
@@ -133,6 +144,39 @@ class AnnotationSession extends Model
         }
 
         return $query->get();
+    }
+
+    /**
+     * Get a query for all annotations that belong to this session.
+     *
+     * This is **not** an Eloquent relation!
+     *
+     * @return Illuminate\Database\Eloquent\Builder
+     */
+    public function annotations()
+    {
+        return Annotation::where(function ($query) {
+            // all annotations of the associated transect
+            return $query->whereIn('image_id', function ($query) {
+                    $query->select('id')
+                        ->from('images')
+                        ->where('transect_id', $this->transect_id);
+                })
+            // that were created between the start and end date
+                ->where('created_at', '>=', $this->starts_at)
+                ->where('created_at', '<', $this->ends_at)
+            // and have a label by one of the members of this session
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('annotation_labels')
+                        ->whereRaw('annotation_labels.annotation_id = annotations.id')
+                        ->whereIn('annotation_labels.user_id', function ($query) {
+                            $query->select('user_id')
+                                ->from('annotation_session_user')
+                                ->where('annotation_session_id', $this->id);
+                        });
+                });
+        });
     }
 
     /**
