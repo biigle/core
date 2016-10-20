@@ -17,6 +17,7 @@ class ProjectLabelTreeController extends Controller
      * @apiGroup Projects
      * @apiName IndexProjectLabelTrees
      * @apiPermission projectMember
+     * @apiDescription This endpoint lists all label trees that are used by the project.
      *
      * @apiParam {Number} id The project ID.
      *
@@ -65,6 +66,7 @@ class ProjectLabelTreeController extends Controller
      * @apiGroup Projects
      * @apiName IndexProjectAvailableLabelTrees
      * @apiPermission projectMember
+     * @apiDescription This endpoint lists all label trees that _can be_ used by the project (do not confuse this with the "used label trees" endpoint).
      *
      * @apiParam {Number} id The project ID.
      *

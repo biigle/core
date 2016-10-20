@@ -3,11 +3,13 @@
 namespace Dias\Exceptions;
 
 use Exception;
+use ErrorException;
 use Dias\Http\Controllers\Controller;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Exception\HttpResponseException;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -61,7 +63,7 @@ class Handler extends ExceptionHandler
         // use JsonResponse if this was an automated request
         if (Controller::isAutomatedRequest($request)) {
             return $this->renderJsonResponse($exception);
-        } else if ($exception instanceof \ErrorException && view()->exists("errors.500")) {
+        } else if ($exception instanceof ErrorException && view()->exists("errors.500")) {
             return $this->renderCustomErrorPage($exception);
         } else {
             return parent::render($request, $exception);
@@ -131,7 +133,7 @@ class Handler extends ExceptionHandler
         if ($e instanceof HttpResponseException) {
             return $e->getResponse();
         } elseif ($e instanceof ModelNotFoundException) {
-            $e = new NotFoundHttpException($e->getMessage(), $e);
+            $e = new HttpException(404, $e->getMessage());
         } elseif ($e instanceof AuthorizationException) {
             $e = new HttpException(403, $e->getMessage());
         } elseif ($e instanceof ValidationException && $e->getResponse()) {

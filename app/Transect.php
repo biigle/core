@@ -2,8 +2,10 @@
 
 namespace Dias;
 
+use DB;
 use Exception;
 use Dias\Image;
+use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use Dias\Jobs\GenerateThumbnails;
 use Illuminate\Database\Eloquent\Model;
@@ -140,6 +142,25 @@ class Transect extends Model
     }
 
     /**
+     * Return a query for all users associated to this transect through projects
+     *
+     * @return  \Illuminate\Database\Eloquent\Builder
+     */
+    public function users()
+    {
+        return User::whereIn('id', function ($query) {
+            $query->select('user_id')
+                ->distinct()
+                ->from('project_user')
+                ->whereIn('project_id', function ($query) {
+                    $query->select('project_id')
+                        ->from('project_transect')
+                        ->where('transect_id', $this->id);
+                });
+        });
+    }
+
+    /**
      * Check if an array of image filenames is valid.
      *
      * A valid array is not empty, contains no duplicates and has only images with JPG,
@@ -211,5 +232,79 @@ class Transect extends Model
     public function projects()
     {
         return $this->belongsToMany('Dias\Project');
+    }
+
+    /**
+     * The annotation sessions of this transect
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function annotationSessions()
+    {
+        return $this->hasMany('Dias\AnnotationSession')->with('users');
+    }
+
+    /**
+     * The active annotation sessions of this transect (if any)
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function activeAnnotationSession()
+    {
+        $now = Carbon::now();
+        return $this->hasOne('Dias\AnnotationSession')
+            ->where('starts_at', '<=', $now)
+            ->where('ends_at', '>', $now)
+            ->limit(1);
+    }
+
+    /**
+     * Returns the active annotation session of this transect for the given user
+     *
+     * An annotation session may be active for a transect but it is only also active for
+     * a user, if the user belongs to the set of restricted users of the annotation
+     * session.
+     *
+     * @param User $user
+     * @return AnnotationSession
+     */
+    public function getActiveAnnotationSession(User $user)
+    {
+        return $this->activeAnnotationSession()
+            ->whereExists(function ($query) use ($user) {
+                $query->select(DB::raw(1))
+                    ->from('annotation_session_user')
+                    ->where('annotation_session_user.user_id', $user->id)
+                    ->whereRaw('annotation_session_user.annotation_session_id = annotation_sessions.id');
+            })->first();
+    }
+
+    /**
+     * Check if the given annotation session is in conflict with existing ones
+     *
+     * A conflict exists if the active time period of two sessions overlaps.
+     *
+     * @param AnnotationSession $session The annotation session to check
+     *
+     * @return bool
+     */
+    public function hasConflictingAnnotationSession(AnnotationSession $session)
+    {
+        return $this->annotationSessions()
+            ->when(!is_null($session->id), function ($query) use ($session) {
+                return $query->where('id', '!=', $session->id);
+            })
+            ->where(function ($query) use ($session) {
+                $query->where(function ($query) use ($session) {
+                    $query->where('starts_at', '<=', $session->starts_at)
+                        ->where('ends_at', '>', $session->starts_at);
+                });
+                $query->orWhere(function ($query) use ($session) {
+                    // ends_at is exclusive so it may equal starts_at of another session
+                    $query->where('starts_at', '<', $session->ends_at)
+                        ->where('ends_at', '>=', $session->ends_at);
+                });
+            })
+            ->exists();
     }
 }

@@ -13,7 +13,7 @@ class ApiImageControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->image = ImageTest::create();
-        $this->project()->addTransectId($this->image->transect->id);
+        $this->project()->transects()->attach($this->image->transect);
     }
 
     public function testShow()

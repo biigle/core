@@ -20,6 +20,7 @@ class ImageAnnotationController extends Controller
      * @apiGroup Images
      * @apiName IndexImageAnnotations
      * @apiPermission projectMember
+     * @apiDescription If there is an active annotation session for the transect of this image, only those annotations will be returned that the user is allowed to access.
      *
      * @apiParam {Number} id The image ID.
      *
@@ -55,12 +56,19 @@ class ImageAnnotationController extends Controller
      * ]
      *
      * @param int $id image id
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index($id)
+    public function index($id, Guard $auth)
     {
         $image = Image::findOrFail($id);
         $this->authorize('access', $image);
+        $user = $auth->user();
+        $session = $image->transect->getActiveAnnotationSession($user);
+
+        if ($session) {
+            return $session->getImageAnnotations($image, $user);
+        }
 
         return $image->annotations()->with('labels')->get();
     }

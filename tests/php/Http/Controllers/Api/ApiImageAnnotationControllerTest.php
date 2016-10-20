@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 class ApiImageAnnotationControllerTest extends ApiTestCase
 {
     private $image;
@@ -7,8 +9,9 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->image = ImageTest::create();
-        $this->project()->addTransectId($this->image->transect->id);
+        $this->image = ImageTest::create([
+            'transect_id' => $this->transect()->id,
+        ]);
     }
 
     public function testIndex()
@@ -40,6 +43,53 @@ class ApiImageAnnotationControllerTest extends ApiTestCase
             ->seeJson(['points' => [10, 20, 30, 40]])
             ->seeJson(['color' => 'bada55'])
             ->seeJson(['name' => 'My label']);
+        $this->assertResponseOk();
+    }
+
+    public function testIndexAnnotationSessionHideOwn()
+    {
+        $session = AnnotationSessionTest::create([
+            'transect_id' => $this->transect()->id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $a1 = AnnotationTest::create([
+            'image_id' => $this->image->id,
+            'created_at' => Carbon::yesterday(),
+            'points' => [10, 20],
+        ]);
+
+        $al1 = AnnotationLabelTest::create([
+            'user_id' => $this->editor()->id,
+            'annotation_id' => $a1->id,
+        ]);
+
+        $a2 = AnnotationTest::create([
+            'image_id' => $this->image->id,
+            'created_at' => Carbon::today(),
+            'points' => [20, 30],
+        ]);
+
+        $al2 = AnnotationLabelTest::create([
+            'user_id' => $this->editor()->id,
+            'annotation_id' => $a2->id,
+        ]);
+
+        $this->beEditor();
+        $this->get("/api/v1/images/{$this->image->id}/annotations")
+            ->seeJson(['points' => [10, 20]])
+            ->seeJson(['points' => [20, 30]]);
+        $this->assertResponseOk();
+
+        $session->users()->attach($this->editor());
+        Cache::flush();
+
+        $this->get("/api/v1/images/{$this->image->id}/annotations")
+            ->dontSeeJson(['points' => [10, 20]])
+            ->seeJson(['points' => [20, 30]]);
         $this->assertResponseOk();
     }
 

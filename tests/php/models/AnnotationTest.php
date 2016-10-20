@@ -1,14 +1,14 @@
 <?php
 
-use Dias\Annotation;
 use Dias\Shape;
+use Dias\Annotation;
 
 class AnnotationTest extends ModelTestCase
 {
     /**
      * The model class this class will test.
      */
-    protected static $modelClass = Dias\Annotation::class;
+    protected static $modelClass = Annotation::class;
 
     public function testAttributes()
     {
@@ -100,5 +100,180 @@ class AnnotationTest extends ModelTestCase
         $this->model->validatePoints([10, 10]);
         $this->setExpectedException('Exception');
         $this->model->validatePoints([10]);
+    }
+
+    public function testAllowedBySessionScopeHideOwn()
+    {
+        $ownUser = UserTest::create();
+        $otherUser = UserTest::create();
+        $image = ImageTest::create();
+
+        // this should not be shown
+        $a1 = static::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-05',
+        ]);
+        $al1 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+
+        // this should be shown
+        $a2 = static::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-05',
+        ]);
+        $al2 = AnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+
+        // this should be shown
+        $a3 = static::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al3 = AnnotationLabelTest::create([
+            'annotation_id' => $a3->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $session = AnnotationSessionTest::create([
+            'transect_id' => $image->transect->id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $ids = Annotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
+        $this->assertEquals([$a2->id, $a3->id], $ids);
+    }
+
+    public function testAllowedBySessionScopeHideOther()
+    {
+        $ownUser = UserTest::create();
+        $otherUser = UserTest::create();
+        $image = ImageTest::create();
+
+        // this should be shown
+        $a1 = static::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-05',
+        ]);
+        $al1 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+
+        // this should not be shown
+        $a2 = static::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-05',
+        ]);
+        $al2 = AnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+
+        // this should be shown
+        $a3 = static::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al3 = AnnotationLabelTest::create([
+            'annotation_id' => $a3->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        // this should not be shown
+        $a4 = static::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al4 = AnnotationLabelTest::create([
+            'annotation_id' => $a4->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $session = AnnotationSessionTest::create([
+            'transect_id' => $image->transect->id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => false,
+            'hide_other_users_annotations' => true,
+        ]);
+
+        $ids = Annotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
+        $this->assertEquals([$a1->id, $a3->id], $ids);
+    }
+
+    public function testAllowedBySessionScopeHideBoth()
+    {
+        $ownUser = UserTest::create();
+        $otherUser = UserTest::create();
+        $image = ImageTest::create();
+
+        // this should not be shown
+        $a1 = static::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-05',
+        ]);
+        $al1 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+
+        // this should not be shown
+        $a2 = static::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-05',
+        ]);
+        $al2 = AnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-05',
+        ]);
+
+        // this should be shown
+        $a3 = static::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al3 = AnnotationLabelTest::create([
+            'annotation_id' => $a3->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        // this should not be shown
+        $a4 = static::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al4 = AnnotationLabelTest::create([
+            'annotation_id' => $a4->id,
+            'user_id' => $otherUser->id,
+            'created_at' => '2016-09-06',
+        ]);
+
+        $session = AnnotationSessionTest::create([
+            'transect_id' => $image->transect->id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+
+        $ids = Annotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
+        $this->assertEquals([$a3->id], $ids);
     }
 }

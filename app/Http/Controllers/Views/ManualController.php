@@ -2,6 +2,8 @@
 
 namespace Dias\Http\Controllers\Views;
 
+use View;
+
 class ManualController extends Controller
 {
 
@@ -16,25 +18,24 @@ class ManualController extends Controller
     }
 
     /**
-     * Show the application tutorial center to the user.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function indexTutorials()
-    {
-        return view('manual.tutorials.index');
-    }
-
-    /**
      * Show a tutorials article.
      *
-     * @param string $name Article name
+     * @param string $module Name of the module or name of the article
+     * @param string $articla Article name (only if the article belongs to a module)
      * @return \Illuminate\Http\Response
      */
-    public function tutorialsArticle($name)
+    public function tutorialsArticle($module, $article = null)
     {
-        if (view()->exists('manual.tutorials.'.$name)) {
-            return view('manual.tutorials.'.$name);
+        $view = 'manual.tutorials.';
+
+        if (is_null($article)) {
+            $view .= $module;
+        } else {
+            $view = "{$module}::{$view}{$article}";
+        }
+
+        if (View::exists($view)) {
+            return View::make($view);
         } else {
             abort(404);
         }
@@ -53,13 +54,22 @@ class ManualController extends Controller
     /**
      * Show a documentation article.
      *
-     * @param string $name Article name
+     * @param string $module Name of the module or name of the article
+     * @param string $articla Article name (only if the article belongs to a module)
      * @return \Illuminate\Http\Response
      */
-    public function documentationArticle($name)
+    public function documentationArticle($module, $article = null)
     {
-        if (view()->exists('manual.documentation.'.$name)) {
-            return view('manual.documentation.'.$name);
+        $view = 'manual.documentation.';
+
+        if (is_null($article)) {
+            $view .= $module;
+        } else {
+            $view = "{$module}::{$view}{$article}";
+        }
+
+        if (View::exists($view)) {
+            return View::make($view);
         } else {
             abort(404);
         }

@@ -23,19 +23,17 @@ $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router
         'uses' => 'ManualController@index',
     ]);
 
-    $router->get('/tutorials', [
+    $router->get('/tutorials/{module}/{article?}', [
         'as' => 'manual-tutorials',
-        'uses' => 'ManualController@indexTutorials',
+        'uses' => 'ManualController@tutorialsArticle',
     ]);
-
-    $router->get('/tutorials/{article}', 'ManualController@tutorialsArticle');
 
     $router->get('/documentation', [
         'as' => 'manual-documentation',
         'uses' => 'ManualController@indexDocumentation',
     ]);
 
-    $router->get('/documentation/{article}', 'ManualController@documentationArticle');
+    $router->get('/documentation/{module}/{article?}', 'ManualController@documentationArticle');
 });
 
 // PROTECTED ROUTES -----------------------------------------------------------
@@ -103,6 +101,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
     ]);
 
     $router->resource('annotation-labels', 'AnnotationLabelController', [
+        'only' => ['update', 'destroy'],
+    ]);
+
+    $router->resource('annotation-sessions', 'AnnotationSessionController', [
         'only' => ['update', 'destroy'],
     ]);
 
@@ -189,6 +191,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
 
     $router->resource('transects', 'TransectController', [
         'only' => ['show', 'update'],
+    ]);
+
+    $router->resource('transects.annotation-sessions', 'TransectAnnotationSessionController', [
+        'only' => ['index', 'store'],
     ]);
 
     $router->resource('transects.images', 'TransectImageController', [

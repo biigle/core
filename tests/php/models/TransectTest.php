@@ -1,6 +1,8 @@
 <?php
 
+use Dias\Role;
 use Dias\Transect;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 
@@ -64,7 +66,7 @@ class TransectTest extends ModelTestCase
     {
         $project = ProjectTest::create();
         $this->assertEquals(0, $this->model->projects()->count());
-        $project->addTransectId($this->model->id);
+        $project->transects()->attach($this->model);
         $this->assertEquals(1, $this->model->projects()->count());
     }
 
@@ -175,5 +177,94 @@ class TransectTest extends ModelTestCase
         $this->model->createImages(['1.jpg']);
         $image = $this->model->images()->first();
         $this->assertNotNull($image->uuid);
+    }
+
+    public function testAnnotationSessions()
+    {
+        $this->assertFalse($this->model->annotationSessions()->exists());
+        $session = AnnotationSessionTest::create(['transect_id' => $this->model->id]);
+        $this->assertTrue($this->model->annotationSessions()->exists());
+    }
+
+    public function testActiveAnnotationSession()
+    {
+        $active = AnnotationSessionTest::create([
+            'transect_id' => $this->model->id,
+            'starts_at' => Carbon::yesterday(),
+            'ends_at' => Carbon::tomorrow(),
+        ]);
+
+        AnnotationSessionTest::create([
+            'transect_id' => $this->model->id,
+            'starts_at' => Carbon::yesterday()->subDay(),
+            'ends_at' => Carbon::yesterday(),
+        ]);
+
+        $this->assertEquals($active->id, $this->model->activeAnnotationSession->id);
+    }
+
+    public function testHasConflictingAnnotationSession()
+    {
+        $a1 = AnnotationSessionTest::create([
+            'transect_id' => $this->model->id,
+            'starts_at' => '2016-09-04',
+            'ends_at' => '2016-09-06',
+        ]);
+
+        $a2 = AnnotationSessionTest::make([
+            'transect_id' => $this->model->id,
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+        ]);
+
+        $this->assertTrue($this->model->hasConflictingAnnotationSession($a2));
+
+        $a3 = AnnotationSessionTest::make([
+            'transect_id' => $this->model->id,
+            'starts_at' => '2016-09-03',
+            'ends_at' => '2016-09-04',
+        ]);
+
+        $this->assertFalse($this->model->hasConflictingAnnotationSession($a3));
+
+        $a4 = AnnotationSessionTest::make([
+            'transect_id' => $this->model->id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+        ]);
+
+        $this->assertFalse($this->model->hasConflictingAnnotationSession($a4));
+
+        $a4->save();
+        $a4 = $a4->fresh();
+        // should not count the own annotation session (for updating)
+        $this->assertFalse($this->model->hasConflictingAnnotationSession($a4));
+    }
+
+    public function testUsers()
+    {
+        $editor = Role::$editor;
+        $u1 = UserTest::create();
+        $u2 = UserTest::create();
+        $u3 = UserTest::create();
+        $u4 = UserTest::create();
+
+        $p1 = ProjectTest::create();
+        $p1->addUserId($u1, $editor->id);
+        $p1->addUserId($u2, $editor->id);
+        $p1->transects()->attach($this->model);
+
+        $p2 = ProjectTest::create();
+        $p2->addUserId($u2, $editor->id);
+        $p2->addUserId($u3, $editor->id);
+        $p2->transects()->attach($this->model);
+
+        $users = $this->model->users()->get();
+        // project creators are counted, too
+        $this->assertEquals(5, $users->count());
+        $this->assertEquals(1, $users->where('id', $u1->id)->count());
+        $this->assertEquals(1, $users->where('id', $u2->id)->count());
+        $this->assertEquals(1, $users->where('id', $u3->id)->count());
+        $this->assertEquals(0, $users->where('id', $u4->id)->count());
     }
 }

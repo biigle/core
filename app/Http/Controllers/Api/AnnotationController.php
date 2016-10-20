@@ -16,6 +16,7 @@ class AnnotationController extends Controller
      * @apiName ShowAnnotation
      * @apiParam {Number} id The annotation ID.
      * @apiPermission projectMember
+     * @apiDescription Access may be denied by an active annotation session of the transect, the annotation belongs to.
      * @apiSuccessExample {json} Success response:
      * {
      *    "id":1,

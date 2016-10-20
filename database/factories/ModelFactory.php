@@ -156,3 +156,17 @@ $factory->define(Dias\LabelSource::class, function ($faker) {
         'description' => $faker->sentence(),
     ];
 });
+
+$factory->define(Dias\AnnotationSession::class, function ($faker) {
+    return [
+        'name' => $faker->username(),
+        'description' => $faker->sentence(),
+        'transect_id' => function () {
+            return factory(Dias\Transect::class)->create()->id;
+        },
+        'starts_at' => '2016-09-04',
+        'ends_at' => '2016-09-06',
+        'hide_other_users_annotations' => $faker->boolean(),
+        'hide_own_annotations' => $faker->boolean(),
+    ];
+});

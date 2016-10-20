@@ -197,6 +197,7 @@ class Project extends Model
     /**
      * Adds a transect to this project if it wasn't already.
      *
+     * @deprecated Use `$project->transects()->attach($id)` instead.
      * @param int $id
      * @return void
      */

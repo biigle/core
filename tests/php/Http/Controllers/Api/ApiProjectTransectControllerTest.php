@@ -14,7 +14,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->transect = TransectTest::create();
-        $this->project()->addTransectId($this->transect->id);
+        $this->project()->transects()->attach($this->transect);
     }
 
     public function testIndex()
@@ -136,6 +136,16 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         $this->assertNotEmpty($secondProject->fresh()->transects);
     }
 
+    public function testAttachDuplicate()
+    {
+        $tid = $this->transect->id;
+        $pid = $this->project()->id;
+
+        $this->beAdmin();
+        $this->json('POST', '/api/v1/projects/'.$pid.'/transects/'.$tid);
+        $this->assertResponseStatus(422);
+    }
+
     public function testDestroy()
     {
         $id = $this->transect->id;
@@ -164,7 +174,6 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         $this->delete('/api/v1/projects/1/transects/'.$otherTransect->id);
         // does not belong to the project
         $this->assertResponseStatus(404);
-
 
         Event::shouldReceive('fire')
             ->once()

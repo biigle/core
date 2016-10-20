@@ -117,7 +117,7 @@ class ProjectTransectController extends Controller
         // otherwise not all thumbnails will be generated
         $transect->generateThumbnails();
 
-        $project->addTransectId($transect->id);
+        $project->transects()->attach($transect);
 
         if (static::isAutomatedRequest($request)) {
             // media type shouldn't be returned
@@ -144,11 +144,12 @@ class ProjectTransectController extends Controller
      * @apiParam {Number} pid ID of the project that should get the annotation.
      * @apiParam {Number} tid ID of the existing transect to attach to the project.
      *
+     * @param Request $request
      * @param int $projectId
      * @param int $transectId
      * @return \Illuminate\Http\Response
      */
-    public function attach($projectId, $transectId)
+    public function attach(Request $request, $projectId, $transectId)
     {
         // user must be able to admin the transect *and* the project it should
         // be attached to
@@ -157,7 +158,13 @@ class ProjectTransectController extends Controller
         $project = Project::findOrFail($projectId);
         $this->authorize('update', $project);
 
-        $project->addTransectId($transect->id);
+        if ($project->transects()->where('id', $transectId)->exists()) {
+            return $this->buildFailedValidationResponse($request, [
+                'tid' => 'The transect is already attached to the project.',
+            ]);
+        }
+
+        $project->transects()->attach($transect);
     }
 
     /**
