@@ -15,6 +15,7 @@
     angular.module('dias.annotations').constant('IMAGES_IDS', {!!$images->keys()!!});
     angular.module('dias.annotations').constant('IMAGES_FILENAMES', {!!$images->values()!!});
     angular.module('dias.annotations').constant('SHAPES', {!!$shapes!!});
+    angular.module('dias.annotations').constant('ANNOTATION_SESSIONS', {!!$annotationSessions!!});
     @if($editMode)
         angular.module('dias.annotations').constant('LABEL_TREES', {!!$labelTrees!!});
     @else
@@ -36,20 +37,8 @@
 
 @section('navbar')
 <div class="navbar-text navbar-annotations-breadcrumbs">
-    @if ($transect->projects->count() > 1)
-        <span class="dropdown">
-            <a href="#" class="dropdown-toggle navbar-link">Projects <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-                @foreach ($transect->projects as $project)
-                    <li><a href="{{route('project', $project->id)}}">{{$project->name}}</a></li>
-                @endforeach
-            </ul>
-        </span>
-    @else
-        <a href="{{route('project', $transect->projects->first()->id)}}" class="navbar-link" title="Show project {{$transect->projects->first()->name}}">{{$transect->projects->first()->name}}</a>
-    @endif
-    / <a href="{{route('transect', $transect->id)}}" class="navbar-link" title="Show transect {{$transect->name}}">{{$transect->name}}</a>
-    / <strong class="navbar-annotations-filename">{{$image->filename}}</strong>
+    @include('transects::partials.projectsBreadcrumb', ['projects' => $transect->projects])/ <a href="{{route('transect', $transect->id)}}" class="navbar-link" title="Show transect {{$transect->name}}">{{$transect->name}}</a>
+    / <strong class="navbar-annotations-filename">{{$image->filename}}</strong> @include('transects::partials.annotationSessionIndicator')
 </div>
 @endsection
 

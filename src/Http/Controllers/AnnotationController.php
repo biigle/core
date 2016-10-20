@@ -62,6 +62,11 @@ class AnnotationController extends Controller
 
         $shapes = Shape::all();
 
+        $annotationSessions = $image->transect->annotationSessions()
+            ->select('id', 'name', 'starts_at', 'ends_at')
+            ->with('users')
+            ->get();
+
         return view('annotations::index', [
             'user' => $user,
             'image' => $image,
@@ -70,6 +75,7 @@ class AnnotationController extends Controller
             'images' => $images,
             'labelTrees' => $trees,
             'shapes' => $shapes,
+            'annotationSessions' => $annotationSessions,
         ]);
     }
 

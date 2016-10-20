@@ -3,7 +3,10 @@
 namespace Dias\Modules\Annotations\Http\Controllers\Api;
 
 use DB;
+use Dias\Image;
 use Dias\Transect;
+use Dias\Annotation;
+use Illuminate\Contracts\Auth\Guard;
 use Dias\Http\Controllers\Api\Controller;
 
 class TransectImageController extends Controller
@@ -15,22 +18,35 @@ class TransectImageController extends Controller
      * @apiGroup Transects
      * @apiName TransectImagesHasAnnotation
      * @apiPermission projectMember
-     * @apiDescription Returns IDs of images having one or more annotations
+     * @apiDescription Returns IDs of images having one or more annotations. If there is an active annotation session, images with annotations hidden by the session are not returned.
      *
      * @apiParam {Number} id The transect ID
      *
      * @apiSuccessExample {json} Success response:
      * [1, 5, 6]
      *
+     * @param Guard $auth
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function hasAnnotation($id)
+    public function hasAnnotation(Guard $auth, $id)
     {
         $transect = Transect::findOrFail($id);
         $this->authorize('access', $transect);
 
-        return $transect->images()->has('annotations')->pluck('id');
+        $user = $auth->user();
+        $session = $transect->getActiveAnnotationSession($user);
+
+        if ($session) {
+            $query = Annotation::allowedBySession($session, $user);
+        } else {
+            $query = Annotation::getQuery();
+        }
+
+        return $query->join('images', 'images.id', '=', 'annotations.image_id')
+            ->where('images.transect_id', $id)
+            ->groupBy('images.id')
+            ->pluck('images.id');
     }
 
     /**
@@ -40,7 +56,7 @@ class TransectImageController extends Controller
      * @apiGroup Transects
      * @apiName TransectImagesHasUser
      * @apiPermission projectMember
-     * @apiDescription Returns IDs of images having one or more annotations of the specified user.
+     * @apiDescription Returns IDs of images having one or more annotations of the specified user. If there is an active annotation session, images with annotations hidden by the session are not returned.
      *
      * @apiParam {Number} tid The transect ID
      * @apiParam {Number} uid The user ID
@@ -48,25 +64,31 @@ class TransectImageController extends Controller
      * @apiSuccessExample {json} Success response:
      * [1, 5, 6]
      *
+     * @param Guard $auth
      * @param  int  $tid
      * @param  int  $uid
      * @return \Illuminate\Http\Response
      */
-    public function hasAnnotationUser($tid, $uid)
+    public function hasAnnotationUser(Guard $auth, $tid, $uid)
     {
         $transect = Transect::findOrFail($tid);
         $this->authorize('access', $transect);
 
-        return DB::table('images')
-            ->where('transect_id', $tid)
-            ->whereExists(function ($query) use ($uid) {
-                $query->select(DB::raw(1))
-                      ->from('annotations')
-                      ->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-                      ->where('annotation_labels.user_id', $uid)
-                      ->whereRaw('annotations.image_id = images.id');
-            })
-            ->pluck('id');
+        $user = $auth->user();
+        $session = $transect->getActiveAnnotationSession($user);
+
+        if ($session) {
+            $query = Annotation::allowedBySession($session, $user);
+        } else {
+            $query = Annotation::getQuery();
+        }
+
+        return $query->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
+                ->where('annotation_labels.user_id', $uid)
+                ->join('images', 'annotations.image_id', '=', 'images.id')
+                ->where('images.transect_id', $tid)
+                ->groupBy('images.id')
+                ->pluck('images.id');
     }
 
     /**
@@ -76,7 +98,7 @@ class TransectImageController extends Controller
      * @apiGroup Transects
      * @apiName TransectImagesHasLabel
      * @apiPermission projectMember
-     * @apiDescription Returns IDs of images having one or more annotations with the specified label.
+     * @apiDescription Returns IDs of images having one or more annotations with the specified label. If there is an active annotation session, images with annotations hidden by the session are not returned.
      *
      * @apiParam {Number} tid The transect ID
      * @apiParam {Number} lid The label ID
@@ -84,24 +106,30 @@ class TransectImageController extends Controller
      * @apiSuccessExample {json} Success response:
      * [1, 5, 6]
      *
+     * @param Guard $auth
      * @param  int  $tid
      * @param  int  $lid
      * @return \Illuminate\Http\Response
      */
-    public function hasAnnotationLabel($tid, $lid)
+    public function hasAnnotationLabel(Guard $auth, $tid, $lid)
     {
         $transect = Transect::findOrFail($tid);
         $this->authorize('access', $transect);
 
-        return DB::table('images')
-            ->where('transect_id', $tid)
-            ->whereExists(function ($query) use ($lid) {
-                $query->select(DB::raw(1))
-                      ->from('annotations')
-                      ->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
-                      ->where('annotation_labels.label_id', $lid)
-                      ->whereRaw('annotations.image_id = images.id');
-            })
-            ->pluck('id');
+        $user = $auth->user();
+        $session = $transect->getActiveAnnotationSession($user);
+
+        if ($session) {
+            $query = Annotation::allowedBySession($session, $user);
+        } else {
+            $query = Annotation::getQuery();
+        }
+
+        return $query->join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
+                ->where('annotation_labels.label_id', $lid)
+                ->join('images', 'annotations.image_id', '=', 'images.id')
+                ->where('images.transect_id', $tid)
+                ->groupBy('images.id')
+                ->pluck('images.id');
     }
 }
