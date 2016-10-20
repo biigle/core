@@ -26,7 +26,7 @@ class AteController extends Controller
      * @apiName ShowAnnotationPatch
      * @apiParam {Number} id The annotation ID.
      * @apiPermission projectMember
-     * @apiDescription Responds with an image file
+     * @apiDescription Responds with an image file. If there is an active annotation session, access to annotations hidden by the session is denied.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response

@@ -2,13 +2,13 @@
 
 namespace Dias\Modules\Ate\Jobs;
 
-use Dias\Annotation;
+use File;
 use Dias\Shape;
 use Dias\Jobs\Job;
+use Dias\Annotation;
+use InterventionImage as IImage;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use InterventionImage as IImage;
-use File;
 
 class GenerateAnnotationPatch extends Job implements ShouldQueue
 {

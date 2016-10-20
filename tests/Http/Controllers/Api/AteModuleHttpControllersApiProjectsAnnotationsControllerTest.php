@@ -1,6 +1,5 @@
 <?php
 
-
 class AteModuleHttpControllersApiProjectsAnnotationsControllerTest extends ApiTestCase {
 
     public function testFilter() {
