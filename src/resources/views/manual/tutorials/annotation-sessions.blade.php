@@ -27,6 +27,10 @@
             </div>
         </div>
 
+        <div class="embed-responsive embed-responsive-16by9">
+            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/Qwoe9aHIpbc?cc_load_policy=1" allowfullscreen></iframe>
+        </div>
+
         <h3>Annotation studies</h3>
 
         <p>
