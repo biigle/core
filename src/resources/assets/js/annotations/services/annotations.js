@@ -229,10 +229,14 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
             promise = annotations.$promise
                 .then(buildGroupedByLabel)
                 .then(update)
-                .then(_this.get)
-                // resolve initial promise
-                .then(deferred.resolve)
-                .catch(deferred.reject);
+                .then(_this.get);
+
+            // resolve initial promise
+            if (deferred) {
+                promise.then(deferred.resolve)
+                    .catch(deferred.reject);
+                deferred = undefined;
+            }
         };
 
         this.add = function (params) {
