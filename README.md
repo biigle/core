@@ -13,7 +13,6 @@ Additionally:
 - PHP PGSQL extension
 - PHP Fileinfo extension
 - PHP EXIF extension
-- PHP PCNTL extension
 - PHP GD Library (>=2.0)
 - PostgreSQL
 - Git
@@ -58,7 +57,7 @@ Finally, you have to configure a supervised process for the queue worker daemon.
 ```
 [program:dias-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=php /path/to/dias/application/artisan queue:work --sleep=5 --tries=3
+command=php /path/to/dias/application/artisan queue:work --sleep=5 --tries=3 --timeout=0
 autostart=true
 autorestart=true
 user=webserver-user
