@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Controller cycling through annotations
  */
-angular.module('dias.annotations').controller('SettingsAnnotationsCyclingController', function ($scope, mapAnnotations, annotations, labels, keyboard, settings) {
+angular.module('dias.annotations').controller('SettingsAnnotationsCyclingController', function ($scope, mapAnnotations, annotations, labels, keyboard, settings, EDIT_MODE) {
         "use strict";
 
         // flag to prevent cycling while a new image is loading
@@ -54,7 +54,7 @@ angular.module('dias.annotations').controller('SettingsAnnotationsCyclingControl
         };
 
         var attachLabel = function (e) {
-            if (loading) return;
+            if (loading || !EDIT_MODE) return;
             if (e) {
                 e.preventDefault();
             }
