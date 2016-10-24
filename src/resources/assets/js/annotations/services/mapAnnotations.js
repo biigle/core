@@ -157,7 +157,9 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		var refreshAnnotations = function (a) {
             annotationSource.clear();
 			_this.clearSelection();
-            lastDrawnFeature = null;
+            if (lastDrawnFeature && lastDrawnFeature.annotation && lastDrawnFeature.annotation.image && lastDrawnFeature.annotation.image.id !== images.getCurrentId()) {
+                lastDrawnFeature = null;
+            }
 			a.forEach(createFeature);
 		};
         annotations.observe(refreshAnnotations);
