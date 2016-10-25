@@ -50,7 +50,8 @@ To check if everything was set up correctly you can run `php vendor/bin/phpunit`
 
 Next, run `php artisan migrate` to set up the database tables.
 
-Now, you have to make sure that the web server user has write permissions in the `storage` directory and any of its subdirectories.
+The document / web root of the web server must point to the `public` directory. Never make anything outside of the `public` directory accessible through the web!
+Make sure that the web server user has write permissions in the `storage` directory and any of its subdirectories as well as the `bootstrap/cache` directory.
 
 Finally, you have to configure a supervised process for the queue worker daemon. The worker runs in parallel to the web server and is used for longer running tasks that should not be handled during a single request. The recommended setup for a supervised process is to use [Supervisor](http://supervisord.org/) but you can use any equivalent service as well. A supervisor configuration might look like this:
 
@@ -130,7 +131,7 @@ php artisan migrate
 Updating dependencies:
 
 ```
-composer install
+composer update
 ```
 
 To update your installed DIAS modules, run:
@@ -138,6 +139,7 @@ To update your installed DIAS modules, run:
 ```
 composer update dias/*
 ```
+Check the instructions of the individual modules if an update required additional actions like publishing updated assets.
 
 Now you have to restart your worker processes so the changes will be applied to them as well. This depends on the service you are using. For Supervisor it looks like this:
 
