@@ -186,12 +186,20 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
                 return;
             }
 
+            var wasActive = filtersActive();
+
             for (var filter in filters) {
                 if (!params.hasOwnProperty(filter) || !filters.hasOwnProperty(filter)) {
                     continue;
                 }
 
                 filters[filter] = params[filter].map(parseFloat);
+            }
+
+            // Don't render if no filters are active. Check `wasActive` in case the
+            // filters were reset and the original image should be rendered here.
+            if (!wasActive && !filtersActive()) {
+                return;
             }
 
             applyFilters(true);
