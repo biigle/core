@@ -1,10 +1,8 @@
 <?php
 
-require __DIR__.'/vendor/autoload.php';
-
 use Sami\Sami;
-use Symfony\Component\Finder\Finder;
 use Sami\Parser\Filter\TrueFilter;
+use Symfony\Component\Finder\Finder;
 
 $iterator = Finder::create()
 	->files()
