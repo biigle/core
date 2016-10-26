@@ -15,6 +15,8 @@
         "ramsey/uuid": "^3.5"
     },
     "require-dev": {
+        "ext-curl": "*",
+        "ext-sqlite3": "*",
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~5.0",
