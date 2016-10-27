@@ -29,6 +29,13 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             console.log(error);
         }
 
+        // Image filters are buggy in Chrome/WebKit which might result in erroneous
+        // annotation positions. They are disabled until the bug is resolved.
+        // see https://github.com/BiodataMiningGroup/dias-annotations/issues/44
+        if (navigator.userAgent.indexOf('AppleWebKit') !== -1) {
+            webglSupported = false;
+        }
+
         window.onbeforeunload = function () {
             // Make sure the texture is destroyed when the page is left.
             // The browser may take its time to garbage collect it and it may cause
