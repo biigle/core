@@ -50,7 +50,7 @@ class ExportModuleSupportReportsTransectsAnnotationsFullReportTest extends TestC
 
         $mock->shouldReceive('put')
             ->once()
-            ->with(['image_filename', 'annotation_id', 'annotation_shape', 'x/radius', 'y', 'labels', 'image_area_qm']);
+            ->with(['image filename', 'annotation id', 'annotation shape', 'x/radius', 'y', 'labels', 'image area in m²']);
 
         $mock->shouldReceive('put')
             ->once()
@@ -120,7 +120,7 @@ class ExportModuleSupportReportsTransectsAnnotationsFullReportTest extends TestC
 
         $mock->shouldReceive('put')
             ->twice()
-            ->with(['image_filename', 'annotation_id', 'annotation_shape', 'x/radius', 'y', 'labels', 'image_area_qm']);
+            ->with(['image filename', 'annotation id', 'annotation shape', 'x/radius', 'y', 'labels', 'image area in m²']);
 
         $mock->shouldReceive('put')
             ->once()

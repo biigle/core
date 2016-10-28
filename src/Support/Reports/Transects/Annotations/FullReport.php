@@ -96,7 +96,7 @@ class FullReport extends Report
     {
         $csv = CsvFile::makeTmp();
         $csv->put([$title]);
-        $csv->put(['image_filename', 'annotation_id', 'annotation_shape', 'x/radius', 'y', 'labels', 'image_area_qm']);
+        $csv->put(['image filename', 'annotation id', 'annotation shape', 'x/radius', 'y', 'labels', 'image area in m²']);
 
         foreach ($rows as $row) {
             $csv->put([
