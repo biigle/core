@@ -30,7 +30,7 @@ class ExportModuleSupportReportsTransectsAnnotationsFullReportTest extends TestC
             'label_id' => $child->id,
         ]);
         $al->annotation->image->transect_id = $transect->id;
-        $al->annotation->image->attrs = ['image' => 'attrs'];
+        $al->annotation->image->attrs = ['laserpoints' => ['area' => 3.1415]];
         $al->annotation->image->save();
 
         // for the AvailableReport
@@ -50,13 +50,17 @@ class ExportModuleSupportReportsTransectsAnnotationsFullReportTest extends TestC
 
         $mock->shouldReceive('put')
             ->once()
+            ->with(['image_filename', 'annotation_id', 'annotation_shape', 'x/radius', 'y', 'labels', 'image_area_qm']);
+
+        $mock->shouldReceive('put')
+            ->once()
             ->with([
                 $al->annotation->image->filename,
                 $al->annotation_id,
                 "{$root->name} > {$child->name}",
                 $al->annotation->shape->name,
                 json_encode($al->annotation->points),
-                json_encode(['image' => 'attrs']),
+                3.1415,
             ]);
 
         $mock->shouldReceive('close')
@@ -80,7 +84,9 @@ class ExportModuleSupportReportsTransectsAnnotationsFullReportTest extends TestC
         $label1 = LabelTest::create();
         $label2 = LabelTest::create();
 
-        $image = ImageTest::create();
+        $image = ImageTest::create([
+            'attrs' => ['some' => 'attrs'],
+        ]);
 
         $annotation = AnnotationTest::create([
             'image_id' => $image->id,
@@ -111,6 +117,10 @@ class ExportModuleSupportReportsTransectsAnnotationsFullReportTest extends TestC
         $mock->shouldReceive('put')
             ->once()
             ->with([$label2->tree->name]);
+
+        $mock->shouldReceive('put')
+            ->twice()
+            ->with(['image_filename', 'annotation_id', 'annotation_shape', 'x/radius', 'y', 'labels', 'image_area_qm']);
 
         $mock->shouldReceive('put')
             ->once()

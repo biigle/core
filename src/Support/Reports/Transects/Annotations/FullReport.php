@@ -96,6 +96,7 @@ class FullReport extends Report
     {
         $csv = CsvFile::makeTmp();
         $csv->put([$title]);
+        $csv->put(['image_filename', 'annotation_id', 'annotation_shape', 'x/radius', 'y', 'labels', 'image_area_qm']);
 
         foreach ($rows as $row) {
             $csv->put([
@@ -104,12 +105,28 @@ class FullReport extends Report
                 $this->expandLabelName($row->label_id),
                 $row->shape_name,
                 $row->points,
-                $row->attrs
+                $this->getArea($row->attrs)
             ]);
         }
 
         $csv->close();
 
         return $csv;
+    }
+
+    /**
+     * Parses the image attrs JSON object to retrieve the computed area of the laserpoint detection.
+     *
+     * @param  string $attrs Image attrs JSON as string
+     * @return mixed The number or `null`
+     */
+    protected function getArea($attrs)
+    {
+        $attrs = json_decode($attrs, true);
+        if (is_array($attrs)) {
+            return array_get($attrs, 'laserpoints.area');
+        }
+
+        return null;
     }
 }

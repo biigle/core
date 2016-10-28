@@ -19,14 +19,14 @@ for path in csvs:
     f = open(path, 'r')
     csv_file = csv.reader(f)
     csv_title = csv_file.next()[0]
+    csv_column_labels = csv_file.next()
     rows = np.array(list(csv_file))
     f.close()
     if rows.shape[0] == 0:
         continue
     numSheets += 1
     # rows have the content: image_filename, annotation_id, label_name, shape_name, points
-    celldata = [[csv_title]]
-    celldata.append(addRow("x/radius", "y", "labels", "filename", "annotation_id", "shape", "area in m^2"))
+    celldata = [[csv_title], csv_column_labels]
 
     uniqueimages = np.unique(rows[:, 0])
 
@@ -39,14 +39,7 @@ for path in csvs:
             labels = ", ".join(curAnnotationData[:, 2])
             points = ast.literal_eval(curAnnotationData[:, 4][0])
             it = iter(points)
-            lp = ""
-            if (curAnnotationData[0, 5]):
-                js = json.loads(curAnnotationData[0, 5])
-                try:
-                    lp = js['laserpoints']['area']
-                except KeyError:
-                    pass
-            celldata.append(addRow(it.next(), it.next(), labels, img, annotation, curAnnotationData[0, 3], lp))
+            celldata.append(addRow(it.next(), it.next(), labels, img, annotation, curAnnotationData[0, 3], curAnnotationData[0, 5]))
             try:
                 for x in it:
                     celldata.append(addRow(x, next(it)))
