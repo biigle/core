@@ -90,6 +90,10 @@ class AteController extends Controller
         $dismissed = $request->input('dismissed', []);
         $changed = $request->input('changed', []);
 
+        if (count($dismissed) === 0 && count($changed) === 0) {
+            return;
+        }
+
         $affectedAnnotations = $this->getAffectedAnnotations($dismissed, $changed);
 
         if (!$this->anotationsBelongToTransects($affectedAnnotations, [$id])) {
@@ -115,6 +119,7 @@ class AteController extends Controller
 
         $availableLabelTreeIds = DB::table('label_tree_project')
             ->whereIn('project_id', $projects)
+            ->distinct()
             ->pluck('label_tree_id');
 
         $requiredLabelTreeIds = $this->getRequiredLabelTrees($changed);
@@ -165,6 +170,10 @@ class AteController extends Controller
 
         $dismissed = $request->input('dismissed', []);
         $changed = $request->input('changed', []);
+
+        if (count($dismissed) === 0 && count($changed) === 0) {
+            return;
+        }
 
         $affectedAnnotations = $this->getAffectedAnnotations($dismissed, $changed);
 
@@ -280,6 +289,13 @@ class AteController extends Controller
                 ->delete();
         }
 
+        // Skip the rest if no annotations have been changed.
+        // The alreadyThereQuery below would FETCH ALL annotation labels if $changed were
+        // empty! This almost certainly results in memory exhaustion.
+        if (count($changed) === 0) {
+            return;
+        }
+
         // create new 'changed' annotation labels
         $newAnnotationLabels = [];
         $now = \Carbon\Carbon::now();
@@ -311,10 +327,10 @@ class AteController extends Controller
             ->toArray();
 
         foreach ($changed as $annotationId => $labelId) {
-            // skip all new annotation labels if their annotation no longer exists
-            // or if they already exist exactly like they should be created
-            $skip = !in_array($annotationId, $existingAnnotations)
-                || !$alreadyThere->where('annotation_id', $annotationId)
+            // Skip all new annotation labels if their annotation no longer exists
+            // or if they already exist exactly like they should be created.
+            $skip = !in_array($annotationId, $existingAnnotations) ||
+                !$alreadyThere->where('annotation_id', $annotationId)
                     ->where('label_id', $labelId)
                     ->isEmpty();
 
