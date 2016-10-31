@@ -27,7 +27,7 @@ class ApiTransectAnnotationSessionControllerTest extends ApiTestCase
     public function testStore()
     {
         $id = $this->transect()->id;
-        $session = AnnotationSessionTest::create([
+        AnnotationSessionTest::create([
             'transect_id' => $id,
             'starts_at' => '2016-09-03',
             'ends_at' => '2016-09-04',
@@ -119,7 +119,7 @@ class ApiTransectAnnotationSessionControllerTest extends ApiTestCase
 
         $session = $this->transect()->annotationSessions()
             ->with('users')
-            ->where('id', '!=', $session->id)
+            ->orderBy('id', 'desc')
             ->first();
         $this->assertTrue($session->users()->where('id', $this->admin()->id)->exists());
         $this->seeJsonEquals($session->toArray());

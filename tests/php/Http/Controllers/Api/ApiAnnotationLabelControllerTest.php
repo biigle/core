@@ -20,15 +20,15 @@ class ApiAnnotationLabelControllerTest extends ApiTestCase
             'annotation_id' => $this->annotation->id,
             'user_id' => $this->editor()->id,
         ]);
-        $this->doTestApiRoute('GET', "/api/v1/annotations/{$this->annotation->id}/labels");
+        $this->doTestApiRoute('GET', '/api/v1/annotations/1/labels');
 
         // api key authentication
         $this->beUser();
-        $this->get("/api/v1/annotations/{$this->annotation->id}/labels");
+        $this->get('/api/v1/annotations/1/labels');
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/annotations/{$this->annotation->id}/labels");
+        $this->get('/api/v1/annotations/1/labels');
         $this->assertResponseOk();
 
         $content = $this->response->getContent();

@@ -49,31 +49,30 @@ class ApiProjectControllerTest extends ApiTestCase
 
     public function testUpdate()
     {
-        $id = $this->project()->id;
-        $this->doTestApiRoute('PUT', "/api/v1/projects/{$id}");
+        $this->doTestApiRoute('PUT', '/api/v1/projects/1');
 
         // non-admins are not allowed to update
         $this->beEditor();
-        $this->put("/api/v1/projects/{$id}");
+        $this->put('/api/v1/projects/1');
         $this->assertResponseStatus(403);
 
         $this->beAdmin();
         $this->put('/api/v1/projects/999');
         $this->assertResponseStatus(404);
 
-        $this->json('PUT', "/api/v1/projects/{$id}", [
+        $this->json('PUT', '/api/v1/projects/1', [
             'name' => '',
         ]);
         // name must not be empty if it is present
         $this->assertResponseStatus(422);
 
-        $this->json('PUT', "/api/v1/projects/{$id}", [
+        $this->json('PUT', '/api/v1/projects/1', [
             'description' => '',
         ]);
         // description must not be empty if it is present
         $this->assertResponseStatus(422);
 
-        $this->json('PUT', "/api/v1/projects/{$id}", [
+        $this->json('PUT', '/api/v1/projects/1', [
             'name' => 'my test',
             'description' => 'this is my test',
             'creator_id' => 5,
@@ -95,7 +94,7 @@ class ApiProjectControllerTest extends ApiTestCase
         $this->json('POST', '/api/v1/projects');
         $this->assertResponseStatus(422);
 
-        $this->assertEquals(1, Project::count());
+        $this->assertNull(Project::find(2));
 
         $this->json('POST', '/api/v1/projects', [
             'name' => 'test project',
@@ -107,7 +106,7 @@ class ApiProjectControllerTest extends ApiTestCase
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
         $this->assertContains('"name":"test project"', $content);
-        $this->assertEquals(2, Project::count());
+        $this->assertNotNull(Project::find(2));
     }
 
     public function testDestroy()

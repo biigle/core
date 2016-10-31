@@ -149,13 +149,8 @@ class AnnotationTest extends ModelTestCase
             'hide_other_users_annotations' => false,
         ]);
 
-        $ids = Annotation::allowedBySession($session, $ownUser)
-            ->orderBy('id', 'asc')
-            ->pluck('id')
-            ->toArray();
-        $expect = [$a2->id, $a3->id];
-        sort($expect);
-        $this->assertEquals($expect, $ids);
+        $ids = Annotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
+        $this->assertEquals([$a2->id, $a3->id], $ids);
     }
 
     public function testAllowedBySessionScopeHideOther()
@@ -216,13 +211,8 @@ class AnnotationTest extends ModelTestCase
             'hide_other_users_annotations' => true,
         ]);
 
-        $ids = Annotation::allowedBySession($session, $ownUser)
-            ->orderBy('id', 'asc')
-            ->pluck('id')
-            ->toArray();
-        $expect = [$a1->id, $a3->id];
-        sort($expect);
-        $this->assertEquals($expect, $ids);
+        $ids = Annotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
+        $this->assertEquals([$a1->id, $a3->id], $ids);
     }
 
     public function testAllowedBySessionScopeHideBoth()

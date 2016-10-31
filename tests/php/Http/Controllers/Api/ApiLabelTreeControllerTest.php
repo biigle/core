@@ -83,7 +83,7 @@ class ApiLabelTreeControllerTest extends ApiTestCase
 
         // non-admins are not allowed to update
         $this->beEditor();
-        $this->put("/api/v1/label-trees/{$id}");
+        $this->put('/api/v1/label-trees/1');
         $this->assertResponseStatus(403);
 
         $this->beAdmin();

@@ -64,13 +64,14 @@ class ApiLabelTreeLabelControllerTest extends ApiTestCase
         $this->assertEquals(3, $tree->labels()->count());
 
         $expect = [
+            'id' => (int) $tree->labels()->max('id'),
             'name' => 'new label 2',
             'color' => 'bada55',
             'parent_id' => null,
             'label_tree_id' => $tree->id,
         ];
 
-        $this->seeJson($expect);
+        $this->seeJsonEquals([$expect]);
     }
 
     public function testStoreFormRequest()

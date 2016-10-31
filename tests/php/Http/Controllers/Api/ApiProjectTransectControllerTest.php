@@ -19,15 +19,14 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
     public function testIndex()
     {
-        $id = $this->project()->id;
-        $this->doTestApiRoute('GET', "/api/v1/projects/{$id}/transects");
+        $this->doTestApiRoute('GET', '/api/v1/projects/1/transects');
 
         $this->beUser();
-        $this->get("/api/v1/projects/{$id}/transects");
+        $this->get('/api/v1/projects/1/transects');
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/projects/{$id}/transects");
+        $this->get('/api/v1/projects/1/transects');
         $content = $this->response->getContent();
         $this->assertResponseOk();
         // response should not be an empty array
@@ -149,31 +148,30 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
     public function testDestroy()
     {
-        $pid = $this->project()->id;
-        $tid = $this->transect->id;
-        $image = ImageTest::create(['transect_id' => $tid]);
+        $id = $this->transect->id;
+        $image = ImageTest::create(['transect_id' => $id]);
 
-        $this->doTestApiRoute('DELETE', "/api/v1/projects/{$pid}/transects/{$tid}");
+        $this->doTestApiRoute('DELETE', '/api/v1/projects/1/transects/'.$id);
 
         $this->beUser();
-        $this->delete("/api/v1/projects/{$pid}/transects/{$tid}");
+        $this->delete('/api/v1/projects/1/transects/'.$id);
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->delete("/api/v1/projects/{$pid}/transects/{$tid}");
+        $this->delete('/api/v1/projects/1/transects/'.$id);
         $this->assertResponseStatus(403);
 
         $this->beEditor();
-        $this->delete("/api/v1/projects/{$pid}/transects/{$tid}");
+        $this->delete('/api/v1/projects/1/transects/'.$id);
         $this->assertResponseStatus(403);
 
         $this->beAdmin();
-        $this->delete("/api/v1/projects/{$pid}/transects/{$tid}");
+        $this->delete('/api/v1/projects/1/transects/'.$id);
         // trying to delete without force
         $this->assertResponseStatus(400);
 
         $otherTransect = TransectTest::create();
-        $this->delete("/api/v1/projects/{$pid}/transects/{$otherTransect->id}");
+        $this->delete('/api/v1/projects/1/transects/'.$otherTransect->id);
         // does not belong to the project
         $this->assertResponseStatus(404);
 
@@ -183,7 +181,7 @@ class ApiProjectTransectControllerTest extends ApiTestCase
 
         Event::shouldReceive('fire'); // catch other events
 
-        $this->delete("/api/v1/projects/{$pid}/transects/{$tid}", [
+        $this->delete('/api/v1/projects/1/transects/'.$id, [
             'force' => 'abc',
         ]);
         // deleting with force succeeds

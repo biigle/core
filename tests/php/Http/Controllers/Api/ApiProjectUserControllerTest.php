@@ -123,20 +123,19 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $this->admin();
         // creator is an admin and shouldn't play a role in this test
         $this->project()->creator->delete();
-        $pid = $this->project()->id;
 
         // token mismatch
-        $this->doTestApiRoute('DELETE', "/api/v1/projects/{$pid}/users/1");
+        $this->doTestApiRoute('DELETE', '/api/v1/projects/1/users/1');
 
         // non-admins are not allowed to delete other users
         $this->beEditor();
-        $this->delete("/api/v1/projects/{$pid}/users/{$this->admin()->id}");
+        $this->delete('/api/v1/projects/1/users/'.$this->admin()->id);
         $this->assertResponseStatus(403);
 
         // but they can delete themselves
         $this->assertNotNull($this->project()->fresh()->users()->find($this->editor()->id));
 
-        $this->delete("/api/v1/projects/{$pid}/users/{$this->editor()->id}");
+        $this->delete('/api/v1/projects/1/users/'.$this->editor()->id);
         $this->assertResponseOk();
         $this->assertNull($this->project()->fresh()->users()->find($this->editor()->id));
 
@@ -146,14 +145,14 @@ class ApiProjectUserControllerTest extends ApiTestCase
         $this->assertNotNull($this->project()->fresh()->users()->find($this->editor()->id));
 
         $this->beAdmin();
-        $this->delete("/api/v1/projects/{$pid}/users/{$this->editor()->id}");
+        $this->delete('/api/v1/projects/1/users/'.$this->editor()->id);
         $this->assertResponseOk();
         $this->assertNull($this->project()->fresh()->users()->find($this->editor()->id));
 
         $this->project()->addUserId($this->editor()->id, Role::$editor->id);
 
         // but admins cannot delete themselves if they are the only admin left
-        $this->delete("/api/v1/projects/{$pid}/users/{$this->admin()->id}");
+        $this->delete('/api/v1/projects/1/users/'.$this->admin()->id);
         $this->assertResponseStatus(400);
     }
 }
