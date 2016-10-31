@@ -18,18 +18,18 @@ class ApiImageControllerTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/images/1');
+        $this->doTestApiRoute('GET', '/api/v1/images/'.$this->image->id);
 
         // api key authentication
         $this->beUser();
-        $this->get('/api/v1/images/1');
+        $this->get('/api/v1/images/'.$this->image->id);
         $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get('/api/v1/images/-1');
         $this->assertResponseStatus(404);
 
-        $this->get('/api/v1/images/1');
+        $this->get('/api/v1/images/'.$this->image->id);
         $this->assertResponseOk();
         $content = $this->response->getContent();
         $this->assertStringStartsWith('{', $content);
@@ -65,17 +65,18 @@ class ApiImageControllerTest extends ApiTestCase
 
     public function testShowFile()
     {
-        $this->doTestApiRoute('GET', '/api/v1/images/1/file');
+        $id = $this->image->id;
+        $this->doTestApiRoute('GET', "/api/v1/images/{$id}/file");
 
         $this->beUser();
-        $this->get('/api/v1/images/1/file');
+        $this->get("/api/v1/images/{$id}/file");
         $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->get('/api/v1/images/-1/file');
         $this->assertResponseStatus(404);
 
-        $this->get('/api/v1/images/1/file');
+        $this->get("/api/v1/images/{$id}/file");
         $this->assertResponseOk();
         $this->assertEquals('image/jpeg', $this->response->headers->get('content-type'));
     }

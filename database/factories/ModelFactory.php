@@ -13,12 +13,14 @@
 
 $factory->define(Dias\Role::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'name' => $faker->username(),
     ];
 });
 
 $factory->define(Dias\User::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'firstname' => $faker->firstName(),
         'lastname' => $faker->lastName(),
         // 'password'
@@ -30,6 +32,7 @@ $factory->define(Dias\User::class, function ($faker) {
 
 $factory->define(Dias\Project::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'name' => $faker->company(),
         'description' => $faker->sentence(),
         'creator_id' => function () {
@@ -40,12 +43,14 @@ $factory->define(Dias\Project::class, function ($faker) {
 
 $factory->define(Dias\MediaType::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'name' => $faker->username(),
     ];
 });
 
 $factory->define(Dias\Transect::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'name' => $faker->company(),
         'media_type_id' => function () {
             return factory(Dias\MediaType::class)->create()->id;
@@ -59,6 +64,7 @@ $factory->define(Dias\Transect::class, function ($faker) {
 
 $factory->define(Dias\Image::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'filename' => 'test-image.jpg',
         'uuid' => $faker->uuid(),
         'transect_id' => function () {
@@ -69,6 +75,7 @@ $factory->define(Dias\Image::class, function ($faker) {
 
 $factory->define(Dias\Label::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'name' => $faker->username(),
         'color' => '0099ff',
         'parent_id' => null,
@@ -80,12 +87,14 @@ $factory->define(Dias\Label::class, function ($faker) {
 
 $factory->define(Dias\Shape::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'name' => $faker->username(),
     ];
 });
 
 $factory->define(Dias\Annotation::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'image_id' => function () {
             return factory(Dias\Image::class)->create()->id;
         },
@@ -98,6 +107,7 @@ $factory->define(Dias\Annotation::class, function ($faker) {
 
 $factory->define(Dias\AnnotationLabel::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'annotation_id' => function () {
             return factory(Dias\Annotation::class)->create()->id;
         },
@@ -113,6 +123,7 @@ $factory->define(Dias\AnnotationLabel::class, function ($faker) {
 
 $factory->define(Dias\ApiToken::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'owner_id' => function () {
             return factory(Dias\User::class)->create()->id;
         },
@@ -124,12 +135,14 @@ $factory->define(Dias\ApiToken::class, function ($faker) {
 
 $factory->define(Dias\Visibility::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'name' => $faker->username(),
     ];
 });
 
 $factory->define(Dias\LabelTree::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'name' => $faker->username(),
         'description' => $faker->sentence(),
         'visibility_id' => Dias\Visibility::$public->id,
@@ -138,6 +151,7 @@ $factory->define(Dias\LabelTree::class, function ($faker) {
 
 $factory->define(Dias\ImageLabel::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'image_id' => function () {
             return factory(Dias\Image::class)->create()->id;
         },
@@ -152,6 +166,7 @@ $factory->define(Dias\ImageLabel::class, function ($faker) {
 
 $factory->define(Dias\LabelSource::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'name' => $faker->username(),
         'description' => $faker->sentence(),
     ];
@@ -159,6 +174,7 @@ $factory->define(Dias\LabelSource::class, function ($faker) {
 
 $factory->define(Dias\AnnotationSession::class, function ($faker) {
     return [
+        'id' => $faker->unique()->numberBetween(0, 10000),
         'name' => $faker->username(),
         'description' => $faker->sentence(),
         'transect_id' => function () {

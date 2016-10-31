@@ -233,13 +233,13 @@ class AnnotationSessionTest extends ModelTestCase
 
         $annotations = $session->getImageAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
-        $annotations = collect($annotations->toArray());
+        $annotations = collect(array_sort_recursive($annotations->toArray()));
 
         $this->assertTrue($annotations->contains('points', [40, 50, 60]));
-        $this->assertTrue($annotations->contains('labels', [
+        $this->assertTrue($annotations->contains('labels', array_sort_recursive([
             $al1->load('user', 'label')->toArray(),
             $al2->load('user', 'label')->toArray()
-        ]));
+        ])));
     }
 
     public function testAllowsAccess()

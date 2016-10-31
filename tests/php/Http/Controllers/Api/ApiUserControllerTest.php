@@ -287,10 +287,9 @@ class ApiUserControllerTest extends ApiTestCase
         ]);
         $this->assertResponseOk();
 
-        $newUser = User::find(User::max('id'));
+        $newUser = User::where('email', 'new@email.me')->first();
         $this->assertEquals('jack', $newUser->firstname);
         $this->assertEquals('jackson', $newUser->lastname);
-        $this->assertEquals('new@email.me', $newUser->email);
         $this->assertEquals(Role::$editor->id, $newUser->role_id);
 
         $this->json('POST', '/api/v1/users', [

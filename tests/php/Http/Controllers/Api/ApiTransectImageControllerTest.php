@@ -24,8 +24,10 @@ class ApiTransectImageControllerTest extends ApiTestCase
 
     public function testStore()
     {
+        // Don't use model factories here because order of image IDs is omportant.
+        // Model factories use random IDs by default.
         $id = $this->transect()->id;
-        ImageTest::create(['filename' => 'no.jpg', 'transect_id' => $id]);
+        $this->transect()->createImages(['no.jpg']);
 
         $this->doTestApiRoute('POST', "/api/v1/transects/{$id}/images");
 
@@ -69,7 +71,8 @@ class ApiTransectImageControllerTest extends ApiTestCase
 
         $images = $this->transect()->images()
             ->where('filename', '!=', 'no.jpg')
-            ->select('id', 'filename')->get();
+            ->select('id', 'filename')
+            ->get();
 
         $this->seeJsonEquals($images->toArray());
 
