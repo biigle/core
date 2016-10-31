@@ -39,7 +39,8 @@ class AnnotationPolicy extends CachedPolicy
     public function access(User $user, Annotation $annotation)
     {
         return $this->remember("annotation-can-access-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
-            $transect = Transect::join('images', 'images.transect_id', '=', 'transects.id')
+            $transect = Transect::select('transects.id')
+                ->join('images', 'images.transect_id', '=', 'transects.id')
                 ->where('images.id', $annotation->image_id)
                 ->first();
 
