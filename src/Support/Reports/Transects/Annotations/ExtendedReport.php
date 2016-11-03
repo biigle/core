@@ -60,17 +60,11 @@ class ExtendedReport extends Report
      */
     protected function query()
     {
-        $query = DB::table('images')
-            ->join('annotations', 'annotations.image_id', '=', 'images.id')
-            ->join('annotation_labels', 'annotation_labels.annotation_id', '=', 'annotations.id')
-            ->where('images.transect_id', $this->transect->id)
-            ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
-            ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
+        $query = $this->initQuery()
             ->orderBy('images.filename');
 
         if ($this->shouldSeparateLabelTrees()) {
-            $query->join('labels', 'labels.id', '=', 'annotation_labels.label_id')
-                ->select(DB::raw('images.filename, annotation_labels.label_id, count(annotation_labels.label_id) as count, labels.label_tree_id'))
+            $query->select(DB::raw('images.filename, annotation_labels.label_id, count(annotation_labels.label_id) as count, labels.label_tree_id'))
                 ->groupBy('annotation_labels.label_id', 'images.id', 'labels.label_tree_id');
         } else {
             $query->select(DB::raw('images.filename, annotation_labels.label_id, count(annotation_labels.label_id) as count'))

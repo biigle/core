@@ -42,6 +42,10 @@ angular.module('dias.export').factory('ProjectReport', function ($resource, URL)
             method: 'POST',
             params: {type: 'annotations', variant: 'csv'}
         },
+        requestAnnotationAreaReport: {
+            method: 'POST',
+            params: {type: 'annotations', variant: 'area'}
+        },
         requestBasicImageLabelReport: {
             method: 'POST',
             params: {type: 'image-labels', variant: 'basic'}

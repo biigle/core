@@ -12,6 +12,7 @@ angular.module('dias.export').controller('TransectReportRequestController', func
             'annotations': [
                 'basic',
                 'extended',
+                'area',
                 'full',
                 'csv'
             ],

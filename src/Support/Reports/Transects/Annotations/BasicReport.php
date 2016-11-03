@@ -60,16 +60,18 @@ class BasicReport extends Report
      */
     protected function query()
     {
-        return DB::table('labels')
-            ->join('annotation_labels', 'annotation_labels.label_id', '=', 'labels.id')
-            ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
-            ->join('images', 'annotations.image_id', '=', 'images.id')
-            ->where('images.transect_id', $this->transect->id)
-            ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
-            ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
-            ->select(DB::raw('labels.name, labels.color, count(labels.id) as count, labels.label_tree_id'))
+        $query = $this->initQuery(DB::raw('labels.name, labels.color, count(labels.id) as count'))
             ->groupBy('labels.id')
             ->orderBy('labels.id');
+
+        // We want this every time not only if the report should be separated by label
+        // trees as defined in initQuery().
+        if (!$this->shouldSeparateLabelTrees()) {
+            $query->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
+                ->addSelect('labels.label_tree_id');
+        }
+
+        return $query;
     }
 
     /**
