@@ -20,7 +20,7 @@ class ExportModuleSupportReportsTransectsAnnotationsAreaReportTest extends TestC
         'annotation_area_sqm',
         'annotation_width_px',
         'annotation_height_px',
-        'annotation_area_px',
+        'annotation_area_sqpx',
     ];
 
     public function testProperties()

@@ -7,8 +7,8 @@ use StdClass;
 use Dias\Image;
 use Dias\Shape;
 use Dias\LabelTree;
-use Dias\Modules\Laserpoints\Image as LImage;
 use Dias\Modules\Export\Support\CsvFile;
+use Dias\Modules\Laserpoints\Image as LImage;
 
 class AreaReport extends Report
 {
@@ -81,12 +81,7 @@ class AreaReport extends Report
      */
     protected function query()
     {
-        $query = DB::table('annotation_labels')
-            ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
-            ->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
-            ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
-            ->join('images', 'annotations.image_id', '=', 'images.id')
-            ->select([
+        $query = $this->initQuery([
                 'annotations.id as annotation_id',
                 'shapes.id as shape_id',
                 'shapes.name as shape_name',
@@ -95,19 +90,17 @@ class AreaReport extends Report
                 'annotations.image_id',
                 'annotations.points',
             ])
-            ->where('images.transect_id', $this->transect->id)
+            ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
             // We can only compute the area from annotations that have and area.
             ->whereIn('shapes.id', [
                 Shape::$circleId,
                 Shape::$rectangleId,
                 Shape::$polygonId,
             ])
-            ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
-            ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
             ->orderBy('annotation_labels.id');
 
-        if ($this->shouldSeparateLabelTrees()) {
-            $query->addSelect(['labels.label_tree_id']);
+        if (!$this->shouldSeparateLabelTrees()) {
+            $query->join('labels', 'annotation_labels.label_id', '=', 'labels.id');
         }
 
         return $query;
@@ -138,7 +131,7 @@ class AreaReport extends Report
             'annotation_area_sqm',
             'annotation_width_px',
             'annotation_height_px',
-            'annotation_area_px',
+            'annotation_area_sqpx',
         ]);
 
         foreach ($rows as $row) {
@@ -150,12 +143,12 @@ class AreaReport extends Report
                 implode(', ', $row->label_names),
                 $row->image_id,
                 $row->image_filename,
-                $row->width_sqm,
-                $row->height_sqm,
+                $row->width_m,
+                $row->height_m,
                 $row->area_sqm,
                 $row->width_px,
                 $row->height_px,
-                $row->area_px,
+                $row->area_sqpx,
             ]);
         }
 
@@ -211,9 +204,9 @@ class AreaReport extends Report
         // If we can't compute the dimensions or area, leave them blank.
         $annotation->width_px = '';
         $annotation->height_px = '';
-        $annotation->area_px = '';
-        $annotation->width_sqm = '';
-        $annotation->height_sqm = '';
+        $annotation->area_sqpx = '';
+        $annotation->width_m = '';
+        $annotation->height_m = '';
         $annotation->area_sqm = '';
 
         switch ($annotation->shape_id) {
@@ -221,7 +214,7 @@ class AreaReport extends Report
                 // width and height are the diameter
                 $annotation->width_px = 2 * $points[2];
                 $annotation->height_px = $annotation->width_px;
-                $annotation->area_px = pow($points[2], 2) * M_PI;
+                $annotation->area_sqpx = pow($points[2], 2) * M_PI;
                 break;
 
             case Shape::$rectangleId:
@@ -235,7 +228,7 @@ class AreaReport extends Report
                 $dim2 = sqrt(pow($points[2] - $points[4], 2) + pow($points[3] - $points[5], 2));
                 $annotation->width_px = max($dim1, $dim2);
                 $annotation->height_px = min($dim1, $dim2);
-                $annotation->area_px = $dim1 * $dim2;
+                $annotation->area_sqpx = $dim1 * $dim2;
                 break;
 
             case Shape::$polygonId:
@@ -264,7 +257,7 @@ class AreaReport extends Report
 
                 $annotation->width_px = $max[0] - $min[0];
                 $annotation->height_px = $max[1] - $min[1];
-                $annotation->area_px = abs($area / 2);
+                $annotation->area_sqpx = abs($area / 2);
                 break;
 
             default:
@@ -297,9 +290,9 @@ class AreaReport extends Report
                 // And this is the width/height of a single pixel.
                 $widthHeight = sqrt($area);
 
-                $annotation->width_sqm = $widthHeight * $annotation->width_px;
-                $annotation->height_sqm = $widthHeight * $annotation->height_px;
-                $annotation->area_sqm = $area * $annotation->area_px;
+                $annotation->width_m = $widthHeight * $annotation->width_px;
+                $annotation->height_m = $widthHeight * $annotation->height_px;
+                $annotation->area_sqm = $area * $annotation->area_sqpx;
             }
         }
     }
