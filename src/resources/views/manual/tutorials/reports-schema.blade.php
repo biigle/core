@@ -58,6 +58,40 @@ Animalia
             <li><strong>Label abundance</strong></li>
         </ol>
 
+        <h4><a name="annotation-area-report"></a>Area</h4>
+
+        <p>
+            The annotation area report is an XLSX spreadsheet of all area annotations (rectangle, circle and polygon) with their width and height in pixels (px) and their area in px². If a laserpoint detection was performed, the width and height in m and the area in m² is included as well.
+        </p>
+        <p class="alert alert-danger">
+            The computed area of self-intersecting polygons like these will not be correct!
+            <svg style="width:100px;margin:5px auto -5px;display:block;" xmlns="http://www.w3.org/2000/svg" width="100px" height="50px" viewBox="0 0 100 50" xmlns:svg="http://www.w3.org/2000/svg">
+                <polygon stroke="#de6764" stroke-width="2" points="10,10 10,40 90,10 90,40" fill="rgba(0, 0, 0, 0.25)"></polygon>
+                <circle cx="10" cy="10" r="3" fill="#de6764" />
+                <circle cx="10" cy="40" r="3" fill="#de6764" />
+                <circle cx="90" cy="10" r="3" fill="#de6764" />
+                <circle cx="90" cy="40" r="3" fill="#de6764" />
+            </svg>
+        </p>
+        <p>
+            For a single worksheet (not separated by label tree) the first line contains the transect name. For multiple worksheets the first lines contain the name of the respective label tree. The second line always contains the column headers. The columns are as follows:
+        </p>
+        <ol>
+            <li><strong>Annotation ID</strong></li>
+            <li><strong>Annotation shape ID</strong></li>
+            <li><strong>Annotation shape name</strong></li>
+            <li><strong>Label IDs</strong> comma separated list of IDs of all labels that are attached to the annotation</li>
+            <li><strong>Label names</strong> comma separated list of names of all labels that are attached to the annotation</li>
+            <li><strong>Image ID</strong></li>
+            <li><strong>Image filename</strong></li>
+            <li><strong>Annotation width (m)</strong> Rectangle: the longer edge. Circle: the diameter. Polygon: width of the minimum (non-rotated) bounding rectangle.</li>
+            <li><strong>Annotation height (m)</strong> Rectangle: the shorter edge. Circle: the diameter. Polygon: height of the minimum (non-rotated) bounding rectangle.</li>
+            <li><strong>Annotation area (m²)</strong></li>
+            <li><strong>Annotation width (px)</strong> See the width in m for the interpretation of this value for different shapes.</li>
+            <li><strong>Annotation height (px)</strong> See the height in m for the interpretation of this value for different shapes.</li>
+            <li><strong>Annotation area (px²)</strong></li>
+        </ol>
+
         <h4><a name="annotation-full-report"></a>Full</h4>
 
         <p>
