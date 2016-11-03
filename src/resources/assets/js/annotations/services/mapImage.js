@@ -29,13 +29,6 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             console.log(error);
         }
 
-        // Image filters are buggy in Chrome/WebKit which might result in erroneous
-        // annotation positions. They are disabled until the bug is resolved.
-        // see https://github.com/BiodataMiningGroup/dias-annotations/issues/44
-        if (navigator.userAgent.indexOf('AppleWebKit') !== -1) {
-            webglSupported = false;
-        }
-
         window.onbeforeunload = function () {
             // Make sure the texture is destroyed when the page is left.
             // The browser may take its time to garbage collect it and it may cause
@@ -73,10 +66,20 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
         };
 
         var checkTextureSize = function (width, height) {
+            // Check supported texture size.
             var size = fxCanvas._.gl.getParameter(fxCanvas._.gl.MAX_TEXTURE_SIZE);
             webglSupported = size >= height && size >= width;
             if (!webglSupported) {
                 console.log('Insufficient WebGL texture size. Required: ' + width + 'x' + height + ', available: ' + size + 'x' + size + '.');
+            }
+
+            // Check supported drawing buffer size.
+            // see: https://github.com/BiodataMiningGroup/dias-annotations/issues/44
+            fxCanvas.width = width;
+            fxCanvas.height = height;
+            if (width !== fxCanvas._.gl.drawingBufferWidth || height !== fxCanvas._.gl.drawingBufferHeight) {
+                webglSupported = false;
+                console.log('Your browser does not allow a WebGL drawing buffer with the size of the original image. This would result in distorted display of the image.');
             }
         };
 
