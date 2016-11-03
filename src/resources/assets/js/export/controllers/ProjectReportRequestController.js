@@ -13,7 +13,8 @@ angular.module('dias.export').controller('ProjectReportRequestController', funct
                 'basic',
                 'extended',
                 'full',
-                'csv'
+                'csv',
+                'area'
             ],
             'image-labels': [
                 'basic',

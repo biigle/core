@@ -13,7 +13,8 @@ angular.module('dias.export').controller('TransectReportRequestController', func
                 'basic',
                 'extended',
                 'full',
-                'csv'
+                'csv',
+                'area'
             ],
             'image-labels': [
                 'basic',
