@@ -53,11 +53,6 @@ class AreaReport extends Report
             ->select('id', 'filename', 'attrs')
             ->get()
             ->keyBy('id');
-        // Manually assign the transect model to the images so there is no DB query for
-        // each single image when we require the full image URL later on.
-        $this->images->each(function ($image) {
-            $image->transect = $this->transect;
-        });
 
         if ($this->shouldSeparateLabelTrees()) {
             $rows = $rows->groupBy('label_tree_id');
