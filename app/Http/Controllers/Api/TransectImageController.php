@@ -2,9 +2,9 @@
 
 namespace Dias\Http\Controllers\Api;
 
+use Exception;
 use Dias\Transect;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 
 class TransectImageController extends Controller
 {
@@ -80,7 +80,7 @@ class TransectImageController extends Controller
 
         try {
             $transect->validateImages($images);
-        } catch (ValidationException $e) {
+        } catch (Exception $e) {
             return $this->buildFailedValidationResponse($request, [
                 'images' => $e->getMessage(),
             ]);
@@ -88,7 +88,7 @@ class TransectImageController extends Controller
 
         try {
             $transect->createImages($images);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response($e->getMessage(), 400);
         }
 

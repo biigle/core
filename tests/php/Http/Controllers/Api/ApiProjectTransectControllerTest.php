@@ -88,6 +88,27 @@ class ApiProjectTransectControllerTest extends ApiTestCase
         // error because of unsupported image format
         $this->assertResponseStatus(422);
 
+        File::shouldReceive('exists')->times(3)->andReturn(false, true, true);
+        File::shouldReceive('isReadable')->twice()->andReturn(false, true);
+
+        $this->json('POST', '/api/v1/projects/'.$id.'/transects', [
+            'name' => 'my transect no. 1',
+            'url' => 'random',
+            'media_type_id' => MediaType::$timeSeriesId,
+            'images' => '1.jpg',
+        ]);
+        // transect url does not exist
+        $this->assertResponseStatus(422);
+
+        $this->json('POST', '/api/v1/projects/'.$id.'/transects', [
+            'name' => 'my transect no. 1',
+            'url' => 'random',
+            'media_type_id' => MediaType::$timeSeriesId,
+            'images' => '1.jpg',
+        ]);
+        // transect url is not readable
+        $this->assertResponseStatus(422);
+
         $this->assertEquals($count, $this->project()->transects()->count());
         $this->assertEquals($imageCount, Image::all()->count());
 

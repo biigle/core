@@ -2,11 +2,11 @@
 
 namespace Dias\Http\Controllers\Api;
 
+use Exception;
 use Dias\Project;
 use Dias\Transect;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Validation\ValidationException;
 
 class ProjectTransectController extends Controller
 {
@@ -96,8 +96,16 @@ class ProjectTransectController extends Controller
         $images = Transect::parseImagesQueryString($request->input('images'));
 
         try {
+            $transect->validateUrl();
+        } catch (Exception $e) {
+            return $this->buildFailedValidationResponse($request, [
+                'url' => $e->getMessage(),
+            ]);
+        }
+
+        try {
             $transect->validateImages($images);
-        } catch (ValidationException $e) {
+        } catch (Exception $e) {
             return $this->buildFailedValidationResponse($request, [
                 'images' => $e->getMessage(),
             ]);

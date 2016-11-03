@@ -3,6 +3,7 @@
 namespace Dias;
 
 use DB;
+use File;
 use Exception;
 use Dias\Image;
 use Carbon\Carbon;
@@ -11,7 +12,6 @@ use Dias\Jobs\GenerateThumbnails;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Validation\ValidationException;
 
 /**
  * A transect is a collection of images. Transects belong to one or many
@@ -161,29 +161,53 @@ class Transect extends Model
     }
 
     /**
+     * Check if the URL of this transect exists and is readable.
+     *
+     * Currently works only for local paths.
+     *
+     * @return boolean
+     * @throws Exception If the validation failed.
+     */
+    public function validateUrl()
+    {
+        if (!File::exists($this->url)) {
+            throw new Exception('The transect URL does not exist.');
+        }
+
+        if (!File::isReadable($this->url)) {
+            throw new Exception('The transect URL is not readable. Please check the access permissions.');
+        }
+
+        return true;
+    }
+
+    /**
      * Check if an array of image filenames is valid.
      *
      * A valid array is not empty, contains no duplicates and has only images with JPG,
      * PNG or GIF file endings.
      *
      * @param array $filenames
-     * @throws ValidationException
+     * @return boolean
+     * @throws Exception If the validation failed.
      */
     public function validateImages($filenames)
     {
         if (empty($filenames)) {
-            throw new ValidationException('No images were supplied.');
+            throw new Exception('No images were supplied.');
         }
 
         if (count($filenames) !== count(array_unique($filenames))) {
-            throw new ValidationException('A transect must not have the same image twice.');
+            throw new Exception('A transect must not have the same image twice.');
         }
 
         foreach ($filenames as $filename) {
             if (preg_match('/\.(jpe?g|png|gif)$/i', $filename) !== 1) {
-                throw new ValidationException('Only JPG, PNG or GIF image formats are supported.');
+                throw new Exception('Only JPG, PNG or GIF image formats are supported.');
             }
         }
+
+        return true;
     }
 
     /**

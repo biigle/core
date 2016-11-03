@@ -4,7 +4,6 @@ use Dias\Role;
 use Dias\Transect;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
-use Illuminate\Validation\ValidationException;
 
 class TransectTest extends ModelTestCase
 {
@@ -106,28 +105,53 @@ class TransectTest extends ModelTestCase
         $return = $this->model->createImages(['1.jpg', '1.jpg']);
     }
 
+    public function testValidateUrlNotThere()
+    {
+        $this->model->url = 'test';
+        File::shouldReceive('exists')->andReturn(false);
+        $this->setExpectedException(Exception::class);
+        $this->model->validateUrl();
+    }
+
+    public function testValidateUrlNotReadable()
+    {
+        $this->model->url = 'test';
+        File::shouldReceive('exists')->andReturn(true);
+        File::shouldReceive('isReadable')->andReturn(false);
+        $this->setExpectedException(Exception::class);
+        $this->model->validateUrl();
+    }
+
+    public function testValidateUrlOk()
+    {
+        $this->model->url = 'test';
+        File::shouldReceive('exists')->andReturn(true);
+        File::shouldReceive('isReadable')->andReturn(true);
+        $this->assertTrue($this->model->validateUrl());
+    }
+
     public function testValidateImagesFormatOk()
     {
-        $this->model->validateImages(['1.jpg', '2.jpeg', '1.JPG', '2.JPEG']);
-        $this->model->validateImages(['1.png', '2.PNG']);
-        $this->model->validateImages(['1.gif', '2.GIF']);
+        $this->assertTrue($this->model->validateImages(['1.jpg', '2.jpeg', '1.JPG', '2.JPEG']));
+        $this->assertTrue($this->model->validateImages(['1.png', '2.PNG']));
+        $this->assertTrue($this->model->validateImages(['1.gif', '2.GIF']));
     }
 
     public function testValidateImagesFormatNotOk()
     {
-        $this->setExpectedException(ValidationException::class);
+        $this->setExpectedException(Exception::class);
         $this->model->validateImages(['1.jpg', '2.bmp']);
     }
 
     public function testValidateImagesDupes()
     {
-        $this->setExpectedException(ValidationException::class);
+        $this->setExpectedException(Exception::class);
         $this->model->validateImages(['1.jpg', '1.jpg']);
     }
 
     public function testValidateImagesEmpty()
     {
-        $this->setExpectedException(ValidationException::class);
+        $this->setExpectedException(Exception::class);
         $this->model->validateImages([]);
     }
 
