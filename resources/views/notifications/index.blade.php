@@ -35,7 +35,7 @@
                     <div class="panel-heading">
                         <span class="pull-right">
                             <span v-bind:title="item.created_at" v-text="item.created_at_diff"></span>
-                            <button class="btn btn-default btn-xs" title="Mark as read" v-on:click="markRead(item)" v-if="isUnread" v-bind:disabled="isLoading"><i class="glyphicon glyphicon-ok"></i></button>
+                            <button class="btn btn-default btn-xs" title="Mark as read" v-on:click="markRead()" v-if="isUnread" v-bind:disabled="isLoading"><i class="glyphicon glyphicon-ok"></i></button>
                         </span>
                         <h3 class="panel-title" v-text="item.data.title"></h3>
                     </div>
