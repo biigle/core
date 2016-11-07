@@ -44,22 +44,31 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         'uses' => 'DashboardController@index',
     ]);
 
-    $router->get('settings', [
-        'as' => 'settings',
-        'uses' => 'SettingsController@index',
-    ]);
-    $router->get('settings/profile', [
-        'as' => 'settings-profile',
-        'uses' => 'SettingsController@profile',
-    ]);
-    $router->get('settings/account', [
-        'as' => 'settings-account',
-        'uses' => 'SettingsController@account',
-    ]);
-    $router->get('settings/tokens', [
-        'as' => 'settings-tokens',
-        'uses' => 'SettingsController@tokens',
-    ]);
+    $router->group(['namespace' => 'Notifications', 'prefix' => 'notifications'], function ($router) {
+        $router->get('/', [
+            'as' => 'notifications',
+            'uses' => 'NotificationsController@index',
+        ]);
+    });
+
+    $router->group(['prefix' => 'settings'], function ($router) {
+        $router->get('/', [
+            'as' => 'settings',
+            'uses' => 'SettingsController@index',
+        ]);
+        $router->get('profile', [
+            'as' => 'settings-profile',
+            'uses' => 'SettingsController@profile',
+        ]);
+        $router->get('account', [
+            'as' => 'settings-account',
+            'uses' => 'SettingsController@account',
+        ]);
+        $router->get('tokens', [
+            'as' => 'settings-tokens',
+            'uses' => 'SettingsController@tokens',
+        ]);
+    });
 
     $router->group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'can:admin'], function ($router) {
 

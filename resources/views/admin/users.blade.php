@@ -33,7 +33,7 @@
                     @endif
                 </td>
                 <td>
-                    @if ($user->id !== auth()->user()->id)
+                    @if ($user->id !== $user->id)
                         <a class="btn btn-default btn-xs" href="{{route('admin-users-edit', $user->id)}}" title="Edit {{$user->firstname}} {{$user->lastname}}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
                     @endif
                 </td>

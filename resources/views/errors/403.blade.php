@@ -10,7 +10,7 @@
     You are not authorized to see the resource you just requested.
 </p>
 <div class="col-sm-offset-3 col-sm-6 clearfix">
-    @if (auth()->check())
+    @if ($user)
         <a href="{{route('home')}}" class="pull-right">Go to dashboard</a>
     @endif
     <a href="{{URL::previous()}}" class="">Go back</a>

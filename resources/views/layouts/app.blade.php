@@ -11,7 +11,7 @@
     @stack('styles')
 </head>
 <body>
-@if(auth()->check())
+@if($user)
     @include('partials.navbar')
 @endif
     @include('partials.messages')
