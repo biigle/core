@@ -20,12 +20,14 @@ class NotificationsController extends Controller
         $all = (boolean) $request->input('all', false);
         $user = $auth->user();
         $notifications = $all ? $user->notifications : $user->unreadNotifications;
-        $unreadCount = $user->unreadNotifications->count();
+
+        foreach ($notifications as $n) {
+            $n->created_at_diff = $n->created_at->diffForHumans();
+        }
 
         return view('notifications.index', [
             'all' => $all,
             'notifications' => $notifications,
-            'unreadCount' => $unreadCount,
         ]);
     }
 }

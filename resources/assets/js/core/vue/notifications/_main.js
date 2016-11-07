@@ -1,0 +1,1 @@
+biigle.notifications = {};
