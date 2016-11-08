@@ -25,16 +25,18 @@ biigle.$viewModel('notifications-list', function (element) {
         },
         methods: {
             markRead: function () {
+                var _this = this;
                 this.isLoading = true;
-                this.$http.put('/api/v1/notifications/' + this.item.id)
+                biigle.api.notifications.markRead({id: this.item.id}, {})
                     .then(function (response) {
-                        this.isLoading = false;
-                        this.item.read_at = new Date();
-
-                        if (this.removeItem) {
-                            biigle.notifications.store.remove(this.item.id);
+                        _this.item.read_at = new Date();
+                        if (_this.removeItem) {
+                            biigle.notifications.store.remove(_this.item.id);
                         }
-                    }, biigle.messages.store.handleErrorResponse);
+                    }, biigle.messages.store.handleErrorResponse)
+                    .finally(function () {
+                        _this.isLoading = false;
+                    });
 
             }
         }
