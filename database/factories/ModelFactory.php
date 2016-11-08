@@ -170,3 +170,19 @@ $factory->define(Dias\AnnotationSession::class, function ($faker) {
         'hide_own_annotations' => $faker->boolean(),
     ];
 });
+
+$factory->define(Dias\SystemMessageType::class, function ($faker) {
+    return [
+        'name' => $faker->username(),
+    ];
+});
+
+$factory->define(Dias\SystemMessage::class, function ($faker) {
+    return [
+        'body' => $faker->text(),
+        'title' => $faker->sentence(),
+        'type_id' => function () {
+            return factory(Dias\SystemMessageType::class)->create()->id;
+        }
+    ];
+});
