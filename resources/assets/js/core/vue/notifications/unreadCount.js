@@ -1,12 +1,13 @@
-biigle.notifications.unreadCount = document.getElementById('notifications-unread-count');
-
-window.addEventListener('load', function () {
-    if (biigle.notifications.unreadCount) {
-        new Vue({
-            el: biigle.notifications.unreadCount,
-            computed: {
-                count: biigle.notifications.store.countUnread
-            }
-        });
-    }
+/**
+ * The notification unread count.
+ *
+ * Shows the number of unread notifications.
+ */
+biigle.$viewModel('notifications-unread-count', function (element) {
+    new Vue({
+        el: element,
+        computed: {
+            count: biigle.notifications.store.countUnread
+        }
+    });
 });

@@ -1,3 +1,8 @@
+/**
+ * The InAppNotification store.
+ *
+ * Stores information on InAppNotifications to be shared between multiple JS components.
+ */
 biigle.notifications.store = new Vue({
     data: {
         _all: null,

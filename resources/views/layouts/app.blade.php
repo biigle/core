@@ -17,7 +17,6 @@
     @include('partials.messages')
     @yield('content')
 
-
     @if (app()->environment('local'))
         <script src="{{ asset('assets/scripts/vue.js') }}"></script>
         <script src="{{ asset('assets/scripts/vue-resource.js') }}"></script>
