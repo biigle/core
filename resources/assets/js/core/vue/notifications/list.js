@@ -34,10 +34,7 @@ biigle.$viewModel('notifications-list', function (element) {
                         if (this.removeItem) {
                             biigle.notifications.store.remove(this.item.id);
                         }
-                    }, function (response) {
-                        this.isLoading = false;
-                        $diasPostMessage('danger', 'Could not mark message as read: ' + response.statusText);
-                    });
+                    }, biigle.messages.store.handleErrorResponse);
 
             }
         }
