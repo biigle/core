@@ -127,7 +127,7 @@ class LabelTree extends Model
      */
     public function visibility()
     {
-        return $this->belongsTo('Dias\Visibility');
+        return $this->belongsTo(Visibility::class);
     }
 
     /**
@@ -137,7 +137,7 @@ class LabelTree extends Model
      */
     public function members()
     {
-        return $this->belongsToMany('Dias\User')
+        return $this->belongsToMany(User::class)
             ->select('id', 'firstname', 'lastname')
             ->withPivot('role_id as role_id');
     }
@@ -149,7 +149,7 @@ class LabelTree extends Model
      */
     public function labels()
     {
-        return $this->hasMany('Dias\Label');
+        return $this->hasMany(Label::class);
     }
 
     /**
@@ -238,7 +238,7 @@ class LabelTree extends Model
      */
     public function projects()
     {
-        return $this->belongsToMany('Dias\Project');
+        return $this->belongsToMany(Project::class);
     }
 
     /**
@@ -248,7 +248,7 @@ class LabelTree extends Model
      */
     public function authorizedProjects()
     {
-        return $this->belongsToMany('Dias\Project', 'label_tree_authorized_project');
+        return $this->belongsToMany(Project::class, 'label_tree_authorized_project');
     }
 
     /**

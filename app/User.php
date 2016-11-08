@@ -104,7 +104,7 @@ class User extends Authenticatable
      */
     public function projects()
     {
-        return $this->belongsToMany('Dias\Project');
+        return $this->belongsToMany(Project::class);
     }
 
     /**
@@ -114,7 +114,7 @@ class User extends Authenticatable
      */
     public function labelTrees()
     {
-        return $this->belongsToMany('Dias\LabelTree');
+        return $this->belongsToMany(LabelTree::class);
     }
 
     /**
@@ -124,7 +124,7 @@ class User extends Authenticatable
      */
     public function role()
     {
-        return $this->belongsTo('Dias\Role');
+        return $this->belongsTo(Role::class);
     }
 
     /**
@@ -134,7 +134,7 @@ class User extends Authenticatable
      */
     public function apiTokens()
     {
-        return $this->hasMany('Dias\ApiToken', 'owner_id');
+        return $this->hasMany(ApiToken::class, 'owner_id');
     }
 
     /**

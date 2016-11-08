@@ -32,6 +32,6 @@ class ApiToken extends Model
      */
     public function owner()
     {
-        return $this->belongsTo('Dias\User');
+        return $this->belongsTo(User::class);
     }
 }
