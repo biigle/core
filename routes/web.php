@@ -96,6 +96,21 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as' => 'admin-users-delete',
             'uses' => 'UsersController@delete',
         ]);
+
+        $router->get('system-messages', [
+            'as' => 'admin-system-messages',
+            'uses' => 'SystemMessagesController@index',
+        ]);
+
+        $router->get('system-messages/new', [
+            'as' => 'admin-system-messages-new',
+            'uses' => 'SystemMessagesController@create',
+        ]);
+
+        $router->get('system-messages/{id}', [
+            'as' => 'admin-system-messages-edit',
+            'uses' => 'SystemMessagesController@update',
+        ]);
     });
 
 });
@@ -200,6 +215,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
 
     $router->resource('shapes', 'ShapeController', [
         'only' => ['index', 'show'],
+    ]);
+
+    $router->resource('system-messages', 'SystemMessageController', [
+        'only' => ['store'],
     ]);
 
     $router->resource('transects', 'TransectController', [

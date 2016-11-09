@@ -31,4 +31,9 @@ class SystemMessageTest extends ModelTestCase
         $this->setExpectedException('Illuminate\Database\QueryException');
         $this->model->save();
     }
+
+    public function testPublish()
+    {
+        $this->markTestIncomplete('This test has not been implemented yet.');
+    }
 }

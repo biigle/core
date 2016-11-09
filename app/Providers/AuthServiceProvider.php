@@ -21,6 +21,7 @@ class AuthServiceProvider extends ServiceProvider
         \Dias\Image::class => \Dias\Policies\ImagePolicy::class,
         \Dias\Transect::class => \Dias\Policies\TransectPolicy::class,
         \Dias\ImageLabel::class => \Dias\Policies\ImageLabelPolicy::class,
+        \Dias\SystemMessage::class => \Dias\Policies\SystemMessagePolicy::class,
     ];
 
     /**
