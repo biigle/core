@@ -52,7 +52,7 @@ class UsersController extends Controller
     public function edit($id)
     {
         return view('admin.users.edit')
-            ->with('user', User::findOrFail($id))
+            ->with('affectedUser', User::findOrFail($id))
             ->with('roles', Role::all());
     }
 
@@ -64,6 +64,6 @@ class UsersController extends Controller
     public function delete($id)
     {
         return view('admin.users.delete')
-            ->with('user', User::findOrFail($id));
+            ->with('affectedUser', User::findOrFail($id));
     }
 }

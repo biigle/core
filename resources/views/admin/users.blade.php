@@ -8,7 +8,7 @@
         The user was deleted.
     </div>
 @endif
-<a href="{{route('admin-users-new')}}" class="btn btn-default" title="Create a new user"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> New user</a>
+<a href="{{route('admin-users-new')}}" class="btn btn-default" title="Create a new user"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> New user</a>
 <table class="table table-hover">
     <thead>
         <tr>

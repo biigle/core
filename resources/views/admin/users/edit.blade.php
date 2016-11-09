@@ -3,19 +3,19 @@
 @section('title')Users admin area - Edit user @stop
 
 @section('admin-content')
-<h4>Edit {{$user->firstname}} {{$user->lastname}}</h4>
+<h4>Edit {{$affectedUser->firstname}} {{$affectedUser->lastname}}</h4>
 @if (session('saved'))
     <div class="alert alert-success" role="alert">
-        The user <strong>{{$user->firstname}} {{$user->lastname}}</strong> was successfully updated.
+        The user <strong>{{$affectedUser->firstname}} {{$affectedUser->lastname}}</strong> was successfully updated.
     </div>
 @endif
-<form class="clearfix" role="form" method="POST" action="{{ url('api/v1/users/'.$user->id) }}">
+<form class="clearfix" role="form" method="POST" action="{{ url('api/v1/users/'.$affectedUser->id) }}">
 
     <div class="row">
 
         <div class="col-sm-6 form-group{{ $errors->has('email') ? ' has-error' : '' }}">
             <label for="email">Email</label>
-            <input type="email" class="form-control" name="email" id="email" value="{{ old('email', $user->email) }}" required>
+            <input type="email" class="form-control" name="email" id="email" value="{{ old('email', $affectedUser->email) }}" required>
             @if($errors->has('email'))
                 <span class="help-block">{{ $errors->first('email') }}</span>
             @endif
@@ -25,7 +25,7 @@
             <label for="role_id">Role</label>
             <select class="form-control" name="role_id" id="role_id" required>
                 @foreach ($roles as $role)
-                    <option value="{{$role->id}}" @if ($user->role_id === $role->id) selected="" @endif>{{ucfirst($role->name)}}</option>
+                    <option value="{{$role->id}}" @if ($affectedUser->role_id === $role->id) selected="" @endif>{{ucfirst($role->name)}}</option>
                 @endforeach
             </select>
             @if($errors->has('role_id'))
@@ -39,7 +39,7 @@
 
         <div class="col-sm-6 form-group{{ $errors->has('firstname') ? ' has-error' : '' }}">
             <label for="firstname">First name</label>
-            <input type="text" class="form-control" name="firstname" id="firstname" value="{{ old('firstname', $user->firstname) }}" required>
+            <input type="text" class="form-control" name="firstname" id="firstname" value="{{ old('firstname', $affectedUser->firstname) }}" required>
             @if($errors->has('firstname'))
                 <span class="help-block">{{ $errors->first('firstname') }}</span>
             @endif
@@ -47,7 +47,7 @@
 
         <div class="col-sm-6 form-group{{ $errors->has('lastname') ? ' has-error' : '' }}">
             <label for="lastname">Last name</label>
-            <input type="text" class="form-control" name="lastname" id="lastname" value="{{ old('lastname', $user->lastname) }}" required>
+            <input type="text" class="form-control" name="lastname" id="lastname" value="{{ old('lastname', $affectedUser->lastname) }}" required>
             @if($errors->has('lastname'))
                 <span class="help-block">{{ $errors->first('lastname') }}</span>
             @endif
@@ -86,10 +86,10 @@
 
     <input type="hidden" name="_token" value="{{ csrf_token() }}">
     <input type="hidden" name="_method" value="PUT">
-    <input type="hidden" name="_redirect" value="{{ route('admin-users-edit', $user->id) }}">
+    <input type="hidden" name="_redirect" value="{{ route('admin-users-edit', $affectedUser->id) }}">
     <a href="{{ route('admin-users') }}" class="btn btn-link">@if(session('saved')) Back @else Cancel @endif</a>
     <span class="pull-right">
-        <a href="{{ route('admin-users-delete', $user->id) }}" class="btn btn-danger" title="Delete {{$user->firstname}} {{$user->lastname}}">Delete</a>
+        <a href="{{ route('admin-users-delete', $affectedUser->id) }}" class="btn btn-danger" title="Delete {{$affectedUser->firstname}} {{$affectedUser->lastname}}">Delete</a>
         <input type="submit" class="btn btn-success" value="Save" title="Save">
     </span>
 </form>
