@@ -51,6 +51,18 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         ]);
     });
 
+    $router->group(['namespace' => 'SystemMessages', 'prefix' => 'system-messages'], function ($router) {
+        $router->get('/', [
+            'as' => 'system-messages',
+            'uses' => 'SystemMessagesController@index',
+        ]);
+
+        $router->get('{id}', [
+            'as' => 'system-messages-show',
+            'uses' => 'SystemMessagesController@show',
+        ]);
+    });
+
     $router->group(['prefix' => 'settings'], function ($router) {
         $router->get('/', [
             'as' => 'settings',

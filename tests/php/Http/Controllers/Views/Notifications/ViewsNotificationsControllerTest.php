@@ -1,8 +1,6 @@
 <?php
 
-use Dias\Notifications\InAppNotification;
-
-class ViewsNotificationsIndexControllerTest extends TestCase
+class ViewsNotificationsControllerTest extends TestCase
 {
     public function testIndexWhenNotLoggedIn()
     {

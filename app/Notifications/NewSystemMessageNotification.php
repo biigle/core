@@ -65,8 +65,7 @@ class NewSystemMessageNotification extends Notification
             'message' => 'A new system message was just published.',
             'type' => $type,
             'action' => 'Read it here',
-            // 'actionLink' => route('system-messages', $message->id),
-            'actionLink' => '#',
+            'actionLink' => route('system-messages-show', $this->message->id),
         ];
     }
 }
