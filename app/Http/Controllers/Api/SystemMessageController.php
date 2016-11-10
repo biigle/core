@@ -56,64 +56,82 @@ class SystemMessageController extends Controller
             $message->publish();
         }
 
-        return $message;
+        if ($request->wantsJson()) {
+            return $message;
+        }
+
+        return redirect()->route('admin-system-messages-edit', $message->id);
     }
 
     /**
-     * Updates the attributes of the specified user.
+     * Updates the attributes of the specified system message.
      *
-     * @api {put} users/:id Update a user
-     * @apiGroup Users
-     * @apiName UpdateUsers
+     * @api {put} system-messages/:id Update a system message
+     * @apiGroup SystemMessages
+     * @apiName UpdateSystemMessages
      * @apiPermission admin
-     * @apiDescription This action is allowed only by session cookie authentication.
      *
-     * @apiParam {Number} id The user ID.
+     * @apiParam {Number} id The system message ID.
      *
-     * @apiParam (Attributes that can be updated) {String} email The new email address of the user. Must be unique for all users.
-     * @apiParam (Attributes that can be updated) {String} password The new password of the user. If this parameter is set, an additional `password_confirmation` parameter needs to be present, containing the same new password.
-     * @apiParam (Attributes that can be updated) {String} firstname The new firstname of the user.
-     * @apiParam (Attributes that can be updated) {String} lastname The new lastname of the user.
-     * @apiParam (Attributes that can be updated) {Number} role_id Global role of the user. If the role should be changed, an additional `auth_password` field is required, containing the password of the global administrator that requests the change.
+     * @apiParam (Attributes that can be updated) {String} title Title of the system message
+     * @apiParam (Attributes that can be updated) {String} body The body text of the system message. May be formatted with HTML.
+     * @apiParam (Attributes that can be updated) {Number} type_id ID of the type of the system message. Default is the 'info' type.
+     *
+     * @apiParam (Optional parameters) {Boolean} publish If set to `true` the system message will be published.
      *
      * @apiParamExample {String} Request example:
-     * email: 'new@example.com'
-     * password: 'TotallySecure'
-     * password_confirmation: 'TotallySecure'
-     * firstname: 'New'
-     * lastname: 'Name'
-     * role_id: 1
-     * auth_password: 'password123'
+     * title: 'My new system message title'
+     * publish: 1
      *
      * @param Request $request
-     * @param Guard $auth
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
+        $message = SystemMessage::findOrFail($id);
+        $this->authorize('update', $message);
+        $this->validate($request, SystemMessage::$createRules);
 
+        $message->title = $request->input('title', $message->title);
+        $message->body = $request->input('body', $message->body);
+        $message->type_id = $request->input('type_id', $message->type_id);
+        $message->save();
+
+        if ($request->input('publish')) {
+            $message->publish();
+        }
+
+        if ($request->wantsJson()) {
+            return $message;
+        }
+
+        return redirect()->route('admin-system-messages-edit', $message->id);
     }
 
     /**
-     * Removes the specified user.
+     * Delete an unpublished system message
      *
-     * @api {delete} users/:id Delete a user
-     * @apiGroup Users
-     * @apiName DestroyUsers
+     * @api {delete} system-messages/:id Delete a system message
+     * @apiGroup SystemMessages
+     * @apiName DestroySystemMessages
      * @apiPermission admin
-     * @apiParam (Required parameters) {String} password The password of the global administrator.
-     * @apiDescription This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.
+     * @apiDescription Only unpublished system messages can be deleted.
      *
-     * @apiParam {Number} id The user ID.
+     * @apiParam {Number} id The system message ID.
      *
      * @param Request $request
-     * @param Guard $auth
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $id)
     {
+        $message = SystemMessage::findOrFail($id);
+        $this->authorize('destroy', $message);
+        $message->delete();
 
+        if (!$request->wantsJson()) {
+            return redirect()->route('admin-system-messages');
+        }
     }
 }

@@ -1,6 +1,8 @@
 <?php
 
+use Dias\User;
 use Dias\SystemMessage;
+use Dias\Notifications\NewSystemMessageNotification;
 
 class SystemMessageTest extends ModelTestCase
 {
@@ -34,6 +36,25 @@ class SystemMessageTest extends ModelTestCase
 
     public function testPublish()
     {
-        $this->markTestIncomplete('This test has not been implemented yet.');
+        UserTest::create();
+        UserTest::create();
+
+        $this->assertNull($this->model->published_at);
+        Notification::shouldReceive('send')
+            ->once()
+            ->with(Mockery::on(function ($users) {
+                // should be all users
+                return User::all()->diff($users)->count() === 0;
+            }), Mockery::type(NewSystemMessageNotification::class));
+        $this->model->publish();
+        // Already published messages aren't published again.
+        $this->model->publish();
+    }
+
+    public function testIsPublished()
+    {
+        $this->assertFalse($this->model->isPublished());
+        $this->model->publish();
+        $this->asserttrue($this->model->isPublished());
     }
 }

@@ -5,7 +5,7 @@
 @section('admin-content')
 <h4>Create a new system message</h4>
 
-<form id="system-messages-edit-form" class="clearfix" role="form" method="POST" action="{{ url('api/v1/system-messages/draft') }}">
+<form id="system-messages-edit-form" class="clearfix" role="form" method="POST" action="{{ url('api/v1/system-messages') }}">
     <div class="row">
         <div class="col-sm-6 form-group{{ $errors->has('title') ? ' has-error' : '' }}">
             <label for="title">Title</label>
@@ -38,13 +38,12 @@
             <label>Preview</label>
             <div class="well well-sm system-message__html-preview" v-html="body" v-if="body" v-cloak></div>
         </div>
-
     </div>
     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-    <input type="hidden" name="_redirect" value="{{ route('admin-system-messages') }}">
+
     <a href="{{ route('admin-system-messages') }}" class="btn btn-default">Cancel</a>
     <span class="pull-right">
-        <input type="submit" class="btn btn-success" value="Publish system message" title="Publish system message">
+        <input type="submit" class="btn btn-success" title="Publish system message" value="Publish" formaction="{{ url('api/v1/system-messages') }}?publish=1" onclick="return confirm('This will publish the system message right away and notify all users. Published system messages cannot be deleted. Proceed?')">
         <input type="submit" class="btn btn-default" value="Save draft" title="Save draft">
     </span>
 </form>

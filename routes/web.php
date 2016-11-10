@@ -218,7 +218,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
     ]);
 
     $router->resource('system-messages', 'SystemMessageController', [
-        'only' => ['store'],
+        'only' => ['store', 'update', 'destroy'],
     ]);
 
     $router->resource('transects', 'TransectController', [

@@ -15,7 +15,13 @@ class SystemMessagesController extends Controller
      */
     public function index()
     {
-        return view('admin.system-messages.index');
+        $messages = SystemMessage::orderBy('published_at', 'desc')
+            ->with('type')
+            ->get();
+
+        return view('admin.system-messages.index', [
+            'messages' => $messages,
+        ]);
     }
 
     /**
@@ -26,9 +32,9 @@ class SystemMessagesController extends Controller
     public function create()
     {
         $types = [
-            SystemMessageType::$important,
-            SystemMessageType::$update,
             SystemMessageType::$info,
+            SystemMessageType::$update,
+            SystemMessageType::$important,
         ];
 
         return view('admin.system-messages.create', [
@@ -44,5 +50,15 @@ class SystemMessagesController extends Controller
     public function update($id)
     {
         $message = SystemMessage::findOrFail($id);
+        $types = [
+            SystemMessageType::$info,
+            SystemMessageType::$update,
+            SystemMessageType::$important,
+        ];
+
+        return view('admin.system-messages.update', [
+            'types' => $types,
+            'message' => $message,
+        ]);
     }
 }
