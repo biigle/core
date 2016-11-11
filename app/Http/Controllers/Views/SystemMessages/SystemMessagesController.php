@@ -29,6 +29,7 @@ class SystemMessagesController extends Controller
             ->when($type, function ($query) use ($type) {
                 return $query->where('type_id', $type);
             })
+            ->orderBy('published_at', 'desc')
             ->get();
 
         $typeClasses = [
