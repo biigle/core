@@ -83,7 +83,7 @@ class AnnotationSession extends Model
      */
     public function transect()
     {
-        return $this->belongsTo('Dias\Transect');
+        return $this->belongsTo(Transect::class);
     }
 
     /**
@@ -93,7 +93,7 @@ class AnnotationSession extends Model
      */
     public function users()
     {
-        return $this->belongsToMany('Dias\User')
+        return $this->belongsToMany(User::class)
             ->select('id', 'firstname', 'lastname', 'email');
     }
 

@@ -13,11 +13,14 @@
         @endif
         <div class="navbar-right">
             <ul class="nav navbar-nav">
+                <li id="notifications-navbar-indicator" unread="{{$user->unreadNotifications()->exists() ? 'true' : 'false'}}">
+                    <a href="{{route('notifications')}}" class="notifications-icon" v-bind:class="{'notifications-icon--unread': unread}" v-bind:title="'You have ' + (unread ? '' : 'no ') + 'unread notifications'"><i class="glyphicon glyphicon-bell"></i></a>
+                </li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-menu-hamburger"></i> <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li class="dropdown-header">
-                            Signed in as <strong>{{ auth()->user()->firstname }} {{ auth()->user()->lastname }}</strong>
+                            Signed in as <strong>{{ $user->firstname }} {{ $user->lastname }}</strong>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li>
@@ -26,7 +29,7 @@
                         @foreach ($modules->getMixins('navbarMenuItem') as $module => $nestedMixins)
                             @include($module.'::navbarMenuItem')
                         @endforeach
-                        @if (auth()->user()->isAdmin)
+                        @if ($user->isAdmin)
                             <li>
                                 <a href="{{ route('admin') }}" title="Admin area">Admin area</a>
                             </li>

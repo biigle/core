@@ -2,6 +2,8 @@
 
 namespace Dias\Providers;
 
+use Auth;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +15,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        View::composer('*', function ($view) {
+            // Make authenticated user available in any view.
+            $view->with('user', Auth::user());
+        });
     }
 
     /**

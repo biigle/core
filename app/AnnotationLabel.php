@@ -38,7 +38,7 @@ class AnnotationLabel extends Model
      */
     public function annotation()
     {
-        return $this->belongsTo('Dias\Annotation');
+        return $this->belongsTo(Annotation::class);
     }
 
     /**
@@ -48,7 +48,7 @@ class AnnotationLabel extends Model
      */
     public function label()
     {
-        return $this->belongsTo('Dias\Label');
+        return $this->belongsTo(Label::class);
     }
 
     /**
@@ -58,7 +58,7 @@ class AnnotationLabel extends Model
      */
     public function user()
     {
-        return $this->belongsTo('Dias\User')
+        return $this->belongsTo(User::class)
             ->select('id', 'firstname', 'lastname', 'role_id');
     }
 }

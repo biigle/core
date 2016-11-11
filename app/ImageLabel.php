@@ -16,7 +16,7 @@ class ImageLabel extends Model
      */
     public function image()
     {
-        return $this->belongsTo('Dias\Image');
+        return $this->belongsTo(Image::class);
     }
 
     /**
@@ -26,7 +26,7 @@ class ImageLabel extends Model
      */
     public function label()
     {
-        return $this->belongsTo('Dias\Label');
+        return $this->belongsTo(Label::class);
     }
 
     /**
@@ -36,7 +36,7 @@ class ImageLabel extends Model
      */
     public function user()
     {
-        return $this->belongsTo('Dias\User')
+        return $this->belongsTo(User::class)
             ->select('id', 'firstname', 'lastname', 'role_id');
     }
 }

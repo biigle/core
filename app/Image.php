@@ -100,7 +100,7 @@ class Image extends Model
      */
     public function transect()
     {
-        return $this->belongsTo('Dias\Transect');
+        return $this->belongsTo(Transect::class);
     }
 
     /**
@@ -110,7 +110,7 @@ class Image extends Model
      */
     public function annotations()
     {
-        return $this->hasMany('Dias\Annotation');
+        return $this->hasMany(Annotation::class);
     }
 
     /**
@@ -120,7 +120,7 @@ class Image extends Model
      */
     public function labels()
     {
-        return $this->hasMany('Dias\ImageLabel')->with('label', 'user');
+        return $this->hasMany(ImageLabel::class)->with('label', 'user');
     }
 
     /**

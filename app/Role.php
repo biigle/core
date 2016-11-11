@@ -2,8 +2,8 @@
 
 namespace Dias;
 
-use Illuminate\Database\Eloquent\Model;
 use Cache;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * A role of a user. Users have one global role and can have many project-

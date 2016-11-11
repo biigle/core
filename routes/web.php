@@ -44,22 +44,43 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         'uses' => 'DashboardController@index',
     ]);
 
-    $router->get('settings', [
-        'as' => 'settings',
-        'uses' => 'SettingsController@index',
-    ]);
-    $router->get('settings/profile', [
-        'as' => 'settings-profile',
-        'uses' => 'SettingsController@profile',
-    ]);
-    $router->get('settings/account', [
-        'as' => 'settings-account',
-        'uses' => 'SettingsController@account',
-    ]);
-    $router->get('settings/tokens', [
-        'as' => 'settings-tokens',
-        'uses' => 'SettingsController@tokens',
-    ]);
+    $router->group(['namespace' => 'Notifications', 'prefix' => 'notifications'], function ($router) {
+        $router->get('/', [
+            'as' => 'notifications',
+            'uses' => 'NotificationsController@index',
+        ]);
+    });
+
+    $router->group(['namespace' => 'SystemMessages', 'prefix' => 'system-messages'], function ($router) {
+        $router->get('/', [
+            'as' => 'system-messages',
+            'uses' => 'SystemMessagesController@index',
+        ]);
+
+        $router->get('{id}', [
+            'as' => 'system-messages-show',
+            'uses' => 'SystemMessagesController@show',
+        ]);
+    });
+
+    $router->group(['prefix' => 'settings'], function ($router) {
+        $router->get('/', [
+            'as' => 'settings',
+            'uses' => 'SettingsController@index',
+        ]);
+        $router->get('profile', [
+            'as' => 'settings-profile',
+            'uses' => 'SettingsController@profile',
+        ]);
+        $router->get('account', [
+            'as' => 'settings-account',
+            'uses' => 'SettingsController@account',
+        ]);
+        $router->get('tokens', [
+            'as' => 'settings-tokens',
+            'uses' => 'SettingsController@tokens',
+        ]);
+    });
 
     $router->group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'can:admin'], function ($router) {
 
@@ -86,6 +107,21 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         $router->get('users/delete/{id}', [
             'as' => 'admin-users-delete',
             'uses' => 'UsersController@delete',
+        ]);
+
+        $router->get('system-messages', [
+            'as' => 'admin-system-messages',
+            'uses' => 'SystemMessagesController@index',
+        ]);
+
+        $router->get('system-messages/new', [
+            'as' => 'admin-system-messages-new',
+            'uses' => 'SystemMessagesController@create',
+        ]);
+
+        $router->get('system-messages/{id}', [
+            'as' => 'admin-system-messages-edit',
+            'uses' => 'SystemMessagesController@update',
         ]);
     });
 
@@ -152,6 +188,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'only' => ['index', 'show'],
     ]);
 
+    $router->resource('notifications', 'NotificationController', [
+        'only' => ['update', 'destroy'],
+    ]);
+
     $router->get('projects/my', 'ProjectController@index');
     $router->resource('projects', 'ProjectController', [
         'only' => ['show', 'update', 'store', 'destroy'],
@@ -187,6 +227,10 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
 
     $router->resource('shapes', 'ShapeController', [
         'only' => ['index', 'show'],
+    ]);
+
+    $router->resource('system-messages', 'SystemMessageController', [
+        'only' => ['store', 'update', 'destroy'],
     ]);
 
     $router->resource('transects', 'TransectController', [

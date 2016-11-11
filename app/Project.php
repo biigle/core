@@ -53,7 +53,7 @@ class Project extends Model
      */
     public function users()
     {
-        return $this->belongsToMany('Dias\User')
+        return $this->belongsToMany(User::class)
             ->withPivot('project_role_id as project_role_id');
     }
 
@@ -96,7 +96,7 @@ class Project extends Model
      */
     public function creator()
     {
-        return $this->belongsTo('Dias\User');
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -191,7 +191,7 @@ class Project extends Model
      */
     public function transects()
     {
-        return $this->belongsToMany('Dias\Transect');
+        return $this->belongsToMany(Transect::class);
     }
 
     /**
@@ -214,7 +214,7 @@ class Project extends Model
      * Detaches the transect from this project. Fails if this is the last
      * project, the transect is attached to, unless force is `true`.
      *
-     * @param \Dias\Transect $transect
+     * @param Transect $transect
      * @param bool $force Delete the transect completely if this is the last
      * project it belongs to
      */
@@ -270,7 +270,7 @@ class Project extends Model
      */
     public function labelTrees()
     {
-        return $this->belongsToMany('Dias\LabelTree');
+        return $this->belongsToMany(LabelTree::class);
     }
 
     /**
@@ -280,6 +280,6 @@ class Project extends Model
      */
     public function authorizedLabelTrees()
     {
-        return $this->belongsToMany('Dias\LabelTree', 'label_tree_authorized_project');
+        return $this->belongsToMany(LabelTree::class, 'label_tree_authorized_project');
     }
 }

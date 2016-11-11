@@ -45,6 +45,7 @@ class Annotation extends Model
     /**
      * Scope a query to only include annotations allowed by the session for the user
      *
+     * @param Illuminate\Database\Query\Builder $query
      * @param AnnotationSession $session
      * @param User $user The user to whom the restrictions should apply ('own' user)
      * @return \Illuminate\Database\Eloquent\Builder
@@ -139,7 +140,7 @@ class Annotation extends Model
      */
     public function image()
     {
-        return $this->belongsTo('Dias\Image');
+        return $this->belongsTo(Image::class);
     }
 
     /**
@@ -149,7 +150,7 @@ class Annotation extends Model
      */
     public function shape()
     {
-        return $this->belongsTo('Dias\Shape');
+        return $this->belongsTo(Shape::class);
     }
 
     /**
@@ -159,6 +160,6 @@ class Annotation extends Model
      */
     public function labels()
     {
-        return $this->hasMany('Dias\AnnotationLabel')->with('label', 'user');
+        return $this->hasMany(AnnotationLabel::class)->with('label', 'user');
     }
 }

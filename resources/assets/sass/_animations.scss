@@ -17,3 +17,11 @@
 		transform: scaleY(1);
 	}
 }
+
+.scale-up-enter-active {
+    animation: scale-up 0.25s;
+}
+
+.scale-up-leave-active {
+    display: none;
+}

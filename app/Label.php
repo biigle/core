@@ -52,7 +52,7 @@ class Label extends Model
      */
     public function parent()
     {
-        return $this->belongsTo('Dias\Label');
+        return $this->belongsTo(Label::class);
     }
 
     /**
@@ -62,7 +62,7 @@ class Label extends Model
      */
     public function tree()
     {
-        return $this->belongsTo('Dias\LabelTree', 'label_tree_id');
+        return $this->belongsTo(LabelTree::class, 'label_tree_id');
     }
 
     /**
@@ -73,7 +73,7 @@ class Label extends Model
      */
     public function children()
     {
-        return $this->hasMany('Dias\Label', 'parent_id');
+        return $this->hasMany(Label::class, 'parent_id');
     }
 
     /**

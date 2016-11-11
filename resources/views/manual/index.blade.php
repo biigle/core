@@ -35,6 +35,14 @@
                 Learn how you can manage your user account.
             </p>
 
+            <h4>
+                <a href="{{route('manual-tutorials', 'notifications')}}">Notifications</a>
+            </h4>
+
+            <p>
+                Everything about the notification center.
+            </p>
+
             @foreach ($modules->getMixins('manualTutorial') as $module => $nestedMixins)
                 @include($module.'::manualTutorial')
             @endforeach

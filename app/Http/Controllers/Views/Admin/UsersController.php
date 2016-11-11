@@ -2,9 +2,9 @@
 
 namespace Dias\Http\Controllers\Views\Admin;
 
-use Dias\Http\Controllers\Controller;
 use Dias\User;
 use Dias\Role;
+use Dias\Http\Controllers\Controller;
 
 class UsersController extends Controller
 {
@@ -20,8 +20,18 @@ class UsersController extends Controller
             ->with('role')
             ->get();
 
-        return view('admin.users')
-            ->with('users', $users);
+        $activeUsers = $users->filter(function ($user) {
+            return $user->login_at !== null;
+        });
+
+        $inactiveUsers = $users->filter(function ($user) {
+            return $user->login_at === null;
+        });
+
+        return view('admin.users', [
+            'activeUsers' => $activeUsers,
+            'inactiveUsers' => $inactiveUsers,
+        ]);
     }
 
     /**
@@ -42,7 +52,7 @@ class UsersController extends Controller
     public function edit($id)
     {
         return view('admin.users.edit')
-            ->with('user', User::findOrFail($id))
+            ->with('affectedUser', User::findOrFail($id))
             ->with('roles', Role::all());
     }
 
@@ -54,6 +64,6 @@ class UsersController extends Controller
     public function delete($id)
     {
         return view('admin.users.delete')
-            ->with('user', User::findOrFail($id));
+            ->with('affectedUser', User::findOrFail($id));
     }
 }
