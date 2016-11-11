@@ -11,8 +11,11 @@ class ViewsSystemMessageControllerTest extends TestCase
     {
         $user = UserTest::create();
         $message = SystemMessageTest::create();
+        $message->publish();
+        $message2 = SystemMessageTest::create();
         $this->actingAs($user)->visit('system-messages')
             ->see($message->title)
+            ->dontSee($message2->title)
             ->seePageIs('system-messages');
     }
 
@@ -26,9 +29,18 @@ class ViewsSystemMessageControllerTest extends TestCase
     {
         $user = UserTest::create();
         $message = SystemMessageTest::create();
+        $message->publish();
         $this->actingAs($user)->visit('system-messages/'.$message->id)
             ->see($message->title)
             ->see($message->body)
             ->seePageIs('system-messages/'.$message->id);
+    }
+
+    public function testShowUnpublished()
+    {
+        $user = UserTest::create();
+        $message = SystemMessageTest::create();
+        $this->actingAs($user)->get('system-messages/'.$message->id)
+            ->assertResponseStatus(404);
     }
 }

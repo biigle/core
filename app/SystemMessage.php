@@ -44,6 +44,17 @@ class SystemMessage extends Model
     ];
 
     /**
+     * All published system messages.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @return Illuminate\Database\Query\Builder
+     */
+    public function scopePublished($query)
+    {
+        return $query->whereNotNull('system_messages.published_at');
+    }
+
+    /**
      * The type of this system message.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

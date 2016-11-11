@@ -57,4 +57,13 @@ class SystemMessageTest extends ModelTestCase
         $this->model->publish();
         $this->asserttrue($this->model->isPublished());
     }
+
+    public function testPublishedScope()
+    {
+        $unpublished = static::create();
+        $this->model->publish();
+
+        $messages = SystemMessage::published()->pluck('id');
+        $this->assertEquals([$this->model->id], $messages->toArray());
+    }
 }

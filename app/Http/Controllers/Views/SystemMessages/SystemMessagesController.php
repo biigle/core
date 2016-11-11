@@ -23,7 +23,8 @@ class SystemMessagesController extends Controller
 
         $type = $request->input('type');
 
-        $messages = SystemMessage::select('id', 'title', 'type_id', 'published_at')
+        $messages = SystemMessage::published()
+            ->select('id', 'title', 'type_id', 'published_at')
             ->with('type')
             ->when($type, function ($query) use ($type) {
                 return $query->where('type_id', $type);
@@ -57,7 +58,9 @@ class SystemMessagesController extends Controller
      */
     public function show($id)
     {
-        $message = SystemMessage::with('type')->findOrFail($id);
+        $message = SystemMessage::published()
+            ->with('type')
+            ->findOrFail($id);
 
         $typeClasses = [
             SystemMessageType::$important->id => 'warning',
