@@ -3,15 +3,15 @@
 @section('title')System messages admin area @stop
 
 @section('admin-content')
-<a href="{{route('admin-system-messages-new')}}" class="btn btn-default" title="Create a new system message"><span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span> Create a new system message</a>
+<a href="{{route('admin-system-messages-new')}}" class="btn btn-default" title="Create a new system message"><span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span> New system message</a>
 
 <table class="table table-hover">
     <thead>
         <tr>
-            <td>Title</td>
-            <td>Type</td>
-            <td>Published</td>
-            <td></td>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Published</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
