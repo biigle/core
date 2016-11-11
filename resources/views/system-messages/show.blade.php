@@ -12,12 +12,9 @@
             </ul>
         </div>
         <div class="col-sm-9 col-md-7 col-md-offset-1">
-            <h3>
-                {{$message->title}}
-                <span class="pull-right label label-{{$typeClasses[$message->type_id]}}">{{$message->type->name}}</span>
-            </h3>
+            <h2>{{$message->title}}</h2>
             <p class="text-muted">
-                Published on {{$message->published_at}}
+                <span class="label label-{{$typeClasses[$message->type_id]}}">{{$message->type->name}}</span> Published on {{$message->published_at}}
             </p>
             {!!$message->body!!}
         </div>

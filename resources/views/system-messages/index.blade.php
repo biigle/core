@@ -16,14 +16,9 @@
         </div>
         <div class="col-sm-9 col-md-7 col-md-offset-1">
             @forelse ($messages as $message)
-                <h3>
-                    <a href="{{route('system-messages-show', $message->id)}}">
-                        {{$message->title}}
-                        <span class="pull-right label label-{{$typeClasses[$message->type_id]}}">{{$message->type->name}}</span>
-                    </a>
-                </h3>
+                <h2><a href="{{route('system-messages-show', $message->id)}}">{{$message->title}}</a></h2>
                 <p class="text-muted">
-                    Published on {{$message->published_at}}
+                    <span class="label label-{{$typeClasses[$message->type_id]}}">{{$message->type->name}}</span> Published on {{$message->published_at}}
                 </p>
             @empty
                 <p class="text-muted">
