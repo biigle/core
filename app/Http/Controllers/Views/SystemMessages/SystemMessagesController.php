@@ -49,4 +49,25 @@ class SystemMessagesController extends Controller
             'types' => $types,
         ]);
     }
+
+    /**
+     * Show a system message
+     * @param  int $id System message ID
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $message = SystemMessage::with('type')->findOrFail($id);
+
+        $typeClasses = [
+            SystemMessageType::$important->id => 'warning',
+            SystemMessageType::$update->id => 'success',
+            SystemMessageType::$info->id => 'info',
+        ];
+
+        return view('system-messages.show', [
+            'message' => $message,
+            'typeClasses' => $typeClasses,
+        ]);
+    }
 }

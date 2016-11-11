@@ -181,8 +181,10 @@ $factory->define(Dias\SystemMessage::class, function ($faker) {
     return [
         'body' => $faker->text(),
         'title' => $faker->sentence(),
-        'type_id' => function () {
-            return factory(Dias\SystemMessageType::class)->create()->id;
-        }
+        'type_id' => $faker->randomElement([
+            Dias\SystemMessageType::$important->id,
+            Dias\SystemMessageType::$update->id,
+            Dias\SystemMessageType::$info->id,
+        ])
     ];
 });
