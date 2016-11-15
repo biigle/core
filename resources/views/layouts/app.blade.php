@@ -19,11 +19,10 @@
 
     @if (app()->environment('local'))
         <script src="{{ asset('assets/scripts/vue.js') }}"></script>
-        <script src="{{ asset('assets/scripts/vue-resource.js') }}"></script>
     @else
         <script src="{{ asset('assets/scripts/vue.min.js') }}"></script>
-        <script src="{{ asset('assets/scripts/vue-resource.min.js') }}"></script>
     @endif
+    <script src="{{ asset('assets/scripts/vue-resource.min.js') }}"></script>
 
     <script type="text/javascript">
         Vue.http.options.root = '{{url('/')}}';
