@@ -3,11 +3,11 @@
 @section('title'){{ $tree->name }}@stop
 
 @push('styles')
-<link href="{{ asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
 @endpush
 
 @push('scripts')
-<script src="{{ asset('vendor/label-trees/scripts/main.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
 <script type="text/javascript">
     angular.module('dias.label-trees').constant('LABEL_TREE', {!! $tree !!});
     angular.module('dias.label-trees').constant('LABELS', {!! $labels !!});
