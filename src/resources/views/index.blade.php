@@ -3,8 +3,8 @@
 @section('title'){{ $transect->name }} @stop
 
 @push('scripts')
-    <script src="{{ asset('vendor/transects/scripts/main.js') }}"></script>
-    <script src="{{ asset('vendor/ate/scripts/main.js') }}"></script>
+    <script src="{{ cachebust_asset('vendor/transects/scripts/main.js') }}"></script>
+    <script src="{{ cachebust_asset('vendor/ate/scripts/main.js') }}"></script>
     <script type="text/javascript">
         angular.module('dias.ate').constant('ATE_TRANSECT_ID', {{$transect->id}});
         angular.module('dias.ate').constant('THUMB_DIMENSION', {WIDTH: {{config('thumbnails.width')}}, HEIGHT: {{config('thumbnails.height')}} });
@@ -13,8 +13,8 @@
 @endpush
 
 @push('styles')
-    <link href="{{ asset('vendor/transects/styles/main.css') }}" rel="stylesheet">
-    <link href="{{ asset('vendor/ate/styles/main.css') }}" rel="stylesheet">
+    <link href="{{ cachebust_asset('vendor/transects/styles/main.css') }}" rel="stylesheet">
+    <link href="{{ cachebust_asset('vendor/ate/styles/main.css') }}" rel="stylesheet">
 @endpush
 
 @section('navbar')

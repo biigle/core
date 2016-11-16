@@ -1,1 +1,1 @@
-<script src="{{ asset('vendor/ate/scripts/annotations.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/ate/scripts/annotations.js') }}"></script>
