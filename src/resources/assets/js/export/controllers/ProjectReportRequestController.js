@@ -12,6 +12,7 @@ angular.module('dias.export').controller('ProjectReportRequestController', funct
             'annotations': [
                 'basic',
                 'extended',
+                'area',
                 'full',
                 'csv'
             ],

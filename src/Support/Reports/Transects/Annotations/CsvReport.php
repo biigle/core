@@ -68,12 +68,7 @@ class CsvReport extends Report
      */
     protected function query()
     {
-        $query = DB::table('annotation_labels')
-            ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
-            ->join('images', 'annotations.image_id', '=', 'images.id')
-            ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
-            ->join('users', 'annotation_labels.user_id', '=', 'users.id')
-            ->select([
+        $query = $this->initQuery([
                 'annotation_labels.id as annotation_label_id',
                 'annotation_labels.label_id',
                 'users.id as user_id',
@@ -86,15 +81,9 @@ class CsvReport extends Report
                 'annotations.points',
                 'images.attrs',
             ])
-            ->where('images.transect_id', $this->transect->id)
-            ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
-            ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
+            ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
+            ->join('users', 'annotation_labels.user_id', '=', 'users.id')
             ->orderBy('annotation_labels.id');
-
-        if ($this->shouldSeparateLabelTrees()) {
-            $query->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
-                ->addSelect(['labels.label_tree_id']);
-        }
 
         return $query;
     }

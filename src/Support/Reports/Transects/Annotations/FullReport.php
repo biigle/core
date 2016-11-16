@@ -60,27 +60,16 @@ class FullReport extends Report
      */
     protected function query()
     {
-        $query = DB::table('annotation_labels')
-            ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
-            ->join('images', 'annotations.image_id', '=', 'images.id')
-            ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
-            ->select(
+        $query = $this->initQuery([
                 'images.filename',
                 'annotations.id as annotation_id',
                 'annotation_labels.label_id',
                 'shapes.name as shape_name',
                 'annotations.points',
-                'images.attrs'
-            )
-            ->where('images.transect_id', $this->transect->id)
-            ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
-            ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
+                'images.attrs',
+            ])
+            ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
             ->orderBy('annotations.id');
-
-        if ($this->shouldSeparateLabelTrees()) {
-            $query->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
-                ->addSelect('labels.label_tree_id');
-        }
 
         return $query;
     }

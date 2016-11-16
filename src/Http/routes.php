@@ -27,6 +27,10 @@ $router->group([
             'uses' => 'Annotations\CsvReportController@store',
         ]);
 
+        $router->post('{id}/reports/annotations/area', [
+            'uses' => 'Annotations\AreaReportController@store',
+        ]);
+
         $router->post('{id}/reports/image-labels/basic', [
             'uses' => 'ImageLabels\BasicReportController@store',
         ]);
@@ -68,6 +72,10 @@ $router->group([
 
         $router->post('{id}/reports/annotations/csv', [
             'uses' => 'Annotations\CsvReportController@store',
+        ]);
+
+        $router->post('{id}/reports/annotations/area', [
+            'uses' => 'Annotations\AreaReportController@store',
         ]);
 
         $router->post('{id}/reports/image-labels/basic', [
