@@ -148,14 +148,14 @@ class TransectTest extends ModelTestCase
         app()->bind(Client::class, function () use ($client) {
             return $client;
         });
-        $this->setExpectedException(RequestException::class);
+        $this->setExpectedException(Exception::class);
         $this->model->validateUrl();
     }
 
     public function testValidateUrlRemoteNotReadable()
     {
         $this->model->url = 'http://localhost';
-        $mock = new MockHandler([new Response(404)]);
+        $mock = new MockHandler([new Response(500)]);
 
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
@@ -169,7 +169,10 @@ class TransectTest extends ModelTestCase
     public function testValidateUrlRemoteOk()
     {
         $this->model->url = 'http://localhost';
-        $mock = new MockHandler([new Response(200)]);
+        $mock = new MockHandler([
+            new Response(404),
+            new Response(200)
+        ]);
 
         $container = [];
         $history = Middleware::history($container);
@@ -180,6 +183,7 @@ class TransectTest extends ModelTestCase
         app()->bind(Client::class, function () use ($client) {
             return $client;
         });
+        $this->assertTrue($this->model->validateUrl());
         $this->assertTrue($this->model->validateUrl());
 
         $request = $container[0]['request'];

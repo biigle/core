@@ -13,8 +13,10 @@ use GuzzleHttp\Client;
 use Dias\Jobs\GenerateThumbnails;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use GuzzleHttp\Exception\BadResponseException;
 
 /**
  * A transect is a collection of images. Transects belong to one or many
@@ -168,7 +170,6 @@ class Transect extends Model
      *
      * @return boolean
      * @throws Exception If the validation failed.
-     * @throws \GuzzleHttp\Exception\RequestException The there was an error acessing the remote URL
      */
     public function validateUrl()
     {
@@ -176,7 +177,14 @@ class Transect extends Model
             $client = App::make(Client::class);
             try {
                 $response = $client->head($this->url);
-            } catch (BadResponseException $e) {
+            } catch (ServerException $e) {
+                throw new Exception('The remote transect URL returned an error response. '.$e->getMessage());
+            } catch (ClientException $e) {
+                // A 400 level error means that something is responding.
+                // It may well be that the Transect URL results in a 400 response but a
+                // single image works fine so we define this as success.
+                return true;
+            } catch (RequestException $e) {
                 throw new Exception('The remote transect URL does not seem to exist. '.$e->getMessage());
             }
         } else {
