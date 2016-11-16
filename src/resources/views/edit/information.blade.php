@@ -34,7 +34,7 @@
                     <label for="url">URL</label>
                     <input type="text" class="form-control" name="url" id="url" value="{{ old('url', $transect->url) }}" placeholder="/vol/images/transect" required>
                     <p class="help-block">
-                        The directory containing the transect images.{{-- Can be local like <code>/vol/images/transect</code> or remote like <code>https://my-domain.tld/transect</code>.--}} Should be a local path like <code>/vol/images/transect</code>.
+                        The directory containing the transect images. Can be local like <code>/vol/images/transect</code> or remote like <code>https://my-domain.tld/transect</code>.
                     </p>
                     @if($errors->has('url'))
                         <span class="help-block">{{ $errors->first('url') }}</span>
