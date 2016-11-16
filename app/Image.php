@@ -197,6 +197,10 @@ class Image extends Model
      */
     public function getFile()
     {
+        if ($this->transect->isRemote()) {
+            return Response::redirect($this->url);
+        }
+
         try {
             // TODO download() doesn't work for external resources
             // InterventionImage::make() does but is very memory expensive
