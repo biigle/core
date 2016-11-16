@@ -85,14 +85,9 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             }
 
             // Check if the image comes from a cross origin without CORS
-            context.drawImage(image, 0, 0);
-            try {
-                context.getImageData(0, 0, 1, 1);
-            } catch (err) {
-                if (err.code === 18) {
-                    webglSupported = false;
-                    console.log('Image filters are not supported for cross origin resources.');
-                }
+            if (!biigle.annotations.utils.checkCors(image)) {
+                webglSupported = false;
+                console.log('Image filters are not supported for cross origin resources.');
             }
         };
 

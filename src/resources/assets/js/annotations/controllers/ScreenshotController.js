@@ -124,16 +124,9 @@ angular.module('dias.annotations').controller('ScreenshotController', function (
         var cancelListener = $scope.$on('image.shown', function (e, image) {
             // Perform this check only for the first image.
             cancelListener();
-            var ctx = document.createElement('canvas').getContext('2d');
             // Check if the image comes from a cross origin without CORS
-            ctx.drawImage(image, 0, 0);
-
-            try {
-                ctx.getImageData(0, 0, 1, 1);
-            } catch (err) {
-                if (err.code === 18) {
-                    screenshotsSupported = false;
-                }
+            if (!biigle.annotations.utils.checkCors(image)) {
+                screenshotsSupported = false;
             }
         });
 	}
