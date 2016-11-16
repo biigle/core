@@ -2,11 +2,12 @@
 
 namespace Dias\Modules\Ate\Jobs;
 
+use App;
 use File;
 use Dias\Shape;
 use Dias\Jobs\Job;
 use Dias\Annotation;
-use InterventionImage as IImage;
+use Intervention\Image\ImageCache;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -128,9 +129,15 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         // increase memory limit for modifying large images
         ini_set('memory_limit', config('ate.memory_limit'));
 
-        IImage::make($image->url)
-            ->crop($width, $height, $xmin, $ymin)
+        // Like InterventionImage::cache() from the documentation but this has better
+        // testability.
+        $cachedImage = App::make(ImageCache::class)
+            ->make($image->url)
+            // Cache the encoding so we don't have to do do it the next time.
             ->encode($format)
+            ->get(config('ate.imagecache_lifetime'), true);
+
+        $cachedImage->crop($width, $height, $xmin, $ymin)
             ->save("{$prefix}/{$annotation->id}.{$format}")
             ->destroy();
 

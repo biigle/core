@@ -1,11 +1,30 @@
 <?php
 
-use Dias\Modules\Ate\Jobs\GenerateAnnotationPatch;
 use Dias\Shape;
-use InterventionImage as IImage;
+use Intervention\Image\Image;
+use Intervention\Image\ImageCache;
+use Intervention\Image\ImageManager;
+use Dias\Modules\Ate\Jobs\GenerateAnnotationPatch;
 
 class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+        $this->image = Mockery::mock(Image::class);
+        // default encoding of cached image
+        $this->image->shouldReceive('encode')
+            ->with()
+            ->once()
+            ->andReturn($this->image);
+
+        $this->manager = Mockery::mock(ImageManager::class);
+
+        App::bind(ImageCache::class, function () {
+            return new ImageCache($this->manager);
+        });
+    }
+
     public function testHandlePoint()
     {
         $annotation = AnnotationTest::create([
@@ -14,30 +33,28 @@ class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
         ]);
         $job = new GenerateAnnotationPatch($annotation);
 
-        $mock = Mockery::mock(IImage::make($annotation->image->url));
-
-        $mock->shouldReceive('crop')
-            ->with(197, 148, 1, 26)
-            ->once()
-            ->andReturn($mock);
-
-        $mock->shouldReceive('encode')
-            ->with('jpg')
-            ->once()
-            ->andReturn($mock);
-
-        $mock->shouldReceive('save')
-            ->with(config('ate.patch_storage').'/'.$annotation->image->transect_id.'/'.$annotation->id.'.jpg')
-            ->once()
-            ->andReturn($mock);
-
-        $mock->shouldReceive('destroy')
-            ->once();
-
-        IImage::shouldReceive('make')
+        $this->manager->shouldReceive('make')
             ->with($annotation->image->url)
             ->once()
-            ->andReturn($mock);
+            ->andReturn($this->image);
+
+        $this->image->shouldReceive('crop')
+            ->with(197, 148, 1, 26)
+            ->once()
+            ->andReturn($this->image);
+
+        $this->image->shouldReceive('encode')
+            ->with('jpg')
+            ->once()
+            ->andReturn($this->image);
+
+        $this->image->shouldReceive('save')
+            ->with(config('ate.patch_storage').'/'.$annotation->image->transect_id.'/'.$annotation->id.'.jpg')
+            ->once()
+            ->andReturn($this->image);
+
+        $this->image->shouldReceive('destroy')
+            ->once();
 
         File::shouldReceive('exists')
             ->once()
@@ -55,27 +72,26 @@ class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
         ]);
         $job = new GenerateAnnotationPatch($annotation);
 
-        $mock = Mockery::mock(IImage::make($annotation->image->url));
+        $this->manager->shouldReceive('make')
+            ->with($annotation->image->url)
+            ->once()
+            ->andReturn($this->image);
 
-        $mock->shouldReceive('crop')
+        $this->image->shouldReceive('crop')
             ->with(80, 60, 60, 70)
             ->once()
-            ->andReturn($mock);
+            ->andReturn($this->image);
 
-        $mock->shouldReceive('encode')
+        $this->image->shouldReceive('encode')
             ->once()
-            ->andReturn($mock);
+            ->andReturn($this->image);
 
-        $mock->shouldReceive('save')
+        $this->image->shouldReceive('save')
             ->once()
-            ->andReturn($mock);
+            ->andReturn($this->image);
 
-        $mock->shouldReceive('destroy')
+        $this->image->shouldReceive('destroy')
             ->once();
-
-        IImage::shouldReceive('make')
-            ->once()
-            ->andReturn($mock);
 
         File::shouldReceive('exists')
             ->once()
@@ -93,27 +109,26 @@ class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
         ]);
         $job = new GenerateAnnotationPatch($annotation);
 
-        $mock = Mockery::mock(IImage::make($annotation->image->url));
+        $this->manager->shouldReceive('make')
+            ->with($annotation->image->url)
+            ->once()
+            ->andReturn($this->image);
 
-        $mock->shouldReceive('crop')
+        $this->image->shouldReceive('crop')
             ->with(160, 120, 70, 90)
             ->once()
-            ->andReturn($mock);
+            ->andReturn($this->image);
 
-        $mock->shouldReceive('encode')
+        $this->image->shouldReceive('encode')
             ->once()
-            ->andReturn($mock);
+            ->andReturn($this->image);
 
-        $mock->shouldReceive('save')
+        $this->image->shouldReceive('save')
             ->once()
-            ->andReturn($mock);
+            ->andReturn($this->image);
 
-        $mock->shouldReceive('destroy')
+        $this->image->shouldReceive('destroy')
             ->once();
-
-        IImage::shouldReceive('make')
-            ->once()
-            ->andReturn($mock);
 
         File::shouldReceive('exists')
             ->once()
