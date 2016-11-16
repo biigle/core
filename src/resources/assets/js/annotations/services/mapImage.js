@@ -15,7 +15,7 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
         var context = canvas.getContext('2d');
 
         var webglSupported = true;
-        var needsTextureSizeCheck = true;
+        var needsCapabilityCheck = true;
 
         try {
             // webgl check is done here
@@ -65,7 +65,9 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             vibrance: [0]
         };
 
-        var checkTextureSize = function (width, height) {
+        var checkCapabilities = function (image) {
+            var height = image.height;
+            var width = image.width;
             // Check supported texture size.
             var size = fxCanvas._.gl.getParameter(fxCanvas._.gl.MAX_TEXTURE_SIZE);
             webglSupported = size >= height && size >= width;
@@ -80,6 +82,17 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             if (width !== fxCanvas._.gl.drawingBufferWidth || height !== fxCanvas._.gl.drawingBufferHeight) {
                 webglSupported = false;
                 console.log('Your browser does not allow a WebGL drawing buffer with the size of the original image. This would result in distorted display of the image.');
+            }
+
+            // Check if the image comes from a cross origin without CORS
+            context.drawImage(image, 0, 0);
+            try {
+                context.getImageData(0, 0, 1, 1);
+            } catch (err) {
+                if (err.code === 18) {
+                    webglSupported = false;
+                    console.log('Image filters are not supported for cross origin resources.');
+                }
             }
         };
 
@@ -130,9 +143,9 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             canvas.width = image.width;
             canvas.height = image.height;
 
-            if (webglSupported && needsTextureSizeCheck) {
-                needsTextureSizeCheck = false;
-                checkTextureSize(image.width, image.height);
+            if (webglSupported && needsCapabilityCheck) {
+                needsCapabilityCheck = false;
+                checkCapabilities(image);
             }
 
             if (webglSupported && filtersActive()) {
