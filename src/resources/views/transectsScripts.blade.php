@@ -1,1 +1,1 @@
-<script src="{{ asset('vendor/annotations/scripts/transects.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/annotations/scripts/transects.js') }}"></script>

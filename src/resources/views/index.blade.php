@@ -4,9 +4,9 @@
 @section('title') Annotate @stop
 
 @push('scripts')
-<script src="{{ asset('vendor/annotations/scripts/ol.js') }}"></script>
-<script src="{{ asset('vendor/annotations/scripts/glfx.js') }}"></script>
-<script src="{{ asset('vendor/annotations/scripts/main.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/annotations/scripts/ol.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/annotations/scripts/glfx.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/annotations/scripts/main.js') }}"></script>
 <script type="text/javascript">
     angular.module('dias.annotations').constant('IMAGE_ID', {!!$image->id!!});
     angular.module('dias.annotations').constant('EDIT_MODE', {!!$editMode ? 'true' : 'false'!!});
@@ -28,8 +28,8 @@
 @endpush
 
 @push('styles')
-<link href="{{ asset('vendor/annotations/styles/ol.css') }}" rel="stylesheet">
-<link href="{{ asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/annotations/styles/ol.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
 @foreach ($modules->getMixins('annotationsStyles') as $module => $nestedMixins)
     @include($module.'::annotationsStyles', ['mixins' => $nestedMixins])
 @endforeach
