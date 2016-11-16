@@ -4,11 +4,11 @@
 @section('title'){{ $project->name }}@stop
 
 @push('styles')
-<link href="{{ asset('vendor/projects/styles/main.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/projects/styles/main.css') }}" rel="stylesheet">
 @endpush
 
 @push('scripts')
-<script src="{{ asset('vendor/projects/scripts/main.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/projects/scripts/main.js') }}"></script>
 <script type="text/javascript">
     angular.module('dias.projects').constant('PROJECT', {!!$project!!});
     angular.module('dias.projects').constant('USER_ID', {!! $user->id !!});
