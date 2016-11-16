@@ -198,7 +198,7 @@ class Image extends Model
     public function getFile()
     {
         if ($this->transect->isRemote()) {
-            return Response::redirect($this->url);
+            return Response::redirectTo($this->url);
         }
 
         try {

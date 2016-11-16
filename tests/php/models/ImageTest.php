@@ -110,7 +110,7 @@ class ImageTest extends ModelTestCase
     public function testGetFileRemote()
     {
         $this->model->transect->url = 'http://localhost';
-        Response::shouldReceive('redirect')
+        Response::shouldReceive('redirectTo')
             ->once()
             ->with($this->model->url)
             ->andReturn(true);
