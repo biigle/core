@@ -3,7 +3,14 @@
 use Dias\Role;
 use Dias\Transect;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Handler\MockHandler;
 use Illuminate\Database\QueryException;
+use GuzzleHttp\Exception\RequestException;
 
 class TransectTest extends ModelTestCase
 {
@@ -128,6 +135,56 @@ class TransectTest extends ModelTestCase
         File::shouldReceive('exists')->andReturn(true);
         File::shouldReceive('isReadable')->andReturn(true);
         $this->assertTrue($this->model->validateUrl());
+    }
+
+    public function testValidateUrlRemoteError()
+    {
+        $this->model->url = 'http://localhost';
+        $mock = new MockHandler([new RequestException("Error Communicating with Server", new Request('HEAD', 'test'))]);
+
+        $handler = HandlerStack::create($mock);
+
+        $client = new Client(['handler' => $handler]);
+        app()->bind(Client::class, function () use ($client) {
+            return $client;
+        });
+        $this->setExpectedException(RequestException::class);
+        $this->model->validateUrl();
+    }
+
+    public function testValidateUrlRemoteNotReadable()
+    {
+        $this->model->url = 'http://localhost';
+        $mock = new MockHandler([new Response(404)]);
+
+        $handler = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handler]);
+        app()->bind(Client::class, function () use ($client) {
+            return $client;
+        });
+        $this->setExpectedException(Exception::class);
+        $this->model->validateUrl();
+    }
+
+    public function testValidateUrlRemoteOk()
+    {
+        $this->model->url = 'http://localhost';
+        $mock = new MockHandler([new Response(200)]);
+
+        $container = [];
+        $history = Middleware::history($container);
+
+        $handler = HandlerStack::create($mock);
+        $handler->push($history);
+        $client = new Client(['handler' => $handler]);
+        app()->bind(Client::class, function () use ($client) {
+            return $client;
+        });
+        $this->assertTrue($this->model->validateUrl());
+
+        $request = $container[0]['request'];
+        $this->assertEquals('HEAD', $request->getMethod());
+        $this->assertEquals('http://localhost', (string) $request->getUri());
     }
 
     public function testValidateImagesFormatOk()

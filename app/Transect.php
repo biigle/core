@@ -3,15 +3,18 @@
 namespace Dias;
 
 use DB;
+use App;
 use File;
 use Exception;
 use Dias\Image;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
+use GuzzleHttp\Client;
 use Dias\Jobs\GenerateThumbnails;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use GuzzleHttp\Exception\BadResponseException;
 
 /**
  * A transect is a collection of images. Transects belong to one or many
@@ -163,19 +166,27 @@ class Transect extends Model
     /**
      * Check if the URL of this transect exists and is readable.
      *
-     * Currently works only for local paths.
-     *
      * @return boolean
      * @throws Exception If the validation failed.
+     * @throws \GuzzleHttp\Exception\RequestException The there was an error acessing the remote URL
      */
     public function validateUrl()
     {
-        if (!File::exists($this->url)) {
-            throw new Exception('The transect URL does not exist.');
-        }
+        if ($this->isRemote()) {
+            $client = App::make(Client::class);
+            try {
+                $response = $client->head($this->url);
+            } catch (BadResponseException $e) {
+                throw new Exception('The remote transect URL does not seem to exist. '.$e->getMessage());
+            }
+        } else {
+            if (!File::exists($this->url)) {
+                throw new Exception('The transect URL does not exist.');
+            }
 
-        if (!File::isReadable($this->url)) {
-            throw new Exception('The transect URL is not readable. Please check the access permissions.');
+            if (!File::isReadable($this->url)) {
+                throw new Exception('The transect URL is not readable. Please check the access permissions.');
+            }
         }
 
         return true;
