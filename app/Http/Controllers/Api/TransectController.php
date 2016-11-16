@@ -2,6 +2,7 @@
 
 namespace Dias\Http\Controllers\Api;
 
+use Exception;
 use Dias\Transect;
 use Illuminate\Http\Request;
 
@@ -64,9 +65,19 @@ class TransectController extends Controller
 
         $this->validate($request, Transect::$updateRules);
 
+        if ($request->has('url')) {
+            $transect->url = $request->input('url');
+            try {
+                $transect->validateUrl();
+            } catch (Exception $e) {
+                return $this->buildFailedValidationResponse($request, [
+                    'url' => $e->getMessage(),
+                ]);
+            }
+        }
+
         $transect->name = $request->input('name', $transect->name);
         $transect->media_type_id = $request->input('media_type_id', $transect->media_type_id);
-        $transect->url = $request->input('url', $transect->url);
 
         $isDirty = $transect->isDirty();
         $newUrl = $transect->isDirty('url');

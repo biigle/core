@@ -51,6 +51,10 @@ class ApiTransectControllerTest extends ApiTestCase
 
     public function testUpdateUrl()
     {
+        // URL validation
+        File::shouldReceive('exists')->once()->andReturn(true);
+        File::shouldReceive('isReadable')->once()->andReturn(true);
+
         $this->beAdmin();
         $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
         $this->json('PUT', '/api/v1/transects/'.$this->transect()->id, [
