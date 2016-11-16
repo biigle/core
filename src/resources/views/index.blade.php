@@ -4,7 +4,7 @@
 @section('title'){{ $transect->name }} @stop
 
 @push('scripts')
-    <script src="{{ asset('vendor/transects/scripts/main.js') }}"></script>
+    <script src="{{ cachebust_asset('vendor/transects/scripts/main.js') }}"></script>
     <script type="text/javascript">
         {{-- Add image IDs as array, too, because the ordering is important! --}}
         angular.module('dias.transects').constant('TRANSECT_IMAGES', {!!$imageIds->keys()!!});
@@ -31,7 +31,7 @@
 @endpush
 
 @push('styles')
-    <link href="{{ asset('vendor/transects/styles/main.css') }}" rel="stylesheet">
+    <link href="{{ cachebust_asset('vendor/transects/styles/main.css') }}" rel="stylesheet">
     @foreach ($modules->getMixins('transectsStyles') as $module => $nestedMixins)
         @include($module.'::transectsStyles', ['mixins' => $nestedMixins])
     @endforeach

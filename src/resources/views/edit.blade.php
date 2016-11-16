@@ -4,7 +4,7 @@
 @section('title')Edit transect {{ $transect->name }} @stop
 
 @push('scripts')
-    <script src="{{ asset('vendor/transects/scripts/edit.js') }}"></script>
+    <script src="{{ cachebust_asset('vendor/transects/scripts/edit.js') }}"></script>
     <script type="text/javascript">
         angular.module('dias.transects.edit').constant('TRANSECT_ID', {!!$transect->id!!});
         angular.module('dias.transects.edit').constant('ANNOTATION_SESSIONS', {!!$annotationSessions!!});
@@ -15,7 +15,7 @@
 @endpush
 
 @push('styles')
-    <link href="{{ asset('vendor/transects/styles/edit.css') }}" rel="stylesheet">
+    <link href="{{ cachebust_asset('vendor/transects/styles/edit.css') }}" rel="stylesheet">
     @foreach ($modules->getMixins('transectsEditStyles') as $module => $nestedMixins)
         @include($module.'::transectsEditStyles', ['mixins' => $nestedMixins])
     @endforeach
