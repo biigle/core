@@ -331,4 +331,14 @@ class Transect extends Model
             })
             ->exists();
     }
+
+    /**
+     * Check if the images of this transect come from a remote URL
+     *
+     * @return boolean
+     */
+    public function isRemote()
+    {
+        return preg_match('#^https?://#i', $this->url) === 1;
+    }
 }

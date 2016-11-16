@@ -291,4 +291,14 @@ class TransectTest extends ModelTestCase
         $this->assertEquals(1, $users->where('id', $u3->id)->count());
         $this->assertEquals(0, $users->where('id', $u4->id)->count());
     }
+
+    public function testIsRemote()
+    {
+        $t = static::create(['url' => '/local/path']);
+        $this->assertFalse($t->isRemote());
+        $t->url = 'http://remote.path';
+        $this->assertTrue($t->isRemote());
+        $t->url = 'https://remote.path';
+        $this->assertTrue($t->isRemote());
+    }
 }
