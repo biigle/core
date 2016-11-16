@@ -3,14 +3,14 @@
 @section('title')Reports for {{ $transect->name }}@stop
 
 @push('scripts')
-    <script src="{{ asset('vendor/export/scripts/main.js') }}"></script>
+    <script src="{{ cachebust_asset('vendor/export/scripts/main.js') }}"></script>
     <script type="text/javascript">
         angular.module('dias.export').constant('TRANSECT_ID', {{$transect->id}});
     </script>
 @endpush
 
 @push('styles')
-    <link href="{{ asset('vendor/transects/styles/main.css') }}" rel="stylesheet">
+    <link href="{{ cachebust_asset('vendor/transects/styles/main.css') }}" rel="stylesheet">
 @endpush
 
 @section('navbar')
