@@ -6,7 +6,9 @@
         <table class="table">
             <tr>
                 <th>Transect</th>
-                <td>{{ $image->transect->name }}</td>
+                <td>
+                    <a href="{{route('transect', $transect->id)}}">{{ $transect->name }}</a>
+                </td>
             </tr>
             <tr>
                 <th>Filename</th>

@@ -15,16 +15,31 @@ class ImageController extends Controller
      */
     public function index($id)
     {
-        $image = Image::findOrFail($id);
-        $this->authorize('access', $image);
-        $exifKeys = ['DateTime', 'Model', 'ShutterSpeedValue', 'ApertureValue', 'Flash', 'GPS Latitude', 'GPS Longitude', 'GPS Altitude'];
-        $image->setAttribute('exif', $image->getExif());
-        $size = $image->getSize();
-        $image->setAttribute('width', $size[0]);
-        $image->setAttribute('height', $size[1]);
+        $image = Image::with('transect')->findOrFail($id);
 
-        return view('transects::images.index')
-            ->withImage($image)
-            ->with('exifKeys', $exifKeys);
+        $this->authorize('access', $image);
+
+        $exifKeys = [
+            'DateTime',
+            'Model',
+            'ShutterSpeedValue',
+            'ApertureValue',
+            'Flash',
+            'GPS Latitude',
+            'GPS Longitude',
+            'GPS Altitude'
+        ];
+
+        $image->exif = $image->getExif();
+
+        $size = $image->getSize();
+        $image->width = $size[0];
+        $image->height = $size[1];
+
+        return view('transects::images.index', [
+            'image' => $image,
+            'transect' => $image->transect,
+            'exifKeys' => $exifKeys,
+        ]);
     }
 }

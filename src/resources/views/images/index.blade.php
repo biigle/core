@@ -19,7 +19,9 @@
 
 	@include('transects::images.index.meta')
 
-	@include('transects::images.index.exif')
+    @if (!$transect->isRemote())
+	   @include('transects::images.index.exif')
+    @endif
 
 	@foreach ($modules->getMixins('imagesIndex') as $module => $nestedMixins)
 		@include($module.'::imagesIndex', array('mixins' => $nestedMixins))
