@@ -93,8 +93,6 @@ class ProjectTransectController extends Controller
         $transect->setMediaTypeId($request->input('media_type_id'));
         $transect->creator()->associate($auth->user());
 
-        $images = Transect::parseImagesQueryString($request->input('images'));
-
         try {
             $transect->validateUrl();
         } catch (Exception $e) {
@@ -102,6 +100,8 @@ class ProjectTransectController extends Controller
                 'url' => $e->getMessage(),
             ]);
         }
+
+        $images = Transect::parseImagesQueryString($request->input('images'));
 
         try {
             $transect->validateImages($images);
