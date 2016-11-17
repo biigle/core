@@ -14,12 +14,13 @@ class AdminController extends Controller
      */
     public function index()
     {
-        return view('transects::admin')
-            ->with(
-                'transects',
-                Transect::select('id', 'name', 'updated_at')->with(['projects' => function ($query) {
-                    $query->select('id', 'name');
-                }])->get()
-            );
+        $transects = Transect::select('id', 'name', 'updated_at')
+            ->with(['projects' => function ($query) {
+                $query->select('id', 'name');
+            }])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        return view('transects::admin', compact('transects'));
     }
 }
