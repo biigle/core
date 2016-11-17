@@ -358,8 +358,12 @@ class TransectTest extends ModelTestCase
         $t = static::create(['url' => '/local/path']);
         $this->assertFalse($t->isRemote());
         $t->url = 'http://remote.path';
+        // result was cached
+        $this->assertFalse($t->isRemote());
+        Cache::flush();
         $this->assertTrue($t->isRemote());
         $t->url = 'https://remote.path';
+        Cache::flush();
         $this->assertTrue($t->isRemote());
     }
 }

@@ -5,6 +5,7 @@ namespace Dias;
 use DB;
 use App;
 use File;
+use Cache;
 use Exception;
 use Dias\Image;
 use Carbon\Carbon;
@@ -358,6 +359,9 @@ class Transect extends Model
      */
     public function isRemote()
     {
-        return preg_match('#^https?://#i', $this->url) === 1;
+        // Cache this for a single request because it may be called lots of times.
+        return Cache::store('array')->remember("transect-{$this->id}-is-remote", 1, function () {
+            return preg_match('#^https?://#i', $this->url) === 1;
+        });
     }
 }
