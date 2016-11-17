@@ -3,15 +3,21 @@
         <div class="panel-heading">
             <h3 class="panel-title">EXIF</h3>
         </div>
-        <table class="table">
-            @forelse (array_only($image->exif, $exifKeys) as $field => $value)
-                <tr>
-                    <th>{{ $field }}</th>
-                    <td>{{ $value }}</td>
-                </tr>
-            @empty
-                <tr><td>No EXIF data</td></tr>
-            @endforelse
-        </table>
+        @if ($transect->isRemote())
+            <div class="panel-body text-muted">
+                EXIF data is not available for images of remote transects.
+            </div>
+        @else
+            <table class="table">
+                @forelse (array_only($image->exif, $exifKeys) as $field => $value)
+                    <tr>
+                        <th>{{ $field }}</th>
+                        <td>{{ $value }}</td>
+                    </tr>
+                @empty
+                    <tr><td>No EXIF data</td></tr>
+                @endforelse
+            </table>
+        @endif
     </div>
 </div>
