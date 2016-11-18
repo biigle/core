@@ -14,11 +14,11 @@
             Depending on where you come from (literally), this setup might pose some problems. Usually you want to work with your own images. This means that you have to transfer all the images to the machine (and the people) that run the BIIGLE instance. So first, you have to inconveniently transfer a large amount of data and second, you lose control of that data. This might not be a problem most of the time but sometimes you might want to keep (control of) your data.
         </p>
         <p>
-            This is where remote transects come in. When you request an image in BIIGLE, your browser doesn't care where this image comes from. So it actually doesn't have to be served from the same machine that runs the BIIGLE application. Instead, BIIGLE only has to know the "remote" location from where the image is served to redirect your request there. And this remote location can be under your control. In addition to that, a remote transect may speed up loading times of the images if your internet connection to the BIIGLE server is rather slow but the connection to the remote image location is fast.
+            This is where remote transects come in. When you request an image in BIIGLE, your browser doesn't care where this image comes from. So it actually doesn't have to be served from the same machine that runs the BIIGLE application. Instead, BIIGLE only has to know the "remote" location from where the image is served to redirect your request there. And this remote location can be under your control. In addition to that, a remote image location may speed up loading times of the images if your internet connection to the BIIGLE server is rather slow but the connection to the remote location is fast.
         </p>
         <h3>How to set up a remote location for images</h3>
         <p>
-            Images from a remote location must be accessible both by the BIIGLE application and your browser. The simplest setup is to make the images publicly available through a web server. After a successful setup you should be able to access the images in your browser via an URL like this <code>https://your-institute.com/subdirectory/image_001.jpg</code>. The domain, directory and image file names are just examples and can be completely arbitrary (<code>http(s)://&lt;domain>/&lt;subdirectories>/&lt;image file></code>).
+            Images from a remote location must be accessible both by the BIIGLE application and your browser. The simplest setup is to make the images publicly available through a web server. After a successful setup you should be able to access the images in your browser via a URL like this <code>https://your-institute.com/subdirectory/image_001.jpg</code>. The domain, directory and image file names are just examples and can be completely arbitrary (<code>http(s)://&lt;domain>/&lt;subdirectories>/&lt;image file></code>).
         </p>
         <p>
             Once the remote location is set up you can create a new transect with the images. Just enter the first part of the location (<code>http(s)://&lt;domain>/&lt;subdirectories></code>) as the transect URL and a comma separated list of all image filenames (<code>&lt;image file></code>) as images. BIIGLE will automatically detect transect images coming from a remote location. The remote location should be available as long as the remote transect exists in BIIGLE.
@@ -36,8 +36,14 @@
             The simplest method to prevent unauthorized access to the images of your remote location is to keep the URL secret. This way only authorized BIIGLE users know and have access to the location. Although <em>theoretically</em> anyone has access to the images, the probability of someone accidentally stumbling on the correct URL can be kept as low as someone accidentally (or by brute force) guessing a correct password.
         </p>
         <p>
-            One way to keep this probability low is to use long random names for the image directory and/or the image files. If your remote location URL is <code>https://your-institute.com/images</code>, the directory name is an easy guess. But with <code>https://your-institute.com/151f93a2-5bbe-4af8-b06e-118441ca39cc</code> it becomes almost impossible to guess the URL.
+            One way to keep this probability low is to use long random names for the image directory and/or the image files. If your remote location URL is <code>https://your-institute.com/images</code>, the directory name is an easy guess. But with <code>https://your-institute.com/4e29be7a-4bfa-4a5e-98c4-c99ce6a94226</code> it becomes almost impossible to guess the URL.
         </p>
+        @if (class_exists(\Ramsey\Uuid\Uuid::class))
+            <p>
+                Here is your personal random string that you can use as a directory name (a <a href="https://github.com/ramsey/uuid">UUID 4</a>). Refresh the page to get a new one:
+            </p>
+            <pre>{{\Ramsey\Uuid\Uuid::uuid4()}}</pre>
+        @endif
         <p>
             Another way is HTTP <a href="https://en.wikipedia.org/wiki/Basic_access_authentication">basic access authentication</a>. With basic auth you can specify a username and password that has to be supplied in order to access the remote location. Let's say you have set up basic auth with the username "admin" and the password "eiYie8ou". To create a remote transect that uses these basic auth credentials, just format the transect URL like this: <code>https://admin:eiYie8ou@your-institute.com</code>. That is <code>https://&lt;username>:&lt;password>@&lt;domain></code>.
         </p>
