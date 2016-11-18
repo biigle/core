@@ -24,7 +24,7 @@ biigle.$viewModel('notifications-list', function (element) {
             }
         },
         methods: {
-            markRead: function () {
+            markRead: function (ignoreError) {
                 var _this = this;
                 this.isLoading = true;
                 biigle.api.notifications.markRead({id: this.item.id}, {})
@@ -33,7 +33,11 @@ biigle.$viewModel('notifications-list', function (element) {
                         if (_this.removeItem) {
                             biigle.notifications.store.remove(_this.item.id);
                         }
-                    }, biigle.messages.store.handleErrorResponse)
+                    }, function (response) {
+                        if (!ignoreError) {
+                            biigle.messages.store.handleErrorResponse(response);
+                        }
+                    })
                     .finally(function () {
                         _this.isLoading = false;
                     });

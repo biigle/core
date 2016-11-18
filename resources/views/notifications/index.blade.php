@@ -42,7 +42,7 @@
                     <div class="panel-body">
                         @{{item.data.message}}
                         <p class="notification__action" v-if="item.data.action">
-                            <a v-bind:href="item.data.actionLink" v-text="item.data.action"></a>
+                            <a v-bind:href="item.data.actionLink" v-text="item.data.action" v-on:click="markRead(true)" v-bind:title="item.data.action"></a>
                         </p>
                     </div>
                 </div>
