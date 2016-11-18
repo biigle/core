@@ -89,11 +89,13 @@ class ImageTest extends ModelTestCase
         Response::shouldReceive('download')
             ->once()
             ->with($this->model->url)
-            ->passthru();
+            ->andReturn(true);
 
-        $file = $this->model->getFile();
-        $this->assertNotNull($file);
+        $this->assertTrue($this->model->getFile());
+    }
 
+    public function testGetFileNotFound()
+    {
         // error handling when the original file is not readable
         $this->model->filename = '';
 
@@ -103,6 +105,16 @@ class ImageTest extends ModelTestCase
 
         $this->setExpectedException('Symfony\Component\HttpKernel\Exception\NotFoundHttpException');
         $this->model->getFile();
+    }
+
+    public function testGetFileRemote()
+    {
+        $this->model->transect->url = 'http://localhost';
+        Response::shouldReceive('redirectTo')
+            ->once()
+            ->with($this->model->url)
+            ->andReturn(true);
+        $this->assertTrue($this->model->getFile());
     }
 
     public function testCleanupTransectThumbnails()

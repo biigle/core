@@ -3,14 +3,20 @@
 namespace Dias;
 
 use DB;
+use App;
 use File;
+use Cache;
 use Exception;
 use Dias\Image;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
+use GuzzleHttp\Client;
 use Dias\Jobs\GenerateThumbnails;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
@@ -163,19 +169,33 @@ class Transect extends Model
     /**
      * Check if the URL of this transect exists and is readable.
      *
-     * Currently works only for local paths.
-     *
      * @return boolean
      * @throws Exception If the validation failed.
      */
     public function validateUrl()
     {
-        if (!File::exists($this->url)) {
-            throw new Exception('The transect URL does not exist.');
-        }
+        if ($this->isRemote()) {
+            $client = App::make(Client::class);
+            try {
+                $response = $client->head($this->url);
+            } catch (ServerException $e) {
+                throw new Exception('The remote transect URL returned an error response. '.$e->getMessage());
+            } catch (ClientException $e) {
+                // A 400 level error means that something is responding.
+                // It may well be that the Transect URL results in a 400 response but a
+                // single image works fine so we define this as success.
+                return true;
+            } catch (RequestException $e) {
+                throw new Exception('The remote transect URL does not seem to exist. '.$e->getMessage());
+            }
+        } else {
+            if (!File::exists($this->url)) {
+                throw new Exception('The transect URL does not exist.');
+            }
 
-        if (!File::isReadable($this->url)) {
-            throw new Exception('The transect URL is not readable. Please check the access permissions.');
+            if (!File::isReadable($this->url)) {
+                throw new Exception('The transect URL is not readable. Please check the access permissions.');
+            }
         }
 
         return true;
@@ -330,5 +350,18 @@ class Transect extends Model
                 });
             })
             ->exists();
+    }
+
+    /**
+     * Check if the images of this transect come from a remote URL
+     *
+     * @return boolean
+     */
+    public function isRemote()
+    {
+        // Cache this for a single request because it may be called lots of times.
+        return Cache::store('array')->remember("transect-{$this->id}-is-remote", 1, function () {
+            return preg_match('#^https?://#i', $this->url) === 1;
+        });
     }
 }

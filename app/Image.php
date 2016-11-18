@@ -149,10 +149,16 @@ class Image extends Model
      * Returns a subset of the EXIF metadata of the image file.
      * The subset is defined in `$exifSubset`.
      *
+     * Only works for local images.
+     *
      * @return array
      */
     public function getExif()
     {
+        if ($this->transect->isRemote()) {
+            return [];
+        }
+
         try {
             $exif = exif_read_data($this->url);
         } catch (ErrorException $e) {
@@ -197,6 +203,10 @@ class Image extends Model
      */
     public function getFile()
     {
+        if ($this->transect->isRemote()) {
+            return Response::redirectTo($this->url);
+        }
+
         try {
             // TODO download() doesn't work for external resources
             // InterventionImage::make() does but is very memory expensive
