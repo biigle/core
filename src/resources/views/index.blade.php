@@ -38,7 +38,7 @@
 @section('navbar')
 <div class="navbar-text navbar-annotations-breadcrumbs">
     @include('transects::partials.projectsBreadcrumb', ['projects' => $transect->projects])/ <a href="{{route('transect', $transect->id)}}" class="navbar-link" title="Show transect {{$transect->name}}">{{$transect->name}}</a>
-    / <strong class="navbar-annotations-filename">{{$image->filename}}</strong> @include('transects::partials.annotationSessionIndicator')
+    / <strong class="navbar-annotations-filename" title="{{$image->filename}}">{{$image->filename}}</strong> @include('transects::partials.annotationSessionIndicator')
 </div>
 @endsection
 

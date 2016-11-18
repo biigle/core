@@ -161,6 +161,11 @@ html, body {
 }
 
 .navbar-text.navbar-annotations-breadcrumbs {
+    white-space: nowrap;
+    max-width: 850px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
     &, a {
         color: #ccc;
     }
