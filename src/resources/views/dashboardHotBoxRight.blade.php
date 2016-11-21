@@ -1,19 +1,17 @@
 @if($recentTransect)
-    <div class="panel panel-info">
+    <div id="transect-dashboard-hot-box-right" class="panel panel-info">
         <div class="panel-heading">Most recently edited transect</div>
         <div class="panel-body dashboard__hot-thumbnail">
-            <figure class="image-thumbnail">
-                <a href="{{ route('transect', $recentTransect->id) }}" title="Show transect {{$recentTransect->name}}">
+            <a href="{{route('transect', $recentTransect->id)}}" title="Show transect {{$recentTransect->name}}">
+                <transect-thumbnail class="transect-thumbnail" tid="{{$recentTransect->id}}" uri="{{asset(config('thumbnails.uri'))}}" format="{{config('thumbnails.format')}}">
                     @if ($recentTransectImage && File::exists($recentTransectImage->thumbPath))
                         <img src="{{ asset(config('thumbnails.uri').'/'.$recentTransectImage->uuid.'.'.config('thumbnails.format')) }}">
                     @else
                         <img src="{{ asset(config('thumbnails.empty_url')) }}">
                     @endif
-                    <figcaption class="caption">
-                        {{ $recentTransect->name }}
-                    </figcaption>
-                </a>
-            </figure>
+                    <figcaption slot="caption">{{$recentTransect->name}}</figcaption>
+                </transect-thumbnail>
+            </a>
         </div>
     </div>
 @endif

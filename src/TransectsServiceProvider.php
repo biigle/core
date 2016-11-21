@@ -35,6 +35,7 @@ class TransectsServiceProvider extends ServiceProvider
         $modules->addMixin('transects', 'adminIndex');
         $modules->addMixin('transects', 'manualTutorial');
         $modules->addMixin('transects', 'dashboardStyles');
+        $modules->addMixin('transects', 'dashboardScripts');
         $modules->addMixin('transects', 'dashboardHotBoxRight');
         $modules->addMixin('transects', 'dashboardMain.projects');
     }

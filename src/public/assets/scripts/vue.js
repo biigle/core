@@ -1,0 +1,1 @@
+biigle.$viewModel("transect-dashboard-hot-box-right",function(e){new Vue({el:e,components:{transectThumbnail:biigle.transects.components.thumbnail}})});

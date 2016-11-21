@@ -30,12 +30,17 @@ gulp.task('js-edit', function (cb) {
     h.angular('edit/**/*.js', 'edit.js', cb);
 });
 
-gulp.task('js', ['js-main', 'js-edit']);
+gulp.task('js-vue', function (cb) {
+    h.angular('vue/**/*.js', 'vue.js', cb);
+});
+
+gulp.task('js', ['js-main', 'js-edit', 'js-vue']);
 
 gulp.task('watch', function () {
     gulp.watch(h.paths.sass + '**/*.scss', ['sass']);
     gulp.watch(h.paths.js + 'transects/**/*.js', ['js-main']);
     gulp.watch(h.paths.js + 'edit/**/*.js', ['js-edit']);
+    gulp.watch(h.paths.js + 'vue/**/*.js', ['js-vue']);
     gulp.watch(h.paths.public + '**/*', publish);
 });
 
