@@ -6,7 +6,7 @@
  */
 biigle.transects.components.thumbnail = {
     template:
-    '<figure class="transect-thumbnail" v-bind:class="{loading: loading}" v-on:mouseover="fetchUuids" v-on:mousemove="updateIndex($event)">' +
+    '<figure class="transect-thumbnail" v-bind:class="{loading: loading}" v-on:mouseover="fetchUuids" v-on:mousemove="updateIndex($event)" v-on:click="clearTimeout" v-on:mouseout="clearTimeout">' +
         '<slot></slot>' +
         '<div class="transect-thumbnail__images" v-if="initialized">' +
             '<img v-on:error="failed[i] = true" v-bind:class="{hidden: thumbHidden(i)}" v-bind:src="thumbUri(uuid)" v-for="(uuid, i) in uuids">' +
@@ -25,8 +25,10 @@ biigle.transects.components.thumbnail = {
             loading: false,
             // Index of the thumbnail to display.
             index: 0,
-            // true at the index of the thumbnail if it failed to load (does not exist)
-            failed: []
+            // true at the index of the thumbnail if it failed to load (does not exist).
+            failed: [],
+            // ID of the fetching timeout.
+            timeoutId: null
         };
     },
     computed: {
@@ -46,16 +48,21 @@ biigle.transects.components.thumbnail = {
 
             var self = this;
             self.loading = true;
-            biigle.api.transectSample.get({id: this.tid})
-                .then(function (response) {
-                    if (response.ok) {
-                        self.uuids = response.data;
-                        self.initialized = true;
-                    }
-                })
-                .finally(function () {
-                    self.loading = false;
-                });
+            // Wait before fetching the thumbnails. Maybe the user just wants to go
+            // to the transect or just passes the mouse over the thumbnail. In this case
+            // the timeout is cancelled.
+            self.timeoutId = setTimeout(function () {
+                biigle.api.transectSample.get({id: self.tid})
+                    .then(function (response) {
+                        if (response.ok) {
+                            self.uuids = response.data;
+                            self.initialized = true;
+                        }
+                    })
+                    .finally(function () {
+                        self.loading = false;
+                    });
+            }, 1000);
         },
         thumbUri: function (uuid) {
             return this.uri + '/' + uuid + '.' + this.format;
@@ -66,6 +73,13 @@ biigle.transects.components.thumbnail = {
         updateIndex: function (event) {
             var rect = this.$el.getBoundingClientRect();
             this.index = Math.floor(this.uuids.length * (event.clientX - rect.left) / (rect.width));
+        },
+        clearTimeout: function () {
+            if (this.timeoutId) {
+                clearTimeout(this.timeoutId);
+                this.timeoutId = null;
+                this.loading = false;
+            }
         }
     }
 };
