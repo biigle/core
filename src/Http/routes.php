@@ -25,4 +25,7 @@ $router->group(['middleware' => 'auth'], function ($router) {
 $router->group(['middleware' => 'auth.api', 'namespace' => 'Api', 'prefix' => 'api/v1'],
     function ($router) {
         $router->get('projects/{id}/attachable-transects', 'AttachableTransectsController@index');
+
+        $router->get('transects/{id}/sample/{number?}', 'TransectSampleController@index')
+            ->where(['number' => '[0-9]+']);
 });

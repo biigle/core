@@ -1,0 +1,63 @@
+@keyframes pulse {
+    50% {opacity: .5;}
+}
+
+.transect-thumbnail {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+
+    img {
+        width: auto;
+        height: 100%;
+
+        &.hidden {
+            display: none;
+        }
+    }
+
+    figcaption {
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        color: white;
+        opacity: 0.75;
+        padding: 0.5em;
+        transition: opacity 0.25s ease;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8)) center;
+    }
+
+    img, figcaption {
+        border-radius: $border-radius-base;
+    }
+
+    &:hover {
+        figcaption {
+            opacity: 1;
+        }
+    }
+
+    &.loading:hover {
+        .transect-thumbnail__progress {
+            animation: pulse 1s infinite;
+        }
+    }
+}
+
+.transect-thumbnail__images {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.transect-thumbnail__progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background-color: $brand-info;
+    opacity: .25;
+}

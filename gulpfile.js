@@ -12,20 +12,27 @@ gulp.task('sass-main', function () {
     h.sass('main.scss', 'main.css');
 });
 
-gulp.task('sass-dashboard', function () {
-    h.sass('dashboard.scss', 'dashboard.css');
-});
+gulp.task('sass', ['sass-main']);
 
-gulp.task('sass', ['sass-main', 'sass-dashboard']);
-
-gulp.task('js', function (cb) {
+gulp.task('js-projects', function (cb) {
     h.angular('projects/**/*.js', 'main.js', cb);
 });
 
+gulp.task('js-transects', function (cb) {
+    h.angular('transects/**/*.js', 'transects.js', cb);
+});
+
+gulp.task('js-vue', function (cb) {
+    h.angular('vue/**/*.js', 'vue.js', cb);
+});
+
+gulp.task('js', ['js-projects', 'js-transects', 'js-vue']);
+
 gulp.task('watch', function () {
-    gulp.watch(h.paths.sass + 'main.scss', ['sass-main']);
-    gulp.watch(h.paths.sass + 'dashboard.scss', ['sass-dashboard']);
-    gulp.watch(h.paths.js + 'projects/**/*.js', ['js']);
+    gulp.watch(h.paths.sass + '**/*.scss', ['sass-main']);
+    gulp.watch(h.paths.js + 'projects/**/*.js', ['js-projects']);
+    gulp.watch(h.paths.js + 'transects/**/*.js', ['js-transects']);
+    gulp.watch(h.paths.js + 'vue/**/*.js', ['js-vue']);
     gulp.watch(h.paths.public + '**/*', publish);
 });
 

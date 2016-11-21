@@ -1,3 +1,5 @@
+@import "variables";
+
 .list-group-transects {
     max-height: 600px;
     max-width: 100%;
@@ -22,3 +24,10 @@
         width: 300px;
     }
 }
+
+.dashboard__all-projects {
+    padding: 2em;
+    text-align: center;
+}
+
+@import 'components/thumbnail';

@@ -35,6 +35,7 @@ class ProjectsServiceProvider extends ServiceProvider
         $modules->addMixin('projects', 'dashboardMain');
         $modules->addMixin('projects', 'dashboardButtons');
         $modules->addMixin('projects', 'dashboardStyles');
+        $modules->addMixin('projects', 'dashboardScripts');
         $modules->addMixin('projects', 'adminIndex');
         $modules->addMixin('projects', 'navbarMenuItem');
         $modules->addMixin('projects', 'manualTutorial');

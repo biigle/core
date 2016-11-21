@@ -1,0 +1,1 @@
+biigle.projects={},biigle.$viewModel("projects-dashboard-main",function(e){new Vue({el:e,components:{transectThumbnail:biigle.transects.components.thumbnail}})}),biigle.api.transectSample=Vue.resource("/api/v1/transects{/id}/sample{/number}");
