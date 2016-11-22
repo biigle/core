@@ -2,6 +2,7 @@
 
 namespace Dias\Modules\Projects\Http\Controllers\Api;
 
+use Cache;
 use Dias\Image;
 use Dias\Transect;
 use Dias\Http\Controllers\Api\Controller;
@@ -37,38 +38,44 @@ class TransectSampleController extends Controller
     {
         $transect = Transect::select('id')->findOrFail($id);
         $this->authorize('access', $transect);
-        $total = $transect->images()->count();
-        $query = $transect->images()
-                ->orderBy('filename', 'asc');
-        $step = round($total / $number);
 
-        /*
-         * This is how the images should be chosen (x):
-         * Maxbe $number must be event fr this to work??
-         *
-         *             image
-         *          1 2 3 4 5 6 7
-         *        1 x o o o o o o
-         *        2 x o o o o o x
-         * number 3 x o o x o o x
-         *        4 x o x o x o x
-         *        5 x x o x o x x
-         *        6 ? ? ? ? ? ? ?
-         *        7 x x x x x x x
-         */
+        // We can cache this for 1 hour because it's unlikely to change as long as the
+        // transect exists.
+        return Cache::remember("transect-sample-{$id}-{$number}", 60, function () use ($transect, $number) {
 
-        // This is a preliminary (easy) version that simply chunks the transect into
-        // $number parts and takes the first image of each chunk. The method described
-        // above would produce a better overview of the transect, though, and should
-        // be implemented sometime.
-        if ($step <= 1) {
-            return $query->pluck('uuid');
-        }
+            $total = $transect->images()->count();
+            $query = $transect->images()
+                    ->orderBy('filename', 'asc');
+            $step = round($total / $number);
 
-        $ids = $transect->images()->pluck('id')->filter(function ($v, $k) use ($step) {
-            return $k % $step === 0;
+            /*
+             * This is how the images should be chosen (x):
+             * Maxbe $number must be event fr this to work??
+             *
+             *             image
+             *          1 2 3 4 5 6 7
+             *        1 x o o o o o o
+             *        2 x o o o o o x
+             * number 3 x o o x o o x
+             *        4 x o x o x o x
+             *        5 x x o x o x x
+             *        6 ? ? ? ? ? ? ?
+             *        7 x x x x x x x
+             */
+
+            // This is a preliminary (easy) version that simply chunks the transect into
+            // $number parts and takes the first image of each chunk. The method described
+            // above would produce a better overview of the transect, though, and should
+            // be implemented sometime.
+            if ($step <= 1) {
+                return $query->pluck('uuid');
+            }
+
+            $ids = $transect->images()->pluck('id')->filter(function ($v, $k) use ($step) {
+                return $k % $step === 0;
+            });
+
+            return $query->whereIn('id', $ids)->pluck('uuid');
         });
-
-        return $query->whereIn('id', $ids)->pluck('uuid');
     }
 }
