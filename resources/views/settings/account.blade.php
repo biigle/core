@@ -3,7 +3,7 @@
 @section('title')Account settings @stop
 
 @section('settings-content')
-<?php $origin = session('origin') ?>
+<?php $origin = session('origin'); ?>
 <div class="panel panel-default">
     <div class="panel-heading">Change password</div>
     <div class="panel-body">

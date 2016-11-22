@@ -7,11 +7,11 @@ return array(
 	'back' => 'back',
 
 	'titles' => array(
-		'login' => 'Login',
+		'login' => 'BIIGLE - Login',
 		'logout' => 'Logout',
 		'settings' => 'Settings',
 		'resetpw' => 'Reset password',
-		'register' => 'Register',
+		'register' => 'BIIGLE - Register',
 		'dashboard' => 'BIIGLE DIAS',
         'manual' => 'Manual',
 		'doc' => 'Documentation',
