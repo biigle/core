@@ -3,8 +3,8 @@
         <a href="{{route('transect', $transect->id)}}" title="Show transect {{$transect->name}}">
             <transect-thumbnail class="transect-thumbnail" tid="{{$transect->id}}" uri="{{asset(config('thumbnails.uri'))}}" format="{{config('thumbnails.format')}}">
                 <?php $image = $transect->images()->orderBy('filename', 'asc')->first(); ?>
-                @if ($image && File::exists($image->thumbPath))
-                    <img src="{{ asset(config('thumbnails.uri').'/'.$image->uuid.'.'.config('thumbnails.format')) }}">
+                @if ($image)
+                    <img src="{{ asset(config('thumbnails.uri').'/'.$image->uuid.'.'.config('thumbnails.format')) }}"  onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                 @else
                     <img src="{{ asset(config('thumbnails.empty_url')) }}">
                 @endif
