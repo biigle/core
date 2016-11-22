@@ -366,4 +366,17 @@ class TransectTest extends ModelTestCase
         Cache::flush();
         $this->assertTrue($t->isRemote());
     }
+
+    public function testImagesOrderByFilename()
+    {
+        ImageTest::create([
+            'filename' => 'b.jpg',
+            'transect_id' => $this->model->id,
+        ]);
+        ImageTest::create([
+            'filename' => 'a.jpg',
+            'transect_id' => $this->model->id,
+        ]);
+        $this->assertEquals('a.jpg', $this->model->images()->first()->filename);
+    }
 }

@@ -144,7 +144,7 @@ class Transect extends Model
      */
     public function images()
     {
-        return $this->hasMany('Dias\Image');
+        return $this->hasMany('Dias\Image')->orderBy('filename', 'asc');
     }
 
     /**
