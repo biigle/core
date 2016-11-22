@@ -30,8 +30,7 @@ class TransectImageController extends Controller
         $transect = Transect::findOrFail($id);
         $this->authorize('access', $transect);
 
-        return $transect->images()
-            ->orderBy('filename', 'asc')
+        return $transect->orderedImages()
             ->pluck('id');
     }
 

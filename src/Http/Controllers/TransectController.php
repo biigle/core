@@ -70,8 +70,7 @@ class TransectController extends Controller
             })
             ->get();
 
-        $imageIds = $transect->images()
-            ->orderBy('filename', 'asc')
+        $imageIds = $transect->orderedImages()
             ->pluck('uuid', 'id');
 
         return view('transects::index')
@@ -97,7 +96,7 @@ class TransectController extends Controller
 
         return view('transects::edit', [
             'transect' => $transect,
-            'images' => $transect->images()->pluck('filename', 'id'),
+            'images' => $transect->orderedImages()->pluck('filename', 'id'),
             'mediaTypes' => MediaType::all(),
             'annotationSessions' => $sessions,
             'today' => Carbon::today()
