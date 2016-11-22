@@ -260,4 +260,14 @@ class ProjectTest extends ModelTestCase
         $this->assertTrue($project->labelTrees()->exists());
         $this->assertTrue($project->labelTrees()->where('id', $tree->id)->exists());
     }
+
+    public function testGetThumbnailAttribute()
+    {
+        $i1 = ImageTest::create();
+        $i2 = ImageTest::create();
+        $this->model->addTransectId($i1->transect_id);
+        $this->model->addTransectId($i2->transect_id);
+
+        $this->assertEquals($i1->uuid, $this->model->thumbnail->uuid);
+    }
 }

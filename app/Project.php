@@ -2,6 +2,7 @@
 
 namespace Dias;
 
+use Cache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
@@ -281,5 +282,25 @@ class Project extends Model
     public function authorizedLabelTrees()
     {
         return $this->belongsToMany(LabelTree::class, 'label_tree_authorized_project');
+    }
+
+    /**
+     * An image that can be used a unique thumbnail for this project.
+     *
+     * @return Image
+     */
+    public function getThumbnailAttribute()
+    {
+        return Cache::remember("project-thumbnail-{$this->id}", 60, function () {
+            return Image::where('transect_id', function ($query) {
+                    $query->select('transect_id')
+                        ->from('project_transect')
+                        ->orderBy('transect_id', 'asc')
+                        ->where('project_id', $this->id)
+                        ->take(1);
+                })
+                ->orderBy('filename', 'asc')
+                ->first();
+        });
     }
 }
