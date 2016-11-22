@@ -206,6 +206,8 @@ class Project extends Model
     {
         try {
             $this->transects()->attach($id);
+            // Maybe we get a new thumbnail now.
+            Cache::forget("project-thumbnail-{$this->id}");
         } catch (QueryException $e) {
             // transect already exists for this project, so everything is fine
         }
@@ -239,6 +241,8 @@ class Project extends Model
 
         // if the transect still belongs to other projects, just detach it
         $this->transects()->detach($transect->id);
+        // Maybe we get a new thumbnail now.
+        Cache::forget("project-thumbnail-{$this->id}");
     }
 
     /**
@@ -262,6 +266,7 @@ class Project extends Model
         foreach ($transects as $transect) {
             $this->removeTransect($transect, $force);
         }
+        Cache::forget("project-thumbnail-{$this->id}");
     }
 
     /**
