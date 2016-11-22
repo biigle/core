@@ -379,4 +379,18 @@ class TransectTest extends ModelTestCase
         ]);
         $this->assertEquals('a.jpg', $this->model->orderedImages()->first()->filename);
     }
+
+    public function testGetThumbnailAttribute()
+    {
+        $i1 = ImageTest::create([
+            'filename' => 'a.jpg',
+            'transect_id' => $this->model->id,
+        ]);
+        $i2 = ImageTest::create([
+            'filename' => 'b.jpg',
+            'transect_id' => $this->model->id,
+        ]);
+
+        $this->assertEquals($i1->uuid, $this->model->thumbnail->uuid);
+    }
 }

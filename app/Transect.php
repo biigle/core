@@ -374,4 +374,16 @@ class Transect extends Model
             return preg_match('#^https?://#i', $this->url) === 1;
         });
     }
+
+    /**
+     * An image that can be used a unique thumbnail for this transect.
+     *
+     * @return Image
+     */
+    public function getThumbnailAttribute()
+    {
+        return Cache::remember("transect-thumbnail-{$this->id}", 60, function () {
+            return $this->orderedImages()->first();
+        });
+    }
 }

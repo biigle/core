@@ -41,13 +41,10 @@ class DashboardController extends Controller
                 // else take the transect of the image label
                 $recentTransect = $imageLabel->image->transect;
             }
-            $recentTransectImage = $recentTransect->images()->first();
         } elseif ($recentImage) {
             $recentTransect = $recentImage->transect;
-            $recentTransectImage = $recentTransect->images()->first();
         } else {
             $recentTransect = null;
-            $recentTransectImage = null;
         }
 
         $projects = $user->projects()
@@ -59,7 +56,6 @@ class DashboardController extends Controller
             'user' => $user,
             'recentImage' => $recentImage,
             'recentTransect' => $recentTransect,
-            'recentTransectImage' => $recentTransectImage,
             'projects' => $projects,
         ]);
     }
