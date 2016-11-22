@@ -144,7 +144,17 @@ class Transect extends Model
      */
     public function images()
     {
-        return $this->hasMany('Dias\Image')->orderBy('filename', 'asc');
+        return $this->hasMany('Dias\Image');
+    }
+
+    /**
+     * The images belonging to this transect ordered by filename (ascending).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderedImages()
+    {
+        return $this->images()->orderBy('filename', 'asc');
     }
 
     /**

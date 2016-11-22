@@ -367,7 +367,7 @@ class TransectTest extends ModelTestCase
         $this->assertTrue($t->isRemote());
     }
 
-    public function testImagesOrderByFilename()
+    public function testOrderedImages()
     {
         ImageTest::create([
             'filename' => 'b.jpg',
@@ -377,6 +377,6 @@ class TransectTest extends ModelTestCase
             'filename' => 'a.jpg',
             'transect_id' => $this->model->id,
         ]);
-        $this->assertEquals('a.jpg', $this->model->images()->first()->filename);
+        $this->assertEquals('a.jpg', $this->model->orderedImages()->first()->filename);
     }
 }
