@@ -30,13 +30,24 @@
         @endif
         <div class="list-group">
             @forelse($projects as $project)
-                <a class="list-group-item @if($newProject && $project->id === $newProject->id) list-group-item-success @endif" href="{{route('project', $project->id)}}" title="Show the project {{$project->name}}">
-                    <h4 class="list-group-item-heading">
-                        {{$project->name}}
-                    </h4>
-                    @if($project->description)
-                        <p class="list-group-item-text">{{$project->description}}</p>
-                    @endif
+                <a class="list-group-item container-fluid @if($newProject && $project->id === $newProject->id) list-group-item-success @endif" href="{{route('project', $project->id)}}" title="Show the project {{$project->name}}">
+                    <div class="row">
+                        @if ($project->thumbnail)
+                            <div class="col-xs-2 project-thumbnail">
+                                <img src="{{ asset(config('thumbnails.uri').'/'.$project->thumbnail->uuid.'.'.config('thumbnails.format')) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
+                            </div>
+                            <div class="col-xs-10">
+                        @else
+                            <div class="col-xs-12">
+                        @endif
+                            <h4 class="list-group-item-heading">
+                                {{$project->name}}
+                            </h4>
+                            @if($project->description)
+                                <p class="list-group-item-text">{{$project->description}}</p>
+                            @endif
+                        </div>
+                    </div>
                 </a>
             @empty
                 <p class="list-group-item list-group-item-info">
@@ -68,3 +79,7 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
+<link href="{{ cachebust_asset('vendor/projects/styles/main.css') }}" rel="stylesheet">
+@endpush

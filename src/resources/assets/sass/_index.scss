@@ -1,0 +1,9 @@
+.project-thumbnail {
+    padding-right: 0;
+
+    img {
+        max-width: 100%;
+        height: auto;
+        border-radius: $border-radius-base;
+    }
+}
