@@ -44,8 +44,7 @@ class TransectSampleController extends Controller
         return Cache::remember("transect-sample-{$id}-{$number}", 60, function () use ($transect, $number) {
 
             $total = $transect->images()->count();
-            $query = $transect->images()
-                    ->orderBy('filename', 'asc');
+            $query = $transect->orderedImages();
             $step = round($total / $number);
 
             /*
