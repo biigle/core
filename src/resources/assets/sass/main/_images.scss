@@ -44,9 +44,12 @@
     padding: 2px;
     border-radius: $border-radius-large;
     transition: border .25s ease;
+    text-align: center;
 
-    &:hover .image-button {
-        opacity: .75;
+    &:hover {
+        .image-button {
+            opacity: .75;
+        }
     }
 
     .image-buttons {
@@ -76,7 +79,8 @@
     }
 
     img {
-        width: 100%;
+        max-width: 100%;
+        width: auto;
         height: 100%;
         border-radius: $border-radius-base;
     }
