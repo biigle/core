@@ -82,6 +82,7 @@ class Image extends Model
         'exif',
         'width',
         'height',
+        'uuid',
     ];
 
     /**
