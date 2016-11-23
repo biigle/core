@@ -24,6 +24,7 @@
         <script src="{{ cachebust_asset('assets/scripts/vue.min.js') }}"></script>
     @endif
     <script src="{{ cachebust_asset('assets/scripts/vue-resource.min.js') }}"></script>
+    <script src="{{ cachebust_asset('assets/scripts/vue-strap.min.js') }}"></script>
 
     <script type="text/javascript">
         Vue.http.options.root = '{{url('/')}}';
