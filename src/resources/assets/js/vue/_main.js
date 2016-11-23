@@ -1,1 +1,6 @@
-// The biigle.transects namespace is initiated in the projects module.
+/**
+ * The transects namespace.
+ *
+ * @type {Object}
+ */
+biigle.transects = {};

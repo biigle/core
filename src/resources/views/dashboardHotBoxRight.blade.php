@@ -3,7 +3,7 @@
         <div class="panel-heading">Most recently edited transect</div>
         <div class="panel-body dashboard__hot-thumbnail">
             <a href="{{route('transect', $recentTransect->id)}}" title="Show transect {{$recentTransect->name}}">
-                <transect-thumbnail class="transect-thumbnail" tid="{{$recentTransect->id}}" uri="{{asset(config('thumbnails.uri'))}}" format="{{config('thumbnails.format')}}">
+                <transect-thumbnail class="transect-thumbnail" v-bind:tid="{{$recentTransect->id}}" uri="{{asset(config('thumbnails.uri'))}}" format="{{config('thumbnails.format')}}">
                     @if ($recentTransect->thumbnail)
                         <img src="{{ asset(config('thumbnails.uri').'/'.$recentTransect->thumbnail->uuid.'.'.config('thumbnails.format')) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                     @else

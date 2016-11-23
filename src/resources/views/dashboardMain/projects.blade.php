@@ -1,7 +1,7 @@
 @forelse($project->transects()->orderBy('created_at', 'desc')->take(3)->get() as $transect)
     <div class="col-xs-12 col-sm-6 col-md-3 dashboard__project-transect">
         <a href="{{route('transect', $transect->id)}}" title="Show transect {{$transect->name}}">
-            <transect-thumbnail class="transect-thumbnail" tid="{{$transect->id}}" uri="{{asset(config('thumbnails.uri'))}}" format="{{config('thumbnails.format')}}">
+            <transect-thumbnail class="transect-thumbnail" v-bind:tid="{{$transect->id}}" uri="{{asset(config('thumbnails.uri'))}}" format="{{config('thumbnails.format')}}">
                 @if ($transect->thumbnail)
                     <img src="{{ asset(config('thumbnails.uri').'/'.$transect->thumbnail->uuid.'.'.config('thumbnails.format')) }}"  onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                 @else
