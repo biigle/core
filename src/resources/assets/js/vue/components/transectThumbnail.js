@@ -4,9 +4,10 @@
  *
  * @type {Object}
  */
-biigle.transects.components.thumbnail = {
+biigle.projects.components.transectThumbnail = {
     template:
     '<figure class="transect-thumbnail" v-bind:class="{loading: loading}" v-on:mouseover="fetchUuids" v-on:mousemove="updateIndex($event)" v-on:click="clearTimeout" v-on:mouseout="clearTimeout">' +
+        '<span class="transect-thumbnail__close close" v-if="removable" v-on:click.prevent="remove" v-bind:title="removeTitle">&times;</span>' +
         '<slot></slot>' +
         '<div class="transect-thumbnail__images" v-if="initialized">' +
             '<img v-on:error="failed[i] = true" v-bind:class="{hidden: thumbHidden(i)}" v-bind:src="thumbUri(uuid)" v-for="(uuid, i) in uuids">' +
@@ -14,7 +15,28 @@ biigle.transects.components.thumbnail = {
         '<slot name="caption"></slot>' +
         '<span class="transect-thumbnail__progress" v-bind:style="{width: progress}"></span>' +
     '</figure>',
-    props: ['tid', 'uri', 'format'],
+    props: {
+        tid: {
+            type: Number,
+            required: true
+        },
+        uri: {
+            type: String,
+            required: true
+        },
+        format: {
+            type: String,
+            required: true
+        },
+        removable: {
+            type: Boolean,
+            default: false
+        },
+        removeTitle: {
+            type: String,
+            default: 'Remove this transect'
+        }
+    },
     data: function () {
         return {
             // The thumbnail UUIDs to display.
@@ -80,6 +102,10 @@ biigle.transects.components.thumbnail = {
                 this.timeoutId = null;
                 this.loading = false;
             }
+        },
+        remove: function () {
+            this.clearTimeout();
+            this.$emit('remove', this.tid);
         }
     }
 };

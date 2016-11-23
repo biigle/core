@@ -5,7 +5,7 @@ biigle.$viewModel('projects-dashboard-main', function (element) {
     new Vue({
         el: element,
         components: {
-            transectThumbnail: biigle.transects.components.thumbnail
+            transectThumbnail: biigle.projects.components.transectThumbnail
         }
     });
 });
