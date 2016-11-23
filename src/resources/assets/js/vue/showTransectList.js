@@ -8,10 +8,15 @@ biigle.$viewModel('projects-show-transect-list', function (element) {
             project: biigle.projects.project,
             transects: biigle.projects.transects,
             editing: false,
-            loading: false
+            loading: false,
+            fetchedAttachableTransects: false,
+            attachableTransects: [],
+            // emplate for the attachable transects typeahead
+            template: '<span v-text="item.name"></span>'
         },
         components: {
-            transectThumbnail: biigle.projects.components.transectThumbnail
+            transectThumbnail: biigle.projects.components.transectThumbnail,
+            typeahead: VueStrap.typeahead
         },
         methods: {
             removeTransect: function (id) {
@@ -43,18 +48,56 @@ biigle.$viewModel('projects-show-transect-list', function (element) {
             spliceTransect: function (id) {
                 for (var i = this.transects.length - 1; i >= 0; i--) {
                     if (this.transects[i].id === id) {
+                        this.attachableTransects.unshift(this.transects[i]);
                         this.transects.splice(i, 1);
                     }
                 }
             },
             edit: function () {
                 this.editing = !this.editing;
+                if (!this.fetchedAttachableTransects) {
+                    this.fetchedAttachableTransects = true;
+                    this.fetchAttachableTransects();
+                }
             },
             startLoading: function () {
                 this.loading = true;
             },
             quitLoading: function () {
                 this.loading = false;
+            },
+            hasTransect: function (id) {
+                for (var i = this.transects.length - 1; i >= 0; i--) {
+                    if (this.transects[i].id === id) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
+            attachTransect: function (transect, typeahead) {
+                typeahead.reset();
+                if (transect && !this.hasTransect(transect.id)) {
+                    var self = this;
+                    this.startLoading();
+                    biigle.api.projectTransects.attach({pid: this.project.id, id: transect.id}, {})
+                        .then(function () {
+                            self.transects.unshift(transect);
+                            for (var i = self.attachableTransects.length - 1; i >= 0; i--) {
+                                if (self.attachableTransects[i].id === transect.id) {
+                                    self.attachableTransects.splice(i, 1);
+                                }
+                            }
+                        }, biigle.messages.store.handleErrorResponse)
+                        .finally(this.quitLoading);
+                }
+            },
+            fetchAttachableTransects: function () {
+                var self = this;
+                biigle.api.attachableTransects.get({id: this.project.id})
+                    .then(function (response) {
+                        self.attachableTransects = response.data;
+                    }, biigle.messages.store.handleErrorResponse);
             }
         }
     });

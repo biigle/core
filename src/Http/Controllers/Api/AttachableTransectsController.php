@@ -25,7 +25,12 @@ class AttachableTransectsController extends Controller
      * [
      *    {
      *       "id": 1,
-     *       "name": "My other transect"
+     *       "name": "My other transect",
+     *       "thumbnail": {
+     *           "id": 12,
+     *           "filename": "image.jpg",
+     *           "uuid": "7ae57f55-6fd6-4857-a3ff-a3c9a099349b"
+     *       }
      *    }
      * ]
      *
@@ -39,7 +44,7 @@ class AttachableTransectsController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
 
-        return Transect::select('id', 'name')
+        $transects = Transect::select('id', 'name')
             // All transects of other projects where the user has admin rights on.
             ->whereIn('id', function ($query) use ($auth, $id) {
                 return $query->select('transect_id')
@@ -63,5 +68,11 @@ class AttachableTransectsController extends Controller
             })
             ->distinct()
             ->get();
+
+        $transects->each(function ($item) {
+            $item->append('thumbnail');
+        });
+
+        return $transects;
     }
 }

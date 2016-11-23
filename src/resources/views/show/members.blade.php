@@ -41,7 +41,6 @@
                         <span class="text-muted" data-ng-bind="getRole(member.project_role_id)"></span>
                     </span>
                 </span>
-                </span>
                 <span data-ng-bind="member.firstname"></span> <span data-ng-bind="member.lastname"></span> <span class="text-muted" data-ng-if="isOwnUser(member)">(you)</span>
             </li>
         @else

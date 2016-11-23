@@ -32,6 +32,7 @@ class ProjectsModuleHttpControllersApiAttachableTransectsControllerTest extends 
         $this->seeJsonEquals([[
             'id' => $validTransect->id,
             'name' => $validTransect->name,
+            'thumbnail' => null
         ]]);
     }
 }
