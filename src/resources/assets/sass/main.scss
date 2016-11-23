@@ -30,5 +30,17 @@
     text-align: center;
 }
 
+.transect-thumbnail--projects {
+    height: 150px;
+    margin: 15px 0;
+}
+
+.transects-panel {
+    .panel-body {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+}
+
 @import 'components/thumbnail';
 @import 'index';

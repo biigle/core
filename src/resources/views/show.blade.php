@@ -9,6 +9,7 @@
 
 @push('scripts')
 <script src="{{ cachebust_asset('vendor/projects/scripts/main.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/projects/scripts/vue.js') }}"></script>
 <script type="text/javascript">
     angular.module('dias.projects').constant('PROJECT', {!!$project!!});
     angular.module('dias.projects').constant('USER_ID', {!! $user->id !!});
@@ -16,8 +17,10 @@
     angular.module('dias.projects').constant('ROLES', {!! $roles !!});
     angular.module('dias.projects').constant('DEFAULT_ROLE_ID', {!! Dias\Role::$guest->id !!});
     angular.module('dias.projects').constant('LABEL_TREES', {!! $labelTrees !!});
-    angular.module('dias.projects').constant('TRANSECTS', {!! $transects !!});
     angular.module('dias.projects').constant('MEMBERS', {!! $members !!});
+
+    biigle.projects.transects = {!! $transects !!};
+    biigle.projects.project = {!!$project!!};
 </script>
 @foreach ($modules->getMixins('projectsShowScripts') as $module => $nestedMixins)
     @include($module.'::projectsShowScripts')

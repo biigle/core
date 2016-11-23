@@ -47,6 +47,10 @@ class ProjectsController extends Controller
             ->orderBy('updated_at', 'desc')
             ->get();
 
+        $transects->each(function ($item) {
+            $item->append('thumbnail');
+        });
+
         $members = $project->users()
             ->select('id', 'firstname', 'lastname', 'project_role_id')
             ->orderBy('project_user.project_role_id', 'asc')
