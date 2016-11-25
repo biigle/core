@@ -24,7 +24,7 @@
     @endcan
     <div class="panel-body container-fluid transects-grid">
         <div class="row">
-            <div class="col-sm-6" v-for="transect in transects" v-cloak>
+            <div class="col-sm-6" v-for="transect in transects" v-bind:key="transect.id" v-cloak>
                 <a class="transect-thumbnail__link" v-bind:href="'{{route('transect', '')}}/'+transect.id" v-bind:title="'Show transect '+transect.name">
                     <transect-thumbnail class="transect-thumbnail transect-thumbnail--projects" v-bind:tid="transect.id" uri="{{ asset(config('thumbnails.uri')) }}" format="{{ config('thumbnails.format') }}" @can('update', $project) v-bind:removable="editing" v-bind:remove-title="'Detach transect '+transect.name" @endcan v-on:remove="removeTransect">
                         <img v-if="transect.thumbnail" v-bind:src="'{{ asset(config('thumbnails.uri')) }}/'+transect.thumbnail.uuid+'.{{ config('thumbnails.format') }}'" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
