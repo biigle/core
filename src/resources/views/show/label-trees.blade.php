@@ -3,7 +3,7 @@
         Label Trees
         @can('update', $project)
             <span class="pull-right">
-                <span class="ng-cloak" data-ng-if="isLoading()">loading...</span>
+                <span class="loader" data-ng-class="{'loader--active':isLoading()}"></span>
                 <button class="btn btn-default btn-xs" title="Attach/detach label trees" data-ng-click="toggleEditing()" data-ng-class="{active: isEditing()}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
             </span>
         @endcan
