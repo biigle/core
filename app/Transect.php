@@ -385,7 +385,7 @@ class Transect extends Model
         return Cache::remember("transect-thumbnail-{$this->id}", 60, function () {
             // Choose an image from the middle of the transect because the first and last
             // ones are often of bad quality.
-            $index = round($this->images->count() / 2) - 1;
+            $index = round($this->images()->count() / 2) - 1;
 
             return $this->orderedImages()->skip($index)->first();
         });
