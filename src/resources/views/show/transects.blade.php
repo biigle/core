@@ -13,9 +13,9 @@
     </div>
     @can('update', $project)
         <div class="panel-body" v-if="editing" v-cloak>
-            <form class="" v-on:submit.prevent="attachTransect">
+            <form v-on:submit.prevent="attachTransect">
                 <label>Transect to attach</label>
-                <typeahead class="transects-typeahead" :data="attachableTransects" placeholder="My transect name" :on-hit="attachTransect" :template="template"></typeahead>
+                <typeahead class="transects-typeahead" v-bind:data="attachableTransects" placeholder="Transect name" v-bind:on-hit="attachTransect" v-bind:template="template" match-property="name"></typeahead>
                 <p class="help-block">
                     Transects can be shared between projects. Here you can attach transects from other projects to this project. To attach a transect, you need to be admin in one of the projects, the transect is already attached to.
                 </p>
