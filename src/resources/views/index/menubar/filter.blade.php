@@ -39,7 +39,7 @@
                 <button type="button" class="btn btn-default" title="Clear all filter rules" data-ng-click="resetFiltering()" data-ng-disabled="!active()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
             </div>
             <div class="pull-right ng-cloak text-muted">
-                <span data-ng-if="rulesLoading()">loading...</span>
+                <span class="loader" data-ng-class="{'loader--active':rulesLoading()}"></span>
                 <span data-ng-if="!rulesLoading()"><span data-ng-bind="numberImages()"></span> of {{ $transect->images->count() }} images</span>
             </div>
         </div>

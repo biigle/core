@@ -14,7 +14,9 @@
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-default" title="Reset sorting" data-ng-click="resetSorting()" data-ng-disabled="!active()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
             </div>
-            <span class="pull-right text-muted" data-ng-if="isLoading()">loading...</span>
+            <span class="pull-right">
+                <span class="loader" data-ng-class="{'loader--active':isLoading()}"></span>
+            </span>
         </div>
 
         <div class="list-group sorter-list-group">

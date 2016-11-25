@@ -44,6 +44,6 @@
             </ul>
             <span data-ng-switch-default="">No image labels</span>
         </div>
-        <span data-ng-switch-default="">loading...</span>
+        <span class="loader loader--active" data-ng-switch-default=""></span>
     </div>
 </script>
