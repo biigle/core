@@ -22,7 +22,7 @@
         </div>
         <div data-ng-switch-default="" data-ng-switch="isLoading()">
             <div class="alert alert-info ng-cloak" data-ng-switch-when="true">
-                loading...
+                <span class="loader loader--active"></span>
             </div>
             <div class="alert alert-info ng-cloak" data-ng-switch-default="" data-ng-if="!annotationsExist()">
                 There are no annotations with the label <strong data-ng-bind="getSelectedLabelName()"></strong>.
