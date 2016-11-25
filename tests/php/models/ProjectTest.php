@@ -261,6 +261,11 @@ class ProjectTest extends ModelTestCase
         $this->assertTrue($project->labelTrees()->where('id', $tree->id)->exists());
     }
 
+    public function testGetThumbnailAttributeNull()
+    {
+        $this->assertEquals(null, $this->model->thumbnail);
+    }
+
     public function testGetThumbnailAttribute()
     {
         $i1 = ImageTest::create();

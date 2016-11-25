@@ -383,7 +383,11 @@ class Transect extends Model
     public function getThumbnailAttribute()
     {
         return Cache::remember("transect-thumbnail-{$this->id}", 60, function () {
-            return $this->orderedImages()->first();
+            // Choose an image from the middle of the transect because the first and last
+            // ones are often of bad quality.
+            $index = round($this->images->count() / 2) - 1;
+
+            return $this->orderedImages()->skip($index)->first();
         });
     }
 }

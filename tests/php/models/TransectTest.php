@@ -380,6 +380,11 @@ class TransectTest extends ModelTestCase
         $this->assertEquals('a.jpg', $this->model->orderedImages()->first()->filename);
     }
 
+    public function testGetThumbnailAttributeNull()
+    {
+        $this->assertEquals(null, $this->model->thumbnail);
+    }
+
     public function testGetThumbnailAttribute()
     {
         $i1 = ImageTest::create([
@@ -390,7 +395,12 @@ class TransectTest extends ModelTestCase
             'filename' => 'b.jpg',
             'transect_id' => $this->model->id,
         ]);
+        $i3 = ImageTest::create([
+            'filename' => 'c.jpg',
+            'transect_id' => $this->model->id,
+        ]);
 
-        $this->assertEquals($i1->uuid, $this->model->thumbnail->uuid);
+        // should be the middle image ordered by name
+        $this->assertEquals($i2->uuid, $this->model->thumbnail->uuid);
     }
 }

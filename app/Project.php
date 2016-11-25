@@ -297,15 +297,12 @@ class Project extends Model
     public function getThumbnailAttribute()
     {
         return Cache::remember("project-thumbnail-{$this->id}", 60, function () {
-            return Image::where('transect_id', function ($query) {
-                    $query->select('transect_id')
-                        ->from('project_transect')
-                        ->orderBy('transect_id', 'asc')
-                        ->where('project_id', $this->id)
-                        ->take(1);
-                })
-                ->orderBy('filename', 'asc')
+            $transect = $this->transects()
+                ->select('id')
+                ->orderBy('id')
                 ->first();
+
+            return $transect ? $transect->thumbnail : null;
         });
     }
 }
