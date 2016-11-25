@@ -2,14 +2,14 @@
     <div class="panel-heading">
         Authorized Projects
         <span class="pull-right">
-            <span class="ng-cloak" data-ng-if="isLoading()">loading...</span>
+            <span class="loader" data-ng-class="{'loader--active':isLoading()}"></span>
             <button class="btn btn-default btn-xs" title="Edit authorized projects" data-ng-click="toggleEditing()" data-ng-class="{active: isEditing()}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
         </span>
     </div>
     <div data-ng-if="isEditing()" class="panel-body ng-cloak">
         <form class="form-inline">
             <div class="form-group">
-                <input type="text" class="form-control" id="new-authorized-project" placeholder="Search your projects" data-ng-model="selected.project" data-uib-typeahead="project as project.name for project in getProjectsForAuthorization() | filter:$viewValue | limitTo:10" data-typeahead-on-select="addAuthorizedProject($item)" title="Authorize one of your projects to use this tree" />
+                <input type="text" class="form-control" id="new-authorized-project" placeholder="Project name" data-ng-model="selected.project" data-uib-typeahead="project as project.name for project in getProjectsForAuthorization() | filter:$viewValue | limitTo:10" data-typeahead-on-select="addAuthorizedProject($item)" title="Authorize one of your projects to use this tree" />
             </div>
         </form>
     </div>
