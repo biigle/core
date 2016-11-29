@@ -19,6 +19,14 @@ class AppServiceProvider extends ServiceProvider
             // Make authenticated user available in any view.
             $view->with('user', Auth::user());
         });
+
+        // Configure global proxy settings for readfile() and the likes.
+        if (env('HTTP_PROXY')) {
+            stream_context_set_default(['http' => [
+                'proxy' => 'tcp://'.env('HTTP_PROXY'),
+                'request_fulluri' => true,
+            ]]);
+        }
     }
 
     /**
