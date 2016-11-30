@@ -133,7 +133,13 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
 
         this.renderImage = function (i) {
             image = i;
-            var extentChanged = extent[2] !== image.width || extent[3] !== image.height;
+            var extentChanged = false;
+            if (extent[2] && extent[3]) {
+                // Only check this if the extent is actually initialized. If not, this
+                // is the first image to be displayed and the extent hasn't changed
+                // (and the viewport shouldn't be reset).
+                extentChanged = extent[2] !== image.width || extent[3] !== image.height;
+            }
             extent[2] = image.width;
             extent[3] = image.height;
             canvas.width = image.width;
