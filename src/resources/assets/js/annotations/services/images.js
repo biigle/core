@@ -16,6 +16,9 @@ angular.module('dias.annotations').service('images', function ($rootScope, URL, 
 		// buffer of already loaded images
 		var buffer = [];
 
+        // array of image IDs that the user hasn't seen yet
+        var notVisited = [];
+
 		// the currently shown image
 		this.currentImage = undefined;
 
@@ -63,6 +66,12 @@ angular.module('dias.annotations').service('images', function ($rootScope, URL, 
 		 */
 		var show = function (image) {
 			_this.currentImage = image;
+
+            for (var i = notVisited.length - 1; i >= 0; i--) {
+                if (notVisited[i] === image._id) {
+                    notVisited.splice(i, 1);
+                }
+            }
 
             return image;
 		};
@@ -130,6 +139,8 @@ angular.module('dias.annotations').service('images', function ($rootScope, URL, 
                 // all IDs belonging to the transect
                 imageIds = storedSequence;
             }
+
+            angular.copy(imageIds, notVisited);
 		};
 
 		/**
@@ -161,5 +172,9 @@ angular.module('dias.annotations').service('images', function ($rootScope, URL, 
 		this.getCurrentId = function () {
 			return _this.currentImage._id;
 		};
+
+        this.hasUnvisitedImages = function () {
+            return notVisited.length !== 0;
+        };
 	}
 );

@@ -12,6 +12,8 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
         // the scope of the angular app
         var navbarFilename = document.querySelector('.navbar-annotations-filename');
 
+        var hasShownVisitedImagesMessage = false;
+
         $scope.imageLoading = true;
 
         var updateNavbarFilename = function (image) {
@@ -26,6 +28,11 @@ angular.module('dias.annotations').controller('AnnotatorController', function ($
             mapImage.renderImage(image);
             annotations.show(image._id);
             $scope.$broadcast('image.shown', image);
+
+            if (!hasShownVisitedImagesMessage && !images.hasUnvisitedImages()) {
+                msg.info("You have now seen all images of this batch.");
+                hasShownVisitedImagesMessage = true;
+            }
 
             return image;
         };
