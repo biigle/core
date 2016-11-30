@@ -28,7 +28,7 @@ $router->group([
         'uses' => 'AteController@saveTransect',
     ]);
 
-    $router->get('transects/{tid}/annotations/filter/label/{lid}', [
+    $router->get('transects/{id}/annotations/filter/label/{id2}', [
         'uses' => 'TransectsAnnotationsController@filter',
     ]);
 
@@ -36,7 +36,7 @@ $router->group([
         'uses' => 'AteController@saveProject',
     ]);
 
-    $router->get('projects/{pid}/annotations/filter/label/{lid}', [
+    $router->get('projects/{id}/annotations/filter/label/{id2}', [
         'uses' => 'ProjectsAnnotationsController@filter',
     ]);
 });
