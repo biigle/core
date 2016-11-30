@@ -133,6 +133,7 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
 
         this.renderImage = function (i) {
             image = i;
+            var extentChanged = extent[2] !== image.width || extent[3] !== image.height;
             extent[2] = image.width;
             extent[3] = image.height;
             canvas.width = image.width;
@@ -159,8 +160,9 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             }));
 
             var center = viewport.getCenter();
-            if (center[0] === undefined || center[1] === undefined) {
-                // viewport center is still uninitialized
+            // Set viewport to center of the extent if the image dimensions changed or
+            // the center is still uninitialized.
+            if (extentChanged || (center[0] === undefined || center[1] === undefined)) {
                 center = ol.extent.getCenter(extent);
             }
 
