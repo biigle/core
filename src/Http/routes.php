@@ -1,10 +1,5 @@
 <?php
 
-$router->get('manual/tutorials/label-trees/{name}', [
-    'as'   => 'manual-tutorials-label-trees',
-    'uses' => 'LabelTreesController@tutorial',
-]);
-
 $router->group(['middleware' => 'auth'], function ($router) {
     $router->get('label-trees', [
         'as'   => 'label-trees-index',

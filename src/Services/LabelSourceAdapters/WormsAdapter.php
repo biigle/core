@@ -2,11 +2,11 @@
 
 namespace Dias\Modules\LabelTrees\Services\LabelSourceAdapters;
 
-use Dias\Contracts\LabelSourceAdapterContract;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use SoapClient;
 use Dias\Label;
+use Illuminate\Http\Request;
+use Dias\Contracts\LabelSourceAdapterContract;
+use Illuminate\Validation\ValidationException;
 
 /**
  * WoRMS label source adapter
