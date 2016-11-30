@@ -1,5 +1,5 @@
 <h4>
-    <a href="{{route('manual-tutorials-annotations', 'annotate-an-image')}}">Annotate an image</a>
+    <a href="{{route('manual-tutorials', ['annotations', 'annotate-an-image'])}}">Annotate an image</a>
 </h4>
 
 <p>
@@ -7,7 +7,7 @@
 </p>
 
 <h4>
-    <a href="{{route('manual-tutorials-annotations', 'image-section-cycle-mode')}}">Efficiently annotate images</a>
+    <a href="{{route('manual-tutorials', ['annotations', 'image-section-cycle-mode'])}}">Efficiently annotate images</a>
 </h4>
 
 <p>
@@ -15,7 +15,7 @@
 </p>
 
 <h4>
-    <a href="{{route('manual-tutorials-annotations', 'setting-image-labels')}}">Setting Image Labels</a>
+    <a href="{{route('manual-tutorials', ['annotations', 'setting-image-labels'])}}">Setting Image Labels</a>
 </h4>
 
 <p>
@@ -23,7 +23,7 @@
 </p>
 
 <h4>
-    <a href="{{route('manual-tutorials-annotations', 'manipulate-an-annotation')}}">Manipulate an annotation</a>
+    <a href="{{route('manual-tutorials', ['annotations', 'manipulate-an-annotation'])}}">Manipulate an annotation</a>
 </h4>
 
 <p>
@@ -31,7 +31,7 @@
 </p>
 
 <h4>
-    <a href="{{route('manual-tutorials-annotations', 'shortcuts')}}">Annotator shortcuts</a>
+    <a href="{{route('manual-tutorials', ['annotations', 'shortcuts'])}}">Annotator shortcuts</a>
 </h4>
 
 <p>

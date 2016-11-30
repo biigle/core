@@ -13,11 +13,6 @@ $router->get('annotations/{id}', [
     'uses' => 'AnnotationController@show',
 ]);
 
-$router->get('manual/tutorials/annotations/{name}', [
-    'as'   => 'manual-tutorials-annotations',
-    'uses' => 'AnnotationController@tutorial',
-]);
-
 $router->group([
     'middleware' => 'auth.api',
     'namespace' => 'Api',
