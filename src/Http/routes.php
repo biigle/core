@@ -45,11 +45,11 @@ $router->group([
         'uses' => 'TransectImageController@hasLabel'
     ]);
 
-    $router->get('transects/{tid}/images/filter/image-label-user/{uid}', [
+    $router->get('transects/{id}/images/filter/image-label-user/{id2}', [
         'uses' => 'TransectImageController@hasImageLabelUser'
     ]);
 
-    $router->get('transects/{tid}/images/filter/image-label/{lid}', [
+    $router->get('transects/{id}/images/filter/image-label/{id2}', [
         'uses' => 'TransectImageController@hasImageLabel'
     ]);
 
