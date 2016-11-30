@@ -28,11 +28,11 @@ $router->group([
         'uses' => 'TransectImageController@hasAnnotation'
     ]);
 
-    $router->get('transects/{tid}/images/filter/annotation-user/{uid}', [
+    $router->get('transects/{id}/images/filter/annotation-user/{id2}', [
         'uses' => 'TransectImageController@hasAnnotationUser'
     ]);
 
-    $router->get('transects/{tid}/images/filter/annotation-label/{lid}', [
+    $router->get('transects/{id}/images/filter/annotation-label/{id2}', [
         'uses' => 'TransectImageController@hasAnnotationLabel'
     ]);
 
