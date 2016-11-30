@@ -23,7 +23,12 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // sometimes there are multiple IDs in the same route but they cannot have the
+        // same name
+        Route::patterns([
+            'id' => '[0-9]+',
+            'id2' => '[0-9]+',
+        ]);
 
         parent::boot();
     }

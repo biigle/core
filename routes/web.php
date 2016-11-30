@@ -130,62 +130,76 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
 $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'auth.api'], function ($router) {
     $router->resource('annotations', 'AnnotationController', [
         'only' => ['show', 'update', 'destroy'],
+        'parameters' => ['annotations' => 'id'],
     ]);
 
     $router->resource('annotations.labels', 'AnnotationLabelController', [
         'only' => ['index', 'store'],
+        'parameters' => ['annotations' => 'id'],
     ]);
 
     $router->resource('annotation-labels', 'AnnotationLabelController', [
         'only' => ['update', 'destroy'],
+        'parameters' => ['annotation-labels' => 'id'],
     ]);
 
     $router->resource('annotation-sessions', 'AnnotationSessionController', [
         'only' => ['update', 'destroy'],
+        'parameters' => ['annotation-sessions' => 'id'],
     ]);
 
     $router->get('images/{id}/thumb', 'ImageController@showThumb');
     $router->get('images/{id}/file', 'ImageController@showFile');
     $router->resource('images', 'ImageController', [
         'only' => ['show', 'destroy'],
+        'parameters' => ['images' => 'id'],
     ]);
 
     $router->resource('images.annotations', 'ImageAnnotationController', [
         'only' => ['index', 'store'],
+        'parameters' => ['images' => 'id'],
     ]);
 
     $router->resource('images.labels', 'ImageLabelController', [
         'only' => ['index', 'store'],
+        'parameters' => ['images' => 'id'],
     ]);
 
     $router->resource('image-labels', 'ImageLabelController', [
         'only' => ['destroy'],
+        'parameters' => ['image-labels' => 'id'],
     ]);
 
     $router->resource('labels', 'LabelController', [
         'only' => ['destroy'],
+        'parameters' => ['labels' => 'id'],
     ]);
 
     $router->get('label-sources/{id}/find', 'LabelSourceController@find');
 
     $router->resource('label-trees', 'LabelTreeController', [
         'only' => ['index', 'show', 'store', 'update', 'destroy'],
+        'parameters' => ['label-trees' => 'id'],
     ]);
 
     $router->resource('label-trees.authorized-projects', 'LabelTreeAuthorizedProjectController', [
         'only' => ['store', 'destroy'],
+        'parameters' => ['label-trees' => 'id', 'authorized-projects' => 'id2'],
     ]);
 
     $router->resource('label-trees.labels', 'LabelTreeLabelController', [
         'only' => ['store'],
+        'parameters' => ['label-trees' => 'id'],
     ]);
 
     $router->resource('label-trees.users', 'LabelTreeUserController', [
         'only' => ['store', 'update', 'destroy'],
+        'parameters' => ['label-trees' => 'id', 'users' => 'id2'],
     ]);
 
     $router->resource('media-types', 'MediaTypeController', [
         'only' => ['index', 'show'],
+        'parameters' => ['media-types' => 'id'],
     ]);
 
     $router->resource('notifications', 'NotificationController', [
@@ -195,54 +209,64 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
     $router->get('projects/my', 'ProjectController@index');
     $router->resource('projects', 'ProjectController', [
         'only' => ['show', 'update', 'store', 'destroy'],
+        'parameters' => ['projects' => 'id'],
     ]);
 
     $router->get(
-        'projects/{pid}/label-trees/available',
+        'projects/{id}/label-trees/available',
         'ProjectLabelTreeController@available'
     );
     $router->resource('projects.label-trees', 'ProjectLabelTreeController', [
         'only' => ['index', 'store', 'destroy'],
+        'parameters' => ['projects' => 'id', 'label-trees' => 'id2'],
     ]);
 
     $router->post(
-        'projects/{pid}/transects/{tid}',
+        'projects/{id}/transects/{id2}',
         'ProjectTransectController@attach'
     );
     $router->resource('projects.transects', 'ProjectTransectController', [
         'only' => ['index', 'store', 'destroy'],
+        'parameters' => ['projects' => 'id', 'transects' => 'id2'],
     ]);
 
     $router->post(
-        'projects/{pid}/users/{uid}',
+        'projects/{id}/users/{id2}',
         'ProjectUserController@attach'
     );
     $router->resource('projects.users', 'ProjectUserController', [
         'only' => ['index', 'update', 'destroy'],
+        'parameters' => ['projects' => 'id', 'users' => 'id2'],
     ]);
 
     $router->resource('roles', 'RoleController', [
         'only' => ['index', 'show'],
+        'parameters' => ['roles' => 'id'],
     ]);
 
     $router->resource('shapes', 'ShapeController', [
         'only' => ['index', 'show'],
+        'parameters' => ['shapes' => 'id'],
     ]);
 
     $router->resource('system-messages', 'SystemMessageController', [
         'only' => ['store', 'update', 'destroy'],
+        'parameters' => ['system-messages' => 'id'],
     ]);
 
     $router->resource('transects', 'TransectController', [
         'only' => ['show', 'update'],
+        'parameters' => ['transects' => 'id'],
     ]);
 
     $router->resource('transects.annotation-sessions', 'TransectAnnotationSessionController', [
         'only' => ['index', 'store'],
+        'parameters' => ['transects' => 'id'],
     ]);
 
     $router->resource('transects.images', 'TransectImageController', [
         'only' => ['index', 'store'],
+        'parameters' => ['transects' => 'id'],
     ]);
 
     $router->get('users/find/{pattern}', 'UserController@find');
@@ -252,14 +276,17 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
     $router->delete('users/my', 'UserController@destroyOwn');
 
     $router->resource('api-tokens', 'ApiTokenController', [
-        'only' => ['index', 'store', 'destroy']
+        'only' => ['index', 'store', 'destroy'],
+        'parameters' => ['api-tokens' => 'id'],
     ]);
 
     $router->resource('users', 'UserController', [
         'only' => ['index', 'show', 'update', 'store', 'destroy'],
+        'parameters' => ['users' => 'id'],
     ]);
 
     $router->resource('visibilities', 'VisibilityController', [
         'only' => ['index', 'show'],
+        'parameters' => ['visibilities' => 'id'],
     ]);
 });
