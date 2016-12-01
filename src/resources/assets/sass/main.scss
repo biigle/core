@@ -169,6 +169,16 @@ html, body {
     &, a {
         color: #ccc;
     }
+
+    // make dropdown visible despite overflow:hidden
+    .dropdown {
+        position: static;
+
+        .dropdown-menu {
+            left: auto;
+            top: auto;
+        }
+    }
 }
 
 
