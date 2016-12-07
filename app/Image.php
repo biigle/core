@@ -84,6 +84,8 @@ class Image extends Model
      */
     protected $casts = [
         'attrs' => 'array',
+        'lat' => 'float',
+        'lng' => 'float',
     ];
 
     /**
