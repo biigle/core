@@ -15,7 +15,7 @@ angular.module('dias.annotations').controller('CanvasController', function ($sco
             var emit = function () {
                 $scope.$emit('canvas.moveend', {
                     center: mapView.getCenter(),
-                    zoom: mapView.getZoom()
+                    zoom: Math.round(mapView.getZoom())
                 });
             };
 
