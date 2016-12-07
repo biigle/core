@@ -47,7 +47,6 @@ class Image extends Model
         'Make',
         'Model',
         'Orientation',
-        'DateTime',
         'ExposureTime',
         'FNumber',
         'ShutterSpeedValue',
