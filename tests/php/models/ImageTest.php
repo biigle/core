@@ -172,4 +172,22 @@ class ImageTest extends ModelTestCase
         $this->model->save();
         $this->assertEquals(['a', 'b', 'c'], $this->model->fresh()->attrs);
     }
+
+    public function testTakenAt()
+    {
+        $now = Carbon\Carbon::now();
+        $this->model->taken_at = $now;
+        $this->model->save();
+        $this->assertEquals($now, $this->model->fresh()->taken_at);
+    }
+
+    public function testLatLng()
+    {
+        $this->model->lat = 55.5;
+        $this->model->lng = 44.4;
+        $this->model->save();
+        $this->model = $this->model->fresh();
+        $this->assertEquals(55.5, $this->model->lat);
+        $this->assertEquals(44.4, $this->model->lng);
+    }
 }
