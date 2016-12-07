@@ -21,15 +21,24 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
     private $transect;
 
     /**
+     * Array of image IDs to restrict the collecting of meta info to.
+     * If it is empty, all images of the transect will be taken.
+     *
+     * @var array
+     */
+    private $only;
+
+    /**
      * Create a new job instance.
      *
      * @param Transect $transect The transect for which the image meta info should be collected.
      *
      * @return void
      */
-    public function __construct(Transect $transect)
+    public function __construct(Transect $transect, array $only = [])
     {
         $this->transect = $transect;
+        $this->only = $only;
     }
 
     /**
@@ -44,7 +53,12 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
             return;
         }
 
-        $images = $this->transect->images()->select('id', 'filename')->get();
+        $images = $this->transect->images()
+            ->select('id', 'filename')
+            ->when($this->only, function ($query) {
+                return $query->whereIn('id', $this->only);
+            })
+            ->get();
 
         foreach ($images as $image) {
             $exif = exif_read_data($this->transect->url.'/'.$image->filename);
