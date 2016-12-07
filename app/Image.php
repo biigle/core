@@ -69,19 +69,12 @@ class Image extends Model
     public $timestamps = false;
 
     /**
-     * The attributes included in the model's JSON form. All other are hidden.
+     * The attributes hidden in the model's JSON form.
      *
      * @var array
      */
-    protected $visible = [
-        'id',
-        'transect',
-        'annotations',
-        'filename',
-        'exif',
-        'width',
-        'height',
-        'uuid',
+    protected $hidden = [
+        'labels',
     ];
 
     /**
