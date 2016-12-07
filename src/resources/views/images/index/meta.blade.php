@@ -3,27 +3,29 @@
         <div class="panel-heading">
             <h3 class="panel-title">Meta info</h3>
         </div>
-        <table class="table">
-            <tr>
-                <th>Transect</th>
-                <td>
-                    <a href="{{route('transect', $transect->id)}}">{{ $transect->name }}</a>
-                </td>
-            </tr>
-            <tr>
-                <th>Filename</th>
-                <td>{{ $image->filename }}</td>
-            </tr>
-            <tr>
-                <th>Dimensions</th>
-                <td>{{ $image->width }} &times; {{ $image->height }} px</td>
-            </tr>
-            @if (is_array($image->exif) && array_key_exists('FileSize', $image->exif))
+        <div class="table-responsive">
+            <table class="table">
                 <tr>
-                    <th>Size</th>
-                    <td>{{ round($image->exif['FileSize'] / 1e6, 2) }} MByte</td>
+                    <th>Transect</th>
+                    <td>
+                        <a href="{{route('transect', $transect->id)}}">{{ $transect->name }}</a>
+                    </td>
                 </tr>
-            @endif
-        </table>
+                <tr>
+                    <th>Filename</th>
+                    <td>{{ $image->filename }}</td>
+                </tr>
+                <tr>
+                    <th>Dimensions</th>
+                    <td>{{ $image->width }} &times; {{ $image->height }} px</td>
+                </tr>
+                @if (is_array($image->exif) && array_key_exists('FileSize', $image->exif))
+                    <tr>
+                        <th>Size</th>
+                        <td>{{ round($image->exif['FileSize'] / 1e6, 2) }} MByte</td>
+                    </tr>
+                @endif
+            </table>
+        </div>
     </div>
 </div>

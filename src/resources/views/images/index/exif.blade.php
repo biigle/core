@@ -8,16 +8,18 @@
                 EXIF data is not available for images of remote transects.
             </div>
         @else
-            <table class="table">
-                @forelse (array_only($image->exif, $exifKeys) as $field => $value)
-                    <tr>
-                        <th>{{ $field }}</th>
-                        <td>{{ $value }}</td>
-                    </tr>
-                @empty
-                    <tr><td>No EXIF data</td></tr>
-                @endforelse
-            </table>
+            <div class="table-responsive">
+                <table class="table">
+                    @forelse (array_only($image->exif, $exifKeys) as $field => $value)
+                        <tr>
+                            <th>{{ $field }}</th>
+                            <td>{{ $value }}</td>
+                        </tr>
+                    @empty
+                        <tr><td>No EXIF data</td></tr>
+                    @endforelse
+                </table>
+            </div>
         @endif
     </div>
 </div>
