@@ -216,16 +216,11 @@ class TransectTest extends ModelTestCase
         $this->model->validateImages([]);
     }
 
-    public function testGenerateThumbnails()
+    public function testHandleNewImages()
     {
         $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
-        $this->model->generateThumbnails();
-    }
-
-    public function testGenerateThumbnailsOnly()
-    {
-        $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
-        $this->model->generateThumbnails([1, 2]);
+        $this->expectsJobs(\Dias\Jobs\CollectImageMetaInfo::class);
+        $this->model->HandleNewImages();
     }
 
     public function testCastsAttrs()

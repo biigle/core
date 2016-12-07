@@ -85,7 +85,7 @@ class TransectController extends Controller
 
         // do this *after* saving
         if ($newUrl) {
-            $transect->generateThumbnails();
+            $transect->handleNewImages();
         }
 
         if (!static::isAutomatedRequest($request)) {
