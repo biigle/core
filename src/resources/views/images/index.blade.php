@@ -3,6 +3,10 @@
 
 @section('title') Image {{ $image->id }}@stop
 
+@push('styles')
+    <link href="{{ cachebust_asset('vendor/transects/styles/main.css') }}" rel="stylesheet">
+@endpush
+
 @section('content')
 <div class="container">
     <div class="row">
@@ -22,7 +26,6 @@
                 <img class="img-responsive" src="{{ url('api/v1/images/'.$image->id.'/file') }}">
             </div>
             @include('transects::images.index.meta')
-            @include('transects::images.index.exif')
         </div>
         <div class="col-sm-6 col-lg-8">
             <div class="row">
@@ -32,5 +35,12 @@
             </div>
         </div>
     </div>
+</div>
+@endsection
+
+@section('navbar')
+<div class="navbar-text navbar-transects-breadcrumbs">
+    @include('transects::partials.projectsBreadcrumb', ['projects' => $transect->projects])/ <a href="{{route('transect', $transect->id)}}" class="navbar-link" title="Show transect {{$transect->name}}">{{$transect->name}}</a>
+    / <strong title="{{$image->filename}}">{{$image->filename}}</strong>
 </div>
 @endsection
