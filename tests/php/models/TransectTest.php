@@ -398,4 +398,17 @@ class TransectTest extends ModelTestCase
         // should be the middle image ordered by name
         $this->assertEquals($i2->uuid, $this->model->thumbnail->uuid);
     }
+
+    public function testHasGeoInfo()
+    {
+        $this->assertFalse($this->model->hasGeoInfo());
+        ImageTest::create([
+            'lng' => 5.5,
+            'lat' => 5.5,
+            'transect_id' => $this->model->id,
+        ]);
+        $this->assertFalse($this->model->hasGeoInfo());
+        $this->model->flushGeoInfoCache();
+        $this->assertTrue($this->model->hasGeoInfo());
+    }
 }

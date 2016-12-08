@@ -393,6 +393,26 @@ class Transect extends Model
     }
 
     /**
+     * Check if the transect has some images with GPS coordinates
+     *
+     * @return boolean
+     */
+    public function hasGeoInfo()
+    {
+        return Cache::remember("transect-{$this->id}-has-geo-info", 60, function () {
+            return $this->images()->whereNotNull('lng')->whereNotNull('lat')->exists();
+        });
+    }
+
+    /**
+     * Flush the cached information if this transect has images with GPS coordinates
+     */
+    public function flushGeoInfoCache()
+    {
+        Cache::forget("transect-{$this->id}-has-geo-info");
+    }
+
+    /**
      * (Re-) generates the thumbnail images for all images belonging to this transect
      *
      * @param array $only (optional) Array of image IDs to restrict the (re-)generation

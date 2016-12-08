@@ -83,6 +83,8 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
 
             $image->save();
         }
+
+        $this->transect->flushGeoInfoCache();
     }
 
     /**
