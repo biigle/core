@@ -1,7 +1,7 @@
 @extends('app')
 @inject('modules', 'Dias\Services\Modules')
 
-@section('title') Image {{ $image->id }}@stop
+@section('title'){{ $image->filename }}@stop
 
 @push('styles')
     <link href="{{ cachebust_asset('vendor/transects/styles/main.css') }}" rel="stylesheet">
@@ -11,7 +11,7 @@
 <div class="container">
     <div class="row">
         <h2 class="col-lg-12 clearfix">
-            Image <small title="Image ID {{ $image->id }}">#{{ $image->id }}</small>
+            {{ $image->filename }}
             <span class="pull-right">
                 <a href="{{route('transect', $transect->id)}}" title="Back to {{ $transect->name }}" class="btn btn-default">back</a>
                 @foreach ($modules->getMixins('imagesIndexButtons') as $module => $nestedMixins)

@@ -2,6 +2,7 @@
 
 namespace Dias\Modules\Transects\Http\Controllers;
 
+use File;
 use Dias\Image;
 use Dias\Http\Controllers\Views\Controller;
 
@@ -32,9 +33,12 @@ class ImageController extends Controller
 
         $image->exif = $image->getExif();
 
-        $size = $image->getSize();
-        $image->width = $size[0];
-        $image->height = $size[1];
+        if (File::exists($image->url)) {
+            $size = $image->getSize();
+            $image->width = $size[0];
+            $image->height = $size[1];
+            $image->size = round(File::size($image->url) / 1e4) / 1e2;
+        }
 
         return view('transects::images.index', [
             'image' => $image,

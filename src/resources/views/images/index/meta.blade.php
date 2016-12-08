@@ -4,14 +4,18 @@
     </div>
     <div class="table-responsive">
         <table class="table">
-            <tr>
-                <th>Dimensions</th>
-                <td>{{ $image->width }} &times; {{ $image->height }} px</td>
-            </tr>
-            <tr>
-                <th>Size</th>
-                <td>{{ round(File::size($image->url) / 1e4) / 1e2 }} MByte</td>
-            </tr>
+            @if ($image->width && $image->height)
+                <tr>
+                    <th>Dimensions</th>
+                    <td>{{ $image->width }} &times; {{ $image->height }} px</td>
+                </tr>
+            @endif
+            @if ($image->size)
+                <tr>
+                    <th>Size</th>
+                    <td>{{ $image->size }} MByte</td>
+                </tr>
+            @endif
             @if ($image->taken_at)
                 <tr>
                     <th>Created</th>
