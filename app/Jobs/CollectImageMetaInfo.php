@@ -71,6 +71,14 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
             if ($this->hasGpsInfo($exif)) {
                 $image->lng = $this->getGps($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
                 $image->lat = $this->getGps($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
+
+                // It is unlikely that the position is exactly 0. More likely is a false
+                // position if the camera sets 0 as "no position detected". So we assume
+                // the image has no position information in this case.
+                if ($image->lng === 0 && $image->lat === 0) {
+                    $image->lng = null;
+                    $image->lat = null;
+                }
             }
 
             $image->save();
