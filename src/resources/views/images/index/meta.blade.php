@@ -1,31 +1,29 @@
-<div class="col-sm-6 col-lg-4">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">Meta info</h3>
-        </div>
-        <div class="table-responsive">
-            <table class="table">
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Meta info</h3>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th>Transect</th>
+                <td>
+                    <a href="{{route('transect', $transect->id)}}">{{ $transect->name }}</a>
+                </td>
+            </tr>
+            <tr>
+                <th>Filename</th>
+                <td>{{ $image->filename }}</td>
+            </tr>
+            <tr>
+                <th>Dimensions</th>
+                <td>{{ $image->width }} &times; {{ $image->height }} px</td>
+            </tr>
+            @if ($image->taken_at)
                 <tr>
-                    <th>Transect</th>
-                    <td>
-                        <a href="{{route('transect', $transect->id)}}">{{ $transect->name }}</a>
-                    </td>
+                    <th>Created</th>
+                    <td>{{ $image->taken_at }}</td>
                 </tr>
-                <tr>
-                    <th>Filename</th>
-                    <td>{{ $image->filename }}</td>
-                </tr>
-                <tr>
-                    <th>Dimensions</th>
-                    <td>{{ $image->width }} &times; {{ $image->height }} px</td>
-                </tr>
-                @if (is_array($image->exif) && array_key_exists('FileSize', $image->exif))
-                    <tr>
-                        <th>Size</th>
-                        <td>{{ round($image->exif['FileSize'] / 1e6, 2) }} MByte</td>
-                    </tr>
-                @endif
-            </table>
-        </div>
+            @endif
+        </table>
     </div>
 </div>
