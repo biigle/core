@@ -17,15 +17,8 @@ angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSE
         // all available filters for which rules may be added
         var filters = [];
 
-        var mode = window.localStorage.getItem(modeLocalStorageKey);
-        if (!mode) {
-            mode = DEFAULT_MODE;
-        }
-
-        var rules = JSON.parse(window.localStorage.getItem(rulesLocalStorageKey));
-        if (!rules) {
-            rules = [];
-        }
+        var mode = window.localStorage.getItem(modeLocalStorageKey) || DEFAULT_MODE;
+        var rules = JSON.parse(window.localStorage.getItem(rulesLocalStorageKey)) || [];
 
         // the image IDs that should be displayed
         var ids = [];
@@ -70,20 +63,26 @@ angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSE
                 throw "A filter needs a name property";
             }
 
-            if (!newFilter.hasOwnProperty('resource')) {
-                throw "A filter needs a resource property";
+            if (!newFilter.hasOwnProperty('getSequence')) {
+                throw "A filter needs a getSequence property";
             }
 
             filters.push({
                 name: newFilter.name,
                 helpText: newFilter.helpText || '',
                 helpTextNegate: newFilter.helpTextNegate || '',
-                resource: newFilter.resource,
+                getSequence: newFilter.getSequence,
                 template: newFilter.template,
                 typeahead: newFilter.typeahead,
-                // add the transform function or use identity if there is none
-                transformData: newFilter.transformData || angular.identity
             });
+
+            if (newFilter.refreshSequence && newFilter.getSequence) {
+                for (var i = rules.length - 1; i >= 0; i--) {
+                    if (rules[i].filter.name === newFilter.name) {
+                        rules[i].ids = newFilter.getSequence(rules[i].data);
+                    }
+                }
+            }
         };
 
         this.getAll = function () {
@@ -101,19 +100,11 @@ angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSE
                 _this.removeRule(rule);
             };
 
-            var data;
-
-            try {
-                data = r.filter.transformData(r.data);
-            } catch (e) {
-                // if transforming failed, do nothing
-                var deferred = $q.defer();
-                deferred.resolve();
-                return deferred.promise;
-            }
-
-            rule.ids = r.filter.resource.query({transect_id: TRANSECT_ID, data: data}, refresh, rollback);
+            // Use this ordering of lines so the promise can be resolved immediately
+            // in the query function (e.g. if the ids are fetches from localStorage).
             rules.push(rule);
+            rule.ids = r.filter.getSequence(r.data);
+            rule.ids.$promise.then(refresh, rollback);
 
             return rule.ids.$promise;
         };
@@ -184,6 +175,8 @@ angular.module('dias.transects').service('filter', function (TRANSECT_ID, TRANSE
             _this.setMode(DEFAULT_MODE);
             refresh();
         };
+
+        this.refresh = refresh;
 
         refresh();
     }

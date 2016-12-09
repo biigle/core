@@ -5,7 +5,7 @@
  * @memberOf dias.transects
  * @description Manages the image label filter feature
  */
-angular.module('dias.transects').controller('ImageLabelFilterController', function (ImageLabelImage, filter) {
+angular.module('dias.transects').controller('ImageLabelFilterController', function (ImageLabelImage, filter, TRANSECT_ID) {
         "use strict";
 
         filter.add({
@@ -13,10 +13,9 @@ angular.module('dias.transects').controller('ImageLabelFilterController', functi
             helpText: 'All images that have the given image label attached.',
             helpTextNegate: 'All images that don\'t have the given image label attached.',
             template: 'imageWithLabelFilterRule.html',
-            resource: ImageLabelImage,
             typeahead: 'imageLabelFilterTypeahead.html',
-            transformData: function (label) {
-                return label.id;
+            getSequence: function (label) {
+                return ImageLabelImage.query({transect_id: TRANSECT_ID, data: label.id});
             }
         });
     }
