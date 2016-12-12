@@ -28,8 +28,12 @@ angular.module('dias.annotations').factory('map', function (ZoomToNativeControl)
                 })
             ],
             interactions: ol.interaction.defaults({
+                altShiftDragRotate: false,
+                doubleClickZoom: false,
                 keyboard: false,
                 shiftDragZoom: false,
+                pinchRotate: false,
+                pinchZoom: false
             })
         });
 
