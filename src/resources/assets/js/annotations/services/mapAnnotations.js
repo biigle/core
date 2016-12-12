@@ -13,18 +13,20 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         var annotationSource = new ol.source.Vector({
             features: annotationFeatures
         });
+        var annotationLayerShouldUpdate = true;
         var annotationLayer = new ol.layer.Vector({
             source: annotationSource,
             style: styles.features,
             zIndex: 100,
-            updateWhileAnimating: true,
-            updateWhileInteracting: true
+            updateWhileAnimating: annotationLayerShouldUpdate,
+            updateWhileInteracting: annotationLayerShouldUpdate
         });
         map.addLayer(annotationLayer);
 
         // all annotations that are currently selected
-        var selectedFeatures = mapInteractions.init('select', [annotationLayer])
-            .getFeatures();
+        var selectedFeatures = mapInteractions.init('select', function (layer) {
+            return layer === annotationLayer;
+        }).getFeatures();
 
         mapInteractions.init('modify', annotationFeatures);
         mapInteractions.deactivate('modify');
@@ -52,6 +54,27 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         // scope of the CanvasController
         var _scope;
+
+        // If there are lots of (complex Polygon or LineString) annotations, the map can
+        // become real slow while interacting. in this case updateWhileAnimating/
+        // Interacting should be false. Else it should be true for better UX.
+        var maybeRefreshAnnotationLayer = function (annotations) {
+            // A pretty bad way to determine this because performance dependy on the
+            // user's machine, too, but it should do for now...
+            var shouldUpdate = annotations.length < 400;
+            if (shouldUpdate !== annotationLayerShouldUpdate) {
+                var newLayer = new ol.layer.Vector({
+                    updateWhileAnimating: shouldUpdate,
+                    updateWhileInteracting: shouldUpdate,
+                });
+                newLayer.setProperties(annotationLayer.getProperties());
+                newLayer.setStyle(annotationLayer.getStyle());
+                map.removeLayer(annotationLayer);
+                annotationLayer = newLayer;
+                annotationLayerShouldUpdate = shouldUpdate;
+                map.addLayer(annotationLayer);
+            }
+        };
 
         // selects a single annotation and moves the viewport to it
         var selectAndShowAnnotation = function (annotation) {
@@ -157,6 +180,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 		var refreshAnnotations = function (a) {
             annotationSource.clear();
 			_this.clearSelection();
+            maybeRefreshAnnotationLayer(a);
             if (lastDrawnFeature && lastDrawnFeature.annotation && lastDrawnFeature.annotation.image && lastDrawnFeature.annotation.image.id !== images.getCurrentId()) {
                 lastDrawnFeature = null;
             }
