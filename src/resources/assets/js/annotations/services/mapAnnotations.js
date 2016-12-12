@@ -56,10 +56,10 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         var _scope;
 
         // If there are lots of (complex Polygon or LineString) annotations, the map can
-        // become real slow while interacting. in this case updateWhileAnimating/
+        // become real slow while interacting. In this case updateWhileAnimating/
         // Interacting should be false. Else it should be true for better UX.
         var maybeRefreshAnnotationLayer = function (annotations) {
-            // A pretty bad way to determine this because performance dependy on the
+            // A pretty bad way to determine this because performance depends on the
             // user's machine, too, but it should do for now...
             var shouldUpdate = annotations.length < 400;
             if (shouldUpdate !== annotationLayerShouldUpdate) {
@@ -127,6 +127,12 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			debounce(save, 500, feature.annotation.id);
 		};
 
+        // Remove an OL feature from the map.
+        // Don't confuse this with removeFeature() which deletes an annotation!
+        var eraseFeature = function (annotation) {
+            annotationSource.removeFeature(annotationSource.getFeatureById(annotation.id));
+        };
+
         // create a new OL feature on the map based on an annotation object
 		var createFeature = function (annotation) {
 			var geometry;
@@ -169,22 +175,30 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
             var feature = new ol.Feature({ geometry: geometry });
             feature.annotation = annotation;
+            feature.setId(annotation.id);
             if (annotation.labels && annotation.labels.length > 0) {
-                feature.color = annotation.labels[0].label.color;
+                feature.set('color', annotation.labels[0].label.color);
             }
             feature.on('change', handleGeometryChange);
-            annotationSource.addFeature(feature);
+
+            return feature;
 		};
 
-        // redraw all features
-		var refreshAnnotations = function (a) {
-            annotationSource.clear();
-			_this.clearSelection();
-            maybeRefreshAnnotationLayer(a);
+		var refreshAnnotations = function (all, added, removed) {
+            // If there are more features to remove than to draw, clear and redraw
+            // all since forEach(eraseFeature) is slower than clear().
+            if (removed.length > all.length) {
+                annotationSource.clear(true);
+                annotationSource.addFeatures(all.map(createFeature));
+            } else {
+                removed.forEach(eraseFeature);
+                annotationSource.addFeatures(added.map(createFeature));
+            }
+            _this.clearSelection();
+            maybeRefreshAnnotationLayer(all);
             if (lastDrawnFeature && lastDrawnFeature.annotation && lastDrawnFeature.annotation.image && lastDrawnFeature.annotation.image.id !== images.getCurrentId()) {
                 lastDrawnFeature = null;
             }
-			a.forEach(createFeature);
 		};
         annotations.observe(refreshAnnotations);
 
@@ -193,7 +207,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 			var geometry = e.feature.getGeometry();
             var label = labels.getSelected();
 
-            e.feature.color = label.color;
+            e.feature.set('color', label.color);
 
 			e.feature.annotation = annotations.add({
 				id: images.getCurrentId(),
@@ -203,13 +217,15 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
                 confidence: labels.getCurrentConfidence()
 			});
 
-			// if the feature couldn't be saved, remove it again
-			e.feature.annotation.$promise.catch(function () {
+			// Delete the feature when the response came back. If creating was successful
+            // the feature will be redrawn in refreshAnnotations(), if not, it should be
+            // removed anyway.
+			e.feature.annotation.$promise.finally(function () {
                 annotationSource.removeFeature(e.feature);
 			});
 
-			e.feature.on('change', handleGeometryChange);
-
+            // Although the feature will be removed from the map, we need to set the
+            // color and the annotation properly so it can be used as lastDrawnFeature.
             lastDrawnFeature = e.feature;
 
             return e.feature.annotation.$promise;
@@ -219,7 +235,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
         var removeFeature = function (feature) {
             if (!feature || !feature.annotation) return;
 
-            if (feature === lastDrawnFeature) {
+            if (lastDrawnFeature && feature.getId() === lastDrawnFeature.getId()) {
                 lastDrawnFeature = null;
             }
 
@@ -228,14 +244,7 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
 
         // get the feature that represents the given annotation
         var getFeature = function (annotation) {
-            var features = annotationFeatures.getArray();
-            for (var i = features.length - 1; i >= 0; i--) {
-                if (features[i].annotation.id === annotation.id) {
-                    return features[i];
-                }
-            }
-
-            return null;
+            return annotationSource.getFeatureById(annotation.id);
         };
 
 		this.init = function (scope) {

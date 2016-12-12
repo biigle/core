@@ -78,7 +78,8 @@ angular.module('dias.annotations').service('styles', function () {
         });
 
 		this.features = function (feature) {
-            var color = feature.color ? ('#' + feature.color) : _this.colors.blue;
+            var color = feature.get('color');
+            color = color ? ('#' + color) : _this.colors.blue;
             return [
                 new ol.style.Style({
                     stroke: defaultStrokeOutline,
