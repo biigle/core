@@ -164,12 +164,32 @@ angular.module('dias.annotations').service('annotations', function (Annotation, 
                 f = activeFilters[i](f);
             }
 
+            // get all newly added annotations
+            var added = f.flat.filter(function (item) {
+                for (var i = filtered.flat.length - 1; i >= 0; i--) {
+                    if (filtered.flat[i].id === item.id) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+
+            // get all removed annotations
+            var removed = filtered.flat.filter(function (item) {
+                for (var i = f.flat.length - 1; i >= 0; i--) {
+                    if (f.flat[i].id === item.id) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+
             filtered.groupedByLabel = f.groupedByLabel;
             filtered.flat = f.flat;
 
             if (!silent) {
                 observers.forEach(function (callback) {
-                    callback(filtered.flat);
+                    callback(filtered.flat, added, removed);
                 });
             }
         };
