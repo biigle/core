@@ -28,7 +28,8 @@ angular.module('dias.annotations').factory('map', function (ZoomToNativeControl)
                 })
             ],
             interactions: ol.interaction.defaults({
-                keyboard: false
+                keyboard: false,
+                shiftDragZoom: false,
             })
         });
 
