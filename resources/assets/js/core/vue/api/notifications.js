@@ -1,16 +1,18 @@
 /**
  * Resource for DB notifications.
  *
+ * var resource = biigle.$require('api.notifications');
+ *
  * Mark as read:
  *
- * biigle.api.notifications.markRead({id: notificationId}, {}).then(...)
+ * resource.markRead({id: notificationId}, {}).then(...)
  *
  * Delete:
  *
- * biigle.api.notifications.markRead({id: notificationId}).then(...)
+ * resource.delete({id: notificationId}).then(...)
  *
  * @type {Vue.resource}
  */
-biigle.api.notifications = Vue.resource('/api/v1/notifications{/id}', {}, {
+biigle.$declare('api.notifications', Vue.resource('/api/v1/notifications{/id}', {}, {
     markRead: {method: 'PUT'}
-});
+}));

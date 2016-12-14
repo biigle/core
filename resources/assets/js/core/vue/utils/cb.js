@@ -2,7 +2,7 @@
  * Various functions for cross browser support that can be used throughout the
  * application.
  */
-biigle.utils.cb = {
+biigle.$declare('utils.cb', {
     // https://developer.mozilla.org/en-US/docs/Web/API/Document/exitFullscreen
     exitFullscreen: function () {
         if (document.exitFullscreen) {
@@ -15,4 +15,4 @@ biigle.utils.cb = {
             document.webkitExitFullscreen();
         }
     }
-};
+});
