@@ -53,6 +53,10 @@ $router->group([
         'uses' => 'TransectImageController@hasImageLabel'
     ]);
 
+    $router->get('transects/{id}/images/filter/annotation-label/{id2}', [
+        'uses' => 'TransectImageAnnotationLabelController@index'
+    ]);
+
     $router->get('transects/{id}/image-labels/find/{pattern}', [
         'uses' => 'TransectImageLabelController@findLabel'
     ]);
