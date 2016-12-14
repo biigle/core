@@ -2,11 +2,15 @@
  * The transect list on the project show view.
  */
 biigle.$viewModel('projects-show-transect-list', function (element) {
+    var projectTransects = biigle.$require('api.projectTransects');
+    var attachableTransects = biigle.$require('api.attachableTransects');
+    var messageStore = biigle.$require('messages.store');
+
     new Vue({
         el: element,
         data: {
-            project: biigle.projects.project,
-            transects: biigle.projects.transects,
+            project: biigle.$require('projects.project'),
+            transects: biigle.$require('projects.transects'),
             editing: false,
             loading: false,
             fetchedAttachableTransects: false,
@@ -15,14 +19,14 @@ biigle.$viewModel('projects-show-transect-list', function (element) {
             template: '<span v-text="item.name"></span>'
         },
         components: {
-            transectThumbnail: biigle.projects.components.transectThumbnail,
+            transectThumbnail: biigle.$require('projects.components.transectThumbnail'),
             typeahead: VueStrap.typeahead
         },
         methods: {
             removeTransect: function (id) {
                 var self = this;
                 this.startLoading();
-                biigle.api.projectTransects.detach({pid: this.project.id, id: id})
+                projectTransects.detach({pid: this.project.id, id: id})
                     .then(function (response) {
                         self.spliceTransect(id);
                     }, function (response) {
@@ -31,7 +35,7 @@ biigle.$viewModel('projects-show-transect-list', function (element) {
                                 self.forceRemoveTransect(id);
                             }
                         } else {
-                            biigle.messages.store.handleErrorResponse(response);
+                            messageStore.handleErrorResponse(response);
                         }
                     })
                     .finally(this.quitLoading);
@@ -39,10 +43,10 @@ biigle.$viewModel('projects-show-transect-list', function (element) {
             forceRemoveTransect: function (id) {
                 var self = this;
                 this.startLoading();
-                biigle.api.projectTransects.detach({pid: this.project.id, id: id}, {force: true})
+                projectTransects.detach({pid: this.project.id, id: id}, {force: true})
                     .then(function (response) {
                         self.spliceTransect(id);
-                    }, biigle.messages.store.handleErrorResponse)
+                    }, messageStore.handleErrorResponse)
                     .finally(this.quitLoading);
             },
             spliceTransect: function (id) {
@@ -80,7 +84,7 @@ biigle.$viewModel('projects-show-transect-list', function (element) {
                 if (transect && !this.hasTransect(transect.id)) {
                     var self = this;
                     this.startLoading();
-                    biigle.api.projectTransects.attach({pid: this.project.id, id: transect.id}, {})
+                    projectTransects.attach({pid: this.project.id, id: transect.id}, {})
                         .then(function () {
                             self.transects.unshift(transect);
                             for (var i = self.attachableTransects.length - 1; i >= 0; i--) {
@@ -88,16 +92,16 @@ biigle.$viewModel('projects-show-transect-list', function (element) {
                                     self.attachableTransects.splice(i, 1);
                                 }
                             }
-                        }, biigle.messages.store.handleErrorResponse)
+                        }, messageStore.handleErrorResponse)
                         .finally(this.quitLoading);
                 }
             },
             fetchAttachableTransects: function () {
                 var self = this;
-                biigle.api.attachableTransects.get({id: this.project.id})
+                attachableTransects.get({id: this.project.id})
                     .then(function (response) {
                         self.attachableTransects = response.data;
-                    }, biigle.messages.store.handleErrorResponse);
+                    }, messageStore.handleErrorResponse);
             }
         }
     });

@@ -1,12 +1,14 @@
 /**
  * Resource for transect sample thumbnails.
  *
+ * var resource = biigle.$require('api.transectSample');
+ *
  * Get samples:
  *
- * biigle.api.transectSample.get({id: transectId}, {}).then(...)
+ * resource.get({id: transectId}, {}).then(...)
  *
  * Get 2 samples:
  *
- * biigle.api.transectSample.get({id: transectId, number: 2}, {}).then(...)
+ * resource.get({id: transectId, number: 2}, {}).then(...)
  */
-biigle.api.transectSample = Vue.resource('/api/v1/transects{/id}/sample{/number}');
+biigle.$declare('api.transectSample', Vue.resource('/api/v1/transects{/id}/sample{/number}'));

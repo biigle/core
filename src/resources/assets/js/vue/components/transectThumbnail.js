@@ -4,7 +4,7 @@
  *
  * @type {Object}
  */
-biigle.projects.components.transectThumbnail = {
+biigle.$component('projects.components.transectThumbnail', {
     template:
     '<figure class="transect-thumbnail" v-bind:class="{loading: loading}" v-on:mouseover="fetchUuids" v-on:mousemove="updateIndex($event)" v-on:click="clearTimeout" v-on:mouseout="clearTimeout">' +
         '<span class="transect-thumbnail__close close" v-if="removable" v-on:click.prevent="remove" v-bind:title="removeTitle">&times;</span>' +
@@ -68,13 +68,15 @@ biigle.projects.components.transectThumbnail = {
         fetchUuids: function () {
             if (this.initialized || this.loading) return;
 
+            var transectSample = biigle.$require('api.transectSample');
+
             var self = this;
             self.loading = true;
             // Wait before fetching the thumbnails. Maybe the user just wants to go
             // to the transect or just passes the mouse over the thumbnail. In this case
             // the timeout is cancelled.
             self.timeoutId = setTimeout(function () {
-                biigle.api.transectSample.get({id: self.tid})
+                transectSample.get({id: self.tid})
                     .then(function (response) {
                         if (response.ok) {
                             self.uuids = response.data;
@@ -108,4 +110,4 @@ biigle.projects.components.transectThumbnail = {
             this.$emit('remove', this.tid);
         }
     }
-};
+});

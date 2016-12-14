@@ -19,8 +19,8 @@
     angular.module('dias.projects').constant('LABEL_TREES', {!! $labelTrees !!});
     angular.module('dias.projects').constant('MEMBERS', {!! $members !!});
 
-    biigle.projects.transects = {!! $transects !!};
-    biigle.projects.project = {!!$project!!};
+    biigle.$declare('projects.transects', {!! $transects !!});
+    biigle.$declare('projects.project', {!!$project!!});
 </script>
 @foreach ($modules->getMixins('projectsShowScripts') as $module => $nestedMixins)
     @include($module.'::projectsShowScripts')
