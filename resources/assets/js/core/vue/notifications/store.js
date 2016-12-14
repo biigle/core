@@ -3,7 +3,7 @@
  *
  * Stores information on InAppNotifications to be shared between multiple JS components.
  */
-biigle.notifications.store = new Vue({
+biigle.$declare('notifications.store', new Vue({
     data: {
         _all: null,
         initialized: false
@@ -49,4 +49,4 @@ biigle.notifications.store = new Vue({
             }
         }
     }
-});
+}));

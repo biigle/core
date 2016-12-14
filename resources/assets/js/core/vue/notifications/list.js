@@ -4,6 +4,10 @@
  * Displays all InAppNotifications of the user in a list.
  */
 biigle.$viewModel('notifications-list', function (element) {
+    var notifications = biigle.$require('api.notifications');
+    var notificationStore = biigle.$require('notifications.store');
+    var messageStore = biigle.$require('messages.store');
+
     var notification = {
         props: ['item', 'removeItem'],
         data: function () {
@@ -27,15 +31,15 @@ biigle.$viewModel('notifications-list', function (element) {
             markRead: function (ignoreError) {
                 var _this = this;
                 this.isLoading = true;
-                biigle.api.notifications.markRead({id: this.item.id}, {})
+                notifications.markRead({id: this.item.id}, {})
                     .then(function (response) {
                         _this.item.read_at = new Date();
                         if (_this.removeItem) {
-                            biigle.notifications.store.remove(_this.item.id);
+                            notificationStore.remove(_this.item.id);
                         }
                     }, function (response) {
                         if (!ignoreError) {
-                            biigle.messages.store.handleErrorResponse(response);
+                            messageStore.handleErrorResponse(response);
                         }
                     })
                     .finally(function () {
@@ -52,11 +56,11 @@ biigle.$viewModel('notifications-list', function (element) {
             notification: notification
         },
         data: {
-            notifications: biigle.notifications.store.all
+            notifications: notificationStore.all
         },
         methods: {
             hasNotifications: function () {
-                return biigle.notifications.store.count() > 0;
+                return notificationStore.count() > 0;
             }
         }
     });
