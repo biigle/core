@@ -1,6 +1,14 @@
 <?php
 
-class AnnotationsModuleHttpControllersApiTransectLabelControllerTest extends ApiTestCase {
+namespace Dias\Tests\Modules\Annotations\Http\Controllers\Api;
+
+use ApiTestCase;
+use Dias\Tests\ImageTest;
+use Dias\Tests\LabelTest;
+use Dias\Tests\AnnotationTest;
+use Dias\Tests\AnnotationLabelTest;
+
+class TransectLabelControllerTest extends ApiTestCase {
 
     public function testFind() {
         $tid = $this->transect()->id;

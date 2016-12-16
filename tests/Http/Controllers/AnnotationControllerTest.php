@@ -1,9 +1,18 @@
 <?php
 
-use Dias\Role;
-use Carbon\Carbon;
+namespace Dias\Tests\Modules\Annotations\Http\Controllers;
 
-class AnnotationsModuleHttpControllersAnnotationControllerTest extends ApiTestCase {
+use Dias\Role;
+use ApiTestCase;
+use Carbon\Carbon;
+use Dias\Tests\UserTest;
+use Dias\Tests\ImageTest;
+use Dias\Tests\ProjectTest;
+use Dias\Tests\TransectTest;
+use Dias\Tests\AnnotationTest;
+use Dias\Tests\AnnotationSessionTest;
+
+class AnnotationControllerTest extends ApiTestCase {
 
     public function testIndex() {
         $project = ProjectTest::create();

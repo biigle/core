@@ -1,8 +1,15 @@
 <?php
 
-use Carbon\Carbon;
+namespace Dias\Tests\Modules\Annotations\Http\Controllers\Api;
 
-class AnnotationsModuleHttpControllersApiTransectImageControllerTest extends ApiTestCase {
+use ApiTestCase;
+use Carbon\Carbon;
+use Dias\Tests\ImageTest;
+use Dias\Tests\AnnotationTest;
+use Dias\Tests\AnnotationLabelTest;
+use Dias\Tests\AnnotationSessionTest;
+
+class TransectImageControllerTest extends ApiTestCase {
 
     public function testHasAnnotation() {
         $id = $this->transect()->id;
