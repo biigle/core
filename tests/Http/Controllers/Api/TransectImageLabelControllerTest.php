@@ -1,10 +1,17 @@
 <?php
 
+namespace Dias\Tests\Modules\Transects\Http\Controllers\Api;
+
 use Dias\Role;
+use ApiTestCase;
+use Dias\Tests\LabelTest;
+use Dias\Tests\ImageTest;
+use Dias\Tests\ImageLabelTest;
 
-class TransectsModuleHttpControllersApiTransectImageLabelControllerTest extends ApiTestCase {
-
-    public function testFindLabel() {
+class TransectImageLabelControllerTest extends ApiTestCase
+{
+    public function testFindLabel()
+    {
         $tid = $this->transect()->id;
 
         $label1 = LabelTest::create(['name' => 'my-label']);

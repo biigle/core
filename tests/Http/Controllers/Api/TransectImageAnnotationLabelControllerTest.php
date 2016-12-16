@@ -1,10 +1,19 @@
 <?php
 
+namespace Dias\Tests\Modules\Transects\Http\Controllers\Api;
+
+use ApiTestCase;
 use Carbon\Carbon;
+use Dias\Tests\LabelTest;
+use Dias\Tests\ImageTest;
+use Dias\Tests\AnnotationTest;
+use Dias\Tests\AnnotationLabelTest;
+use Dias\Tests\AnnotationSessionTest;
 
-class TransectsModuleHttpControllersApiTransectImageAnnotationLabelControllerTest extends ApiTestCase {
-
-    public function testIndex() {
+class TransectImageAnnotationLabelControllerTest extends ApiTestCase
+{
+    public function testIndex()
+    {
         $tid = $this->transect()->id;
 
         $image = ImageTest::create(['transect_id' => $tid]);
@@ -37,7 +46,8 @@ class TransectsModuleHttpControllersApiTransectImageAnnotationLabelControllerTes
         $this->assertResponseStatus(403);
 
         $expect = [$image->id];
-        if ($this->isSqlite()) {
+        if ($this->isSqlite())
+        {
             $expect = array_map('strval', $expect);
         }
 
@@ -72,7 +82,8 @@ class TransectsModuleHttpControllersApiTransectImageAnnotationLabelControllerTes
         $lid = $label->label_id;
 
         $expect = [$image->id];
-        if ($this->isSqlite()) {
+        if ($this->isSqlite())
+        {
             $expect = array_map('strval', $expect);
         }
 

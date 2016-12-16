@@ -1,10 +1,17 @@
 <?php
 
+namespace Dias\Tests\Modules\Transects\Http\Controllers;
+
+use TestCase;
 use Dias\Role;
+use Dias\Tests\UserTest;
+use Dias\Tests\ImageTest;
+use Dias\Tests\ProjectTest;
 
-class TransectsModuleHttpControllersImageControllerTest extends TestCase {
-
-   public function testIndex() {
+class ImageControllerTest extends TestCase
+{
+   public function testIndex()
+   {
       $project = ProjectTest::create();
       $user = UserTest::create();
       $image = ImageTest::create();

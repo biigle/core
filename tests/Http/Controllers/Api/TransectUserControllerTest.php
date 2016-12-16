@@ -1,10 +1,14 @@
 <?php
 
+namespace Dias\Tests\Modules\Transects\Http\Controllers\Api;
+
 use Dias\Role;
+use ApiTestCase;
 
-class TransectsModuleHttpControllersApiTransectUserControllerTest extends ApiTestCase {
-
-    public function testIndex() {
+class TransectUserControllerTest extends ApiTestCase
+{
+    public function testIndex()
+    {
         $id = $this->transect()->id;
 
         $this->doTestApiRoute('GET', "/api/v1/transects/{$id}/users");

@@ -1,10 +1,16 @@
 <?php
 
+namespace Dias\Tests\Modules\Transects\Http\Controllers\Api;
+
 use Dias\Role;
+use ApiTestCase;
+use Dias\Tests\ImageTest;
+use Dias\Tests\ImageLabelTest;
 
-class TransectsModuleHttpControllersApiTransectImageControllerTest extends ApiTestCase {
-
-    public function testIndexOrderByFilename() {
+class TransectImageControllerTest extends ApiTestCase
+{
+    public function testIndexOrderByFilename()
+    {
         $id = $this->transect()->id;
 
         $image1 = ImageTest::create(['transect_id' => $id, 'filename' => 'b.jpg']);
@@ -23,7 +29,8 @@ class TransectsModuleHttpControllersApiTransectImageControllerTest extends ApiTe
         $this->assertEquals("[{$image2->id},{$image1->id}]", $this->response->getContent());
     }
 
-    public function testHasAnnotation() {
+    public function testHasAnnotation()
+    {
         $id = $this->transect()->id;
 
         $image = ImageTest::create(['transect_id' => $id]);
@@ -45,7 +52,8 @@ class TransectsModuleHttpControllersApiTransectImageControllerTest extends ApiTe
             ->seeJsonEquals([$image->id]);
     }
 
-    public function testHasImageLabelUser() {
+    public function testHasImageLabelUser()
+    {
         $tid = $this->transect()->id;
 
         $image = ImageTest::create(['transect_id' => $tid]);
@@ -72,7 +80,8 @@ class TransectsModuleHttpControllersApiTransectImageControllerTest extends ApiTe
         $this->get("/api/v1/transects/{$tid}/images/filter/image-label-user/{$uid}");
         $this->assertResponseOk();
 
-        if ($this->isSqlite()) {
+        if ($this->isSqlite())
+        {
             $expect = ["{$image->id}"];
         } else {
             $expect = [$image->id];
@@ -82,7 +91,8 @@ class TransectsModuleHttpControllersApiTransectImageControllerTest extends ApiTe
             ->seeJsonEquals($expect);
     }
 
-    public function testHasImageLabel() {
+    public function testHasImageLabel()
+    {
         $tid = $this->transect()->id;
 
         $image = ImageTest::create(['transect_id' => $tid]);
@@ -110,7 +120,8 @@ class TransectsModuleHttpControllersApiTransectImageControllerTest extends ApiTe
         $this->get("/api/v1/transects/{$tid}/images/filter/image-label/{$lid}");
         $this->assertResponseOk();
 
-        if ($this->isSqlite()) {
+        if ($this->isSqlite())
+        {
             $expect = ["{$image->id}"];
         } else {
             $expect = [$image->id];

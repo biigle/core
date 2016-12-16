@@ -1,8 +1,13 @@
 <?php
 
-class TransectsModuleHttpControllersTransectControllerTest extends ApiTestCase {
+namespace Dias\Tests\Modules\Transects\Http\Controllers;
 
-    public function testIndex() {
+use ApiTestCase;
+
+class TransectControllerTest extends ApiTestCase
+{
+    public function testIndex()
+    {
         $id = $this->transect()->id;
 
         // not logged in
@@ -27,7 +32,8 @@ class TransectsModuleHttpControllersTransectControllerTest extends ApiTestCase {
         $this->assertResponseStatus(404);
     }
 
-    public function testCreate() {
+    public function testCreate()
+    {
         $id = $this->project()->id;
 
         // not logged in
@@ -48,7 +54,8 @@ class TransectsModuleHttpControllersTransectControllerTest extends ApiTestCase {
         $this->assertResponseOk();
     }
 
-    public function testEdit() {
+    public function testEdit()
+    {
         $id = $this->transect()->id;
 
         $this->beUser();
