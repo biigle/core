@@ -122,8 +122,7 @@ class ProjectTransectController extends Controller
         }
 
         // it's important that this is done *after* all images were added
-        // otherwise not all thumbnails will be generated
-        $transect->generateThumbnails();
+        $transect->handleNewImages();
 
         $project->transects()->attach($transect);
 

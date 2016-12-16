@@ -37,6 +37,9 @@
         ]
     },
     "autoload-dev": {
+        "psr-4": {
+            "Dias\\Tests\\": "tests/php/"
+        },
         "classmap": [
             "tests/TestCase.php",
             "tests/ApiTestCase.php",

@@ -47,7 +47,6 @@ class Image extends Model
         'Make',
         'Model',
         'Orientation',
-        'DateTime',
         'ExposureTime',
         'FNumber',
         'ShutterSpeedValue',
@@ -70,19 +69,12 @@ class Image extends Model
     public $timestamps = false;
 
     /**
-     * The attributes included in the model's JSON form. All other are hidden.
+     * The attributes hidden in the model's JSON form.
      *
      * @var array
      */
-    protected $visible = [
-        'id',
-        'transect',
-        'annotations',
-        'filename',
-        'exif',
-        'width',
-        'height',
-        'uuid',
+    protected $hidden = [
+        'labels',
     ];
 
     /**
@@ -92,6 +84,17 @@ class Image extends Model
      */
     protected $casts = [
         'attrs' => 'array',
+        'lat' => 'float',
+        'lng' => 'float',
+    ];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'taken_at',
     ];
 
     /**

@@ -100,7 +100,7 @@ class TransectImageController extends Controller
 
         $ids = $images->pluck('id')->toArray();
 
-        $transect->generateThumbnails($ids);
+        $transect->handleNewImages($ids);
         event('images.created', [$id, $ids]);
 
         return $images;

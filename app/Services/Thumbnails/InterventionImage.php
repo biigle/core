@@ -65,11 +65,9 @@ class InterventionImage implements ThumbnailService
         static::$width = config('thumbnails.width');
         static::$height = config('thumbnails.height');
 
-        $query = $transect->images();
-
-        if (!empty($only)) {
-            $query = $query->whereIn('id', $only);
-        }
+        $query = $transect->images()->when($only, function ($query) use ($only) {
+            return $query->whereIn('id', $only);
+        });
 
         // process the images, 100 at a time
         $query->chunk(100, function ($images) {

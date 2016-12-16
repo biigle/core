@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use GuzzleHttp\Client;
 use Dias\Jobs\GenerateThumbnails;
+use Dias\Jobs\CollectImageMetaInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use GuzzleHttp\Exception\ServerException;
@@ -268,14 +269,14 @@ class Transect extends Model
     }
 
     /**
-     * (Re-) generates the thumbnail images for all images belonging to this transect
+     * Perform actions when new images were added to the transect
      *
-     * @param array $only (optional) Array of image IDs to restrict the (re-)generation
-     * of thumbnails to.
+     * @param  array  $only IDs of images to restrict the actions to.
      */
-    public function generateThumbnails($only = [])
+    public function handleNewImages($only = [])
     {
-        $this->dispatch(new GenerateThumbnails($this, $only));
+        $this->generateThumbnails($only);
+        $this->collectMetaInfo($only);
     }
 
     /**
@@ -389,5 +390,46 @@ class Transect extends Model
 
             return $this->orderedImages()->skip($index)->first();
         });
+    }
+
+    /**
+     * Check if the transect has some images with GPS coordinates
+     *
+     * @return boolean
+     */
+    public function hasGeoInfo()
+    {
+        return Cache::remember("transect-{$this->id}-has-geo-info", 60, function () {
+            return $this->images()->whereNotNull('lng')->whereNotNull('lat')->exists();
+        });
+    }
+
+    /**
+     * Flush the cached information if this transect has images with GPS coordinates
+     */
+    public function flushGeoInfoCache()
+    {
+        Cache::forget("transect-{$this->id}-has-geo-info");
+    }
+
+    /**
+     * (Re-) generates the thumbnail images for all images belonging to this transect
+     *
+     * @param array $only (optional) Array of image IDs to restrict the (re-)generation
+     * of thumbnails to.
+     */
+    protected function generateThumbnails($only = [])
+    {
+        $this->dispatch(new GenerateThumbnails($this, $only));
+    }
+
+    /**
+     * (Re-) collects image meta information for images of this transect.
+     *
+     * @param array $only (optional) Array of image IDs to restrict the action to.
+     */
+    protected function collectMetaInfo($only = [])
+    {
+        $this->dispatch(new CollectImageMetaInfo($this, $only));
     }
 }
