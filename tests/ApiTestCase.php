@@ -2,6 +2,12 @@
 
 use Dias\Role;
 use Dias\Label;
+use Dias\Visibility;
+use Dias\Tests\UserTest;
+use Dias\Tests\LabelTest;
+use Dias\Tests\ProjectTest;
+use Dias\Tests\TransectTest;
+use Dias\Tests\LabelTreeTest;
 
 class ApiTestCase extends TestCase
 {
@@ -137,7 +143,7 @@ class ApiTestCase extends TestCase
         $this->project();
 
         $this->labelTree = $this->labelTree = LabelTreeTest::create([
-            'visibility_id' => Dias\Visibility::$public->id,
+            'visibility_id' => Visibility::$public->id,
         ]);
 
         $this->labelTree->projects()->attach($this->project());
