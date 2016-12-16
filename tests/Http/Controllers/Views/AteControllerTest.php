@@ -1,8 +1,14 @@
 <?php
 
-class AteModuleHttpControllersViewsAteControllerTest extends ApiTestCase {
 
-    public function testIndexTransect() {
+namespace Dias\Tests\Modules\Ate\Http\Controllers\Views;
+
+use ApiTestCase;
+
+class AteControllerTest extends ApiTestCase
+{
+    public function testIndexTransect()
+    {
         $id = $this->transect()->id;
 
         $this->get("transects/{$id}/ate")
@@ -17,7 +23,8 @@ class AteModuleHttpControllersViewsAteControllerTest extends ApiTestCase {
             ->assertResponseOk();
     }
 
-    public function testIndexProject() {
+    public function testIndexProject()
+    {
         $id = $this->project()->id;
 
         $this->get("projects/{$id}/ate")

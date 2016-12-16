@@ -1,11 +1,17 @@
 <?php
 
+namespace Dias\Tests\Modules\Ate\Http\Controllers\Api;
+
+use ApiTestCase;
+use Dias\Tests\ImageTest;
+use Dias\Tests\AnnotationTest;
+use Dias\Tests\AnnotationLabelTest;
 use Dias\Modules\Ate\Jobs\RemoveAnnotationPatches;
 
-class AteModuleHttpControllersApiAteControllerTest extends ApiTestCase {
-
-    public function testSaveTransect() {
-
+class AteControllerTest extends ApiTestCase
+{
+    public function testSaveTransect()
+    {
         $id = $this->transect()->id;
         // make sure the label tree and label are set up
         $this->labelRoot();
@@ -121,8 +127,8 @@ class AteModuleHttpControllersApiAteControllerTest extends ApiTestCase {
         $this->assertNotNull($a4->fresh());
     }
 
-    public function testSaveProject() {
-
+    public function testSaveProject()
+    {
         $id = $this->project()->id;
         // make sure the label tree and label are set up
         $this->labelRoot();

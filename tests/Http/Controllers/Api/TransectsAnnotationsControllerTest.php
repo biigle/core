@@ -1,9 +1,16 @@
 <?php
 
+namespace Dias\Tests\Modules\Ate\Http\Controllers\Api;
+
+use ApiTestCase;
 use Carbon\Carbon;
+use Dias\Tests\ImageTest;
+use Dias\Tests\AnnotationTest;
+use Dias\Tests\AnnotationLabelTest;
+use Dias\Tests\AnnotationSessionTest;
 
-class AteModuleHttpControllersApiTransectsAnnotationsControllerTest extends ApiTestCase {
-
+class TransectsAnnotationsControllerTest extends ApiTestCase
+{
     public function testFilter() {
         $id = $this->transect()->id;
 

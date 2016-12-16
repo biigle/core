@@ -1,7 +1,15 @@
 <?php
 
+
+namespace Dias\Tests\Modules\Ate\Jobs;
+
+use App;
+use File;
+use Mockery;
+use TestCase;
 use Dias\Shape;
 use Intervention\Image\Image;
+use Dias\Tests\AnnotationTest;
 use Intervention\Image\ImageCache;
 use Intervention\Image\ImageManager;
 use Dias\Modules\Ate\Jobs\GenerateAnnotationPatch;

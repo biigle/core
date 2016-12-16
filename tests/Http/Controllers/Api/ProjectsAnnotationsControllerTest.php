@@ -1,7 +1,14 @@
 <?php
 
-class AteModuleHttpControllersApiProjectsAnnotationsControllerTest extends ApiTestCase {
+namespace Dias\Tests\Modules\Ate\Http\Controllers\Api;
 
+use ApiTestCase;
+use Dias\Tests\ImageTest;
+use Dias\Tests\AnnotationTest;
+use Dias\Tests\AnnotationLabelTest;
+
+class ProjectsAnnotationsControllerTest extends ApiTestCase
+{
     public function testFilter() {
         $id = $this->project()->id;
 

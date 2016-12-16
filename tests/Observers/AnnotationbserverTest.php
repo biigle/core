@@ -1,5 +1,9 @@
 <?php
 
+namespace Dias\Tests\Modules\Ate\Listeners;
+
+use TestCase;
+use Dias\Tests\AnnotationTest;
 use Dias\Modules\Ate\Jobs\RemoveAnnotationPatches;
 use Dias\Modules\Ate\Jobs\GenerateAnnotationPatch;
 

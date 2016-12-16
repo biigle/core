@@ -1,5 +1,12 @@
 <?php
 
+namespace Dias\Tests\Modules\Ate\Jobs;
+
+use App;
+use File;
+use Mockery;
+use TestCase;
+use FilesystemIterator;
 use Dias\Modules\Ate\Jobs\RemoveAnnotationPatches;
 
 class RemoveAnnotationPatchesTest extends TestCase

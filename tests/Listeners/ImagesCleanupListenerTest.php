@@ -1,6 +1,10 @@
 <?php
 
+namespace Dias\Tests\Modules\Ate\Listeners;
+
+use TestCase;
 use Copria\Transect;
+use Dias\Tests\ImageTest;
 use Faker\Factory as Faker;
 use Illuminate\Database\QueryException;
 use Dias\Modules\Ate\Jobs\RemoveAnnotationPatches;
