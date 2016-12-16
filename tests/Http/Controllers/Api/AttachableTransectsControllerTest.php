@@ -1,9 +1,14 @@
 <?php
 
+namespace Dias\Tests\Modules\Projects\Http\Controllers\Api;
+
 use Dias\Role;
+use ApiTestCase;
+use Dias\Tests\ProjectTest;
+use Dias\Tests\TransectTest;
 
-class ProjectsModuleHttpControllersApiAttachableTransectsControllerTest extends ApiTestCase {
-
+class AttachableTransectsControllerTest extends ApiTestCase
+{
     public function testIndex() {
         $validTransect = TransectTest::create();
         $validProject = ProjectTest::create();

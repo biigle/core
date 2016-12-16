@@ -1,7 +1,12 @@
 <?php
 
-class ProjectsModuleHttpControllersApiTransectSampleControllerTest extends ApiTestCase {
+namespace Dias\Tests\Modules\Projects\Http\Controllers\Api;
 
+use ApiTestCase;
+use Dias\Tests\ImageTest;
+
+class TransectSampleControllerTest extends ApiTestCase
+{
     public function testIndex() {
         $id = $this->transect()->id;
         $i1 = ImageTest::create([

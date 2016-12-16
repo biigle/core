@@ -1,10 +1,17 @@
 <?php
 
+namespace Dias\Tests\Modules\Projects\Http\Controllers;
+
+use Cache;
+use TestCase;
 use Dias\Role;
+use Dias\Tests\UserTest;
+use Dias\Tests\ProjectTest;
 
-class ProjectsModuleHttpControllersProjectsControllerTest extends TestCase {
-
-   public function testEdit() {
+class ProjectsControllerTest extends TestCase
+{
+   public function testEdit()
+   {
       $project = ProjectTest::create();
       $user = UserTest::create();
 
@@ -28,7 +35,8 @@ class ProjectsModuleHttpControllersProjectsControllerTest extends TestCase {
       $this->assertResponseStatus(404);
    }
 
-   public function testCreate() {
+   public function testCreate()
+   {
       $user = UserTest::create();
 
       // not logged in
@@ -41,7 +49,8 @@ class ProjectsModuleHttpControllersProjectsControllerTest extends TestCase {
    }
 
 
-    public function testIndex() {
+    public function testIndex()
+    {
         $user = UserTest::create();
         $project = ProjectTest::create(['name' => 'random name']);
         $project2 = ProjectTest::create(['name' => 'another project']);
