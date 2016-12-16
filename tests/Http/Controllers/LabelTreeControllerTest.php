@@ -1,9 +1,14 @@
 <?php
 
-use Dias\Visibility;
-use Dias\Role;
+namespace Dias\Tests\Modules\LabelTrees\Http\Controllers;
 
-class LabelTreesModuleHttpControllersLabelTreeControllerTest extends TestCase
+use TestCase;
+use Dias\Role;
+use Dias\Visibility;
+use Dias\Tests\UserTest;
+use Dias\Tests\LabelTreeTest;
+
+class LabelTreeControllerTest extends TestCase
 {
     public function testShow() {
         $tree = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
@@ -32,7 +37,7 @@ class LabelTreesModuleHttpControllersLabelTreeControllerTest extends TestCase
         $user = UserTest::create();
         $this->be($user);
         $this->get("admin/label-trees")->assertResponseStatus(403);
-        $user->role()->associate(Dias\Role::$admin);
+        $user->role()->associate(Role::$admin);
         $this->visit("admin/label-trees")->assertResponseOk();
     }
 
