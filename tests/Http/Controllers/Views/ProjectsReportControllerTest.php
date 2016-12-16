@@ -4,21 +4,21 @@ namespace Dias\Tests\Modules\Export\Http\Controllers\Views;
 
 use ApiTestCase;
 
-class TransectsReportControllerTest extends ApiTestCase
+class ProjectsReportControllerTest extends ApiTestCase
 {
     public function testShow()
     {
-        $id = $this->transect()->id;
+        $id = $this->project()->id;
 
-        $this->get("transects/{$id}/reports")
+        $this->get("projects/{$id}/reports")
             ->assertResponseStatus(302);
 
         $this->beUser();
-        $this->get("transects/{$id}/reports")
+        $this->get("projects/{$id}/reports")
             ->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->get("transects/{$id}/reports")
+        $this->get("projects/{$id}/reports")
             ->assertResponseOk();
     }
 }

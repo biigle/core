@@ -1,45 +1,51 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Support\Reports\Transects\ImageLabels;
+namespace Dias\Tests\Modules\Export\Support\Reports\Transects\Annotations;
 
 use App;
 use File;
 use Mockery;
 use TestCase;
 use ZipArchive;
-use Dias\Tests\ImageTest;
 use Dias\Tests\LabelTest;
+use Dias\Tests\ImageTest;
 use Dias\Tests\TransectTest;
 use Dias\Tests\LabelTreeTest;
-use Dias\Tests\ImageLabelTest;
-use Dias\Modules\Export\Support\Exec;
+use Dias\Tests\AnnotationTest;
+use Dias\Tests\AnnotationLabelTest;
 use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\Transects\ImageLabels\CsvReport;
+use Dias\Modules\Export\Support\Reports\Transects\Annotations\CsvReport;
 
 class CsvReportTest extends TestCase
 {
     private $columns = [
-        'image_label_id',
-        'image_id',
-        'filename',
+        'annotation_label_id',
+        'label_id',
+        'label_name',
         'user_id',
         'firstname',
         'lastname',
-        'label_id',
-        'label_name',
+        'image_id',
+        'filename',
+        'shape_id',
+        'shape_name',
+        'points',
+        'attributes',
     ];
 
     public function testProperties()
     {
         $report = new CsvReport(TransectTest::make());
-        $this->assertEquals('CSV image label report', $report->getName());
-        $this->assertEquals('csv_image_label_report', $report->getFilename());
+        $this->assertEquals('CSV annotation report', $report->getName());
+        $this->assertEquals('csv_annotation_report', $report->getFilename());
         $this->assertEquals('zip', $report->getExtension());
     }
 
     public function testGenerateReport()
     {
-        $transect = TransectTest::create();
+        $transect = TransectTest::create([
+            'name' => 'My Cool Transect',
+        ]);
 
         $root = LabelTest::create();
         $child = LabelTest::create([
@@ -47,13 +53,13 @@ class CsvReportTest extends TestCase
             'label_tree_id' => $root->label_tree_id,
         ]);
 
-        $il = ImageLabelTest::create([
-            'image_id' => ImageTest::create([
-                'transect_id' => $transect->id,
-                'filename' => 'foo.jpg',
-            ])->id,
+        $al = AnnotationLabelTest::create([
             'label_id' => $child->id,
         ]);
+        $al->annotation->image->transect_id = $transect->id;
+        $al->annotation->image->attrs = ['image' => 'attrs'];
+        $al->annotation->image->save();
+
 
         // for the AvailableReport
         File::shouldReceive('exists')
@@ -73,14 +79,18 @@ class CsvReportTest extends TestCase
         $mock->shouldReceive('put')
             ->once()
             ->with([
-                $il->id,
-                $il->image_id,
-                $il->image->filename,
-                $il->user_id,
-                $il->user->firstname,
-                $il->user->lastname,
-                $il->label_id,
+                $al->id,
+                $child->id,
                 "{$root->name} > {$child->name}",
+                $al->user_id,
+                $al->user->firstname,
+                $al->user->lastname,
+                $al->annotation->image_id,
+                $al->annotation->image->filename,
+                $al->annotation->shape->id,
+                $al->annotation->shape->name,
+                json_encode($al->annotation->points),
+                json_encode(['image' => 'attrs']),
             ]);
 
         $mock->shouldReceive('close')
@@ -96,7 +106,10 @@ class CsvReportTest extends TestCase
             ->once()
             ->andReturn(true);
 
-        $mock->shouldReceive('addFile')->once();
+        $mock->shouldReceive('addFile')
+            ->once()
+            ->with('abc', "{$transect->id}-my-cool-transect.csv");
+
         $mock->shouldReceive('close')->once();
 
         App::singleton(ZipArchive::class, function () use ($mock) {
@@ -116,12 +129,16 @@ class CsvReportTest extends TestCase
 
         $image = ImageTest::create();
 
-        $il1 = ImageLabelTest::create([
+        $annotation = AnnotationTest::create([
             'image_id' => $image->id,
+        ]);
+
+        $al1 = AnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
             'label_id' => $label1->id,
         ]);
-        $il2 = ImageLabelTest::create([
-            'image_id' => $image->id,
+        $al2 = AnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
             'label_id' => $label2->id,
         ]);
 
@@ -141,27 +158,35 @@ class CsvReportTest extends TestCase
         $mock->shouldReceive('put')
             ->once()
             ->with([
-                $il1->id,
-                $image->id,
-                $image->filename,
-                $il1->user_id,
-                $il1->user->firstname,
-                $il1->user->lastname,
+                $al1->id,
                 $label1->id,
                 $label1->name,
+                $al1->user_id,
+                $al1->user->firstname,
+                $al1->user->lastname,
+                $annotation->image_id,
+                $annotation->image->filename,
+                $annotation->shape->id,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null,
             ]);
 
         $mock->shouldReceive('put')
             ->once()
             ->with([
-                $il2->id,
-                $image->id,
-                $image->filename,
-                $il2->user_id,
-                $il2->user->firstname,
-                $il2->user->lastname,
+                $al2->id,
                 $label2->id,
                 $label2->name,
+                $al2->user_id,
+                $al2->user->firstname,
+                $al2->user->lastname,
+                $annotation->image_id,
+                $annotation->image->filename,
+                $annotation->shape->id,
+                $annotation->shape->name,
+                json_encode($annotation->points),
+                null,
             ]);
 
         $mock->shouldReceive('close')

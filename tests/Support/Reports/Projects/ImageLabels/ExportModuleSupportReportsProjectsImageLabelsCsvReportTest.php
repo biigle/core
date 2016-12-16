@@ -1,10 +1,13 @@
 <?php
 
+namespace Dias\Tests\Modules\Export\Support\Reports\Projects\ImageLabels;
+
+use TestCase;
+use Dias\Tests\ProjectTest;
 use Dias\Modules\Export\Support\Reports\Projects\ImageLabels\CsvReport;
 
-class ExportModuleSupportReportsProjectsImageLabelsCsvReportTest extends TestCase
+class CsvReportTest extends TestCase
 {
-
     public function testProperties()
     {
         $report = new CsvReport(ProjectTest::make());
