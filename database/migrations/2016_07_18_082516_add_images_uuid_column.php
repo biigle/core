@@ -27,6 +27,7 @@ class AddImagesUuidColumn extends Migration
                 $image->update(['uuid' => Uuid::uuid4()]);
             }
         });
+        Image::reguard();
 
         Schema::table('images', function (Blueprint $table) {
             // make doctrine/dbal work with uuid type
