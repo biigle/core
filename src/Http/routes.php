@@ -64,4 +64,8 @@ $router->group([
     $router->get('transects/{id}/users', [
         'uses' => 'TransectUserController@index'
     ]);
+
+    $router->post('transects/{id}/images/metadata', [
+        'uses' => 'TransectImageMetadataController@store'
+    ]);
 });
