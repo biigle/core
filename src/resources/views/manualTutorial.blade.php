@@ -13,3 +13,11 @@
 <p>
     Learn what remote transects are and when to use them.
 </p>
+
+<h4>
+    <a href="{{route('manual-tutorials', ['transects', 'image-metadata'])}}">Image metadata</a>
+</h4>
+
+<p>
+    Learn how to upload image metadata.
+</p>

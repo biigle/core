@@ -5,9 +5,12 @@
 
 @push('scripts')
     <script src="{{ cachebust_asset('vendor/transects/scripts/edit.js') }}"></script>
+    <script src="{{ cachebust_asset('vendor/transects/scripts/vue.js') }}"></script>
     <script type="text/javascript">
         angular.module('dias.transects.edit').constant('TRANSECT_ID', {!!$transect->id!!});
         angular.module('dias.transects.edit').constant('ANNOTATION_SESSIONS', {!!$annotationSessions!!});
+
+        biigle.$declare('transects.id', {!! $transect->id !!});
     </script>
     @foreach ($modules->getMixins('transectsEditScripts') as $module => $nestedMixins)
         @include($module.'::transectsEditScripts', ['mixins' => $nestedMixins])
@@ -32,6 +35,7 @@
     </h2>
     <div class="col-sm-6">
         @include('transects::edit.information')
+        @include('transects::edit.metadata')
         @include('transects::edit.annotation-sessions')
     </div>
     <div class="col-sm-6">

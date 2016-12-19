@@ -145,6 +145,12 @@ class TransectImageMetadataController extends Controller
                 ]);
             }
 
+            if (array_key_exists('taken_at', $toFill) && strtotime($toFill['taken_at']) === false) {
+                return $this->buildFailedValidationResponse($request, [
+                    'file' => "'{$toFill['taken_at']}' is no valid date for image {$filename}.",
+                ]);
+            }
+
             try {
                 $image->fill($toFill);
             } catch (Exception $e) {
