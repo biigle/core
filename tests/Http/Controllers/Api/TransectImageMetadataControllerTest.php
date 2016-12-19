@@ -9,58 +9,56 @@ use Illuminate\Http\UploadedFile;
 
 class TransectImageMetadataControllerTest extends ApiTestCase
 {
+    protected function getCsv($name)
+    {
+        $csv = __DIR__."/../../../files/{$name}";
+        return new UploadedFile($csv, 'image-metadata.csv', 'text/csv', null, null, true);
+    }
+
     public function testStore()
     {
         $id = $this->transect()->id;
 
-        $csv = __DIR__.'/../../../files/image-metadata.csv';
-        $csvFile = new UploadedFile($csv, 'image-metadata.csv', 'text/csv', null, null, true);
-
         $this->doTestApiRoute('POST', "/api/v1/transects/{$id}/images/metadata");
 
+        $csv = $this->getCsv('image-metadata.csv');
         $this->beEditor();
-        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [
-            'columns' => ['taken_at', 'lng', 'lat'],
-        ], [], ['file' => $csvFile]);
-        // columns required
+        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [], [], ['file' => $csv]);
+        // no permissions
         $this->assertResponseStatus(403);
 
         $this->beAdmin();
-        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [], [], ['file' => $csvFile]);
-        // columns required
-        $this->assertResponseStatus(302);
-
-        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", ['columns' => ['taken_at']]);
+        $this->call('POST', "/api/v1/transects/{$id}/images/metadata");
         // file required
         $this->assertResponseStatus(302);
 
-        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [
-            'columns' => ['abc'],
-        ], [], ['file' => $csvFile]);
+        $csv = $this->getCsv('image-metadata-nocols.csv');
+        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [], [], ['file' => $csv]);
+        // columns required
+        $this->assertResponseStatus(302);
+
+        $csv = $this->getCsv('image-metadata-wrongcols.csv');
+        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [], [], ['file' => $csv]);
         // columns content invalid
         $this->assertResponseStatus(302);
 
-        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [
-            'columns' => ['lng'],
-        ], [], ['file' => $csvFile]);
+        $csv = $this->getCsv('image-metadata-nolat.csv');
+        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [], [], ['file' => $csv]);
         // lng requires lat, too
         $this->assertResponseStatus(302);
 
-        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [
-            'columns' => ['lat'],
-        ], [], ['file' => $csvFile]);
+        $csv = $this->getCsv('image-metadata-nolng.csv');
+        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [], [], ['file' => $csv]);
         // lat requires lng, too
         $this->assertResponseStatus(302);
 
-        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [
-            'columns' => ['taken_at'],
-        ], [], ['file' => $csvFile]);
+        $csv = $this->getCsv('image-metadata-colcount.csv');
+        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [], [], ['file' => $csv]);
         // columns don't match file
         $this->assertResponseStatus(302);
 
-        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [
-            'columns' => ['taken_at', 'lng', 'lat'],
-        ], [], ['file' => $csvFile]);
+        $csv = $this->getCsv('image-metadata.csv');
+        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [], [], ['file' => $csv]);
         // image does not exist
         $this->assertResponseStatus(302);
 
@@ -73,15 +71,13 @@ class TransectImageMetadataControllerTest extends ApiTestCase
             'transect_id' => $id,
         ]);
 
-        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [
-            'columns' => ['lng', 'lat', 'taken_at'],
-        ], [], ['file' => $csvFile]);
+        $csv = $this->getCsv('image-metadata-colordering.csv');
+        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [], [], ['file' => $csv]);
         // date is no valid longitude
         $this->assertResponseStatus(302);
 
-        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [
-            'columns' => ['taken_at', 'lng', 'lat'],
-        ], [], ['file' => $csvFile]);
+        $csv = $this->getCsv('image-metadata.csv');
+        $this->call('POST', "/api/v1/transects/{$id}/images/metadata", [], [], ['file' => $csv]);
         $this->assertResponseOk();
 
         $png = $png->fresh();
