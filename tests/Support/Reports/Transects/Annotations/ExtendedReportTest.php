@@ -19,7 +19,7 @@ use Dias\Modules\Export\Support\Reports\Transects\Annotations\ExtendedReport;
 
 class ExtendedReportTest extends TestCase
 {
-    private $columns = ['image_filename', 'label_name', 'annotation_count'];
+    private $columns = ['image_filename', 'label_hierarchy', 'annotation_count'];
 
     public function testProperties()
     {

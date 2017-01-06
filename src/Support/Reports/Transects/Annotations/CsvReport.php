@@ -101,7 +101,7 @@ class CsvReport extends Report
         $csv->put([
             'annotation_label_id',
             'label_id',
-            'label_name',
+            'label_hierarchy',
             'user_id',
             'firstname',
             'lastname',

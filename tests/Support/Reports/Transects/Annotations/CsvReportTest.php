@@ -21,7 +21,7 @@ class CsvReportTest extends TestCase
     private $columns = [
         'annotation_label_id',
         'label_id',
-        'label_name',
+        'label_hierarchy',
         'user_id',
         'firstname',
         'lastname',

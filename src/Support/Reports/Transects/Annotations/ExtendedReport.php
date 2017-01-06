@@ -85,7 +85,7 @@ class ExtendedReport extends Report
     {
         $csv = CsvFile::makeTmp();
         $csv->put([$title]);
-        $csv->put(['image_filename', 'label_name', 'annotation_count']);
+        $csv->put(['image_filename', 'label_hierarchy', 'annotation_count']);
 
         foreach ($rows as $row) {
             $csv->put([

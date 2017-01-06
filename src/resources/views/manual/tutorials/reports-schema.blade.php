@@ -43,16 +43,16 @@
         <ol>
             <li><strong>Image filename</strong></li>
             <li>
-                <strong>Label name</strong>
+                <strong>Label hierarchy</strong>
                 <p>
-                    The label name contains all label names from the root label to the child label, separated by a <code>&gt;</code>. If we have the following label tree:
+                    The label hierarchy contains all label names from the root label to the child label, separated by a <code>&gt;</code>. If we have the following label tree:
 <pre>
 Animalia
 └─ Annelida
    └─ Polychaeta
       └─ Buskiella sp
 </pre>
-                    Then the content of the "label name" column for annotations with the label "Buskiella sp" will be <code>Animalia > Annelida > Polychaeta > Buskiella sp</code>.
+                    Then the content of the "label hierarchy" column for annotations with the label "Buskiella sp" will be <code>Animalia > Annelida > Polychaeta > Buskiella sp</code>.
                 </p>
             </li>
             <li><strong>Label abundance</strong></li>
@@ -63,16 +63,18 @@ Animalia
         <p>
             The annotation area report is an XLSX spreadsheet of all area annotations (rectangle, circle and polygon) with their width and height in pixels (px) and their area in px². If a laserpoint detection was performed, the width and height in m and the area in m² is included as well.
         </p>
-        <p class="alert alert-danger">
-            The computed area of self-intersecting polygons like these will not be correct!
-            <svg style="width:100px;margin:5px auto -5px;display:block;" xmlns="http://www.w3.org/2000/svg" width="100px" height="50px" viewBox="0 0 100 50" xmlns:svg="http://www.w3.org/2000/svg">
-                <polygon stroke="#de6764" stroke-width="2" points="10,10 10,40 90,10 90,40" fill="rgba(0, 0, 0, 0.25)"></polygon>
-                <circle cx="10" cy="10" r="3" fill="#de6764" />
-                <circle cx="10" cy="40" r="3" fill="#de6764" />
-                <circle cx="90" cy="10" r="3" fill="#de6764" />
-                <circle cx="90" cy="40" r="3" fill="#de6764" />
-            </svg>
-        </p>
+        <div class="panel panel-danger">
+            <div class="panel-body text-danger">
+                The computed area of self-intersecting polygons like these will not be correct!
+                <svg style="width:100px;margin:5px auto -5px;display:block;" xmlns="http://www.w3.org/2000/svg" width="100px" height="50px" viewBox="0 0 100 50" xmlns:svg="http://www.w3.org/2000/svg">
+                    <polygon stroke="#de6764" stroke-width="2" points="10,10 10,40 90,10 90,40" fill="rgba(0, 0, 0, 0.25)"></polygon>
+                    <circle cx="10" cy="10" r="3" fill="#de6764" />
+                    <circle cx="10" cy="40" r="3" fill="#de6764" />
+                    <circle cx="90" cy="10" r="3" fill="#de6764" />
+                    <circle cx="90" cy="40" r="3" fill="#de6764" />
+                </svg>
+            </div>
+        </div>
         <p>
             For a single worksheet (not separated by label tree) the first line contains the transect name. For multiple worksheets the first lines contain the name of the respective label tree. The second line always contains the column headers. The columns are as follows:
         </p>
@@ -106,7 +108,7 @@ Animalia
             <li><strong>Annotation shape name</strong></li>
             <li><strong>X-Coordinate(s) of the annotation</strong> (may span multiple lines)</li>
             <li><strong>Y-Coordinate(s) of the annotation</strong> (may span multiple lines)</li>
-            <li><strong>Comma separated list of label names</strong> (see the <a href="#annotation-extended-report">extended report</a> on how to interpret a label name)</li>
+            <li><strong>Comma separated list of label hierarchies</strong> (see the <a href="#annotation-extended-report">extended report</a> on how to interpret a label hierarchy)</li>
             <li><strong>The area of the image</strong> in m² if available</li>
         </ol>
         <p>
@@ -140,7 +142,7 @@ Animalia
         <ol>
             <li><strong>Annotation label ID</strong> (not the annotation ID)</li>
             <li><strong>Label ID</strong></li>
-            <li><strong>Label name</strong> (see the <a href="#annotation-extended-report">extended report</a> on how to interpret a label name)</li>
+            <li><strong>Label hierarchy</strong> (see the <a href="#annotation-extended-report">extended report</a> on how to interpret a label hierarchy)</li>
             <li><strong>ID of the user who created/attached the annotation label</strong></li>
             <li><strong>User firstname</strong></li>
             <li><strong>User lastname</strong></li>
@@ -170,7 +172,7 @@ Animalia
         <ol>
             <li><strong>Image ID</strong></li>
             <li><strong>Image filename</strong></li>
-            <li><strong>Comma separated list of label names</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label name)</li>
+            <li><strong>Comma separated list of label hierarchies</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label hierarchy)</li>
         </ol>
 
         <h4><a name="image-label-csv-report"></a>CSV</h4>
@@ -188,7 +190,7 @@ Animalia
             <li><strong>User firstname</strong></li>
             <li><strong>User lastname</strong></li>
             <li><strong>Label ID</strong></li>
-            <li><strong>Label name</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label name)</li>
+            <li><strong>Label hierarchy</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label hierarchy)</li>
         </ol>
     </div>
 @endsection

@@ -86,7 +86,7 @@ class BasicReport extends Report
     {
         $csv = CsvFile::makeTmp();
         $csv->put([$title]);
-        $csv->put(['image_id', 'image_filename', 'label_names']);
+        $csv->put(['image_id', 'image_filename', 'label_hierarchies']);
 
         foreach ($rows->groupBy('id') as $row) {
             $csv->put([

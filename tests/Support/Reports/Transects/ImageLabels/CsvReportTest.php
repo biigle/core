@@ -26,7 +26,7 @@ class CsvReportTest extends TestCase
         'firstname',
         'lastname',
         'label_id',
-        'label_name',
+        'label_hierarchy',
     ];
 
     public function testProperties()

@@ -110,7 +110,7 @@ class CsvReport extends Report
             'firstname',
             'lastname',
             'label_id',
-            'label_name',
+            'label_hierarchy',
         ]);
 
         foreach ($rows as $row) {

@@ -16,7 +16,7 @@ use Dias\Modules\Export\Support\Reports\Transects\ImageLabels\BasicReport;
 
 class BasicReportTest extends TestCase
 {
-    private $columns = ['image_id', 'image_filename', 'label_names'];
+    private $columns = ['image_id', 'image_filename', 'label_hierarchies'];
 
     public function testProperties()
     {
