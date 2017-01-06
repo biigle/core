@@ -60,16 +60,9 @@ class BasicReport extends Report
      */
     protected function query()
     {
-        $query = $this->initQuery(DB::raw('labels.name, labels.color, count(labels.id) as count'))
+        $query = $this->initQuery(DB::raw('labels.name, labels.label_tree_id, labels.color, count(labels.id) as count'))
             ->groupBy('labels.id')
             ->orderBy('labels.id');
-
-        // We want this every time not only if the report should be separated by label
-        // trees as defined in initQuery().
-        if (!$this->shouldSeparateLabelTrees()) {
-            $query->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
-                ->addSelect('labels.label_tree_id');
-        }
 
         return $query;
     }

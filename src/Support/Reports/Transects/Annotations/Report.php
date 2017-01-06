@@ -164,14 +164,14 @@ class Report extends BaseReport
         $query = DB::table('annotation_labels')
             ->join('annotations', 'annotation_labels.annotation_id', '=', 'annotations.id')
             ->join('images', 'annotations.image_id', '=', 'images.id')
+            ->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
             ->where('images.transect_id', $this->transect->id)
             ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
             ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
             ->select($columns);
 
         if ($this->shouldSeparateLabelTrees()) {
-            $query->join('labels', 'annotation_labels.label_id', '=', 'labels.id')
-                ->addSelect('labels.label_tree_id');
+            $query->addSelect('labels.label_tree_id');
         }
 
         return $query;

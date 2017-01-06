@@ -21,6 +21,7 @@ class CsvReportTest extends TestCase
     private $columns = [
         'annotation_label_id',
         'label_id',
+        'label_name',
         'label_hierarchy',
         'user_id',
         'firstname',
@@ -81,6 +82,7 @@ class CsvReportTest extends TestCase
             ->with([
                 $al->id,
                 $child->id,
+                $child->name,
                 "{$root->name} > {$child->name}",
                 $al->user_id,
                 $al->user->firstname,
@@ -161,6 +163,7 @@ class CsvReportTest extends TestCase
                 $al1->id,
                 $label1->id,
                 $label1->name,
+                $label1->name,
                 $al1->user_id,
                 $al1->user->firstname,
                 $al1->user->lastname,
@@ -177,6 +180,7 @@ class CsvReportTest extends TestCase
             ->with([
                 $al2->id,
                 $label2->id,
+                $label2->name,
                 $label2->name,
                 $al2->user_id,
                 $al2->user->firstname,

@@ -94,10 +94,6 @@ class AreaReport extends Report
             ])
             ->orderBy('annotation_labels.id');
 
-        if (!$this->shouldSeparateLabelTrees()) {
-            $query->join('labels', 'annotation_labels.label_id', '=', 'labels.id');
-        }
-
         return $query;
     }
 

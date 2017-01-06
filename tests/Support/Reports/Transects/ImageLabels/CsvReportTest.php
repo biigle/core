@@ -26,6 +26,7 @@ class CsvReportTest extends TestCase
         'firstname',
         'lastname',
         'label_id',
+        'label_name',
         'label_hierarchy',
     ];
 
@@ -80,6 +81,7 @@ class CsvReportTest extends TestCase
                 $il->user->firstname,
                 $il->user->lastname,
                 $il->label_id,
+                $child->name,
                 "{$root->name} > {$child->name}",
             ]);
 
@@ -149,6 +151,7 @@ class CsvReportTest extends TestCase
                 $il1->user->lastname,
                 $label1->id,
                 $label1->name,
+                $label1->name,
             ]);
 
         $mock->shouldReceive('put')
@@ -161,6 +164,7 @@ class CsvReportTest extends TestCase
                 $il2->user->firstname,
                 $il2->user->lastname,
                 $label2->id,
+                $label2->name,
                 $label2->name,
             ]);
 

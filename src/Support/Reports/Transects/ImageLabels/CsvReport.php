@@ -72,6 +72,7 @@ class CsvReport extends Report
         $query = DB::table('image_labels')
             ->join('images', 'image_labels.image_id', '=', 'images.id')
             ->join('users', 'image_labels.user_id', '=', 'users.id')
+            ->join('labels', 'labels.id', '=', 'image_labels.label_id')
             ->select([
                 'image_labels.id as image_label_id',
                 'image_labels.image_id',
@@ -80,13 +81,13 @@ class CsvReport extends Report
                 'users.firstname',
                 'users.lastname',
                 'image_labels.label_id',
+                'labels.name as label_name',
             ])
             ->where('images.transect_id', $this->transect->id)
             ->orderBy('images.filename');
 
         if ($this->shouldSeparateLabelTrees()) {
-            $query->join('labels', 'labels.id', '=', 'image_labels.label_id')
-                ->addSelect('labels.label_tree_id');
+            $query->addSelect('labels.label_tree_id');
         }
 
         return $query;
@@ -110,6 +111,7 @@ class CsvReport extends Report
             'firstname',
             'lastname',
             'label_id',
+            'label_name',
             'label_hierarchy',
         ]);
 
@@ -122,6 +124,7 @@ class CsvReport extends Report
                 $row->firstname,
                 $row->lastname,
                 $row->label_id,
+                $row->label_name,
                 $this->expandLabelName($row->label_id),
             ]);
         }

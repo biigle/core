@@ -142,6 +142,7 @@ Animalia
         <ol>
             <li><strong>Annotation label ID</strong> (not the annotation ID)</li>
             <li><strong>Label ID</strong></li>
+            <li><strong>Label name</strong></li>
             <li><strong>Label hierarchy</strong> (see the <a href="#annotation-extended-report">extended report</a> on how to interpret a label hierarchy)</li>
             <li><strong>ID of the user who created/attached the annotation label</strong></li>
             <li><strong>User firstname</strong></li>
@@ -190,6 +191,7 @@ Animalia
             <li><strong>User firstname</strong></li>
             <li><strong>User lastname</strong></li>
             <li><strong>Label ID</strong></li>
+            <li><strong>Label name</strong></li>
             <li><strong>Label hierarchy</strong> (see the <a href="#annotation-extended-report">extended annotation report</a> on how to interpret a label hierarchy)</li>
         </ol>
     </div>

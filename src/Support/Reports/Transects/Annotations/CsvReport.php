@@ -71,6 +71,7 @@ class CsvReport extends Report
         $query = $this->initQuery([
                 'annotation_labels.id as annotation_label_id',
                 'annotation_labels.label_id',
+                'labels.name as label_name',
                 'users.id as user_id',
                 'users.firstname',
                 'users.lastname',
@@ -101,6 +102,7 @@ class CsvReport extends Report
         $csv->put([
             'annotation_label_id',
             'label_id',
+            'label_name',
             'label_hierarchy',
             'user_id',
             'firstname',
@@ -117,6 +119,7 @@ class CsvReport extends Report
             $csv->put([
                 $row->annotation_label_id,
                 $row->label_id,
+                $row->label_name,
                 $this->expandLabelName($row->label_id),
                 $row->user_id,
                 $row->firstname,
