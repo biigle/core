@@ -184,7 +184,7 @@ class ImageTest extends ModelTestCase
         $now = Carbon::now();
         $this->model->taken_at = $now;
         $this->model->save();
-        $this->assertEquals($now, $this->model->fresh()->taken_at);
+        $this->assertEquals($now->timestamp, $this->model->fresh()->taken_at->timestamp);
     }
 
     public function testLatLng()
