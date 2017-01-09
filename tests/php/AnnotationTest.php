@@ -42,6 +42,14 @@ class AnnotationTest extends ModelTestCase
         $this->assertEquals([1, 2, 3, 4], $annotation->fresh()->points);
     }
 
+    public function testRoundPoints()
+    {
+        $annotation = static::make();
+        $annotation->points = [1.23456789, 2.23456789, 3.1415];
+        $annotation->save();
+        $this->assertEquals([1.23, 2.23, 3.14], $annotation->fresh()->points);
+    }
+
     public function testLabels()
     {
         $label = LabelTest::create();
