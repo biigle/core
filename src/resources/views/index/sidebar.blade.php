@@ -4,7 +4,7 @@
          @include('annotations::index.sidebar.categories')
       @endif
     @include('annotations::index.sidebar.settings')
-    @include('annotations::index.sidebar.filters')
+    @include('annotations::index.sidebar.colorAdjustment')
     @foreach ($modules->getMixins('annotationsSidebarFoldouts') as $module => $nestedMixins)
             @include($module.'::annotationsSidebarFoldouts')
       @endforeach

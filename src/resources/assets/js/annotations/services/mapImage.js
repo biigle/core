@@ -51,14 +51,14 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
 		var imageLayer = new ol.layer.Image();
         map.addLayer(imageLayer);
 
-        var DEFAULT_FILTERS = {
+        var DEFAULT_ADJUSTMENT = {
             brightnessContrast: [0, 0],
             brightnessRGB: [0, 0, 0],
             hueSaturation: [0, 0],
             vibrance: [0]
         };
 
-        var filters = {
+        var colorAdjustment = {
             brightnessContrast: [0, 0],
             brightnessRGB: [0, 0, 0],
             hueSaturation: [0, 0],
@@ -87,15 +87,15 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             // Check if the image comes from a cross origin without CORS
             if (!biigle.annotations.utils.checkCors(image)) {
                 webglSupported = false;
-                console.log('Image filters are not supported for cross origin resources.');
+                console.log('Color adjustment is not supported for cross origin resources.');
             }
         };
 
-        var filtersActive = function () {
-            return !angular.equals(filters, DEFAULT_FILTERS);
+        var colorAdjustmentActive = function () {
+            return !angular.equals(colorAdjustment, DEFAULT_ADJUSTMENT);
         };
 
-        var applyFilters = function (render) {
+        var applyColorAdjustment = function (render) {
             if (!image) {
                 return;
             }
@@ -111,16 +111,16 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
 
             fxCanvas.draw(fxTexture);
 
-            for (var filter in filters) {
-                if (!filters.hasOwnProperty(filter)) {
+            for (var adjustment in colorAdjustment) {
+                if (!colorAdjustment.hasOwnProperty(adjustment)) {
                     continue;
                 }
 
-                if (angular.equals(filters[filter], DEFAULT_FILTERS[filter])) {
+                if (angular.equals(colorAdjustment[adjustment], DEFAULT_ADJUSTMENT[adjustment])) {
                     continue;
                 }
 
-                fxCanvas[filter].apply(fxCanvas, filters[filter]);
+                fxCanvas[adjustment].apply(fxCanvas, colorAdjustment[adjustment]);
             }
 
             fxCanvas.update();
@@ -150,10 +150,10 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
                 checkCapabilities(image);
             }
 
-            if (webglSupported && filtersActive()) {
-                // only use the WebGL filter stuff if any of the filters are activated
-                // since drawing directly is much quicker
-                applyFilters();
+            if (webglSupported && colorAdjustmentActive()) {
+                // only use the WebGL color adjustment stuff if any adjustment is
+                // activated since drawing directly is much quicker
+                applyColorAdjustment();
             } else {
                 context.drawImage(image, 0, 0);
             }
@@ -207,31 +207,31 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             return imageLayer;
         };
 
-        this.filter = function (params) {
+        this.colorAdjustment = function (params) {
             if (!webglSupported) {
                 return;
             }
 
-            var wasActive = filtersActive();
+            var wasActive = colorAdjustmentActive();
 
-            for (var filter in filters) {
-                if (!params.hasOwnProperty(filter) || !filters.hasOwnProperty(filter)) {
+            for (var adjustment in colorAdjustment) {
+                if (!params.hasOwnProperty(adjustment) || !colorAdjustment.hasOwnProperty(adjustment)) {
                     continue;
                 }
 
-                filters[filter] = params[filter].map(parseFloat);
+                colorAdjustment[adjustment] = params[adjustment].map(parseFloat);
             }
 
-            // Don't render if no filters are active. Check `wasActive` in case the
-            // filters were reset and the original image should be rendered here.
-            if (!wasActive && !filtersActive()) {
+            // Don't render if no color adjustment is active. Check `wasActive` in case
+            // the adjustment was reset and the original image should be rendered here.
+            if (!wasActive && !colorAdjustmentActive()) {
                 return;
             }
 
-            applyFilters(true);
+            applyColorAdjustment(true);
         };
 
-        this.supportsFilters = function () {
+        this.supportsColorAdjustment = function () {
             return webglSupported;
         };
 	}
