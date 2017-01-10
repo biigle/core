@@ -5,7 +5,7 @@
  * @memberOf dias.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval, labels, mapInteractions) {
+angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval, labels, mapInteractions, settings) {
 		"use strict";
 
         // the geometric features of the annotations on the map
@@ -28,8 +28,10 @@ angular.module('dias.annotations').service('mapAnnotations', function (map, imag
             return layer === annotationLayer;
         }).getFeatures();
 
-        mapInteractions.init('modify', annotationFeatures);
-        mapInteractions.deactivate('modify');
+        if (!settings.getPermanentSettings('disable_modify_interaction')) {
+            mapInteractions.init('modify', annotationFeatures);
+            mapInteractions.deactivate('modify');
+        }
 
         mapInteractions.init('translate', selectedFeatures);
         mapInteractions.deactivate('translate');

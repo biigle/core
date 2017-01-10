@@ -8,7 +8,7 @@
     @include('annotations::index.sidebar.settings.annotation-opacity')
     @include('annotations::index.sidebar.settings.annotation-cycling')
     @include('annotations::index.sidebar.settings.section-cycling')
-    @include('annotations::index.sidebar.settings.mouse-position')
+    @include('annotations::index.sidebar.settings.expert')
 
     @foreach ($modules->getMixins('annotationsSettings') as $module => $nestedMixins)
         @include($module.'::annotationsSettings')
