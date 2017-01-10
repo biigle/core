@@ -2,6 +2,7 @@
 
 namespace Dias\Jobs;
 
+use File;
 use Carbon\Carbon;
 use Dias\Jobs\Job;
 use Dias\Transect;
@@ -61,7 +62,10 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
             ->get();
 
         foreach ($images as $image) {
-            $exif = exif_read_data($this->transect->url.'/'.$image->filename);
+            $file = $this->transect->url.'/'.$image->filename;
+            if (!File::exists($file)) continue;
+
+            $exif = exif_read_data($file);
             if ($exif === false) continue;
 
             if ($this->hasTakenAtInfo($exif)) {
