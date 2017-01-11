@@ -1,6 +1,6 @@
-# BIIGLE 2.0
+# BIIGLE
 
-BIIGLE - BioImage Indexing, Graphical Labeling and Exploration
+BioImage Indexing, Graphical Labeling and Exploration
 
 ## Requirements
 

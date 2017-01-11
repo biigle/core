@@ -1,7 +1,7 @@
 {
     "name": "biigle/core",
-    "description": "Core of the BIIGLE 2.0 web application.",
-    "keywords": ["BIIGLE 2.0", "core"],
+    "description": "Core of the BIIGLE web application.",
+    "keywords": ["BIIGLE", "core"],
     "license": "proprietary",
     "type": "project",
     "require": {
