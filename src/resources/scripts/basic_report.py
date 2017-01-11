@@ -26,9 +26,7 @@ def TitleSlide(text):
     btright = plt.subplot2grid((3, 3), (2, 2))
     btright.axis('off')
     mid.text(0.5, 0.5, text, fontsize=15, horizontalalignment='center')
-    # btleft.imshow(mpimg.imread('../assets/images/biigle_biigle_logo.png'))
     btmid.text(0.423, 0.5, datetime.date.today(), fontsize=9)
-    # btright.imshow(mpimg.imread('../assets/images/logo_en_tr-height72.png'))
     return fig
 
 pdf = PdfPages(target_file)
