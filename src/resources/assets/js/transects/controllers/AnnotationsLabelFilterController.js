@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc controller
  * @name AnnotationsLabelFilterController
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Manages the annotation label filter feature
  */
-angular.module('dias.transects').controller('AnnotationsLabelFilterController', function (AnnotationLabelImage, filter, TRANSECT_ID) {
+angular.module('biigle.transects').controller('AnnotationsLabelFilterController', function (AnnotationLabelImage, filter, TRANSECT_ID) {
         "use strict";
 
         filter.add({

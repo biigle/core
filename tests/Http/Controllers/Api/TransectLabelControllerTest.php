@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Modules\Annotations\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Annotations\Http\Controllers\Api;
 
 use ApiTestCase;
-use Dias\Tests\ImageTest;
-use Dias\Tests\LabelTest;
-use Dias\Tests\AnnotationTest;
-use Dias\Tests\AnnotationLabelTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\AnnotationLabelTest;
 
 class TransectLabelControllerTest extends ApiTestCase {
 

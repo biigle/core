@@ -1,14 +1,14 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name SidebarController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for the sidebar
  */
-angular.module('dias.annotations').controller('SidebarController', function ($scope, $rootScope) {
+angular.module('biigle.annotations').controller('SidebarController', function ($scope, $rootScope) {
 		"use strict";
 
-        var foldoutStorageKey = 'dias.annotations.sidebar-foldout';
+        var foldoutStorageKey = 'biigle.annotations.sidebar-foldout';
 
         var annotationFilterOpen = false;
 

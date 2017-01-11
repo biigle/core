@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc service
  * @name styles
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Wrapper service for the OpenLayers styles
  */
-angular.module('dias.annotations').service('styles', function () {
+angular.module('biigle.annotations').service('styles', function () {
 		"use strict";
 
         var _this = this;

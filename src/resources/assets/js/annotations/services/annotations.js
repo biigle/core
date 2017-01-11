@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc service
  * @name annotations
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Wrapper service the annotations to make them available in multiple controllers.
  */
-angular.module('dias.annotations').service('annotations', function (Annotation, SHAPES, msg, AnnotationLabel, labels, $q) {
+angular.module('biigle.annotations').service('annotations', function (Annotation, SHAPES, msg, AnnotationLabel, labels, $q) {
 		"use strict";
 
         var _this = this;

@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name ScreenshotController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Manages the "get screenshot" button
  */
-angular.module('dias.annotations').controller('ScreenshotController', function ($scope, map, images) {
+angular.module('biigle.annotations').controller('ScreenshotController', function ($scope, map, images) {
 		"use strict";
         var screenshotsSupported = true;
 
@@ -16,10 +16,10 @@ angular.module('dias.annotations').controller('ScreenshotController', function (
                     name[name.length - 1] = 'png';
                 }
                 name = name.join('.').toLowerCase();
-                return 'dias_screenshot_' + name;
+                return 'biigle_screenshot_' + name;
             }
 
-            return 'dias_screenshot.png';
+            return 'biigle_screenshot.png';
         };
 
         // see: https://gist.github.com/remy/784508

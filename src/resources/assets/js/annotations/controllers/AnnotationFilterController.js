@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name AnnotationFilterController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for the annotations filter function in the sidebar
  */
-angular.module('dias.annotations').controller('AnnotationFilterController', function ($scope, annotations, AnnotationFilters, ANNOTATION_SESSIONS) {
+angular.module('biigle.annotations').controller('AnnotationFilterController', function ($scope, annotations, AnnotationFilters, ANNOTATION_SESSIONS) {
     "use strict";
 
     var clearFilter = function () {

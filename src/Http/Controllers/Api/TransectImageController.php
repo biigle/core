@@ -1,13 +1,13 @@
 <?php
 
-namespace Dias\Modules\Annotations\Http\Controllers\Api;
+namespace Biigle\Modules\Annotations\Http\Controllers\Api;
 
 use DB;
-use Dias\Image;
-use Dias\Transect;
-use Dias\Annotation;
+use Biigle\Image;
+use Biigle\Transect;
+use Biigle\Annotation;
 use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Api\Controller;
+use Biigle\Http\Controllers\Api\Controller;
 
 class TransectImageController extends Controller
 {

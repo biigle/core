@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc factory
  * @name AttachLabelInteraction
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Interaction for attaching labels to existing annotations
  */
-angular.module('dias.annotations').factory('AttachLabelInteraction', function (annotations, labels, msg) {
+angular.module('biigle.annotations').factory('AttachLabelInteraction', function (annotations, labels, msg) {
         "use strict";
 
         function AttachLabelInteraction(options) {

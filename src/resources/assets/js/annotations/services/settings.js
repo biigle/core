@@ -1,16 +1,16 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc service
  * @name settings
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Service for the local settings of the annotation tool
  */
-angular.module('dias.annotations').service('settings', function (debounce) {
+angular.module('biigle.annotations').service('settings', function (debounce) {
         "use strict";
 
         var _this = this;
 
-        var storageKey = 'dias.annotations.settings';
+        var storageKey = 'biigle.annotations.settings';
 
         var defaultSettings = {};
 

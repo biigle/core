@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc service
  * @name labels
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Wrapper service for annotation labels to provide some convenience functions.
  */
-angular.module('dias.annotations').service('labels', function (AnnotationLabel, LABEL_TREES) {
+angular.module('biigle.annotations').service('labels', function (AnnotationLabel, LABEL_TREES) {
         "use strict";
 
         var selectedLabel;

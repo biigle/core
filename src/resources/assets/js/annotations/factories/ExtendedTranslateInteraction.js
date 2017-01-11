@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc factory
  * @name ExtendedTranslateInteraction
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Extends the default translate interaction by keyboard controls
  */
-angular.module('dias.annotations').factory('ExtendedTranslateInteraction', function (keyboard, map) {
+angular.module('biigle.annotations').factory('ExtendedTranslateInteraction', function (keyboard, map) {
         "use strict";
 
         function ExtendedTranslateInteraction(options) {

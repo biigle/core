@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc factory
  * @name ZoomToNativeControl
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Control for zooming the map image to the original resolution
  */
-angular.module('dias.annotations').factory('ZoomToNativeControl', function () {
+angular.module('biigle.annotations').factory('ZoomToNativeControl', function () {
         "use strict";
 
         function ZoomToNativeControl (opt_options) {

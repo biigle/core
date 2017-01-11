@@ -1,15 +1,15 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name SelectedLabelController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for the selected label display in the map
  */
-angular.module('dias.annotations').controller('SelectedLabelController', function ($scope, labels) {
-		"use strict";
+angular.module('biigle.annotations').controller('SelectedLabelController', function ($scope, labels) {
+      "use strict";
 
         $scope.getSelectedLabel = labels.getSelected;
 
         $scope.hasSelectedLabel = labels.hasSelected;
-	}
+   }
 );

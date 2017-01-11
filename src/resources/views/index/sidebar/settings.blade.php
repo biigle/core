@@ -1,4 +1,4 @@
-@inject('modules', 'Dias\Services\Modules')
+@inject('modules', 'Biigle\Services\Modules')
 <div class="sidebar__foldout settings-foldout" data-ng-class="{open:(foldout=='settings')}">
     <h4>
         Settings

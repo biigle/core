@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc directive
  * @name labelsListItem
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description An item of the labels list in the sidebar
  */
-angular.module('dias.annotations').directive('labelsListItem', function (mapAnnotations) {
+angular.module('biigle.annotations').directive('labelsListItem', function (mapAnnotations) {
 		"use strict";
 
 		return {

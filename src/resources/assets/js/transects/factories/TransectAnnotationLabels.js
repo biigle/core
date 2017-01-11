@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name TransectAnnotationLabels
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Provides the resource to find labels occurring as annotation labels in a certain transect
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -12,7 +12,7 @@ var labels = TransectAnnotationLabels.find({transect_id: 1, query: 'an'}, functi
 });
  *
  */
-angular.module('dias.transects').factory('TransectAnnotationLabels', function ($resource, URL) {
+angular.module('biigle.transects').factory('TransectAnnotationLabels', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/transects/:transect_id/annotation-labels/find/:query', {}, {

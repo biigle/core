@@ -20,7 +20,7 @@ if (!(\DB::connection() instanceof \Illuminate\Database\SQLiteConnection)) {
     $height = 50;
     $width = 40;
 }
-$total = number_format(Dias\Annotation::count());
+$total = number_format(Biigle\Annotation::count());
 ?>
 
 <div class="panel panel-default">

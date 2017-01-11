@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name EditControlsController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for the controls bar edit buttons
  */
-angular.module('dias.annotations').controller('EditControlsController', function ($scope, mapAnnotations, keyboard, $timeout, labels, msg, mapInteractions) {
+angular.module('biigle.annotations').controller('EditControlsController', function ($scope, mapAnnotations, keyboard, $timeout, labels, msg, mapInteractions) {
 		"use strict";
 
         // the user has a certain amount of time to quick delete the last drawn

@@ -1,15 +1,15 @@
 <?php
 
-namespace Dias\Modules\Annotations\Http\Controllers;
+namespace Biigle\Modules\Annotations\Http\Controllers;
 
 use DB;
-use Dias\Role;
-use Dias\Shape;
-use Dias\Image;
-use Dias\LabelTree;
-use Dias\Annotation;
+use Biigle\Role;
+use Biigle\Shape;
+use Biigle\Image;
+use Biigle\LabelTree;
+use Biigle\Annotation;
 use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Views\Controller;
+use Biigle\Http\Controllers\Views\Controller;
 
 class AnnotationController extends Controller
 {

@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc service
  * @name mapImage
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Wrapper service handling the image layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapImage', function (map, viewport) {
+angular.module('biigle.annotations').service('mapImage', function (map, viewport) {
 		"use strict";
         var extent = [0, 0, 0, 0];
         // image that is currently displayed
@@ -43,7 +43,7 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
         };
 
 		var projection = new ol.proj.Projection({
-			code: 'dias-image',
+			code: 'biigle-image',
 			units: 'pixels',
 			extent: extent
 		});
@@ -76,7 +76,7 @@ angular.module('dias.annotations').service('mapImage', function (map, viewport) 
             }
 
             // Check supported drawing buffer size.
-            // see: https://github.com/BiodataMiningGroup/dias-annotations/issues/44
+            // see: https://github.com/BiodataMiningGroup/biigle-annotations/issues/44
             fxCanvas.width = width;
             fxCanvas.height = height;
             if (width !== fxCanvas._.gl.drawingBufferWidth || height !== fxCanvas._.gl.drawingBufferHeight) {

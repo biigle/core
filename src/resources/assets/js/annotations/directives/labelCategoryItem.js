@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc directive
  * @name labelCategoryItem
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description A label category list item.
  */
-angular.module('dias.annotations').directive('labelCategoryItem', function ($compile, $timeout, $templateCache) {
+angular.module('biigle.annotations').directive('labelCategoryItem', function ($compile, $timeout, $templateCache) {
         "use strict";
 
         return {

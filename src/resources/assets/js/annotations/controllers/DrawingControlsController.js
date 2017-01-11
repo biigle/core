@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name DrawingControlsController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for the controls bar drawing butons
  */
-angular.module('dias.annotations').controller('DrawingControlsController', function ($scope, mapAnnotations, labels, msg, $attrs, keyboard, mapInteractions) {
+angular.module('biigle.annotations').controller('DrawingControlsController', function ($scope, mapAnnotations, labels, msg, $attrs, keyboard, mapInteractions) {
 		"use strict";
 
         var selectedShape;

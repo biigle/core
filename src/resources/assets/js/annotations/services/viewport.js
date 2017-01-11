@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc service
  * @name viewport
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Manages the map viewport
  */
-angular.module('dias.annotations').service('viewport', function (urlParams) {
+angular.module('biigle.annotations').service('viewport', function (urlParams) {
         "use strict";
 
         var viewport = {

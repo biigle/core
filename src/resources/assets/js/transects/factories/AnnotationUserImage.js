@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name AnnotationUserImage
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Provides the resource for images having annotations of a certain user.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -12,7 +12,7 @@ var ids = AnnotationUserImage.query({transect_id: 1, data: 123}, function () {
 });
  *
  */
-angular.module('dias.transects').factory('AnnotationUserImage', function ($resource, URL) {
+angular.module('biigle.transects').factory('AnnotationUserImage', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/transects/:transect_id/images/filter/annotation-user/:data');

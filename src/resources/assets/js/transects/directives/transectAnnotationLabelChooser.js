@@ -1,8 +1,8 @@
 /**
- * @namespace dias.ui.users
+ * @namespace biigle.ui.users
  * @ngdoc directive
  * @name transectAnnotationLabelChooser
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description An input field to find a label that was used as annotation label in a transect
  * @example
 // HTML
@@ -14,7 +14,7 @@ $scope.addLabel = function (label) {
 };
 
  */
-angular.module('dias.transects').directive('transectAnnotationLabelChooser', function () {
+angular.module('biigle.transects').directive('transectAnnotationLabelChooser', function () {
       "use strict";
 
       return {

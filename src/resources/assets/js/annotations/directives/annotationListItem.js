@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc directive
  * @name annotationListItem
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description An annotation list item.
  */
-angular.module('dias.annotations').directive('annotationListItem', function (annotations, mapAnnotations, USER_ID) {
+angular.module('biigle.annotations').directive('annotationListItem', function (annotations, mapAnnotations, USER_ID) {
 		"use strict";
 
 		return {

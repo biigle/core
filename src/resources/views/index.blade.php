@@ -1,5 +1,5 @@
 @extends('app')
-@inject('modules', 'Dias\Services\Modules')
+@inject('modules', 'Biigle\Services\Modules')
 
 @section('title') Annotate @stop
 
@@ -8,18 +8,18 @@
 <script src="{{ cachebust_asset('vendor/annotations/scripts/glfx.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/annotations/scripts/main.js') }}"></script>
 <script type="text/javascript">
-    angular.module('dias.annotations').constant('IMAGE_ID', {!!$image->id!!});
-    angular.module('dias.annotations').constant('EDIT_MODE', {!!$editMode ? 'true' : 'false'!!});
-    angular.module('dias.annotations').constant('USER_ID', {!!$user->id!!});
-    angular.module('dias.annotations').constant('TRANSECT_ID', {!!$image->transect_id!!});
-    angular.module('dias.annotations').constant('IMAGES_IDS', {!!$images->keys()!!});
-    angular.module('dias.annotations').constant('IMAGES_FILENAMES', {!!$images->values()!!});
-    angular.module('dias.annotations').constant('SHAPES', {!!$shapes!!});
-    angular.module('dias.annotations').constant('ANNOTATION_SESSIONS', {!!$annotationSessions!!});
+    angular.module('biigle.annotations').constant('IMAGE_ID', {!!$image->id!!});
+    angular.module('biigle.annotations').constant('EDIT_MODE', {!!$editMode ? 'true' : 'false'!!});
+    angular.module('biigle.annotations').constant('USER_ID', {!!$user->id!!});
+    angular.module('biigle.annotations').constant('TRANSECT_ID', {!!$image->transect_id!!});
+    angular.module('biigle.annotations').constant('IMAGES_IDS', {!!$images->keys()!!});
+    angular.module('biigle.annotations').constant('IMAGES_FILENAMES', {!!$images->values()!!});
+    angular.module('biigle.annotations').constant('SHAPES', {!!$shapes!!});
+    angular.module('biigle.annotations').constant('ANNOTATION_SESSIONS', {!!$annotationSessions!!});
     @if($editMode)
-        angular.module('dias.annotations').constant('LABEL_TREES', {!!$labelTrees!!});
+        angular.module('biigle.annotations').constant('LABEL_TREES', {!!$labelTrees!!});
     @else
-        angular.module('dias.annotations').constant('LABEL_TREES', []);
+        angular.module('biigle.annotations').constant('LABEL_TREES', []);
     @endif
 </script>
 @foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
@@ -43,7 +43,7 @@
 @endsection
 
 @section('content')
-<div class="annotator__container" data-ng-app="dias.annotations" data-ng-controller="AnnotatorController">
+<div class="annotator__container" data-ng-app="biigle.annotations" data-ng-controller="AnnotatorController">
     <div id="canvas" class="annotator__canvas" data-ng-controller="CanvasController">
         <div class="canvas__loader" data-ng-class="{active:imageLoading}"></div>
             {{--

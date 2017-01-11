@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name SettingsSectionCyclingController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for cycling through image sections
  */
-angular.module('dias.annotations').controller('SettingsSectionCyclingController', function ($scope, map, mapImage, keyboard, settings) {
+angular.module('biigle.annotations').controller('SettingsSectionCyclingController', function ($scope, map, mapImage, keyboard, settings) {
         "use strict";
 
         // flag to prevent cycling while a new image is loading

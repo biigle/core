@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name SettingsAnnotationOpacityController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for the sidebar settings foldout
  */
-angular.module('dias.annotations').controller('SettingsAnnotationOpacityController', function ($scope, mapAnnotations, settings) {
+angular.module('biigle.annotations').controller('SettingsAnnotationOpacityController', function ($scope, mapAnnotations, settings) {
         "use strict";
 
         var key = 'annotation_opacity';

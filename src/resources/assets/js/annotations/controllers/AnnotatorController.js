@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name AnnotatorController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Main controller of the Annotator application.
  */
-angular.module('dias.annotations').controller('AnnotatorController', function ($scope, images, urlParams, msg, IMAGE_ID, keyboard, viewport, annotations, mapImage, mapAnnotations) {
+angular.module('biigle.annotations').controller('AnnotatorController', function ($scope, images, urlParams, msg, IMAGE_ID, keyboard, viewport, annotations, mapImage, mapAnnotations) {
         "use strict";
 
         // set the content of the navbar element "manually" because it is outside of

@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc service
  * @name mapAnnotations
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Wrapper service handling the annotations layer on the OpenLayers map
  */
-angular.module('dias.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval, labels, mapInteractions, settings) {
+angular.module('biigle.annotations').service('mapAnnotations', function (map, images, annotations, debounce, styles, $interval, labels, mapInteractions, settings) {
 		"use strict";
 
         // the geometric features of the annotations on the map

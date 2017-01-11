@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc factory
  * @name AnnotationFilters
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Provides functions that filter annotations based on different properties
  */
-angular.module('dias.annotations').factory('AnnotationFilters', function (ANNOTATION_SESSIONS) {
+angular.module('biigle.annotations').factory('AnnotationFilters', function (ANNOTATION_SESSIONS) {
     "use strict";
 
     /*

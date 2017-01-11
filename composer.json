@@ -1,14 +1,14 @@
 {
-    "name": "dias/annotations",
+    "name": "biigle/annotations",
     "require": {
-        "dias/transects": "~1.2",
-        "dias/label-trees": "~1.0"
+        "biigle/transects": "~1.2",
+        "biigle/label-trees": "~1.0"
     },
     "require-dev": {
     },
     "autoload": {
         "psr-4": {
-            "Dias\\Modules\\Annotations\\": "src"
+            "Biigle\\Modules\\Annotations\\": "src"
         }
     },
     "scripts": {

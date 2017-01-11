@@ -1,17 +1,17 @@
 <?php
 
-namespace Dias\Modules\Annotations;
+namespace Biigle\Modules\Annotations;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
-use Dias\Services\Modules;
+use Biigle\Services\Modules;
 
 class AnnotationsServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application events.
      *
-     * @param  \Dias\Services\Modules  $modules
+     * @param  \Biigle\Services\Modules  $modules
      * @param  \Illuminate\Routing\Router  $router
      *
      * @return void
@@ -25,7 +25,7 @@ class AnnotationsServiceProvider extends ServiceProvider
         ], 'public');
 
         $router->group([
-            'namespace' => 'Dias\Modules\Annotations\Http\Controllers',
+            'namespace' => 'Biigle\Modules\Annotations\Http\Controllers',
             'middleware' => 'web',
         ], function ($router) {
             require __DIR__.'/Http/routes.php';
@@ -46,7 +46,7 @@ class AnnotationsServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('command.annotations.publish', function ($app) {
-            return new \Dias\Modules\Annotations\Console\Commands\Publish();
+            return new \Biigle\Modules\Annotations\Console\Commands\Publish();
         });
         $this->commands('command.annotations.publish');
     }

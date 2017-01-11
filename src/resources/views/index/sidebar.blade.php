@@ -1,4 +1,4 @@
-@inject('modules', 'Dias\Services\Modules')
+@inject('modules', 'Biigle\Services\Modules')
 <div class="annotator__sidebar" data-ng-controller="SidebarController">
       @if ($editMode)
          @include('annotations::index.sidebar.categories')

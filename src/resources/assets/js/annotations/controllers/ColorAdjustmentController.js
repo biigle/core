@@ -1,14 +1,14 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name ColorAdjustmentController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for the sidebar color adjustment foldout
  */
-angular.module('dias.annotations').controller('ColorAdjustmentController', function ($scope, debounce, mapImage) {
+angular.module('biigle.annotations').controller('ColorAdjustmentController', function ($scope, debounce, mapImage) {
         "use strict";
 
-        var storageKey = 'dias.annotations.color-adjustment';
+        var storageKey = 'biigle.annotations.color-adjustment';
 
         var brightnessRgbActive = false;
 

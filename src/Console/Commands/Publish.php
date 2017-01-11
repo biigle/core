@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Annotations\Console\Commands;
+namespace Biigle\Modules\Annotations\Console\Commands;
 
 use Illuminate\Console\Command;
-use Dias\Modules\Annotations\AnnotationsServiceProvider as ServiceProvider;
+use Biigle\Modules\Annotations\AnnotationsServiceProvider as ServiceProvider;
 
 class Publish extends Command {
 

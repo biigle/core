@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc service
  * @name mapInteractions
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Manages all the (default) OpenLayers interactions of the annotator
  */
-angular.module('dias.annotations').service('mapInteractions', function (map, styles, AttachLabelInteraction, ExtendedTranslateInteraction) {
+angular.module('biigle.annotations').service('mapInteractions', function (map, styles, AttachLabelInteraction, ExtendedTranslateInteraction) {
     "use strict";
 
     var _this = this;

@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name AnnotationImage
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Provides the resource for images having annotations.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -12,7 +12,7 @@ var ids = AnnotationImage.query({transect_id: 1}, function () {
 });
  *
  */
-angular.module('dias.transects').factory('AnnotationImage', function ($resource, URL) {
+angular.module('biigle.transects').factory('AnnotationImage', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/transects/:transect_id/images/filter/annotations');

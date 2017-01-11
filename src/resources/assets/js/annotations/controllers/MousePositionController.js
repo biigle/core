@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name MousePositionController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for the mouse position element
  */
-angular.module('dias.annotations').controller('MousePositionController', function ($scope, settings, map, debounce) {
+angular.module('biigle.annotations').controller('MousePositionController', function ($scope, settings, map, debounce) {
         "use strict";
         var imageSize = [0, 0];
         $scope.position = [0, 0];

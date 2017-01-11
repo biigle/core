@@ -1,16 +1,16 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name CategoriesController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for the sidebar label categories foldout
  */
-angular.module('dias.annotations').controller('CategoriesController', function ($scope, labels, keyboard) {
+angular.module('biigle.annotations').controller('CategoriesController', function ($scope, labels, keyboard) {
         "use strict";
 
         // maximum number of allowed favourites
         var maxFavourites = 9;
-        var favouritesStorageKey = 'dias.annotations.label-favourites';
+        var favouritesStorageKey = 'biigle.annotations.label-favourites';
 
         // saves the IDs of the favourites in localStorage
         var storeFavourites = function () {

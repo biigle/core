@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc controller
  * @name AnnotationsUserFilterController
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Manages the user filter feature
  */
-angular.module('dias.transects').controller('AnnotationsUserFilterController', function (  AnnotationUserImage, filter, TRANSECT_ID) {
+angular.module('biigle.transects').controller('AnnotationsUserFilterController', function (  AnnotationUserImage, filter, TRANSECT_ID) {
         "use strict";
 
         filter.add({

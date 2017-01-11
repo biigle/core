@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name AnnotationsController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for the annotations list in the sidebar
  */
-angular.module('dias.annotations').controller('AnnotationsController', function ($scope, $element, annotations, mapAnnotations, $timeout) {
+angular.module('biigle.annotations').controller('AnnotationsController', function ($scope, $element, annotations, mapAnnotations, $timeout) {
         "use strict";
 
         var scrollElement = $element[0];

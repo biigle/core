@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name SettingsExpertController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for expert settings
  */
-angular.module('dias.annotations').controller('SettingsExpertController', function ($scope, settings) {
+angular.module('biigle.annotations').controller('SettingsExpertController', function ($scope, settings) {
         "use strict";
 
         var mouseKey = 'show_mouse_position';

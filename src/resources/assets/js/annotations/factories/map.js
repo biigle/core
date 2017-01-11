@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc factory
  * @name map
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Wrapper factory handling OpenLayers map
  */
-angular.module('dias.annotations').factory('map', function (ZoomToNativeControl) {
+angular.module('biigle.annotations').factory('map', function (ZoomToNativeControl) {
         "use strict";
 
         var map = new ol.Map({
