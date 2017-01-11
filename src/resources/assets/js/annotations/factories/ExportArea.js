@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name ExportArea
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Provides the resource for the export area of a transect
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -18,7 +18,7 @@ ExportArea.save({transect_id: 1}, {coordinates: [10, 20, 30, 40]});
 ExportArea.delete({transect_id: 1});
  *
  */
-angular.module('dias.annotations').factory('ExportArea', function ($resource, URL) {
+angular.module('biigle.annotations').factory('ExportArea', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/transects/:transect_id/export-area');

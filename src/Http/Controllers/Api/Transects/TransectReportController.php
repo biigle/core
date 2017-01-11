@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers\Api\Transects;
+namespace Biigle\Modules\Export\Http\Controllers\Api\Transects;
 
-use Dias\Transect;
+use Biigle\Transect;
 use Illuminate\Http\Request;
-use Dias\Modules\Export\Http\Controllers\Api\ReportController;
+use Biigle\Modules\Export\Http\Controllers\Api\ReportController;
 
 abstract class TransectReportController extends ReportController
 {

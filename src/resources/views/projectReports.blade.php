@@ -5,7 +5,7 @@
 @push('scripts')
     <script src="{{ cachebust_asset('vendor/export/scripts/main.js') }}"></script>
     <script type="text/javascript">
-        angular.module('dias.export').constant('PROJECT_ID', {{$project->id}});
+        angular.module('biigle.export').constant('PROJECT_ID', {{$project->id}});
     </script>
 @endpush
 
@@ -20,7 +20,7 @@
 @endsection
 
 @section('content')
-<div class="container" data-ng-app="dias.export">
+<div class="container" data-ng-app="biigle.export">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
             <h2>Request report for {{$project->name}}</h2>

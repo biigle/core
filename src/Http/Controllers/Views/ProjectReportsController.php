@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers\Views;
+namespace Biigle\Modules\Export\Http\Controllers\Views;
 
-use Dias\Project;
-use Dias\Http\Controllers\Views\Controller;
+use Biigle\Project;
+use Biigle\Http\Controllers\Views\Controller;
 
 class ProjectReportsController extends Controller
 {

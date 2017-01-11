@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name ExportAreaSettingsController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for ATE example patches settings
  */
-angular.module('dias.annotations').controller('ExportAreaSettingsController', function ($scope, exportArea, settings) {
+angular.module('biigle.annotations').controller('ExportAreaSettingsController', function ($scope, exportArea, settings) {
 		"use strict";
 
         var key = 'export_area_opacity';

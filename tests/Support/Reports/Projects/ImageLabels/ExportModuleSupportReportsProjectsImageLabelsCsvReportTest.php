@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Support\Reports\Projects\ImageLabels;
+namespace Biigle\Tests\Modules\Export\Support\Reports\Projects\ImageLabels;
 
 use TestCase;
-use Dias\Tests\ProjectTest;
-use Dias\Modules\Export\Support\Reports\Projects\ImageLabels\CsvReport;
+use Biigle\Tests\ProjectTest;
+use Biigle\Modules\Export\Support\Reports\Projects\ImageLabels\CsvReport;
 
 class CsvReportTest extends TestCase
 {

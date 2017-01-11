@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Support\Reports\Transects;
+namespace Biigle\Tests\Modules\Export\Support\Reports\Transects;
 
 use TestCase;
-use Dias\Tests\LabelTest;
-use Dias\Tests\ProjectTest;
-use Dias\Tests\TransectTest;
-use Dias\Modules\Export\Support\Reports\Transects\Report;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\TransectTest;
+use Biigle\Modules\Export\Support\Reports\Transects\Report;
 
 class ReportTest extends TestCase
 {

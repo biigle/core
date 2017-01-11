@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers\Views;
+namespace Biigle\Modules\Export\Http\Controllers\Views;
 
-use Dias\Transect;
-use Dias\Http\Controllers\Views\Controller;
+use Biigle\Transect;
+use Biigle\Http\Controllers\Views\Controller;
 
 class TransectReportsController extends Controller
 {

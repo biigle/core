@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Export\Notifications;
+namespace Biigle\Modules\Export\Notifications;
 
 use Illuminate\Notifications\Notification;
-use Dias\Modules\Export\Support\Reports\Report;
+use Biigle\Modules\Export\Support\Reports\Report;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class ReportReady extends Notification
@@ -46,7 +46,7 @@ class ReportReady extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Your BIIGLE DIAS report is ready')
+            ->subject('Your BIIGLE report is ready')
             ->line("Your {$this->report->getName()} for {$this->report->getSubject()} is ready for download!")
             ->line('The report will be removed once you have downloaded it.')
             ->action('Download report', $this->report->getUrl());

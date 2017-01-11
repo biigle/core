@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports\Projects\Annotations;
+namespace Biigle\Modules\Export\Support\Reports\Projects\Annotations;
 
 use DB;
-use Dias\Modules\Export\Transect;
-use Dias\Modules\Export\Support\Reports\Projects\Report as BaseReport;
+use Biigle\Modules\Export\Transect;
+use Biigle\Modules\Export\Support\Reports\Projects\Report as BaseReport;
 
 class Report extends BaseReport
 {

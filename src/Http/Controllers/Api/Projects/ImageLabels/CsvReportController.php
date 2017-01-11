@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers\Api\Projects\ImageLabels;
+namespace Biigle\Modules\Export\Http\Controllers\Api\Projects\ImageLabels;
 
-use Dias\Modules\Export\Support\Reports\Projects\ImageLabels\CsvReport;
-use Dias\Modules\Export\Http\Controllers\Api\Projects\ProjectReportController;
+use Biigle\Modules\Export\Support\Reports\Projects\ImageLabels\CsvReport;
+use Biigle\Modules\Export\Http\Controllers\Api\Projects\ProjectReportController;
 
 class CsvReportController extends ProjectReportController
 {

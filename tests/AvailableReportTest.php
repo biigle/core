@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests\Modules\Export;
+namespace Biigle\Tests\Modules\Export;
 
 use File;
 use TestCase;
-use Dias\Modules\Export\AvailableReport;
+use Biigle\Modules\Export\AvailableReport;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AvailableReportTest extends TestCase

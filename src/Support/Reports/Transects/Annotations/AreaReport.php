@@ -1,14 +1,14 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports\Transects\Annotations;
+namespace Biigle\Modules\Export\Support\Reports\Transects\Annotations;
 
 use DB;
 use StdClass;
-use Dias\Image;
-use Dias\Shape;
-use Dias\LabelTree;
-use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Laserpoints\Image as LImage;
+use Biigle\Image;
+use Biigle\Shape;
+use Biigle\LabelTree;
+use Biigle\Modules\Export\Support\CsvFile;
+use Biigle\Modules\Laserpoints\Image as LImage;
 
 class AreaReport extends Report
 {

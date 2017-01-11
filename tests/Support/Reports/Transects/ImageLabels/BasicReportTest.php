@@ -1,18 +1,18 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Support\Reports\Transects\ImageLabels;
+namespace Biigle\Tests\Modules\Export\Support\Reports\Transects\ImageLabels;
 
 use App;
 use File;
 use Mockery;
 use TestCase;
-use Dias\Tests\LabelTest;
-use Dias\Tests\ImageTest;
-use Dias\Tests\TransectTest;
-use Dias\Tests\ImageLabelTest;
-use Dias\Modules\Export\Support\Exec;
-use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\Transects\ImageLabels\BasicReport;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\TransectTest;
+use Biigle\Tests\ImageLabelTest;
+use Biigle\Modules\Export\Support\Exec;
+use Biigle\Modules\Export\Support\CsvFile;
+use Biigle\Modules\Export\Support\Reports\Transects\ImageLabels\BasicReport;
 
 class BasicReportTest extends TestCase
 {

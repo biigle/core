@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports;
+namespace Biigle\Modules\Export\Support\Reports;
 
 use File;
 use Exception;
-use Dias\Label;
-use Dias\Modules\Export\AvailableReport;
+use Biigle\Label;
+use Biigle\Modules\Export\AvailableReport;
 
 class Report
 {

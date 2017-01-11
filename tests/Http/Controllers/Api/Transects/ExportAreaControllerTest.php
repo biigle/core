@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Http\Controllers\Api\Transects;
+namespace Biigle\Tests\Modules\Export\Http\Controllers\Api\Transects;
 
 use ApiTestCase;
-use Dias\Modules\Export\Transect;
+use Biigle\Modules\Export\Transect;
 
 class ExportAreaControllerTest extends ApiTestCase
 {

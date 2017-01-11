@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Support\Reports;
+namespace Biigle\Tests\Modules\Export\Support\Reports;
 
 use Mockery;
 use TestCase;
 use Exception;
-use Dias\Tests\LabelTest;
-use Dias\Modules\Export\Support\Reports\Report;
+use Biigle\Tests\LabelTest;
+use Biigle\Modules\Export\Support\Reports\Report;
 
 class ReportTest extends TestCase
 {

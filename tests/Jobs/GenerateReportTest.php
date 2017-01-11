@@ -1,13 +1,13 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Jobs;
+namespace Biigle\Tests\Modules\Export\Jobs;
 
 use Mockery;
 use TestCase;
-use Dias\User;
-use Dias\Modules\Export\Support\Reports\Report;
-use Dias\Modules\Export\Jobs\GenerateReportJob;
-use Dias\Modules\Export\Notifications\ReportReady;
+use Biigle\User;
+use Biigle\Modules\Export\Support\Reports\Report;
+use Biigle\Modules\Export\Jobs\GenerateReportJob;
+use Biigle\Modules\Export\Notifications\ReportReady;
 
 class GenerateReportTest extends TestCase
 {

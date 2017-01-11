@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers\Api\Transects\ImageLabels;
+namespace Biigle\Modules\Export\Http\Controllers\Api\Transects\ImageLabels;
 
-use Dias\Modules\Export\Support\Reports\Transects\ImageLabels\BasicReport;
-use Dias\Modules\Export\Http\Controllers\Api\Transects\TransectReportController;
+use Biigle\Modules\Export\Support\Reports\Transects\ImageLabels\BasicReport;
+use Biigle\Modules\Export\Http\Controllers\Api\Transects\TransectReportController;
 
 class BasicReportController extends TransectReportController
 {

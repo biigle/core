@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers\Api;
+namespace Biigle\Modules\Export\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Api\Controller;
-use Dias\Modules\Export\Jobs\GenerateReportJob;
+use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Modules\Export\Jobs\GenerateReportJob;
 
 abstract class ReportController extends Controller
 {

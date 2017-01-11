@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Export;
+namespace Biigle\Modules\Export;
 
 use File;
-use Dias\Modules\Export\Contracts\DeletableContract;
+use Biigle\Modules\Export\Contracts\DeletableContract;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**

@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Modules\Export;
+namespace Biigle\Modules\Export;
 
-use Dias\Services\Modules;
+use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
@@ -11,7 +11,7 @@ class ExportServiceProvider extends ServiceProvider {
     /**
      * Bootstrap the application events.
      *
-     * @param  \Dias\Services\Modules  $modules
+     * @param  \Biigle\Services\Modules  $modules
      * @param  \Illuminate\Routing\Router  $router
      *
      * @return void
@@ -21,7 +21,7 @@ class ExportServiceProvider extends ServiceProvider {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'export');
 
         $router->group([
-            'namespace' => 'Dias\Modules\Export\Http\Controllers',
+            'namespace' => 'Biigle\Modules\Export\Http\Controllers',
             'middleware' => 'web',
         ], function ($router) {
             require __DIR__.'/Http/routes.php';
@@ -52,7 +52,7 @@ class ExportServiceProvider extends ServiceProvider {
         $this->mergeConfigFrom(__DIR__.'/config/export.php', 'export');
 
         $this->app->singleton('command.export.publish', function ($app) {
-            return new \Dias\Modules\Export\Console\Commands\Publish();
+            return new \Biigle\Modules\Export\Console\Commands\Publish();
         });
 
         $this->commands([

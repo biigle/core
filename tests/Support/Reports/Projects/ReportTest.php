@@ -1,16 +1,16 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Support\Reports\Projects;
+namespace Biigle\Tests\Modules\Export\Support\Reports\Projects;
 
 use App;
 use Mockery;
 use TestCase;
 use ZipArchive;
-use Dias\Tests\LabelTest;
-use Dias\Tests\ProjectTest;
-use Dias\Tests\TransectTest;
-use Dias\Modules\Export\Support\Reports\Projects\Report;
-use Dias\Modules\Export\Support\Reports\Transects\Annotations\BasicReport as TransectReport;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\TransectTest;
+use Biigle\Modules\Export\Support\Reports\Projects\Report;
+use Biigle\Modules\Export\Support\Reports\Transects\Annotations\BasicReport as TransectReport;
 
 class ReportTest extends TestCase
 {

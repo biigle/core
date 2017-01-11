@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers\Api\Transects\Annotations;
+namespace Biigle\Modules\Export\Http\Controllers\Api\Transects\Annotations;
 
-use Dias\Modules\Export\Support\Reports\Transects\Annotations\ExtendedReport;
-use Dias\Modules\Export\Http\Controllers\Api\Transects\TransectReportController;
+use Biigle\Modules\Export\Support\Reports\Transects\Annotations\ExtendedReport;
+use Biigle\Modules\Export\Http\Controllers\Api\Transects\TransectReportController;
 
 class ExtendedReportController extends TransectReportController
 {

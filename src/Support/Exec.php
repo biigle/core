@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Modules\Export\Support;
+namespace Biigle\Modules\Export\Support;
 
 /**
  * Tiny wrapper class for the exec function

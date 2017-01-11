@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Http\Controllers\Api\Transects\ImageLabels;
+namespace Biigle\Tests\Modules\Export\Http\Controllers\Api\Transects\ImageLabels;
 
 use ApiTestCase;
-use Dias\Modules\Export\Jobs\GenerateReportJob;
+use Biigle\Modules\Export\Jobs\GenerateReportJob;
 
 class CsvReportControllerTest extends ApiTestCase
 {

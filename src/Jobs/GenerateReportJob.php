@@ -1,14 +1,14 @@
 <?php
 
-namespace Dias\Modules\Export\Jobs;
+namespace Biigle\Modules\Export\Jobs;
 
-use Dias\User;
-use Dias\Jobs\Job;
+use Biigle\User;
+use Biigle\Jobs\Job;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Dias\Modules\Export\Support\Reports\Report;
-use Dias\Modules\Export\Notifications\ReportReady;
+use Biigle\Modules\Export\Support\Reports\Report;
+use Biigle\Modules\Export\Notifications\ReportReady;
 
 class GenerateReportJob extends Job implements ShouldQueue
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Modules\Export\Support;
+namespace Biigle\Modules\Export\Support;
 
 use App;
 use File;
-use Dias\Modules\Export\Contracts\DeletableContract;
+use Biigle\Modules\Export\Contracts\DeletableContract;
 
 class CsvFile implements DeletableContract
 {
@@ -54,7 +54,7 @@ class CsvFile implements DeletableContract
     public function __construct($path = null, $delimiter = ',', $enclosure = '"', $escape_char = '\\')
     {
         if (is_null($path)) {
-            $this->path = tempnam(config('export.tmp_storage').'/', 'dias-export-csv-');
+            $this->path = tempnam(config('export.tmp_storage').'/', 'biigle-export-csv-');
         } else {
             $this->path = $path;
         }

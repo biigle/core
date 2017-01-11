@@ -1,11 +1,11 @@
 /**
- * @namespace dias.export
+ * @namespace biigle.export
  * @ngdoc controller
  * @name TransectReportRequestController
- * @memberOf dias.export
+ * @memberOf biigle.export
  * @description Controller for requesting a new transect report
  */
-angular.module('dias.export').controller('TransectReportRequestController', function ($scope, TransectReport, ReportForm, TRANSECT_ID) {
+angular.module('biigle.export').controller('TransectReportRequestController', function ($scope, TransectReport, ReportForm, TRANSECT_ID) {
         "use strict";
 
         var variants = {

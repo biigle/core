@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name ProjectReport
- * @memberOf dias.export
+ * @memberOf biigle.export
  * @description Provides the resource for requesting project reports
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -19,7 +19,7 @@ ProjectReport.requestFullAnnotationReport({project_id: 1}, {});
 ProjectReport.requestBasicImageLabelReport({project_id: 1}, {});
 
  */
-angular.module('dias.export').factory('ProjectReport', function ($resource, URL) {
+angular.module('biigle.export').factory('ProjectReport', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/projects/:project_id/reports/:type/:variant', {}, {

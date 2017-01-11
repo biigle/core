@@ -1,20 +1,20 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Support\Reports\Transects\Annotations;
+namespace Biigle\Tests\Modules\Export\Support\Reports\Transects\Annotations;
 
 use App;
 use File;
 use Mockery;
 use TestCase;
 use ZipArchive;
-use Dias\Tests\LabelTest;
-use Dias\Tests\ImageTest;
-use Dias\Tests\TransectTest;
-use Dias\Tests\LabelTreeTest;
-use Dias\Tests\AnnotationTest;
-use Dias\Tests\AnnotationLabelTest;
-use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\Transects\Annotations\CsvReport;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\TransectTest;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Modules\Export\Support\CsvFile;
+use Biigle\Modules\Export\Support\Reports\Transects\Annotations\CsvReport;
 
 class CsvReportTest extends TestCase
 {

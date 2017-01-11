@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports\Projects\ImageLabels;
+namespace Biigle\Modules\Export\Support\Reports\Projects\ImageLabels;
 
 
-use Dias\Modules\Export\Support\Reports\Projects\Report;
-use Dias\Modules\Export\Support\Reports\Transects\ImageLabels\BasicReport as TransectReport;
+use Biigle\Modules\Export\Support\Reports\Projects\Report;
+use Biigle\Modules\Export\Support\Reports\Transects\ImageLabels\BasicReport as TransectReport;
 
 class BasicReport extends Report
 {

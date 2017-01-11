@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports\Transects\Annotations;
+namespace Biigle\Modules\Export\Support\Reports\Transects\Annotations;
 
 use DB;
-use Dias\LabelTree;
-use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\MakesZipArchives;
+use Biigle\LabelTree;
+use Biigle\Modules\Export\Support\CsvFile;
+use Biigle\Modules\Export\Support\Reports\MakesZipArchives;
 
 class CsvReport extends Report
 {

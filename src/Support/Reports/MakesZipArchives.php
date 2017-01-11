@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports;
+namespace Biigle\Modules\Export\Support\Reports;
 
 use App;
 use Exception;

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Export\Console\Commands;
+namespace Biigle\Modules\Export\Console\Commands;
 
 use Illuminate\Console\Command;
-use Dias\Modules\Export\ExportServiceProvider as ServiceProvider;
+use Biigle\Modules\Export\ExportServiceProvider as ServiceProvider;
 
 class Publish extends Command {
 

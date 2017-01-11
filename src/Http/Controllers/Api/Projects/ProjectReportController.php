@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers\Api\Projects;
+namespace Biigle\Modules\Export\Http\Controllers\Api\Projects;
 
-use Dias\Project;
-use Dias\Modules\Export\Http\Controllers\Api\ReportController;
+use Biigle\Project;
+use Biigle\Modules\Export\Http\Controllers\Api\ReportController;
 
 abstract class ProjectReportController extends ReportController
 {

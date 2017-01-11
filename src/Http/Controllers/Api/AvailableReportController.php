@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers\Api;
+namespace Biigle\Modules\Export\Http\Controllers\Api;
 
-use Dias\Modules\Export\AvailableReport;
-use Dias\Http\Controllers\Api\Controller;
+use Biigle\Modules\Export\AvailableReport;
+use Biigle\Http\Controllers\Api\Controller;
 
 class AvailableReportController extends Controller
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports\Transects\ImageLabels;
+namespace Biigle\Modules\Export\Support\Reports\Transects\ImageLabels;
 
 use DB;
-use Dias\LabelTree;
-use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\Transects\Report;
+use Biigle\LabelTree;
+use Biigle\Modules\Export\Support\CsvFile;
+use Biigle\Modules\Export\Support\Reports\Transects\Report;
 
 class BasicReport extends Report
 {

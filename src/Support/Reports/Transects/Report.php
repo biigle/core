@@ -1,13 +1,13 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports\Transects;
+namespace Biigle\Modules\Export\Support\Reports\Transects;
 
 use App;
 use Exception;
-use Dias\Label;
-use Dias\Transect;
-use Dias\Modules\Export\Support\Exec;
-use Dias\Modules\Export\Support\Reports\Report as BaseReport;
+use Biigle\Label;
+use Biigle\Transect;
+use Biigle\Modules\Export\Support\Exec;
+use Biigle\Modules\Export\Support\Reports\Report as BaseReport;
 
 class Report extends BaseReport
 {

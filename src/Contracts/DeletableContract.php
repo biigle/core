@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Modules\Export\Contracts;
+namespace Biigle\Modules\Export\Contracts;
 
 interface DeletableContract
 {

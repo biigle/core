@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Modules\Export;
+namespace Biigle\Modules\Export;
 
 use Exception;
-use Dias\Transect as BaseTransect;
+use Biigle\Transect as BaseTransect;
 
 /**
- * Extends the base Dias transect
+ * Extends the base Biigle transect
  */
 class Transect extends BaseTransect {
 
@@ -27,9 +27,9 @@ class Transect extends BaseTransect {
     ];
 
     /**
-     * Converts a regular Dias transect to an export transect
+     * Converts a regular Biigle transect to an export transect
      *
-     * @param BaseTransect $transect Regular Dias transect instance
+     * @param BaseTransect $transect Regular Biigle transect instance
      *
      * @return Transect
      */

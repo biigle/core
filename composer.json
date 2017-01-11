@@ -1,14 +1,14 @@
 {
-    "name": "dias/export",
+    "name": "biigle/export",
     "require": {
         "ext-zip": "*",
-        "dias/projects": "~1.1"
+        "biigle/projects": "~1.1"
     },
     "require-dev": {
     },
     "autoload": {
         "psr-4": {
-            "Dias\\Modules\\Export\\": "src"
+            "Biigle\\Modules\\Export\\": "src"
         }
     }
 }

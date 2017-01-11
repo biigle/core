@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests\Modules\Export;
+namespace Biigle\Tests\Modules\Export;
 
 use TestCase;
-use Dias\Modules\Export\Transect;
-use Dias\Tests\TransectTest as BaseTransectTest;
+use Biigle\Modules\Export\Transect;
+use Biigle\Tests\TransectTest as BaseTransectTest;
 
 class TransectTest extends TestCase
 {

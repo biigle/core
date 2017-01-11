@@ -26,13 +26,13 @@ def TitleSlide(text):
     btright = plt.subplot2grid((3, 3), (2, 2))
     btright.axis('off')
     mid.text(0.5, 0.5, text, fontsize=15, horizontalalignment='center')
-    # btleft.imshow(mpimg.imread('../assets/images/biigle_dias_logo.png'))
+    # btleft.imshow(mpimg.imread('../assets/images/biigle_biigle_logo.png'))
     btmid.text(0.423, 0.5, datetime.date.today(), fontsize=9)
     # btright.imshow(mpimg.imread('../assets/images/logo_en_tr-height72.png'))
     return fig
 
 pdf = PdfPages(target_file)
-fig = TitleSlide("BIIGLE DIAS basic report for transect\n" + title.decode('UTF-8'))
+fig = TitleSlide("BIIGLE basic report for transect\n" + title.decode('UTF-8'))
 pdf.savefig(fig)
 width = 1.
 
@@ -65,7 +65,7 @@ for path in data_csvs:
     pdf.savefig()
 
 d = pdf.infodict()
-d['Title'] = "BIIGLE DIAS basic report for transect " + title.decode('UTF-8')
+d['Title'] = "BIIGLE basic report for transect " + title.decode('UTF-8')
 d['Author'] = 'Biodata Mining Group, Bielefeld University'
 d['Subject'] = 'Histogram of label distribution of the transect'
 d['Keywords'] = ''

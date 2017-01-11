@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Modules\Export\Http\Controllers\Api\Transects;
+namespace Biigle\Modules\Export\Http\Controllers\Api\Transects;
 
 use Exception;
 use Illuminate\Http\Request;
-use Dias\Modules\Export\Transect;
-use Dias\Transect as BaseTransect;
-use Dias\Http\Controllers\Api\Controller;
+use Biigle\Modules\Export\Transect;
+use Biigle\Transect as BaseTransect;
+use Biigle\Http\Controllers\Api\Controller;
 
 class ExportAreaController extends Controller
 {

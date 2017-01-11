@@ -1,24 +1,24 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Support\Reports\Transects\Annotations;
+namespace Biigle\Tests\Modules\Export\Support\Reports\Transects\Annotations;
 
 use App;
 use File;
 use Mockery;
 use TestCase;
-use Dias\Shape;
-use Dias\Annotation;
-use Dias\Tests\UserTest;
-use Dias\AnnotationLabel;
-use Dias\Tests\ImageTest;
-use Dias\Tests\TransectTest;
-use Dias\Tests\AnnotationTest;
-use Dias\Modules\Export\Transect;
-use Dias\Tests\AnnotationLabelTest;
-use Dias\Tests\AnnotationSessionTest;
-use Dias\Modules\Export\Support\Exec;
-use Dias\Modules\Export\Support\CsvFile;
-use Dias\Modules\Export\Support\Reports\Transects\Annotations\Report;
+use Biigle\Shape;
+use Biigle\Annotation;
+use Biigle\Tests\UserTest;
+use Biigle\AnnotationLabel;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\TransectTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Modules\Export\Transect;
+use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Modules\Export\Support\Exec;
+use Biigle\Modules\Export\Support\CsvFile;
+use Biigle\Modules\Export\Support\Reports\Transects\Annotations\Report;
 
 class ReportTest extends TestCase
 {

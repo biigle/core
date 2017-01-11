@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name TransectReport
- * @memberOf dias.export
+ * @memberOf biigle.export
  * @description Provides the resource for requesting transect reports
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -19,7 +19,7 @@ TransectReport.requestFullAnnotationReport({transect_id: 1}, {});
 TransectReport.requestBasicImageLabelReport({transect_id: 1}, {});
 
  */
-angular.module('dias.export').factory('TransectReport', function ($resource, URL) {
+angular.module('biigle.export').factory('TransectReport', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/transects/:transect_id/reports/:type/:variant', {}, {

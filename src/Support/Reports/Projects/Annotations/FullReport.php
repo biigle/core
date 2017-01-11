@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports\Projects\Annotations;
+namespace Biigle\Modules\Export\Support\Reports\Projects\Annotations;
 
 
-use Dias\Modules\Export\Support\Reports\Transects\Annotations\FullReport as TransectReport;
+use Biigle\Modules\Export\Support\Reports\Transects\Annotations\FullReport as TransectReport;
 
 class FullReport extends Report
 {

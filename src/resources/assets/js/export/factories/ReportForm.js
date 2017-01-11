@@ -1,11 +1,11 @@
 /**
- * @namespace dias.export
+ * @namespace biigle.export
  * @ngdoc factory
  * @name ReportForm
- * @memberOf dias.export
+ * @memberOf biigle.export
  * @description Service to help with request report forms
  */
-angular.module('dias.export').factory('ReportForm', function (msg) {
+angular.module('biigle.export').factory('ReportForm', function (msg) {
     "use strict";
 
     function ReportForm(variants, allowedOptions, defaultForm) {

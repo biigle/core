@@ -1,18 +1,18 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports\Transects\Annotations;
+namespace Biigle\Modules\Export\Support\Reports\Transects\Annotations;
 
 use DB;
 use Illuminate\Support\Str;
-use Dias\Modules\Export\Transect;
-use Dias\Modules\Export\Support\Reports\Transects\Report as BaseReport;
+use Biigle\Modules\Export\Transect;
+use Biigle\Modules\Export\Support\Reports\Transects\Report as BaseReport;
 
 class Report extends BaseReport
 {
     /**
      * Cache for the annotation session this report may be restricted to
      *
-     * @var Dias\AnnotationSession
+     * @var Biigle\AnnotationSession
      */
     protected $annotationSession;
 
@@ -210,7 +210,7 @@ class Report extends BaseReport
     /**
      * Returns the annotation session this report should be restricted to
      *
-     * @return Dias\AnnotationSession|null
+     * @return Biigle\AnnotationSession|null
      */
     protected function getAnnotationSession()
     {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Support\Reports\Projects\Annotations;
+namespace Biigle\Tests\Modules\Export\Support\Reports\Projects\Annotations;
 
 use TestCase;
-use Dias\Tests\ProjectTest;
-use Dias\Modules\Export\Support\Reports\Projects\Annotations\ExtendedReport;
+use Biigle\Tests\ProjectTest;
+use Biigle\Modules\Export\Support\Reports\Projects\Annotations\ExtendedReport;
 
 class ExtendedReportTest extends TestCase
 {

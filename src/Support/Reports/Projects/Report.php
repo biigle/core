@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Modules\Export\Support\Reports\Projects;
+namespace Biigle\Modules\Export\Support\Reports\Projects;
 
 use App;
-use Dias\Label;
-use Dias\Project;
-use Dias\Modules\Export\Support\Reports\MakesZipArchives;
-use Dias\Modules\Export\Support\Reports\Report as BaseReport;
+use Biigle\Label;
+use Biigle\Project;
+use Biigle\Modules\Export\Support\Reports\MakesZipArchives;
+use Biigle\Modules\Export\Support\Reports\Report as BaseReport;
 
 class Report extends BaseReport
 {

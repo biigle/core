@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Http\Controllers\Api\Transects\Annotations;
+namespace Biigle\Tests\Modules\Export\Http\Controllers\Api\Transects\Annotations;
 
 use ApiTestCase;
-use Dias\Modules\Export\Jobs\GenerateReportJob;
-use Dias\Modules\Export\Support\Reports\Transects\Annotations\CsvReport;
+use Biigle\Modules\Export\Jobs\GenerateReportJob;
+use Biigle\Modules\Export\Support\Reports\Transects\Annotations\CsvReport;
 
 class CsvReportControllerTest extends ApiTestCase
 {

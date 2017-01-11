@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc service
  * @name exportArea
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Manages the export area drawn on the map
  */
-angular.module('dias.annotations').service('exportArea', function (map, styles, ExportArea, TRANSECT_ID, EXPORT_AREA, msg) {
+angular.module('biigle.annotations').service('exportArea', function (map, styles, ExportArea, TRANSECT_ID, EXPORT_AREA, msg) {
         "use strict";
 
         // a circle with a red and white stroke

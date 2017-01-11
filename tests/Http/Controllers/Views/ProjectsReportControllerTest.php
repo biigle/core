@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Tests\Modules\Export\Http\Controllers\Views;
+namespace Biigle\Tests\Modules\Export\Http\Controllers\Views;
 
 use ApiTestCase;
 
