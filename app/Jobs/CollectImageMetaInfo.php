@@ -3,6 +3,7 @@
 namespace Dias\Jobs;
 
 use File;
+use Exception;
 use Carbon\Carbon;
 use Dias\Jobs\Job;
 use Dias\Transect;
@@ -69,7 +70,12 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
             if ($exif === false) continue;
 
             if ($this->hasTakenAtInfo($exif)) {
-                $image->taken_at = new Carbon($exif['DateTimeOriginal']);
+                try {
+                    $image->taken_at = new Carbon($exif['DateTimeOriginal']);
+                } catch (Exception $e) {
+                    // date could not be parsed
+                    $image->taken_at = null;
+                }
             }
 
             if ($this->hasGpsInfo($exif)) {
