@@ -1,12 +1,12 @@
 {
-    "name": "dias/projects",
+    "name": "biigle/projects",
     "require": {
     },
     "require-dev": {
     },
     "autoload": {
         "psr-4": {
-            "Dias\\Modules\\Projects\\": "src"
+            "Biigle\\Modules\\Projects\\": "src"
         }
     },
     "scripts": {

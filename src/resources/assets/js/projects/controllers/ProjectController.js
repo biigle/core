@@ -1,11 +1,11 @@
 /**
- * @namespace dias.projects
+ * @namespace biigle.projects
  * @ngdoc controller
  * @name ProjectController
- * @memberOf dias.projects
+ * @memberOf biigle.projects
  * @description Controller for the project information
  */
-angular.module('dias.projects').controller('ProjectController', function ($scope,  PROJECT, Project, msg, $timeout, ProjectUser, USER_ID, REDIRECT_URL) {
+angular.module('biigle.projects').controller('ProjectController', function ($scope,  PROJECT, Project, msg, $timeout, ProjectUser, USER_ID, REDIRECT_URL) {
         "use strict";
 
         var editing = false;

@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Modules\Projects\Http\Controllers;
+namespace Biigle\Modules\Projects\Http\Controllers;
 
-use Dias\Role;
-use Dias\Project;
+use Biigle\Role;
+use Biigle\Project;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Views\Controller;
+use Biigle\Http\Controllers\Views\Controller;
 
 class ProjectsController extends Controller
 {

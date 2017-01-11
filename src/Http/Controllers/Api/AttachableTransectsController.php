@@ -1,13 +1,13 @@
 <?php
 
-namespace Dias\Modules\Projects\Http\Controllers\Api;
+namespace Biigle\Modules\Projects\Http\Controllers\Api;
 
 use DB;
-use Dias\Role;
-use Dias\Project;
-use Dias\Transect;
+use Biigle\Role;
+use Biigle\Project;
+use Biigle\Transect;
 use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Api\Controller;
+use Biigle\Http\Controllers\Api\Controller;
 
 class AttachableTransectsController extends Controller
 {

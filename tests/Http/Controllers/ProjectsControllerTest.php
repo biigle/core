@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Modules\Projects\Http\Controllers;
+namespace Biigle\Tests\Modules\Projects\Http\Controllers;
 
 use Cache;
 use TestCase;
-use Dias\Role;
-use Dias\Tests\UserTest;
-use Dias\Tests\ProjectTest;
+use Biigle\Role;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\ProjectTest;
 
 class ProjectsControllerTest extends TestCase
 {

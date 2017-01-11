@@ -1,4 +1,4 @@
-@inject('modules', 'Dias\Services\Modules')
+@inject('modules', 'Biigle\Services\Modules')
 
 @if ($modules->getMixins('projectsShowToolbar'))
     <div class="col-md-12 form">

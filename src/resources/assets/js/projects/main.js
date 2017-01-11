@@ -1,5 +1,5 @@
 /**
- * @namespace dias.projects
- * @description The DIAS projects module.
+ * @namespace biigle.projects
+ * @description The BIIGLE projects module.
  */
-angular.module('dias.projects', ['dias.api', 'dias.ui']);
+angular.module('biigle.projects', ['biigle.api', 'biigle.ui']);

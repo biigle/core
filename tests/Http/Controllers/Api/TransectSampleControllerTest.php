@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests\Modules\Projects\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Projects\Http\Controllers\Api;
 
 use ApiTestCase;
-use Dias\Tests\ImageTest;
+use Biigle\Tests\ImageTest;
 
 class TransectSampleControllerTest extends ApiTestCase
 {

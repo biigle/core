@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Tests\Modules\Projects\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Projects\Http\Controllers\Api;
 
-use Dias\Role;
+use Biigle\Role;
 use ApiTestCase;
-use Dias\Tests\ProjectTest;
-use Dias\Tests\TransectTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\TransectTest;
 
 class AttachableTransectsControllerTest extends ApiTestCase
 {

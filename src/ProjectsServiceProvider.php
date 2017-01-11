@@ -1,17 +1,17 @@
 <?php
 
-namespace Dias\Modules\Projects;
+namespace Biigle\Modules\Projects;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
-use Dias\Services\Modules;
+use Biigle\Services\Modules;
 
 class ProjectsServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application events.
      *
-     * @param  \Dias\Services\Modules  $modules
+     * @param  \Biigle\Services\Modules  $modules
      * @param  \Illuminate\Routing\Router  $router
      *
      * @return void
@@ -26,7 +26,7 @@ class ProjectsServiceProvider extends ServiceProvider
         ], 'public');
 
         $router->group([
-            'namespace' => 'Dias\Modules\Projects\Http\Controllers',
+            'namespace' => 'Biigle\Modules\Projects\Http\Controllers',
             'middleware' => 'web',
         ], function ($router) {
             require __DIR__.'/Http/routes.php';
@@ -49,7 +49,7 @@ class ProjectsServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('command.projects.publish', function ($app) {
-            return new \Dias\Modules\Projects\Console\Commands\Publish();
+            return new \Biigle\Modules\Projects\Console\Commands\Publish();
         });
         $this->commands('command.projects.publish');
     }

@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Modules\Projects\Http\Controllers\Api;
+namespace Biigle\Modules\Projects\Http\Controllers\Api;
 
 use Cache;
-use Dias\Image;
-use Dias\Transect;
-use Dias\Http\Controllers\Api\Controller;
+use Biigle\Image;
+use Biigle\Transect;
+use Biigle\Http\Controllers\Api\Controller;
 
 class TransectSampleController extends Controller
 {

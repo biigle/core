@@ -1,13 +1,13 @@
 /**
- * @namespace dias.projects
+ * @namespace biigle.projects
  * @ngdoc controller
  * @name ProjectLabelTreesController
- * @memberOf dias.projects
+ * @memberOf biigle.projects
  * @description Handles modification of the labels of a project.
  * @example
 
  */
-angular.module('dias.projects').controller('ProjectLabelTreesController', function ($scope, PROJECT, LABEL_TREES, ProjectLabelTree, msg) {
+angular.module('biigle.projects').controller('ProjectLabelTreesController', function ($scope, PROJECT, LABEL_TREES, ProjectLabelTree, msg) {
 		"use strict";
 
         var editing = false;
