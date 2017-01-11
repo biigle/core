@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Transects\Console\Commands;
+namespace Biigle\Modules\Transects\Console\Commands;
 
 use Illuminate\Console\Command;
-use Dias\Modules\Transects\TransectsServiceProvider as ServiceProvider;
+use Biigle\Modules\Transects\TransectsServiceProvider as ServiceProvider;
 
 class Publish extends Command {
 

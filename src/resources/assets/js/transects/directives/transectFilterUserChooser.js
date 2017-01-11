@@ -1,8 +1,8 @@
 /**
- * @namespace dias.ui.users
+ * @namespace biigle.ui.users
  * @ngdoc directive
  * @name transectFilterUserChooser
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description An input field to find a user which can be used for the transect filter mechanism
  * @example
 // HTML
@@ -14,7 +14,7 @@ $scope.addUser = function (user) {
 };
 
  */
-angular.module('dias.transects').directive('transectFilterUserChooser', function () {
+angular.module('biigle.transects').directive('transectFilterUserChooser', function () {
       "use strict";
 
       return {

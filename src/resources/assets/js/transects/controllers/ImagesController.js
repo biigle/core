@@ -1,12 +1,12 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc controller
  * @name ImagesController
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Controller for displaying the huge amout of images of a
  * transect on a singe page.
  */
-angular.module('dias.transects').controller('ImagesController', function ($scope, $element, images, filter, keyboard, $timeout) {
+angular.module('biigle.transects').controller('ImagesController', function ($scope, $element, images, filter, keyboard, $timeout) {
 		"use strict";
 
         var updateDisplay = function () {

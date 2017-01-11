@@ -1,16 +1,16 @@
 <?php
 
-namespace Dias\Modules\Transects\Http\Controllers;
+namespace Biigle\Modules\Transects\Http\Controllers;
 
-use Dias\Role;
-use Dias\Project;
-use Dias\Transect;
+use Biigle\Role;
+use Biigle\Project;
+use Biigle\Transect;
 use Carbon\Carbon;
-use Dias\LabelTree;
-use Dias\MediaType;
+use Biigle\LabelTree;
+use Biigle\MediaType;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Views\Controller;
+use Biigle\Http\Controllers\Views\Controller;
 
 class TransectController extends Controller
 {

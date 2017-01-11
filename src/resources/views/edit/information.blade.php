@@ -21,7 +21,7 @@
                     <label for="media_type_id">Media type</label>
                     <select class="form-control" name="media_type_id" id="media_type_id" required>
                         @foreach($mediaTypes as $mediaType)
-                            <option {!! old('media_type_id', $transect->media_type_id) == $mediaType->id ? 'selected="selected"' : '' !!} value="{{ $mediaType->id }}">{{ trans('dias.media_types.'.$mediaType->name) }}</option>
+                            <option {!! old('media_type_id', $transect->media_type_id) == $mediaType->id ? 'selected="selected"' : '' !!} value="{{ $mediaType->id }}">{{ trans('biigle.media_types.'.$mediaType->name) }}</option>
                         @endforeach
                     </select>
                     @if($errors->has('media_type_id'))

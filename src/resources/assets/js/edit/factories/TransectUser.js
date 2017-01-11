@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name TransectUser
- * @memberOf dias.transects.edit
+ * @memberOf biigle.transects.edit
  * @description Provides the resource for users belonging to a transect.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -12,7 +12,7 @@ var users = TransectUser.query({transect_id: 1}, function () {
 });
  *
  */
-angular.module('dias.transects.edit').factory('TransectUser', function ($resource, URL) {
+angular.module('biigle.transects.edit').factory('TransectUser', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/transects/:transect_id/users');

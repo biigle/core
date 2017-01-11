@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Modules\Transects;
+namespace Biigle\Modules\Transects;
 
-use Dias\Services\Modules;
+use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
@@ -11,7 +11,7 @@ class TransectsServiceProvider extends ServiceProvider
     /**
      * Bootstrap the application events.
      *
-     * @param  \Dias\Services\Modules  $modules
+     * @param  \Biigle\Services\Modules  $modules
      * @param  \Illuminate\Routing\Router  $router
      *
      * @return void
@@ -25,7 +25,7 @@ class TransectsServiceProvider extends ServiceProvider
         ], 'public');
 
         $router->group([
-            'namespace' => 'Dias\Modules\Transects\Http\Controllers',
+            'namespace' => 'Biigle\Modules\Transects\Http\Controllers',
             'middleware' => 'web',
         ], function ($router) {
             require __DIR__.'/Http/routes.php';
@@ -48,7 +48,7 @@ class TransectsServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('command.transects.publish', function ($app) {
-            return new \Dias\Modules\Transects\Console\Commands\Publish();
+            return new \Biigle\Modules\Transects\Console\Commands\Publish();
         });
         $this->commands('command.transects.publish');
     }

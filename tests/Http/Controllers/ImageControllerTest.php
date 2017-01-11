@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Modules\Transects\Http\Controllers;
+namespace Biigle\Tests\Modules\Transects\Http\Controllers;
 
 use TestCase;
-use Dias\Role;
-use Dias\Tests\UserTest;
-use Dias\Tests\ImageTest;
-use Dias\Tests\ProjectTest;
+use Biigle\Role;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\ProjectTest;
 
 class ImageControllerTest extends TestCase
 {

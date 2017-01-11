@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc controller
  * @name SortController
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Controller for the sorting feature of the transects page
  */
-angular.module('dias.transects').controller('SortController', function ($scope, sort, images) {
+angular.module('biigle.transects').controller('SortController', function ($scope, sort, images) {
         "use strict";
 
         // the cache can be used by sort controllers to cache their sorting sequences

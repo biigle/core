@@ -1,5 +1,5 @@
 @extends('app')
-@inject('modules', 'Dias\Services\Modules')
+@inject('modules', 'Biigle\Services\Modules')
 
 @section('title'){{ $image->filename }}@stop
 

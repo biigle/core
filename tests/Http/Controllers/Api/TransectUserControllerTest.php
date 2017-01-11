@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Tests\Modules\Transects\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Transects\Http\Controllers\Api;
 
-use Dias\Role;
+use Biigle\Role;
 use ApiTestCase;
 
 class TransectUserControllerTest extends ApiTestCase

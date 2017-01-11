@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc controller
  * @name HasImageLabelFilterController
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Manages the image labels filter feature
  */
-angular.module('dias.transects').controller('HasImageLabelFilterController', function (LabelImage, filter, TRANSECT_ID) {
+angular.module('biigle.transects').controller('HasImageLabelFilterController', function (LabelImage, filter, TRANSECT_ID) {
         "use strict";
 
         filter.add({

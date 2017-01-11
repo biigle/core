@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name TransectImageLabels
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Provides the resource to find labels occurring as image labels in a certain transect
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -12,7 +12,7 @@ var labels = TransectImageLabels.find({transect_id: 1, query: 'ba'}, function ()
 });
  *
  */
-angular.module('dias.transects').factory('TransectImageLabels', function ($resource, URL) {
+angular.module('biigle.transects').factory('TransectImageLabels', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/transects/:transect_id/image-labels/find/:query', {}, {

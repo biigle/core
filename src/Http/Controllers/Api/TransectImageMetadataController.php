@@ -1,13 +1,13 @@
 <?php
 
-namespace Dias\Modules\Transects\Http\Controllers\Api;
+namespace Biigle\Modules\Transects\Http\Controllers\Api;
 
 use File;
 use Exception;
-use Dias\Image;
-use Dias\Transect;
+use Biigle\Image;
+use Biigle\Transect;
 use Illuminate\Http\Request;
-use Dias\Http\Controllers\Api\Controller;
+use Biigle\Http\Controllers\Api\Controller;
 
 class TransectImageMetadataController extends Controller
 {

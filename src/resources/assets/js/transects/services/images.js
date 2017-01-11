@@ -1,15 +1,15 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc service
  * @name images
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Service managing the list of images to display
  */
-angular.module('dias.transects').service('images', function (TRANSECT_ID, TRANSECT_IMAGES, filterSubset, filter, sort, THUMB_DIMENSION, urlParams, debounce) {
+angular.module('biigle.transects').service('images', function (TRANSECT_ID, TRANSECT_IMAGES, filterSubset, filter, sort, THUMB_DIMENSION, urlParams, debounce) {
         "use strict";
 
-        var imagesLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.images';
-        var offsetLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.offset';
+        var imagesLocalStorageKey = 'biigle.transects.' + TRANSECT_ID + '.images';
+        var offsetLocalStorageKey = 'biigle.transects.' + TRANSECT_ID + '.offset';
 
         // the currently displayed ordering of images (as array of image IDs)
         var sequence = [];

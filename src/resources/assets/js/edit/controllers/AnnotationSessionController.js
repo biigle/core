@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects.edit
+ * @namespace biigle.transects.edit
  * @ngdoc controller
  * @name AnnotationSessionController
- * @memberOf dias.transects.edit
+ * @memberOf biigle.transects.edit
  * @description Controller for adding, editing and deleting annotation sessions
  */
-angular.module('dias.transects.edit').controller('AnnotationSessionController', function ($scope, AnnotationSession, TRANSECT_ID, ANNOTATION_SESSIONS, msg, TransectUser) {
+angular.module('biigle.transects.edit').controller('AnnotationSessionController', function ($scope, AnnotationSession, TRANSECT_ID, ANNOTATION_SESSIONS, msg, TransectUser) {
 		"use strict";
         var editing = false;
         var loading = false;

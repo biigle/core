@@ -1,5 +1,5 @@
 @extends('app')
-@inject('modules', 'Dias\Services\Modules')
+@inject('modules', 'Biigle\Services\Modules')
 
 @section('title')Edit transect {{ $transect->name }} @stop
 
@@ -7,8 +7,8 @@
     <script src="{{ cachebust_asset('vendor/transects/scripts/edit.js') }}"></script>
     <script src="{{ cachebust_asset('vendor/transects/scripts/vue.js') }}"></script>
     <script type="text/javascript">
-        angular.module('dias.transects.edit').constant('TRANSECT_ID', {!!$transect->id!!});
-        angular.module('dias.transects.edit').constant('ANNOTATION_SESSIONS', {!!$annotationSessions!!});
+        angular.module('biigle.transects.edit').constant('TRANSECT_ID', {!!$transect->id!!});
+        angular.module('biigle.transects.edit').constant('ANNOTATION_SESSIONS', {!!$annotationSessions!!});
 
         biigle.$declare('transects.id', {!! $transect->id !!});
     </script>
@@ -26,7 +26,7 @@
 
 @section('content')
 
-<div class="container" data-ng-app="dias.transects.edit">
+<div class="container" data-ng-app="biigle.transects.edit">
     <h2 class="col-xs-12 clearfix">
         Edit {{$transect->name}}
         <span class="pull-right">

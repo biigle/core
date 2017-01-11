@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc controller
  * @name TransectController
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Controller for the transect view
  */
-angular.module('dias.transects').controller('TransectController', function ($scope) {
+angular.module('biigle.transects').controller('TransectController', function ($scope) {
 		"use strict";
 
         var labelMode = false;

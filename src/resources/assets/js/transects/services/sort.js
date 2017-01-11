@@ -1,16 +1,16 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc service
  * @name sort
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Service managing the image sorting of the transect index page
  */
-angular.module('dias.transects').service('sort', function (TRANSECT_ID, TRANSECT_IMAGES) {
+angular.module('biigle.transects').service('sort', function (TRANSECT_ID, TRANSECT_IMAGES) {
         "use strict";
 
-        var sorterLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.sorting.sorter';
-        var sequenceLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.sorting.sequence';
-        var directionLocalStorageKey = 'dias.transects.' + TRANSECT_ID + '.sorting.direction';
+        var sorterLocalStorageKey = 'biigle.transects.' + TRANSECT_ID + '.sorting.sorter';
+        var sequenceLocalStorageKey = 'biigle.transects.' + TRANSECT_ID + '.sorting.sequence';
+        var directionLocalStorageKey = 'biigle.transects.' + TRANSECT_ID + '.sorting.direction';
 
         var ASCENDING = 'asc';
         var DESCENDING = 'desc';

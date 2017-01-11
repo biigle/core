@@ -14,7 +14,7 @@
             Existing annotation sessions can be used to filter <a href="{{route('manual-tutorials', ['export', 'reports-schema'])}}">transect annotation reports</a>. A report restricted to an annotation session only includes annotations that belong to this session (i.e. created by a member between the start an end dates of the annotation session).
         </p>
         <p>
-            Similar to filtering transect annotation reports, annotation sessions can be used to filter the displayed annotations in the annotation tool, too. Simply select the filter tool ( <button class="btn btn-default btn-xs" onclick="$diasPostMessage('info', 'Try the button in the annotation tool 🙂')"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button> ), choose the "session" filter, type the name of the annotation session and press enter. Now only annotations belonging to the annotation sessions are displayed. This can be combined with the Annotation Cycle Mode to review all annotations of an annotation session.
+            Similar to filtering transect annotation reports, annotation sessions can be used to filter the displayed annotations in the annotation tool, too. Simply select the filter tool ( <button class="btn btn-default btn-xs" onclick="$biiglePostMessage('info', 'Try the button in the annotation tool 🙂')"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button> ), choose the "session" filter, type the name of the annotation session and press enter. Now only annotations belonging to the annotation sessions are displayed. This can be combined with the Annotation Cycle Mode to review all annotations of an annotation session.
         </p>
         <div class="panel panel-info">
             <div class="panel-body">

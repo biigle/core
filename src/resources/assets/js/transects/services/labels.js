@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc service
  * @name labels
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Service managing the list of labels
  */
-angular.module('dias.transects').service('labels', function (LABEL_TREES, USER_ID, IS_ADMIN, ImageLabel, $q) {
+angular.module('biigle.transects').service('labels', function (LABEL_TREES, USER_ID, IS_ADMIN, ImageLabel, $q) {
         "use strict";
 
         // cache the already requested attached image labels here

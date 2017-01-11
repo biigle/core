@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Modules\Transects\Http\Controllers;
+namespace Biigle\Modules\Transects\Http\Controllers;
 
 use File;
-use Dias\Image;
-use Dias\Http\Controllers\Views\Controller;
+use Biigle\Image;
+use Biigle\Http\Controllers\Views\Controller;
 
 class ImageController extends Controller
 {

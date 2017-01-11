@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Modules\Transects\Http\Controllers\Api;
+namespace Biigle\Modules\Transects\Http\Controllers\Api;
 
-use Dias\Transect;
-use Dias\Annotation;
+use Biigle\Transect;
+use Biigle\Annotation;
 use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Api\Controller;
+use Biigle\Http\Controllers\Api\Controller;
 
 class TransectImageAnnotationLabelController extends Controller
 {

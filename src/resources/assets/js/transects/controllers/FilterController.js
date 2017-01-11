@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc controller
  * @name FilterController
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Controller for the filter feature of the transects page
  */
-angular.module('dias.transects').controller('FilterController', function ($scope, images, filter) {
+angular.module('biigle.transects').controller('FilterController', function ($scope, images, filter) {
         "use strict";
 
         $scope.active = filter.hasRules;

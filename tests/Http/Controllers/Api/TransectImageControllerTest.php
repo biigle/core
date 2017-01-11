@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Tests\Modules\Transects\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Transects\Http\Controllers\Api;
 
-use Dias\Role;
+use Biigle\Role;
 use ApiTestCase;
-use Dias\Tests\ImageTest;
-use Dias\Tests\ImageLabelTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\ImageLabelTest;
 
 class TransectImageControllerTest extends ApiTestCase
 {

@@ -23,7 +23,7 @@
         </li>
         @foreach ($images as $id => $filename)
             <li id="transect-image-{{$id}}" class="list-group-item">
-                <button type="button" class="close" title="Delete image #{{$id}}" onclick="$diasTransectsEditDeleteImage({{$id}}, '{{$filename}}')"><span>&times;</span></button>
+                <button type="button" class="close" title="Delete image #{{$id}}" onclick="$biigleTransectsEditDeleteImage({{$id}}, '{{$filename}}')"><span>&times;</span></button>
                 <span class="text-muted">#{{$id}}</span> {{$filename}}
             </li>
         @endforeach

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Transects\Http\Controllers;
+namespace Biigle\Modules\Transects\Http\Controllers;
 
-use Dias\Http\Controllers\Views\Controller;
-use Dias\Transect;
+use Biigle\Http\Controllers\Views\Controller;
+use Biigle\Transect;
 
 class AdminController extends Controller
 {

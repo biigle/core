@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Transects\Http\Controllers\Api;
+namespace Biigle\Modules\Transects\Http\Controllers\Api;
 
-use Dias\Transect;
-use Dias\Http\Controllers\Api\Controller;
+use Biigle\Transect;
+use Biigle\Http\Controllers\Api\Controller;
 
 class TransectUserController extends Controller
 {

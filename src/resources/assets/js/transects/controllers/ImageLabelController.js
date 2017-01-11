@@ -1,17 +1,17 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc controller
  * @name ImageLabelController
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Manages the image label feature
  */
-angular.module('dias.transects').controller('ImageLabelController', function ($scope, labels, TRANSECT_ID, keyboard) {
+angular.module('biigle.transects').controller('ImageLabelController', function ($scope, labels, TRANSECT_ID, keyboard) {
         "use strict";
 
         // favourite labels that can be selected with the hotkeys
         var favourites = [];
         var maxFavourites = 9;
-        var favouritesStorageKey = 'dias.transects.' + TRANSECT_ID + '.label-favourites';
+        var favouritesStorageKey = 'biigle.transects.' + TRANSECT_ID + '.label-favourites';
         // callback functions for the favourites key events
         var favouriteCallbacks = [];
 

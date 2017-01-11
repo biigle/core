@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests\Modules\Transects\Http\Controllers;
+namespace Biigle\Tests\Modules\Transects\Http\Controllers;
 
 use TestCase;
-use Dias\Role;
-use Dias\Tests\UserTest;
+use Biigle\Role;
+use Biigle\Tests\UserTest;
 
 class AdminControllerTest extends TestCase
 {

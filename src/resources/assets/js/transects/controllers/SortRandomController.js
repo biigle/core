@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc controller
  * @name SortRandomController
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Controller for sorting images randomly on the transects overview page
  */
-angular.module('dias.transects').controller('SortRandomController', function ($scope, sort, TRANSECT_IMAGES) {
+angular.module('biigle.transects').controller('SortRandomController', function ($scope, sort, TRANSECT_IMAGES) {
         "use strict";
 
         var id = 'random';

@@ -1,14 +1,14 @@
 {
-    "name": "dias/transects",
+    "name": "biigle/transects",
     "require": {
-        "dias/projects": ">=1.1.2",
-        "dias/label-trees": "~1.0"
+        "biigle/projects": ">=1.1.2",
+        "biigle/label-trees": "~1.0"
     },
     "require-dev": {
     },
     "autoload": {
         "psr-4": {
-            "Dias\\Modules\\Transects\\": "src"
+            "Biigle\\Modules\\Transects\\": "src"
         }
     },
     "scripts": {

@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects.edit
+ * @namespace biigle.transects.edit
  * @ngdoc controller
  * @name ImagesController
- * @memberOf dias.transects.edit
+ * @memberOf biigle.transects.edit
  * @description Controller for adding, editing and deleting transect images
  */
-angular.module('dias.transects.edit').controller('ImagesController', function ($scope, $element, Image, TransectImage, TRANSECT_ID, msg) {
+angular.module('biigle.transects.edit').controller('ImagesController', function ($scope, $element, Image, TransectImage, TRANSECT_ID, msg) {
 		"use strict";
 
         var messages = {
@@ -49,7 +49,7 @@ angular.module('dias.transects.edit').controller('ImagesController', function ($
          * scope of this controller and ngClick because it has a much better performance
          * if the transect has thousands of images.
          */
-        window.$diasTransectsEditDeleteImage = function (id, filename) {
+        window.$biigleTransectsEditDeleteImage = function (id, filename) {
             $scope.$apply(function () {
                 $scope.deleteImage(id, filename);
             });

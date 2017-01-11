@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Tests\Modules\Transects\Http\Controllers;
+namespace Biigle\Tests\Modules\Transects\Http\Controllers;
 
 use ApiTestCase;
 

@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc directive
  * @name transectFigure
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description A transect image
  */
-angular.module('dias.transects').directive('transectFigure', function () {
+angular.module('biigle.transects').directive('transectFigure', function () {
         "use strict";
 
         return {

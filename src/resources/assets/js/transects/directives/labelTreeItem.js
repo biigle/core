@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc directive
  * @name labelTreeItem
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description A label tree list item.
  */
-angular.module('dias.transects').directive('labelTreeItem', function ($compile, $timeout, $templateCache) {
+angular.module('biigle.transects').directive('labelTreeItem', function ($compile, $timeout, $templateCache) {
         "use strict";
 
         return {

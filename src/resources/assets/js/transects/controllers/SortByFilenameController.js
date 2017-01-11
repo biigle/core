@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc controller
  * @name SortByFilenameController
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Controller for sorting images by filename on the transects overview page
  */
-angular.module('dias.transects').controller('SortByFilenameController', function ($scope, sort, TRANSECT_IMAGES) {
+angular.module('biigle.transects').controller('SortByFilenameController', function ($scope, sort, TRANSECT_IMAGES) {
         "use strict";
 
         var id = 'filename';

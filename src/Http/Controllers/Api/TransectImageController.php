@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Modules\Transects\Http\Controllers\Api;
+namespace Biigle\Modules\Transects\Http\Controllers\Api;
 
 use DB;
-use Dias\Transect;
-use Dias\Http\Controllers\Api\Controller;
+use Biigle\Transect;
+use Biigle\Http\Controllers\Api\Controller;
 
 class TransectImageController extends Controller
 {

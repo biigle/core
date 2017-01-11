@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests\Modules\Transects\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Transects\Http\Controllers\Api;
 
 use ApiTestCase;
-use Dias\Tests\ImageTest;
-use Dias\Tests\TransectTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\TransectTest;
 use Illuminate\Http\UploadedFile;
 
 class TransectImageMetadataControllerTest extends ApiTestCase

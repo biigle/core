@@ -1,8 +1,8 @@
 /**
- * @namespace dias.ui.users
+ * @namespace biigle.ui.users
  * @ngdoc directive
  * @name transectImageLabelChooser
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description An input field to find a label that was used as image label in a transect
  * @example
 // HTML
@@ -14,7 +14,7 @@ $scope.addLabel = function (label) {
 };
 
  */
-angular.module('dias.transects').directive('transectImageLabelChooser', function () {
+angular.module('biigle.transects').directive('transectImageLabelChooser', function () {
       "use strict";
 
       return {

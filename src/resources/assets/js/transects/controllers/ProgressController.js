@@ -1,11 +1,11 @@
 /**
- * @namespace dias.transects
+ * @namespace biigle.transects
  * @ngdoc controller
  * @name ProgressController
- * @memberOf dias.transects
+ * @memberOf biigle.transects
  * @description Controller for the progress bar
  */
-angular.module('dias.transects').controller('ProgressController', function ($scope, images, debounce) {
+angular.module('biigle.transects').controller('ProgressController', function ($scope, images, debounce) {
 		"use strict";
 
         var scrolling = false;
