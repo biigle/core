@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Modules\Ate\Http\Controllers\Api;
+namespace Biigle\Modules\Ate\Http\Controllers\Api;
 
-use Dias\Transect;
-use Dias\Annotation;
+use Biigle\Transect;
+use Biigle\Annotation;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Api\Controller;
+use Biigle\Http\Controllers\Api\Controller;
 
 class TransectsAnnotationsController extends Controller
 {

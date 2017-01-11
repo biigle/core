@@ -1,14 +1,14 @@
 /**
- * @namespace dias.project-ate
- * @description The DIAS ATE module por a whole project.
+ * @namespace biigle.project-ate
+ * @description The BIIGLE ATE module por a whole project.
  */
-angular.module('dias.project-ate', ['dias.ate']);
+angular.module('biigle.project-ate', ['biigle.ate']);
 
 /*
  * Disable debug info in production for better performance.
  * see: https://code.angularjs.org/1.4.7/docs/guide/production
  */
-angular.module('dias.project-ate').config(function ($compileProvider) {
+angular.module('biigle.project-ate').config(function ($compileProvider) {
     "use strict";
 
     $compileProvider.debugInfoEnabled(false);

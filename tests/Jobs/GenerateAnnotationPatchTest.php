@@ -1,18 +1,18 @@
 <?php
 
 
-namespace Dias\Tests\Modules\Ate\Jobs;
+namespace Biigle\Tests\Modules\Ate\Jobs;
 
 use App;
 use File;
 use Mockery;
 use TestCase;
-use Dias\Shape;
+use Biigle\Shape;
 use Intervention\Image\Image;
-use Dias\Tests\AnnotationTest;
+use Biigle\Tests\AnnotationTest;
 use Intervention\Image\ImageCache;
 use Intervention\Image\ImageManager;
-use Dias\Modules\Ate\Jobs\GenerateAnnotationPatch;
+use Biigle\Modules\Ate\Jobs\GenerateAnnotationPatch;
 
 class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
 {

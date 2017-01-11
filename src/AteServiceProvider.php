@@ -1,18 +1,18 @@
 <?php
 
-namespace Dias\Modules\Ate;
+namespace Biigle\Modules\Ate;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
-use Dias\Modules\Ate\Listeners\ImagesCleanupListener;
-use Dias\Services\Modules;
+use Biigle\Modules\Ate\Listeners\ImagesCleanupListener;
+use Biigle\Services\Modules;
 
 class AteServiceProvider extends ServiceProvider {
 
     /**
      * Bootstrap the application events.
      *
-     * @param  \Dias\Services\Modules  $modules
+     * @param  \Biigle\Services\Modules  $modules
      * @param  \Illuminate\Routing\Router  $router
      *
      * @return void
@@ -30,13 +30,13 @@ class AteServiceProvider extends ServiceProvider {
         ], 'config');
 
         $router->group([
-            'namespace' => 'Dias\Modules\Ate\Http\Controllers',
+            'namespace' => 'Biigle\Modules\Ate\Http\Controllers',
             'middleware' => 'web',
         ], function ($router) {
             require __DIR__.'/Http/routes.php';
         });
 
-        \Dias\Annotation::observe(new \Dias\Modules\Ate\Observers\AnnotationObserver);
+        \Biigle\Annotation::observe(new \Biigle\Modules\Ate\Observers\AnnotationObserver);
 
         \Event::listen('images.cleanup', ImagesCleanupListener::class);
 
@@ -58,12 +58,12 @@ class AteServiceProvider extends ServiceProvider {
         $this->mergeConfigFrom(__DIR__.'/config/ate.php', 'ate');
 
         $this->app->singleton('command.ate.publish', function ($app) {
-            return new \Dias\Modules\Ate\Console\Commands\Publish();
+            return new \Biigle\Modules\Ate\Console\Commands\Publish();
         });
         $this->commands('command.ate.publish');
 
         $this->app->singleton('command.ate.config', function ($app) {
-            return new \Dias\Modules\Ate\Console\Commands\Config();
+            return new \Biigle\Modules\Ate\Console\Commands\Config();
         });
         $this->commands('command.ate.config');
     }

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\Ate\Console\Commands;
+namespace Biigle\Modules\Ate\Console\Commands;
 
 use Illuminate\Console\Command;
-use Dias\Modules\Ate\AteServiceProvider as ServiceProvider;
+use Biigle\Modules\Ate\AteServiceProvider as ServiceProvider;
 
 class Config extends Command {
 

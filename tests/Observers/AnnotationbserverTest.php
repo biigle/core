@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Tests\Modules\Ate\Listeners;
+namespace Biigle\Tests\Modules\Ate\Listeners;
 
 use TestCase;
-use Dias\Tests\AnnotationTest;
-use Dias\Modules\Ate\Jobs\RemoveAnnotationPatches;
-use Dias\Modules\Ate\Jobs\GenerateAnnotationPatch;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Modules\Ate\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Ate\Jobs\GenerateAnnotationPatch;
 
 class AteModuleObserversAnnotationObserverTest extends TestCase
 {

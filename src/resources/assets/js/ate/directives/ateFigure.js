@@ -1,11 +1,11 @@
 /**
- * @namespace dias.ate
+ * @namespace biigle.ate
  * @ngdoc directive
  * @name ateFigure
- * @memberOf dias.ate
+ * @memberOf biigle.ate
  * @description An ATE annotation patch image
  */
-angular.module('dias.ate').directive('ateFigure', function () {
+angular.module('biigle.ate').directive('ateFigure', function () {
         "use strict";
 
         return {

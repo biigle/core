@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Dias\Tests\Modules\Ate\Http\Controllers\Views;
+namespace Biigle\Tests\Modules\Ate\Http\Controllers\Views;
 
 use ApiTestCase;
 

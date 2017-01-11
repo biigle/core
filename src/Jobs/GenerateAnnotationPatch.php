@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Modules\Ate\Jobs;
+namespace Biigle\Modules\Ate\Jobs;
 
 use App;
 use File;
-use Dias\Shape;
-use Dias\Jobs\Job;
-use Dias\Annotation;
+use Biigle\Shape;
+use Biigle\Jobs\Job;
+use Biigle\Annotation;
 use Intervention\Image\ImageCache;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;

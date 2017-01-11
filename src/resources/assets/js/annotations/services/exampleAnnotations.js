@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc service
  * @name exampleAnnotations
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Service to manage example annotation images
  */
-angular.module('dias.annotations').service('exampleAnnotations', function (TransectFilterAnnotationLabel, TRANSECT_ID) {
+angular.module('biigle.annotations').service('exampleAnnotations', function (TransectFilterAnnotationLabel, TRANSECT_ID) {
         "use strict";
 
         // number of annotations to display

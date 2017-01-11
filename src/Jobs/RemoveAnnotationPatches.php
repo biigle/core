@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Modules\Ate\Jobs;
+namespace Biigle\Modules\Ate\Jobs;
 
 use App;
 use File;
-use Dias\Jobs\Job;
+use Biigle\Jobs\Job;
 use FilesystemIterator;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;

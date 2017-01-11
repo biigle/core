@@ -6,9 +6,9 @@
     <script src="{{ cachebust_asset('vendor/transects/scripts/main.js') }}"></script>
     <script src="{{ cachebust_asset('vendor/ate/scripts/main.js') }}"></script>
     <script type="text/javascript">
-        angular.module('dias.ate').constant('ATE_TRANSECT_ID', {{$transect->id}});
-        angular.module('dias.ate').constant('THUMB_DIMENSION', {WIDTH: {{config('thumbnails.width')}}, HEIGHT: {{config('thumbnails.height')}} });
-        angular.module('dias.ate').constant('LABEL_TREES', {!!$labelTrees!!});
+        angular.module('biigle.ate').constant('ATE_TRANSECT_ID', {{$transect->id}});
+        angular.module('biigle.ate').constant('THUMB_DIMENSION', {WIDTH: {{config('thumbnails.width')}}, HEIGHT: {{config('thumbnails.height')}} });
+        angular.module('biigle.ate').constant('LABEL_TREES', {!!$labelTrees!!});
     </script>
 @endpush
 
@@ -24,7 +24,7 @@
 @endsection
 
 @section('content')
-<div class="transect-container" data-ng-app="dias.ate" data-ng-controller="AteController" data-ng-class="getClass()">
+<div class="transect-container" data-ng-app="biigle.ate" data-ng-controller="AteController" data-ng-class="getClass()">
     @include('ate::index.images')
     @include('transects::index.progress')
     @include('ate::index.label')

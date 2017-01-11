@@ -1,18 +1,18 @@
 <?php
 
-namespace Dias\Modules\Ate\Http\Controllers\Api;
+namespace Biigle\Modules\Ate\Http\Controllers\Api;
 
 use DB;
-use Dias\Role;
-use Dias\Label;
-use Dias\Project;
-use Dias\Transect;
-use Dias\Annotation;
-use Dias\AnnotationLabel;
+use Biigle\Role;
+use Biigle\Label;
+use Biigle\Project;
+use Biigle\Transect;
+use Biigle\Annotation;
+use Biigle\AnnotationLabel;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Api\Controller;
-use Dias\Modules\Ate\Jobs\RemoveAnnotationPatches;
+use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Modules\Ate\Jobs\RemoveAnnotationPatches;
 use Illuminate\Auth\Access\AuthorizationException;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
@@ -274,7 +274,7 @@ class AteController extends Controller
      *
      * Removes the dismissed annotation labels and creates the changed annotation labels.
      *
-     * @param \Dias\User $user
+     * @param \Biigle\User $user
      * @param array $dismissed Array of all dismissed annotation IDs for each label
      * @param array $changed Array of IDs of changed annotations
      */

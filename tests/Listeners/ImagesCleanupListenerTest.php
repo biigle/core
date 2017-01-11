@@ -1,14 +1,14 @@
 <?php
 
-namespace Dias\Tests\Modules\Ate\Listeners;
+namespace Biigle\Tests\Modules\Ate\Listeners;
 
 use TestCase;
 use Copria\Transect;
-use Dias\Tests\ImageTest;
+use Biigle\Tests\ImageTest;
 use Faker\Factory as Faker;
 use Illuminate\Database\QueryException;
-use Dias\Modules\Ate\Jobs\RemoveAnnotationPatches;
-use Dias\Modules\Ate\Listeners\ImagesCleanupListener;
+use Biigle\Modules\Ate\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Ate\Listeners\ImagesCleanupListener;
 
 class AteModuleListenersImagesCleanupListenerTest extends TestCase
 {

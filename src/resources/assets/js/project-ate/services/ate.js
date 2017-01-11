@@ -1,11 +1,11 @@
 /**
- * @namespace dias.ate
+ * @namespace biigle.ate
  * @ngdoc service
  * @name ate
- * @memberOf dias.ate
- * @description Override the dias.ate ate service to work for a whole project.
+ * @memberOf biigle.ate
+ * @description Override the biigle.ate ate service to work for a whole project.
  */
-angular.module('dias.project-ate').service('ate', function (PROJECT_ID, ProjectFilterAnnotationLabel, Ate) {
+angular.module('biigle.project-ate').service('ate', function (PROJECT_ID, ProjectFilterAnnotationLabel, Ate) {
     "use strict";
 
     this.getAnnotations = function (label_id) {

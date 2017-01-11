@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name Ate
- * @memberOf dias.ate
+ * @memberOf biigle.ate
  * @description Provides the resource to save an ATE session for a transect
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -12,7 +12,7 @@ Ate.save({transect_id: 3}, {dismissed: {1: [...]}, changed: {12: 1, ...}} functi
 });
  *
  */
-angular.module('dias.ate').factory('Ate', function ($resource, URL) {
+angular.module('biigle.ate').factory('Ate', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/transects/:transect_id/ate');

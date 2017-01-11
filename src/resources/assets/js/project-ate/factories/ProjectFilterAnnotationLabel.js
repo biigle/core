@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name ProjectFilterAnnotationLabel
- * @memberOf dias.project-ate
+ * @memberOf biigle.project-ate
  * @description Provides the resource to get annotations with a specific label in a project
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -12,7 +12,7 @@ var annotations = ProjectFilterAnnotationLabel.query({project_id: 1, label_id: 2
 });
  *
  */
-angular.module('dias.project-ate').factory('ProjectFilterAnnotationLabel', function ($resource, URL) {
+angular.module('biigle.project-ate').factory('ProjectFilterAnnotationLabel', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/projects/:project_id/annotations/filter/label/:label_id');

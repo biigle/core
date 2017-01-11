@@ -1,11 +1,11 @@
 /**
- * @namespace dias.ate
+ * @namespace biigle.ate
  * @ngdoc service
  * @name annotations
- * @memberOf dias.ate
+ * @memberOf biigle.ate
  * @description Service for managing the dismissed/replaced annotation labels of the ATE view
  */
-angular.module('dias.ate').service('annotations', function (TRANSECT_IMAGES, ate, labels, images, msg) {
+angular.module('biigle.ate').service('annotations', function (TRANSECT_IMAGES, ate, labels, images, msg) {
         "use strict";
 
         // cache that maps label IDs to IDs of annotations with this label

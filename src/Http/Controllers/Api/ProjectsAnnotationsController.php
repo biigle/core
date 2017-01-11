@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Modules\Ate\Http\Controllers\Api;
+namespace Biigle\Modules\Ate\Http\Controllers\Api;
 
-use Dias\Project;
-use Dias\Transect;
-use Dias\Annotation;
+use Biigle\Project;
+use Biigle\Transect;
+use Biigle\Annotation;
 use Illuminate\Http\Request;
-use Dias\Http\Controllers\Api\Controller;
+use Biigle\Http\Controllers\Api\Controller;
 
 class ProjectsAnnotationsController extends Controller
 {

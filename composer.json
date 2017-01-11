@@ -1,7 +1,7 @@
 {
-    "name": "dias/ate",
+    "name": "biigle/ate",
     "require": {
-        "dias/transects": "~1.1",
+        "biigle/transects": "~1.1",
         "intervention/image": "~2.1",
         "intervention/imagecache": "~2.1"
     },
@@ -9,7 +9,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Dias\\Modules\\Ate\\": "src"
+            "Biigle\\Modules\\Ate\\": "src"
         }
     }
 }

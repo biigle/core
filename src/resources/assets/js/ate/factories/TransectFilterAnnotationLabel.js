@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name TransectFilterAnnotationLabel
- * @memberOf dias.ate
+ * @memberOf biigle.ate
  * @description Provides the resource to get annotations with a specific label in a transect
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -12,7 +12,7 @@ var annotations = TransectFilterAnnotationLabel.query({transect_id: 1, label_id:
 });
  *
  */
-angular.module('dias.ate').factory('TransectFilterAnnotationLabel', function ($resource, URL) {
+angular.module('biigle.ate').factory('TransectFilterAnnotationLabel', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/transects/:transect_id/annotations/filter/label/:label_id');

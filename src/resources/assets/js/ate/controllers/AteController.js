@@ -1,11 +1,11 @@
 /**
- * @namespace dias.ate
+ * @namespace biigle.ate
  * @ngdoc controller
  * @name AteController
- * @memberOf dias.ate
+ * @memberOf biigle.ate
  * @description Controller for the transect view
  */
-angular.module('dias.ate').controller('AteController', function ($scope, labels, annotations, msg) {
+angular.module('biigle.ate').controller('AteController', function ($scope, labels, annotations, msg) {
 		"use strict";
 
         var step = 0;

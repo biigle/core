@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Modules\Ate\Listeners;
+namespace Biigle\Modules\Ate\Listeners;
 
-use Dias\Image;
-use Dias\Annotation;
+use Biigle\Image;
+use Biigle\Annotation;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Dias\Modules\Ate\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Ate\Jobs\RemoveAnnotationPatches;
 
 class ImagesCleanupListener
 {

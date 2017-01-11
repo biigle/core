@@ -1,11 +1,11 @@
 /**
- * @namespace dias.annotations
+ * @namespace biigle.annotations
  * @ngdoc controller
  * @name AteExamplePatchesController
- * @memberOf dias.annotations
+ * @memberOf biigle.annotations
  * @description Controller for ATE example patches
  */
-angular.module('dias.annotations').controller('AteExamplePatchesController', function ($scope, labels, exampleAnnotations) {
+angular.module('biigle.annotations').controller('AteExamplePatchesController', function ($scope, labels, exampleAnnotations) {
 		"use strict";
 
         var patches = [];

@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Tests\Modules\Ate\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Ate\Http\Controllers\Api;
 
 use ApiTestCase;
-use Dias\Tests\ImageTest;
-use Dias\Tests\AnnotationTest;
-use Dias\Tests\AnnotationLabelTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\AnnotationLabelTest;
 
 class ProjectsAnnotationsControllerTest extends ApiTestCase
 {

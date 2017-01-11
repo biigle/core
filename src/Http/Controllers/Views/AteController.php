@@ -1,15 +1,15 @@
 <?php
 
-namespace Dias\Modules\Ate\Http\Controllers\Views;
+namespace Biigle\Modules\Ate\Http\Controllers\Views;
 
 use DB;
-use Dias\Role;
-use Dias\Project;
-use Dias\Transect;
-use Dias\LabelTree;
-use Dias\Annotation;
+use Biigle\Role;
+use Biigle\Project;
+use Biigle\Transect;
+use Biigle\LabelTree;
+use Biigle\Annotation;
 use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Views\Controller;
+use Biigle\Http\Controllers\Views\Controller;
 
 class AteController extends Controller
 {

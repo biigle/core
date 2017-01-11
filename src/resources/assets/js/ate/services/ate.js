@@ -1,11 +1,11 @@
 /**
- * @namespace dias.ate
+ * @namespace biigle.ate
  * @ngdoc service
  * @name ate
- * @memberOf dias.ate
+ * @memberOf biigle.ate
  * @description Manages the interaction with the Ate specific API endpoints
  */
-angular.module('dias.ate').service('ate', function (ATE_TRANSECT_ID, TransectFilterAnnotationLabel, Ate) {
+angular.module('biigle.ate').service('ate', function (ATE_TRANSECT_ID, TransectFilterAnnotationLabel, Ate) {
         "use strict";
 
         this.getAnnotations = function (label_id) {

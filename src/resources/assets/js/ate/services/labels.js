@@ -1,11 +1,11 @@
 /**
- * @namespace dias.ate
+ * @namespace biigle.ate
  * @ngdoc service
  * @name labels
- * @memberOf dias.ate
- * @description Service managing the list of labels. This service overrides the labels service of dias.transects!
+ * @memberOf biigle.ate
+ * @description Service managing the list of labels. This service overrides the labels service of biigle.transects!
  */
-angular.module('dias.ate').service('labels', function (LABEL_TREES) {
+angular.module('biigle.ate').service('labels', function (LABEL_TREES) {
         "use strict";
 
         var labels = [];

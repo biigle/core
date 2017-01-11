@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Modules\Ate\Observers;
+namespace Biigle\Modules\Ate\Observers;
 
-use Dias\Annotation;
+use Biigle\Annotation;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Dias\Modules\Ate\Jobs\RemoveAnnotationPatches;
-use Dias\Modules\Ate\Jobs\GenerateAnnotationPatch;
+use Biigle\Modules\Ate\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Ate\Jobs\GenerateAnnotationPatch;
 
 class AnnotationObserver
 {

@@ -2,7 +2,7 @@
 
 var gulp = require('gulp');
 var h = require('gulp-helpers');
-var publish = h.publish('Dias\\Modules\\Ate\\AteServiceProvider', 'public');
+var publish = h.publish('Biigle\\Modules\\Ate\\AteServiceProvider', 'public');
 
 h.paths.sass = 'src/resources/assets/sass/';
 h.paths.js = 'src/resources/assets/js/';
