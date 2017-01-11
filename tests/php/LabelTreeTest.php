@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
-use Dias\Role;
+use Biigle\Role;
 use ModelTestCase;
-use Dias\LabelTree;
-use Dias\Visibility;
+use Biigle\LabelTree;
+use Biigle\Visibility;
 
 class LabelTreeTest extends ModelTestCase
 {

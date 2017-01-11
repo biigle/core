@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\Shape;
+use Biigle\Shape;
 
 class ShapeController extends Controller
 {

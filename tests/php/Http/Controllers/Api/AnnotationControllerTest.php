@@ -1,13 +1,13 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use Cache;
-use Dias\Shape;
+use Biigle\Shape;
 use ApiTestCase;
 use Carbon\Carbon;
-use Dias\Tests\AnnotationTest;
-use Dias\Tests\AnnotationSessionTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\AnnotationSessionTest;
 
 class AnnotationControllerTest extends ApiTestCase
 {

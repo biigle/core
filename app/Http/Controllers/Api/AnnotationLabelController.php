@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\Label;
-use Dias\Annotation;
-use Dias\AnnotationLabel;
+use Biigle\Label;
+use Biigle\Annotation;
+use Biigle\AnnotationLabel;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\QueryException;

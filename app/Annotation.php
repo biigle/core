@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias;
+namespace Biigle;
 
 use DB;
 use Exception;
-use Dias\Shape;
+use Biigle\Shape;
 use Illuminate\Database\Eloquent\Model;
 
 /**

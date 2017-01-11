@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Exceptions;
+namespace Biigle\Exceptions;
 
 use Exception;
 use ErrorException;
-use Dias\Http\Controllers\Controller;
+use Biigle\Http\Controllers\Controller;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Session\TokenMismatchException;

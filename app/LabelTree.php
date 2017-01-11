@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias;
+namespace Biigle;
 
 use DB;
 use Illuminate\Database\Eloquent\Model;

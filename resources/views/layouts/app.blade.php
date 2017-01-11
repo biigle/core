@@ -37,7 +37,7 @@
     <script src="{{ cachebust_asset('assets/scripts/ui-bootstrap-tpls.min.js') }}"></script>
     <script src="{{ cachebust_asset('assets/scripts/main.js') }}"></script>
     <script type="text/javascript">
-        angular.module('dias.api').constant('URL', '{{ url('/') }}');
+        angular.module('biigle.api').constant('URL', '{{ url('/') }}');
     </script>
     @stack('scripts')
 </body>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Providers;
+namespace Biigle\Providers;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -14,7 +14,7 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         'images.cleanup' => [
-            \Dias\Listeners\CleanupThumbnails::class,
+            \Biigle\Listeners\CleanupThumbnails::class,
         ],
     ];
 
@@ -27,9 +27,9 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        \Dias\Project::observe(new \Dias\Observers\ProjectObserver);
-        \Dias\User::observe(new \Dias\Observers\UserObserver);
-        \Dias\Transect::observe(new \Dias\Observers\TransectObserver);
-        \Dias\Image::observe(new \Dias\Observers\ImageObserver);
+        \Biigle\Project::observe(new \Biigle\Observers\ProjectObserver);
+        \Biigle\User::observe(new \Biigle\Observers\UserObserver);
+        \Biigle\Transect::observe(new \Biigle\Observers\TransectObserver);
+        \Biigle\Image::observe(new \Biigle\Observers\ImageObserver);
     }
 }

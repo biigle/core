@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Providers;
+namespace Biigle\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -22,7 +22,7 @@ class ThumbnailServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('Dias\Contracts\ThumbnailService', function ($app) {
+        $this->app->singleton('Biigle\Contracts\ThumbnailService', function ($app) {
             // which service to use is set in the thumbnails config
             $chosenAdapter = config('thumbnails.service');
 
@@ -37,6 +37,6 @@ class ThumbnailServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return ['Dias\Contracts\ThumbnailService'];
+        return ['Biigle\Contracts\ThumbnailService'];
     }
 }

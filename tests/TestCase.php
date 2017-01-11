@@ -1,7 +1,5 @@
 <?php
 
-use Dias\Transect;
-
 class TestCase extends Illuminate\Foundation\Testing\TestCase
 {
     protected static $pdo;

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
 use ModelTestCase;
-use Dias\ApiToken;
+use Biigle\ApiToken;
 
 class ApiTokenTest extends ModelTestCase
 {

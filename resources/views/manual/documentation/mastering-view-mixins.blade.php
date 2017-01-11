@@ -24,13 +24,13 @@
             <h4>Handling the mixins in the view</h4>
 
             <p>
-                View mixins are basically no more than a dynamic usage of the <code>&#64;include</code> control structure of the <a href="http://laravel.com/docs/5.0/templates">Blade templating engine</a>. With <code>&#64;include</code> you can take a view and insert it into another view making view modularization and separation of concerns possible. Adding a view mixin to a view is nothing else than <code>&#64;include</code>-ing it, except the name of the view to load is dynamically fetched from the <code>Dias\Services\Modules</code> service.
+                View mixins are basically no more than a dynamic usage of the <code>&#64;include</code> control structure of the <a href="http://laravel.com/docs/5.0/templates">Blade templating engine</a>. With <code>&#64;include</code> you can take a view and insert it into another view making view modularization and separation of concerns possible. Adding a view mixin to a view is nothing else than <code>&#64;include</code>-ing it, except the name of the view to load is dynamically fetched from the <code>Biigle\Services\Modules</code> service.
             </p>
             <p>
                 But first we need to <a href="http://laravel.com/docs/5.1/blade#service-injection">inject</a> the <code>Modules</code> service into the view like this:
             </p>
 <pre>
-&#64;inject('modules', 'Dias\Services\Modules')
+&#64;inject('modules', 'Biigle\Services\Modules')
 </pre>
             <p>
                 Now the service can be used to fetch the names of all views that should be included as a mixin. Let's take a look at how the dashboard view handles including the mixins:
@@ -56,7 +56,7 @@
             <h3>Nested mixins</h3>
 
             <p>
-                Let's stay in the dashboard example. If you fiddle with the providers array of DIAS' <code>config/app.php</code> and disable the transects module, you'll notice on the dashboard that the transect thumbnail images inside of the project boxes disappear. If you then disable the projects module as well, the project boxes will disappear, too. So the transect thumbnails and project boxes <em>both</em> must be view mixins. But the thumbnails are inside of the project boxes so there must be a mechanism for nesting view mixins.
+                Let's stay in the dashboard example. If you fiddle with the providers array of BIIGLE' <code>config/app.php</code> and disable the transects module, you'll notice on the dashboard that the transect thumbnail images inside of the project boxes disappear. If you then disable the projects module as well, the project boxes will disappear, too. So the transect thumbnails and project boxes <em>both</em> must be view mixins. But the thumbnails are inside of the project boxes so there must be a mechanism for nesting view mixins.
             </p>
 
             <h4>Displaying nested mixins</h4>
@@ -153,7 +153,7 @@ $modules->addMixin('transects', 'dashboardStyles');
             <h3>Conclusion</h3>
 
             <p>
-                Now we have de-mystified the mechanisms behind view mixins and you know how to register areas for view mixins, use nested mixins and in which situations asset mixins are required. You can now consider yourself a fully qualified DIAS package developer!
+                Now we have de-mystified the mechanisms behind view mixins and you know how to register areas for view mixins, use nested mixins and in which situations asset mixins are required. You can now consider yourself a fully qualified BIIGLE package developer!
             </p>
 
             <p>

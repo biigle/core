@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Policies;
+namespace Biigle\Policies;
 
 use Cache;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
 use Exception;
-use Dias\Transect;
+use Biigle\Transect;
 use Illuminate\Http\Request;
 
 class TransectImageController extends Controller

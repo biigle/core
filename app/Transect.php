@@ -1,18 +1,17 @@
 <?php
 
-namespace Dias;
+namespace Biigle;
 
 use DB;
 use App;
 use File;
 use Cache;
 use Exception;
-use Dias\Image;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use GuzzleHttp\Client;
-use Dias\Jobs\GenerateThumbnails;
-use Dias\Jobs\CollectImageMetaInfo;
+use Biigle\Jobs\GenerateThumbnails;
+use Biigle\Jobs\CollectImageMetaInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use GuzzleHttp\Exception\ServerException;
@@ -99,7 +98,7 @@ class Transect extends Model
      */
     public function creator()
     {
-        return $this->belongsTo('Dias\User');
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -109,13 +108,13 @@ class Transect extends Model
      */
     public function mediaType()
     {
-        return $this->belongsTo('Dias\MediaType');
+        return $this->belongsTo(MediaType::class);
     }
 
     /**
      * Sets the media type of this transect.
      *
-     * @param Dias\MediaType $mediaType
+     * @param Biigle\MediaType $mediaType
      * @return void
      */
     public function setMediaType($mediaType)
@@ -145,7 +144,7 @@ class Transect extends Model
      */
     public function images()
     {
-        return $this->hasMany('Dias\Image');
+        return $this->hasMany(Image::class);
     }
 
     /**
@@ -286,7 +285,7 @@ class Transect extends Model
      */
     public function projects()
     {
-        return $this->belongsToMany('Dias\Project');
+        return $this->belongsToMany(Project::class);
     }
 
     /**
@@ -296,7 +295,7 @@ class Transect extends Model
      */
     public function annotationSessions()
     {
-        return $this->hasMany('Dias\AnnotationSession')->with('users');
+        return $this->hasMany(AnnotationSession::class)->with('users');
     }
 
     /**
@@ -307,7 +306,7 @@ class Transect extends Model
     public function activeAnnotationSession()
     {
         $now = Carbon::now();
-        return $this->hasOne('Dias\AnnotationSession')
+        return $this->hasOne(AnnotationSession::class)
             ->where('starts_at', '<=', $now)
             ->where('ends_at', '>', $now)
             ->limit(1);

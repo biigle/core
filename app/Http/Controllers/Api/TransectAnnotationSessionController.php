@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
 use Carbon\Carbon;
-use Dias\Transect;
-use Dias\AnnotationSession;
+use Biigle\Transect;
+use Biigle\AnnotationSession;
 use Illuminate\Http\Request;
 
 class TransectAnnotationSessionController extends Controller
@@ -67,8 +67,8 @@ class TransectAnnotationSessionController extends Controller
      * @apiParam {Number} id The transect ID.
      *
      * @apiParam (Required arguments) {String} name Name of the annotation session.
-     * @apiParam (Required arguments) {Date} starts_at Day when the annotation session should start. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. This endpoint returns a special `starts_at_iso8601` attribute which is parseable independently from the timezone of the Dias instance.
-     * @apiParam (Required arguments) {Date} ends_at Day when the annotation session should end. The session ends once this day has started. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. This endpoint returns a special `ends_at_iso8601` attribute which is parseable independently from the timezone of the Dias instance.
+     * @apiParam (Required arguments) {Date} starts_at Day when the annotation session should start. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Biigle instance is used. This endpoint returns a special `starts_at_iso8601` attribute which is parseable independently from the timezone of the Biigle instance.
+     * @apiParam (Required arguments) {Date} ends_at Day when the annotation session should end. The session ends once this day has started. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Biigle instance is used. This endpoint returns a special `ends_at_iso8601` attribute which is parseable independently from the timezone of the Biigle instance.
      * @apiParam (Required arguments) {Number[]} users Array of user IDs of all users participating in the new annotation session. All other users won't be affected by the annotation session.
      *
      * @apiParam (Optional arguments) {String} description Short description of the annotation session.
@@ -116,7 +116,6 @@ class TransectAnnotationSessionController extends Controller
      * }
      *
      * @param Request $request
-     * @param Guard $auth
      * @param int $id transect ID
      * @return Annotation
      */

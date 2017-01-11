@@ -1,19 +1,19 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use File;
 use Event;
 use Cache;
-use Dias\Role;
-use Dias\Image;
+use Biigle\Role;
+use Biigle\Image;
 use ApiTestCase;
-use Dias\Transect;
-use Dias\MediaType;
-use Dias\Tests\ImageTest;
-use Dias\Tests\ProjectTest;
-use Dias\Tests\TransectTest;
-use Dias\Services\Thumbnails\InterventionImage;
+use Biigle\Transect;
+use Biigle\MediaType;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\TransectTest;
+use Biigle\Services\Thumbnails\InterventionImage;
 
 class ProjectTransectControllerTest extends ApiTestCase
 {
@@ -121,7 +121,7 @@ class ProjectTransectControllerTest extends ApiTestCase
         $this->assertEquals($count, $this->project()->transects()->count());
         $this->assertEquals($imageCount, Image::all()->count());
 
-        $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
+        $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
 
         $this->json('POST', '/api/v1/projects/'.$id.'/transects', [
             'name' => 'my transect no. 1',

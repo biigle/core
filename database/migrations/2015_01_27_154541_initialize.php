@@ -109,7 +109,7 @@ class Initialize extends Migration
         | Tree admins can edit this list.
         | Public trees may be used by all projects.
         | There may be "global" trees without members which are maintained by the global
-        | admins of the Dias instance.
+        | admins of the Biigle instance.
         */
         Schema::create('label_trees', function (Blueprint $table) {
             $table->increments('id');

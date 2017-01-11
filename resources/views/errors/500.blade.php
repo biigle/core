@@ -7,7 +7,7 @@
     <span class="glyphicon glyphicon-alert" aria-hidden="true"></span> Internal Server Error
 </h2>
 <p class="col-sm-offset-3 col-sm-6 alert alert-danger">
-    This is not supposed to happen. You probably just disovered a bug. Please notify the BIIGLE DIAS administrators with the exact steps to reproduce this error.
+    This is not supposed to happen. You probably just disovered a bug. Please notify the BIIGLE administrators with the exact steps to reproduce this error.
 </p>
 <div class="col-sm-offset-3 col-sm-6 clearfix">
     @if (auth()->check())

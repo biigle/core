@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Dias\SystemMessage;
-use Dias\SystemMessageType;
-use Dias\Tests\SystemMessageTest;
+use Biigle\SystemMessage;
+use Biigle\SystemMessageType;
+use Biigle\Tests\SystemMessageTest;
 
 class SystemMessageControllerTest extends ApiTestCase
 {

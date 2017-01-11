@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Http\Controllers\Views;
+namespace Biigle\Http\Controllers\Views;
 
 use Illuminate\Contracts\Auth\Guard;
 

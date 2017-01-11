@@ -1,5 +1,5 @@
 describe('The filterSubset factory', function () {
-    beforeEach(module('dias.ui.utils'));
+    beforeEach(module('biigle.ui.utils'));
 
     it('should filter out numbers that are not present in the second array', inject(function (filterSubset) {
         var first = [1, 2, 3, 4, 5, 10];

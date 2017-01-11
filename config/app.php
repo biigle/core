@@ -12,7 +12,7 @@ return [
     | any other location as required by the application or its packages.
     */
 
-    'name' => 'BIIGLE DIAS',
+    'name' => 'BIIGLE',
 
     /*
     |--------------------------------------------------------------------------
@@ -171,12 +171,12 @@ return [
         /*
          * Application Service Providers...
          */
-        Dias\Providers\AppServiceProvider::class,
-        // Dias\Providers\BroadcastServiceProvider::class,
-        Dias\Providers\AuthServiceProvider::class,
-        Dias\Providers\EventServiceProvider::class,
-        Dias\Providers\RouteServiceProvider::class,
-        Dias\Providers\ThumbnailServiceProvider::class,
+        Biigle\Providers\AppServiceProvider::class,
+        // Biigle\Providers\BroadcastServiceProvider::class,
+        Biigle\Providers\AuthServiceProvider::class,
+        Biigle\Providers\EventServiceProvider::class,
+        Biigle\Providers\RouteServiceProvider::class,
+        Biigle\Providers\ThumbnailServiceProvider::class,
 
     ],
 

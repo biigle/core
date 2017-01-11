@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Services;
+namespace Biigle\Services;
 
 /**
- * The Dias module registry service.
+ * The module registry service.
  */
 class Modules
 {
@@ -26,7 +26,7 @@ class Modules
 
     /**
      * Returns all mixins for a view, that were registered by modules.
-     * 
+     *
      * @param string $view name of the view
      * @return array
      */

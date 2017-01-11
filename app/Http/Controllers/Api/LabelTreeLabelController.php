@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\Label;
-use Dias\LabelTree;
-use Dias\LabelSource;
+use Biigle\Label;
+use Biigle\LabelTree;
+use Biigle\LabelSource;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 

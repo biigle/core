@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name AnnotationLabel
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource for annotation labels.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -31,29 +31,29 @@ var labels = AnnotationLabel.query({annotation_id: 1}, function () {
 AnnotationLabel.delete({id: 1});
  *
  */
-angular.module('dias.api').factory('AnnotationLabel', function ($resource, URL) {
-	"use strict";
+angular.module('biigle.api').factory('AnnotationLabel', function ($resource, URL) {
+   "use strict";
 
-	return $resource(URL + '/api/v1/annotation-labels/:id', {
-			id: '@id',
-			annotation_id: '@annotation_id'
-		}, {
-			query: {
-				method: 'GET',
+   return $resource(URL + '/api/v1/annotation-labels/:id', {
+         id: '@id',
+         annotation_id: '@annotation_id'
+      }, {
+         query: {
+            method: 'GET',
                 url: URL + '/api/v1/annotations/:annotation_id/labels',
-				isArray: true
-			},
-			attach: {
-				method: 'POST',
-				url: URL + '/api/v1/annotations/:annotation_id/labels',
-			},
-			save: {
-				method: 'PUT',
+            isArray: true
+         },
+         attach: {
+            method: 'POST',
+            url: URL + '/api/v1/annotations/:annotation_id/labels',
+         },
+         save: {
+            method: 'PUT',
                 params: {annotation_id: null}
-			},
+         },
             delete: {
                 method: 'DELETE',
                 params: {annotation_id: null}
             }
-	});
+   });
 });

@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\User;
-use Dias\Role;
-use Dias\Project;
+use Biigle\User;
+use Biigle\Role;
+use Biigle\Project;
 use Illuminate\Http\Request;
 
 class ProjectUserController extends Controller

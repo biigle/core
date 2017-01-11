@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Policies;
+namespace Biigle\Tests\Policies;
 
 use TestCase;
-use Dias\Role;
-use Dias\Tests\UserTest;
-use Dias\Tests\ProjectTest;
-use Dias\Tests\TransectTest;
+use Biigle\Role;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\TransectTest;
 
 class TransectPolicyTest extends TestCase
 {

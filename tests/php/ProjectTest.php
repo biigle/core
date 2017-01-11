@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
-use Dias\Role;
-use Dias\Project;
+use Biigle\Role;
+use Biigle\Project;
 use ModelTestCase;
 use Illuminate\Database\QueryException;
 use Symfony\Component\HttpKernel\Exception\HttpException;

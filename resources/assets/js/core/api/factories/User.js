@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name User
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource for users.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -49,9 +49,9 @@ User.delete({id: 1});
 var users = User.find({query: 'ja' }, function () {
    console.log(users); // [{id: 1, firstname: "jane", ...}, ...]
 });
- * 
+ *
  */
-angular.module('dias.api').factory('User', function ($resource, URL) {
+angular.module('biigle.api').factory('User', function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/users/:id/:query', { id: '@id' }, {

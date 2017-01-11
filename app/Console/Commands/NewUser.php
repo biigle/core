@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Console\Commands;
+namespace Biigle\Console\Commands;
 
 use Illuminate\Console\Command;
-use Dias\User;
-use Dias\Role;
+use Biigle\User;
+use Biigle\Role;
 
 class NewUser extends Command
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
 use ModelTestCase;
 use Carbon\Carbon;
-use Dias\AnnotationSession;
+use Biigle\AnnotationSession;
 
 class AnnotationSessionTest extends ModelTestCase
 {
@@ -340,7 +340,7 @@ class AnnotationSessionTest extends ModelTestCase
 
     public function testStartsAtEndsAtISO8601()
     {
-        // the timezone may vary between different Dias instances that run this test
+        // the timezone may vary between different Biigle instances that run this test
         config(['app.timezone' => 'UTC']);
 
         $session = self::create([

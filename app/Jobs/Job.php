@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Jobs;
+namespace Biigle\Jobs;
 
 use Illuminate\Bus\Queueable;
 

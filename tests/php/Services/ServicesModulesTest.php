@@ -1,6 +1,6 @@
 <?php
 
-use Dias\Services\Modules;
+use Biigle\Services\Modules;
 
 class ServicesModulesTest extends TestCase
 {

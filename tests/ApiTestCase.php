@@ -1,13 +1,13 @@
 <?php
 
-use Dias\Role;
-use Dias\Label;
-use Dias\Visibility;
-use Dias\Tests\UserTest;
-use Dias\Tests\LabelTest;
-use Dias\Tests\ProjectTest;
-use Dias\Tests\TransectTest;
-use Dias\Tests\LabelTreeTest;
+use Biigle\Role;
+use Biigle\Label;
+use Biigle\Visibility;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\TransectTest;
+use Biigle\Tests\LabelTreeTest;
 
 class ApiTestCase extends TestCase
 {

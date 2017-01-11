@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Policies;
+namespace Biigle\Tests\Policies;
 
 use TestCase;
-use Dias\Role;
-use Dias\Tests\UserTest;
-use Dias\Tests\LabelTest;
-use Dias\Tests\LabelTreeTest;
+use Biigle\Role;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\LabelTreeTest;
 
 class LabelPolicyTest extends TestCase
 {

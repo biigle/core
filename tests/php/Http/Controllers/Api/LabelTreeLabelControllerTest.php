@@ -1,15 +1,15 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use App;
 use Mockery;
-use Dias\Role;
+use Biigle\Role;
 use ApiTestCase;
-use Dias\LabelTree;
-use Dias\Tests\LabelTest;
-use Dias\Tests\LabelTreeTest;
-use Dias\Tests\LabelSourceTest;
+use Biigle\LabelTree;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Tests\LabelSourceTest;
 use Illuminate\Validation\ValidationException;
 
 class LabelTreeLabelControllerTest extends ApiTestCase
@@ -137,7 +137,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
             ->once()
             ->andReturn($labels);
 
-        App::singleton('Dias\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
+        App::singleton('Biigle\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
             return $mock;
         });
 
@@ -164,7 +164,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
             ->once()
             ->andThrow($exception);
 
-        App::singleton('Dias\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
+        App::singleton('Biigle\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
             return $mock;
         });
 

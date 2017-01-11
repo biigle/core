@@ -9,15 +9,15 @@
 			<h2>Advanced package development</h2>
 
 			<p class="lead">
-				In this tutorial you will learn some advanced techniques in package development for DIAS, like creating new routes and views, and how to test them using the DIAS testing environment.
+				In this tutorial you will learn some advanced techniques in package development for BIIGLE, like creating new routes and views, and how to test them using the BIIGLE testing environment.
 			</p>
 
 			<p>
-				In a previous tutorial you have learned what PHP package development is all about and how to start developing your own DIAS module. If you haven't done the tutorial yet, <a href="{{ route('manual-documentation') }}/package-development">start there</a> and come back later, since we'll build upon that.
+				In a previous tutorial you have learned what PHP package development is all about and how to start developing your own BIIGLE module. If you haven't done the tutorial yet, <a href="{{ route('manual-documentation') }}/package-development">start there</a> and come back later, since we'll build upon that.
 			</p>
 
 			<p>
-				Now we would like to take our <code>quotes</code> module and add a new route as well as a new view to the DIAS core application. Following the name of the package, the new view should display a random quote. We'll use the existing dashboard panel to add a link to the new view (otherwise the users will be unable to reach it).
+				Now we would like to take our <code>quotes</code> module and add a new route as well as a new view to the BIIGLE core application. Following the name of the package, the new view should display a random quote. We'll use the existing dashboard panel to add a link to the new view (otherwise the users will be unable to reach it).
 			</p>
 
 			<p>
@@ -27,17 +27,17 @@
 			<h3><a name="testing"></a>Testing</h3>
 
 			<p>
-				Testing our <code>quotes</code> package on its own doesn't work for us, since we need Laravel for the routes, views and controllers we intend to implement. The core application has its testing environment already set up with all functional/unit tests residing in <code>tests/unit</code>. All you have to do is run <code>phpunit</code> in the root directory of the DIAS installation and the tests run. It would be best if we were able to test our package just like it would belong to the core application and fortunately there is a very easy way to do so.
+				Testing our <code>quotes</code> package on its own doesn't work for us, since we need Laravel for the routes, views and controllers we intend to implement. The core application has its testing environment already set up with all functional/unit tests residing in <code>tests/unit</code>. All you have to do is run <code>phpunit</code> in the root directory of the BIIGLE installation and the tests run. It would be best if we were able to test our package just like it would belong to the core application and fortunately there is a very easy way to do so.
 			</p>
 			<p>
-				As already mentioned in the previous tutorial, we are now able to develop the package right out of the cloned repository in <code>vendor/dias/quotes</code>. This is where we now create a new <code>tests</code> directory besides the existing <code>src</code>. Now all we have to do is to create a simple symlink from the <code>tests/unit</code> directory of the core application to the new <code>tests</code> directory of our package:
+				As already mentioned in the previous tutorial, we are now able to develop the package right out of the cloned repository in <code>vendor/biigle/quotes</code>. This is where we now create a new <code>tests</code> directory besides the existing <code>src</code>. Now all we have to do is to create a simple symlink from the <code>tests/unit</code> directory of the core application to the new <code>tests</code> directory of our package:
 			</p>
 <pre>
 cd tests/unit
-ln -s ../../vendor/dias/quotes/tests/ quotes-module
+ln -s ../../vendor/biigle/quotes/tests/ quotes-module
 </pre>
 			<p>
-				Now the tests of our package are just like any other part of the core application and will be run with <code>phpunit</code> as well. Let's try testing a new test! Create a new test class in <code>vendor/dias/quotes/tests</code> called <code>QuotesServiceProvider.php</code> with the following content:
+				Now the tests of our package are just like any other part of the core application and will be run with <code>phpunit</code> as well. Let's try testing a new test! Create a new test class in <code>vendor/biigle/quotes/tests</code> called <code>QuotesServiceProvider.php</code> with the following content:
 			</p>
 <pre>
 &lt;?php
@@ -47,7 +47,7 @@ class QuotesServiceProviderTest extends TestCase {
    public function testServiceProvider()
    {
       $this->assertTrue(
-         class_exists('Dias\Modules\Quotes\QuotesServiceProvider')
+         class_exists('Biigle\Modules\Quotes\QuotesServiceProvider')
       );
    }
 }
@@ -59,7 +59,7 @@ class QuotesServiceProviderTest extends TestCase {
 > phpunit --filter QuotesServiceProviderTest
 PHPUnit 4.5.0 by Sebastian Bergmann and contributors.
 
-Configuration read from /your/local/path/to/dias/phpunit.xml
+Configuration read from /your/local/path/to/biigle/phpunit.xml
 
 .
 
@@ -116,7 +116,7 @@ class QuotesControllerTest extends TestCase {
 > phpunit --filter QuotesControllerTest
 PHPUnit 4.5.0 by Sebastian Bergmann and contributors.
 
-Configuration read from /your/local/path/to/dias/phpunit.xml
+Configuration read from /your/local/path/to/biigle/phpunit.xml
 
 F
 
@@ -128,8 +128,8 @@ There was 1 failure:
 Expected status code 200, got 404
 Failed asserting that false is true.
 
-/your/local/path/to/dias/vendor/laravel/framework/src/Illuminate/Foundation/Testing/AssertionsTrait.php:17
-/your/local/path/to/dias/vendor/dias/quotes/tests/QuotesControllerTest.php:7
+/your/local/path/to/biigle/vendor/laravel/framework/src/Illuminate/Foundation/Testing/AssertionsTrait.php:17
+/your/local/path/to/biigle/vendor/biigle/quotes/tests/QuotesControllerTest.php:7
 
 FAILURES!
 Tests: 1, Assertions: 1, Failures: 1.
@@ -142,7 +142,7 @@ Tests: 1, Assertions: 1, Failures: 1.
 
 Route::get('quotes', array(
    'as'   => 'quotes',
-   'uses' => '\Dias\Modules\Quotes\Http\Controllers\QuotesController@index'
+   'uses' => '\Biigle\Modules\Quotes\Http\Controllers\QuotesController@index'
 ));
 </pre>
 			<p>
@@ -162,7 +162,7 @@ Failed asserting that false is true.
 			<h3><a name="a-new-controller"></a>A new controller</h3>
 
 			<p>
-				Controllers typically reside in the <code>Http/Controllers</code> namespace of a Laravel application. We defined the <code>src</code> directory of our package to be the root of the <code>Dias\Modules\Quotes</code> namespace so we now create the new <code>src/Http/Controllers</code> directory to reflect the <code>Dias\Modules\Quotes\Http\Controllers</code> namespace of our new controller.
+				Controllers typically reside in the <code>Http/Controllers</code> namespace of a Laravel application. We defined the <code>src</code> directory of our package to be the root of the <code>Biigle\Modules\Quotes</code> namespace so we now create the new <code>src/Http/Controllers</code> directory to reflect the <code>Biigle\Modules\Quotes\Http\Controllers</code> namespace of our new controller.
 			</p>
 
 			<h4><a name="creating-a-controller"></a>Creating a controller</h4>
@@ -171,9 +171,9 @@ Failed asserting that false is true.
 				Let's create the controller by adding a new <code>QuotesController.php</code> to the <code>Controllers</code> directory, containing:
 			</p>
 <pre>
-&lt;?php namespace Dias\Modules\Quotes\Http\Controllers;
+&lt;?php namespace Biigle\Modules\Quotes\Http\Controllers;
 
-use Dias\Http\Controllers\Views\Controller;
+use Biigle\Http\Controllers\Views\Controller;
 
 class QuotesController extends Controller {
 
@@ -188,13 +188,13 @@ class QuotesController extends Controller {
 }
 </pre>
 			<p>
-				The controller already extends the <code>Controller</code> class of the DIAS core application instead of the default Laravel controller, which will come in handy in a next tutorial. Let's have a look at our test:
+				The controller already extends the <code>Controller</code> class of the BIIGLE core application instead of the default Laravel controller, which will come in handy in a next tutorial. Let's have a look at our test:
 			</p>
 <pre>
 > phpunit --filter QuotesControllerTest
 PHPUnit 4.5.0 by Sebastian Bergmann and contributors.
 
-Configuration read from /your/local/path/to/dias/phpunit.xml
+Configuration read from /your/local/path/to/biigle/phpunit.xml
 
 .
 
@@ -203,7 +203,7 @@ Time: 529 ms, Memory: 26.50Mb
 OK (1 test, 1 assertion)
 </pre>
 			<p>
-				Neat! You can now call the <code>quotes</code> route in your DIAS application whithout causing any errors. But wait, shouldn't the route have restricted access? If the user is not logged in, they should be redirected to the login page instead of seeing the quotes. Let's adjust our test:
+				Neat! You can now call the <code>quotes</code> route in your BIIGLE application whithout causing any errors. But wait, shouldn't the route have restricted access? If the user is not logged in, they should be redirected to the login page instead of seeing the quotes. Let's adjust our test:
 			</p>
 <pre>
 $user = UserTest::create();
@@ -230,16 +230,16 @@ Failed asserting that 200 matches expected 302.
 			<h4><a name="middleware"></a>Middleware</h4>
 
 			<p>
-				Restricting the route to authenticated users is really simple since DIAS has everything already implemented. User authentication in Laravel is done using <a href="http://laravel.com/docs/5.0/middleware">middleware</a>, methods that are run before or after each request and are able to intercept it when needed.
+				Restricting the route to authenticated users is really simple since BIIGLE has everything already implemented. User authentication in Laravel is done using <a href="http://laravel.com/docs/5.0/middleware">middleware</a>, methods that are run before or after each request and are able to intercept it when needed.
 			</p>
 			<p>
-				In DIAS, user authentication is checked by the <code>auth</code> middleware. To add the <code>auth</code> middleware to our route, we extend the route definition:
+				In BIIGLE, user authentication is checked by the <code>auth</code> middleware. To add the <code>auth</code> middleware to our route, we extend the route definition:
 			</p>
 <pre>
 Route::get('quotes', array(
    'middleware' => 'auth',
    'as'         => 'quotes',
-   'uses'       => '\Dias\Modules\Quotes\Http\Controllers\QuotesController@index'
+   'uses'       => '\Biigle\Modules\Quotes\Http\Controllers\QuotesController@index'
 ));
 </pre>
 			<p>
@@ -269,13 +269,13 @@ public function index()
 				Here, the <code>quotes::</code> view namespace is used which we defined in the <code>boot</code> method of our service provider in the previous tutorial. If we didn't use it, Laravel would look for the <code>index</code> view of the core application. Now you can call the route and see the quote.
 			</p>
 			<p>
-				Pretty ugly, isn't it? The view doesn't look like the other DIAS views at all and, in fact, isn't even valid HTML. It displays only the code we defined in the view template and nothing else. This is where view inheritance comes in.
+				Pretty ugly, isn't it? The view doesn't look like the other BIIGLE views at all and, in fact, isn't even valid HTML. It displays only the code we defined in the view template and nothing else. This is where view inheritance comes in.
 			</p>
 
 			<h4><a name="inheriting-views"></a>Inheriting views</h4>
 
 			<p>
-				The DIAS core application has an <code>app</code> view template containing all the scaffolding of a HTML page and loading the default assets. This <code>app</code> template is what makes all DIAS views look alike.
+				The BIIGLE core application has an <code>app</code> view template containing all the scaffolding of a HTML page and loading the default assets. This <code>app</code> template is what makes all BIIGLE views look alike.
 			</p>
 			</p>
 				The Blade templating engine allows for view inheritance so you can create new views, building upon existing ones. When inheriting a view, you need to specify view <em>sections</em>, defining which part of the new view should be inserted into which part of the parent view. Let's see this in action by applying it to the <code>index.blade.php</code> view of our package:
@@ -294,7 +294,7 @@ public function index()
 &#64;endsection
 </pre>
 			<p>
-				Here we tell the templating engine that our view should extend the <code>app</code> view, inheriting all its content. The <code>app</code> view has two sections we can use, <code>title</code> and <code>content</code>. The <code>title</code> section is the content of the title tag in the HTML header. The <code>content</code> section is the "body" of the DIAS view. Since styling the body of the page is entirely up to the child view, we have to use the Bootstrap grid to get adequate spacing.
+				Here we tell the templating engine that our view should extend the <code>app</code> view, inheriting all its content. The <code>app</code> view has two sections we can use, <code>title</code> and <code>content</code>. The <code>title</code> section is the content of the title tag in the HTML header. The <code>content</code> section is the "body" of the BIIGLE view. Since styling the body of the page is entirely up to the child view, we have to use the Bootstrap grid to get adequate spacing.
 			</p>
 			<p>
 				Take a look at the page again. Now we are talking!
@@ -317,7 +317,7 @@ public function index()
 				That's it! Now you have learned how to create new routes, controllers and views, and how to test them. This is everything you need to develop complex custom modules where all the content is rendered by the server.
 			</p>
 			<p>
-				But there is still one step left for you to master package development: Custom assets. Besides using custom CSS to style the content beyond Bootstrap's capabilities, you need to be able to use custom JavaScript for interactive client side applications as well. In a next tutorial, we'll discuss how to include and publish custom assets and how to use the already provided functionality of the DIAS core client side application.
+				But there is still one step left for you to master package development: Custom assets. Besides using custom CSS to style the content beyond Bootstrap's capabilities, you need to be able to use custom JavaScript for interactive client side applications as well. In a next tutorial, we'll discuss how to include and publish custom assets and how to use the already provided functionality of the BIIGLE core client side application.
 			</p>
 			<p>
 				<a href="{{ route('manual-documentation') }}" class="btn btn-default" title="Back to the core documentation"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> back</a>

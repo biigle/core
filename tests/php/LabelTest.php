@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
-use Dias\Label;
+use Biigle\Label;
 use ModelTestCase;
 
 class LabelTest extends ModelTestCase

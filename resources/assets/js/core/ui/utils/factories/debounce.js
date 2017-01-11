@@ -1,13 +1,13 @@
 /**
- * @namespace dias.ui.utils
+ * @namespace biigle.ui.utils
  * @ngdoc factory
  * @name debounce
- * @memberOf dias.ui.utils
+ * @memberOf biigle.ui.utils
  * @description A debounce service to perform an action only when this function
  * wasn't called again in a short period of time.
  * see http://stackoverflow.com/a/13320016/1796523
  */
-angular.module('dias.ui.utils').factory('debounce', function ($timeout, $q) {
+angular.module('biigle.ui.utils').factory('debounce', function ($timeout, $q) {
       "use strict";
 
       var timeouts = {};

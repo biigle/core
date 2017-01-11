@@ -1,5 +1,5 @@
 @extends('admin.base')
-@inject('modules', 'Dias\Services\Modules')
+@inject('modules', 'Biigle\Services\Modules')
 
 @section('title')Admin area @stop
 
@@ -10,7 +10,7 @@
                 <a href="{{route('admin-users')}}" title="Users"><h3 class="panel-title">Users</h3></a>
             </div>
             <div class="panel-body">
-                <p class="h1 text-center">{{ Dias\User::count() }}</p>
+                <p class="h1 text-center">{{ Biigle\User::count() }}</p>
             </div>
         </div>
     </div>

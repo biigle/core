@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Services\Thumbnails;
+namespace Biigle\Tests\Services\Thumbnails;
 
 use File;
 use TestCase;
-use Dias\Tests\ImageTest;
-use Dias\Tests\TransectTest;
-use Dias\Services\Thumbnails\InterventionImage;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\TransectTest;
+use Biigle\Services\Thumbnails\InterventionImage;
 
 class InterventionImageTest extends TestCase
 {

@@ -16,7 +16,7 @@ Where the stuff after `Basic` is the base 64 encoded string `username:token`.
 Most HTTP libraries should support Basic Auth out of the box. A cURL request might look like this:
 
 ```
-curl -u joe@user.com:wZIrnc2WENnJSdOnDRs4nG14ct986G7H biigle-dias.org/api/v1/api-tokens
+curl -u joe@user.com:wZIrnc2WENnJSdOnDRs4nG14ct986G7H biigle.de/api/v1/api-tokens
 ```
 
 Most API endpoints require authentication either via session cookie or API token. Some endpoints are restricted to authentication with a session cookie (e.g. manupulation of user credentials).

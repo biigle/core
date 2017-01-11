@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name OwnUser
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource for the logged in user.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -25,12 +25,12 @@ var user = OwnUser.get(function () {
 });
 // or directly
 OwnUser.delete();
- * 
+ *
  */
-angular.module('dias.api').factory('OwnUser', function ($resource, URL) {
-	"use strict";
+angular.module('biigle.api').factory('OwnUser', function ($resource, URL) {
+   "use strict";
 
-	return $resource(URL + '/api/v1/users/my', {}, {
-		save: {method: 'PUT'}
-	});
+   return $resource(URL + '/api/v1/users/my', {}, {
+      save: {method: 'PUT'}
+   });
 });

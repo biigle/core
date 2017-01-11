@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\Image;
-use Dias\Label;
-use Dias\ImageLabel;
+use Biigle\Image;
+use Biigle\Label;
+use Biigle\ImageLabel;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\QueryException;

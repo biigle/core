@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
 use Exception;
-use Dias\Annotation;
+use Biigle\Annotation;
 use Illuminate\Http\Request;
 
 class AnnotationController extends Controller

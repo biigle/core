@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
 use ModelTestCase;
-use Dias\Visibility;
+use Biigle\Visibility;
 
 class VisibilityTest extends ModelTestCase
 {

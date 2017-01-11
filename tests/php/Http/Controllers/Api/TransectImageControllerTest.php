@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Dias\Tests\ImageTest;
+use Biigle\Tests\ImageTest;
 
 class TransectImageControllerTest extends ApiTestCase
 {
@@ -51,7 +51,7 @@ class TransectImageControllerTest extends ApiTestCase
         $this->assertResponseStatus(422);
 
         $this->assertEquals(1, $this->transect()->images()->count());
-        $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
+        $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
         $this->expectsEvents('images.created');
 
         $this->json('POST', "/api/v1/transects/{$id}/images", [

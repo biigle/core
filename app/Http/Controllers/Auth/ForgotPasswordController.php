@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Http\Controllers\Auth;
+namespace Biigle\Http\Controllers\Auth;
 
-use Dias\Http\Controllers\Controller;
+use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 
 class ForgotPasswordController extends Controller

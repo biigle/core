@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias;
+namespace Biigle;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;

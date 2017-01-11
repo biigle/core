@@ -1,13 +1,13 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
 use Mockery;
-use Dias\User;
+use Biigle\User;
 use Notification;
 use ModelTestCase;
-use Dias\SystemMessage;
-use Dias\Notifications\NewSystemMessageNotification;
+use Biigle\SystemMessage;
+use Biigle\Notifications\NewSystemMessageNotification;
 
 class SystemMessageTest extends ModelTestCase
 {

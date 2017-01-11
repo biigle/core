@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Http\Middleware;
+namespace Biigle\Http\Middleware;
 
 use Hash;
 use Closure;
-use Dias\User;
+use Biigle\User;
 use Illuminate\Support\Facades\Auth;
 
 class AuthenticateAPI
@@ -62,6 +62,7 @@ class AuthenticateAPI
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  Closure  $next
+     * @param Guard $guard
      * @return mixed
      */
     public function handle($request, Closure $next, $guard = null)

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\LabelTree;
-use Dias\Visibility;
+use Biigle\LabelTree;
+use Biigle\Visibility;
 use Illuminate\Http\Request;
 
 class LabelTreeAuthorizedProjectController extends Controller

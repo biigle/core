@@ -9,16 +9,16 @@
 			<h2>Package development</h2>
 
 			<p class="lead">
-				In this tutorial you will learn what PHP packages are, how they are developed and how you can create a basic DIAS module by implementing your own package.
+				In this tutorial you will learn what PHP packages are, how they are developed and how you can create a basic BIIGLE module by implementing your own package.
 			</p>
 
 			<h3><a name="basics"></a>Basics</h3>
 
 			<p>
-				DIAS is based on <a href="http://laravel.com/">Laravel</a>, a PHP framework for modern web applications. Laravel is designed in an object oriented and very modular fashion, making it easily extensible with custom modules. DIAS is designed as a core application, providing user and database management, the RESTful API and some basic views (the dashboard or settings, for example). Any additional functionality - like project management - is added as a separate module, keeping the codebase clean and manageable.
+				BIIGLE is based on <a href="http://laravel.com/">Laravel</a>, a PHP framework for modern web applications. Laravel is designed in an object oriented and very modular fashion, making it easily extensible with custom modules. BIIGLE is designed as a core application, providing user and database management, the RESTful API and some basic views (the dashboard or settings, for example). Any additional functionality - like project management - is added as a separate module, keeping the codebase clean and manageable.
 			</p>
 			<p>
-				By implementing a custom module and installing or disabling modules developed by others, you can easily extend DIAS and shape it to your needs, without having to dig deep into the core application. Using <a href="https://getcomposer.org/">Composer</a>, the most popualar dependency manager for PHP packages, and <a href="https://packagist.org/">Packagist</a> you can even share your DIAS modules with others.
+				By implementing a custom module and installing or disabling modules developed by others, you can easily extend BIIGLE and shape it to your needs, without having to dig deep into the core application. Using <a href="https://getcomposer.org/">Composer</a>, the most popualar dependency manager for PHP packages, and <a href="https://packagist.org/">Packagist</a> you can even share your BIIGLE modules with others.
 			</p>
 			<p>
 				So let's have a quick look at how PHP package development usually works.
@@ -36,29 +36,29 @@
 			<h4><a name="package-development"></a>Package development</h4>
 
 			<p>
-				The <code>conposer.json</code> is also used for developing new packages (similar to the <code>package.json</code> for Node.js modules). Each package has such a file, containing the dependencies of the package or the package name, for example. Take a look at the <code>composer.json</code> of the DIAS annotations package:
+				The <code>conposer.json</code> is also used for developing new packages (similar to the <code>package.json</code> for Node.js modules). Each package has such a file, containing the dependencies of the package or the package name, for example. Take a look at the <code>composer.json</code> of the BIIGLE annotations package:
 			</p>
 <pre>
 {
-   "name": "dias/annotations",
+   "name": "biigle/annotations",
    "require": {
-      "dias/transects": "dev-master"
+      "biigle/transects": "dev-master"
    },
    "autoload": {
       "psr-4": {
-         "Dias\\Modules\\Annotations\\": "src"
+         "Biigle\\Modules\\Annotations\\": "src"
       }
    }
 }
 </pre>
 			<p>
-				First, the name of the package is defined as <code>dias/annotations</code>. Packages are always namespaced like this, identifying the developer in the first part and the name of the package in the second. In this case the developer is <code>dias</code> because the annotations package is developed by the DIAS core team. For your own packages you might want to use your name or the name of your organization.
+				First, the name of the package is defined as <code>biigle/annotations</code>. Packages are always namespaced like this, identifying the developer in the first part and the name of the package in the second. In this case the developer is <code>biigle</code> because the annotations package is developed by the BIIGLE core team. For your own packages you might want to use your name or the name of your organization.
 			</p>
 			<p>
-				Second, the dependencies of the package are delcared. Here, the annotations package requires the <code>dias/transects</code> package (since otherwise there is no way reaching the "annotator" application, but it can have other reasons, too).
+				Second, the dependencies of the package are delcared. Here, the annotations package requires the <code>biigle/transects</code> package (since otherwise there is no way reaching the "annotator" application, but it can have other reasons, too).
 			</p>
 			<p>
-				Last, the namespace of the PHP classes of this package is defined. The <code>autoload</code> section of this configuration tells composer that every file it finds in the <code>src</code> directory belongs to the <code>Dias\Modules\Annotations</code> namespace. Any further namespacing inside of this namespace is reflected by the directory structure in <code>src</code>.
+				Last, the namespace of the PHP classes of this package is defined. The <code>autoload</code> section of this configuration tells composer that every file it finds in the <code>src</code> directory belongs to the <code>Biigle\Modules\Annotations</code> namespace. Any further namespacing inside of this namespace is reflected by the directory structure in <code>src</code>.
 			</p>
 			<p>
 				This is everything you need to know to understand the more detailed description of developing a package below; all you need for a new package is a directory containing a <code>composer.json</code>.
@@ -76,10 +76,10 @@
 			<h3><a name="setting-up-a-new-package"></a>Setting up a new package</h3>
 
 			<p>
-				Having learned all the basics, let's now walk through the process of creating a new package. If you have a local installation of DIAS, you should follow along, implementing, and see how it works.
+				Having learned all the basics, let's now walk through the process of creating a new package. If you have a local installation of BIIGLE, you should follow along, implementing, and see how it works.
 			</p>
 			<p>
-				Our package should add new a panel to the DIAS dashboard displaying a random <a href="https://github.com/laravel/framework/blob/feb0cee6777daf487ef01b5a0c744d155ac8f057/src/Illuminate/Foundation/Inspiring.php">inspiring quote</a>.
+				Our package should add new a panel to the BIIGLE dashboard displaying a random <a href="https://github.com/laravel/framework/blob/feb0cee6777daf487ef01b5a0c744d155ac8f057/src/Illuminate/Foundation/Inspiring.php">inspiring quote</a>.
 			</p>
 			<blockquote>
 				<p>Well begun is half done.</p>
@@ -92,23 +92,23 @@
 				In this tutorial we will use Git as VCS but you should be able to follow along with Mercurial or even Subversion just fine. So let's begin by creating a new repository for our package.
 			</p>
 <pre>
-git init dias-quotes
+git init biigle-quotes
 </pre>
 			<p>
 				In the repository, we then create a new <code>src</code> directory and the <code>composer.json</code> file of the package with the following content:
 			</p>
 <pre>
 {
-   "name": "dias/quotes",
+   "name": "biigle/quotes",
    "autoload": {
       "psr-4": {
-         "Dias\\Modules\\Quotes\\": "src"
+         "Biigle\\Modules\\Quotes\\": "src"
       }
    }
 }
 </pre>
 			<p>
-				You see, our new package is called <code>dias/quotes</code> but you are free to use your personal name prefix, too. In the autoload section, we define our package to reside in the <code>Dias\Modules\Quotes</code> namespace. You can choose your own namespace here, too but <code>Dias\Modules</code> is a good way to keep things organized.
+				You see, our new package is called <code>biigle/quotes</code> but you are free to use your personal name prefix, too. In the autoload section, we define our package to reside in the <code>Biigle\Modules\Quotes</code> namespace. You can choose your own namespace here, too but <code>Biigle\Modules</code> is a good way to keep things organized.
 			</p>
 			<p>
 				Normally you would start implementing now, but our new package still lacks a few things to integrate cleanly with Laravel.
@@ -120,7 +120,7 @@ git init dias-quotes
 				Each package for Laravel contains one or more <a href="http://laravel.com/docs/5.0/providers">service provider</a> classes. These classes, among other things, tell Laravel where to find the package configuration, views or translation files. So let's create a file called <code>src/QuotesServiceProvider.php</code> with the following content:
 			</p>
 <pre>
-&lt;?php namespace Dias\Modules\Quotes;
+&lt;?php namespace Biigle\Modules\Quotes;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -148,7 +148,7 @@ class QuotesServiceProvider extends ServiceProvider {
 }
 </pre>
 			<p>
-				This skeleton is enough for now, we'll populate it later on. But it already enables us to require and install the new module to our DIAS application.
+				This skeleton is enough for now, we'll populate it later on. But it already enables us to require and install the new module to our BIIGLE application.
 			</p>
 
 			<h4><a name="installing-the-package"></a>Installing the package</h4>
@@ -164,14 +164,14 @@ git commit -m "Initial commit"
 				When developing a real package (using Git), you now normally would create a bare remote repository on a server all developers can access, and push the first commit to this repository. But for this tutorial we can stick to the local repository, as well.
 			</p>
 			<p>
-				Having the repository set up, let's switch to our DIAS installation and append it to the known repositories in the <code>composer.json</code>:
+				Having the repository set up, let's switch to our BIIGLE installation and append it to the known repositories in the <code>composer.json</code>:
 			</p>
 <pre>
 "repositories": [
    (...),
    {
       "type": "vcs",
-      "url": "/local/path/to/dias-quotes"
+      "url": "/local/path/to/biigle-quotes"
    }
 ]
 </pre>
@@ -181,11 +181,11 @@ git commit -m "Initial commit"
 <pre>
 "require": {
    (...),
-   "dias/quotes": "dev-master"
+   "biigle/quotes": "dev-master"
 }
 </pre>
 			<p>
-				Now you can let Composer install the package with <code>php composer.phar update dias/quotes</code> (get the <a href="https://getcomposer.org/composer.phar">composer.phar</a> if you don't have it already installed). That was it! You now can find a cloned copy of the package repository in the <code>vendors/dias/quotes</code> directory (the <code>dias/quotes</code> part is the package name, so the directory names may be different if your package name is different).
+				Now you can let Composer install the package with <code>php composer.phar update biigle/quotes</code> (get the <a href="https://getcomposer.org/composer.phar">composer.phar</a> if you don't have it already installed). That was it! You now can find a cloned copy of the package repository in the <code>vendors/biigle/quotes</code> directory (the <code>biigle/quotes</code> part is the package name, so the directory names may be different if your package name is different).
 			</p>
 			<p>
 				Since the new directory is just a clone of the original repository, we can use it for development from now on. Like this you can see all the changes you make live in the application before committing or pushing them. Even more important: You can test the package in the complete application environment! But more on that in another tutorial.
@@ -196,12 +196,12 @@ git commit -m "Initial commit"
 <pre>
 'providers' => [
    (...),
-   'Dias\Modules\Quotes\QuotesServiceProvider',
+   'Biigle\Modules\Quotes\QuotesServiceProvider',
 ]
 </pre>
 
 			<p>
-				Now we are finally done and the new package is installed and activated. Adding a new package to the <code>composer.json</code> and appending the service provider to the <code>app.php</code> is the usual procedure of installing a new DIAS module. To deactivate a module, simply comment out the line in the <code>'providers'</code> array (but be sure that this doesn't break any dependencies).
+				Now we are finally done and the new package is installed and activated. Adding a new package to the <code>composer.json</code> and appending the service provider to the <code>app.php</code> is the usual procedure of installing a new BIIGLE module. To deactivate a module, simply comment out the line in the <code>'providers'</code> array (but be sure that this doesn't break any dependencies).
 			</p>
 
 			<h3><a name="developing-the-package"></a>Developing the package</h3>
@@ -211,14 +211,14 @@ git commit -m "Initial commit"
 			</p>
 
 			<p>
-				As you'll recall we like to add a new section to the DIAS dashboard, displaying an inspiring quote.
+				As you'll recall we like to add a new section to the BIIGLE dashboard, displaying an inspiring quote.
 			</p>
 			<blockquote>
 				Simplicity is the ultimate sophistication.
 				<footer>Leonardo da Vinci</footer>
 			</blockquote>
 			<p>
-				This requires us to modify the existing dashboard view somehow. DIAS has a mechanism to do just that, called <em>view mixins</em>, that allows packages to inject components into predefined spaces of existing views.
+				This requires us to modify the existing dashboard view somehow. BIIGLE has a mechanism to do just that, called <em>view mixins</em>, that allows packages to inject components into predefined spaces of existing views.
 			</p>
 			<p>
 				First, we have to create a new view of the package, containing the code of the new dashboard section. In Laravel, views are usually located in <code>resources/views</code>, so let's create the new file <code>src/resources/views/dashboardMain.blade.php</code> in our package repository, with the following content:
@@ -251,13 +251,13 @@ $this->loadViewsFrom(__DIR__.'/resources/views', 'quotes');
 				This tells Laravel to look for views of the <code>quotes</code> module in the previously created directory. The <code>'quotes'</code> part is the namespace for views of our package; you'll see that in action when we add the first real view in the advanced tutorial.
 			</p>
 			<p>
-				In addition to registering the views, we need to register our view mixin. For this, we need to inject the <code>Dias\Services\Modules</code> class in the <code>boot</code> function. To keep things simple, here is how the service provider class should look like:
+				In addition to registering the views, we need to register our view mixin. For this, we need to inject the <code>Biigle\Services\Modules</code> class in the <code>boot</code> function. To keep things simple, here is how the service provider class should look like:
 			</p>
 <pre>
-&lt;?php namespace Dias\Modules\Quotes;
+&lt;?php namespace Biigle\Modules\Quotes;
 
 use Illuminate\Support\ServiceProvider;
-use Dias\Services\Modules;
+use Biigle\Services\Modules;
 
 class QuotesServiceProvider extends ServiceProvider {
 
@@ -285,7 +285,7 @@ class QuotesServiceProvider extends ServiceProvider {
 }
 </pre>
 			<p>
-				Now refresh your DIAS dashboard and get inspired!
+				Now refresh your BIIGLE dashboard and get inspired!
 			</p>
 			<div class="panel panel-default">
 				<div class="panel-heading">
@@ -301,10 +301,10 @@ class QuotesServiceProvider extends ServiceProvider {
 			<h3><a name="conclusion"></a>Conclusion</h3>
 
 			<p>
-				In this tutorial you have learned the basics of Laravel package development and how to extend existing DIAS views with custom view mixins. In a next tutorial we'll talk about implementing new routes and controllers, and how to properly test them using the DIAS testing environment. Further down the road are custom assets like CSS or the JavaScript of a custom client side application.
+				In this tutorial you have learned the basics of Laravel package development and how to extend existing BIIGLE views with custom view mixins. In a next tutorial we'll talk about implementing new routes and controllers, and how to properly test them using the BIIGLE testing environment. Further down the road are custom assets like CSS or the JavaScript of a custom client side application.
 			</p>
 			<p>
-				If you have any questions or are looking for examples, take a look at the <a href="http://laravel.com/docs/5.0/packages">Laravel documentation</a> on package development or the existing DIAS modules of your installation.
+				If you have any questions or are looking for examples, take a look at the <a href="http://laravel.com/docs/5.0/packages">Laravel documentation</a> on package development or the existing BIIGLE modules of your installation.
 			</p>
 			<p>
 				<a href="{{ route('manual-documentation') }}" class="btn btn-default" title="Back to the core documentation"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> back</a>

@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
 use Carbon\Carbon;
-use Dias\Tests\AnnotationSessionTest;
+use Biigle\Tests\AnnotationSessionTest;
 
 class TransectAnnotationSessionControllerTest extends ApiTestCase
 {

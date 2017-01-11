@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
 use App;
 use Mockery;
 use ModelTestCase;
-use Dias\LabelSource;
+use Biigle\LabelSource;
 
 class LabelSourceTest extends ModelTestCase
 {
@@ -37,7 +37,7 @@ class LabelSourceTest extends ModelTestCase
     {
         $mock = Mockery::mock();
 
-        App::singleton('Dias\Services\LabelSourceAdapters\AbCdAdapter', function () use ($mock) {
+        App::singleton('Biigle\Services\LabelSourceAdapters\AbCdAdapter', function () use ($mock) {
             return $mock;
         });
 

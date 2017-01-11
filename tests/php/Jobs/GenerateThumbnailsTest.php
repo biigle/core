@@ -1,13 +1,13 @@
 <?php
 
-namespace Dias\Tests\Jobs;
+namespace Biigle\Tests\Jobs;
 
 use App;
 use Mockery;
 use TestCase;
 use Copria\Transect;
-use Dias\Tests\TransectTest;
-use Dias\Jobs\GenerateThumbnails;
+use Biigle\Tests\TransectTest;
+use Biigle\Jobs\GenerateThumbnails;
 
 class GenerateThumbnailsTest extends TestCase
 {
@@ -15,8 +15,8 @@ class GenerateThumbnailsTest extends TestCase
     {
         parent::setUp();
          // mock this, so no actual thumbnail is generated
-        App::singleton('Dias\Contracts\ThumbnailService', function () {
-            return Mockery::mock('Dias\Services\Thumbnails\InterventionImage');
+        App::singleton('Biigle\Contracts\ThumbnailService', function () {
+            return Mockery::mock('Biigle\Services\Thumbnails\InterventionImage');
         });
     }
 
@@ -24,10 +24,10 @@ class GenerateThumbnailsTest extends TestCase
     {
         $transect = TransectTest::create();
 
-        $mock = App::make('Dias\Contracts\ThumbnailService');
+        $mock = App::make('Biigle\Contracts\ThumbnailService');
         $mock->shouldReceive('generateThumbnails')
             ->once()
-            ->with(Mockery::type('Dias\Transect'), []);
+            ->with(Mockery::type('Biigle\Transect'), []);
 
         with(new GenerateThumbnails($transect))->handle();
     }
@@ -36,10 +36,10 @@ class GenerateThumbnailsTest extends TestCase
     {
         $transect = TransectTest::create();
 
-        $mock = App::make('Dias\Contracts\ThumbnailService');
+        $mock = App::make('Biigle\Contracts\ThumbnailService');
         $mock->shouldReceive('generateThumbnails')
             ->once()
-            ->with(Mockery::type('Dias\Transect'), [2, 3, 4]);
+            ->with(Mockery::type('Biigle\Transect'), [2, 3, 4]);
 
         with(new GenerateThumbnails($transect, [2, 3, 4]))->handle();
     }

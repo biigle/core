@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
 use TestCase;
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
-use Dias\User;
-use Dias\Role;
+use Biigle\User;
+use Biigle\Role;
 use ModelTestCase;
 
 class UserTest extends ModelTestCase

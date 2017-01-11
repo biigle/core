@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\Label;
+use Biigle\Label;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Access\AuthorizationException;
 
@@ -21,6 +21,7 @@ class LabelController extends Controller
      * @apiParam {Number} id The label ID
      *
      * @param Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $id)

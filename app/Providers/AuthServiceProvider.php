@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Providers;
+namespace Biigle\Providers;
 
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -13,15 +13,15 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        \Dias\LabelTree::class => \Dias\Policies\LabelTreePolicy::class,
-        \Dias\Project::class => \Dias\Policies\ProjectPolicy::class,
-        \Dias\Annotation::class => \Dias\Policies\AnnotationPolicy::class,
-        \Dias\Label::class => \Dias\Policies\LabelPolicy::class,
-        \Dias\AnnotationLabel::class => \Dias\Policies\AnnotationLabelPolicy::class,
-        \Dias\Image::class => \Dias\Policies\ImagePolicy::class,
-        \Dias\Transect::class => \Dias\Policies\TransectPolicy::class,
-        \Dias\ImageLabel::class => \Dias\Policies\ImageLabelPolicy::class,
-        \Dias\SystemMessage::class => \Dias\Policies\SystemMessagePolicy::class,
+        \Biigle\LabelTree::class => \Biigle\Policies\LabelTreePolicy::class,
+        \Biigle\Project::class => \Biigle\Policies\ProjectPolicy::class,
+        \Biigle\Annotation::class => \Biigle\Policies\AnnotationPolicy::class,
+        \Biigle\Label::class => \Biigle\Policies\LabelPolicy::class,
+        \Biigle\AnnotationLabel::class => \Biigle\Policies\AnnotationLabelPolicy::class,
+        \Biigle\Image::class => \Biigle\Policies\ImagePolicy::class,
+        \Biigle\Transect::class => \Biigle\Policies\TransectPolicy::class,
+        \Biigle\ImageLabel::class => \Biigle\Policies\ImageLabelPolicy::class,
+        \Biigle\SystemMessage::class => \Biigle\Policies\SystemMessagePolicy::class,
     ];
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Http;
+namespace Biigle\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -15,7 +15,7 @@ class Kernel extends HttpKernel
      */
     protected $middleware = [
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
-        \Dias\Http\Middleware\UpdateUserActivity::class,
+        \Biigle\Http\Middleware\UpdateUserActivity::class,
     ];
 
     /**
@@ -25,11 +25,11 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            \Dias\Http\Middleware\EncryptCookies::class,
+            \Biigle\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \Dias\Http\Middleware\VerifyCsrfToken::class,
+            \Biigle\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 
@@ -48,12 +48,12 @@ class Kernel extends HttpKernel
      */
     protected $routeMiddleware = [
         'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
-        'auth.api' => \Dias\Http\Middleware\AuthenticateAPI::class,
+        'auth.api' => \Biigle\Http\Middleware\AuthenticateAPI::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest' => \Dias\Http\Middleware\RedirectIfAuthenticated::class,
-        'session' => \Dias\Http\Middleware\SessionOnly::class,
+        'guest' => \Biigle\Http\Middleware\RedirectIfAuthenticated::class,
+        'session' => \Biigle\Http\Middleware\SessionOnly::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
     ];
 }

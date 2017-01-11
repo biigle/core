@@ -1,14 +1,14 @@
 <?php
 
-namespace Dias\Policies;
+namespace Biigle\Policies;
 
 use DB;
-use Dias\User;
-use Dias\Role;
-use Dias\Label;
-use Dias\Transect;
-use Dias\Annotation;
-use Dias\AnnotationLabel;
+use Biigle\User;
+use Biigle\Role;
+use Biigle\Label;
+use Biigle\Transect;
+use Biigle\Annotation;
+use Biigle\AnnotationLabel;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AnnotationPolicy extends CachedPolicy

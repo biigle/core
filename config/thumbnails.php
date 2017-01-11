@@ -4,9 +4,9 @@ return [
 
     /*
     | The service for generating thumbnails, this application should use.
-    | Default 'Dias\Services\Thumbnails\InterventionImage' is provided by the core application.
+    | Default 'Biigle\Services\Thumbnails\InterventionImage' is provided by the core application.
     */
-    'service' => 'Dias\Services\Thumbnails\InterventionImage',
+    'service' => 'Biigle\Services\Thumbnails\InterventionImage',
 
     /*
     | URI where the image thumbnails are available from.

@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name LabelTree
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource for label trees.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -25,13 +25,13 @@ LabelTree.update({id: 1, name: 'New Label Tree'});
 LabelTree.delete({id: 1});
  *
  */
-angular.module('dias.api').factory('LabelTree', function ($resource, URL) {
-	"use strict";
+angular.module('biigle.api').factory('LabelTree', function ($resource, URL) {
+   "use strict";
 
-	return $resource(URL + '/api/v1/label-trees/:id', {id: '@id'}, {
-		// a user can only query their own label-trees
-		query: { method: 'GET', isArray: true },
-		create: { method: 'POST' },
-		update: { method: 'PUT' }
-	});
+   return $resource(URL + '/api/v1/label-trees/:id', {id: '@id'}, {
+      // a user can only query their own label-trees
+      query: { method: 'GET', isArray: true },
+      create: { method: 'POST' },
+      update: { method: 'PUT' }
+   });
 });

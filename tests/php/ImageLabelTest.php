@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
 use ModelTestCase;
-use Dias\ImageLabel;
+use Biigle\ImageLabel;
 
 class ImageLabelTest extends ModelTestCase
 {

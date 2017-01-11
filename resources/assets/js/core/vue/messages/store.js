@@ -73,5 +73,5 @@ biigle.$declare('messages.store', new Vue({
     }
 }));
 
-// To support the legacy AngularJS dias.ui.messages msg service
-$diasPostMessage = biigle.$require('messages.store.post');
+// To support the legacy AngularJS biigle.ui.messages msg service
+$biiglePostMessage = biigle.$require('messages.store.post');

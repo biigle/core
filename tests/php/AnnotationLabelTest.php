@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
 use ModelTestCase;
-use Dias\AnnotationLabel;
+use Biigle\AnnotationLabel;
 
 class AnnotationLabelTest extends ModelTestCase
 {

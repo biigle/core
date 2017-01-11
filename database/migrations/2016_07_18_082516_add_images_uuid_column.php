@@ -1,6 +1,6 @@
 <?php
 
-use Dias\Image;
+use Biigle\Image;
 use Ramsey\Uuid\Uuid;
 use Doctrine\DBAL\Types\Type;
 use Ramsey\Uuid\Doctrine\UuidType;

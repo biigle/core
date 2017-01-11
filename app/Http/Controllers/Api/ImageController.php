@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\Image;
+use Biigle\Image;
 
 class ImageController extends Controller
 {

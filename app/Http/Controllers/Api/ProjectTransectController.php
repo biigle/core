@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
 use Exception;
-use Dias\Project;
-use Dias\Transect;
+use Biigle\Project;
+use Biigle\Transect;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 

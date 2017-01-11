@@ -1,13 +1,13 @@
 <?php
 
-namespace Dias\Policies;
+namespace Biigle\Policies;
 
 use DB;
 use Cache;
-use Dias\User;
-use Dias\Role;
-use Dias\Image;
-use Dias\Label;
+use Biigle\User;
+use Biigle\Role;
+use Biigle\Image;
+use Biigle\Label;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ImagePolicy extends CachedPolicy

@@ -1,5 +1,5 @@
 @extends('settings.base')
-@inject('modules', 'Dias\Services\Modules')
+@inject('modules', 'Biigle\Services\Modules')
 
 @section('title')Access tokens @stop
 

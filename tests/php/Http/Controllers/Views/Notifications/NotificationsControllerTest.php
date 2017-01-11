@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Views\Notifications;
+namespace Biigle\Tests\Http\Controllers\Views\Notifications;
 
 use TestCase;
-use Dias\Tests\UserTest;
+use Biigle\Tests\UserTest;
 
 class NotificationsControllerTest extends TestCase
 {

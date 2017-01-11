@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Policies;
+namespace Biigle\Policies;
 
 use DB;
-use Dias\User;
-use Dias\Role;
-use Dias\LabelTree;
-use Dias\Visibility;
+use Biigle\User;
+use Biigle\Role;
+use Biigle\LabelTree;
+use Biigle\Visibility;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LabelTreePolicy extends CachedPolicy

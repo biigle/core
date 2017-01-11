@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
-use Dias\Role;
+use Biigle\Role;
 use ApiTestCase;
-use Dias\Project;
+use Biigle\Project;
 
 class ProjectUserControllerTest extends ApiTestCase
 {

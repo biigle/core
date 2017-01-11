@@ -57,7 +57,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_ADDRESS', null),
-        'name' => 'BIIGLE DIAS',
+        'name' => 'BIIGLE',
     ],
 
     /*

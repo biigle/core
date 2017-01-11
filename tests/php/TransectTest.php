@@ -1,14 +1,14 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
 use File;
 use Event;
 use Cache;
 use Exception;
-use Dias\Role;
+use Biigle\Role;
 use ModelTestCase;
-use Dias\Transect;
+use Biigle\Transect;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Middleware;
@@ -225,8 +225,8 @@ class TransectTest extends ModelTestCase
 
     public function testHandleNewImages()
     {
-        $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
-        $this->expectsJobs(\Dias\Jobs\CollectImageMetaInfo::class);
+        $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
+        $this->expectsJobs(\Biigle\Jobs\CollectImageMetaInfo::class);
         $this->model->HandleNewImages();
     }
 

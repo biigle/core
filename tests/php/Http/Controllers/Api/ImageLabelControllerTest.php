@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Dias\Tests\ImageTest;
-use Dias\Tests\ImageLabelTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\ImageLabelTest;
 
 class ImageLabelControllerTest extends ApiTestCase
 {

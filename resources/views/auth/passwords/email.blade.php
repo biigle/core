@@ -1,12 +1,12 @@
 @extends('app')
 
-@section('title'){{ trans('dias.titles.resetpw') }}@stop
+@section('title'){{ trans('biigle.titles.resetpw') }}@stop
 
 @section('content')
 <div class="container">
     <div class="row center-form">
         <div class="col-md-4 col-sm-6">
-            <h1 class="logo  logo--standalone"><a href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></a></h1>
+            <h1 class="logo  logo--standalone"><a href="{{ route('home') }}" class="logo__biigle">BIIGLE</a></h1>
         @if (session('status'))
             <div class="alert alert-success">
                 {{ session('status') }}
@@ -32,7 +32,7 @@
             </form>
         @endif
             <p class="clearfix">
-                <a href="{{ route('home') }}" class="">{{ trans('dias.back') }}</a>
+                <a href="{{ route('home') }}" class="">{{ trans('biigle.back') }}</a>
             </p>
         </div>
     </div>

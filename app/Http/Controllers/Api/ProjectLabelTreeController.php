@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\Project;
-use Dias\LabelTree;
-use Dias\Visibility;
+use Biigle\Project;
+use Biigle\LabelTree;
+use Biigle\Visibility;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Access\AuthorizationException;
 

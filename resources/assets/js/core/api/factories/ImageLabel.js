@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name ImageLabel
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource for image labels.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -25,25 +25,25 @@ var labels = ImageLabel.query({image_id: 1}, function () {
 ImageLabel.delete({id: 1});
  *
  */
-angular.module('dias.api').factory('ImageLabel', function ($resource, URL) {
-	"use strict";
+angular.module('biigle.api').factory('ImageLabel', function ($resource, URL) {
+   "use strict";
 
-	return $resource(URL + '/api/v1/image-labels/:id', {
-			id: '@id',
-			image_id: '@image_id'
-		}, {
-			query: {
-				method: 'GET',
+   return $resource(URL + '/api/v1/image-labels/:id', {
+         id: '@id',
+         image_id: '@image_id'
+      }, {
+         query: {
+            method: 'GET',
                 url: URL + '/api/v1/images/:image_id/labels',
-				isArray: true
-			},
-			attach: {
-				method: 'POST',
-				url: URL + '/api/v1/images/:image_id/labels',
-			},
+            isArray: true
+         },
+         attach: {
+            method: 'POST',
+            url: URL + '/api/v1/images/:image_id/labels',
+         },
             delete: {
                 method: 'DELETE',
                 params: {image_id: null}
             }
-	});
+   });
 });

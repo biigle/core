@@ -7,14 +7,14 @@ set -e
 # be run after the Homestead machine is provisioned.
 
 # run the database migrations
-php /home/vagrant/dias/artisan migrate --force
+php /home/vagrant/biigle/artisan migrate --force
 
 echo "Configuring queue worker daemon..."
 # create the queue worker daemon managed by supervisor
 sudo cat > /etc/supervisor/conf.d/laravel-worker.conf <<__EOF__
 [program:laravel-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=php /home/vagrant/dias/artisan queue:work --sleep=3 --tries=3 --daemon
+command=php /home/vagrant/biigle/artisan queue:work --sleep=3 --tries=3 --daemon
 autostart=true
 autorestart=true
 user=vagrant

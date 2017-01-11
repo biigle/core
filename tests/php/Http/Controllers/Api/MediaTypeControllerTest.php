@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Dias\MediaType;
+use Biigle\MediaType;
 
 class MediaTypeControllerTest extends ApiTestCase
 {

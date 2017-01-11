@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Contracts;
+namespace Biigle\Contracts;
 
 use Illuminate\Http\Request;
 

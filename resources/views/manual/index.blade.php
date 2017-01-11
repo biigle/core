@@ -1,5 +1,5 @@
 @extends('app')
-@inject('modules', 'Dias\Services\Modules')
+@inject('modules', 'Biigle\Services\Modules')
 
 @section('title') Manual @stop
 
@@ -9,22 +9,22 @@
         <div class="row">
             <h2>Manual</h2>
             <p class="lead">
-                This is the application manual of BIIGLE DIAS. Here you can find tutorials and videos on how to use the application as well as the developer documentation and API.
+                This is the application manual of BIIGLE. Here you can find tutorials and videos on how to use the application as well as the developer documentation and API.
             </p>
         </div>
         <div class="row">
             <h3>Tutorials</h3>
 
             <p>
-                Learn more about the different functions and tools of BIIGLE DIAS for an efficient workflow.
+                Learn more about the different functions and tools of BIIGLE for an efficient workflow.
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', 'whole-playlist')}}">Biigle Dias Tutorial Playlist</a>
+                <a href="{{route('manual-tutorials', 'whole-playlist')}}">BIIGLE Tutorial Playlist</a>
             </h4>
 
             <p>
-                The Biigle Dias Tutorial playlist.
+                The BIIGLE Tutorial playlist.
             </p>
 
             <h4>
@@ -51,7 +51,7 @@
             <h3>Developer Documentation</h3>
 
             <p>
-                BIIGLE DIAS consists of different modules, each of which provides their own set of functions. Here you can find the developer documentation of each module that this instance has installed.
+                BIIGLE consists of different modules, each of which provides their own set of functions. Here you can find the developer documentation of each module that this instance has installed.
             </p>
 
             <h4>
@@ -59,7 +59,7 @@
             </h4>
 
             <p>
-                The BIIGLE DIAS core provides the basic functions and framework for each instance. This documentation also describes how to use the API or develop custom DIAS modules.
+                The BIIGLE core provides the basic functions and framework for each instance. This documentation also describes how to use the API or develop custom BIIGLE modules.
             </p>
 
             @foreach ($modules->getMixins('manualDocumentation') as $module => $nestedMixins)

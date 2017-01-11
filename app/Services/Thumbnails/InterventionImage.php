@@ -1,14 +1,14 @@
 <?php
 
-namespace Dias\Services\Thumbnails;
+namespace Biigle\Services\Thumbnails;
 
-use Dias\Image;
-use Dias\Transect;
+use Biigle\Image;
+use Biigle\Transect;
 use InterventionImage as IImage;
-use Dias\Contracts\ThumbnailService;
+use Biigle\Contracts\ThumbnailService;
 
 /**
- * The default Dias thumbnails service using the InterventionImage package
+ * The default thumbnails service using the InterventionImage package
  * (http://image.intervention.io/)
  */
 class InterventionImage implements ThumbnailService

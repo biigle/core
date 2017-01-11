@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias;
+namespace Biigle;
 
 use Notification;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Dias\Notifications\NewSystemMessageNotification;
+use Biigle\Notifications\NewSystemMessageNotification;
 
 /**
  * System messages are broadcasts from the application administrators that reach
