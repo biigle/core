@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Observers;
+namespace Biigle\Observers;
 
 use Event;
 use Exception;
-use Dias\Image;
+use Biigle\Image;
 
 class ImageObserver
 {

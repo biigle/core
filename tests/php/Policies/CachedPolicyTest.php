@@ -1,14 +1,14 @@
 <?php
 
-namespace Dias\Tests\Policies;
+namespace Biigle\Tests\Policies;
 
 use Cache;
 use Mockery;
 use TestCase;
-use Dias\Role;
-use Dias\Tests\UserTest;
-use Dias\Tests\LabelTreeTest;
-use Dias\Policies\LabelTreePolicy;
+use Biigle\Role;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\LabelTreeTest;
+use Biigle\Policies\LabelTreePolicy;
 
 class CachedPolicyTest extends TestCase
 {

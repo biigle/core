@@ -1,19 +1,19 @@
 <?php
 
-namespace Dias\Tests\Policies;
+namespace Biigle\Tests\Policies;
 
 use Cache;
 use TestCase;
-use Dias\Role;
+use Biigle\Role;
 use Carbon\Carbon;
-use Dias\Tests\UserTest;
-use Dias\Tests\LabelTest;
-use Dias\Tests\ImageTest;
-use Dias\Tests\ProjectTest;
-use Dias\Tests\TransectTest;
-use Dias\Tests\AnnotationTest;
-use Dias\Tests\AnnotationLabelTest;
-use Dias\Tests\AnnotationSessionTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\TransectTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\AnnotationSessionTest;
 
 class AnnotationPolicyTest extends TestCase
 {

@@ -1,7 +1,7 @@
 @extends('app')
-@inject('modules', 'Dias\Services\Modules')
+@inject('modules', 'Biigle\Services\Modules')
 
-@section('title'){{ trans('dias.titles.dashboard') }}@stop
+@section('title'){{ trans('biigle.titles.dashboard') }}@stop
 
 @push('styles')
     @foreach ($modules->getMixins('dashboardStyles') as $module => $nestedMixins)

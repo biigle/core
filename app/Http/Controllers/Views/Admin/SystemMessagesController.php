@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Http\Controllers\Views\Admin;
+namespace Biigle\Http\Controllers\Views\Admin;
 
-use Dias\SystemMessage;
-use Dias\SystemMessageType;
-use Dias\Http\Controllers\Controller;
+use Biigle\SystemMessage;
+use Biigle\SystemMessageType;
+use Biigle\Http\Controllers\Controller;
 
 class SystemMessagesController extends Controller
 {

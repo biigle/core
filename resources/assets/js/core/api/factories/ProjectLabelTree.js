@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name ProjectLabelTree
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource project label trees
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -27,7 +27,7 @@ ProjectLabelTree.detach({ project_id: 1 }, { id: 1 }, function () {
 });
  *
  */
-angular.module('dias.api').factory('ProjectLabelTree', function ($resource, URL) {
+angular.module('biigle.api').factory('ProjectLabelTree', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/projects/:project_id/label-trees', {project_id: '@project_id'}, {

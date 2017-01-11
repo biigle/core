@@ -1,5 +1,5 @@
 describe('The filterExclude factory', function () {
-    beforeEach(module('dias.ui.utils'));
+    beforeEach(module('biigle.ui.utils'));
 
     it('should exclude numbers that are present in the second array', inject(function (filterExclude) {
         var first = [1, 2, 3, 4, 5, 10];

@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
-use Dias\Shape;
+use Biigle\Shape;
 use ApiTestCase;
 
 class ShapeControllerTest extends ApiTestCase

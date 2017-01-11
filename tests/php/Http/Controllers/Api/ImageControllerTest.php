@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
-use Dias\Image;
+use Biigle\Image;
 use ApiTestCase;
-use Dias\Transect;
-use Dias\Tests\ImageTest;
-use Dias\Services\Thumbnails\InterventionImage;
+use Biigle\Transect;
+use Biigle\Tests\ImageTest;
+use Biigle\Services\Thumbnails\InterventionImage;
 
 class ImageControllerTest extends ApiTestCase
 {

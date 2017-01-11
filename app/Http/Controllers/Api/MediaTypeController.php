@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\MediaType;
+use Biigle\MediaType;
 
 class MediaTypeController extends Controller
 {

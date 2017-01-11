@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Providers;
+namespace Biigle\Providers;
 
 use Auth;
 use Illuminate\Support\Facades\View;
@@ -36,6 +36,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(\Dias\Services\Modules::class);
+        $this->app->bind(\Biigle\Services\Modules::class);
     }
 }

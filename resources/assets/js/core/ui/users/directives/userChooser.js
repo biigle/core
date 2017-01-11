@@ -1,8 +1,8 @@
 /**
- * @namespace dias.ui.users
+ * @namespace biigle.ui.users
  * @ngdoc directive
  * @name userChooser
- * @memberOf dias.ui.users
+ * @memberOf biigle.ui.users
  * @description An input field to find a user.
  * @example
 // HTML
@@ -10,40 +10,40 @@
 
 // Controller (example for adding a user to a project)
 $scope.addUser = function (user) {
-	// new users are guests by default
-	var roleId = $scope.roles.guest;
+   // new users are guests by default
+   var roleId = $scope.roles.guest;
 
-	var success = function () {
-		user.project_role_id = roleId;
-		$scope.users.push(user);
-	};
+   var success = function () {
+      user.project_role_id = roleId;
+      $scope.users.push(user);
+   };
 
-	// user shouldn't already exist
-	if (!getUser(user.id)) {
-		ProjectUser.attach(
-			{project_id: $scope.projectId},
-			{id: user.id, project_role_id: roleId},
-			success, msg.responseError
-		);
-	}
+   // user shouldn't already exist
+   if (!getUser(user.id)) {
+      ProjectUser.attach(
+         {project_id: $scope.projectId},
+         {id: user.id, project_role_id: roleId},
+         success, msg.responseError
+      );
+   }
 };
 
  */
-angular.module('dias.ui.users').directive('userChooser', function () {
-		"use strict";
+angular.module('biigle.ui.users').directive('userChooser', function () {
+      "use strict";
 
-		return {
-			restrict: 'A',
+      return {
+         restrict: 'A',
 
-			scope: {
-				select: '=userChooser'
-			},
+         scope: {
+            select: '=userChooser'
+         },
 
-			replace: true,
+         replace: true,
 
-			template: '<input type="text" data-ng-model="selected" data-uib-typeahead="name(user) for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
+         template: '<input type="text" data-ng-model="selected" data-uib-typeahead="name(user) for user in find($viewValue)" data-typeahead-wait-ms="250" data-typeahead-on-select="select($item)"/>',
 
-			controller: function ($scope, User) {
+         controller: function ($scope, User) {
                 $scope.name = function (user) {
                     if (user && user.firstname && user.lastname) {
                         return user.firstname + ' ' + user.lastname;
@@ -52,10 +52,10 @@ angular.module('dias.ui.users').directive('userChooser', function () {
                     return '';
                 };
 
-				$scope.find = function (query) {
-					return User.find({query: encodeURIComponent(query)}).$promise;
-				};
-			}
-		};
-	}
+            $scope.find = function (query) {
+               return User.find({query: encodeURIComponent(query)}).$promise;
+            };
+         }
+      };
+   }
 );

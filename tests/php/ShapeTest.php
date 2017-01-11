@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
-use Dias\Shape;
+use Biigle\Shape;
 use ModelTestCase;
 
 class ShapeTest extends ModelTestCase

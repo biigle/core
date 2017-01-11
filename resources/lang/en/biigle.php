@@ -2,7 +2,7 @@
 
 return array(
 
-	'info' => 'The BIIGLE Discol Image Annotation Software is a browser-based application for the most efficient and effective rapid manual annotation of still images with a focus on underwater images.',
+	'info' => 'BIIGLE is a browser-based application for the most efficient and effective rapid manual annotation of still images with a focus on underwater images.',
 	'new_acc' => 'Create an account',
 	'back' => 'back',
 
@@ -12,7 +12,7 @@ return array(
 		'settings' => 'Settings',
 		'resetpw' => 'Reset password',
 		'register' => 'BIIGLE - Register',
-		'dashboard' => 'BIIGLE DIAS',
+		'dashboard' => 'BIIGLE',
         'manual' => 'Manual',
 		'doc' => 'Documentation',
 	),

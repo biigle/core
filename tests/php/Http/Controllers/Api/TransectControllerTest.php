@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use File;
 use Cache;
 use ApiTestCase;
-use Dias\MediaType;
+use Biigle\MediaType;
 
 class TransectControllerTest extends ApiTestCase
 {
@@ -28,7 +28,7 @@ class TransectControllerTest extends ApiTestCase
 
     public function testUpdate()
     {
-        $this->doesntExpectJobs(\Dias\Jobs\GenerateThumbnails::class);
+        $this->doesntExpectJobs(\Biigle\Jobs\GenerateThumbnails::class);
 
         $id = $this->transect()->id;
         $this->transect()->media_type_id = MediaType::$timeSeriesId;
@@ -61,7 +61,7 @@ class TransectControllerTest extends ApiTestCase
         File::shouldReceive('isReadable')->once()->andReturn(true);
 
         $this->beAdmin();
-        $this->expectsJobs(\Dias\Jobs\GenerateThumbnails::class);
+        $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
         $this->json('PUT', '/api/v1/transects/'.$this->transect()->id, [
             'url' => '/new/url',
         ]);

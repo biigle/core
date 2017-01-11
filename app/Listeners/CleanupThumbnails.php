@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Listeners;
+namespace Biigle\Listeners;
 
 use File;
-use Dias\Image;
+use Biigle\Image;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 

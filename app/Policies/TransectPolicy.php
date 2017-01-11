@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Policies;
+namespace Biigle\Policies;
 
 use DB;
-use Dias\User;
-use Dias\Role;
-use Dias\Transect;
+use Biigle\User;
+use Biigle\Role;
+use Biigle\Transect;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TransectPolicy extends CachedPolicy

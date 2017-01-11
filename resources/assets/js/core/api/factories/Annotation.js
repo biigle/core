@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name Annotation
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource for annotations.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -47,23 +47,23 @@ var annotation = Annotation.add({
 });
  *
  */
-angular.module('dias.api').factory('Annotation', function ($resource, URL) {
-	"use strict";
+angular.module('biigle.api').factory('Annotation', function ($resource, URL) {
+   "use strict";
 
-	return $resource(URL + '/api/v1/annotations/:id',
-		{ id: '@id'	},
-		{
-			save: {
-				method: 'PUT'
-			},
-			query: {
-				method: 'GET',
+   return $resource(URL + '/api/v1/annotations/:id',
+      { id: '@id' },
+      {
+         save: {
+            method: 'PUT'
+         },
+         query: {
+            method: 'GET',
                 url: URL + '/api/v1/images/:id/annotations',
-				isArray: true
-			},
-			add: {
-				method: 'POST',
-				url: URL + '/api/v1/images/:id/annotations',
-			}
-		});
+            isArray: true
+         },
+         add: {
+            method: 'POST',
+            url: URL + '/api/v1/images/:id/annotations',
+         }
+      });
 });

@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Http\Controllers\Views\SystemMessages;
+namespace Biigle\Http\Controllers\Views\SystemMessages;
 
-use Dias\SystemMessage;
-use Dias\SystemMessageType;
+use Biigle\SystemMessage;
+use Biigle\SystemMessageType;
 use Illuminate\Http\Request;
-use Dias\Http\Controllers\Controller;
+use Biigle\Http\Controllers\Controller;
 
 class SystemMessagesController extends Controller
 {

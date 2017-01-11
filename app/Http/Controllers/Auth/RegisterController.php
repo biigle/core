@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Http\Controllers\Auth;
+namespace Biigle\Http\Controllers\Auth;
 
-use Dias\User;
+use Biigle\User;
 use Validator;
 use Illuminate\Http\Request;
-use Dias\Http\Controllers\Controller;
+use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
 class RegisterController extends Controller

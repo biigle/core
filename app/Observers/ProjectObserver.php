@@ -1,17 +1,17 @@
 <?php
 
-namespace Dias\Observers;
+namespace Biigle\Observers;
 
 use Exception;
-use Dias\Role;
-use Dias\LabelTree;
-use Dias\Visibility;
+use Biigle\Role;
+use Biigle\LabelTree;
+use Biigle\Visibility;
 
 class ProjectObserver
 {
     /**
      * A project must not be created without having a creator.
-     * @param \Dias\Project $project
+     * @param \Biigle\Project $project
      * @return bool
      */
     public function creating($project)
@@ -26,7 +26,7 @@ class ProjectObserver
     /**
      * Handle actions for newly created projects.
      *
-     * @param \Dias\Project $project
+     * @param \Biigle\Project $project
      * @return void
      */
     public function created($project)

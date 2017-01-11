@@ -1,7 +1,7 @@
 describe('The OwnUser resource factory', function () {
-	var $httpBackend;
+   var $httpBackend;
 
-	beforeEach(module('dias.api'));
+   beforeEach(module('biigle.api'));
 
     // mock URL constant which is set inline in the base template
     beforeEach(function() {
@@ -10,24 +10,24 @@ describe('The OwnUser resource factory', function () {
         });
     });
 
-	beforeEach(inject(function($injector) {
-		var user = {id: 1, firstname: 'joe', lastname: 'user', role_id: 2};
+   beforeEach(inject(function($injector) {
+      var user = {id: 1, firstname: 'joe', lastname: 'user', role_id: 2};
 
-		// Set up the mock http service responses
-		$httpBackend = $injector.get('$httpBackend');
+      // Set up the mock http service responses
+      $httpBackend = $injector.get('$httpBackend');
 
-		$httpBackend.when('GET', '/api/v1/users/my')
-		            .respond(user);
+      $httpBackend.when('GET', '/api/v1/users/my')
+                  .respond(user);
 
-		$httpBackend.when('PUT', '/api/v1/users/my')
-		            .respond(200);
+      $httpBackend.when('PUT', '/api/v1/users/my')
+                  .respond(200);
 
-		$httpBackend.when('DELETE', '/api/v1/users/my')
-		            .respond(200);
-	}));
+      $httpBackend.when('DELETE', '/api/v1/users/my')
+                  .respond(200);
+   }));
 
-	afterEach(function() {
-		$httpBackend.flush();
+   afterEach(function() {
+      $httpBackend.flush();
         $httpBackend.verifyNoOutstandingExpectation();
         $httpBackend.verifyNoOutstandingRequest();
     });
@@ -37,20 +37,20 @@ describe('The OwnUser resource factory', function () {
         var user = OwnUser.get(function () {
             expect(user.id).toEqual(1);
         });
-	}));
+   }));
 
-	it('should update the own user', inject(function (OwnUser) {
-		$httpBackend.expectPUT('/api/v1/users/my', {
-			firstname: 'jack'
-		});
-		var user = OwnUser.save({firstname: 'jack'}, function () {
-			expect(user.firstname).toEqual('jack');
-		});
-	}));
+   it('should update the own user', inject(function (OwnUser) {
+      $httpBackend.expectPUT('/api/v1/users/my', {
+         firstname: 'jack'
+      });
+      var user = OwnUser.save({firstname: 'jack'}, function () {
+         expect(user.firstname).toEqual('jack');
+      });
+   }));
 
-	it('should destroy the own user', inject(function (OwnUser) {
-		$httpBackend.expectDELETE('/api/v1/users/my');
-		OwnUser.delete();
-	}));
+   it('should destroy the own user', inject(function (OwnUser) {
+      $httpBackend.expectDELETE('/api/v1/users/my');
+      OwnUser.delete();
+   }));
 
 });

@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Listeners;
+namespace Biigle\Tests\Listeners;
 
 use File;
 use TestCase;
 use Copria\Transect;
-use Dias\Tests\ImageTest;
-use Dias\Listeners\CleanupThumbnails;
+use Biigle\Tests\ImageTest;
+use Biigle\Listeners\CleanupThumbnails;
 
 class ListenersCleanupThumbnailsTest extends TestCase
 {

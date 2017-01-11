@@ -1,7 +1,7 @@
 describe('The Shape resource factory', function () {
-	var $httpBackend;
+   var $httpBackend;
 
-	beforeEach(module('dias.api'));
+   beforeEach(module('biigle.api'));
 
     // mock URL constant which is set inline in the base template
     beforeEach(function() {
@@ -10,24 +10,24 @@ describe('The Shape resource factory', function () {
         });
     });
 
-	beforeEach(inject(function($injector) {
-		var shape = {
-			id: 1,
-			name: "point"
-		};
+   beforeEach(inject(function($injector) {
+      var shape = {
+         id: 1,
+         name: "point"
+      };
 
-		// Set up the mock http service responses
-		$httpBackend = $injector.get('$httpBackend');
+      // Set up the mock http service responses
+      $httpBackend = $injector.get('$httpBackend');
 
-		$httpBackend.when('GET', '/api/v1/shapes')
-		            .respond([shape]);
+      $httpBackend.when('GET', '/api/v1/shapes')
+                  .respond([shape]);
 
-		$httpBackend.when('GET', '/api/v1/shapes/1')
-		            .respond(shape);
-	}));
+      $httpBackend.when('GET', '/api/v1/shapes/1')
+                  .respond(shape);
+   }));
 
-	afterEach(function() {
-		$httpBackend.flush();
+   afterEach(function() {
+      $httpBackend.flush();
         $httpBackend.verifyNoOutstandingExpectation();
         $httpBackend.verifyNoOutstandingRequest();
     });
@@ -39,12 +39,12 @@ describe('The Shape resource factory', function () {
             expect(shape instanceof Shape).toBe(true);
             expect(shape.name).toEqual('point');
         });
-	}));
+   }));
 
-	it('should show a shape', inject(function (Shape) {
-		$httpBackend.expectGET('/api/v1/shapes/1');
-		var shape = Shape.get({id: 1}, function () {
-			expect(shape.name).toEqual('point');
-		});
-	}));
+   it('should show a shape', inject(function (Shape) {
+      $httpBackend.expectGET('/api/v1/shapes/1');
+      var shape = Shape.get({id: 1}, function () {
+         expect(shape.name).toEqual('point');
+      });
+   }));
 });

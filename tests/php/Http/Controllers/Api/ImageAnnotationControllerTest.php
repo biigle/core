@@ -1,15 +1,15 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use Cache;
 use ApiTestCase;
 use Carbon\Carbon;
-use Dias\Tests\ImageTest;
-use Dias\Tests\LabelTest;
-use Dias\Tests\AnnotationTest;
-use Dias\Tests\AnnotationLabelTest;
-use Dias\Tests\AnnotationSessionTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Tests\AnnotationSessionTest;
 
 class ImageAnnotationControllerTest extends ApiTestCase
 {
@@ -125,21 +125,21 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->assertResponseStatus(422);
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Dias\Shape::$lineId,
+            'shape_id' => \Biigle\Shape::$lineId,
             'label_id' => 99999,
         ]);
         // label is required
         $this->assertResponseStatus(422);
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Dias\Shape::$pointId,
+            'shape_id' => \Biigle\Shape::$pointId,
             'label_id' => $label->id,
         ]);
         // confidence required
         $this->assertResponseStatus(422);
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Dias\Shape::$pointId,
+            'shape_id' => \Biigle\Shape::$pointId,
             'label_id' => $label->id,
             'confidence' => 2
         ]);
@@ -147,7 +147,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->assertResponseStatus(422);
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Dias\Shape::$pointId,
+            'shape_id' => \Biigle\Shape::$pointId,
             'label_id' => $label->id,
             'confidence' => -1
         ]);
@@ -155,7 +155,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->assertResponseStatus(422);
 
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Dias\Shape::$pointId,
+            'shape_id' => \Biigle\Shape::$pointId,
             'label_id' => $label->id,
             'confidence' => 0.5,
             'points' => '[]',
@@ -164,7 +164,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->assertResponseStatus(422);
 
         $this->post("/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Dias\Shape::$pointId,
+            'shape_id' => \Biigle\Shape::$pointId,
             'label_id' => $label->id,
             'confidence' => 0.5,
             'points' => '[10, 11]',
@@ -177,7 +177,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         Cache::flush();
 
         $this->post("/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Dias\Shape::$pointId,
+            'shape_id' => \Biigle\Shape::$pointId,
             'label_id' => $label->id,
             'confidence' => 0.5,
             'points' => '[10, 11]',
@@ -199,7 +199,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $this->beEditor();
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Dias\Shape::$pointId,
+            'shape_id' => \Biigle\Shape::$pointId,
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => '[10, 11, 12, 13]',

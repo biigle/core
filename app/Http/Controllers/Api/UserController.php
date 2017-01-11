@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
 use Hash;
-use Dias\User;
+use Biigle\User;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Symfony\Component\HttpKernel\Exception\HttpException;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\Role;
+use Biigle\Role;
 
 class RoleController extends Controller
 {

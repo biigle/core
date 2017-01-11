@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Auth;
+namespace Biigle\Tests\Http\Controllers\Auth;
 
 use DB;
 use Mail;
@@ -8,7 +8,7 @@ use Hash;
 use Session;
 use TestCase;
 use Faker\Factory;
-use Dias\Tests\UserTest;
+use Biigle\Tests\UserTest;
 
 class PasswordControllerTest extends TestCase
 {

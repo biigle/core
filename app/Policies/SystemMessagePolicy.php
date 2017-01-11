@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Policies;
+namespace Biigle\Policies;
 
-use Dias\User;
-use Dias\SystemMessage;
+use Biigle\User;
+use Biigle\SystemMessage;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SystemMessagePolicy
@@ -13,7 +13,7 @@ class SystemMessagePolicy
     /**
      * Determine whether the user can create systemMessages.
      *
-     * @param  Dias\User  $user
+     * @param  Biigle\User  $user
      * @return mixed
      */
     public function create(User $user)
@@ -24,8 +24,8 @@ class SystemMessagePolicy
     /**
      * Determine whether the user can update the systemMessage.
      *
-     * @param  Dias\User  $user
-     * @param  Dias\SystemMessage  $systemMessage
+     * @param  Biigle\User  $user
+     * @param  Biigle\SystemMessage  $systemMessage
      * @return mixed
      */
     public function update(User $user, SystemMessage $systemMessage)
@@ -36,8 +36,8 @@ class SystemMessagePolicy
     /**
      * Determine whether the user can delete the systemMessage.
      *
-     * @param  Dias\User  $user
-     * @param  Dias\SystemMessage  $systemMessage
+     * @param  Biigle\User  $user
+     * @param  Biigle\SystemMessage  $systemMessage
      * @return mixed
      */
     public function destroy(User $user, SystemMessage $systemMessage)

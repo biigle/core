@@ -1,11 +1,11 @@
 @extends('manual.base')
 
-@section('manual-title') Biigle Dias Tutorial Playlist @stop
+@section('manual-title') BIIGLE Tutorial Playlist @stop
 
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            Learn how to use Biigle Dias.
+            Learn how to use BIIGLE.
         </p>
 
         <div class="embed-responsive embed-responsive-16by9">

@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name LabelTreeUser
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource for users belonging to a label tree.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -16,19 +16,19 @@ LabelTreeUser.attach({label_tree_id: 2}, {id: 1, role_id: 2});
 LabelTreeUser.detach({label_tree_id: 1}, {id: 1});
  *
  */
-angular.module('dias.api').factory('LabelTreeUser', function ($resource, URL) {
-	"use strict";
+angular.module('biigle.api').factory('LabelTreeUser', function ($resource, URL) {
+   "use strict";
 
-	return $resource(URL + '/api/v1/label-trees/:label_tree_id/users/:id',
-		{ id: '@id' },
-		{
-			update: { method: 'PUT' },
-			attach: {
+   return $resource(URL + '/api/v1/label-trees/:label_tree_id/users/:id',
+      { id: '@id' },
+      {
+         update: { method: 'PUT' },
+         attach: {
                 method: 'POST',
                 url: URL + '/api/v1/label-trees/:label_tree_id/users',
                 params: {id: null}
             },
-			detach: { method: 'DELETE' }
-		}
-	);
+         detach: { method: 'DELETE' }
+      }
+   );
 });

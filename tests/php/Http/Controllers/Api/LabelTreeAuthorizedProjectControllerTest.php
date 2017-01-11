@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
-use Dias\Role;
+use Biigle\Role;
 use ApiTestCase;
-use Dias\LabelTree;
-use Dias\Visibility;
-use Dias\Tests\LabelTreeTest;
+use Biigle\LabelTree;
+use Biigle\Visibility;
+use Biigle\Tests\LabelTreeTest;
 
 class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
 {

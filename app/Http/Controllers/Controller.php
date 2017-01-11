@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Http\Controllers;
+namespace Biigle\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Dias\Http\Middleware\AuthenticateAPI;
+use Biigle\Http\Middleware\AuthenticateAPI;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;

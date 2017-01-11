@@ -1,5 +1,5 @@
 @extends('manual.base')
-@inject('modules', 'Dias\Services\Modules')
+@inject('modules', 'Biigle\Services\Modules')
 
 @section('manual-title') Core Documentation @stop
 
@@ -7,19 +7,14 @@
 	<div class="row">
 		<h3><a name="tutorials"></a>Tutorials</h3>
 
-		{{--<h4>Installing BIIGLE DIAS</h4>
-		<p>
-			Walking through the DIAS installation process, we'll show you how to get the application up and running on your own server.
-		</p>--}}
-
 		<h4><a href="{{ route('manual-documentation').'/package-development' }}">Package development</a></h4>
 		<p>
-			Learn about PHP package development and how to add custom functionality to your DIAS installation by developing your own modules.
+			Learn about PHP package development and how to add custom functionality to your BIIGLE installation by developing your own modules.
 		</p>
 
 		<h4><a href="{{ route('manual-documentation').'/advanced-package-development' }}">Advanced package development</a></h4>
 		<p>
-			Learn how to add new views and routes with a custom package and how to properly test them using the DIAS testing environment.
+			Learn how to add new views and routes with a custom package and how to properly test them using the BIIGLE testing environment.
 		</p>
 
 		<h4><a href="{{ route('manual-documentation').'/using-custom-assets-in-packages' }}">Using custom assets in packages</h4></a>
@@ -29,7 +24,7 @@
 
 		<h4><a href="{{ route('manual-documentation').'/mastering-view-mixins' }}">Mastering view mixins</a></h4>
 		<p>
-			Building your custom extensions is nice but what about extending the extensions? Learn how to use the view mixin registry of DIAS, allowing other modules to extend yours.
+			Building your custom extensions is nice but what about extending the extensions? Learn how to use the view mixin registry of BIIGLE, allowing other modules to extend yours.
 		</p>
 	</div>
 	<div class="row">
@@ -62,7 +57,7 @@
 	<div class="row">
 		<h3>Client</h3>
 		<p>
-			The client side application is written in JavaScript using the <a href="https://angularjs.org/">AngularJS</a> framework. AngularJS, by default, wraps any application in a module, which works very well with the server side PHP modules for custom package development. The core modules of this application essentially provide utility functions like Angular resources for the RESTful API access or services for e.g. the user feedback <a onclick="window.$diasPostMessage('info', 'I am the user feedback messaging system!');">messaging system</a>.
+			The client side application is written in JavaScript using the <a href="https://angularjs.org/">AngularJS</a> framework. AngularJS, by default, wraps any application in a module, which works very well with the server side PHP modules for custom package development. The core modules of this application essentially provide utility functions like Angular resources for the RESTful API access or services for e.g. the user feedback <a onclick="window.$biiglePostMessage('info', 'I am the user feedback messaging system!');">messaging system</a>.
 		</p>
 		<p>
 			While custom BIIGLE modules are free to use any JavaScript framework (or none at all) for client side interactions, the AngularJS core modules are always available for convenient access to the RESTful API and integration in the application ecosystem. Therfore using AngularJS for custom module development is highly recommended.

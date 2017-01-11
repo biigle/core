@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
 use ModelTestCase;
-use Dias\MediaType;
+use Biigle\MediaType;
 
 class MediaTypeTest extends ModelTestCase
 {

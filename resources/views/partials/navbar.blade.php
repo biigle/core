@@ -1,10 +1,8 @@
-@inject('modules', 'Dias\Services\Modules')
+@inject('modules', 'Biigle\Services\Modules')
 <nav class="navbar navbar-default navbar-static-top">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand logo" href="{{ route('home') }}">
-                <span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup>
-            </a>
+            <a class="navbar-brand logo" href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span></a>
         </div>
         @hasSection('navbar')
             <div class="navbar-left">
@@ -35,15 +33,15 @@
                             </li>
                         @endif
                         <li>
-                            <a href="{{ route('manual') }}" title="{{ trans('dias.titles.manual') }}">{{ trans('dias.titles.manual') }}</a>
+                            <a href="{{ route('manual') }}" title="{{ trans('biigle.titles.manual') }}">{{ trans('biigle.titles.manual') }}</a>
                         </li>
                         <li role="separator" class="divider"></li>
                         <li>
-                            <a href="{{ route('settings') }}" title="{{ trans('dias.titles.settings') }}">{{ trans('dias.titles.settings') }}</a>
+                            <a href="{{ route('settings') }}" title="{{ trans('biigle.titles.settings') }}">{{ trans('biigle.titles.settings') }}</a>
                         </li>
                         <li>
-                            <a href="{{ url('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();" title="{{ trans('dias.titles.logout') }}">
-                                {{ trans('dias.titles.logout') }}
+                            <a href="{{ url('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();" title="{{ trans('biigle.titles.logout') }}">
+                                {{ trans('biigle.titles.logout') }}
                             </a>
 
                             <form id="logout-form" action="{{ url('logout') }}" method="POST" style="display: none;">

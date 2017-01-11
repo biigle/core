@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Auth;
+namespace Biigle\Tests\Http\Controllers\Auth;
 
 use Session;
 use TestCase;
 use Carbon\Carbon;
-use Dias\Tests\UserTest;
+use Biigle\Tests\UserTest;
 
 class ControllerTest extends TestCase
 {
@@ -111,7 +111,7 @@ class ControllerTest extends TestCase
 
     // public function testRegisterSuccess()
     // {
-    //     $this->assertNull(\Dias\User::find(1));
+    //     $this->assertNull(\Biigle\User::find(1));
 
     //     $this->get('/register');
     //     $this->post('/register', [
@@ -124,14 +124,14 @@ class ControllerTest extends TestCase
     //     ]);
 
     //     $this->assertRedirectedTo('/');
-    //     $user = \Dias\User::find(1);
+    //     $user = \Biigle\User::find(1);
     //     $this->assertEquals('e@ma.il', $user->email);
     // }
 
     // public function testRegisterEmailTaken()
     // {
     //     UserTest::create(['email' => 'test@test.com']);
-    //     $this->assertEquals(1, \Dias\User::all()->count());
+    //     $this->assertEquals(1, \Biigle\User::all()->count());
 
     //     $this->get('/register');
     //     $this->post('/register', [
@@ -144,13 +144,13 @@ class ControllerTest extends TestCase
     //     ]);
 
     //     $this->assertRedirectedTo('/register');
-    //     $this->assertEquals(1, \Dias\User::all()->count());
+    //     $this->assertEquals(1, \Biigle\User::all()->count());
     // }
 
     // public function testRegisterWhenLoggedIn()
     // {
     //     $this->be(UserTest::create());
-    //     $this->assertEquals(1, \Dias\User::all()->count());
+    //     $this->assertEquals(1, \Biigle\User::all()->count());
 
     //     $this->get('/register');
     //     $this->assertRedirectedTo('/');
@@ -165,6 +165,6 @@ class ControllerTest extends TestCase
     //     ]);
 
     //     $this->assertRedirectedTo('/');
-    //     $this->assertEquals(1, \Dias\User::all()->count());
+    //     $this->assertEquals(1, \Biigle\User::all()->count());
     // }
 }

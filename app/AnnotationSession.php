@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias;
+namespace Biigle;
 
 use DB;
 use Carbon\Carbon;
-use Dias\Annotation;
+use Biigle\Annotation;
 use Illuminate\Database\Eloquent\Model;
 
 /**

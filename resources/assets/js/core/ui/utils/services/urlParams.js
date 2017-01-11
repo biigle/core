@@ -1,11 +1,11 @@
 /**
- * @namespace dias.ui.utils
+ * @namespace biigle.ui.utils
  * @ngdoc service
  * @name urlParams
- * @memberOf dias.ui.utils
+ * @memberOf biigle.ui.utils
  * @description Manages URL parameters
  */
-angular.module('dias.ui.utils').service('urlParams', function ($location) {
+angular.module('biigle.ui.utils').service('urlParams', function ($location) {
         "use strict";
 
         this.setSlug = function (s) {

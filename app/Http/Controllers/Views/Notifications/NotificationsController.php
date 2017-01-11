@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Http\Controllers\Views\Notifications;
+namespace Biigle\Http\Controllers\Views\Notifications;
 
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Controller;
+use Biigle\Http\Controllers\Controller;
 
 class NotificationsController extends Controller
 {

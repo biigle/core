@@ -1,7 +1,7 @@
 {
-    "name": "dias/core",
-    "description": "Core of the BIIGLE DIAS web application.",
-    "keywords": ["BIIGLE DIAS", "core"],
+    "name": "biigle/core",
+    "description": "Core of the BIIGLE 2.0 web application.",
+    "keywords": ["BIIGLE 2.0", "core"],
     "license": "proprietary",
     "type": "project",
     "require": {
@@ -30,7 +30,7 @@
             "database"
         ],
         "psr-4": {
-            "Dias\\": "app/"
+            "Biigle\\": "app/"
         },
         "files": [
             "app/Support/helpers.php"
@@ -38,7 +38,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Dias\\Tests\\": "tests/php/"
+            "Biigle\\Tests\\": "tests/php/"
         },
         "classmap": [
             "tests/TestCase.php",

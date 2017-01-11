@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name Image
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource for images. This resource is only for
  * finding out which transect an image belongs to. The image files are
  * directly called from the API.
@@ -22,8 +22,8 @@ var image = Image.get({id: 1}, function () {
 Image.delete({id: 1});
  *
  */
-angular.module('dias.api').factory('Image', function ($resource, URL) {
-	"use strict";
+angular.module('biigle.api').factory('Image', function ($resource, URL) {
+   "use strict";
 
-	return $resource(URL + '/api/v1/images/:id', { id: '@id'});
+   return $resource(URL + '/api/v1/images/:id', { id: '@id'});
 });

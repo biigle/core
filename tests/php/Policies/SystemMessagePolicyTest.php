@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Policies;
+namespace Biigle\Tests\Policies;
 
 use TestCase;
-use Dias\Role;
-use Dias\SystemMessage;
-use Dias\Tests\UserTest;
-use Dias\Tests\SystemMessageTest;
+use Biigle\Role;
+use Biigle\SystemMessage;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\SystemMessageTest;
 
 class SystemMessagePolicyTest extends TestCase
 {

@@ -1,15 +1,15 @@
 <?php
 
-namespace Dias\Observers;
+namespace Biigle\Observers;
 
-use Dias\Role;
+use Biigle\Role;
 
 class UserObserver
 {
     /**
      * A user gets the global role 'editor' by default.
      *
-     * @param \Dias\User $user
+     * @param \Biigle\User $user
      *
      * @return bool
      */

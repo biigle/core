@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Providers;
+namespace Biigle\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -14,7 +14,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $namespace = 'Dias\Http\Controllers';
+    protected $namespace = 'Biigle\Http\Controllers';
 
     /**
      * Define your route model bindings, pattern filters, etc.

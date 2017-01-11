@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Http\Controllers\Views\Admin;
+namespace Biigle\Http\Controllers\Views\Admin;
 
-use Dias\Http\Controllers\Controller;
+use Biigle\Http\Controllers\Controller;
 
 class IndexController extends Controller
 {

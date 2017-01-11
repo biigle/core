@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name LabelTreeAuthorizedProject
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource label tree projects
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -17,7 +17,7 @@ LabelTreeAuthorizedProject.removeAuthorized({id: 1}, {id: 4}, function () {
 });
  *
  */
-angular.module('dias.api').factory('LabelTreeAuthorizedProject', function ($resource, URL) {
+angular.module('biigle.api').factory('LabelTreeAuthorizedProject', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/label-trees/:id/authorized-projects', {}, {

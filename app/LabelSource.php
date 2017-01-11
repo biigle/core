@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias;
+namespace Biigle;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,15 +29,15 @@ class LabelSource extends Model
      * Returns the label source adapter of this label source.
      *
      * If the name is `worms`, the adapter will be
-     * `Dias\Services\LabelSourceAdapters\WormsAdapter`.
+     * `Biigle\Services\LabelSourceAdapters\WormsAdapter`.
      * If the name is `ab_cd`, the adapter will be
-     * `Dias\Services\LabelSourceAdapters\AbCdAdapter`.
+     * `Biigle\Services\LabelSourceAdapters\AbCdAdapter`.
      *
-     * @return \Dias\Contracts\LabelSourceAdapterContract
+     * @return \Biigle\Contracts\LabelSourceAdapterContract
      */
     public function getAdapter()
     {
         $name = studly_case($this->name);
-        return app()->make("Dias\Services\LabelSourceAdapters\\{$name}Adapter");
+        return app()->make("Biigle\Services\LabelSourceAdapters\\{$name}Adapter");
     }
 }

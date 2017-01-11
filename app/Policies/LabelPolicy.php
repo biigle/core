@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Policies;
+namespace Biigle\Policies;
 
 use DB;
-use Dias\User;
-use Dias\Role;
-use Dias\Label;
+use Biigle\User;
+use Biigle\Role;
+use Biigle\Label;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LabelPolicy extends CachedPolicy

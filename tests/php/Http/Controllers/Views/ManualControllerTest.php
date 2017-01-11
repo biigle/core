@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Views;
+namespace Biigle\Tests\Http\Controllers\Views;
 
 use View;
 use TestCase;

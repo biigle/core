@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
 use Event;
 use Response;
-use Dias\Image;
+use Biigle\Image;
 use Carbon\Carbon;
 use ModelTestCase;
 

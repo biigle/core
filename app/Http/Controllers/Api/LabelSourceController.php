@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\LabelSource;
+use Biigle\LabelSource;
 use Illuminate\Http\Request;
 
 class LabelSourceController extends Controller

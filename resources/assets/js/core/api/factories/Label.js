@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name Label
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource for labels.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -15,7 +15,7 @@ var labels = Label.create({label_tree_id: 1, name: "Trash", color: 'bada55'}, fu
 Label.delete({id: 1});
  *
  */
-angular.module('dias.api').factory('Label', function ($resource, URL) {
+angular.module('biigle.api').factory('Label', function ($resource, URL) {
     "use strict";
 
     return $resource(URL + '/api/v1/labels/:id', { id: '@id' },

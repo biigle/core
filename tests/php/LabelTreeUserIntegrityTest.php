@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests;
+namespace Biigle\Tests;
 
 use TestCase;
-use Dias\Role;
+use Biigle\Role;
 
 class LabelTreeUserIntegrityTest extends TestCase
 {

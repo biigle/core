@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\SystemMessage;
-use Dias\SystemMessageType;
+use Biigle\SystemMessage;
+use Biigle\SystemMessageType;
 use Illuminate\Http\Request;
 
 class SystemMessageController extends Controller

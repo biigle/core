@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Jobs;
+namespace Biigle\Jobs;
 
 use DB;
-use Dias\Jobs\Job;
-use Dias\Transect;
+use Biigle\Jobs\Job;
+use Biigle\Transect;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -49,7 +49,7 @@ class GenerateThumbnails extends Job implements ShouldQueue
      */
     public function handle()
     {
-        app()->make('Dias\Contracts\ThumbnailService')
+        app()->make('Biigle\Contracts\ThumbnailService')
             ->generateThumbnails($this->transect, $this->only);
     }
 }

@@ -11,7 +11,7 @@ $iterator = Finder::create()
 	->in(__DIR__.'/app');
 
 $sami = new Sami($iterator, array(
-	'title' => 'BIIGLE DIAS Server Documentation',
+	'title' => 'BIIGLE Server Documentation',
 	'build_dir' => __DIR__.'/public/doc/server/',
 	'cache_dir' => __DIR__.'/tmp/sami/%version%',
 ));

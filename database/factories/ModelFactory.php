@@ -11,13 +11,13 @@
 |
 */
 
-$factory->define(Dias\Role::class, function ($faker) {
+$factory->define(Biigle\Role::class, function ($faker) {
     return [
         'name' => $faker->username(),
     ];
 });
 
-$factory->define(Dias\User::class, function ($faker) {
+$factory->define(Biigle\User::class, function ($faker) {
     return [
         'firstname' => $faker->firstName(),
         'lastname' => $faker->lastName(),
@@ -28,93 +28,93 @@ $factory->define(Dias\User::class, function ($faker) {
     ];
 });
 
-$factory->define(Dias\Project::class, function ($faker) {
+$factory->define(Biigle\Project::class, function ($faker) {
     return [
         'name' => $faker->company(),
         'description' => $faker->sentence(),
         'creator_id' => function () {
-            return factory(Dias\User::class)->create()->id;
+            return factory(Biigle\User::class)->create()->id;
         },
     ];
 });
 
-$factory->define(Dias\MediaType::class, function ($faker) {
+$factory->define(Biigle\MediaType::class, function ($faker) {
     return [
         'name' => $faker->username(),
     ];
 });
 
-$factory->define(Dias\Transect::class, function ($faker) {
+$factory->define(Biigle\Transect::class, function ($faker) {
     return [
         'name' => $faker->company(),
         'media_type_id' => function () {
-            return factory(Dias\MediaType::class)->create()->id;
+            return factory(Biigle\MediaType::class)->create()->id;
         },
         'creator_id' => function () {
-            return factory(Dias\User::class)->create()->id;
+            return factory(Biigle\User::class)->create()->id;
         },
         'url' => base_path('tests/files'),
     ];
 });
 
-$factory->define(Dias\Image::class, function ($faker) {
+$factory->define(Biigle\Image::class, function ($faker) {
     return [
         'filename' => 'test-image.jpg',
         'uuid' => $faker->uuid(),
         'transect_id' => function () {
-            return factory(Dias\Transect::class)->create()->id;
+            return factory(Biigle\Transect::class)->create()->id;
         },
     ];
 });
 
-$factory->define(Dias\Label::class, function ($faker) {
+$factory->define(Biigle\Label::class, function ($faker) {
     return [
         'name' => $faker->username(),
         'color' => '0099ff',
         'parent_id' => null,
         'label_tree_id' => function () {
-            return factory(Dias\LabelTree::class)->create()->id;
+            return factory(Biigle\LabelTree::class)->create()->id;
         },
     ];
 });
 
-$factory->define(Dias\Shape::class, function ($faker) {
+$factory->define(Biigle\Shape::class, function ($faker) {
     return [
         'name' => $faker->username(),
     ];
 });
 
-$factory->define(Dias\Annotation::class, function ($faker) {
+$factory->define(Biigle\Annotation::class, function ($faker) {
     return [
         'image_id' => function () {
-            return factory(Dias\Image::class)->create()->id;
+            return factory(Biigle\Image::class)->create()->id;
         },
         'shape_id' => function () {
-            return factory(Dias\Shape::class)->create()->id;
+            return factory(Biigle\Shape::class)->create()->id;
         },
         'points' => [0, 0],
     ];
 });
 
-$factory->define(Dias\AnnotationLabel::class, function ($faker) {
+$factory->define(Biigle\AnnotationLabel::class, function ($faker) {
     return [
         'annotation_id' => function () {
-            return factory(Dias\Annotation::class)->create()->id;
+            return factory(Biigle\Annotation::class)->create()->id;
         },
         'label_id' => function () {
-            return factory(Dias\Label::class)->create()->id;
+            return factory(Biigle\Label::class)->create()->id;
         },
         'user_id' => function () {
-            return factory(Dias\User::class)->create()->id;
+            return factory(Biigle\User::class)->create()->id;
         },
         'confidence' => $faker->randomFloat(null, 0, 1),
     ];
 });
 
-$factory->define(Dias\ApiToken::class, function ($faker) {
+$factory->define(Biigle\ApiToken::class, function ($faker) {
     return [
         'owner_id' => function () {
-            return factory(Dias\User::class)->create()->id;
+            return factory(Biigle\User::class)->create()->id;
         },
         'purpose' => $faker->sentence(),
         // 'password'
@@ -122,47 +122,47 @@ $factory->define(Dias\ApiToken::class, function ($faker) {
     ];
 });
 
-$factory->define(Dias\Visibility::class, function ($faker) {
+$factory->define(Biigle\Visibility::class, function ($faker) {
     return [
         'name' => $faker->username(),
     ];
 });
 
-$factory->define(Dias\LabelTree::class, function ($faker) {
+$factory->define(Biigle\LabelTree::class, function ($faker) {
     return [
         'name' => $faker->username(),
         'description' => $faker->sentence(),
-        'visibility_id' => Dias\Visibility::$public->id,
+        'visibility_id' => Biigle\Visibility::$public->id,
     ];
 });
 
-$factory->define(Dias\ImageLabel::class, function ($faker) {
+$factory->define(Biigle\ImageLabel::class, function ($faker) {
     return [
         'image_id' => function () {
-            return factory(Dias\Image::class)->create()->id;
+            return factory(Biigle\Image::class)->create()->id;
         },
         'label_id' => function () {
-            return factory(Dias\Label::class)->create()->id;
+            return factory(Biigle\Label::class)->create()->id;
         },
         'user_id' => function () {
-            return factory(Dias\User::class)->create()->id;
+            return factory(Biigle\User::class)->create()->id;
         },
     ];
 });
 
-$factory->define(Dias\LabelSource::class, function ($faker) {
+$factory->define(Biigle\LabelSource::class, function ($faker) {
     return [
         'name' => $faker->username(),
         'description' => $faker->sentence(),
     ];
 });
 
-$factory->define(Dias\AnnotationSession::class, function ($faker) {
+$factory->define(Biigle\AnnotationSession::class, function ($faker) {
     return [
         'name' => $faker->username(),
         'description' => $faker->sentence(),
         'transect_id' => function () {
-            return factory(Dias\Transect::class)->create()->id;
+            return factory(Biigle\Transect::class)->create()->id;
         },
         'starts_at' => '2016-09-04',
         'ends_at' => '2016-09-06',
@@ -171,20 +171,20 @@ $factory->define(Dias\AnnotationSession::class, function ($faker) {
     ];
 });
 
-$factory->define(Dias\SystemMessageType::class, function ($faker) {
+$factory->define(Biigle\SystemMessageType::class, function ($faker) {
     return [
         'name' => $faker->username(),
     ];
 });
 
-$factory->define(Dias\SystemMessage::class, function ($faker) {
+$factory->define(Biigle\SystemMessage::class, function ($faker) {
     return [
         'body' => $faker->text(),
         'title' => $faker->sentence(),
         'type_id' => $faker->randomElement([
-            Dias\SystemMessageType::$important->id,
-            Dias\SystemMessageType::$update->id,
-            Dias\SystemMessageType::$info->id,
+            Biigle\SystemMessageType::$important->id,
+            Biigle\SystemMessageType::$update->id,
+            Biigle\SystemMessageType::$info->id,
         ])
     ];
 });

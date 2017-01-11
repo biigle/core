@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Http\Controllers\Views;
+namespace Biigle\Http\Controllers\Views;
 
 use View;
 
@@ -21,7 +21,7 @@ class ManualController extends Controller
      * Show a tutorials article.
      *
      * @param string $module Name of the module or name of the article
-     * @param string $articla Article name (only if the article belongs to a module)
+     * @param string $article Article name (only if the article belongs to a module)
      * @return \Illuminate\Http\Response
      */
     public function tutorialsArticle($module, $article = null)
@@ -55,7 +55,7 @@ class ManualController extends Controller
      * Show a documentation article.
      *
      * @param string $module Name of the module or name of the article
-     * @param string $articla Article name (only if the article belongs to a module)
+     * @param string $article Article name (only if the article belongs to a module)
      * @return \Illuminate\Http\Response
      */
     public function documentationArticle($module, $article = null)

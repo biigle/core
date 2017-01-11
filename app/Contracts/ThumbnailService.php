@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Contracts;
+namespace Biigle\Contracts;
 
-use Dias\Transect;
+use Biigle\Transect;
 
 /**
  * A service that generates thumbnail images for newly created transects.

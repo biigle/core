@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\ApiToken;
+use Biigle\ApiToken;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 

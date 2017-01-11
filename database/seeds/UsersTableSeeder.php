@@ -1,7 +1,7 @@
 <?php
 
+use Biigle\User;
 use Illuminate\Database\Seeder;
-use Dias\User;
 
 class UserTableSeeder extends Seeder
 {
@@ -14,7 +14,7 @@ class UserTableSeeder extends Seeder
             'email'     => 'jane@user.com',
             'password'  => Hash::make('janespassword'),
         ]);
-        $jane->role()->associate(Dias\Role::$admin);
+        $jane->role()->associate(Biigle\Role::$admin);
         $jane->save();
     }
 }

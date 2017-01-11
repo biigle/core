@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Http\Middleware;
+namespace Biigle\Tests\Http\Middleware;
 
 use TestCase;
-use Dias\User;
+use Biigle\User;
 use Carbon\Carbon;
-use Dias\Tests\UserTest;
-use Dias\Tests\ApiTokenTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\ApiTokenTest;
 
 class MiddlewareAuthenticateAPITest extends TestCase
 {

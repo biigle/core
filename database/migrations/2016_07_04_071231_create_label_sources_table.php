@@ -1,8 +1,8 @@
 <?php
 
+use Biigle\Label;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Dias\Label;
 
 class CreateLabelSourcesTable extends Migration
 {
@@ -15,7 +15,7 @@ class CreateLabelSourcesTable extends Migration
     {
         /*
         | A label source might be an external database like WoRMS (http://www.marinespecies.org).
-        | Dias labels may be imported from these external sources and use this table to
+        | Labels may be imported from these external sources and use this table to
         | retain a clear reference back to their source.
         */
         Schema::create('label_sources', function (Blueprint $table) {

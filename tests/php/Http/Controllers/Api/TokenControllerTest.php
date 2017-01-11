@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Dias\ApiToken;
-use Dias\Tests\ApiTokenTest;
+use Biigle\ApiToken;
+use Biigle\Tests\ApiTokenTest;
 
 class ApiTokenControllerTest extends ApiTestCase
 {

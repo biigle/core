@@ -1,13 +1,13 @@
 <?php
-namespace Dias\Tests\Policies;
+namespace Biigle\Tests\Policies;
 
 use TestCase;
-use Dias\Role;
-use Dias\Tests\UserTest;
-use Dias\Tests\LabelTest;
-use Dias\Tests\ProjectTest;
-use Dias\Tests\AnnotationTest;
-use Dias\Tests\AnnotationLabelTest;
+use Biigle\Role;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\AnnotationLabelTest;
 
 class AnnotationLabelPolicyTest extends TestCase
 {

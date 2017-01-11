@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Views\SystemMessages;
+namespace Biigle\Tests\Http\Controllers\Views\SystemMessages;
 
 use TestCase;
-use Dias\Tests\UserTest;
-use Dias\Tests\SystemMessageTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\SystemMessageTest;
 
 class SystemMessageControllerTest extends TestCase
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Jobs;
+namespace Biigle\Jobs;
 
 use File;
 use Exception;
 use Carbon\Carbon;
-use Dias\Jobs\Job;
-use Dias\Transect;
+use Biigle\Jobs\Job;
+use Biigle\Transect;
 use ErrorException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -35,6 +35,7 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
      * Create a new job instance.
      *
      * @param Transect $transect The transect for which the image meta info should be collected.
+     * @param array $only Array of image IDs to restrict the job to
      *
      * @return void
      */

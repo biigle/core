@@ -1,14 +1,14 @@
 @extends('app')
 
-@section('title'){{ trans('dias.titles.register') }}@stop
+@section('title'){{ trans('biigle.titles.register') }}@stop
 
 @section('content')
 <div class="container">
     <div class="row center-form">
         <div class="col-md-4 col-sm-6">
-            <h1 class="logo  logo--standalone"><a href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span><sup class="logo__dias">DIAS</sup></a></h1>
+            <h1 class="logo  logo--standalone"><a href="{{ route('home') }}" class="logo__biigle">BIIGLE</a></h1>
             <form class="well clearfix" role="form" method="POST" action="{{ url('register') }}">
-                <p class="lead text-center">{{ trans('dias.new_acc') }}</p>
+                <p class="lead text-center">{{ trans('biigle.new_acc') }}</p>
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                     <div class="input-group">
                         <div class="input-group-addon">
@@ -73,7 +73,7 @@
                 <input type="submit" class="btn btn-success btn-block" value="{{ trans('form.register') }}">
             </form>
             <p class="clearfix">
-                <a href="{{ route('home') }}" class="">{{ trans('dias.back') }}</a>
+                <a href="{{ route('home') }}" class="">{{ trans('biigle.back') }}</a>
             </p>
         </div>
     </div>

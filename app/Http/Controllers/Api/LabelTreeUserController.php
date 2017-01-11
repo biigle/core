@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\User;
-use Dias\Role;
-use Dias\LabelTree;
+use Biigle\User;
+use Biigle\Role;
+use Biigle\LabelTree;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Auth\Access\AuthorizationException;

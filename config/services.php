@@ -30,7 +30,7 @@ return [
     ],
 
     'stripe' => [
-        'model' => Dias\User::class,
+        'model' => Biigle\User::class,
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],

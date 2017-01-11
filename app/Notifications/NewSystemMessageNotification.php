@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Notifications;
+namespace Biigle\Notifications;
 
-use Dias\SystemMessage;
-use Dias\SystemMessageType;
+use Biigle\SystemMessage;
+use Biigle\SystemMessageType;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
 use Illuminate\Contracts\Auth\Guard;
 
@@ -40,6 +40,7 @@ class NotificationController extends Controller
      * @apiParamExample {String} Request example:
      * id: "0972569c-2d3e-444d-8e7d-2054e7ab20e9"
      *
+     * @param Guard $auth
      * @param int  $id
      * @return \Illuminate\Http\Response
      */

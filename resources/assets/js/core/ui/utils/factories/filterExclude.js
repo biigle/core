@@ -1,11 +1,11 @@
 /**
- * @namespace dias.ui.utils
+ * @namespace biigle.ui.utils
  * @ngdoc factory
  * @name filterExclude
- * @memberOf dias.ui.utils
+ * @memberOf biigle.ui.utils
  * @description Provides a function that removes all numbers of the first argument array (in place!) that are not present in the second argument array. Accepts a third argument boolean as to whether the second argument array is already sorted.
  */
-angular.module('dias.ui.utils').factory('filterExclude', function () {
+angular.module('biigle.ui.utils').factory('filterExclude', function () {
         "use strict";
         // comparison function for array.sort() with numbers
         var compareNumbers = function (a, b) {

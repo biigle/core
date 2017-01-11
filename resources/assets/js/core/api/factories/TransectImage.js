@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name TransectImage
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource for images of transects.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -17,10 +17,10 @@ var images = TransectImage.save({transect_id: 1}, {'images': '1.jpg, 2.jpg'}, fu
 });
  *
  */
-angular.module('dias.api').factory('TransectImage', function ($resource, URL) {
-	"use strict";
+angular.module('biigle.api').factory('TransectImage', function ($resource, URL) {
+   "use strict";
 
-	return $resource(URL + '/api/v1/transects/:transect_id/images', {}, {
+   return $resource(URL + '/api/v1/transects/:transect_id/images', {}, {
         save: { method: 'POST', isArray: true }
     });
 });

@@ -1,8 +1,8 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
-use Dias\Http\Controllers\Controller as BaseController;
+use Biigle\Http\Controllers\Controller as BaseController;
 
 abstract class Controller extends BaseController
 {

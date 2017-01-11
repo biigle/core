@@ -1,7 +1,7 @@
 describe('The LabelSource resource factory', function () {
     var $httpBackend;
 
-    beforeEach(module('dias.api'));
+    beforeEach(module('biigle.api'));
 
     // mock URL constant which is set inline in the base template
     beforeEach(function() {

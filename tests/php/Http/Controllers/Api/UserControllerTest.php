@@ -1,15 +1,15 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use Auth;
 use Hash;
 use Session;
-use Dias\User;
-use Dias\Role;
+use Biigle\User;
+use Biigle\Role;
 use ApiTestCase;
-use Dias\Tests\UserTest;
-use Dias\Tests\ApiTokenTest;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\ApiTokenTest;
 
 class UserControllerTest extends ApiTestCase
 {

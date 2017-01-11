@@ -1,13 +1,13 @@
 <?php
 
-namespace Dias\Tests\Policies;
+namespace Biigle\Tests\Policies;
 
 use TestCase;
-use Dias\Role;
-use Dias\Tests\UserTest;
-use Dias\Tests\ImageTest;
-use Dias\Tests\LabelTest;
-use Dias\Tests\ProjectTest;
+use Biigle\Role;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\ProjectTest;
 
 class ImagePolicyTest extends TestCase
 {

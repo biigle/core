@@ -67,7 +67,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => Dias\User::class,
+            'model' => Biigle\User::class,
         ],
 
         // 'users' => [

@@ -1,11 +1,11 @@
 /**
- * @namespace dias.ui.utils
+ * @namespace biigle.ui.utils
  * @ngdoc service
  * @name keyboard
- * @memberOf dias.ui.utils
+ * @memberOf biigle.ui.utils
  * @description Service to register and manage keypress events with priorities
  */
-angular.module('dias.ui.utils').service('keyboard', function ($document) {
+angular.module('biigle.ui.utils').service('keyboard', function ($document) {
         "use strict";
 
         // maps key codes/characters to arrays of listeners

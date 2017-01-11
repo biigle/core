@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use App;
 use Mockery;
 use ApiTestCase;
-use Dias\Tests\LabelSourceTest;
+use Biigle\Tests\LabelSourceTest;
 
 class LabelSourceControllerTest extends ApiTestCase
 {
@@ -19,7 +19,7 @@ class LabelSourceControllerTest extends ApiTestCase
             ->with('my query')
             ->andReturn([['name' => 'My Query Label']]);
 
-        App::singleton('Dias\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
+        App::singleton('Biigle\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {
             return $mock;
         });
 

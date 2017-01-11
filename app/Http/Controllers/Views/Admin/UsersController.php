@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Http\Controllers\Views\Admin;
+namespace Biigle\Http\Controllers\Views\Admin;
 
-use Dias\User;
-use Dias\Role;
-use Dias\Http\Controllers\Controller;
+use Biigle\User;
+use Biigle\Role;
+use Biigle\Http\Controllers\Controller;
 
 class UsersController extends Controller
 {

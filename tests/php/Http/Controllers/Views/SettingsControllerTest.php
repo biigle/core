@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Views;
+namespace Biigle\Tests\Http\Controllers\Views;
 
 use TestCase;
-use Dias\Tests\UserTest;
+use Biigle\Tests\UserTest;
 
 class SettingsControllerTest extends TestCase
 {

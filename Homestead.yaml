@@ -2,19 +2,19 @@
 ip: "192.168.10.10"
 memory: 512
 cpus: 1
-hostname: dias
-name: dias
+hostname: biigle
+name: biigle
 provider: virtualbox
 
 folders:
     - map: "."
-      to: "/home/vagrant/dias"
+      to: "/home/vagrant/biigle"
 
 sites:
     - map: homestead.app
-      to: "/home/vagrant/dias/public"
+      to: "/home/vagrant/biigle/public"
       # Run the sheduler of the application.
-      # Scheduled commands are defined in Dias\Console\Kernel
+      # Scheduled commands are defined in Biigle\Console\Kernel
       schedule: "true"
 
 variables:

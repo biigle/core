@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name ProjectTransect
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource for transects belonging to a project.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -47,7 +47,7 @@ var transect = Transect.get({id: 1}, function () {
 });
  *
  */
-angular.module('dias.api').factory('ProjectTransect', function ($resource, URL) {
+angular.module('biigle.api').factory('ProjectTransect', function ($resource, URL) {
 	"use strict";
 
 	return $resource(URL + '/api/v1/projects/:project_id/transects/:id',

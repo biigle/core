@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Http\Controllers\Views;
+namespace Biigle\Http\Controllers\Views;
 
-use Dias\ImageLabel;
-use Dias\AnnotationLabel;
+use Biigle\ImageLabel;
+use Biigle\AnnotationLabel;
 use Illuminate\Contracts\Auth\Guard;
 
 class DashboardController extends Controller

@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Http\Controllers\Api;
+namespace Biigle\Http\Controllers\Api;
 
 use DB;
 use Carbon\Carbon;
-use Dias\Transect;
-use Dias\AnnotationSession;
+use Biigle\Transect;
+use Biigle\AnnotationSession;
 use Illuminate\Http\Request;
 
 class AnnotationSessionController extends Controller
@@ -23,8 +23,8 @@ class AnnotationSessionController extends Controller
      * @apiParam (Optional attributes) {Boolean} force If there are annotations that would no longer belong to the annotation session any more because of the changes, the changes will be rejected unless this attribute is `true`.
      * @apiParam (Attributes that can be updated) {String} name Name of the annotation session.
      * @apiParam (Attributes that can be updated) {String} Short description of the annotation session.
-     * @apiParam (Attributes that can be updated) {Date} starts_at Day when the annotation session should start. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. This endpoint returns a special `starts_at_iso8601` attribute which is parseable independently from the timezone of the Dias instance.
-     * @apiParam (Attributes that can be updated) {Date} ends_at Day when the annotation session should end. The session ends once this day has started. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Dias instance is used. This endpoint returns a special `ends_at_iso8601` attribute which is parseable independently from the timezone of the Dias instance.
+     * @apiParam (Attributes that can be updated) {Date} starts_at Day when the annotation session should start. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Biigle instance is used. This endpoint returns a special `starts_at_iso8601` attribute which is parseable independently from the timezone of the Biigle instance.
+     * @apiParam (Attributes that can be updated) {Date} ends_at Day when the annotation session should end. The session ends once this day has started. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Biigle instance is used. This endpoint returns a special `ends_at_iso8601` attribute which is parseable independently from the timezone of the Biigle instance.
      * @apiParam (Attributes that can be updated) {Boolean} hide_other_users_annotations Whether to hide annotations of other users while the annotation session is active.
      * @apiParam (Attributes that can be updated) {Boolean} hide_own_annotations Whether to hide annotations of the own user that were created before the annotation session started while the annotation session is active.
      * @apiParam (Attributes that can be updated) {Number[]} users Array of user IDs of all users participating in the new annotation session. All other users won't be affected by the annotation session. This will completely replace the users previously associated with the annotation session.

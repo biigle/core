@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Tests\Jobs;
+namespace Biigle\Tests\Jobs;
 
 use TestCase;
-use Dias\Tests\ImageTest;
-use Dias\Tests\TransectTest;
-use Dias\Jobs\CollectImageMetaInfo;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\TransectTest;
+use Biigle\Jobs\CollectImageMetaInfo;
 
 class CollectImageMetaInfoTest extends TestCase
 {

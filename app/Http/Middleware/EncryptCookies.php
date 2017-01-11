@@ -1,6 +1,6 @@
 <?php
 
-namespace Dias\Http\Middleware;
+namespace Biigle\Http\Middleware;
 
 use Illuminate\Cookie\Middleware\EncryptCookies as BaseEncrypter;
 

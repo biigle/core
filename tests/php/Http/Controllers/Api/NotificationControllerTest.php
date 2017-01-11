@@ -1,10 +1,10 @@
 <?php
 
-namespace Dias\Tests\Http\Controllers\Api;
+namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Dias\Tests\UserTest;
-use Dias\Notifications\InAppNotification;
+use Biigle\Tests\UserTest;
+use Biigle\Notifications\InAppNotification;
 
 class NotificationControllerTest extends ApiTestCase
 {

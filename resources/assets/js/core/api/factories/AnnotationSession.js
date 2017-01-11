@@ -1,7 +1,7 @@
 /**
  * @ngdoc factory
  * @name AnnotationSession
- * @memberOf dias.api
+ * @memberOf biigle.api
  * @description Provides the resource for annotation sessions.
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
@@ -41,23 +41,23 @@ var sessions = AnnotationSession.query({transect_id: 123}, function () {
 AnnotationSession.delete({id: 12});
  *
  */
-angular.module('dias.api').factory('AnnotationSession', function ($resource, URL) {
-	"use strict";
+angular.module('biigle.api').factory('AnnotationSession', function ($resource, URL) {
+   "use strict";
 
-	return $resource(URL + '/api/v1/annotation-sessions/:id',
-		{ id: '@id'	},
-		{
-			save: {
-				method: 'PUT'
-			},
-			query: {
-				method: 'GET',
+   return $resource(URL + '/api/v1/annotation-sessions/:id',
+      { id: '@id' },
+      {
+         save: {
+            method: 'PUT'
+         },
+         query: {
+            method: 'GET',
                 url: URL + '/api/v1/transects/:transect_id/annotation-sessions',
-				isArray: true
-			},
-			create: {
-				method: 'POST',
-				url: URL + '/api/v1/transects/:transect_id/annotation-sessions',
-			}
-		});
+            isArray: true
+         },
+         create: {
+            method: 'POST',
+            url: URL + '/api/v1/transects/:transect_id/annotation-sessions',
+         }
+      });
 });
