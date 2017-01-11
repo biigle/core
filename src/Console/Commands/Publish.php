@@ -1,9 +1,9 @@
 <?php
 
-namespace Dias\Modules\LabelTrees\Console\Commands;
+namespace Biigle\Modules\LabelTrees\Console\Commands;
 
 use Illuminate\Console\Command;
-use Dias\Modules\LabelTrees\LabelTreesServiceProvider as ServiceProvider;
+use Biigle\Modules\LabelTrees\LabelTreesServiceProvider as ServiceProvider;
 
 class Publish extends Command {
 

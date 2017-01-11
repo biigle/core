@@ -1,15 +1,15 @@
 <?php
 
-namespace Dias\Modules\LabelTrees\Http\Controllers;
+namespace Biigle\Modules\LabelTrees\Http\Controllers;
 
-use Dias\Role;
-use Dias\Project;
-use Dias\LabelTree;
-use Dias\Visibility;
-use Dias\LabelSource;
+use Biigle\Role;
+use Biigle\Project;
+use Biigle\LabelTree;
+use Biigle\Visibility;
+use Biigle\LabelSource;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
-use Dias\Http\Controllers\Views\Controller;
+use Biigle\Http\Controllers\Views\Controller;
 
 class LabelTreesController extends Controller
 {

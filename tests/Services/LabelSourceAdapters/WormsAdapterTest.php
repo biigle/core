@@ -1,22 +1,22 @@
 <?php
 
-namespace Dias\Tests\Modules\LabelTrees\Services\LabelSourceAdapters;
+namespace Biigle\Tests\Modules\LabelTrees\Services\LabelSourceAdapters;
 
 use App;
 use Mockery;
 use TestCase;
 use SoapClient;
-use Dias\Tests\LabelTest;
+use Biigle\Tests\LabelTest;
 use Illuminate\Http\Request;
-use Dias\Tests\LabelTreeTest;
+use Biigle\Tests\LabelTreeTest;
 use Illuminate\Validation\ValidationException;
-use Dias\Modules\LabelTrees\Services\LabelSourceAdapters\WormsAdapter;
+use Biigle\Modules\LabelTrees\Services\LabelSourceAdapters\WormsAdapter;
 
 class WormsAdapterTest extends TestCase
 {
     public function testRegister()
     {
-        $this->assertInstanceOf(WormsAdapter::class, App::make("Dias\Services\LabelSourceAdapters\WormsAdapter"));
+        $this->assertInstanceOf(WormsAdapter::class, App::make("Biigle\Services\LabelSourceAdapters\WormsAdapter"));
     }
 
     public function testFind()

@@ -1,11 +1,11 @@
 /**
- * @namespace dias.label-trees
+ * @namespace biigle.label-trees
  * @ngdoc controller
  * @name ManualLabelsController
- * @memberOf dias.label-trees
+ * @memberOf biigle.label-trees
  * @description Controller for manually adding labels to the label tree
  */
-angular.module('dias.label-trees').controller('ManualLabelsController', function ($scope, randomColor) {
+angular.module('biigle.label-trees').controller('ManualLabelsController', function ($scope, randomColor) {
         "use strict";
 
         var DEFAULTS = {

@@ -1,12 +1,12 @@
 <?php
 
-namespace Dias\Tests\Modules\LabelTrees\Http\Controllers;
+namespace Biigle\Tests\Modules\LabelTrees\Http\Controllers;
 
 use TestCase;
-use Dias\Role;
-use Dias\Visibility;
-use Dias\Tests\UserTest;
-use Dias\Tests\LabelTreeTest;
+use Biigle\Role;
+use Biigle\Visibility;
+use Biigle\Tests\UserTest;
+use Biigle\Tests\LabelTreeTest;
 
 class LabelTreeControllerTest extends TestCase
 {

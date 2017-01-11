@@ -32,7 +32,7 @@
             @forelse($trees as $tree)
                 <a class="list-group-item @if($newTree && $tree->id === $newTree->id) list-group-item-success @endif" href="{{route('label-trees', $tree->id)}}" title="Show the label tree {{$tree->name}}">
                     <h4 class="list-group-item-heading">
-                        @if ($tree->visibility_id === Dias\Visibility::$private->id)
+                        @if ($tree->visibility_id === Biigle\Visibility::$private->id)
                             <small class="text-muted glyphicon glyphicon-lock" aria-hidden="true" title="This label tree is private"></small>
                         @endif
                         {{$tree->name}}

@@ -1,11 +1,11 @@
 /**
- * @namespace dias.label-trees
+ * @namespace biigle.label-trees
  * @ngdoc controller
  * @name MembersController
- * @memberOf dias.label-trees
+ * @memberOf biigle.label-trees
  * @description Controller for the the members of a label tree
  */
-angular.module('dias.label-trees').controller('MembersController', function ($scope, LABEL_TREE, MEMBERS, ROLES, DEFAULT_ROLE_ID, USER_ID, LabelTreeUser, msg, User) {
+angular.module('biigle.label-trees').controller('MembersController', function ($scope, LABEL_TREE, MEMBERS, ROLES, DEFAULT_ROLE_ID, USER_ID, LabelTreeUser, msg, User) {
         "use strict";
 
         var editing = false;

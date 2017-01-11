@@ -1,17 +1,17 @@
 <?php
 
-namespace Dias\Modules\LabelTrees;
+namespace Biigle\Modules\LabelTrees;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\Router;
-use Dias\Services\Modules;
+use Biigle\Services\Modules;
 
 class LabelTreesServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application events.
      *
-     * @param  \Dias\Services\Modules  $modules
+     * @param  \Biigle\Services\Modules  $modules
      * @param  \Illuminate\Routing\Router  $router
      *
      * @return void
@@ -25,7 +25,7 @@ class LabelTreesServiceProvider extends ServiceProvider
         ], 'public');
 
         $router->group([
-            'namespace' => 'Dias\Modules\LabelTrees\Http\Controllers',
+            'namespace' => 'Biigle\Modules\LabelTrees\Http\Controllers',
             'middleware' => 'web',
         ], function ($router) {
             require __DIR__.'/Http/routes.php';
@@ -47,12 +47,12 @@ class LabelTreesServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/config/label-trees.php', 'label-trees');
 
         $this->app->singleton('command.label-trees.publish', function ($app) {
-            return new \Dias\Modules\LabelTrees\Console\Commands\Publish();
+            return new \Biigle\Modules\LabelTrees\Console\Commands\Publish();
         });
         $this->commands('command.label-trees.publish');
 
-        $this->app->singleton("Dias\Services\LabelSourceAdapters\WormsAdapter", function ($app) {
-            return new \Dias\Modules\LabelTrees\Services\LabelSourceAdapters\WormsAdapter();
+        $this->app->singleton("Biigle\Services\LabelSourceAdapters\WormsAdapter", function ($app) {
+            return new \Biigle\Modules\LabelTrees\Services\LabelSourceAdapters\WormsAdapter();
         });
     }
 

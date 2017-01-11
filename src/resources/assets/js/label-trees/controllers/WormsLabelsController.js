@@ -1,11 +1,11 @@
 /**
- * @namespace dias.label-trees
+ * @namespace biigle.label-trees
  * @ngdoc controller
  * @name WormsLabelsController
- * @memberOf dias.label-trees
+ * @memberOf biigle.label-trees
  * @description Controller for importing labels from WoRMS
  */
-angular.module('dias.label-trees').controller('WormsLabelsController', function ($scope, LabelSource, LABEL_SOURCES, msg, randomColor) {
+angular.module('biigle.label-trees').controller('WormsLabelsController', function ($scope, LabelSource, LABEL_SOURCES, msg, randomColor) {
         "use strict";
 
         // WoRMS label source

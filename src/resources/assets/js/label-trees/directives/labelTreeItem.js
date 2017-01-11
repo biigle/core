@@ -1,11 +1,11 @@
 /**
- * @namespace dias.label-trees
+ * @namespace biigle.label-trees
  * @ngdoc directive
  * @name labelTreeItem
- * @memberOf dias.label-trees
+ * @memberOf biigle.label-trees
  * @description A label tree item.
  */
-angular.module('dias.label-trees').directive('labelTreeItem', function ($compile, $timeout, $templateCache) {
+angular.module('biigle.label-trees').directive('labelTreeItem', function ($compile, $timeout, $templateCache) {
         "use strict";
 
         return {

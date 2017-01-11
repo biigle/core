@@ -1,14 +1,14 @@
 /**
- * @namespace dias.label-trees
- * @description The DIAS label trees module.
+ * @namespace biigle.label-trees
+ * @description The BIIGLE label trees module.
  */
-angular.module('dias.label-trees', ['dias.api', 'dias.ui']);
+angular.module('biigle.label-trees', ['biigle.api', 'biigle.ui']);
 
 /*
  * Disable debug info in production for better performance.
  * see: https://code.angularjs.org/1.4.7/docs/guide/production
  */
-angular.module('dias.label-trees').config(function ($compileProvider) {
+angular.module('biigle.label-trees').config(function ($compileProvider) {
     "use strict";
 
     $compileProvider.debugInfoEnabled(false);

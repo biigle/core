@@ -1,11 +1,11 @@
 <?php
 
-namespace Dias\Modules\LabelTrees\Services\LabelSourceAdapters;
+namespace Biigle\Modules\LabelTrees\Services\LabelSourceAdapters;
 
 use SoapClient;
-use Dias\Label;
+use Biigle\Label;
 use Illuminate\Http\Request;
-use Dias\Contracts\LabelSourceAdapterContract;
+use Biigle\Contracts\LabelSourceAdapterContract;
 use Illuminate\Validation\ValidationException;
 
 /**

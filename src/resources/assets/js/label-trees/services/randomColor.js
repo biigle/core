@@ -1,11 +1,11 @@
 /**
- * @namespace dias.ate
+ * @namespace biigle.ate
  * @ngdoc service
  * @name rancomColor
- * @memberOf dias.label-trees
+ * @memberOf biigle.label-trees
  * @description Provides a machanism for random colors
  */
-angular.module('dias.label-trees').service('randomColor', function () {
+angular.module('biigle.label-trees').service('randomColor', function () {
         "use strict";
 
         // HSV values

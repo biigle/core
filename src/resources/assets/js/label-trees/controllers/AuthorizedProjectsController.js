@@ -1,11 +1,11 @@
 /**
- * @namespace dias.label-trees
+ * @namespace biigle.label-trees
  * @ngdoc controller
  * @name AuthorizedProjectsController
- * @memberOf dias.label-trees
+ * @memberOf biigle.label-trees
  * @description Controller for the the autorized projects of a label tree
  */
-angular.module('dias.label-trees').controller('AuthorizedProjectsController', function ($scope, LABEL_TREE, AUTH_PROJECTS, AUTH_OWN_PROJECTS, Project, LabelTreeAuthorizedProject) {
+angular.module('biigle.label-trees').controller('AuthorizedProjectsController', function ($scope, LABEL_TREE, AUTH_PROJECTS, AUTH_OWN_PROJECTS, Project, LabelTreeAuthorizedProject) {
         "use strict";
 
         var editing = false;

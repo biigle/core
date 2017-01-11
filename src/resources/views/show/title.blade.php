@@ -11,7 +11,7 @@
             <span class="pull-right" data-ng-switch-default="">
                 <button class="btn btn-default" data-ng-click="toggleEditing()">Edit</button>
                 <button class="btn btn-default" data-ng-click="deleteTree()">Delete</button>
-                <button class="btn btn-default" data-ng-click="leaveTree(getVisibilityId() === {{\Dias\Visibility::$private->id}})">Leave</button>
+                <button class="btn btn-default" data-ng-click="leaveTree(getVisibilityId() === {{\Biigle\Visibility::$private->id}})">Leave</button>
             </span>
             <form class="ng-cloak form-inline label-tree-info-form" data-ng-switch-when="true" data-ng-submit="saveChanges()">
                 <div class="form-group">
@@ -27,7 +27,7 @@
                 </div>
             </form>
             <h2 data-ng-switch-default="">
-                <small class="text-muted glyphicon glyphicon-lock @if(!$private) ng-hide @endif" aria-hidden="true" title="This label tree is private" data-ng-show="getVisibilityId() === {{\Dias\Visibility::$private->id}}"></small>
+                <small class="text-muted glyphicon glyphicon-lock @if(!$private) ng-hide @endif" aria-hidden="true" title="This label tree is private" data-ng-show="getVisibilityId() === {{\Biigle\Visibility::$private->id}}"></small>
                 <span data-ng-bind="getName()">{{$tree->name}}</span>
                 <span class="@if(!$tree->description) hidden @endif" data-ng-if="getDescription()">
                     <br><small data-ng-bind="getDescription()">{{$tree->description}}</small>
@@ -38,7 +38,7 @@
         <h2>
             @can('create-label', $tree)
                 <span class="pull-right">
-                    <button class="btn btn-default" data-ng-click="leaveTree(getVisibilityId() === {{\Dias\Visibility::$private->id}})">Leave</button>
+                    <button class="btn btn-default" data-ng-click="leaveTree(getVisibilityId() === {{\Biigle\Visibility::$private->id}})">Leave</button>
                 </span>
             @endcan
             @if($private)
