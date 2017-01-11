@@ -7,6 +7,7 @@ use Exception;
 use Carbon\Carbon;
 use Dias\Jobs\Job;
 use Dias\Transect;
+use ErrorException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -66,7 +67,12 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
             $file = $this->transect->url.'/'.$image->filename;
             if (!File::exists($file)) continue;
 
-            $exif = exif_read_data($file);
+            try {
+                $exif = exif_read_data($file);
+            } catch (ErrorException $e) {
+                $exif = false;
+            }
+
             if ($exif === false) continue;
 
             if ($this->hasTakenAtInfo($exif)) {
