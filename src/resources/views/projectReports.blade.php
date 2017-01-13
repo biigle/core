@@ -10,11 +10,11 @@
 @endpush
 
 @push('styles')
-    <link href="{{ cachebust_asset('vendor/transects/styles/main.css') }}" rel="stylesheet">
+    <link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
 @endpush
 
 @section('navbar')
-<div class="navbar-text navbar-transects-breadcrumbs">
+<div class="navbar-text navbar-volumes-breadcrumbs">
     <a href="{{route('project', $project->id)}}" class="navbar-link" title="Show project {{$project->name}}">{{$project->name}}</a> / <strong>Reports</strong>
 </div>
 @endsection
@@ -25,7 +25,7 @@
         <div class="col-md-6 col-md-offset-3">
             <h2>Request report for {{$project->name}}</h2>
             <p>
-                Request a project report to consolidate data of all transects of the project into downloadable files.
+                Request a project report to consolidate data of all volumes of the project into downloadable files.
             </p>
             <form data-ng-controller="ProjectReportRequestController" data-ng-submit="submit()">
                 <div class="row">
@@ -87,7 +87,7 @@
                 </div>
             </form>
             <p class="text-muted">
-                ProTip: You can request reports for individual transects (and with more options) from the transect overview page.
+                ProTip: You can request reports for individual volumes (and with more options) from the volume overview page.
             </p>
         </div>
     </div>

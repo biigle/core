@@ -13,7 +13,7 @@ for path in csvs:
     f = open(path, 'r')
     rows = np.array(list(csv.reader(f)))
     f.close()
-    # transect name is the first row
+    # volume name is the first row
     # column titles are in the second row
     if rows.shape[0] == 2:
         continue

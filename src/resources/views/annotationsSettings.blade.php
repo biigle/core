@@ -1,9 +1,9 @@
 <div class="settings-foldout__item" data-ng-controller="ExportAreaSettingsController">
     <h4 class="clearfix">
-        @can('update', $transect)
+        @can('update', $volume)
             <span class="pull-right">
-                <button class="btn btn-default btn-sm" title="Edit the export area for this transect" data-ng-click="edit()" data-ng-class="{active:isEditing()}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
-                <button class="btn btn-default btn-sm" title="Remove the export area for this transect" data-ng-click="delete()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <button class="btn btn-default btn-sm" title="Edit the export area for this volume" data-ng-click="edit()" data-ng-class="{active:isEditing()}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+                <button class="btn btn-default btn-sm" title="Remove the export area for this volume" data-ng-click="delete()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
             </span>
         @endcan
         Export area

@@ -3,7 +3,7 @@
  * @ngdoc controller
  * @name ProjectReportRequestController
  * @memberOf biigle.export
- * @description Controller for requesting a new transect report
+ * @description Controller for requesting a new volume report
  */
 angular.module('biigle.export').controller('ProjectReportRequestController', function ($scope, ProjectReport, ReportForm, PROJECT_ID) {
         "use strict";

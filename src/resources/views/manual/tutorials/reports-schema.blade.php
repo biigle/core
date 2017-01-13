@@ -7,12 +7,12 @@
         <p class="lead">
             A description of the file formats of the different available reports.
         </p>
-        <h3>Project and transect reports</h3>
+        <h3>Project and volume reports</h3>
         <p>
-            Most report types can be requested for a whole project as well as for individual transects. A project report is a convenience feature which requests reports for all individual transects of the project at once and provides a ZIP file containing the transect reports for download. However, not all configuration options may be available for project reports.
+            Most report types can be requested for a whole project as well as for individual volumes. A project report is a convenience feature which requests reports for all individual volumes of the project at once and provides a ZIP file containing the volume reports for download. However, not all configuration options may be available for project reports.
         </p>
         <p>
-            The following sections describe the different types of transect reports but, per definition, apply for project reports as well.
+            The following sections describe the different types of volume reports but, per definition, apply for project reports as well.
         </p>
 
         <h3>Annotation reports</h3>
@@ -38,7 +38,7 @@
             The extended annotation report is an XLSX spreadsheet which contains a list of the abundances of each label and image. If the annotations should be separated by label tree, there will be one worksheet for each label tree that was used.
         </p>
         <p>
-            For a single worksheet (not separated by label tree) the first line contains the transect name. For multiple worksheets the first lines contain the name of the respective label tree. The second line always contains the column headers. The columns are as follows:
+            For a single worksheet (not separated by label tree) the first line contains the volume name. For multiple worksheets the first lines contain the name of the respective label tree. The second line always contains the column headers. The columns are as follows:
         </p>
         <ol>
             <li><strong>Image filename</strong></li>
@@ -76,7 +76,7 @@ Animalia
             </div>
         </div>
         <p>
-            For a single worksheet (not separated by label tree) the first line contains the transect name. For multiple worksheets the first lines contain the name of the respective label tree. The second line always contains the column headers. The columns are as follows:
+            For a single worksheet (not separated by label tree) the first line contains the volume name. For multiple worksheets the first lines contain the name of the respective label tree. The second line always contains the column headers. The columns are as follows:
         </p>
         <ol>
             <li><strong>Annotation ID</strong></li>
@@ -134,7 +134,7 @@ Animalia
 
         <h4><a name="annotation-csv-report"></a>CSV</h4>
         <p>
-            The CSV report is intended for subsequent processing. If you want the data in a machine readable format, choose this report. The report is a ZIP archive, containing a CSV file. The CSV file name consists of the transect ID and the transect name (cleaned up so it can be a file name) separated by an underscore. If the annotations should be separated by label tree, there will be one CSV file for each label tree and the CSV file name will consist of the label tree ID and name instead.
+            The CSV report is intended for subsequent processing. If you want the data in a machine readable format, choose this report. The report is a ZIP archive, containing a CSV file. The CSV file name consists of the volume ID and the volume name (cleaned up so it can be a file name) separated by an underscore. If the annotations should be separated by label tree, there will be one CSV file for each label tree and the CSV file name will consist of the label tree ID and name instead.
         </p>
         <p>
             Each CSV file contains one row for each annotation label. Since an annotation can have multiple labels, there may be multiple rows for a single annotation. The first row always contains the column headers. The columns are as follows:
@@ -168,7 +168,7 @@ Animalia
         <h3>Image label reports</h3>
         <h4><a name="image-label-basic-report"></a>Basic</h4>
         <p>
-            The basic image label report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended annotation report</a>. It contains a list of all labels attached to each image of the transect. The columns are as follows:
+            The basic image label report is an XLSX spreadsheet similar to the <a href="#annotation-extended-report">extended annotation report</a>. It contains a list of all labels attached to each image of the volume. The columns are as follows:
         </p>
         <ol>
             <li><strong>Image ID</strong></li>

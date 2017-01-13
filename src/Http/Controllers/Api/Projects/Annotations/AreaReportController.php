@@ -18,8 +18,8 @@ class AreaReportController extends ProjectReportController
      * @api {post} projects/:id/reports/annotations/area Generate a new annotation area report
      * @apiGroup Projects
      * @apiName GenerateAreaProjectAnnotationReport
-     * @apiParam (Optional arguments) {Boolean} exportArea If `true`, restrict the report to the export area of the individual transects of the project.
-     * @apiParam (Optional arguments) {Boolean} separateLabelTrees If `true`, separate annotations with labels of different label trees to different sheets of the spreadsheet for each transect.
+     * @apiParam (Optional arguments) {Boolean} exportArea If `true`, restrict the report to the export area of the individual volumes of the project.
+     * @apiParam (Optional arguments) {Boolean} separateLabelTrees If `true`, separate annotations with labels of different label trees to different sheets of the spreadsheet for each volume.
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The project ID.

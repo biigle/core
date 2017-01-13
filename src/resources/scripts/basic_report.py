@@ -30,7 +30,7 @@ def TitleSlide(text):
     return fig
 
 pdf = PdfPages(target_file)
-fig = TitleSlide("BIIGLE basic report for transect\n" + title.decode('UTF-8'))
+fig = TitleSlide("BIIGLE basic report for volume\n" + title.decode('UTF-8'))
 pdf.savefig(fig)
 width = 1.
 
@@ -63,9 +63,9 @@ for path in data_csvs:
     pdf.savefig()
 
 d = pdf.infodict()
-d['Title'] = "BIIGLE basic report for transect " + title.decode('UTF-8')
+d['Title'] = "BIIGLE basic report for volume " + title.decode('UTF-8')
 d['Author'] = 'Biodata Mining Group, Bielefeld University'
-d['Subject'] = 'Histogram of label distribution of the transect'
+d['Subject'] = 'Histogram of label distribution of the volume'
 d['Keywords'] = ''
 d['CreationDate'] = datetime.datetime.today()
 d['ModDate'] = datetime.datetime.today()
