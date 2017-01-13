@@ -39,7 +39,7 @@ class ExportServiceProvider extends ServiceProvider {
         $modules->addMixin('export', 'annotationsSettings');
         $modules->addMixin('export', 'annotationsScripts');
         $modules->addMixin('export', 'manualTutorial');
-        $modules->addMixin('export', 'transectsMenubar');
+        $modules->addMixin('export', 'volumesMenubar');
     }
 
     /**

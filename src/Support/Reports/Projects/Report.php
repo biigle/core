@@ -20,11 +20,11 @@ class Report extends BaseReport
     public $project;
 
     /**
-     * The class of the transect report to use for this project report.
+     * The class of the volume report to use for this project report.
      *
      * @var string
      */
-    protected $transectReportClass;
+    protected $volumeReportClass;
 
     /**
      * File extension of the report file.
@@ -74,13 +74,13 @@ class Report extends BaseReport
     {
         $filesForZip = [];
 
-        foreach ($this->project->transects as $transect) {
-            $report = App::make($this->transectReportClass, [
-                'transect' => $transect,
+        foreach ($this->project->volumes as $volume) {
+            $report = App::make($this->volumeReportClass, [
+                'volume' => $volume,
                 'options' => $this->options,
             ]);
             $report->generate();
-            // The individual transect reports should be deleted again after
+            // The individual volume reports should be deleted again after
             // the ZIP of this report was created.
             $this->tmpFiles[] = $report->availableReport;
             $filesForZip[$report->availableReport->path] = $report->getDownloadFilename();

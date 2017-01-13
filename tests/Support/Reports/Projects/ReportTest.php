@@ -8,9 +8,9 @@ use TestCase;
 use ZipArchive;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Tests\TransectTest;
+use Biigle\Tests\VolumeTest;
 use Biigle\Modules\Export\Support\Reports\Projects\Report;
-use Biigle\Modules\Export\Support\Reports\Transects\Annotations\BasicReport as TransectReport;
+use Biigle\Modules\Export\Support\Reports\Volumes\Annotations\BasicReport as VolumeReport;
 
 class ReportTest extends TestCase
 {
@@ -54,7 +54,7 @@ class ReportTest extends TestCase
         $availableReportMock->shouldReceive('delete')->once();
         $mock->availableReport = $availableReportMock;
 
-        App::bind(TransectReport::class, function () use ($mock) {
+        App::bind(VolumeReport::class, function () use ($mock) {
             return $mock;
         });
 
@@ -69,8 +69,8 @@ class ReportTest extends TestCase
         });
 
         $project = ProjectTest::create();
-        $transect = TransectTest::create();
-        $project->addTransectId($transect->id);
+        $volume = VolumeTest::create();
+        $project->addVolumeId($volume->id);
 
         $report = new ProjectReportStub($project);
         $report->generate();
@@ -79,5 +79,5 @@ class ReportTest extends TestCase
 
 class ProjectReportStub extends Report
 {
-    protected $transectReportClass = TransectReport::class;
+    protected $volumeReportClass = VolumeReport::class;
 }

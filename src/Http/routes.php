@@ -7,8 +7,8 @@ $router->group([
 ], function ($router) {
 
     $router->group([
-        'namespace' => 'Transects',
-        'prefix' => 'transects',
+        'namespace' => 'Volumes',
+        'prefix' => 'volumes',
     ], function ($router) {
 
         $router->post('{id}/reports/annotations/basic', [
@@ -94,9 +94,9 @@ $router->group([
     'namespace' => 'Views',
     'middleware' => 'auth',
 ], function ($router) {
-    $router->get('transects/{id}/reports', [
-        'uses' => 'TransectReportsController@show',
-        'as' => 'transect-reports',
+    $router->get('volumes/{id}/reports', [
+        'uses' => 'VolumeReportsController@show',
+        'as' => 'volume-reports',
     ]);
 
     $router->get('projects/{id}/reports', [

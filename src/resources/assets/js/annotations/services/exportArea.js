@@ -5,7 +5,7 @@
  * @memberOf biigle.annotations
  * @description Manages the export area drawn on the map
  */
-angular.module('biigle.annotations').service('exportArea', function (map, styles, ExportArea, TRANSECT_ID, EXPORT_AREA, msg) {
+angular.module('biigle.annotations').service('exportArea', function (map, styles, ExportArea, VOLUME_ID, EXPORT_AREA, msg) {
         "use strict";
 
         // a circle with a red and white stroke
@@ -106,7 +106,7 @@ angular.module('biigle.annotations').service('exportArea', function (map, styles
             }
 
             source.removeFeature(area);
-            ExportArea.delete({transect_id: TRANSECT_ID}, function () {
+            ExportArea.delete({volume_id: VOLUME_ID}, function () {
                 area = undefined;
             }, function (response) {
                 source.addFeature(area);
@@ -117,7 +117,7 @@ angular.module('biigle.annotations').service('exportArea', function (map, styles
         var saveArea = function (feature) {
             var coordinates = fromOlCoordinates(feature.getGeometry().getCoordinates());
 
-            return ExportArea.save({transect_id: TRANSECT_ID}, {
+            return ExportArea.save({volume_id: VOLUME_ID}, {
                 coordinates: coordinates
             }, function () {
                 EXPORT_AREA = coordinates;

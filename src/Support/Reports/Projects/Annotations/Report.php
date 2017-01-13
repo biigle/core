@@ -3,7 +3,7 @@
 namespace Biigle\Modules\Export\Support\Reports\Projects\Annotations;
 
 use DB;
-use Biigle\Modules\Export\Transect;
+use Biigle\Modules\Export\Volume;
 use Biigle\Modules\Export\Support\Reports\Projects\Report as BaseReport;
 
 class Report extends BaseReport
