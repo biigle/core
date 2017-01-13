@@ -1,11 +1,11 @@
 /**
- * @namespace biigle.transects
+ * @namespace biigle.volumes
  * @ngdoc controller
  * @name AnnotationsUserFilterController
- * @memberOf biigle.transects
+ * @memberOf biigle.volumes
  * @description Manages the user filter feature
  */
-angular.module('biigle.transects').controller('AnnotationsUserFilterController', function (  AnnotationUserImage, filter, TRANSECT_ID) {
+angular.module('biigle.volumes').controller('AnnotationsUserFilterController', function (  AnnotationUserImage, filter, VOLUME_ID) {
         "use strict";
 
         filter.add({
@@ -15,7 +15,7 @@ angular.module('biigle.transects').controller('AnnotationsUserFilterController',
             template: 'annotationLabelByUserFilterRule.html',
             typeahead: 'annotationUserFilterTypeahead.html',
             getSequence: function (user) {
-                return AnnotationUserImage.query({transect_id: TRANSECT_ID, data: user.id});
+                return AnnotationUserImage.query({volume_id: VOLUME_ID, data: user.id});
             }
         });
     }

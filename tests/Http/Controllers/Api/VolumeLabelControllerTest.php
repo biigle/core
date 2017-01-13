@@ -8,13 +8,13 @@ use Biigle\Tests\LabelTest;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 
-class TransectLabelControllerTest extends ApiTestCase {
+class VolumeLabelControllerTest extends ApiTestCase {
 
     public function testFind() {
-        $tid = $this->transect()->id;
+        $tid = $this->volume()->id;
 
         $label1 = LabelTest::create(['name' => 'my-label']);
-        $image = ImageTest::create(['transect_id' => $tid]);
+        $image = ImageTest::create(['volume_id' => $tid]);
         $annotation = AnnotationTest::create(['image_id' => $image->id]);
         AnnotationLabelTest::create([
             'label_id' => $label1->id,
@@ -28,14 +28,14 @@ class TransectLabelControllerTest extends ApiTestCase {
             'user_id' => $this->editor()->id,
         ]);
 
-        $this->doTestApiRoute('GET', "/api/v1/transects/{$tid}/annotation-labels/find/my");
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$tid}/annotation-labels/find/my");
 
         $this->beUser();
-        $this->get("/api/v1/transects/{$tid}/annotation-labels/find/my");
+        $this->get("/api/v1/volumes/{$tid}/annotation-labels/find/my");
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/transects/{$tid}/annotation-labels/find/my")
+        $this->get("/api/v1/volumes/{$tid}/annotation-labels/find/my")
             // other-label should not appear
             ->seeJsonEquals([[
                 'id' => $label1->id,
@@ -45,7 +45,7 @@ class TransectLabelControllerTest extends ApiTestCase {
             ]]);
         $this->assertResponseOk();
 
-        $this->get("/api/v1/transects/{$tid}/annotation-labels/find/label")
+        $this->get("/api/v1/volumes/{$tid}/annotation-labels/find/label")
             ->seeJsonEquals([
                 [
                     'id' => $label1->id,

@@ -32,8 +32,8 @@ class AnnotationsServiceProvider extends ServiceProvider
         });
 
         $modules->addMixin('annotations', 'dashboardHotBoxLeft');
-        $modules->addMixin('annotations', 'transectsScripts');
-        $modules->addMixin('annotations', 'transectsFilters');
+        $modules->addMixin('annotations', 'volumesScripts');
+        $modules->addMixin('annotations', 'volumesFilters');
         $modules->addMixin('annotations', 'adminIndex');
         $modules->addMixin('annotations', 'manualTutorial');
     }

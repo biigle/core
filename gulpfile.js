@@ -16,16 +16,16 @@ gulp.task('js-main', function (cb) {
     h.angular('annotations/**/*.js', 'main.js', cb);
 });
 
-gulp.task('js-transects', function (cb) {
-    h.angular('transects/**/*.js', 'transects.js', cb);
+gulp.task('js-volumes', function (cb) {
+    h.angular('volumes/**/*.js', 'volumes.js', cb);
 });
 
-gulp.task('js', ['js-main', 'js-transects']);
+gulp.task('js', ['js-main', 'js-volumes']);
 
 gulp.task('watch', function () {
     gulp.watch(h.paths.sass + '**/*.scss', ['sass']);
     gulp.watch(h.paths.js + 'annotations/**/*.js', ['js-main']);
-    gulp.watch(h.paths.js + 'transects/**/*.js', ['js-transects']);
+    gulp.watch(h.paths.js + 'volumes/**/*.js', ['js-volumes']);
     gulp.watch(h.paths.public + '**/*', publish);
 });
 

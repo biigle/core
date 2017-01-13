@@ -1,11 +1,11 @@
 /**
- * @namespace biigle.transects
+ * @namespace biigle.volumes
  * @ngdoc controller
  * @name AnnotationsLabelFilterController
- * @memberOf biigle.transects
+ * @memberOf biigle.volumes
  * @description Manages the annotation label filter feature
  */
-angular.module('biigle.transects').controller('AnnotationsLabelFilterController', function (AnnotationLabelImage, filter, TRANSECT_ID) {
+angular.module('biigle.volumes').controller('AnnotationsLabelFilterController', function (AnnotationLabelImage, filter, VOLUME_ID) {
         "use strict";
 
         filter.add({
@@ -15,7 +15,7 @@ angular.module('biigle.transects').controller('AnnotationsLabelFilterController'
             template: 'annotationWithLabelFilterRule.html',
             typeahead: 'annotationLabelFilterTypeahead.html',
             getSequence: function (label) {
-                return AnnotationLabelImage.query({transect_id: TRANSECT_ID, data: label.id});
+                return AnnotationLabelImage.query({volume_id: VOLUME_ID, data: label.id});
             }
         });
     }

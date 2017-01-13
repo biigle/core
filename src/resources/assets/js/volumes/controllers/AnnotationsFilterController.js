@@ -1,11 +1,11 @@
 /**
- * @namespace biigle.transects
+ * @namespace biigle.volumes
  * @ngdoc controller
  * @name AnnotationsFilterController
- * @memberOf biigle.transects
+ * @memberOf biigle.volumes
  * @description Manages the annotation filter feature
  */
-angular.module('biigle.transects').controller('AnnotationsFilterController', function ( AnnotationImage, filter, TRANSECT_ID) {
+angular.module('biigle.volumes').controller('AnnotationsFilterController', function ( AnnotationImage, filter, VOLUME_ID) {
         "use strict";
 
         filter.add({
@@ -14,7 +14,7 @@ angular.module('biigle.transects').controller('AnnotationsFilterController', fun
             helpTextNegate: 'All images that contain no annotations.',
             template: 'annotationsFilterRule.html',
             getSequence: function () {
-                return AnnotationImage.query({transect_id: TRANSECT_ID});
+                return AnnotationImage.query({volume_id: VOLUME_ID});
             }
         });
     }

@@ -22,14 +22,14 @@ class AnnotationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Guard $auth, $id) {
-        $image = Image::with('transect')->findOrFail($id);
+        $image = Image::with('volume')->findOrFail($id);
         $this->authorize('access', $image);
         $user = $auth->user();
 
         if ($user->isAdmin) {
             // admins have no restrictions
-            $projectIds = DB::table('project_transect')
-                ->where('transect_id', $image->transect_id)
+            $projectIds = DB::table('project_volume')
+                ->where('volume_id', $image->volume_id)
                 ->pluck('project_id');
         } else {
             // array of all project IDs that the user and the image have in common
@@ -37,16 +37,16 @@ class AnnotationController extends Controller
             $projectIds = DB::table('project_user')
                 ->where('user_id', $user->id)
                 ->whereIn('project_id', function ($query) use ($image) {
-                    $query->select('project_transect.project_id')
-                        ->from('project_transect')
-                        ->join('project_user', 'project_transect.project_id', '=', 'project_user.project_id')
-                        ->where('project_transect.transect_id', $image->transect_id)
+                    $query->select('project_volume.project_id')
+                        ->from('project_volume')
+                        ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
+                        ->where('project_volume.volume_id', $image->volume_id)
                         ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id]);
                 })
                 ->pluck('project_id');
         }
 
-        $images = Image::where('transect_id', $image->transect_id)
+        $images = Image::where('volume_id', $image->volume_id)
             ->orderBy('filename', 'asc')
             ->pluck('filename', 'id');
 
@@ -62,7 +62,7 @@ class AnnotationController extends Controller
 
         $shapes = Shape::all();
 
-        $annotationSessions = $image->transect->annotationSessions()
+        $annotationSessions = $image->volume->annotationSessions()
             ->select('id', 'name', 'starts_at', 'ends_at')
             ->with('users')
             ->get();
@@ -70,7 +70,7 @@ class AnnotationController extends Controller
         return view('annotations::index', [
             'user' => $user,
             'image' => $image,
-            'transect' => $image->transect,
+            'volume' => $image->volume,
             'editMode' => $user->can('add-annotation', $image),
             'images' => $images,
             'labelTrees' => $trees,
