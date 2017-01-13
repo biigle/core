@@ -25,7 +25,7 @@ class ImageLabelPolicyTest extends TestCase
         parent::setUp();
         $this->image = ImageTest::create();
         $this->project = ProjectTest::create();
-        $this->project->transects()->attach($this->image->transect);
+        $this->project->volumes()->attach($this->image->volume);
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
         $this->editor = UserTest::create();

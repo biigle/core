@@ -87,7 +87,7 @@
     </div>
     <div class="panel-body">
         <p class="text-danger">
-            Deleting your account won't delete any of your projects, transects or annotations etc. (they just won't be associated with you any more).<br>
+            Deleting your account won't delete any of your projects, volumes or annotations etc. (they just won't be associated with you any more).<br>
             <strong>Deleting your account cannot be undone!</strong>
         </p>
         <form role="form" method="POST" action="{{ url('api/v1/users/my') }}" onsubmit="return confirm('Do you really want to delete your account?')">

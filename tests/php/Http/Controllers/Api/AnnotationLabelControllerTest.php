@@ -18,7 +18,7 @@ class AnnotationLabelControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->annotation = AnnotationTest::create();
-        $this->project()->transects()->attach($this->annotation->image->transect);
+        $this->project()->volumes()->attach($this->annotation->image->volume);
     }
 
     public function testIndex()
@@ -50,7 +50,7 @@ class AnnotationLabelControllerTest extends ApiTestCase
         $this->annotation->save();
 
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->annotation->image->transect_id,
+            'volume_id' => $this->annotation->image->volume_id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
             'hide_own_annotations' => true,

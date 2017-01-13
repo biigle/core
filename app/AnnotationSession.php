@@ -8,7 +8,7 @@ use Biigle\Annotation;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * An annotation session groups multiple annotations of a transect based on their
+ * An annotation session groups multiple annotations of a volume based on their
  * creation date.
  */
 class AnnotationSession extends Model
@@ -63,7 +63,7 @@ class AnnotationSession extends Model
         'ends_at' => 'date',
         'hide_other_users_annotations' => 'boolean',
         'hide_own_annotations' => 'boolean',
-        'transect_id' => 'int',
+        'volume_id' => 'int',
     ];
 
     /**
@@ -77,13 +77,13 @@ class AnnotationSession extends Model
     ];
 
     /**
-     * The transect, this annotation session belongs to.
+     * The volume, this annotation session belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function transect()
+    public function volume()
     {
-        return $this->belongsTo(Transect::class);
+        return $this->belongsTo(Volume::class);
     }
 
     /**
@@ -156,11 +156,11 @@ class AnnotationSession extends Model
     public function annotations()
     {
         return Annotation::where(function ($query) {
-            // all annotations of the associated transect
+            // all annotations of the associated volume
             return $query->whereIn('image_id', function ($query) {
                     $query->select('id')
                         ->from('images')
-                        ->where('transect_id', $this->transect_id);
+                        ->where('volume_id', $this->volume_id);
                 })
             // that were created between the start and end date
                 ->where('created_at', '>=', $this->starts_at)

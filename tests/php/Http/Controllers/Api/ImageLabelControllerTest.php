@@ -13,7 +13,7 @@ class ImageLabelControllerTest extends ApiTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->image = ImageTest::create(['transect_id' => $this->transect()->id]);
+        $this->image = ImageTest::create(['volume_id' => $this->volume()->id]);
     }
 
     public function testIndex()

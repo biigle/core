@@ -4,20 +4,20 @@ namespace Biigle\Tests\Jobs;
 
 use TestCase;
 use Biigle\Tests\ImageTest;
-use Biigle\Tests\TransectTest;
+use Biigle\Tests\VolumeTest;
 use Biigle\Jobs\CollectImageMetaInfo;
 
 class CollectImageMetaInfoTest extends TestCase
 {
     public function testHandle()
     {
-        $transect = TransectTest::create();
+        $volume = VolumeTest::create();
         $image = ImageTest::create([
             'filename' => 'exif-test.jpg',
-            'transect_id' => $transect->id,
+            'volume_id' => $volume->id,
         ]);
 
-        with(new CollectImageMetaInfo($transect))->handle();
+        with(new CollectImageMetaInfo($volume))->handle();
 
         $image = $image->fresh();
 
@@ -28,13 +28,13 @@ class CollectImageMetaInfoTest extends TestCase
 
     public function testHandleRemote()
     {
-        $transect = TransectTest::create(['url' => 'http://localhost']);
+        $volume = VolumeTest::create(['url' => 'http://localhost']);
         $image = ImageTest::create([
             'filename' => 'exif-test.jpg',
-            'transect_id' => $transect->id,
+            'volume_id' => $volume->id,
         ]);
 
-        with(new CollectImageMetaInfo($transect))->handle();
+        with(new CollectImageMetaInfo($volume))->handle();
 
         $image = $image->fresh();
 

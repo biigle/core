@@ -6,45 +6,45 @@ use ApiTestCase;
 use Carbon\Carbon;
 use Biigle\Tests\AnnotationSessionTest;
 
-class TransectAnnotationSessionControllerTest extends ApiTestCase
+class VolumeAnnotationSessionControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
-        $id = $this->transect()->id;
+        $id = $this->volume()->id;
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->transect()->id,
+            'volume_id' => $this->volume()->id,
         ]);
         $session->users()->attach($this->guest());
 
-        $this->doTestApiRoute('GET', "/api/v1/transects/{$id}/annotation-sessions");
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/annotation-sessions");
 
         $this->beUser();
-        $this->get("/api/v1/transects/{$id}/annotation-sessions");
+        $this->get("/api/v1/volumes/{$id}/annotation-sessions");
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/transects/{$id}/annotation-sessions")
+        $this->get("/api/v1/volumes/{$id}/annotation-sessions")
             ->seeJsonEquals([$session->load('users')->toArray()]);
         $this->assertResponseOk();
     }
 
     public function testStore()
     {
-        $id = $this->transect()->id;
+        $id = $this->volume()->id;
         AnnotationSessionTest::create([
-            'transect_id' => $id,
+            'volume_id' => $id,
             'starts_at' => '2016-09-03',
             'ends_at' => '2016-09-04',
         ]);
 
-        $this->doTestApiRoute('POST', "/api/v1/transects/{$id}/annotation-sessions");
+        $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/annotation-sessions");
 
         $this->beEditor();
-        $this->post("/api/v1/transects/{$id}/annotation-sessions");
+        $this->post("/api/v1/volumes/{$id}/annotation-sessions");
         $this->assertResponseStatus(403);
 
         $this->beAdmin();
-        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
             'users' => [$this->admin()->id],
@@ -52,7 +52,7 @@ class TransectAnnotationSessionControllerTest extends ApiTestCase
         // name is required
         $this->assertResponseStatus(422);
 
-        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
             'name' => 'my session',
             'ends_at' => '2016-09-06',
             'users' => [$this->admin()->id],
@@ -60,7 +60,7 @@ class TransectAnnotationSessionControllerTest extends ApiTestCase
         // starts_at is required
         $this->assertResponseStatus(422);
 
-        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
             'name' => 'my session',
             'starts_at' => '2016-09-05',
             'users' => [$this->admin()->id],
@@ -68,7 +68,7 @@ class TransectAnnotationSessionControllerTest extends ApiTestCase
         // ends_at is required
         $this->assertResponseStatus(422);
 
-        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
             'name' => 'my session',
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-04',
@@ -77,7 +77,7 @@ class TransectAnnotationSessionControllerTest extends ApiTestCase
         // end must be after start
         $this->assertResponseStatus(422);
 
-        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
             'name' => 'my session',
             'starts_at' => '2016-09-03',
             'ends_at' => '2016-09-05',
@@ -86,7 +86,7 @@ class TransectAnnotationSessionControllerTest extends ApiTestCase
         // conflict with existing session
         $this->assertResponseStatus(422);
 
-        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
             'name' => 'my session',
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
@@ -94,7 +94,7 @@ class TransectAnnotationSessionControllerTest extends ApiTestCase
         // users is required
         $this->assertResponseStatus(422);
 
-        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
             'name' => 'my session',
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
@@ -103,25 +103,25 @@ class TransectAnnotationSessionControllerTest extends ApiTestCase
         // user does not exist
         $this->assertResponseStatus(422);
 
-        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
             'name' => 'my session',
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
             'users' => [$this->user()->id],
         ]);
-        // user must belong to transect
+        // user must belong to volume
         $this->assertResponseStatus(422);
 
-        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
             'name' => 'my session',
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
             'users' => [$this->admin()->id],
         ]);
         $this->assertResponseOk();
-        $this->assertEquals(2, $this->transect()->annotationSessions()->count());
+        $this->assertEquals(2, $this->volume()->annotationSessions()->count());
 
-        $session = $this->transect()->annotationSessions()
+        $session = $this->volume()->annotationSessions()
             ->with('users')
             ->orderBy('id', 'desc')
             ->first();
@@ -131,9 +131,9 @@ class TransectAnnotationSessionControllerTest extends ApiTestCase
 
     public function testStoreTimezones()
     {
-        $id = $this->transect()->id;
+        $id = $this->volume()->id;
         $this->beAdmin();
-        $this->json('POST', "/api/v1/transects/{$id}/annotation-sessions", [
+        $this->json('POST', "/api/v1/volumes/{$id}/annotation-sessions", [
             'name' => 'my session',
             'starts_at' => '2016-09-20T00:00:00.000+02:00',
             'ends_at' => '2016-09-21T00:00:00.000+02:00',
@@ -141,7 +141,7 @@ class TransectAnnotationSessionControllerTest extends ApiTestCase
         ]);
         $this->assertResponseOk();
 
-        $session = $this->transect()->annotationSessions()->first();
+        $session = $this->volume()->annotationSessions()->first();
 
         $this->assertTrue(Carbon::parse('2016-09-19T22:00:00.000Z')->eq($session->starts_at));
         $this->assertTrue(Carbon::parse('2016-09-20T22:00:00.000Z')->eq($session->ends_at));

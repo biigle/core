@@ -153,7 +153,7 @@ class AnnotationTest extends ModelTestCase
         ]);
 
         $session = AnnotationSessionTest::create([
-            'transect_id' => $image->transect->id,
+            'volume_id' => $image->volume->id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => true,
@@ -215,7 +215,7 @@ class AnnotationTest extends ModelTestCase
         ]);
 
         $session = AnnotationSessionTest::create([
-            'transect_id' => $image->transect->id,
+            'volume_id' => $image->volume->id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => false,
@@ -277,7 +277,7 @@ class AnnotationTest extends ModelTestCase
         ]);
 
         $session = AnnotationSessionTest::create([
-            'transect_id' => $image->transect->id,
+            'volume_id' => $image->volume->id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => true,

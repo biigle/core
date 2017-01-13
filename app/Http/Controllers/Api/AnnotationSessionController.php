@@ -4,7 +4,7 @@ namespace Biigle\Http\Controllers\Api;
 
 use DB;
 use Carbon\Carbon;
-use Biigle\Transect;
+use Biigle\Volume;
 use Biigle\AnnotationSession;
 use Illuminate\Http\Request;
 
@@ -14,7 +14,7 @@ class AnnotationSessionController extends Controller
      * Updates the annotation session
      *
      * @api {put} annotation-sessions/:id Update an annotation session
-     * @apiGroup Transects
+     * @apiGroup Volumes
      * @apiName UpdateAnnotationSession
      * @apiPermission projectAdmin
      *
@@ -46,8 +46,8 @@ class AnnotationSessionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $session = AnnotationSession::with('transect')->findOrFail($id);
-        $this->authorize('update', $session->transect);
+        $session = AnnotationSession::with('volume')->findOrFail($id);
+        $this->authorize('update', $session->volume);
         $this->validate($request, AnnotationSession::$updateRules);
 
         if ($request->has('starts_at')) {
@@ -80,7 +80,7 @@ class AnnotationSessionController extends Controller
             ]);
         }
 
-        if ($session->transect->hasConflictingAnnotationSession($session)) {
+        if ($session->volume->hasConflictingAnnotationSession($session)) {
             return $this->buildFailedValidationResponse($request, [
                 'starts_at' => ['There already is an annotation session in this time period.']
             ]);
@@ -111,15 +111,15 @@ class AnnotationSessionController extends Controller
             }
 
             // count users of all attached projects that match the given user IDs
-            $count = $session->transect->users()
+            $count = $session->volume->users()
                 ->whereIn('id', $users)
                 ->count();
 
             // Previous validation ensures that the user IDs are distinct so we can
-            // validate the transect users using the count.
+            // validate the volume users using the count.
             if ($count !== count($users)) {
                 return $this->buildFailedValidationResponse($request, [
-                    'users' => ['All users must belong to one of the projects, this transect is attached to.']
+                    'users' => ['All users must belong to one of the projects, this volume is attached to.']
                 ]);
             }
 
@@ -140,7 +140,7 @@ class AnnotationSessionController extends Controller
      * Removes the annotation session.
      *
      * @api {delete} annotation-sessions/:id Delete an annotation session
-     * @apiGroup Transects
+     * @apiGroup Volumes
      * @apiName DestroyAnnotationSession
      * @apiPermission projectAdmin
      *
@@ -158,8 +158,8 @@ class AnnotationSessionController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $session = AnnotationSession::with('transect')->findOrFail($id);
-        $this->authorize('update', $session->transect);
+        $session = AnnotationSession::with('volume')->findOrFail($id);
+        $this->authorize('update', $session->volume);
         $this->validate($request, AnnotationSession::$destroyRules);
 
         if (!$request->input('force') && $session->annotations()->exists()) {

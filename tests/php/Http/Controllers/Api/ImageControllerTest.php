@@ -4,7 +4,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use Biigle\Image;
 use ApiTestCase;
-use Biigle\Transect;
+use Biigle\Volume;
 use Biigle\Tests\ImageTest;
 use Biigle\Services\Thumbnails\InterventionImage;
 
@@ -16,7 +16,7 @@ class ImageControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->image = ImageTest::create();
-        $this->project()->transects()->attach($this->image->transect);
+        $this->project()->volumes()->attach($this->image->volume);
     }
 
     public function testShow()
@@ -37,7 +37,7 @@ class ImageControllerTest extends ApiTestCase
         $content = $this->response->getContent();
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
-        $this->assertContains('"transect"', $content);
+        $this->assertContains('"volume"', $content);
         $this->assertContains('"exif"', $content);
         $this->assertContains('"width"', $content);
         $this->assertContains('"height"', $content);
@@ -105,10 +105,10 @@ class ImageControllerTest extends ApiTestCase
         $this->delete("/api/v1/images/999");
         $this->assertResponseStatus(404);
 
-        $this->assertNotNull($this->image->fresh()->transect_id);
+        $this->assertNotNull($this->image->fresh()->volume_id);
         $this->delete("/api/v1/images/{$id}");
         $this->assertResponseOk();
-        // only the transect ID is set to null so the image is marked for deletion
+        // only the volume ID is set to null so the image is marked for deletion
         $this->assertNull($this->image->fresh());
     }
 }

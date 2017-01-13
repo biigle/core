@@ -222,12 +222,12 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
     ]);
 
     $router->post(
-        'projects/{id}/transects/{id2}',
-        'ProjectTransectController@attach'
+        'projects/{id}/volumes/{id2}',
+        'ProjectVolumeController@attach'
     );
-    $router->resource('projects.transects', 'ProjectTransectController', [
+    $router->resource('projects.volumes', 'ProjectVolumeController', [
         'only' => ['index', 'store', 'destroy'],
-        'parameters' => ['projects' => 'id', 'transects' => 'id2'],
+        'parameters' => ['projects' => 'id', 'volumes' => 'id2'],
     ]);
 
     $router->post(
@@ -254,19 +254,19 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
         'parameters' => ['system-messages' => 'id'],
     ]);
 
-    $router->resource('transects', 'TransectController', [
+    $router->resource('volumes', 'VolumeController', [
         'only' => ['show', 'update'],
-        'parameters' => ['transects' => 'id'],
+        'parameters' => ['volumes' => 'id'],
     ]);
 
-    $router->resource('transects.annotation-sessions', 'TransectAnnotationSessionController', [
+    $router->resource('volumes.annotation-sessions', 'VolumeAnnotationSessionController', [
         'only' => ['index', 'store'],
-        'parameters' => ['transects' => 'id'],
+        'parameters' => ['volumes' => 'id'],
     ]);
 
-    $router->resource('transects.images', 'TransectImageController', [
+    $router->resource('volumes.images', 'VolumeImageController', [
         'only' => ['index', 'store'],
-        'parameters' => ['transects' => 'id'],
+        'parameters' => ['volumes' => 'id'],
     ]);
 
     $router->get('users/find/{pattern}', 'UserController@find');

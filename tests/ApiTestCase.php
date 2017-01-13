@@ -6,13 +6,13 @@ use Biigle\Visibility;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Tests\TransectTest;
+use Biigle\Tests\VolumeTest;
 use Biigle\Tests\LabelTreeTest;
 
 class ApiTestCase extends TestCase
 {
     private $project;
-    private $transect;
+    private $volume;
     private $admin;
     private $editor;
     private $guest;
@@ -50,16 +50,16 @@ class ApiTestCase extends TestCase
         return $this->project = ProjectTest::create();
     }
 
-    protected function transect()
+    protected function volume()
     {
-        if ($this->transect) {
-            return $this->transect;
+        if ($this->volume) {
+            return $this->volume;
         }
 
-        $this->transect = TransectTest::create();
-        $this->project()->transects()->attach($this->transect);
+        $this->volume = VolumeTest::create();
+        $this->project()->volumes()->attach($this->volume);
 
-        return $this->transect;
+        return $this->volume;
     }
 
     protected function admin()

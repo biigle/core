@@ -17,7 +17,7 @@ class AnnotationControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->annotation = AnnotationTest::create();
-        $this->project()->transects()->attach($this->annotation->image->transect_id);
+        $this->project()->volumes()->attach($this->annotation->image->volume_id);
     }
 
     public function testShow()
@@ -44,10 +44,10 @@ class AnnotationControllerTest extends ApiTestCase
             ->seeJson(['points' => [10, 10, 20, 20]]);
         // the labels should be fetched separately
         $this->assertNotContains('labels', $this->response->getContent());
-        // image and transect objects from projectIds() call shouldn't be
+        // image and volume objects from projectIds() call shouldn't be
         // included in the output
         $this->assertNotContains('"image"', $this->response->getContent());
-        $this->assertNotContains('transect', $this->response->getContent());
+        $this->assertNotContains('volume', $this->response->getContent());
     }
 
     public function testShowAnnotationSession()
@@ -56,7 +56,7 @@ class AnnotationControllerTest extends ApiTestCase
         $this->annotation->save();
 
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->annotation->image->transect_id,
+            'volume_id' => $this->annotation->image->volume_id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
             'hide_own_annotations' => true,
@@ -136,7 +136,7 @@ class AnnotationControllerTest extends ApiTestCase
         $this->assertNull($this->annotation->fresh());
 
         $this->annotation = AnnotationTest::create();
-        $this->project()->transects()->attach($this->annotation->image->transect);
+        $this->project()->volumes()->attach($this->annotation->image->volume);
         $id = $this->annotation->id;
 
         $this->beUser();

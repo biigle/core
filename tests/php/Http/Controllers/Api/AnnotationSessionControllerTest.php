@@ -14,13 +14,13 @@ class AnnotationSessionControllerTest extends ApiTestCase
     public function testUpdate()
     {
         AnnotationSessionTest::create([
-            'transect_id' => $this->transect()->id,
+            'volume_id' => $this->volume()->id,
             'starts_at' => '2016-09-04',
             'ends_at' => '2016-09-05',
         ]);
 
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->transect()->id,
+            'volume_id' => $this->volume()->id,
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
         ]);
@@ -74,7 +74,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
             'users' => [$this->user()->id],
         ]);
-        // user does not belong to transect
+        // user does not belong to volume
         $this->assertResponseStatus(422);
 
         $this->put("api/v1/annotation-sessions/{$session->id}", [
@@ -94,7 +94,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
     public function testUpdateTimezones()
     {
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->transect()->id,
+            'volume_id' => $this->volume()->id,
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
         ]);
@@ -113,7 +113,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
     public function testUpdateForceStartDate()
     {
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->transect()->id,
+            'volume_id' => $this->volume()->id,
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-07',
         ]);
@@ -121,7 +121,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $session->users()->attach($this->editor());
 
         $image = ImageTest::create([
-            'transect_id' => $session->transect_id,
+            'volume_id' => $session->volume_id,
         ]);
 
         $annotation = AnnotationTest::create([
@@ -151,7 +151,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
     public function testUpdateForceEndDate()
     {
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->transect()->id,
+            'volume_id' => $this->volume()->id,
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-07',
         ]);
@@ -159,7 +159,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $session->users()->attach($this->editor());
 
         $image = ImageTest::create([
-            'transect_id' => $session->transect_id,
+            'volume_id' => $session->volume_id,
         ]);
 
         $annotation = AnnotationTest::create([
@@ -189,7 +189,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
     public function testUpdateForceUsers()
     {
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->transect()->id,
+            'volume_id' => $this->volume()->id,
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-07',
         ]);
@@ -197,7 +197,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $session->users()->attach($this->editor());
 
         $image = ImageTest::create([
-            'transect_id' => $session->transect_id,
+            'volume_id' => $session->volume_id,
         ]);
 
         $annotation = AnnotationTest::create([
@@ -227,7 +227,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
     public function testDestroy()
     {
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->transect()->id,
+            'volume_id' => $this->volume()->id,
         ]);
 
         $this->doTestApiRoute('DELETE', "api/v1/annotation-sessions/{$session->id}");
@@ -246,7 +246,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
     public function testDestroyForce()
     {
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->transect()->id,
+            'volume_id' => $this->volume()->id,
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-07',
         ]);
@@ -254,7 +254,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $session->users()->attach($this->editor());
 
         $image = ImageTest::create([
-            'transect_id' => $session->transect_id,
+            'volume_id' => $session->volume_id,
         ]);
 
         $annotation = AnnotationTest::create([

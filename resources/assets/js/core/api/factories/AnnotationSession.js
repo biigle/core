@@ -6,13 +6,13 @@
  * @requires $resource
  * @returns {Object} A new [ngResource](https://docs.angularjs.org/api/ngResource/service/$resource) object
  * @example
-// get all annotation sessions of a transect
-var sessions = AnnotationSession.query({transect_id: 123}, function () {
+// get all annotation sessions of a volume
+var sessions = AnnotationSession.query({volume_id: 123}, function () {
    console.log(sessions); //[{id: 12, name: "My session", ...}, ...]
 });
 
 // create a new annotation session
-var session = AnnotationSession.create({transect_id: 123}, {
+var session = AnnotationSession.create({volume_id: 123}, {
     name: 'My annotation session',
     starts_at: '2016-09-20',
     ends_at: '2016-09-25',
@@ -24,7 +24,7 @@ var session = AnnotationSession.create({transect_id: 123}, {
 })
 
 // update a session
-var sessions = AnnotationSession.query({transect_id: 123}, function () {
+var sessions = AnnotationSession.query({volume_id: 123}, function () {
    var session = sessions[0];
    session.name = 'Updated name';
    session.$save();
@@ -33,7 +33,7 @@ var sessions = AnnotationSession.query({transect_id: 123}, function () {
 AnnotationSession.save({id: 12, name: 'Updated name'});
 
 // delete a session
-var sessions = AnnotationSession.query({transect_id: 123}, function () {
+var sessions = AnnotationSession.query({volume_id: 123}, function () {
    var session = sessions[0];
    session.$delete();
 });
@@ -52,12 +52,12 @@ angular.module('biigle.api').factory('AnnotationSession', function ($resource, U
          },
          query: {
             method: 'GET',
-                url: URL + '/api/v1/transects/:transect_id/annotation-sessions',
+                url: URL + '/api/v1/volumes/:volume_id/annotation-sessions',
             isArray: true
          },
          create: {
             method: 'POST',
-            url: URL + '/api/v1/transects/:transect_id/annotation-sessions',
+            url: URL + '/api/v1/volumes/:volume_id/annotation-sessions',
          }
       });
 });

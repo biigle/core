@@ -6,7 +6,7 @@ use File;
 use Exception;
 use Carbon\Carbon;
 use Biigle\Jobs\Job;
-use Biigle\Transect;
+use Biigle\Volume;
 use ErrorException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -17,15 +17,15 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     /**
-     * The transect for which the image meta info should be collected.
+     * The volume for which the image meta info should be collected.
      *
-     * @var Transect
+     * @var Volume
      */
-    private $transect;
+    private $volume;
 
     /**
      * Array of image IDs to restrict the collecting of meta info to.
-     * If it is empty, all images of the transect will be taken.
+     * If it is empty, all images of the volume will be taken.
      *
      * @var array
      */
@@ -34,14 +34,14 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param Transect $transect The transect for which the image meta info should be collected.
+     * @param Volume $volume The volume for which the image meta info should be collected.
      * @param array $only Array of image IDs to restrict the job to
      *
      * @return void
      */
-    public function __construct(Transect $transect, array $only = [])
+    public function __construct(Volume $volume, array $only = [])
     {
-        $this->transect = $transect;
+        $this->volume = $volume;
         $this->only = $only;
     }
 
@@ -52,12 +52,12 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
      */
     public function handle()
     {
-        // Not supported for remote transects.
-        if ($this->transect->isRemote()) {
+        // Not supported for remote volumes.
+        if ($this->volume->isRemote()) {
             return;
         }
 
-        $images = $this->transect->images()
+        $images = $this->volume->images()
             ->select('id', 'filename')
             ->when($this->only, function ($query) {
                 return $query->whereIn('id', $this->only);
@@ -65,7 +65,7 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
             ->get();
 
         foreach ($images as $image) {
-            $file = $this->transect->url.'/'.$image->filename;
+            $file = $this->volume->url.'/'.$image->filename;
             if (!File::exists($file)) continue;
 
             try {
@@ -101,7 +101,7 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
             $image->save();
         }
 
-        $this->transect->flushGeoInfoCache();
+        $this->volume->flushGeoInfoCache();
     }
 
     /**

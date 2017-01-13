@@ -24,7 +24,7 @@ class AnnotationLabelPolicyTest extends TestCase
         parent::setUp();
         $this->annotation = AnnotationTest::create();
         $this->project = ProjectTest::create();
-        $this->project->transects()->attach($this->annotation->image->transect);
+        $this->project->volumes()->attach($this->annotation->image->volume);
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
         $this->editor = UserTest::create();

@@ -98,13 +98,13 @@ class Image extends Model
     ];
 
     /**
-     * The transect, this image belongs to.
+     * The volume, this image belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function transect()
+    public function volume()
     {
-        return $this->belongsTo(Transect::class);
+        return $this->belongsTo(Volume::class);
     }
 
     /**
@@ -146,7 +146,7 @@ class Image extends Model
      */
     public function getUrlAttribute()
     {
-        return $this->transect->url.'/'.$this->filename;
+        return $this->volume->url.'/'.$this->filename;
     }
 
     /**
@@ -159,7 +159,7 @@ class Image extends Model
      */
     public function getExif()
     {
-        if ($this->transect->isRemote()) {
+        if ($this->volume->isRemote()) {
             return [];
         }
 
@@ -207,7 +207,7 @@ class Image extends Model
      */
     public function getFile()
     {
-        if ($this->transect->isRemote()) {
+        if ($this->volume->isRemote()) {
             return Response::redirectTo($this->url);
         }
 

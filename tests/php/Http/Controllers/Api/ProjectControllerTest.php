@@ -114,8 +114,8 @@ class ProjectControllerTest extends ApiTestCase
     public function testDestroy()
     {
         $id = $this->project()->id;
-        // create transect
-        $this->transect();
+        // create volume
+        $this->volume();
 
         $this->doTestApiRoute('DELETE', "/api/v1/projects/{$id}");
 
@@ -124,7 +124,7 @@ class ProjectControllerTest extends ApiTestCase
         $this->json('DELETE', "/api/v1/projects/{$id}");
         $this->assertResponseStatus(403);
 
-        // project still has a transect belonging only to this project
+        // project still has a volume belonging only to this project
         $this->beAdmin();
         $this->assertNotNull($this->project()->fresh());
         $this->json('DELETE', "/api/v1/projects/{$id}");

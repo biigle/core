@@ -29,7 +29,7 @@ class EventServiceProvider extends ServiceProvider
 
         \Biigle\Project::observe(new \Biigle\Observers\ProjectObserver);
         \Biigle\User::observe(new \Biigle\Observers\UserObserver);
-        \Biigle\Transect::observe(new \Biigle\Observers\TransectObserver);
+        \Biigle\Volume::observe(new \Biigle\Observers\VolumeObserver);
         \Biigle\Image::observe(new \Biigle\Observers\ImageObserver);
     }
 }

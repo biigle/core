@@ -20,16 +20,16 @@ use GuzzleHttp\Exception\RequestException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
- * A transect is a collection of images. Transects belong to one or many
+ * A volume is a collection of images. Volumes belong to one or many
  * projects.
  */
-class Transect extends Model
+class Volume extends Model
 {
 
     use DispatchesJobs;
 
     /**
-     * Validation rules for creating a new transect.
+     * Validation rules for creating a new volume.
      *
      * @var array
      */
@@ -41,7 +41,7 @@ class Transect extends Model
     ];
 
     /**
-     * Validation rules for updating a transect.
+     * Validation rules for updating a volume.
      *
      * @var array
      */
@@ -52,7 +52,7 @@ class Transect extends Model
     ];
 
     /**
-     * Validation rules for adding new images to a transect.
+     * Validation rules for adding new images to a volume.
      *
      * @var array
      */
@@ -92,7 +92,7 @@ class Transect extends Model
     }
 
     /**
-     * The user that created the transect.
+     * The user that created the volume.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -102,7 +102,7 @@ class Transect extends Model
     }
 
     /**
-     * The media type of this transect.
+     * The media type of this volume.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -112,7 +112,7 @@ class Transect extends Model
     }
 
     /**
-     * Sets the media type of this transect.
+     * Sets the media type of this volume.
      *
      * @param Biigle\MediaType $mediaType
      * @return void
@@ -123,7 +123,7 @@ class Transect extends Model
     }
 
     /**
-     * Sets the media type of this transect to the media type with the given ID.
+     * Sets the media type of this volume to the media type with the given ID.
      *
      * @param int $id media type ID
      * @return void
@@ -138,7 +138,7 @@ class Transect extends Model
     }
 
     /**
-     * The images belonging to this transect.
+     * The images belonging to this volume.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -148,7 +148,7 @@ class Transect extends Model
     }
 
     /**
-     * The images belonging to this transect ordered by filename (ascending).
+     * The images belonging to this volume ordered by filename (ascending).
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -158,7 +158,7 @@ class Transect extends Model
     }
 
     /**
-     * Return a query for all users associated to this transect through projects
+     * Return a query for all users associated to this volume through projects
      *
      * @return  \Illuminate\Database\Eloquent\Builder
      */
@@ -170,14 +170,14 @@ class Transect extends Model
                 ->from('project_user')
                 ->whereIn('project_id', function ($query) {
                     $query->select('project_id')
-                        ->from('project_transect')
-                        ->where('transect_id', $this->id);
+                        ->from('project_volume')
+                        ->where('volume_id', $this->id);
                 });
         });
     }
 
     /**
-     * Check if the URL of this transect exists and is readable.
+     * Check if the URL of this volume exists and is readable.
      *
      * @return boolean
      * @throws Exception If the validation failed.
@@ -189,22 +189,22 @@ class Transect extends Model
             try {
                 $response = $client->head($this->url);
             } catch (ServerException $e) {
-                throw new Exception('The remote transect URL returned an error response. '.$e->getMessage());
+                throw new Exception('The remote volume URL returned an error response. '.$e->getMessage());
             } catch (ClientException $e) {
                 // A 400 level error means that something is responding.
-                // It may well be that the Transect URL results in a 400 response but a
+                // It may well be that the Volume URL results in a 400 response but a
                 // single image works fine so we define this as success.
                 return true;
             } catch (RequestException $e) {
-                throw new Exception('The remote transect URL does not seem to exist. '.$e->getMessage());
+                throw new Exception('The remote volume URL does not seem to exist. '.$e->getMessage());
             }
         } else {
             if (!File::exists($this->url)) {
-                throw new Exception('The transect URL does not exist.');
+                throw new Exception('The volume URL does not exist.');
             }
 
             if (!File::isReadable($this->url)) {
-                throw new Exception('The transect URL is not readable. Please check the access permissions.');
+                throw new Exception('The volume URL is not readable. Please check the access permissions.');
             }
         }
 
@@ -228,7 +228,7 @@ class Transect extends Model
         }
 
         if (count($filenames) !== count(array_unique($filenames))) {
-            throw new Exception('A transect must not have the same image twice.');
+            throw new Exception('A volume must not have the same image twice.');
         }
 
         foreach ($filenames as $filename) {
@@ -241,11 +241,11 @@ class Transect extends Model
     }
 
     /**
-     * Creates the image objects to be associated with this transect.
+     * Creates the image objects to be associated with this volume.
      *
      * Make sure the image filenames are valid.
      *
-     * @param array $filenames image filenames at the location of the transect URL
+     * @param array $filenames image filenames at the location of the volume URL
      *
      * @throws QueryException If there was an error creating the images (e.g. if there were
      * duplicate filenames).
@@ -259,7 +259,7 @@ class Transect extends Model
         foreach ($filenames as $filename) {
             $images[] = [
                 'filename' => $filename,
-                'transect_id' => $this->id,
+                'volume_id' => $this->id,
                 'uuid' => Uuid::uuid4(),
             ];
         }
@@ -268,7 +268,7 @@ class Transect extends Model
     }
 
     /**
-     * Perform actions when new images were added to the transect
+     * Perform actions when new images were added to the volume
      *
      * @param  array  $only IDs of images to restrict the actions to.
      */
@@ -279,7 +279,7 @@ class Transect extends Model
     }
 
     /**
-     * The project(s), this transect belongs to.
+     * The project(s), this volume belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -289,7 +289,7 @@ class Transect extends Model
     }
 
     /**
-     * The annotation sessions of this transect
+     * The annotation sessions of this volume
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -299,7 +299,7 @@ class Transect extends Model
     }
 
     /**
-     * The active annotation sessions of this transect (if any)
+     * The active annotation sessions of this volume (if any)
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -313,9 +313,9 @@ class Transect extends Model
     }
 
     /**
-     * Returns the active annotation session of this transect for the given user
+     * Returns the active annotation session of this volume for the given user
      *
-     * An annotation session may be active for a transect but it is only also active for
+     * An annotation session may be active for a volume but it is only also active for
      * a user, if the user belongs to the set of restricted users of the annotation
      * session.
      *
@@ -363,27 +363,27 @@ class Transect extends Model
     }
 
     /**
-     * Check if the images of this transect come from a remote URL
+     * Check if the images of this volume come from a remote URL
      *
      * @return boolean
      */
     public function isRemote()
     {
         // Cache this for a single request because it may be called lots of times.
-        return Cache::store('array')->remember("transect-{$this->id}-is-remote", 1, function () {
+        return Cache::store('array')->remember("volume-{$this->id}-is-remote", 1, function () {
             return preg_match('#^https?://#i', $this->url) === 1;
         });
     }
 
     /**
-     * An image that can be used a unique thumbnail for this transect.
+     * An image that can be used a unique thumbnail for this volume.
      *
      * @return Image
      */
     public function getThumbnailAttribute()
     {
-        return Cache::remember("transect-thumbnail-{$this->id}", 60, function () {
-            // Choose an image from the middle of the transect because the first and last
+        return Cache::remember("volume-thumbnail-{$this->id}", 60, function () {
+            // Choose an image from the middle of the volume because the first and last
             // ones are often of bad quality.
             $index = round($this->images()->count() / 2) - 1;
 
@@ -392,27 +392,27 @@ class Transect extends Model
     }
 
     /**
-     * Check if the transect has some images with GPS coordinates
+     * Check if the volume has some images with GPS coordinates
      *
      * @return boolean
      */
     public function hasGeoInfo()
     {
-        return Cache::remember("transect-{$this->id}-has-geo-info", 60, function () {
+        return Cache::remember("volume-{$this->id}-has-geo-info", 60, function () {
             return $this->images()->whereNotNull('lng')->whereNotNull('lat')->exists();
         });
     }
 
     /**
-     * Flush the cached information if this transect has images with GPS coordinates
+     * Flush the cached information if this volume has images with GPS coordinates
      */
     public function flushGeoInfoCache()
     {
-        Cache::forget("transect-{$this->id}-has-geo-info");
+        Cache::forget("volume-{$this->id}-has-geo-info");
     }
 
     /**
-     * (Re-) generates the thumbnail images for all images belonging to this transect
+     * (Re-) generates the thumbnail images for all images belonging to this volume
      *
      * @param array $only (optional) Array of image IDs to restrict the (re-)generation
      * of thumbnails to.
@@ -423,7 +423,7 @@ class Transect extends Model
     }
 
     /**
-     * (Re-) collects image meta information for images of this transect.
+     * (Re-) collects image meta information for images of this volume.
      *
      * @param array $only (optional) Array of image IDs to restrict the action to.
      */

@@ -56,7 +56,7 @@
             <h3>Nested mixins</h3>
 
             <p>
-                Let's stay in the dashboard example. If you fiddle with the providers array of BIIGLE' <code>config/app.php</code> and disable the transects module, you'll notice on the dashboard that the transect thumbnail images inside of the project boxes disappear. If you then disable the projects module as well, the project boxes will disappear, too. So the transect thumbnails and project boxes <em>both</em> must be view mixins. But the thumbnails are inside of the project boxes so there must be a mechanism for nesting view mixins.
+                Let's stay in the dashboard example. If you fiddle with the providers array of BIIGLE' <code>config/app.php</code> and disable the volumes module, you'll notice on the dashboard that the volume thumbnail images inside of the project boxes disappear. If you then disable the projects module as well, the project boxes will disappear, too. So the volume thumbnails and project boxes <em>both</em> must be view mixins. But the thumbnails are inside of the project boxes so there must be a mechanism for nesting view mixins.
             </p>
 
             <h4>Displaying nested mixins</h4>
@@ -69,15 +69,15 @@
    &#64;include($module.'::dashboardMain', <strong>['mixins' => $nestedMixins]</strong>)
 </pre>
             <p>
-                Previously we only talked about keys of the mixins array (<code>$module</code>). The values of the array (<code>$nestedMixins</code>) contain an array of <em>nested</em> view mixins that should be inserted into the current mixin. Let's take the transects thumbnails and project boxes as an example.
+                Previously we only talked about keys of the mixins array (<code>$module</code>). The values of the array (<code>$nestedMixins</code>) contain an array of <em>nested</em> view mixins that should be inserted into the current mixin. Let's take the volumes thumbnails and project boxes as an example.
             </p>
             <p>
-                The project boxes are the first level of mixins that are added to the dashboard; this works just as described in the previous section. Now the transect thumbnails should be added to <em>each</em> project box. These are the second level of mixins, supplied to the project box mixin as an additional argument of <code>&#64;include</code>. The structure can be visualized in a tree like this:
+                The project boxes are the first level of mixins that are added to the dashboard; this works just as described in the previous section. Now the volume thumbnails should be added to <em>each</em> project box. These are the second level of mixins, supplied to the project box mixin as an additional argument of <code>&#64;include</code>. The structure can be visualized in a tree like this:
             </p>
 <pre>
 $modules->getMixins('dashboardMain')
 ├─ <strong>projects</strong> (the project boxes)
-│  └─ <strong>transects</strong> (the transect thumbnails for each box)
+│  └─ <strong>volumes</strong> (the volume thumbnails for each box)
 │     └─ empty
 └─ <strong>quotes</strong> (the inspiring quotes box)
    └─ empty
@@ -98,19 +98,19 @@ $modules->getMixins('dashboardMain')
 $modules->addMixin('projects', 'dashboardMain');
 </pre>
             <p>
-                The view mixin registration of the transect thumbnails looks a bit different, though:
+                The view mixin registration of the volume thumbnails looks a bit different, though:
             </p>
 <pre>
-$modules->addMixin('transects', 'dashboardMain.projects');
+$modules->addMixin('volumes', 'dashboardMain.projects');
 </pre>
             <p>
-                Here, a mixin of the <code>transects</code> namespace is registered for the <code>projects</code> mixin on the <code>dashboardMain</code> view.
+                Here, a mixin of the <code>volumes</code> namespace is registered for the <code>projects</code> mixin on the <code>dashboardMain</code> view.
             </p>
             <p>
-                While the project box mixin simply is the file <code>views/dashboardMain.blade.php</code>, the transect thumbnail mixin has to be the file <code>views/dashboardMain/projects.blade.php</code>. So here, again following convention over configuration, the <code>dashboardMain.projects</code> identifier is used both to determine the area, the mixin should be inserted into, and the source file.
+                While the project box mixin simply is the file <code>views/dashboardMain.blade.php</code>, the volume thumbnail mixin has to be the file <code>views/dashboardMain/projects.blade.php</code>. So here, again following convention over configuration, the <code>dashboardMain.projects</code> identifier is used both to determine the area, the mixin should be inserted into, and the source file.
             </p>
             <p>
-                Registration and serving of nested mixins is handled by the <code>Modules</code> service so nested mixins work out of the box. For a "live" example take a look at the projects and transects modules mentioned in this tutorial.
+                Registration and serving of nested mixins is handled by the <code>Modules</code> service so nested mixins work out of the box. For a "live" example take a look at the projects and volumes modules mentioned in this tutorial.
             </p>
 
             <h3>Asset mixins and multiple mixins per view</h3>
@@ -119,7 +119,7 @@ $modules->addMixin('transects', 'dashboardMain.projects');
                 Until now we have only talked about registering <em>one</em> area for view mixins per page. There are use cases, though, where you'd want or are even required to have multiple of those areas on one page. Let's take a look at one of the situations where multiple areas for view mixins are necessary.
             </p>
             <p>
-                Having the example of the project box mixins containing transect thumbnail mixins still in mind, think about what whould happen if we tried to add a custom style to the transect thumbnails. "Of course", you'd say, "there is the <a href="{{ route('manual-documentation').'/using-custom-assets-in-packages#publishing-css' }}"><code>styles</code> stack</a> we can append our CSS to." But the downside of this approach is: the custom <code>style</code> tag is appended <em>each time</em> the mixin is included. While this is fine for the project box mixin that is included only once, it becomes a problem with nested mixins like the transect thumbnails that are included multiple times. So for each project box on the dashboard, one custom style tag woul be appended to the page. There is a better way to do this.
+                Having the example of the project box mixins containing volume thumbnail mixins still in mind, think about what whould happen if we tried to add a custom style to the volume thumbnails. "Of course", you'd say, "there is the <a href="{{ route('manual-documentation').'/using-custom-assets-in-packages#publishing-css' }}"><code>styles</code> stack</a> we can append our CSS to." But the downside of this approach is: the custom <code>style</code> tag is appended <em>each time</em> the mixin is included. While this is fine for the project box mixin that is included only once, it becomes a problem with nested mixins like the volume thumbnails that are included multiple times. So for each project box on the dashboard, one custom style tag woul be appended to the page. There is a better way to do this.
             </p>
             <p>
                 In fact there is nothing preventing us to implement a separate "style" mixin and add it to the dashboard. That's exactly what is already provided by the dashboard, looking like this:
@@ -135,19 +135,19 @@ $modules->addMixin('transects', 'dashboardMain.projects');
                 Any mixin registered for <code>dashboardStyles</code> will be appended once to the <code>styles</code> section of the dashboard. Since nested mixins don't make any sense in this case, they are not passed on to the first level mixin.
             </p>
             <p>
-                Now, if we wanted to add a custom style to the transects thumbnails we would create a mixin called <code>views/dashboardStyles.blade.php</code> looking like this:
+                Now, if we wanted to add a custom style to the volumes thumbnails we would create a mixin called <code>views/dashboardStyles.blade.php</code> looking like this:
             </p>
 <pre>
-&lt;link href="@{{ asset('vendor/transects/styles/main.css') }}" rel="stylesheet"&gt;
+&lt;link href="@{{ asset('vendor/volumes/styles/main.css') }}" rel="stylesheet"&gt;
 </pre>
             <p>
                 And - in the service provider - register it to the dashboard styles section:
             </p>
 <pre>
-$modules->addMixin('transects', 'dashboardStyles');
+$modules->addMixin('volumes', 'dashboardStyles');
 </pre>
             <p>
-                Now the custom style for the transect thumbnails is included only once in the dashboard but available to all the multiple instances of the thumbnail mixin. The same holds for custom scripts (there is a <code>dashboardScripts</code> mixin area). Aside from styles and scripts of nested mixins, you can use this technique to specify multiple arbitrary areas for view mixins on one page, e.g. one for a sidebar, title bar or the content each.
+                Now the custom style for the volume thumbnails is included only once in the dashboard but available to all the multiple instances of the thumbnail mixin. The same holds for custom scripts (there is a <code>dashboardScripts</code> mixin area). Aside from styles and scripts of nested mixins, you can use this technique to specify multiple arbitrary areas for view mixins on one page, e.g. one for a sidebar, title bar or the content each.
             </p>
 
             <h3>Conclusion</h3>

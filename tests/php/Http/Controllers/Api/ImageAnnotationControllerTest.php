@@ -19,7 +19,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->image = ImageTest::create([
-            'transect_id' => $this->transect()->id,
+            'volume_id' => $this->volume()->id,
         ]);
     }
 
@@ -58,7 +58,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     public function testIndexAnnotationSessionHideOwn()
     {
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->transect()->id,
+            'volume_id' => $this->volume()->id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
             'hide_own_annotations' => true,

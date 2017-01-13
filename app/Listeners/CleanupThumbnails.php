@@ -12,7 +12,7 @@ class CleanupThumbnails implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param  array  $uuids  The transect image UUIDs
+     * @param  array  $uuids  The volume image UUIDs
      * @return void
      */
     public function handle(array $uuids)

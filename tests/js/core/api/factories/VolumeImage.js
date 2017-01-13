@@ -1,4 +1,4 @@
-describe('The TransectImage resource factory', function () {
+describe('The VolumeImage resource factory', function () {
 	var $httpBackend;
 
 	beforeEach(module('biigle.api'));
@@ -20,10 +20,10 @@ describe('The TransectImage resource factory', function () {
 		// Set up the mock http service responses
 		$httpBackend = $injector.get('$httpBackend');
 
-		$httpBackend.when('GET', '/api/v1/transects/1/images')
+		$httpBackend.when('GET', '/api/v1/volumes/1/images')
 		            .respond([image]);
 
-        $httpBackend.when('POST', '/api/v1/transects/1/images')
+        $httpBackend.when('POST', '/api/v1/volumes/1/images')
                     .respond(images);
 	}));
 
@@ -33,18 +33,18 @@ describe('The TransectImage resource factory', function () {
         $httpBackend.verifyNoOutstandingRequest();
     });
 
-    it('should query transect images', inject(function (TransectImage) {
-        $httpBackend.expectGET('/api/v1/transects/1/images');
-        var images = TransectImage.query({transect_id: 1}, function () {
+    it('should query volume images', inject(function (VolumeImage) {
+        $httpBackend.expectGET('/api/v1/volumes/1/images');
+        var images = VolumeImage.query({volume_id: 1}, function () {
             expect(images[0]).toEqual(1);
         });
 	}));
 
-    it('should add transect images', inject(function (TransectImage) {
-        $httpBackend.expectPOST('/api/v1/transects/1/images', {
+    it('should add volume images', inject(function (VolumeImage) {
+        $httpBackend.expectPOST('/api/v1/volumes/1/images', {
             filenames: '1.jpg,2.jpg'
         });
-        var images = TransectImage.save({transect_id: 1}, {filenames: '1.jpg,2.jpg'}, function () {
+        var images = VolumeImage.save({volume_id: 1}, {filenames: '1.jpg,2.jpg'}, function () {
             expect(images[0].id).toEqual(1);
             expect(images[0].filename).toEqual('1.jpg');
             expect(images[1].id).toEqual(2);
