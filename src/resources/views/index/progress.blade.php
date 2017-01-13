@@ -1,4 +1,4 @@
-<div class="transect__progress" data-ng-controller="ProgressController">
+<div class="volume__progress" data-ng-controller="ProgressController">
     <div class="btn-group-vertical progress__buttons--top">
         <button type="button" class="btn btn-default btn-xs" title="Go to top 𝗛𝗼𝗺𝗲" data-ng-click="top()" data-ng-disabled="isAtTop()">
             <span class="glyphicon glyphicon-fast-backward"></span>
@@ -11,7 +11,7 @@
         </button>
     </div>
 
-    <div class="transect__progress-bar" data-ng-mousedown="beginScrolling()" data-ng-mouseup="stopScrolling($event)" data-ng-mouseleave="stopScrolling($event)" data-ng-mousemove="scroll($event)" data-ng-click="scrollOnce($event)">
+    <div class="volume__progress-bar" data-ng-mousedown="beginScrolling()" data-ng-mouseup="stopScrolling($event)" data-ng-mouseleave="stopScrolling($event)" data-ng-mousemove="scroll($event)" data-ng-click="scrollOnce($event)">
         <div class="progress-bar__wrapper">
             <div class="progress-bar__progress" data-ng-style="{height: progress()}"></div>
         </div>

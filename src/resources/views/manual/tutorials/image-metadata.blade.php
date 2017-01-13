@@ -8,7 +8,7 @@
             Learn how to upload image metadata.
         </p>
         <p>
-            BIIGLE supports image metadata like the date and time of creation or the geo coordinates of an image. Every time a new transect is created BIIGLE attempts to automatically read the metadata from the EXIF information of JPG files. This doesn't work if the images have another format than JPG, come from a <a href="{{route('manual-tutorials', ['transects', 'remote-transects'])}}">remote location</a> or simply don't have the metadata stored in their EXIF information.
+            BIIGLE supports image metadata like the date and time of creation or the geo coordinates of an image. Every time a new volume is created BIIGLE attempts to automatically read the metadata from the EXIF information of JPG files. This doesn't work if the images have another format than JPG, come from a <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote location</a> or simply don't have the metadata stored in their EXIF information.
         </p>
         <p>
             In this case you can upload an image metadata file. The file should be a CSV file with <code>,</code> as delimiter, <code>&quot;</code> as enclosure and <code>\</code> as escape characters. The following columns are supported:
@@ -69,7 +69,7 @@ image_1.png,2016-12-19 17:09:00,52.112,28.001
 image_2.png,2016-12-19 17:09:31,52.215,28.501
 </pre>
         <p>
-            The image metadata CSV file can be uploaded by transect admins on the transect edit page that you can reach with the <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button> button of the transect overview.
+            The image metadata CSV file can be uploaded by volume admins on the volume edit page that you can reach with the <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button> button of the volume overview.
         </p>
     </div>
 @endsection

@@ -5,25 +5,25 @@
     justify-content: center;
     align-items: center;
 
-    .image-thumbnail, .transect-thumbnail {
+    .image-thumbnail, .volume-thumbnail {
         max-width: 100%;
         height: 200px;
     }
 }
 
-.dashboard__project-transect {
+.dashboard__project-volume {
     display: inline-block;
     position: relative;
     padding-bottom: 1em;
     padding-right: .5em;
 
-    .transect-thumbnail {
+    .volume-thumbnail {
         height: 200px;
         max-width: 100%;
     }
 }
 
-.dashboard__more-transects {
+.dashboard__more-volumes {
     display: inline-block;
     position: relative;
     padding-bottom: 1em;

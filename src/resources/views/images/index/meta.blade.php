@@ -22,7 +22,7 @@
                     <td>{{ $image->taken_at }}</td>
                 </tr>
             @endif
-            @if (!$transect->isRemote())
+            @if (!$volume->isRemote())
                 @foreach (array_only($image->exif, $exifKeys) as $field => $value)
                     <tr>
                         <th>{{ $field }}</th>

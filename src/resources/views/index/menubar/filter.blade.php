@@ -1,5 +1,5 @@
-<div class="transect-filter-menu-group">
-    <button class="btn btn-default transect-menubar__item" data-popover-placement="right" data-uib-popover-template="'filterPopover.html'" type="button" title="Filter images" data-ng-class="{'btn-info':active()}" data-ng-controller="FilterController">
+<div class="volume-filter-menu-group">
+    <button class="btn btn-default volume-menubar__item" data-popover-placement="right" data-uib-popover-template="'filterPopover.html'" type="button" title="Filter images" data-ng-class="{'btn-info':active()}" data-ng-controller="FilterController">
         <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
     </button>
 </div>
@@ -13,7 +13,7 @@
 </script>
 
 <script type="text/ng-template" id="imageLabelUserFilterTypeahead.html">
-    <input class="form-control" placeholder="Select user" data-transect-filter-user-chooser="selectData" />
+    <input class="form-control" placeholder="Select user" data-volume-filter-user-chooser="selectData" />
 </script>
 
 <script data-ng-controller="ImageLabelFilterController" type="text/ng-template" id="imageWithLabelFilterRule.html">
@@ -21,15 +21,15 @@
 </script>
 
 <script type="text/ng-template" id="imageLabelFilterTypeahead.html">
-    <input class="form-control" placeholder="Select label" data-transect-image-label-chooser="selectData" data-transect-id="{{$transect->id}}" />
+    <input class="form-control" placeholder="Select label" data-volume-image-label-chooser="selectData" data-volume-id="{{$volume->id}}" />
 </script>
 
-@foreach ($modules->getMixins('transectsFilters') as $module => $nestedMixins)
-    @include($module.'::transectsFilters')
+@foreach ($modules->getMixins('volumesFilters') as $module => $nestedMixins)
+    @include($module.'::volumesFilters')
 @endforeach
 
 <script type="text/ng-template" id="filterPopover.html">
-    <div class="transect-filter-popover">
+    <div class="volume-filter-popover">
         <div>
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-default" title="Show only images matching the filter rules" data-ng-class="{active: isFilterMode('filter')}" data-ng-click="setFilterMode('filter')"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
@@ -40,7 +40,7 @@
             </div>
             <div class="pull-right ng-cloak text-muted">
                 <span class="loader" data-ng-class="{'loader--active':rulesLoading()}"></span>
-                <span data-ng-if="!rulesLoading()"><span data-ng-bind="numberImages()"></span> of {{ $transect->images->count() }} images</span>
+                <span data-ng-if="!rulesLoading()"><span data-ng-bind="numberImages()"></span> of {{ $volume->images->count() }} images</span>
             </div>
         </div>
 

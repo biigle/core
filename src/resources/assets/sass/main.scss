@@ -1,9 +1,9 @@
 @import "variables";
 
-$transect-image-margin: 4px;
-$transect-image-padding: 0.5em;
+$volume-image-margin: 4px;
+$volume-image-padding: 0.5em;
 
-.transect-container {
+.volume-container {
     display: flex;
     flex-direction: row;
     position: absolute;
@@ -15,7 +15,7 @@ $transect-image-padding: 0.5em;
 
 
 
-.navbar-text.navbar-transects-breadcrumbs {
+.navbar-text.navbar-volumes-breadcrumbs {
     &, a {
         color: $text-color;
     }

@@ -1,9 +1,9 @@
 <?php
 
-namespace Biigle\Modules\Transects\Console\Commands;
+namespace Biigle\Modules\Volumes\Console\Commands;
 
 use Illuminate\Console\Command;
-use Biigle\Modules\Transects\TransectsServiceProvider as ServiceProvider;
+use Biigle\Modules\Volumes\VolumesServiceProvider as ServiceProvider;
 
 class Publish extends Command {
 
@@ -12,7 +12,7 @@ class Publish extends Command {
      *
      * @var string
      */
-    protected $name = 'transects:publish';
+    protected $name = 'volumes:publish';
 
     /**
      * The console command description.

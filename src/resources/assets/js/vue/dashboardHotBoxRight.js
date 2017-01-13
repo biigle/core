@@ -1,11 +1,11 @@
 /**
- * The transect thumbnail of the dashboard hot box.
+ * The volume thumbnail of the dashboard hot box.
  */
-biigle.$viewModel('transect-dashboard-hot-box-right', function (element) {
+biigle.$viewModel('volume-dashboard-hot-box-right', function (element) {
     new Vue({
         el: element,
         components: {
-            transectThumbnail: biigle.$require('projects.components.transectThumbnail')
+            volumeThumbnail: biigle.$require('projects.components.volumeThumbnail')
         }
     });
 });

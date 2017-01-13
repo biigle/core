@@ -1,16 +1,16 @@
-<div class="transect-menubar">
-    @can ('update', $transect)
-        @include('transects::index.menubar.edit')
+<div class="volume-menubar">
+    @can ('update', $volume)
+        @include('volumes::index.menubar.edit')
     @endcan
 
-    @can ('edit-in', $transect)
-        @include('transects::index.menubar.label')
+    @can ('edit-in', $volume)
+        @include('volumes::index.menubar.label')
     @endcan
 
-    @include('transects::index.menubar.filter')
-    @include('transects::index.menubar.sort')
+    @include('volumes::index.menubar.filter')
+    @include('volumes::index.menubar.sort')
 
-    @foreach ($modules->getMixins('transectsMenubar') as $module => $nestedMixins)
-        @include($module.'::transectsMenubar')
+    @foreach ($modules->getMixins('volumesMenubar') as $module => $nestedMixins)
+        @include($module.'::volumesMenubar')
     @endforeach
 </div>

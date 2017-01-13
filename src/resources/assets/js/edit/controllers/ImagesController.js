@@ -1,11 +1,11 @@
 /**
- * @namespace biigle.transects.edit
+ * @namespace biigle.volumes.edit
  * @ngdoc controller
  * @name ImagesController
- * @memberOf biigle.transects.edit
- * @description Controller for adding, editing and deleting transect images
+ * @memberOf biigle.volumes.edit
+ * @description Controller for adding, editing and deleting volume images
  */
-angular.module('biigle.transects.edit').controller('ImagesController', function ($scope, $element, Image, TransectImage, TRANSECT_ID, msg) {
+angular.module('biigle.volumes.edit').controller('ImagesController', function ($scope, $element, Image, VolumeImage, VOLUME_ID, msg) {
 		"use strict";
 
         var messages = {
@@ -20,7 +20,7 @@ angular.module('biigle.transects.edit').controller('ImagesController', function 
         };
 
         var removeImageListItem = function (id) {
-            var element = document.getElementById('transect-image-' + id);
+            var element = document.getElementById('volume-image-' + id);
 
             if (element) {
                 element.remove();
@@ -47,9 +47,9 @@ angular.module('biigle.transects.edit').controller('ImagesController', function 
         /*
          * Use this function in global scope and onclick instead of a function in the
          * scope of this controller and ngClick because it has a much better performance
-         * if the transect has thousands of images.
+         * if the volume has thousands of images.
          */
-        window.$biigleTransectsEditDeleteImage = function (id, filename) {
+        window.$biigleVolumesEditDeleteImage = function (id, filename) {
             $scope.$apply(function () {
                 $scope.deleteImage(id, filename);
             });
@@ -61,7 +61,7 @@ angular.module('biigle.transects.edit').controller('ImagesController', function 
         };
 
         $scope.addNewImages = function () {
-            var images = TransectImage.save({transect_id: TRANSECT_ID}, {images: $scope.data.filenames}, function () {
+            var images = VolumeImage.save({volume_id: VOLUME_ID}, {images: $scope.data.filenames}, function () {
                 Array.prototype.push.apply($scope.data.newImages, images);
                 $scope.data.filenames = '';
             }, msg.responseError);

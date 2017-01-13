@@ -1,11 +1,11 @@
-<div class="transect-sort-menu-group">
-    <button class="btn btn-default transect-menubar__item" data-popover-placement="right" data-uib-popover-template="'sortPopover.html'" type="button" title="Sort images" data-ng-class="{'btn-info':active()}" data-ng-controller="SortController">
+<div class="volume-sort-menu-group">
+    <button class="btn btn-default volume-menubar__item" data-popover-placement="right" data-uib-popover-template="'sortPopover.html'" type="button" title="Sort images" data-ng-class="{'btn-info':active()}" data-ng-controller="SortController">
         <span class="glyphicon glyphicon-sort" aria-hidden="true"></span>
     </button>
 </div>
 
 <script type="text/ng-template" id="sortPopover.html">
-    <div class="transect-sort-popover">
+    <div class="volume-sort-popover">
         <div class="clearfix">
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-default" title="Sort ascending" data-ng-class="{active: isSortAscending()}" data-ng-click="setSortAscending()"><span class="glyphicon glyphicon-sort-by-attributes" aria-hidden="true"></span></button>
@@ -24,8 +24,8 @@
 
             <button type="button" class="list-group-item" title="Sort images randomly" data-ng-click="toggle()" data-ng-class="{active: active()}" data-ng-controller="SortRandomController">Random</button>
 
-            @foreach ($modules->getMixins('transectsSorters') as $module => $nestedMixins)
-                @include($module.'::transectsSorters')
+            @foreach ($modules->getMixins('volumesSorters') as $module => $nestedMixins)
+                @include($module.'::volumesSorters')
             @endforeach
         </div>
     </div>

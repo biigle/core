@@ -1,5 +1,5 @@
-<div class="transect__label" data-ng-controller="ImageLabelController">
-    <div class="transect__label-body ng-cloak" data-ng-if="isInLabelMode()">
+<div class="volume__label" data-ng-controller="ImageLabelController">
+    <div class="volume__label-body ng-cloak" data-ng-if="isInLabelMode()">
         <div class="labels-search clearfix">
             <button class="btn btn-default pull-right" data-ng-click="toggleLabelMode()" title="Exit image label mode">
                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>

@@ -1,5 +1,5 @@
 <h4>
-    <a href="{{route('manual-tutorials', ['transects', 'annotation-sessions'])}}">Annotation sessions</a>
+    <a href="{{route('manual-tutorials', ['volumes', 'annotation-sessions'])}}">Annotation sessions</a>
 </h4>
 
 <p>
@@ -7,15 +7,15 @@
 </p>
 
 <h4>
-    <a href="{{route('manual-tutorials', ['transects', 'remote-transects'])}}">Remote transects</a>
+    <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">Remote volumes</a>
 </h4>
 
 <p>
-    Learn what remote transects are and when to use them.
+    Learn what remote volumes are and when to use them.
 </p>
 
 <h4>
-    <a href="{{route('manual-tutorials', ['transects', 'image-metadata'])}}">Image metadata</a>
+    <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">Image metadata</a>
 </h4>
 
 <p>

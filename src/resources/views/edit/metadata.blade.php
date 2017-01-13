@@ -1,4 +1,4 @@
-<div id="transect-metadata-upload" class="panel panel-default">
+<div id="volume-metadata-upload" class="panel panel-default">
     <div class="panel-heading">
         Image metadata
         <span class="pull-right"><span class="loader" v-bind:class="{'loader--active':loading}"></span></span>
@@ -11,7 +11,7 @@
             <div class="form-group">
                 <input type="file" name="file" v-on:change="setCsv">
                 <p class="help-block">
-                    See the <a href="{{route('manual-tutorials', ['transects', 'image-metadata'])}}">manual</a> on how the CSV file should look like.
+                    See the <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">manual</a> on how the CSV file should look like.
                 </p>
             </div>
             <div class="alert alert-danger" v-if="error" v-text="error" v-cloak></div>

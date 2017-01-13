@@ -1,5 +1,5 @@
 {
-    "name": "biigle/transects",
+    "name": "biigle/volumes",
     "require": {
         "biigle/projects": ">=1.1.2",
         "biigle/label-trees": "~1.0"
@@ -8,7 +8,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Biigle\\Modules\\Transects\\": "src"
+            "Biigle\\Modules\\Volumes\\": "src"
         }
     },
     "scripts": {
