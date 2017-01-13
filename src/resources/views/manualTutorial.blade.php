@@ -3,7 +3,7 @@
 </h4>
 
 <p>
-    See how to create a project and add a transect.
+    See how to create a project and add a volume.
 </p>
 
 <h4>
@@ -15,9 +15,9 @@
 </p>
 
 <h4>
-    <a href="{{route('manual-tutorials', ['projects', 'view-all-transects-of-a-project'])}}">View all Transects of a Project</a>
+    <a href="{{route('manual-tutorials', ['projects', 'view-all-volumes-of-a-project'])}}">View all Volumes of a Project</a>
 </h4>
 
 <p>
-    See how to view all transects of a project.
+    See how to view all volumes of a project.
 </p>

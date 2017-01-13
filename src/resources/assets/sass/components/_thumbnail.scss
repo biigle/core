@@ -2,7 +2,7 @@
     50% {opacity: .5;}
 }
 
-.transect-thumbnail {
+.volume-thumbnail {
     display: block;
     position: relative;
     overflow: hidden;
@@ -36,13 +36,13 @@
     }
 
     &.loading:hover {
-        .transect-thumbnail__progress {
+        .volume-thumbnail__progress {
             animation: pulse 1s infinite;
         }
     }
 }
 
-.transect-thumbnail__images {
+.volume-thumbnail__images {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -50,7 +50,7 @@
     left: 0;
 }
 
-.transect-thumbnail__progress {
+.volume-thumbnail__progress {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -59,7 +59,7 @@
     opacity: .25;
 }
 
-.transect-thumbnail__close {
+.volume-thumbnail__close {
     position: absolute;
     top: 0;
     right: .5em;

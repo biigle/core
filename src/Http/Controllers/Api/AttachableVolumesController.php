@@ -5,27 +5,27 @@ namespace Biigle\Modules\Projects\Http\Controllers\Api;
 use DB;
 use Biigle\Role;
 use Biigle\Project;
-use Biigle\Transect;
+use Biigle\Volume;
 use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Api\Controller;
 
-class AttachableTransectsController extends Controller
+class AttachableVolumesController extends Controller
 {
     /**
-     * Shows all transects that can be attached to the project by the requesting user
+     * Shows all volumes that can be attached to the project by the requesting user
      *
-     * @api {get} projects/:id/attachable-transects Get all transects that can be attached
+     * @api {get} projects/:id/attachable-volumes Get all volumes that can be attached
      * @apiGroup Projects
-     * @apiName IndexAttachableTransects
+     * @apiName IndexAttachableVolumes
      * @apiPermission admin
-     * @apiParam {Number} id ID of the project for which the transects should be fetched.
-     * @apiDescription A list of all transects where the requesting user has admin rights for (excluding those already belonging to the specified project).
+     * @apiParam {Number} id ID of the project for which the volumes should be fetched.
+     * @apiDescription A list of all volumes where the requesting user has admin rights for (excluding those already belonging to the specified project).
      *
      * @apiSuccessExample {json} Success response:
      * [
      *    {
      *       "id": 1,
-     *       "name": "My other transect",
+     *       "name": "My other volume",
      *       "thumbnail": {
      *           "id": 12,
      *           "filename": "image.jpg",
@@ -44,11 +44,11 @@ class AttachableTransectsController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
 
-        $transects = Transect::select('id', 'name')
-            // All transects of other projects where the user has admin rights on.
+        $volumes = Volume::select('id', 'name')
+            // All volumes of other projects where the user has admin rights on.
             ->whereIn('id', function ($query) use ($auth, $id) {
-                return $query->select('transect_id')
-                    ->from('project_transect')
+                return $query->select('volume_id')
+                    ->from('project_volume')
                     ->whereIn('project_id', function ($query) use ($auth, $id) {
                         return $query->select('project_id')
                             ->from('project_user')
@@ -57,22 +57,22 @@ class AttachableTransectsController extends Controller
                             ->where('project_id', '!=', $id);
                     });
             })
-            // Do not return transects that are already attached to this project.
+            // Do not return volumes that are already attached to this project.
             // This is needed although we are already excluding the project in the
-            // previous statement because other projects may already share transects with
+            // previous statement because other projects may already share volumes with
             // this one.
             ->whereNotIn('id', function ($query) use ($id) {
-                return $query->select('transect_id')
-                    ->from('project_transect')
+                return $query->select('volume_id')
+                    ->from('project_volume')
                     ->where('project_id', $id);
             })
             ->distinct()
             ->get();
 
-        $transects->each(function ($item) {
+        $volumes->each(function ($item) {
             $item->append('thumbnail');
         });
 
-        return $transects;
+        return $volumes;
     }
 }

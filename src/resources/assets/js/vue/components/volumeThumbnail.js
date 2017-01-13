@@ -1,19 +1,19 @@
 /**
- * An interactive transect thumbnail that shows an overview of transect images
+ * An interactive volume thumbnail that shows an overview of volume images
  * on mousemove.
  *
  * @type {Object}
  */
-biigle.$component('projects.components.transectThumbnail', {
+biigle.$component('projects.components.volumeThumbnail', {
     template:
-    '<figure class="transect-thumbnail" v-bind:class="{loading: loading}" v-on:mouseover="fetchUuids" v-on:mousemove="updateIndex($event)" v-on:click="clearTimeout" v-on:mouseout="clearTimeout">' +
-        '<span class="transect-thumbnail__close close" v-if="removable" v-on:click.prevent="remove" v-bind:title="removeTitle">&times;</span>' +
+    '<figure class="volume-thumbnail" v-bind:class="{loading: loading}" v-on:mouseover="fetchUuids" v-on:mousemove="updateIndex($event)" v-on:click="clearTimeout" v-on:mouseout="clearTimeout">' +
+        '<span class="volume-thumbnail__close close" v-if="removable" v-on:click.prevent="remove" v-bind:title="removeTitle">&times;</span>' +
         '<slot></slot>' +
-        '<div class="transect-thumbnail__images" v-if="initialized">' +
+        '<div class="volume-thumbnail__images" v-if="initialized">' +
             '<img v-on:error="failed[i] = true" v-bind:class="{hidden: thumbHidden(i)}" v-bind:src="thumbUri(uuid)" v-for="(uuid, i) in uuids">' +
         '</div>' +
         '<slot name="caption"></slot>' +
-        '<span class="transect-thumbnail__progress" v-bind:style="{width: progress}"></span>' +
+        '<span class="volume-thumbnail__progress" v-bind:style="{width: progress}"></span>' +
     '</figure>',
     props: {
         tid: {
@@ -34,7 +34,7 @@ biigle.$component('projects.components.transectThumbnail', {
         },
         removeTitle: {
             type: String,
-            default: 'Remove this transect'
+            default: 'Remove this volume'
         }
     },
     data: function () {
@@ -68,15 +68,15 @@ biigle.$component('projects.components.transectThumbnail', {
         fetchUuids: function () {
             if (this.initialized || this.loading) return;
 
-            var transectSample = biigle.$require('api.transectSample');
+            var volumeSample = biigle.$require('api.volumeSample');
 
             var self = this;
             self.loading = true;
             // Wait before fetching the thumbnails. Maybe the user just wants to go
-            // to the transect or just passes the mouse over the thumbnail. In this case
+            // to the volume or just passes the mouse over the thumbnail. In this case
             // the timeout is cancelled.
             self.timeoutId = setTimeout(function () {
-                transectSample.get({id: self.tid})
+                volumeSample.get({id: self.tid})
                     .then(function (response) {
                         if (response.ok) {
                             self.uuids = response.data;

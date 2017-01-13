@@ -42,12 +42,12 @@ class ProjectsController extends Controller
             ->select('id', 'name', 'description')
             ->get();
 
-        $transects = $project->transects()
+        $volumes = $project->volumes()
             ->select('id', 'name', 'updated_at')
             ->orderBy('updated_at', 'desc')
             ->get();
 
-        $transects->each(function ($item) {
+        $volumes->each(function ($item) {
             $item->append('thumbnail');
         });
 
@@ -61,7 +61,7 @@ class ProjectsController extends Controller
             'user' => $auth->user(),
             'roles' => $roles,
             'labelTrees' => $labelTrees,
-            'transects' => $transects,
+            'volumes' => $volumes,
             'members' => $members,
         ]);
     }

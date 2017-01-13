@@ -5,7 +5,7 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            See how to create a project and add a transect.
+            See how to create a project and add a volume.
         </p>
 
         <div class="embed-responsive embed-responsive-16by9">
