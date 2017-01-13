@@ -110,7 +110,7 @@ class SystemMessageController extends Controller
     }
 
     /**
-     * Delete an unpublished system message
+     * Delete an unpublished system message.
      *
      * @api {delete} system-messages/:id Delete a system message
      * @apiGroup SystemMessages

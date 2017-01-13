@@ -102,7 +102,7 @@ class ImageControllerTest extends ApiTestCase
         $this->assertResponseStatus(403);
 
         $this->beAdmin();
-        $this->delete("/api/v1/images/999");
+        $this->delete('/api/v1/images/999');
         $this->assertResponseStatus(404);
 
         $this->assertNotNull($this->image->fresh()->volume_id);

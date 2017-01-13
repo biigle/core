@@ -177,7 +177,7 @@ class Image extends Model
     }
 
     /**
-     * Returns the image size as `[width, height]`
+     * Returns the image size as `[width, height]`.
      *
      * @return array
      */
@@ -187,7 +187,7 @@ class Image extends Model
     }
 
     /**
-     * Get the thumbnail image as download response
+     * Get the thumbnail image as download response.
      *
      * @return Response
      */
@@ -201,7 +201,7 @@ class Image extends Model
     }
 
     /**
-     * Get the original image as download response
+     * Get the original image as download response.
      *
      * @return Response
      */

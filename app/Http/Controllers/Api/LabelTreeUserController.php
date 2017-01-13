@@ -12,7 +12,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 class LabelTreeUserController extends Controller
 {
     /**
-     * Updates a member of a label tree
+     * Updates a member of a label tree.
      *
      * @api {put} label-trees/:lid/users/:uid Update a member
      * @apiGroup Label Trees
@@ -51,12 +51,13 @@ class LabelTreeUserController extends Controller
             return redirect($request->input('_redirect'))
                 ->with('saved', true);
         }
+
         return redirect()->back()
             ->with('saved', true);
     }
 
     /**
-     * Add a member to a label tree
+     * Add a member to a label tree.
      *
      * @api {post} label-trees/:id/users Add a member
      * @apiGroup Label Trees
@@ -92,12 +93,13 @@ class LabelTreeUserController extends Controller
             return redirect($request->input('_redirect'))
                 ->with('saved', true);
         }
+
         return redirect()->back()
             ->with('saved', true);
     }
 
     /**
-     * Removes the specified member from the specified label tree
+     * Removes the specified member from the specified label tree.
      *
      * @api {delete} label-trees/:lid/users/:uid Remove a member
      * @apiGroup Label Trees
@@ -137,6 +139,7 @@ class LabelTreeUserController extends Controller
             return redirect($request->input('_redirect'))
                 ->with('deleted', true);
         }
+
         return redirect()->back()
             ->with('deleted', true);
     }

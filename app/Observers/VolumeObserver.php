@@ -24,7 +24,7 @@ class VolumeObserver
     }
 
     /**
-     * Handle the deletion of a volume
+     * Handle the deletion of a volume.
      *
      * @param Volume $volume
      * @return bool

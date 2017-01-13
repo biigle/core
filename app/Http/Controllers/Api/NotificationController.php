@@ -7,7 +7,7 @@ use Illuminate\Contracts\Auth\Guard;
 class NotificationController extends Controller
 {
     /**
-     * Mark a notification as read
+     * Mark a notification as read.
      *
      * @api {put} notifications/:id Mark as read
      * @apiGroup Notifications
@@ -29,7 +29,7 @@ class NotificationController extends Controller
     }
 
     /**
-     * Delete a read notification
+     * Delete a read notification.
      *
      * @api {delete} notifications/:id Delete read notification
      * @apiGroup Notifications

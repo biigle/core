@@ -118,6 +118,7 @@ class ProjectVolumeController extends Controller
             $volume->createImages($images);
         } catch (\Exception $e) {
             $volume->delete();
+
             return response($e->getMessage(), 400);
         }
 

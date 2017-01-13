@@ -93,7 +93,7 @@ class User extends Authenticatable
             'firstname' => 'max:127',
             'lastname' => 'max:127',
             'role_id' => 'exists:roles,id',
-            'auth_password' => 'required_with:role_id,password,email'
+            'auth_password' => 'required_with:role_id,password,email',
         ];
     }
 
@@ -128,7 +128,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Api tokens of this user
+     * Api tokens of this user.
      *
      * @return @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

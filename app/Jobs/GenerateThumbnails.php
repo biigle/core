@@ -2,8 +2,6 @@
 
 namespace Biigle\Jobs;
 
-use DB;
-use Biigle\Jobs\Job;
 use Biigle\Volume;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;

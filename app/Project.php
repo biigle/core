@@ -29,7 +29,7 @@ class Project extends Model
     ];
 
     /**
-     * Validation rules for attaching a label tree
+     * Validation rules for attaching a label tree.
      *
      * @var array
      */
@@ -270,7 +270,7 @@ class Project extends Model
     }
 
     /**
-     * The label trees, this project is using
+     * The label trees, this project is using.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -280,7 +280,7 @@ class Project extends Model
     }
 
     /**
-     * The private label trees that authorized this project to use them
+     * The private label trees that authorized this project to use them.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */

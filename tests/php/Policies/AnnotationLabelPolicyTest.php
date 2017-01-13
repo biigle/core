@@ -1,4 +1,5 @@
 <?php
+
 namespace Biigle\Tests\Policies;
 
 use TestCase;

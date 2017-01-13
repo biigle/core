@@ -23,7 +23,7 @@ class NewUser extends Command
     protected $description = 'Create a new user';
 
     /**
-     * Handle the command
+     * Handle the command.
      *
      * @return void
      */

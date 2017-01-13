@@ -13,7 +13,7 @@ class VolumePolicy extends CachedPolicy
     use HandlesAuthorization;
 
     /**
-     * Intercept all checks
+     * Intercept all checks.
      *
      * @param User $user
      * @param string $ability
@@ -48,7 +48,7 @@ class VolumePolicy extends CachedPolicy
     }
 
     /**
-     * Determine if the user can edit something in the given volume
+     * Determine if the user can edit something in the given volume.
      *
      * @param  User  $user
      * @param  Volume  $volume

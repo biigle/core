@@ -147,7 +147,7 @@ class VolumeTest extends ModelTestCase
     public function testValidateUrlRemoteError()
     {
         $this->model->url = 'http://localhost';
-        $mock = new MockHandler([new RequestException("Error Communicating with Server", new Request('HEAD', 'test'))]);
+        $mock = new MockHandler([new RequestException('Error Communicating with Server', new Request('HEAD', 'test'))]);
 
         $handler = HandlerStack::create($mock);
 
@@ -178,7 +178,7 @@ class VolumeTest extends ModelTestCase
         $this->model->url = 'http://localhost';
         $mock = new MockHandler([
             new Response(404),
-            new Response(200)
+            new Response(200),
         ]);
 
         $container = [];

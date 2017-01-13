@@ -2,7 +2,6 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Carbon\Carbon;
 use Biigle\Volume;
 use Biigle\AnnotationSession;
 use Illuminate\Http\Request;
@@ -135,7 +134,7 @@ class VolumeAnnotationSessionController extends Controller
         // the volume users using the count.
         if ($count !== count($users)) {
             return $this->buildFailedValidationResponse($request, [
-                'users' => ['All users must belong to one of the projects, this volume is attached to.']
+                'users' => ['All users must belong to one of the projects, this volume is attached to.'],
             ]);
         }
 
@@ -148,7 +147,7 @@ class VolumeAnnotationSessionController extends Controller
 
         if ($volume->hasConflictingAnnotationSession($session)) {
             return $this->buildFailedValidationResponse($request, [
-                'starts_at' => ['There already is an annotation session in this time period.']
+                'starts_at' => ['There already is an annotation session in this time period.'],
             ]);
         }
 

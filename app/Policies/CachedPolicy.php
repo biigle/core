@@ -5,12 +5,12 @@ namespace Biigle\Policies;
 use Cache;
 
 /**
- * A policy for caching the return values of the authorization rules during a request
+ * A policy for caching the return values of the authorization rules during a request.
  */
 class CachedPolicy
 {
     /**
-     * Time to store the cached values
+     * Time to store the cached values.
      *
      * (is irrelevant for the array store)
      *
@@ -26,7 +26,7 @@ class CachedPolicy
     protected $cache;
 
     /**
-     * Create a new CachedPolicy
+     * Create a new CachedPolicy.
      */
     public function __construct()
     {
@@ -34,7 +34,7 @@ class CachedPolicy
     }
 
     /**
-     * Wrapper for the Cache::remember function of the array cache
+     * Wrapper for the Cache::remember function of the array cache.
      *
      * @param string $key Key of the cached item
      * @param callable $callback Callback returning the cached item

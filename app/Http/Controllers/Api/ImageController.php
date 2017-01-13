@@ -118,7 +118,7 @@ class ImageController extends Controller
     }
 
     /**
-     * Deletes the image
+     * Deletes the image.
      *
      * @api {delete} images/:id Delete an image
      * @apiGroup Images

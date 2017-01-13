@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class LabelTreeAuthorizedProjectController extends Controller
 {
     /**
-     * Authorize a project to use a private label tree
+     * Authorize a project to use a private label tree.
      *
      * @api {post} label-trees/:id/authorized-projects Add authorized project
      * @apiGroup Label Trees
@@ -45,12 +45,13 @@ class LabelTreeAuthorizedProjectController extends Controller
             return redirect($request->input('_redirect'))
                 ->with('saved', true);
         }
+
         return redirect()->back()
             ->with('saved', true);
     }
 
     /**
-     * Remove authorization of a project to use a private label tree
+     * Remove authorization of a project to use a private label tree.
      *
      * @api {delete} label-trees/:lid/authorized-projects/:pid Remove authorized project
      * @apiGroup Label Trees
@@ -86,6 +87,7 @@ class LabelTreeAuthorizedProjectController extends Controller
             return redirect($request->input('_redirect'))
                 ->with('deleted', true);
         }
+
         return redirect()->back()
             ->with('deleted', true);
     }

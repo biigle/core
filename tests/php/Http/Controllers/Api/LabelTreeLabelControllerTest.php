@@ -6,7 +6,6 @@ use App;
 use Mockery;
 use Biigle\Role;
 use ApiTestCase;
-use Biigle\LabelTree;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelSourceTest;

@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\ApiToken;
 use Biigle\Tests\ApiTokenTest;
 
 class ApiTokenControllerTest extends ApiTestCase
@@ -74,7 +73,7 @@ class ApiTokenControllerTest extends ApiTestCase
 
         $this->be($token->owner);
 
-        $this->delete("/api/v1/api-tokens/999");
+        $this->delete('/api/v1/api-tokens/999');
         $this->assertResponseStatus(404);
 
         $this->json('DELETE', "/api/v1/api-tokens/{$id}");

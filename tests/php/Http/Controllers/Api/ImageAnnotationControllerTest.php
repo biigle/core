@@ -41,7 +41,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             'user_id' => $this->editor()->id,
         ]);
 
-        $this->doTestApiRoute('GET',"/api/v1/images/{$this->image->id}/annotations");
+        $this->doTestApiRoute('GET', "/api/v1/images/{$this->image->id}/annotations");
 
         $this->beUser();
         $this->get("/api/v1/images/{$this->image->id}/annotations");
@@ -141,7 +141,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Biigle\Shape::$pointId,
             'label_id' => $label->id,
-            'confidence' => 2
+            'confidence' => 2,
         ]);
         // confidence must be between 0 and 1
         $this->assertResponseStatus(422);
@@ -149,7 +149,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Biigle\Shape::$pointId,
             'label_id' => $label->id,
-            'confidence' => -1
+            'confidence' => -1,
         ]);
         // confidence must be between 0 and 1
         $this->assertResponseStatus(422);

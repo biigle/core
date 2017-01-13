@@ -4,7 +4,6 @@ namespace Biigle;
 
 use DB;
 use Exception;
-use Biigle\Shape;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -43,7 +42,7 @@ class Annotation extends Model
     ];
 
     /**
-     * Scope a query to only include annotations allowed by the session for the user
+     * Scope a query to only include annotations allowed by the session for the user.
      *
      * @param Illuminate\Database\Query\Builder $query
      * @param AnnotationSession $session
@@ -64,9 +63,7 @@ class Annotation extends Model
                         ->whereRaw('annotation_labels.annotation_id = annotations.id')
                         ->where('annotation_labels.user_id', $user->id);
                 });
-
-        } else if ($session->hide_own_annotations) {
-
+        } elseif ($session->hide_own_annotations) {
             $query->where(function ($query) use ($session, $user) {
                 // take all annotations of this session
                 $query->where('annotations.created_at', '>=', $session->starts_at)
@@ -79,8 +76,7 @@ class Annotation extends Model
                             ->where('annotation_labels.user_id', '!=', $user->id);
                     });
             });
-
-        } else if ($session->hide_other_users_annotations) {
+        } elseif ($session->hide_other_users_annotations) {
 
             // take only annotations with labels of the current user
             $query->whereExists(function ($query) use ($user) {
@@ -89,14 +85,13 @@ class Annotation extends Model
                     ->whereRaw('annotation_labels.annotation_id = annotations.id')
                     ->where('annotation_labels.user_id', $user->id);
             });
-
         }
 
         return $query;
     }
 
     /**
-     * Validates a points array for the shape of this annotation
+     * Validates a points array for the shape of this annotation.
      *
      * @param array $points Points array like `[x1, y1, x2, y2, x3, y3, ...]`
      * @throws Exception If the points array is invalid
@@ -109,7 +104,7 @@ class Annotation extends Model
         }, true);
 
         if (!$valid) {
-            throw new Exception("Point coordinates must be of type float or integer.");
+            throw new Exception('Point coordinates must be of type float or integer.');
         }
 
         $size = sizeof($points);
@@ -164,7 +159,7 @@ class Annotation extends Model
     }
 
     /**
-     * Round the floats of the points array to 2 decimals before saving
+     * Round the floats of the points array to 2 decimals before saving.
      *
      * This is a more than sufficient precision for annotation point coordinates and
      * saves memory in the DB as well as when processing the annotations in PHP.

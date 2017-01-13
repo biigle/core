@@ -4,7 +4,6 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use Biigle\Role;
 use ApiTestCase;
-use Biigle\LabelTree;
 use Biigle\Tests\LabelTreeTest;
 
 class LabelTreeUserControllerTest extends ApiTestCase
@@ -25,27 +24,27 @@ class LabelTreeUserControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->json('PUT', "/api/v1/label-trees/{$t->id}/users/{$u->id}", [
-            'role_id' => 999
+            'role_id' => 999,
         ]);
         $this->assertResponseStatus(422);
 
         $id = $this->admin()->id;
 
         $this->json('PUT', "/api/v1/label-trees/{$t->id}/users/{$id}", [
-            'role_id' => Role::$admin->id
+            'role_id' => Role::$admin->id,
         ]);
         // cannot update the own user
         $this->assertResponseStatus(403);
 
         $this->assertEquals(1, $t->members()->where('label_tree_user.role_id', Role::$admin->id)->count());
         $this->json('PUT', "/api/v1/label-trees/{$t->id}/users/{$u->id}", [
-            'role_id' => Role::$admin->id
+            'role_id' => Role::$admin->id,
         ]);
         $this->assertResponseOk();
         $this->assertEquals(2, $t->members()->where('label_tree_user.role_id', Role::$admin->id)->count());
 
         $this->json('PUT', "/api/v1/label-trees/{$t->id}/users/{$u->id}", [
-            'role_id' => Role::$editor->id
+            'role_id' => Role::$editor->id,
         ]);
         $this->assertResponseOk();
         $this->assertEquals(1, $t->members()->where('label_tree_user.role_id', Role::$admin->id)->count());

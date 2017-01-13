@@ -12,7 +12,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 class LabelTreeController extends Controller
 {
     /**
-     * Shows all public label trees
+     * Shows all public label trees.
      *
      * @api {get} label-trees Get all public label trees
      * @apiGroup Label Trees
@@ -44,7 +44,7 @@ class LabelTreeController extends Controller
     }
 
     /**
-     * Shows a label tree
+     * Shows a label tree.
      *
      * @api {get} label-trees/:id Show a label tree
      * @apiGroup Label Trees
@@ -97,7 +97,7 @@ class LabelTreeController extends Controller
     }
 
     /**
-     * Updates the attributes of the specified label tree
+     * Updates the attributes of the specified label tree.
      *
      * @api {put} label-trees/:id Update a label tree
      * @apiGroup Label Trees
@@ -142,6 +142,7 @@ class LabelTreeController extends Controller
                 ->with('message', 'Label tree updated.')
                 ->with('messageType', 'success');
         }
+
         return redirect()->back()
             ->with('saved', true)
             ->with('message', 'Label tree updated.')
@@ -149,7 +150,7 @@ class LabelTreeController extends Controller
     }
 
     /**
-     * Creates a new label tree
+     * Creates a new label tree.
      *
      * @api {post} label-trees Create a new label tree
      * @apiGroup Label Trees
@@ -199,6 +200,7 @@ class LabelTreeController extends Controller
                 ->with('message', 'Label tree created.')
                 ->with('messageType', 'success');
         }
+
         return redirect()->back()
             ->with('newTree', $tree)
             ->with('message', 'Label tree created.')
@@ -206,7 +208,7 @@ class LabelTreeController extends Controller
     }
 
     /**
-     * Removes the specified label tree
+     * Removes the specified label tree.
      *
      * @api {delete} label-trees/:id Delete a label tree
      * @apiGroup Label Trees
@@ -241,6 +243,7 @@ class LabelTreeController extends Controller
                 ->with('message', 'Label tree deleted.')
                 ->with('messageType', 'success');
         }
+
         return redirect()->back()
             ->with('deleted', true)
             ->with('message', 'Label tree deleted.')

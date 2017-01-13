@@ -93,6 +93,7 @@ class VolumeController extends Controller
                 return redirect($request->input('_redirect'))
                     ->with('saved', $isDirty);
             }
+
             return redirect()->back()
                 ->with('saved', $isDirty);
         }

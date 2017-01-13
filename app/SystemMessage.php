@@ -82,7 +82,7 @@ class SystemMessage extends Model
     /**
      * Returns whether this system message is published.
      *
-     * @return boolean
+     * @return bool
      */
     public function isPublished()
     {

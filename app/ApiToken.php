@@ -6,9 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ApiToken extends Model
 {
-
     /**
-     * Validation rules for creating a new token
+     * Validation rules for creating a new token.
      *
      * @var array
      */

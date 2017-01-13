@@ -185,6 +185,6 @@ $factory->define(Biigle\SystemMessage::class, function ($faker) {
             Biigle\SystemMessageType::$important->id,
             Biigle\SystemMessageType::$update->id,
             Biigle\SystemMessageType::$info->id,
-        ])
+        ]),
     ];
 });

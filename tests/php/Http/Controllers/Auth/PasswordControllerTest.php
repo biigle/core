@@ -58,7 +58,7 @@ class PasswordControllerTest extends TestCase
 
         $this->assertFalse(Hash::check('new-password', $user->fresh()->password));
 
-        $this->post("password/reset", [
+        $this->post('password/reset', [
             '_token' => Session::token(),
             'token' => $token,
             'email' => $user->email,

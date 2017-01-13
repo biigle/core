@@ -13,7 +13,6 @@ use Biigle\MediaType;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
-use Biigle\Services\Thumbnails\InterventionImage;
 
 class ProjectVolumeControllerTest extends ApiTestCase
 {

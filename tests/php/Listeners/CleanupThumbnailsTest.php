@@ -4,7 +4,6 @@ namespace Biigle\Tests\Listeners;
 
 use File;
 use TestCase;
-use Copria\Volume;
 use Biigle\Tests\ImageTest;
 use Biigle\Listeners\CleanupThumbnails;
 

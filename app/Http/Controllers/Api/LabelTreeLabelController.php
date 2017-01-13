@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 class LabelTreeLabelController extends Controller
 {
     /**
-     * Add labels to a label tree
+     * Add labels to a label tree.
      *
      * @api {post} label-trees/:id/labels Create new labels
      * @apiGroup Label Trees
@@ -59,7 +59,7 @@ class LabelTreeLabelController extends Controller
                 ->exists();
             if (!$exists) {
                 return $this->buildFailedValidationResponse($request, [
-                    'parent_id' => ['The parent label must belong to the same label tree than the new label.']
+                    'parent_id' => ['The parent label must belong to the same label tree than the new label.'],
                 ]);
             }
         }
@@ -90,6 +90,7 @@ class LabelTreeLabelController extends Controller
             return redirect($request->input('_redirect'))
                 ->with('saved', true);
         }
+
         return redirect()->back()
             ->with('saved', true);
     }

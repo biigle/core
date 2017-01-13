@@ -162,7 +162,7 @@ class LabelTreeTest extends ModelTestCase
 
     public function testDetachUnauthorizedProjects()
     {
-        $tree = LabelTreeTest::create();
+        $tree = self::create();
         $unauthorized = ProjectTest::create();
         $authorized = ProjectTest::create();
         // label trees without users are attached by default
@@ -173,7 +173,7 @@ class LabelTreeTest extends ModelTestCase
 
     public function testIsRoleValid()
     {
-        $tree = LabelTreeTest::create();
+        $tree = self::create();
         $this->assertFalse($tree->isRoleValid(Role::$guest));
         $this->assertTrue($tree->isRoleValid(Role::$editor));
         $this->assertTrue($tree->isRoleValid(Role::$admin));

@@ -13,7 +13,7 @@ class ImageLabelPolicy extends CachedPolicy
     use HandlesAuthorization;
 
     /**
-     * Intercept all checks
+     * Intercept all checks.
      *
      * @param User $user
      * @param string $ability

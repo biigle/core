@@ -4,7 +4,6 @@ namespace Biigle;
 
 use DB;
 use Carbon\Carbon;
-use Biigle\Annotation;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -124,8 +123,7 @@ class AnnotationSession extends Model
             $query->with(['labels' => function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             }]);
-
-        } else if ($this->hide_own_annotations) {
+        } elseif ($this->hide_own_annotations) {
 
             // take only labels of this session or any labels of other users
             $query->with(['labels' => function ($query) use ($user) {
@@ -138,7 +136,6 @@ class AnnotationSession extends Model
                     ->orWhere('user_id', '!=', $user->id);
                 });
             }]);
-
         } else {
             $query->with('labels');
         }
@@ -158,10 +155,10 @@ class AnnotationSession extends Model
         return Annotation::where(function ($query) {
             // all annotations of the associated volume
             return $query->whereIn('image_id', function ($query) {
-                    $query->select('id')
+                $query->select('id')
                         ->from('images')
                         ->where('volume_id', $this->volume_id);
-                })
+            })
             // that were created between the start and end date
                 ->where('created_at', '>=', $this->starts_at)
                 ->where('created_at', '<', $this->ends_at)
@@ -180,7 +177,7 @@ class AnnotationSession extends Model
     }
 
     /**
-     * Check if the given user is allowed to access the annotation if this annotation session is active
+     * Check if the given user is allowed to access the annotation if this annotation session is active.
      *
      * @param Annotation $annotation
      * @param User $user
@@ -189,27 +186,21 @@ class AnnotationSession extends Model
     public function allowsAccess(Annotation $annotation, User $user)
     {
         if ($this->hide_own_annotations && $this->hide_other_users_annotations) {
-
             return $annotation->created_at >= $this->starts_at &&
                 $annotation->created_at < $this->ends_at &&
                 $annotation->labels()->where('user_id', $user->id)->exists();
-
-        } else if ($this->hide_own_annotations) {
-
+        } elseif ($this->hide_own_annotations) {
             return ($annotation->created_at >= $this->starts_at && $annotation->created_at < $this->ends_at) ||
                 $annotation->labels()->where('user_id', '!=', $user->id)->exists();
-
-        } else if ($this->hide_other_users_annotations) {
-
+        } elseif ($this->hide_other_users_annotations) {
             return $annotation->labels()->where('user_id', $user->id)->exists();
-
         }
 
         return true;
     }
 
     /**
-     * Set the start date
+     * Set the start date.
      *
      * @param mixed $value The date (must be parseable by Carbon)
      */
@@ -223,7 +214,7 @@ class AnnotationSession extends Model
     }
 
     /**
-     * Set the end date
+     * Set the end date.
      *
      * @param mixed $value The date (must be parseable by Carbon)
      */
@@ -237,7 +228,7 @@ class AnnotationSession extends Model
     }
 
     /**
-     * Get the start date formatted as ISO8601 string
+     * Get the start date formatted as ISO8601 string.
      *
      * @return string
      */
@@ -247,7 +238,7 @@ class AnnotationSession extends Model
     }
 
     /**
-     * Get the end date formatted as ISO8601 string
+     * Get the end date formatted as ISO8601 string.
      *
      * @return string
      */

@@ -37,7 +37,7 @@ class VolumeImageController extends Controller
     }
 
     /**
-     * Add images to the specified volume
+     * Add images to the specified volume.
      *
      * @api {post} volumes/:id/images Add images
      * @apiGroup Volumes

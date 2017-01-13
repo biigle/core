@@ -244,7 +244,7 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertTrue($annotations->contains('points', [40, 50, 60]));
         $this->assertTrue($annotations->contains('labels', [
             $al1->load('user', 'label')->toArray(),
-            $al2->load('user', 'label')->toArray()
+            $al2->load('user', 'label')->toArray(),
         ]));
     }
 

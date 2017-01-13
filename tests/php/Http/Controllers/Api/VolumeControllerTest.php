@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use File;
-use Cache;
 use ApiTestCase;
 use Biigle\MediaType;
 

@@ -4,7 +4,6 @@ namespace Biigle\Listeners;
 
 use File;
 use Biigle\Image;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CleanupThumbnails implements ShouldQueue

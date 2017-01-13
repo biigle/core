@@ -25,7 +25,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
  */
 class Volume extends Model
 {
-
     use DispatchesJobs;
 
     /**
@@ -80,7 +79,7 @@ class Volume extends Model
     ];
 
     /**
-     * Parses a comma separated list of image filenames to an array
+     * Parses a comma separated list of image filenames to an array.
      *
      * @param string $string
      *
@@ -158,7 +157,7 @@ class Volume extends Model
     }
 
     /**
-     * Return a query for all users associated to this volume through projects
+     * Return a query for all users associated to this volume through projects.
      *
      * @return  \Illuminate\Database\Eloquent\Builder
      */
@@ -179,7 +178,7 @@ class Volume extends Model
     /**
      * Check if the URL of this volume exists and is readable.
      *
-     * @return boolean
+     * @return bool
      * @throws Exception If the validation failed.
      */
     public function validateUrl()
@@ -218,7 +217,7 @@ class Volume extends Model
      * PNG or GIF file endings.
      *
      * @param array $filenames
-     * @return boolean
+     * @return bool
      * @throws Exception If the validation failed.
      */
     public function validateImages($filenames)
@@ -268,7 +267,7 @@ class Volume extends Model
     }
 
     /**
-     * Perform actions when new images were added to the volume
+     * Perform actions when new images were added to the volume.
      *
      * @param  array  $only IDs of images to restrict the actions to.
      */
@@ -289,7 +288,7 @@ class Volume extends Model
     }
 
     /**
-     * The annotation sessions of this volume
+     * The annotation sessions of this volume.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -299,13 +298,14 @@ class Volume extends Model
     }
 
     /**
-     * The active annotation sessions of this volume (if any)
+     * The active annotation sessions of this volume (if any).
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function activeAnnotationSession()
     {
         $now = Carbon::now();
+
         return $this->hasOne(AnnotationSession::class)
             ->where('starts_at', '<=', $now)
             ->where('ends_at', '>', $now)
@@ -313,7 +313,7 @@ class Volume extends Model
     }
 
     /**
-     * Returns the active annotation session of this volume for the given user
+     * Returns the active annotation session of this volume for the given user.
      *
      * An annotation session may be active for a volume but it is only also active for
      * a user, if the user belongs to the set of restricted users of the annotation
@@ -334,7 +334,7 @@ class Volume extends Model
     }
 
     /**
-     * Check if the given annotation session is in conflict with existing ones
+     * Check if the given annotation session is in conflict with existing ones.
      *
      * A conflict exists if the active time period of two sessions overlaps.
      *
@@ -363,9 +363,9 @@ class Volume extends Model
     }
 
     /**
-     * Check if the images of this volume come from a remote URL
+     * Check if the images of this volume come from a remote URL.
      *
-     * @return boolean
+     * @return bool
      */
     public function isRemote()
     {
@@ -392,9 +392,9 @@ class Volume extends Model
     }
 
     /**
-     * Check if the volume has some images with GPS coordinates
+     * Check if the volume has some images with GPS coordinates.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasGeoInfo()
     {
@@ -404,7 +404,7 @@ class Volume extends Model
     }
 
     /**
-     * Flush the cached information if this volume has images with GPS coordinates
+     * Flush the cached information if this volume has images with GPS coordinates.
      */
     public function flushGeoInfoCache()
     {
@@ -412,7 +412,7 @@ class Volume extends Model
     }
 
     /**
-     * (Re-) generates the thumbnail images for all images belonging to this volume
+     * (Re-) generates the thumbnail images for all images belonging to this volume.
      *
      * @param array $only (optional) Array of image IDs to restrict the (re-)generation
      * of thumbnails to.

@@ -107,6 +107,7 @@ class ProjectController extends Controller
                 ->with('message', 'Project updated.')
                 ->with('messageType', 'success');
         }
+
         return redirect()->back()
             ->with('saved', true)
             ->with('message', 'Project updated.')
@@ -156,6 +157,7 @@ class ProjectController extends Controller
                 ->with('message', 'Project created.')
                 ->with('messageType', 'success');
         }
+
         return redirect()->back()
             ->with('newProject', $project)
             ->with('message', 'Project created.')
@@ -207,6 +209,7 @@ class ProjectController extends Controller
                 ->with('message', 'Project deleted.')
                 ->with('messageType', 'success');
         }
+
         return redirect()->back()
             ->with('deleted', true)
             ->with('message', 'Project deleted.')

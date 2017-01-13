@@ -16,7 +16,6 @@ use Illuminate\Database\QueryException;
  */
 class LabelTree extends Model
 {
-
     /**
      * Validation rules for creating a new label tree.
      *
@@ -57,7 +56,7 @@ class LabelTree extends Model
     ];
 
     /**
-     * Validation rules for adding a new authorized project
+     * Validation rules for adding a new authorized project.
      *
      * @var array
      */
@@ -84,7 +83,7 @@ class LabelTree extends Model
     ];
 
     /**
-     * Check if a member can loose their admin status
+     * Check if a member can loose their admin status.
      *
      * @param User $member
      * @return bool
@@ -99,7 +98,7 @@ class LabelTree extends Model
     }
 
     /**
-     * Scope a query to public label trees
+     * Scope a query to public label trees.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
@@ -110,7 +109,7 @@ class LabelTree extends Model
     }
 
     /**
-     * Scope a query to private label trees
+     * Scope a query to private label trees.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
@@ -121,7 +120,7 @@ class LabelTree extends Model
     }
 
     /**
-     * The visibility of the label tree
+     * The visibility of the label tree.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -143,7 +142,7 @@ class LabelTree extends Model
     }
 
     /**
-     * The labels that belong to this tree
+     * The labels that belong to this tree.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -153,7 +152,7 @@ class LabelTree extends Model
     }
 
     /**
-     * Determines if the label tree can be safely deleted
+     * Determines if the label tree can be safely deleted.
      *
      * A label tree can be safely deleted if none if its labels is in use.
      *
@@ -170,7 +169,7 @@ class LabelTree extends Model
     }
 
     /**
-     * Checks is a role can be used for a member of a label tree
+     * Checks is a role can be used for a member of a label tree.
      *
      * @param Role $role
      * @return bool
@@ -181,7 +180,7 @@ class LabelTree extends Model
     }
 
     /**
-     * Add a new member with a certain role (either admin or editor)
+     * Add a new member with a certain role (either admin or editor).
      *
      * @param User $user
      * @param Role $role
@@ -200,7 +199,7 @@ class LabelTree extends Model
     }
 
     /**
-     * Update a member (role)
+     * Update a member (role).
      *
      * @param User $user
      * @param Role $role
@@ -219,7 +218,7 @@ class LabelTree extends Model
     }
 
     /**
-     * Determines if a member can be removed
+     * Determines if a member can be removed.
      *
      * A member can be removed if at least one admin member remains afterwards.
      *
@@ -232,7 +231,7 @@ class LabelTree extends Model
     }
 
     /**
-     * The projects that are using this label tree
+     * The projects that are using this label tree.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -242,7 +241,7 @@ class LabelTree extends Model
     }
 
     /**
-     * The projects that are authorized to use this private label tree
+     * The projects that are authorized to use this private label tree.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -252,7 +251,7 @@ class LabelTree extends Model
     }
 
     /**
-     * Detaches all projects that are not among the authorized projects
+     * Detaches all projects that are not among the authorized projects.
      */
     public function detachUnauthorizedProjects()
     {

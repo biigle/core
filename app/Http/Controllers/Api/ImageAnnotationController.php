@@ -166,7 +166,7 @@ class ImageAnnotationController extends Controller
             $annotation->validatePoints($points);
         } catch (Exception $e) {
             return $this->buildFailedValidationResponse($request, [
-                'points' => [$e->getMessage()]
+                'points' => [$e->getMessage()],
             ]);
         }
 

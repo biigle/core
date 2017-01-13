@@ -4,8 +4,8 @@ namespace Biigle\Http\Controllers\Views\Admin;
 
 use Biigle\Http\Controllers\Controller;
 
-class LabelsController extends Controller {
-
+class LabelsController extends Controller
+{
     /**
      * Shows the admin labels page.
      *

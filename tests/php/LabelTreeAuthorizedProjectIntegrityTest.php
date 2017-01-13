@@ -3,7 +3,6 @@
 namespace Biigle\Tests;
 
 use TestCase;
-use Biigle\Role;
 
 class LabelTreeAuthorizedProjectIntegrityTest extends TestCase
 {

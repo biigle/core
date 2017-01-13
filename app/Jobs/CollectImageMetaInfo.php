@@ -5,7 +5,6 @@ namespace Biigle\Jobs;
 use File;
 use Exception;
 use Carbon\Carbon;
-use Biigle\Jobs\Job;
 use Biigle\Volume;
 use ErrorException;
 use Illuminate\Queue\SerializesModels;
@@ -66,7 +65,9 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
 
         foreach ($images as $image) {
             $file = $this->volume->url.'/'.$image->filename;
-            if (!File::exists($file)) continue;
+            if (!File::exists($file)) {
+                continue;
+            }
 
             try {
                 $exif = exif_read_data($file);
@@ -74,7 +75,9 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
                 $exif = false;
             }
 
-            if ($exif === false) continue;
+            if ($exif === false) {
+                continue;
+            }
 
             if ($this->hasTakenAtInfo($exif)) {
                 try {
@@ -105,10 +108,10 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
     }
 
     /**
-     * Check if an exif array contains a creation date
+     * Check if an exif array contains a creation date.
      *
      * @param  array   $exif
-     * @return boolean
+     * @return bool
      */
     protected function hasTakenAtInfo(array $exif)
     {
@@ -116,10 +119,10 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
     }
 
     /**
-     * Check if an exif array contains GPS information
+     * Check if an exif array contains GPS information.
      *
      * @param  array   $exif
-     * @return boolean
+     * @return bool
      */
     protected function hasGpsInfo(array $exif)
     {
@@ -131,7 +134,7 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
 
     /**
      * Converts a EXIF GPS coordinate to a float
-     * see: http://stackoverflow.com/a/2572991/1796523
+     * see: http://stackoverflow.com/a/2572991/1796523.
      *
      * @param  array $exifCoord Containing fractures like `"41/1"`
      * @param  string $hemi      Hemisphere, one of `N`, `S`, `E`, or `W`
@@ -157,8 +160,12 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
     protected function fracToFloat($frac)
     {
         $parts = explode('/', $frac);
-        if (count($parts) <= 0) return 0;
-        if (count($parts) === 1) return $parts[0];
+        if (count($parts) <= 0) {
+            return 0;
+        }
+        if (count($parts) === 1) {
+            return $parts[0];
+        }
 
         return floatval($parts[0]) / floatval($parts[1]);
     }

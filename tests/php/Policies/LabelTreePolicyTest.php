@@ -16,7 +16,6 @@ class LabelTreePolicyTest extends TestCase
     private $admin;
     private $globalAdmin;
 
-
     public function setUp()
     {
         parent::setUp();

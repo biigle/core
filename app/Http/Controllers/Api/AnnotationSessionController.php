@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class AnnotationSessionController extends Controller
 {
     /**
-     * Updates the annotation session
+     * Updates the annotation session.
      *
      * @api {put} annotation-sessions/:id Update an annotation session
      * @apiGroup Volumes
@@ -76,13 +76,13 @@ class AnnotationSessionController extends Controller
         // present in the request
         if ($session->ends_at <= $session->starts_at) {
             return $this->buildFailedValidationResponse($request, [
-                'ends_at' => ['The end of an annotation session must be after its start.']
+                'ends_at' => ['The end of an annotation session must be after its start.'],
             ]);
         }
 
         if ($session->volume->hasConflictingAnnotationSession($session)) {
             return $this->buildFailedValidationResponse($request, [
-                'starts_at' => ['There already is an annotation session in this time period.']
+                'starts_at' => ['There already is an annotation session in this time period.'],
             ]);
         }
 
@@ -119,7 +119,7 @@ class AnnotationSessionController extends Controller
             // validate the volume users using the count.
             if ($count !== count($users)) {
                 return $this->buildFailedValidationResponse($request, [
-                    'users' => ['All users must belong to one of the projects, this volume is attached to.']
+                    'users' => ['All users must belong to one of the projects, this volume is attached to.'],
                 ]);
             }
 
@@ -131,7 +131,6 @@ class AnnotationSessionController extends Controller
 
         $session->hide_other_users_annotations = $request->input('hide_other_users_annotations', $session->hide_other_users_annotations);
         $session->hide_own_annotations = $request->input('hide_own_annotations', $session->hide_own_annotations);
-
 
         $session->save();
     }

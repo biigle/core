@@ -1,6 +1,6 @@
 <?php
 
-if (! function_exists('cachebust_asset')) {
+if (!function_exists('cachebust_asset')) {
     /**
      * Generate an asset path with a cachbusting query string for the application.
      *

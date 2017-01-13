@@ -3,7 +3,6 @@
 namespace Biigle\Observers;
 
 use Event;
-use Exception;
 use Biigle\Image;
 
 class ImageObserver

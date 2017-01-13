@@ -10,7 +10,7 @@ use Biigle\Volume;
 interface ThumbnailService
 {
     /**
-     * Generates the thumbnails images for the volume
+     * Generates the thumbnails images for the volume.
      *
      * The thumbnails are stored in the thumbnails storage directory. This function may operate
      * asynchronous, so it is not guaranteed that the thumbnails ae immediately available

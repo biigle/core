@@ -19,7 +19,7 @@ class AnnotationLabel extends Model
         'user_id',
         'annotation_id',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**

@@ -15,7 +15,7 @@ class ImagePolicy extends CachedPolicy
     use HandlesAuthorization;
 
     /**
-     * Intercept all checks
+     * Intercept all checks.
      *
      * @param User $user
      * @param string $ability
@@ -29,7 +29,7 @@ class ImagePolicy extends CachedPolicy
     }
 
     /**
-     * Determine if the user can access the given image
+     * Determine if the user can access the given image.
      *
      * @param  User  $user
      * @param  Image  $image
@@ -53,7 +53,7 @@ class ImagePolicy extends CachedPolicy
     }
 
     /**
-     * Determine if the user can add an annotation to given image
+     * Determine if the user can add an annotation to given image.
      *
      * @param  User  $user
      * @param  Image  $image
@@ -77,7 +77,7 @@ class ImagePolicy extends CachedPolicy
     }
 
     /**
-     * Determine if the user can delete the given image
+     * Determine if the user can delete the given image.
      *
      * @param  User  $user
      * @param  Image  $image

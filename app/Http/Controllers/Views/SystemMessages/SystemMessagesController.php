@@ -53,7 +53,7 @@ class SystemMessagesController extends Controller
     }
 
     /**
-     * Show a system message
+     * Show a system message.
      * @param  int $id System message ID
      * @return \Illuminate\Http\Response
      */

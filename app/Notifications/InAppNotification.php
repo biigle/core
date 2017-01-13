@@ -4,7 +4,6 @@ namespace Biigle\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 /**
  * A notification that is displayed through the in-app notification system.
@@ -75,7 +74,6 @@ class InAppNotification extends Notification
      * @var string
      */
     protected $actionLink;
-
 
     /**
      * Create a new notification instance.

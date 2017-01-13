@@ -5,7 +5,6 @@ namespace Biigle\Tests\Jobs;
 use App;
 use Mockery;
 use TestCase;
-use Copria\Volume;
 use Biigle\Tests\VolumeTest;
 use Biigle\Jobs\GenerateThumbnails;
 
