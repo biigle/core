@@ -36,4 +36,5 @@ class LabelSourceControllerTest extends ApiTestCase
         ]);
         $this->assertResponseOk();
         $this->seeJsonEquals([['name' => 'My Query Label']]);
-    }}
+    }
+}

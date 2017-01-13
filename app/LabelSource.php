@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class LabelSource extends Model
 {
     /**
-     * Validation rules for finding a label from a label source
+     * Validation rules for finding a label from a label source.
      *
      * @var array
      */
@@ -38,6 +38,7 @@ class LabelSource extends Model
     public function getAdapter()
     {
         $name = studly_case($this->name);
+
         return app()->make("Biigle\Services\LabelSourceAdapters\\{$name}Adapter");
     }
 }

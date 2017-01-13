@@ -1,5 +1,10 @@
 <?php
-$finder = Symfony\Component\Finder\Finder::create()
+
+use Symfony\CS\Finder;
+use Symfony\CS\Config\Config;
+use Symfony\CS\FixerInterface;
+
+$finder = Finder::create()
     ->files()
     ->in([__DIR__.'/app', __DIR__.'/tests', __DIR__.'/config', __DIR__.'/database'])
     ->name('*.php')
@@ -7,24 +12,38 @@ $finder = Symfony\Component\Finder\Finder::create()
     ->ignoreVCS(true);
 
 $fixers = [
-    '-psr0',
-    '-php_closing_tag',
     'blankline_after_open_tag',
+    'braces',
     'concat_without_spaces',
     'double_arrow_multiline_whitespaces',
     'duplicate_semicolon',
+    'elseif',
     'empty_return',
+    'encoding',
+    'eof_ending',
     'extra_empty_lines',
+    'function_call_space',
+    'function_declaration',
     'include',
+    'indentation',
     'join_function',
+    'line_after_namespace',
+    'linefeed',
     'list_commas',
+    'lowercase_constants',
+    'lowercase_keywords',
+    'method_argument_space',
     'multiline_array_trailing_comma',
+    'multiline_spaces_before_semicolon',
+    'multiple_use',
     'namespace_no_leading_whitespace',
     'no_blank_lines_after_class_opening',
     'no_empty_lines_after_phpdocs',
     'object_operator',
     'operators_spaces',
+    'parenthesis',
     'phpdoc_indent',
+    'phpdoc_inline_tag',
     'phpdoc_no_access',
     'phpdoc_no_package',
     'phpdoc_scalar',
@@ -37,24 +56,28 @@ $fixers = [
     'remove_lines_between_uses',
     'return',
     'self_accessor',
+    'short_array_syntax',
+    'short_echo_tag',
+    'short_tag',
     'single_array_no_trailing_comma',
     'single_blank_line_before_namespace',
+    'single_line_after_imports',
     'single_quote',
     'spaces_before_semicolon',
     'spaces_cast',
     'standardize_not_equal',
     'ternary_spaces',
+    'trailing_spaces',
     'trim_array_spaces',
     'unalign_equals',
     'unary_operators_spaces',
+    'unused_use',
+    'visibility',
     'whitespacy_lines',
-    'multiline_spaces_before_semicolon',
-    'short_array_syntax',
-    'short_echo_tag',
 ];
 
-return Symfony\CS\Config\Config::create()
-    ->level(Symfony\CS\FixerInterface::PSR2_LEVEL)
-    ->fixers($fixers)
+return Config::create()
     ->finder($finder)
+    ->fixers($fixers)
+    ->level(FixerInterface::NONE_LEVEL)
     ->setUsingCache(true);

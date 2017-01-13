@@ -120,12 +120,12 @@ class ProjectTest extends ModelTestCase
         $this->assertEquals(1, $this->model->guests()->count());
     }
 
-    public function testTransects()
+    public function testVolumes()
     {
-        $transect = TransectTest::make();
-        $this->model->transects()->save($transect);
-        $this->assertEquals($transect->id, $this->model->transects()->first()->id);
-        $this->assertEquals(1, $this->model->transects()->count());
+        $volume = VolumeTest::make();
+        $this->model->volumes()->save($volume);
+        $this->assertEquals($volume->id, $this->model->volumes()->first()->id);
+        $this->assertEquals(1, $this->model->volumes()->count());
     }
 
     public function testAddUserId()
@@ -189,56 +189,56 @@ class ProjectTest extends ModelTestCase
         $this->model->changeRole($admin->id, Role::$editor->id);
     }
 
-    public function testRemoveTransect()
+    public function testRemoveVolume()
     {
         $secondProject = self::create();
         $secondProject->save();
-        $transect = TransectTest::create();
-        $this->model->transects()->attach($transect);
-        $secondProject->transects()->attach($transect);
+        $volume = VolumeTest::create();
+        $this->model->volumes()->attach($volume);
+        $secondProject->volumes()->attach($volume);
 
-        $this->assertNotEmpty($secondProject->fresh()->transects);
-        $secondProject->removeTransect($transect);
-        $this->assertEmpty($secondProject->fresh()->transects);
+        $this->assertNotEmpty($secondProject->fresh()->volumes);
+        $secondProject->removeVolume($volume);
+        $this->assertEmpty($secondProject->fresh()->volumes);
 
         try {
-            // trying to detach a transect belonging to only one project fails
+            // trying to detach a volume belonging to only one project fails
             // without force
-            $this->model->removeTransect($transect);
+            $this->model->removeVolume($volume);
             $this->assertFalse(true);
         } catch (HttpException $e) {
             $this->assertNotNull($e);
         }
 
-        // use the force to detach and delete the transect
-        $this->model->removeTransect($transect, true);
-        $this->assertNull($transect->fresh());
+        // use the force to detach and delete the volume
+        $this->model->removeVolume($volume, true);
+        $this->assertNull($volume->fresh());
     }
 
-    public function testRemoveAllTransects()
+    public function testRemoveAllVolumes()
     {
         $secondProject = self::create();
         $secondProject->save();
-        $transect = TransectTest::create();
-        $this->model->transects()->attach($transect);
-        $secondProject->transects()->attach($transect);
+        $volume = VolumeTest::create();
+        $this->model->volumes()->attach($volume);
+        $secondProject->volumes()->attach($volume);
 
-        $this->assertNotEmpty($secondProject->fresh()->transects);
-        $secondProject->removeAllTransects();
-        $this->assertEmpty($secondProject->fresh()->transects);
+        $this->assertNotEmpty($secondProject->fresh()->volumes);
+        $secondProject->removeAllVolumes();
+        $this->assertEmpty($secondProject->fresh()->volumes);
 
         try {
-            // trying to detach a transect belonging to only one project fails
+            // trying to detach a volume belonging to only one project fails
             // without force
-            $this->model->removeAllTransects();
+            $this->model->removeAllVolumes();
             $this->assertFalse(true);
         } catch (HttpException $e) {
             $this->assertNotNull($e);
         }
 
-        // use the force to detach and delete the transect
-        $this->model->removeAllTransects(true);
-        $this->assertNull($transect->fresh());
+        // use the force to detach and delete the volume
+        $this->model->removeAllVolumes(true);
+        $this->assertNull($volume->fresh());
     }
 
     public function testLabelTrees()
@@ -273,8 +273,8 @@ class ProjectTest extends ModelTestCase
     {
         $i1 = ImageTest::create();
         $i2 = ImageTest::create();
-        $this->model->addTransectId($i1->transect_id);
-        $this->model->addTransectId($i2->transect_id);
+        $this->model->addVolumeId($i1->volume_id);
+        $this->model->addVolumeId($i2->volume_id);
 
         $this->assertEquals($i1->uuid, $this->model->thumbnail->uuid);
     }

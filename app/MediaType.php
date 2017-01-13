@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Cache;
 
 /**
- * Transects can contain different types of image-series. One type would
+ * Volumes can contain different types of image-series. One type would
  * be a time-series of a static camera taking photos in regular intervals
  * for example. Another type coud be images from a moving camera.
  */

@@ -20,7 +20,7 @@ class ImageAnnotationController extends Controller
      * @apiGroup Images
      * @apiName IndexImageAnnotations
      * @apiPermission projectMember
-     * @apiDescription If there is an active annotation session for the transect of this image, only those annotations will be returned that the user is allowed to access.
+     * @apiDescription If there is an active annotation session for the volume of this image, only those annotations will be returned that the user is allowed to access.
      *
      * @apiParam {Number} id The image ID.
      *
@@ -64,7 +64,7 @@ class ImageAnnotationController extends Controller
         $image = Image::findOrFail($id);
         $this->authorize('access', $image);
         $user = $auth->user();
-        $session = $image->transect->getActiveAnnotationSession($user);
+        $session = $image->volume->getActiveAnnotationSession($user);
 
         if ($session) {
             return $session->getImageAnnotations($image, $user);
@@ -166,7 +166,7 @@ class ImageAnnotationController extends Controller
             $annotation->validatePoints($points);
         } catch (Exception $e) {
             return $this->buildFailedValidationResponse($request, [
-                'points' => [$e->getMessage()]
+                'points' => [$e->getMessage()],
             ]);
         }
 

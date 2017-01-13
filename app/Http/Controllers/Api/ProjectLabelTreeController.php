@@ -11,7 +11,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 class ProjectLabelTreeController extends Controller
 {
     /**
-     * Display all label trees used by the specified project
+     * Display all label trees used by the specified project.
      *
      * @api {get} projects/:id/label-trees Get all used label trees
      * @apiGroup Projects
@@ -60,7 +60,7 @@ class ProjectLabelTreeController extends Controller
     }
 
     /**
-     * Display all label trees that can be used by the specified project
+     * Display all label trees that can be used by the specified project.
      *
      * @api {get} projects/:id/label-trees/available Get all available label trees
      * @apiGroup Projects
@@ -101,7 +101,7 @@ class ProjectLabelTreeController extends Controller
     }
 
     /**
-     * Adds a label tree to the specified project
+     * Adds a label tree to the specified project.
      *
      * @api {post} projects/:id/label-trees Add a label tree
      * @apiGroup Projects
@@ -133,7 +133,7 @@ class ProjectLabelTreeController extends Controller
             $tree = LabelTree::findOrFail($request->input('id'));
 
             // only attach if the project is allowed to
-            if ((int)$tree->visibility_id === Visibility::$public->id || $tree->authorizedProjects()->where('label_tree_authorized_project.project_id', $id)->exists()) {
+            if ((int) $tree->visibility_id === Visibility::$public->id || $tree->authorizedProjects()->where('label_tree_authorized_project.project_id', $id)->exists()) {
                 $project->labelTrees()->attach($tree->id);
             } else {
                 throw new AuthorizationException('The project is not authorized to use this label tree.');
@@ -148,6 +148,7 @@ class ProjectLabelTreeController extends Controller
             return redirect($request->input('_redirect'))
                 ->with('saved', true);
         }
+
         return redirect()->back()
             ->with('saved', true);
     }
@@ -182,6 +183,7 @@ class ProjectLabelTreeController extends Controller
             return redirect($request->input('_redirect'))
                 ->with('deleted', $count > 0);
         }
+
         return redirect()->back()
             ->with('deleted', $count > 0);
     }

@@ -21,7 +21,7 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertNotNull($this->model->ends_at);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
-        $this->assertNotNull($this->model->transect_id);
+        $this->assertNotNull($this->model->volume_id);
         $this->assertNotNull($this->model->hide_other_users_annotations);
         $this->assertNotNull($this->model->hide_own_annotations);
     }
@@ -47,9 +47,12 @@ class AnnotationSessionTest extends ModelTestCase
         $this->model->save();
     }
 
-    public function testTransectOnDeleteCascade()
+    public function testVolumeOnDeleteCascade()
     {
-        $this->model->transect()->delete();
+        if ($this->isSqlite()) {
+            $this->markTestSkipped('Can\'t test with SQLite because altering foreign key constraints is not supported.');
+        }
+        $this->model->volume()->delete();
         $this->assertNull($this->model->fresh());
     }
 
@@ -105,7 +108,7 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::create([
-            'transect_id' => $image->transect_id,
+            'volume_id' => $image->volume_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => true,
@@ -148,7 +151,7 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::create([
-            'transect_id' => $image->transect_id,
+            'volume_id' => $image->volume_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => false,
@@ -188,7 +191,7 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::create([
-            'transect_id' => $image->transect_id,
+            'volume_id' => $image->volume_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => true,
@@ -227,7 +230,7 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::create([
-            'transect_id' => $image->transect_id,
+            'volume_id' => $image->volume_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => false,
@@ -241,7 +244,7 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertTrue($annotations->contains('points', [40, 50, 60]));
         $this->assertTrue($annotations->contains('labels', [
             $al1->load('user', 'label')->toArray(),
-            $al2->load('user', 'label')->toArray()
+            $al2->load('user', 'label')->toArray(),
         ]));
     }
 
@@ -292,7 +295,7 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::make([
-            'transect_id' => $image->transect_id,
+            'volume_id' => $image->volume_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => false,
@@ -401,7 +404,7 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::create([
-            'transect_id' => $image->transect_id,
+            'volume_id' => $image->volume_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
         ]);

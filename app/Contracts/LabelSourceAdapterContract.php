@@ -5,12 +5,12 @@ namespace Biigle\Contracts;
 use Illuminate\Http\Request;
 
 /**
- * A label source adapter
+ * A label source adapter.
  */
 interface LabelSourceAdapterContract
 {
     /**
-     * Find a label in the label source
+     * Find a label in the label source.
      *
      * @param string $query The query string (e.g. label name)
      *
@@ -19,7 +19,7 @@ interface LabelSourceAdapterContract
     public function find($query);
 
     /**
-     * Create the label (or labels) from the label source based on an API request
+     * Create the label (or labels) from the label source based on an API request.
      *
      * The request may contain arbitrary input data. This function may create multiple
      * labels (e.g. all parent labels of the label to create) as well.

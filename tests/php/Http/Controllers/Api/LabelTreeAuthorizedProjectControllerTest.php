@@ -4,7 +4,6 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use Biigle\Role;
 use ApiTestCase;
-use Biigle\LabelTree;
 use Biigle\Visibility;
 use Biigle\Tests\LabelTreeTest;
 

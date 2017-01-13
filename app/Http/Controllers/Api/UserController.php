@@ -206,6 +206,7 @@ class UserController extends Controller
         if ($request->has('role_id') || $request->has('email') || $request->has('password')) {
             if (!Hash::check($request->input('auth_password'), $auth->user()->password)) {
                 $errors = ['auth_password' => [trans('validation.custom.password')]];
+
                 return $this->buildFailedValidationResponse($request, $errors);
             }
         }
@@ -226,10 +227,10 @@ class UserController extends Controller
                 return redirect($request->input('_redirect'))
                     ->with('saved', true);
             }
+
             return redirect()->back()
                 ->with('saved', true);
         }
-
     }
 
     /**
@@ -354,6 +355,7 @@ class UserController extends Controller
             return redirect($request->input('_redirect'))
                 ->with('newUser', $user);
         }
+
         return redirect()->back()
             ->with('newUser', $user);
     }
@@ -385,6 +387,7 @@ class UserController extends Controller
 
         if (!Hash::check($request->input('password'), $auth->user()->password)) {
             $errors = ['password' => [trans('validation.custom.password')]];
+
             return $this->buildFailedValidationResponse($request, $errors);
         }
 
@@ -409,6 +412,7 @@ class UserController extends Controller
             return redirect($request->input('_redirect'))
                 ->with('deleted', true);
         }
+
         return redirect()->back()
             ->with('deleted', true);
     }
@@ -435,6 +439,7 @@ class UserController extends Controller
 
         if (!Hash::check($request->input('password'), $user->password)) {
             $errors = ['password' => [trans('validation.custom.password')]];
+
             return $this->buildFailedValidationResponse($request, $errors);
         }
 

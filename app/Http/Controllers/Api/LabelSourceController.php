@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class LabelSourceController extends Controller
 {
     /**
-     * Find labels from a label source
+     * Find labels from a label source.
      *
      * @api {get} label-sources/:id/find Find labels from external sources
      * @apiGroup Label Trees

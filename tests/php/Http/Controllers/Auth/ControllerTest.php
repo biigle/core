@@ -4,7 +4,6 @@ namespace Biigle\Tests\Http\Controllers\Auth;
 
 use Session;
 use TestCase;
-use Carbon\Carbon;
 use Biigle\Tests\UserTest;
 
 class ControllerTest extends TestCase

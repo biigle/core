@@ -6,7 +6,7 @@ use DB;
 use Biigle\User;
 use Biigle\Role;
 use Biigle\Label;
-use Biigle\Transect;
+use Biigle\Volume;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -16,7 +16,7 @@ class AnnotationPolicy extends CachedPolicy
     use HandlesAuthorization;
 
     /**
-     * Intercept all checks
+     * Intercept all checks.
      *
      * @param User $user
      * @param string $ability
@@ -39,22 +39,22 @@ class AnnotationPolicy extends CachedPolicy
     public function access(User $user, Annotation $annotation)
     {
         return $this->remember("annotation-can-access-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
-            $transect = Transect::select('transects.id')
-                ->join('images', 'images.transect_id', '=', 'transects.id')
+            $volume = Volume::select('volumes.id')
+                ->join('images', 'images.volume_id', '=', 'volumes.id')
                 ->where('images.id', $annotation->image_id)
                 ->first();
 
-            $session = $transect->getActiveAnnotationSession($user);
+            $session = $volume->getActiveAnnotationSession($user);
             $sessionAccess = !$session || $session->allowsAccess($annotation, $user);
 
             return $sessionAccess &&
                 // user must be member of one of the projects, the annotation belongs to
                 DB::table('project_user')
                     ->where('user_id', $user->id)
-                    ->whereIn('project_id', function ($query) use ($transect) {
+                    ->whereIn('project_id', function ($query) use ($volume) {
                         $query->select('project_id')
-                            ->from('project_transect')
-                            ->where('transect_id', $transect->id);
+                            ->from('project_volume')
+                            ->where('volume_id', $volume->id);
                     })
                     ->exists();
         });
@@ -74,9 +74,9 @@ class AnnotationPolicy extends CachedPolicy
             return DB::table('project_user')
                 ->where('user_id', $user->id)
                 ->whereIn('project_id', function ($query) use ($annotation) {
-                    $query->select('project_transect.project_id')
-                        ->from('project_transect')
-                        ->join('images', 'project_transect.transect_id', '=', 'images.transect_id')
+                    $query->select('project_volume.project_id')
+                        ->from('project_volume')
+                        ->join('images', 'project_volume.volume_id', '=', 'images.volume_id')
                         ->where('images.id', $annotation->image_id);
                 })
                 ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
@@ -104,9 +104,9 @@ class AnnotationPolicy extends CachedPolicy
                 ->where('user_id', $user->id)
                 ->whereIn('project_id', function ($query) use ($annotation) {
                     // the projects, the annotation belongs to
-                    $query->select('project_transect.project_id')
-                        ->from('project_transect')
-                        ->join('images', 'project_transect.transect_id', '=', 'images.transect_id')
+                    $query->select('project_volume.project_id')
+                        ->from('project_volume')
+                        ->join('images', 'project_volume.volume_id', '=', 'images.volume_id')
                         ->where('images.id', $annotation->image_id);
                 })
                 ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
@@ -134,9 +134,9 @@ class AnnotationPolicy extends CachedPolicy
         return $this->remember("annotation-can-destroy-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
             // selects the IDs of the projects, the annotation belongs to
             $projectIdsQuery = function ($query) use ($annotation) {
-                $query->select('project_transect.project_id')
-                    ->from('project_transect')
-                    ->join('images', 'project_transect.transect_id', '=', 'images.transect_id')
+                $query->select('project_volume.project_id')
+                    ->from('project_volume')
+                    ->join('images', 'project_volume.volume_id', '=', 'images.volume_id')
                     ->where('images.id', $annotation->image_id);
             };
 

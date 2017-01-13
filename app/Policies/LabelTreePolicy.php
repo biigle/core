@@ -16,7 +16,7 @@ class LabelTreePolicy extends CachedPolicy
     use HandlesAuthorization;
 
     /**
-     * Intercept all checks
+     * Intercept all checks.
      *
      * @param User $user
      * @param string $ability
@@ -140,6 +140,7 @@ class LabelTreePolicy extends CachedPolicy
                 ->where('label_tree_id', $tree->id)
                 ->where('user_id', $user->id)
                 ->exists();
+
             return $wantsToDeleteOwnMember || $this->update($user, $tree);
         });
     }

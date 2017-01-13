@@ -19,7 +19,7 @@ class AuthServiceProvider extends ServiceProvider
         \Biigle\Label::class => \Biigle\Policies\LabelPolicy::class,
         \Biigle\AnnotationLabel::class => \Biigle\Policies\AnnotationLabelPolicy::class,
         \Biigle\Image::class => \Biigle\Policies\ImagePolicy::class,
-        \Biigle\Transect::class => \Biigle\Policies\TransectPolicy::class,
+        \Biigle\Volume::class => \Biigle\Policies\VolumePolicy::class,
         \Biigle\ImageLabel::class => \Biigle\Policies\ImageLabelPolicy::class,
         \Biigle\SystemMessage::class => \Biigle\Policies\SystemMessagePolicy::class,
     ];

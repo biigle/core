@@ -3,14 +3,12 @@
 namespace Biigle\Tests\Http\Middleware;
 
 use TestCase;
-use Biigle\User;
 use Carbon\Carbon;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\ApiTokenTest;
 
 class MiddlewareAuthenticateAPITest extends TestCase
 {
-
     public function testNoCredentials()
     {
         $token = ApiTokenTest::create(['hash' => bcrypt('test_token')]);
@@ -55,7 +53,7 @@ class MiddlewareAuthenticateAPITest extends TestCase
 
         $token2 = ApiTokenTest::create([
             'owner_id' => $token->owner->id,
-            'hash' => bcrypt('test_token2')
+            'hash' => bcrypt('test_token2'),
         ]);
 
         $this->call('GET', '/api/v1/users', [], [], [], [

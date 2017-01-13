@@ -65,7 +65,7 @@ class SystemMessagesControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
         $this->be($admin);
-        $this->get("admin/system-messages/999")->assertResponseStatus(404);
+        $this->get('admin/system-messages/999')->assertResponseStatus(404);
     }
 
     public function testEditWhenLoggedIn()

@@ -24,7 +24,7 @@ class ImagePolicyTest extends TestCase
         parent::setUp();
         $this->image = ImageTest::create();
         $this->project = ProjectTest::create();
-        $this->project->transects()->attach($this->image->transect);
+        $this->project->volumes()->attach($this->image->volume);
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
         $this->editor = UserTest::create();
@@ -73,7 +73,7 @@ class ImagePolicyTest extends TestCase
         // for the project *but* no user belongs to the project so they shouldn't be able
         // to attach the label
         $otherProject = ProjectTest::create();
-        $otherProject->transects()->attach($this->image->transect);
+        $otherProject->volumes()->attach($this->image->volume);
         $otherDisallowedLabel = LabelTest::create();
         $otherProject->labelTrees()->attach($otherDisallowedLabel->label_tree_id);
 

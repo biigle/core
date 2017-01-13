@@ -18,7 +18,7 @@ class AnnotationLabelControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->annotation = AnnotationTest::create();
-        $this->project()->transects()->attach($this->annotation->image->transect);
+        $this->project()->volumes()->attach($this->annotation->image->volume);
     }
 
     public function testIndex()
@@ -50,7 +50,7 @@ class AnnotationLabelControllerTest extends ApiTestCase
         $this->annotation->save();
 
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->annotation->image->transect_id,
+            'volume_id' => $this->annotation->image->volume_id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
             'hide_own_annotations' => true,
@@ -83,21 +83,21 @@ class AnnotationLabelControllerTest extends ApiTestCase
         $this->beUser();
         $this->post("/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
-            'confidence' => 0.1
+            'confidence' => 0.1,
         ]);
         $this->assertResponseStatus(403);
 
         $this->beGuest();
         $this->post("/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
-            'confidence' => 0.1
+            'confidence' => 0.1,
         ]);
         $this->assertResponseStatus(403);
 
         $this->beEditor();
         $this->post("/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
-            'confidence' => 0.1
+            'confidence' => 0.1,
         ]);
         $this->assertResponseStatus(201);
         $this->assertEquals(1, $this->annotation->labels()->count());
@@ -105,7 +105,7 @@ class AnnotationLabelControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->json('POST', "/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
-            'confidence' => 0.1
+            'confidence' => 0.1,
         ]);
         $this->assertResponseStatus(201);
         $this->assertEquals(2, $this->annotation->labels()->count());

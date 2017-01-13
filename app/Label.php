@@ -52,11 +52,11 @@ class Label extends Model
      */
     public function parent()
     {
-        return $this->belongsTo(Label::class);
+        return $this->belongsTo(self::class);
     }
 
     /**
-     * The label tree this label belongs to
+     * The label tree this label belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -73,11 +73,11 @@ class Label extends Model
      */
     public function children()
     {
-        return $this->hasMany(Label::class, 'parent_id');
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     /**
-     * Remove the optional '#' from a hexadecimal color
+     * Remove the optional '#' from a hexadecimal color.
      *
      * @param string $value The color
      */
@@ -87,7 +87,7 @@ class Label extends Model
     }
 
     /**
-     * Determines if the label is used anywhere (e.g. attached to an annotation)
+     * Determines if the label is used anywhere (e.g. attached to an annotation).
      *
      * @return bool
      */
@@ -98,7 +98,7 @@ class Label extends Model
     }
 
     /**
-     * Determines if the label can be deleted
+     * Determines if the label can be deleted.
      *
      * A label can be deleted if it doesn't have any child labels and if it is not used
      * anywhere (e.g. attached to an annotation).
@@ -107,6 +107,6 @@ class Label extends Model
      */
     public function canBeDeleted()
     {
-        return !Label::where('parent_id', $this->id)->exists() && !$this->isUsed();
+        return !self::where('parent_id', $this->id)->exists() && !$this->isUsed();
     }
 }

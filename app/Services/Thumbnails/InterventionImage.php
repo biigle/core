@@ -3,13 +3,13 @@
 namespace Biigle\Services\Thumbnails;
 
 use Biigle\Image;
-use Biigle\Transect;
+use Biigle\Volume;
 use InterventionImage as IImage;
 use Biigle\Contracts\ThumbnailService;
 
 /**
  * The default thumbnails service using the InterventionImage package
- * (http://image.intervention.io/)
+ * (http://image.intervention.io/).
  */
 class InterventionImage implements ThumbnailService
 {
@@ -41,7 +41,8 @@ class InterventionImage implements ThumbnailService
      *
      * @param Image $image
      */
-    public static function makeThumbnail(Image $image) {
+    public static function makeThumbnail(Image $image)
+    {
         IImage::make($image->url)
             ->resize(static::$width, static::$height, function ($constraint) {
                 // resize images proportionally
@@ -54,9 +55,10 @@ class InterventionImage implements ThumbnailService
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function generateThumbnails(Transect $transect, array $only) {
+    public function generateThumbnails(Volume $volume, array $only)
+    {
         $memoryLimit = ini_get('memory_limit');
 
         // increase memory limit for resizing large images
@@ -65,7 +67,7 @@ class InterventionImage implements ThumbnailService
         static::$width = config('thumbnails.width');
         static::$height = config('thumbnails.height');
 
-        $query = $transect->images()->when($only, function ($query) use ($only) {
+        $query = $volume->images()->when($only, function ($query) use ($only) {
             return $query->whereIn('id', $only);
         });
 

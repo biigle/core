@@ -18,14 +18,14 @@ class Visibility extends Model
     public $timestamps = false;
 
     /**
-     * The public visibility
+     * The public visibility.
      *
      * @var Visibility
      */
     public static $public;
 
     /**
-     * The private visibility
+     * The private visibility.
      *
      * @var Visibility
      */

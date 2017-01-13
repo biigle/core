@@ -6,15 +6,13 @@ use Biigle\SystemMessage;
 use Biigle\SystemMessageType;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 
 class NewSystemMessageNotification extends Notification
 {
     use Queueable;
 
     /**
-     * The system message
+     * The system message.
      *
      * @var SystemMessage
      */

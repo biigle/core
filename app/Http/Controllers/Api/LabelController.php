@@ -9,7 +9,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 class LabelController extends Controller
 {
     /**
-     * Delete a label
+     * Delete a label.
      *
      * @api {delete} labels/:id Delete a label
      * @apiGroup Labels
@@ -43,6 +43,7 @@ class LabelController extends Controller
             return redirect($request->input('_redirect'))
                 ->with('deleted', true);
         }
+
         return redirect()->back()
             ->with('deleted', true);
     }

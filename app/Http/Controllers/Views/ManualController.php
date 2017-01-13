@@ -6,7 +6,6 @@ use View;
 
 class ManualController extends Controller
 {
-
     /**
      * Show the application manual to the user.
      *

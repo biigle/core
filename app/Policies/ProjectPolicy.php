@@ -15,7 +15,7 @@ class ProjectPolicy extends CachedPolicy
     use HandlesAuthorization;
 
     /**
-     * Intercept all checks
+     * Intercept all checks.
      *
      * @param User $user
      * @param string $ability
@@ -74,7 +74,6 @@ class ProjectPolicy extends CachedPolicy
     public function removeMember(User $user, Project $project, User $member)
     {
         return $this->remember("project-can-remove-member-{$user->id}-{$project->id}-{$member->id}", function () use ($user, $project, $member) {
-
             $isMember = DB::table(self::TABLE)
                 ->where('project_id', $project->id)
                 ->where('user_id', $member->id)

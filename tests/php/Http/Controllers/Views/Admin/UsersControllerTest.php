@@ -64,7 +64,7 @@ class UsersControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
         $this->be($admin);
-        $this->get("admin/users/edit/999")->assertResponseStatus(404);
+        $this->get('admin/users/edit/999')->assertResponseStatus(404);
     }
 
     public function testEditWhenLoggedIn()
@@ -94,7 +94,7 @@ class UsersControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
         $this->be($admin);
-        $this->get("admin/users/delete/999")->assertResponseStatus(404);
+        $this->get('admin/users/delete/999')->assertResponseStatus(404);
     }
 
     public function testDeleteWhenLoggedIn()

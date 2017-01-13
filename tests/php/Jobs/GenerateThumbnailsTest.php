@@ -5,8 +5,7 @@ namespace Biigle\Tests\Jobs;
 use App;
 use Mockery;
 use TestCase;
-use Copria\Transect;
-use Biigle\Tests\TransectTest;
+use Biigle\Tests\VolumeTest;
 use Biigle\Jobs\GenerateThumbnails;
 
 class GenerateThumbnailsTest extends TestCase
@@ -22,25 +21,25 @@ class GenerateThumbnailsTest extends TestCase
 
     public function testHandle()
     {
-        $transect = TransectTest::create();
+        $volume = VolumeTest::create();
 
         $mock = App::make('Biigle\Contracts\ThumbnailService');
         $mock->shouldReceive('generateThumbnails')
             ->once()
-            ->with(Mockery::type('Biigle\Transect'), []);
+            ->with(Mockery::type('Biigle\Volume'), []);
 
-        with(new GenerateThumbnails($transect))->handle();
+        with(new GenerateThumbnails($volume))->handle();
     }
 
     public function testHandleWithOnly()
     {
-        $transect = TransectTest::create();
+        $volume = VolumeTest::create();
 
         $mock = App::make('Biigle\Contracts\ThumbnailService');
         $mock->shouldReceive('generateThumbnails')
             ->once()
-            ->with(Mockery::type('Biigle\Transect'), [2, 3, 4]);
+            ->with(Mockery::type('Biigle\Volume'), [2, 3, 4]);
 
-        with(new GenerateThumbnails($transect, [2, 3, 4]))->handle();
+        with(new GenerateThumbnails($volume, [2, 3, 4]))->handle();
     }
 }

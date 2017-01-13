@@ -13,7 +13,6 @@ use Biigle\Tests\AnnotationLabelTest;
 
 class LabelTreeControllerTest extends ApiTestCase
 {
-
     public function testIndex()
     {
         $this->doTestApiRoute('GET', '/api/v1/label-trees');
@@ -27,7 +26,6 @@ class LabelTreeControllerTest extends ApiTestCase
             'created_at' => (string) $tree->created_at,
             'updated_at' => (string) $tree->updated_at,
         ]);
-
     }
 
     public function testShow()
@@ -71,9 +69,7 @@ class LabelTreeControllerTest extends ApiTestCase
             'lastname' => $this->editor()->lastname,
             'role_id' => Role::$editor->id,
         ]);
-
     }
-
 
     public function testUpdate()
     {

@@ -11,7 +11,7 @@ class ImageController extends Controller
      *
      * @api {get} images/:id Get image information
      * @apiDescription Image information includes a subset of the image EXIF
-     * data as well as the transect, the image belongs to.
+     * data as well as the volume, the image belongs to.
      * @apiGroup Images
      * @apiName ShowImages
      * @apiPermission projectMember
@@ -46,14 +46,14 @@ class ImageController extends Controller
      *       "ExifImageLength":2448,
      *       "ImageType":"IMG:PowerShot G9 JPEG"
      *    },
-     *    "transect":{
+     *    "volume":{
      *       "id":1,
-     *       "name":"Test transect",
+     *       "name":"Test volume",
      *       "media_type_id":2,
      *       "creator_id":1,
      *       "created_at":"2015-05-04 07:34:04",
      *       "updated_at":"2015-05-04 07:34:04",
-     *       "url":"\/path\/to\/transect\/1"
+     *       "url":"\/path\/to\/volume\/1"
      *    }
      * }
      *
@@ -118,7 +118,7 @@ class ImageController extends Controller
     }
 
     /**
-     * Deletes the image
+     * Deletes the image.
      *
      * @api {delete} images/:id Delete an image
      * @apiGroup Images

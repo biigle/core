@@ -35,16 +35,16 @@ class DashboardController extends Controller
         if ($imageLabel) {
             if ($annotationLabel && $annotationLabel->created_at > $imageLabel->created_at) {
                 // if the annotation label is newer than the image label,
-                // take its transect
-                $recentTransect = $recentImage->transect;
+                // take its volume
+                $recentVolume = $recentImage->volume;
             } else {
-                // else take the transect of the image label
-                $recentTransect = $imageLabel->image->transect;
+                // else take the volume of the image label
+                $recentVolume = $imageLabel->image->volume;
             }
         } elseif ($recentImage) {
-            $recentTransect = $recentImage->transect;
+            $recentVolume = $recentImage->volume;
         } else {
-            $recentTransect = null;
+            $recentVolume = null;
         }
 
         $projects = $user->projects()
@@ -55,7 +55,7 @@ class DashboardController extends Controller
         return view('dashboard', [
             'user' => $user,
             'recentImage' => $recentImage,
-            'recentTransect' => $recentTransect,
+            'recentVolume' => $recentVolume,
             'projects' => $projects,
         ]);
     }

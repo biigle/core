@@ -13,7 +13,7 @@ class ImageLabelPolicy extends CachedPolicy
     use HandlesAuthorization;
 
     /**
-     * Intercept all checks
+     * Intercept all checks.
      *
      * @param User $user
      * @param string $ability
@@ -42,9 +42,9 @@ class ImageLabelPolicy extends CachedPolicy
         return $this->remember("image-label-can-destroy-{$user->id}-{$imageLabel->id}", function () use ($user, $imageLabel) {
             // selects the IDs of the projects, the image belongs to
             $projectIdsQuery = function ($query) use ($imageLabel) {
-                $query->select('project_transect.project_id')
-                    ->from('project_transect')
-                    ->join('images', 'project_transect.transect_id', '=', 'images.transect_id')
+                $query->select('project_volume.project_id')
+                    ->from('project_volume')
+                    ->join('images', 'project_volume.volume_id', '=', 'images.volume_id')
                     ->where('images.id', $imageLabel->image_id);
             };
 

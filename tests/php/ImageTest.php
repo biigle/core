@@ -18,7 +18,7 @@ class ImageTest extends ModelTestCase
     public function testAttributes()
     {
         $this->assertNotNull($this->model->filename);
-        $this->assertNotNull($this->model->transect_id);
+        $this->assertNotNull($this->model->volume_id);
         $this->assertNotNull($this->model->thumbPath);
         $this->assertNotNull($this->model->url);
         $this->assertNotNull($this->model->uuid);
@@ -47,28 +47,28 @@ class ImageTest extends ModelTestCase
         $this->model->save();
     }
 
-    public function testTransectRequired()
+    public function testVolumeRequired()
     {
-        $this->model->transect_id = null;
+        $this->model->volume_id = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
         $this->model->save();
     }
 
-    public function testTransectOnDeleteCascade()
+    public function testVolumeOnDeleteCascade()
     {
         if ($this->isSqlite()) {
             $this->markTestSkipped('Can\'t test with SQLite because altering foreign key constraints is not supported.');
         }
-        $this->model->transect->delete();
+        $this->model->volume->delete();
         $this->assertNull($this->model->fresh());
     }
 
-    public function testFilenameTransectUnique()
+    public function testFilenameVolumeUnique()
     {
-        $transect = TransectTest::create();
-        $this->model = self::create(['filename' => 'test', 'transect_id' => $transect->id]);
+        $volume = VolumeTest::create();
+        $this->model = self::create(['filename' => 'test', 'volume_id' => $volume->id]);
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $this->model = self::create(['filename' => 'test', 'transect_id' => $transect->id]);
+        $this->model = self::create(['filename' => 'test', 'volume_id' => $volume->id]);
     }
 
     public function testAnnotations()
@@ -115,7 +115,7 @@ class ImageTest extends ModelTestCase
 
     public function testGetFileRemote()
     {
-        $this->model->transect->url = 'http://localhost';
+        $this->model->volume->url = 'http://localhost';
         Response::shouldReceive('redirectTo')
             ->once()
             ->with($this->model->url)
@@ -123,14 +123,14 @@ class ImageTest extends ModelTestCase
         $this->assertTrue($this->model->getFile());
     }
 
-    public function testCleanupTransectThumbnails()
+    public function testCleanupVolumeThumbnails()
     {
         Event::shouldReceive('fire')
             ->once()
             ->with('images.cleanup', [[$this->model->uuid]]);
         Event::shouldReceive('fire'); // catch other events
 
-        $this->model->transect->delete();
+        $this->model->volume->delete();
     }
 
     public function testGetExif()

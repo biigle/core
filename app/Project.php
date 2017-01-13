@@ -29,7 +29,7 @@ class Project extends Model
     ];
 
     /**
-     * Validation rules for attaching a label tree
+     * Validation rules for attaching a label tree.
      *
      * @var array
      */
@@ -186,91 +186,91 @@ class Project extends Model
     }
 
     /**
-     * The transects of this project.
+     * The volumes of this project.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function transects()
+    public function volumes()
     {
-        return $this->belongsToMany(Transect::class);
+        return $this->belongsToMany(Volume::class);
     }
 
     /**
-     * Adds a transect to this project if it wasn't already.
+     * Adds a volume to this project if it wasn't already.
      *
-     * @deprecated Use `$project->transects()->attach($id)` instead.
+     * @deprecated Use `$project->volumes()->attach($id)` instead.
      * @param int $id
      * @return void
      */
-    public function addTransectId($id)
+    public function addVolumeId($id)
     {
         try {
-            $this->transects()->attach($id);
+            $this->volumes()->attach($id);
             // Maybe we get a new thumbnail now.
             Cache::forget("project-thumbnail-{$this->id}");
         } catch (QueryException $e) {
-            // transect already exists for this project, so everything is fine
+            // volume already exists for this project, so everything is fine
         }
     }
 
     /**
-     * Detaches the transect from this project. Fails if this is the last
-     * project, the transect is attached to, unless force is `true`.
+     * Detaches the volume from this project. Fails if this is the last
+     * project, the volume is attached to, unless force is `true`.
      *
-     * @param Transect $transect
-     * @param bool $force Delete the transect completely if this is the last
+     * @param Volume $volume
+     * @param bool $force Delete the volume completely if this is the last
      * project it belongs to
      */
-    public function removeTransect($transect, $force = false)
+    public function removeVolume($volume, $force = false)
     {
-        if (!$transect) {
+        if (!$volume) {
             // nothing to remove
             return;
         }
 
-        // this is the last project the transect belongs to, so it should be
+        // this is the last project the volume belongs to, so it should be
         // deleted
-        if ($transect->projects()->count() === 1) {
-            // but delete the transect only with force!
+        if ($volume->projects()->count() === 1) {
+            // but delete the volume only with force!
             if (!$force) {
-                abort(400, 'The transect would not belong to any project after detaching. Use the "force" argument to detach and delete it.');
+                abort(400, 'The volume would not belong to any project after detaching. Use the "force" argument to detach and delete it.');
             }
 
-            $transect->delete();
+            $volume->delete();
         }
 
-        // if the transect still belongs to other projects, just detach it
-        $this->transects()->detach($transect->id);
+        // if the volume still belongs to other projects, just detach it
+        $this->volumes()->detach($volume->id);
         // Maybe we get a new thumbnail now.
         Cache::forget("project-thumbnail-{$this->id}");
     }
 
     /**
-     * Detaches all transects from this project. Fails if this is the last
-     * project, one of the transects is attached to, unless force is `true`.
+     * Detaches all volumes from this project. Fails if this is the last
+     * project, one of the volumes is attached to, unless force is `true`.
      *
      * @param bool $force
      */
-    public function removeAllTransects($force = false)
+    public function removeAllVolumes($force = false)
     {
-        $transects = $this->transects;
+        $volumes = $this->volumes;
 
         if (!$force) {
-            foreach ($transects as $transect) {
-                if ($transect->projects()->count() === 1) {
-                    abort(400, 'One transect would not belong to any project after detaching. Use the "force" argument or detach and delete it first.');
+            foreach ($volumes as $volume) {
+                if ($volume->projects()->count() === 1) {
+                    abort(400, 'One volume would not belong to any project after detaching. Use the "force" argument or detach and delete it first.');
                 }
             }
         }
 
-        foreach ($transects as $transect) {
-            $this->removeTransect($transect, $force);
+        foreach ($volumes as $volume) {
+            $this->removeVolume($volume, $force);
         }
         Cache::forget("project-thumbnail-{$this->id}");
     }
 
     /**
-     * The label trees, this project is using
+     * The label trees, this project is using.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -280,7 +280,7 @@ class Project extends Model
     }
 
     /**
-     * The private label trees that authorized this project to use them
+     * The private label trees that authorized this project to use them.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -297,12 +297,12 @@ class Project extends Model
     public function getThumbnailAttribute()
     {
         return Cache::remember("project-thumbnail-{$this->id}", 60, function () {
-            $transect = $this->transects()
+            $volume = $this->volumes()
                 ->select('id')
                 ->orderBy('id')
                 ->first();
 
-            return $transect ? $transect->thumbnail : null;
+            return $volume ? $volume->thumbnail : null;
         });
     }
 }

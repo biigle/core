@@ -2,22 +2,21 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Carbon\Carbon;
-use Biigle\Transect;
+use Biigle\Volume;
 use Biigle\AnnotationSession;
 use Illuminate\Http\Request;
 
-class TransectAnnotationSessionController extends Controller
+class VolumeAnnotationSessionController extends Controller
 {
     /**
-     * Shows a list of all annotation sessions of the specified transect.
+     * Shows a list of all annotation sessions of the specified volume.
      *
-     * @api {get} transects/:id/annotation-sessions Get all annotation sessions
-     * @apiGroup Transects
+     * @api {get} volumes/:id/annotation-sessions Get all annotation sessions
+     * @apiGroup Volumes
      * @apiName IndexAnnotationsSessions
      * @apiPermission projectMember
      *
-     * @apiParam {Number} id The transect ID.
+     * @apiParam {Number} id The volume ID.
      *
      * @apiSuccessExample {json} Success response:
      * [
@@ -25,7 +24,7 @@ class TransectAnnotationSessionController extends Controller
      *       "id": 1,
      *       "name": "My first annotation session",
      *       "description": "This is my first annotation session lasting two days.",
-     *       "transect_id": 1,
+     *       "volume_id": 1,
      *       "created_at": "2016-09-05 13:52:30",
      *       "updated_at": "2016-09-05 13:52:30",
      *       "starts_at": "2016-09-05 00:00:00",
@@ -43,28 +42,28 @@ class TransectAnnotationSessionController extends Controller
      *    }
      * ]
      *
-     * @param int $id transect id
+     * @param int $id volume id
      * @return \Illuminate\Http\Response
      */
     public function index($id)
     {
-        $transect = Transect::findOrFail($id);
-        $this->authorize('access', $transect);
+        $volume = Volume::findOrFail($id);
+        $this->authorize('access', $volume);
 
-        return $transect->annotationSessions;
+        return $volume->annotationSessions;
     }
 
     /**
-     * Creates a new annotation session for the specified transect.
+     * Creates a new annotation session for the specified volume.
      *
-     * @api {post} transects/:id/annotation-sessions Create a new annotation session
-     * @apiGroup Transects
+     * @api {post} volumes/:id/annotation-sessions Create a new annotation session
+     * @apiGroup Volumes
      * @apiName StoreAnnotationSessions
      * @apiPermission projectAdmin
      *
      * @apiDescription Annotation session may not overlap in their active time period.
      *
-     * @apiParam {Number} id The transect ID.
+     * @apiParam {Number} id The volume ID.
      *
      * @apiParam (Required arguments) {String} name Name of the annotation session.
      * @apiParam (Required arguments) {Date} starts_at Day when the annotation session should start. You should use a date format that specifies your timezone (e.g. `2016-09-20T00:00:00.000+02:00`), otherwise the timezone of the Biigle instance is used. This endpoint returns a special `starts_at_iso8601` attribute which is parseable independently from the timezone of the Biigle instance.
@@ -90,7 +89,7 @@ class TransectAnnotationSessionController extends Controller
      *     "id": 1,
      *     "name": "My first annotation session",
      *     "description": "This is my first annotation session lasting two days.",
-     *     "transect_id": 1,
+     *     "volume_id": 1,
      *     "created_at": "2016-09-18 13:52:30",
      *     "updated_at": "2016-09-18 13:52:30",
      *     "starts_at": "2016-09-19 22:00:00",
@@ -116,26 +115,26 @@ class TransectAnnotationSessionController extends Controller
      * }
      *
      * @param Request $request
-     * @param int $id transect ID
+     * @param int $id volume ID
      * @return Annotation
      */
     public function store(Request $request, $id)
     {
-        $transect = Transect::findOrFail($id);
-        $this->authorize('update', $transect);
+        $volume = Volume::findOrFail($id);
+        $this->authorize('update', $volume);
         $this->validate($request, AnnotationSession::$storeRules);
 
         $users = $request->input('users');
         // count users of all attached projects that match the given user IDs
-        $count = $transect->users()
+        $count = $volume->users()
             ->whereIn('id', $users)
             ->count();
 
         // Previous validation ensures that the user IDs are distinct so we can validate
-        // the transect users using the count.
+        // the volume users using the count.
         if ($count !== count($users)) {
             return $this->buildFailedValidationResponse($request, [
-                'users' => ['All users must belong to one of the projects, this transect is attached to.']
+                'users' => ['All users must belong to one of the projects, this volume is attached to.'],
             ]);
         }
 
@@ -146,16 +145,16 @@ class TransectAnnotationSessionController extends Controller
         $session->starts_at = $request->input('starts_at');
         $session->ends_at = $request->input('ends_at');
 
-        if ($transect->hasConflictingAnnotationSession($session)) {
+        if ($volume->hasConflictingAnnotationSession($session)) {
             return $this->buildFailedValidationResponse($request, [
-                'starts_at' => ['There already is an annotation session in this time period.']
+                'starts_at' => ['There already is an annotation session in this time period.'],
             ]);
         }
 
         $session->hide_other_users_annotations = $request->input('hide_other_users_annotations', false);
         $session->hide_own_annotations = $request->input('hide_own_annotations', false);
 
-        $transect->annotationSessions()->save($session);
+        $volume->annotationSessions()->save($session);
         $session->users()->attach($users);
 
         return $session->load('users');

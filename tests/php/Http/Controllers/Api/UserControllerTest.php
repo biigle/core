@@ -249,7 +249,7 @@ class UserControllerTest extends ApiTestCase
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new@email.me',
-            '_origin' => 'email'
+            '_origin' => 'email',
         ]);
         $this->assertResponseOk();
         $this->assertSessionHas('origin', 'email');
@@ -377,7 +377,7 @@ class UserControllerTest extends ApiTestCase
 
         $this->delete('/api/v1/users/'.$this->editor()->id, [
             'password' => 'globalAdmin-password',
-            '_redirect' => 'settings/profile'
+            '_redirect' => 'settings/profile',
         ]);
         $this->assertRedirectedTo('settings/profile');
         $this->assertSessionHas('deleted', true);
@@ -413,7 +413,7 @@ class UserControllerTest extends ApiTestCase
 
         // ajax call to get the correct response status
         $this->json('DELETE', '/api/v1/users/my', [
-            'password' => 'wrong-password'
+            'password' => 'wrong-password',
         ]);
         // wrong password provided
         $this->assertResponseStatus(422);
@@ -421,14 +421,14 @@ class UserControllerTest extends ApiTestCase
         $this->assertNotNull($this->guest()->fresh());
         // ajax call to get the correct response status
         $this->json('DELETE', '/api/v1/users/my', [
-            'password' => 'guest-password'
+            'password' => 'guest-password',
         ]);
         $this->assertResponseOk();
         $this->assertNull($this->guest()->fresh());
 
         $this->beEditor();
         $this->delete('/api/v1/users/my', [
-            'password' => 'editor-password'
+            'password' => 'editor-password',
         ]);
         $this->assertRedirectedTo('auth/login');
         $this->assertNull(Auth::user());

@@ -34,7 +34,7 @@ class SystemMessageControllerTest extends ApiTestCase
         $this->json('POST', '/api/v1/system-messages', [
                 'title' => 'my title',
                 'body' => 'my body',
-                'type_id' => 999
+                'type_id' => 999,
             ])
             // type must exist
             ->assertResponseStatus(422);
@@ -91,7 +91,7 @@ class SystemMessageControllerTest extends ApiTestCase
         $this->beGlobalAdmin();
 
         $this->json('PUT', '/api/v1/system-messages/'.$message->id, [
-                'type_id' => 999
+                'type_id' => 999,
             ])
             // type must exist
             ->assertResponseStatus(422);
@@ -135,7 +135,7 @@ class SystemMessageControllerTest extends ApiTestCase
         $this->assertNull($message->fresh());
 
         $message = SystemMessageTest::create([
-            'published_at' => '2016'
+            'published_at' => '2016',
         ]);
 
         $this->json('DELETE', '/api/v1/system-messages/'.$message->id)

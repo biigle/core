@@ -8,7 +8,7 @@ use Cache;
 use Exception;
 use Biigle\Role;
 use ModelTestCase;
-use Biigle\Transect;
+use Biigle\Volume;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Middleware;
@@ -19,12 +19,12 @@ use GuzzleHttp\Handler\MockHandler;
 use Illuminate\Database\QueryException;
 use GuzzleHttp\Exception\RequestException;
 
-class TransectTest extends ModelTestCase
+class VolumeTest extends ModelTestCase
 {
     /**
      * The model class this class will test.
      */
-    protected static $modelClass = Transect::class;
+    protected static $modelClass = Volume::class;
 
     public function testAttributes()
     {
@@ -71,7 +71,7 @@ class TransectTest extends ModelTestCase
 
     public function testImages()
     {
-        $image = ImageTest::create(['transect_id' => $this->model->id]);
+        $image = ImageTest::create(['volume_id' => $this->model->id]);
         $this->assertEquals($image->id, $this->model->images()->first()->id);
     }
 
@@ -79,7 +79,7 @@ class TransectTest extends ModelTestCase
     {
         $project = ProjectTest::create();
         $this->assertEquals(0, $this->model->projects()->count());
-        $project->transects()->attach($this->model);
+        $project->volumes()->attach($this->model);
         $this->assertEquals(1, $this->model->projects()->count());
     }
 
@@ -147,7 +147,7 @@ class TransectTest extends ModelTestCase
     public function testValidateUrlRemoteError()
     {
         $this->model->url = 'http://localhost';
-        $mock = new MockHandler([new RequestException("Error Communicating with Server", new Request('HEAD', 'test'))]);
+        $mock = new MockHandler([new RequestException('Error Communicating with Server', new Request('HEAD', 'test'))]);
 
         $handler = HandlerStack::create($mock);
 
@@ -178,7 +178,7 @@ class TransectTest extends ModelTestCase
         $this->model->url = 'http://localhost';
         $mock = new MockHandler([
             new Response(404),
-            new Response(200)
+            new Response(200),
         ]);
 
         $container = [];
@@ -239,13 +239,13 @@ class TransectTest extends ModelTestCase
 
     public function testParseImagesQueryString()
     {
-        $return = Transect::parseImagesQueryString('');
+        $return = Volume::parseImagesQueryString('');
         $this->assertEquals([], $return);
 
-        $return = Transect::parseImagesQueryString(', 1.jpg , , 2.jpg, , , ');
+        $return = Volume::parseImagesQueryString(', 1.jpg , , 2.jpg, , , ');
         $this->assertEquals(['1.jpg', '2.jpg'], $return);
 
-        $return = Transect::parseImagesQueryString(' 1.jpg ');
+        $return = Volume::parseImagesQueryString(' 1.jpg ');
         $this->assertEquals(['1.jpg'], $return);
     }
 
@@ -269,20 +269,20 @@ class TransectTest extends ModelTestCase
     public function testAnnotationSessions()
     {
         $this->assertFalse($this->model->annotationSessions()->exists());
-        $session = AnnotationSessionTest::create(['transect_id' => $this->model->id]);
+        $session = AnnotationSessionTest::create(['volume_id' => $this->model->id]);
         $this->assertTrue($this->model->annotationSessions()->exists());
     }
 
     public function testActiveAnnotationSession()
     {
         $active = AnnotationSessionTest::create([
-            'transect_id' => $this->model->id,
+            'volume_id' => $this->model->id,
             'starts_at' => Carbon::yesterday(),
             'ends_at' => Carbon::tomorrow(),
         ]);
 
         AnnotationSessionTest::create([
-            'transect_id' => $this->model->id,
+            'volume_id' => $this->model->id,
             'starts_at' => Carbon::yesterday()->subDay(),
             'ends_at' => Carbon::yesterday(),
         ]);
@@ -293,13 +293,13 @@ class TransectTest extends ModelTestCase
     public function testHasConflictingAnnotationSession()
     {
         $a1 = AnnotationSessionTest::create([
-            'transect_id' => $this->model->id,
+            'volume_id' => $this->model->id,
             'starts_at' => '2016-09-04',
             'ends_at' => '2016-09-06',
         ]);
 
         $a2 = AnnotationSessionTest::make([
-            'transect_id' => $this->model->id,
+            'volume_id' => $this->model->id,
             'starts_at' => '2016-09-05',
             'ends_at' => '2016-09-06',
         ]);
@@ -307,7 +307,7 @@ class TransectTest extends ModelTestCase
         $this->assertTrue($this->model->hasConflictingAnnotationSession($a2));
 
         $a3 = AnnotationSessionTest::make([
-            'transect_id' => $this->model->id,
+            'volume_id' => $this->model->id,
             'starts_at' => '2016-09-03',
             'ends_at' => '2016-09-04',
         ]);
@@ -315,7 +315,7 @@ class TransectTest extends ModelTestCase
         $this->assertFalse($this->model->hasConflictingAnnotationSession($a3));
 
         $a4 = AnnotationSessionTest::make([
-            'transect_id' => $this->model->id,
+            'volume_id' => $this->model->id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
         ]);
@@ -339,12 +339,12 @@ class TransectTest extends ModelTestCase
         $p1 = ProjectTest::create();
         $p1->addUserId($u1, $editor->id);
         $p1->addUserId($u2, $editor->id);
-        $p1->transects()->attach($this->model);
+        $p1->volumes()->attach($this->model);
 
         $p2 = ProjectTest::create();
         $p2->addUserId($u2, $editor->id);
         $p2->addUserId($u3, $editor->id);
-        $p2->transects()->attach($this->model);
+        $p2->volumes()->attach($this->model);
 
         $users = $this->model->users()->get();
         // project creators are counted, too
@@ -373,11 +373,11 @@ class TransectTest extends ModelTestCase
     {
         ImageTest::create([
             'filename' => 'b.jpg',
-            'transect_id' => $this->model->id,
+            'volume_id' => $this->model->id,
         ]);
         ImageTest::create([
             'filename' => 'a.jpg',
-            'transect_id' => $this->model->id,
+            'volume_id' => $this->model->id,
         ]);
         $this->assertEquals('a.jpg', $this->model->orderedImages()->first()->filename);
     }
@@ -391,15 +391,15 @@ class TransectTest extends ModelTestCase
     {
         $i1 = ImageTest::create([
             'filename' => 'a.jpg',
-            'transect_id' => $this->model->id,
+            'volume_id' => $this->model->id,
         ]);
         $i2 = ImageTest::create([
             'filename' => 'b.jpg',
-            'transect_id' => $this->model->id,
+            'volume_id' => $this->model->id,
         ]);
         $i3 = ImageTest::create([
             'filename' => 'c.jpg',
-            'transect_id' => $this->model->id,
+            'volume_id' => $this->model->id,
         ]);
 
         // should be the middle image ordered by name
@@ -412,7 +412,7 @@ class TransectTest extends ModelTestCase
         ImageTest::create([
             'lng' => 5.5,
             'lat' => 5.5,
-            'transect_id' => $this->model->id,
+            'volume_id' => $this->model->id,
         ]);
         $this->assertFalse($this->model->hasGeoInfo());
         $this->model->flushGeoInfoCache();

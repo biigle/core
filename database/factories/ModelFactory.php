@@ -44,7 +44,7 @@ $factory->define(Biigle\MediaType::class, function ($faker) {
     ];
 });
 
-$factory->define(Biigle\Transect::class, function ($faker) {
+$factory->define(Biigle\Volume::class, function ($faker) {
     return [
         'name' => $faker->company(),
         'media_type_id' => function () {
@@ -61,8 +61,8 @@ $factory->define(Biigle\Image::class, function ($faker) {
     return [
         'filename' => 'test-image.jpg',
         'uuid' => $faker->uuid(),
-        'transect_id' => function () {
-            return factory(Biigle\Transect::class)->create()->id;
+        'volume_id' => function () {
+            return factory(Biigle\Volume::class)->create()->id;
         },
     ];
 });
@@ -161,8 +161,8 @@ $factory->define(Biigle\AnnotationSession::class, function ($faker) {
     return [
         'name' => $faker->username(),
         'description' => $faker->sentence(),
-        'transect_id' => function () {
-            return factory(Biigle\Transect::class)->create()->id;
+        'volume_id' => function () {
+            return factory(Biigle\Volume::class)->create()->id;
         },
         'starts_at' => '2016-09-04',
         'ends_at' => '2016-09-06',
@@ -185,6 +185,6 @@ $factory->define(Biigle\SystemMessage::class, function ($faker) {
             Biigle\SystemMessageType::$important->id,
             Biigle\SystemMessageType::$update->id,
             Biigle\SystemMessageType::$info->id,
-        ])
+        ]),
     ];
 });

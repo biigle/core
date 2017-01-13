@@ -13,7 +13,6 @@ use Illuminate\Http\Exception\HttpResponseException;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
@@ -63,7 +62,7 @@ class Handler extends ExceptionHandler
         // use JsonResponse if this was an automated request
         if (Controller::isAutomatedRequest($request)) {
             return $this->renderJsonResponse($exception);
-        } else if ($exception instanceof ErrorException && view()->exists("errors.500")) {
+        } elseif ($exception instanceof ErrorException && view()->exists('errors.500')) {
             return $this->renderCustomErrorPage($exception);
         } else {
             return parent::render($request, $exception);
@@ -104,7 +103,7 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * Render an exception with a custom view
+     * Render an exception with a custom view.
      *
      * @param \Exception $e
      * @return \Symfony\Component\HttpFoundation\Response

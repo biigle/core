@@ -16,7 +16,7 @@ class AnnotationController extends Controller
      * @apiName ShowAnnotation
      * @apiParam {Number} id The annotation ID.
      * @apiPermission projectMember
-     * @apiDescription Access may be denied by an active annotation session of the transect, the annotation belongs to.
+     * @apiDescription Access may be denied by an active annotation session of the volume, the annotation belongs to.
      * @apiSuccessExample {json} Success response:
      * {
      *    "id":1,
@@ -75,7 +75,7 @@ class AnnotationController extends Controller
             $annotation->validatePoints($points);
         } catch (Exception $e) {
             return $this->buildFailedValidationResponse($request, [
-                'points' => [$e->getMessage()]
+                'points' => [$e->getMessage()],
             ]);
         }
 

@@ -3,21 +3,21 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Exception;
-use Biigle\Transect;
+use Biigle\Volume;
 use Illuminate\Http\Request;
 
-class TransectImageController extends Controller
+class VolumeImageController extends Controller
 {
     /**
-     * List the image IDs of the specified transect.
+     * List the image IDs of the specified volume.
      *
-     * @api {get} transects/:id/images Get all images
-     * @apiGroup Transects
-     * @apiName IndexTransectImages
+     * @api {get} volumes/:id/images Get all images
+     * @apiGroup Volumes
+     * @apiName IndexVolumeImages
      * @apiPermission projectMember
-     * @apiDescription Returns a list of all image IDs of the transect.
+     * @apiDescription Returns a list of all image IDs of the volume.
      *
-     * @apiParam {Number} id The transect ID.
+     * @apiParam {Number} id The volume ID.
      *
      * @apiSuccessExample {json} Success response:
      * [1, 2, 3, 4, 5, 6]
@@ -28,23 +28,23 @@ class TransectImageController extends Controller
      */
     public function index($id)
     {
-        $transect = Transect::findOrFail($id);
-        $this->authorize('access', $transect);
+        $volume = Volume::findOrFail($id);
+        $this->authorize('access', $volume);
 
-        return $transect->images()
+        return $volume->images()
             ->orderBy('id', 'asc')
             ->pluck('id');
     }
 
     /**
-     * Add images to the specified transect
+     * Add images to the specified volume.
      *
-     * @api {post} transects/:id/images Add images
-     * @apiGroup Transects
-     * @apiName StoreTransectImages
+     * @api {post} volumes/:id/images Add images
+     * @apiGroup Volumes
+     * @apiName StoreVolumeImages
      * @apiPermission projectAdmin
      *
-     * @apiParam {Number} id The transect ID.
+     * @apiParam {Number} id The volume ID.
      *
      * @apiParam (Required attributes) {String} images List of image file names, formatted as comma separated values.
      *
@@ -65,21 +65,21 @@ class TransectImageController extends Controller
      *
      *
      * @param Request $request
-     * @param int $id Transect ID
+     * @param int $id Volume ID
      *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, $id)
     {
-        $transect = Transect::findOrFail($id);
-        $this->authorize('update', $transect);
+        $volume = Volume::findOrFail($id);
+        $this->authorize('update', $volume);
 
-        $this->validate($request, Transect::$addImagesRules);
+        $this->validate($request, Volume::$addImagesRules);
 
-        $images = Transect::parseImagesQueryString($request->input('images'));
+        $images = Volume::parseImagesQueryString($request->input('images'));
 
         try {
-            $transect->validateImages($images);
+            $volume->validateImages($images);
         } catch (Exception $e) {
             return $this->buildFailedValidationResponse($request, [
                 'images' => $e->getMessage(),
@@ -87,12 +87,12 @@ class TransectImageController extends Controller
         }
 
         try {
-            $transect->createImages($images);
+            $volume->createImages($images);
         } catch (Exception $e) {
             return response($e->getMessage(), 400);
         }
 
-        $images = $transect->images()
+        $images = $volume->images()
             ->select('id', 'filename')
             ->orderBy('id', 'desc')
             ->take(sizeof($images))
@@ -100,7 +100,7 @@ class TransectImageController extends Controller
 
         $ids = $images->pluck('id')->toArray();
 
-        $transect->handleNewImages($ids);
+        $volume->handleNewImages($ids);
         event('images.created', [$id, $ids]);
 
         return $images;

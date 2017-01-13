@@ -2,9 +2,7 @@
 
 namespace Biigle\Jobs;
 
-use DB;
-use Biigle\Jobs\Job;
-use Biigle\Transect;
+use Biigle\Volume;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,15 +12,15 @@ class GenerateThumbnails extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     /**
-     * The transect for which the thumbnails should be generated.
+     * The volume for which the thumbnails should be generated.
      *
-     * @var Transect
+     * @var Volume
      */
-    private $transect;
+    private $volume;
 
     /**
      * Array of image IDs to restrict the generating of thumbnails to.
-     * If it is empty, all images of the transect will be taken.
+     * If it is empty, all images of the volume will be taken.
      *
      * @var array
      */
@@ -31,14 +29,14 @@ class GenerateThumbnails extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param Transect $transect The transect for which the thumbnails should be generated.
-     * @param array $only (optional) Array of image IDs to restrict the generating of thumbnails to. If it is empty, all images of the transect will be taken.
+     * @param Volume $volume The volume for which the thumbnails should be generated.
+     * @param array $only (optional) Array of image IDs to restrict the generating of thumbnails to. If it is empty, all images of the volume will be taken.
      *
      * @return void
      */
-    public function __construct(Transect $transect, array $only = [])
+    public function __construct(Volume $volume, array $only = [])
     {
-        $this->transect = $transect;
+        $this->volume = $volume;
         $this->only = $only;
     }
 
@@ -50,6 +48,6 @@ class GenerateThumbnails extends Job implements ShouldQueue
     public function handle()
     {
         app()->make('Biigle\Contracts\ThumbnailService')
-            ->generateThumbnails($this->transect, $this->only);
+            ->generateThumbnails($this->volume, $this->only);
     }
 }

@@ -4,7 +4,6 @@ namespace Biigle\Listeners;
 
 use File;
 use Biigle\Image;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CleanupThumbnails implements ShouldQueue
@@ -12,7 +11,7 @@ class CleanupThumbnails implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param  array  $uuids  The transect image UUIDs
+     * @param  array  $uuids  The volume image UUIDs
      * @return void
      */
     public function handle(array $uuids)

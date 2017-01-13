@@ -19,7 +19,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         parent::setUp();
         $this->image = ImageTest::create([
-            'transect_id' => $this->transect()->id,
+            'volume_id' => $this->volume()->id,
         ]);
     }
 
@@ -41,7 +41,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
             'user_id' => $this->editor()->id,
         ]);
 
-        $this->doTestApiRoute('GET',"/api/v1/images/{$this->image->id}/annotations");
+        $this->doTestApiRoute('GET', "/api/v1/images/{$this->image->id}/annotations");
 
         $this->beUser();
         $this->get("/api/v1/images/{$this->image->id}/annotations");
@@ -58,7 +58,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     public function testIndexAnnotationSessionHideOwn()
     {
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->transect()->id,
+            'volume_id' => $this->volume()->id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
             'hide_own_annotations' => true,
@@ -141,7 +141,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Biigle\Shape::$pointId,
             'label_id' => $label->id,
-            'confidence' => 2
+            'confidence' => 2,
         ]);
         // confidence must be between 0 and 1
         $this->assertResponseStatus(422);
@@ -149,7 +149,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'shape_id' => \Biigle\Shape::$pointId,
             'label_id' => $label->id,
-            'confidence' => -1
+            'confidence' => -1,
         ]);
         // confidence must be between 0 and 1
         $this->assertResponseStatus(422);

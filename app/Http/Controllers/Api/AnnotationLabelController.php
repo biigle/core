@@ -18,7 +18,7 @@ class AnnotationLabelController extends Controller
      * @apiGroup Annotations
      * @apiName IndexAnnotationLabels
      * @apiPermission projectMember
-     * @apiDescription Access may be denied by an active annotation session of the transect, the annotation belongs to.
+     * @apiDescription Access may be denied by an active annotation session of the volume, the annotation belongs to.
      *
      * @apiParam {Number} id The annotation ID.
      * @apiSuccessExample {json} Success response:

@@ -10,7 +10,7 @@ use Biigle\Tests\UserTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Tests\TransectTest;
+use Biigle\Tests\VolumeTest;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
@@ -30,7 +30,7 @@ class AnnotationPolicyTest extends TestCase
         parent::setUp();
         $this->annotation = AnnotationTest::create();
         $this->project = ProjectTest::create();
-        $this->project->transects()->attach($this->annotation->image->transect);
+        $this->project->volumes()->attach($this->annotation->image->volume);
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
         $this->editor = UserTest::create();
@@ -57,7 +57,7 @@ class AnnotationPolicyTest extends TestCase
         $this->annotation->save();
 
         $session = AnnotationSessionTest::create([
-            'transect_id' => $this->annotation->image->transect_id,
+            'volume_id' => $this->annotation->image->volume_id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
             'hide_own_annotations' => true,
@@ -105,7 +105,7 @@ class AnnotationPolicyTest extends TestCase
         // for the project *but* no user belongs to the project so they shouldn't be able
         // to attach the label
         $otherProject = ProjectTest::create();
-        $otherProject->transects()->attach($this->annotation->image->transect);
+        $otherProject->volumes()->attach($this->annotation->image->volume);
         $otherDisallowedLabel = LabelTest::create();
         $otherProject->labelTrees()->attach($otherDisallowedLabel->label_tree_id);
 
@@ -132,9 +132,9 @@ class AnnotationPolicyTest extends TestCase
 
     public function testDestroy()
     {
-        $transect = TransectTest::create();
-        $this->project->transects()->attach($transect);
-        $image = ImageTest::create(['transect_id' => $transect->id]);
+        $volume = VolumeTest::create();
+        $this->project->volumes()->attach($volume);
+        $image = ImageTest::create(['volume_id' => $volume->id]);
 
         // has a label of user
         $a1 = AnnotationTest::create(['image_id' => $image->id]);

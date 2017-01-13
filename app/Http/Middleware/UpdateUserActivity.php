@@ -7,7 +7,6 @@ use Carbon\Carbon;
 
 class UpdateUserActivity
 {
-
     /**
      * Handle an outgoing response.
      *

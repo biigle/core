@@ -10,7 +10,6 @@ class ApiTokenController extends Controller
 {
     /**
      * Creates a new ApiTokenController instance.
-     *
      */
     public function __construct()
     {
@@ -20,7 +19,7 @@ class ApiTokenController extends Controller
     }
 
     /**
-     * Shows a list of all API tokens belonging to the authenticated user
+     * Shows a list of all API tokens belonging to the authenticated user.
      *
      * @api {get} api-tokens Get all API tokens
      * @apiGroup Api Tokens
