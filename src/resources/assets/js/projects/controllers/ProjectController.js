@@ -44,7 +44,7 @@ angular.module('biigle.projects').controller('ProjectController', function ($sco
 
         var handleProjectDeletionError = function (response) {
             if (response.status === 400) {
-                if (confirm('Deleting this project will delete one or more transects with all annotations! Do you want to continue?')) {
+                if (confirm('Deleting this project will delete one or more volumes with all annotations! Do you want to continue?')) {
                     Project.delete({id: PROJECT.id, force: true}, projectDeleted, msg.responseError);
                 }
             } else {

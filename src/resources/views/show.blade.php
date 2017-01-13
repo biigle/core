@@ -19,7 +19,7 @@
     angular.module('biigle.projects').constant('LABEL_TREES', {!! $labelTrees !!});
     angular.module('biigle.projects').constant('MEMBERS', {!! $members !!});
 
-    biigle.$declare('projects.transects', {!! $transects !!});
+    biigle.$declare('projects.volumes', {!! $volumes !!});
     biigle.$declare('projects.project', {!!$project!!});
 </script>
 @foreach ($modules->getMixins('projectsShowScripts') as $module => $nestedMixins)
@@ -32,7 +32,7 @@
     @include('projects::show.title')
     @include('projects::show.toolbar')
     <div class="col-md-6">
-        @include('projects::show.transects')
+        @include('projects::show.volumes')
     </div>
     <div class="col-md-6">
         @include('projects::show.label-trees')

@@ -1,11 +1,11 @@
 @extends('manual.base')
 
-@section('manual-title')  View all Transects of a Project. @stop
+@section('manual-title')  View all Volumes of a Project. @stop
 
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            See how to view all transects of a project.
+            See how to view all volumes of a project.
         </p>
 
         <div class="embed-responsive embed-responsive-16by9">
