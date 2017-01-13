@@ -4,19 +4,19 @@ $router->group([
         'middleware' => 'auth',
     ], function ($router) {
 
-    $router->get('transects/create', [
-        'as'   => 'create-transect',
-        'uses' => 'TransectController@create',
+    $router->get('volumes/create', [
+        'as'   => 'create-volume',
+        'uses' => 'VolumeController@create',
     ]);
 
-    $router->get('transects/edit/{id}', [
-        'as'   => 'transect-edit',
-        'uses' => 'TransectController@edit',
+    $router->get('volumes/edit/{id}', [
+        'as'   => 'volume-edit',
+        'uses' => 'VolumeController@edit',
     ]);
 
-    $router->get('transects/{id}', [
-        'as'   => 'transect',
-        'uses' => 'TransectController@index',
+    $router->get('volumes/{id}', [
+        'as'   => 'volume',
+        'uses' => 'VolumeController@index',
     ]);
 
     $router->get('images/{id}', [
@@ -24,8 +24,8 @@ $router->group([
         'uses' => 'ImageController@index',
     ]);
 
-    $router->get('admin/transects', [
-        'as' => 'admin-transects',
+    $router->get('admin/volumes', [
+        'as' => 'admin-volumes',
         'middleware' => 'can:admin',
         'uses' => 'AdminController@index',
     ]);
@@ -37,35 +37,35 @@ $router->group([
         'namespace' => 'Api',
     ], function ($router) {
 
-    $router->get('transects/{id}/images/order-by/filename', [
-        'uses' => 'TransectImageController@indexOrderByFilename',
+    $router->get('volumes/{id}/images/order-by/filename', [
+        'uses' => 'VolumeImageController@indexOrderByFilename',
     ]);
 
-    $router->get('transects/{id}/images/filter/labels', [
-        'uses' => 'TransectImageController@hasLabel'
+    $router->get('volumes/{id}/images/filter/labels', [
+        'uses' => 'VolumeImageController@hasLabel'
     ]);
 
-    $router->get('transects/{id}/images/filter/image-label-user/{id2}', [
-        'uses' => 'TransectImageController@hasImageLabelUser'
+    $router->get('volumes/{id}/images/filter/image-label-user/{id2}', [
+        'uses' => 'VolumeImageController@hasImageLabelUser'
     ]);
 
-    $router->get('transects/{id}/images/filter/image-label/{id2}', [
-        'uses' => 'TransectImageController@hasImageLabel'
+    $router->get('volumes/{id}/images/filter/image-label/{id2}', [
+        'uses' => 'VolumeImageController@hasImageLabel'
     ]);
 
-    $router->get('transects/{id}/images/filter/annotation-label/{id2}', [
-        'uses' => 'TransectImageAnnotationLabelController@index'
+    $router->get('volumes/{id}/images/filter/annotation-label/{id2}', [
+        'uses' => 'VolumeImageAnnotationLabelController@index'
     ]);
 
-    $router->get('transects/{id}/image-labels/find/{pattern}', [
-        'uses' => 'TransectImageLabelController@findLabel'
+    $router->get('volumes/{id}/image-labels/find/{pattern}', [
+        'uses' => 'VolumeImageLabelController@findLabel'
     ]);
 
-    $router->get('transects/{id}/users', [
-        'uses' => 'TransectUserController@index'
+    $router->get('volumes/{id}/users', [
+        'uses' => 'VolumeUserController@index'
     ]);
 
-    $router->post('transects/{id}/images/metadata', [
-        'uses' => 'TransectImageMetadataController@store'
+    $router->post('volumes/{id}/images/metadata', [
+        'uses' => 'VolumeImageMetadataController@store'
     ]);
 });

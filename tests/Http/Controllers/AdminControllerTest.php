@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Transects\Http\Controllers;
+namespace Biigle\Tests\Modules\Volumes\Http\Controllers;
 
 use TestCase;
 use Biigle\Role;
@@ -10,11 +10,11 @@ class AdminControllerTest extends TestCase
 {
    public function testIndex()
    {
-        $this->visit("admin/transects")->seePageIs('login');
+        $this->visit("admin/volumes")->seePageIs('login');
         $user = UserTest::create();
         $this->be($user);
-        $this->get("admin/transects")->assertResponseStatus(403);
+        $this->get("admin/volumes")->assertResponseStatus(403);
         $user->role()->associate(Role::$admin);
-        $this->visit("admin/transects")->assertResponseOk();
+        $this->visit("admin/volumes")->assertResponseOk();
    }
 }

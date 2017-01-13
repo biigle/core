@@ -1,4 +1,4 @@
-.transect__images {
+.volume__images {
     position: relative;
     overflow: hidden;
     display: flex;
@@ -9,7 +9,7 @@
     flex: 2;
 
     &.label-mode {
-        .transect-figure {
+        .volume-figure {
             cursor: pointer;
 
             &.image-label-error {
@@ -32,14 +32,14 @@
     }
 }
 
-.transect-figure {
+.volume-figure {
     height: 135px;
     width: 180px;
     display: inline-block;
     position: relative;
-    margin: $transect-image-margin;
+    margin: $volume-image-margin;
     border: 2px solid transparent;
-    // create a gap between transect figure border and image so the image color does
+    // create a gap between volume figure border and image so the image color does
     // not interfere with the border color
     padding: 2px;
     border-radius: $border-radius-large;
@@ -54,8 +54,8 @@
 
     .image-buttons {
         position: absolute;
-        top: $transect-image-padding;
-        right: $transect-image-padding;
+        top: $volume-image-padding;
+        right: $volume-image-padding;
         // width of a single button
         width: 28px;
     }
@@ -70,7 +70,7 @@
         transition: opacity 0.25s ease;
 
         &:not(:last-child) {
-            margin-bottom: $transect-image-padding;
+            margin-bottom: $volume-image-padding;
         }
 
         &:hover {
@@ -114,21 +114,21 @@
     }
 }
 
-.transect-figure__link {
+.volume-figure__link {
     display: block;
     height: 100%;
 }
 
-.transect-figure__flags {
+.volume-figure__flags {
     position: absolute;
     top: 0;
     left: 0;
-    padding-top: $transect-image-padding;
+    padding-top: $volume-image-padding;
 
     .figure-flag {
         position: relative;
         z-index: 100;
-        margin-left: $transect-image-padding;
+        margin-left: $volume-image-padding;
     }
 }
 

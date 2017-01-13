@@ -1,9 +1,9 @@
-.transect__label {
+.volume__label {
     position: relative;
     height: 100%;
 }
 
-.transect__label-body {
+.volume__label-body {
     width: 360px;
     height: 100%;
     padding: 1em;
@@ -11,7 +11,7 @@
     flex-flow: column nowrap;
 }
 
-.transect-image-label-menu-group .popover {
+.volume-image-label-menu-group .popover {
     max-width: none;
 }
 

@@ -1,10 +1,10 @@
 /**
- * The transect thumbnail of the dashboard hot box.
+ * The volume thumbnail of the dashboard hot box.
  */
-biigle.$viewModel('transect-metadata-upload', function (element) {
+biigle.$viewModel('volume-metadata-upload', function (element) {
     var messages = biigle.$require('messages.store');
-    var resource = biigle.$require('api.transectImageMetadata');
-    var transectId = biigle.$require('transects.id');
+    var resource = biigle.$require('api.volumeImageMetadata');
+    var volumeId = biigle.$require('volumes.id');
 
     new Vue({
         el: element,
@@ -38,7 +38,7 @@ biigle.$viewModel('transect-metadata-upload', function (element) {
                 this.loading = true;
                 var data = new FormData();
                 data.append('file', this.csv);
-                resource.save({id: transectId}, data)
+                resource.save({id: volumeId}, data)
                     .bind(this)
                     .then(this.handleSuccess, this.handleError)
                     .finally(function () {

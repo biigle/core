@@ -1,6 +1,6 @@
 @extends('admin.base')
 
-@section('title')Transects admin area @stop
+@section('title')Volumes admin area @stop
 
 @section('admin-content')
 <table class="table">
@@ -12,24 +12,24 @@
         </tr>
     </thead>
     <tbody>
-         @foreach ($transects as $transect)
+         @foreach ($volumes as $volume)
             <tr>
-                <td><a href="{{route('transect', $transect->id)}}" title="Show {{ $transect->name }}">{{$transect->name}}</a></td>
+                <td><a href="{{route('volume', $volume->id)}}" title="Show {{ $volume->name }}">{{$volume->name}}</a></td>
                 <td>
-                    @if ($transect->projects->count() === 1)
-                        <a href="{{route('project', $transect->projects[0]->id)}}" title="Show {{ $transect->projects[0]->name }}">{{$transect->projects[0]->name}}</a>
+                    @if ($volume->projects->count() === 1)
+                        <a href="{{route('project', $volume->projects[0]->id)}}" title="Show {{ $volume->projects[0]->name }}">{{$volume->projects[0]->name}}</a>
                     @else
                         <div class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{$transect->projects->count()}} Projects <span class="caret"></span></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{$volume->projects->count()}} Projects <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                @foreach ($transect->projects as $project)
+                                @foreach ($volume->projects as $project)
                                     <li><a href="{{route('project', $project->id)}}" title="Show {{ $project->name }}">{{$project->name}}</a></li>
                                 @endforeach
                             </ul>
                         </div>
                     @endif
                 </td>
-                <td>{{$transect->updated_at}}</td>
+                <td>{{$volume->updated_at}}</td>
             </tr>
         @endforeach
     </tbody>

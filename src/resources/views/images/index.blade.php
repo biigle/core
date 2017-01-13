@@ -4,7 +4,7 @@
 @section('title'){{ $image->filename }}@stop
 
 @push('styles')
-    <link href="{{ cachebust_asset('vendor/transects/styles/main.css') }}" rel="stylesheet">
+    <link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
 @endpush
 
 @section('content')
@@ -13,7 +13,7 @@
         <h2 class="col-lg-12 clearfix">
             {{ $image->filename }}
             <span class="pull-right">
-                <a href="{{route('transect', $transect->id)}}" title="Back to {{ $transect->name }}" class="btn btn-default">back</a>
+                <a href="{{route('volume', $volume->id)}}" title="Back to {{ $volume->name }}" class="btn btn-default">back</a>
                 @foreach ($modules->getMixins('imagesIndexButtons') as $module => $nestedMixins)
                     @include($module.'::imagesIndexButtons', array('mixins' => $nestedMixins))
                 @endforeach
@@ -25,7 +25,7 @@
             <div class="panel panel-default">
                 <img class="img-responsive" src="{{ url('api/v1/images/'.$image->id.'/file') }}">
             </div>
-            @include('transects::images.index.meta')
+            @include('volumes::images.index.meta')
         </div>
         <div class="col-sm-6 col-lg-8">
             <div class="row">
@@ -39,8 +39,8 @@
 @endsection
 
 @section('navbar')
-<div class="navbar-text navbar-transects-breadcrumbs">
-    @include('transects::partials.projectsBreadcrumb', ['projects' => $transect->projects])/ <a href="{{route('transect', $transect->id)}}" class="navbar-link" title="Show transect {{$transect->name}}">{{$transect->name}}</a>
-    / <strong title="{{$image->filename}}">{{$image->filename}}</strong> @include('transects::partials.annotationSessionIndicator')
+<div class="navbar-text navbar-volumes-breadcrumbs">
+    @include('volumes::partials.projectsBreadcrumb', ['projects' => $volume->projects])/ <a href="{{route('volume', $volume->id)}}" class="navbar-link" title="Show volume {{$volume->name}}">{{$volume->name}}</a>
+    / <strong title="{{$image->filename}}">{{$image->filename}}</strong> @include('volumes::partials.annotationSessionIndicator')
 </div>
 @endsection

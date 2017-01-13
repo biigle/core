@@ -3,7 +3,7 @@
         Annotation sessions
         <span class="pull-right">
             <span class="loader" data-ng-class="{'loader--active':isLoading()}"></span>
-            <a class="btn btn-default btn-xs" href="{{route('manual-tutorials', ['transects', 'annotation-sessions'])}}" title="Learn more on annotation sessions" target="_blank"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+            <a class="btn btn-default btn-xs" href="{{route('manual-tutorials', ['volumes', 'annotation-sessions'])}}" title="Learn more on annotation sessions" target="_blank"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
             <button class="btn btn-default btn-xs" title="Edit annotation sessions" data-ng-click="toggleEditing()" data-ng-class="{active: isEditing()}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
         </span>
     </div>
@@ -46,7 +46,7 @@
             <div class="row">
                 <div class="form-group col-xs-6" data-ng-class="{'has-error':hasError('users')}">
                     <label class="control-label" for="new-user">New user</label>
-                    <input type="text" class="form-control" name="new_user" id="as-new-user" data-ng-model="selected.user" title="Add a new user to the session" placeholder="Joe User" uib-typeahead="user as user.firstname + ' ' + user.lastname for user in getTransectUsers() | filter:$viewValue | limitTo:10" typeahead-on-select="addUser($event, $model)"/>
+                    <input type="text" class="form-control" name="new_user" id="as-new-user" data-ng-model="selected.user" title="Add a new user to the session" placeholder="Joe User" uib-typeahead="user as user.firstname + ' ' + user.lastname for user in getVolumeUsers() | filter:$viewValue | limitTo:10" typeahead-on-select="addUser($event, $model)"/>
                 </div>
                 <div class="form-group col-xs-6" data-ng-class="{'has-error':hasError('users')}">
                     <label class="control-label" for="users">Users</label>

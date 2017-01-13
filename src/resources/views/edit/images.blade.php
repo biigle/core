@@ -1,6 +1,6 @@
-<div class="panel panel-default transect-images-panel" data-ng-controller="ImagesController" data-confirmation="Do you really want to delete the image :img? All annotations will be lost!" data-success="The image was deleted." data-ng-class="{'panel-warning': data.addingNewImages}">
+<div class="panel panel-default volume-images-panel" data-ng-controller="ImagesController" data-confirmation="Do you really want to delete the image :img? All annotations will be lost!" data-success="The image was deleted." data-ng-class="{'panel-warning': data.addingNewImages}">
     <div class="panel-heading">
-        Transect images
+        Volume images
         <span class="pull-right">
             {{-- put image filter toggle here --}}
             <button class="btn btn-default btn-xs" title="Add new images" data-ng-click="toggleAddingNewImage()" data-ng-class="{active: data.addingNewImages}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
@@ -22,8 +22,8 @@
             <span class="text-muted">#@{{image.id}}</span> @{{image.filename}}
         </li>
         @foreach ($images as $id => $filename)
-            <li id="transect-image-{{$id}}" class="list-group-item">
-                <button type="button" class="close" title="Delete image #{{$id}}" onclick="$biigleTransectsEditDeleteImage({{$id}}, '{{$filename}}')"><span>&times;</span></button>
+            <li id="volume-image-{{$id}}" class="list-group-item">
+                <button type="button" class="close" title="Delete image #{{$id}}" onclick="$biigleVolumesEditDeleteImage({{$id}}, '{{$filename}}')"><span>&times;</span></button>
                 <span class="text-muted">#{{$id}}</span> {{$filename}}
             </li>
         @endforeach

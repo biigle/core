@@ -1,45 +1,45 @@
 @extends('app')
 @inject('modules', 'Biigle\Services\Modules')
 
-@section('title')Edit transect {{ $transect->name }} @stop
+@section('title')Edit volume {{ $volume->name }} @stop
 
 @push('scripts')
-    <script src="{{ cachebust_asset('vendor/transects/scripts/edit.js') }}"></script>
-    <script src="{{ cachebust_asset('vendor/transects/scripts/vue.js') }}"></script>
+    <script src="{{ cachebust_asset('vendor/volumes/scripts/edit.js') }}"></script>
+    <script src="{{ cachebust_asset('vendor/volumes/scripts/vue.js') }}"></script>
     <script type="text/javascript">
-        angular.module('biigle.transects.edit').constant('TRANSECT_ID', {!!$transect->id!!});
-        angular.module('biigle.transects.edit').constant('ANNOTATION_SESSIONS', {!!$annotationSessions!!});
+        angular.module('biigle.volumes.edit').constant('VOLUME_ID', {!!$volume->id!!});
+        angular.module('biigle.volumes.edit').constant('ANNOTATION_SESSIONS', {!!$annotationSessions!!});
 
-        biigle.$declare('transects.id', {!! $transect->id !!});
+        biigle.$declare('volumes.id', {!! $volume->id !!});
     </script>
-    @foreach ($modules->getMixins('transectsEditScripts') as $module => $nestedMixins)
-        @include($module.'::transectsEditScripts', ['mixins' => $nestedMixins])
+    @foreach ($modules->getMixins('volumesEditScripts') as $module => $nestedMixins)
+        @include($module.'::volumesEditScripts', ['mixins' => $nestedMixins])
     @endforeach
 @endpush
 
 @push('styles')
-    <link href="{{ cachebust_asset('vendor/transects/styles/edit.css') }}" rel="stylesheet">
-    @foreach ($modules->getMixins('transectsEditStyles') as $module => $nestedMixins)
-        @include($module.'::transectsEditStyles', ['mixins' => $nestedMixins])
+    <link href="{{ cachebust_asset('vendor/volumes/styles/edit.css') }}" rel="stylesheet">
+    @foreach ($modules->getMixins('volumesEditStyles') as $module => $nestedMixins)
+        @include($module.'::volumesEditStyles', ['mixins' => $nestedMixins])
     @endforeach
 @endpush
 
 @section('content')
 
-<div class="container" data-ng-app="biigle.transects.edit">
+<div class="container" data-ng-app="biigle.volumes.edit">
     <h2 class="col-xs-12 clearfix">
-        Edit {{$transect->name}}
+        Edit {{$volume->name}}
         <span class="pull-right">
-            <a class="btn btn-default" href="{{route('transect', $transect->id)}}">Back</a>
+            <a class="btn btn-default" href="{{route('volume', $volume->id)}}">Back</a>
         </span>
     </h2>
     <div class="col-sm-6">
-        @include('transects::edit.information')
-        @include('transects::edit.metadata')
-        @include('transects::edit.annotation-sessions')
+        @include('volumes::edit.information')
+        @include('volumes::edit.metadata')
+        @include('volumes::edit.annotation-sessions')
     </div>
     <div class="col-sm-6">
-    @include('transects::edit.images')
+    @include('volumes::edit.images')
     </div>
 </div>
 

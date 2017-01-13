@@ -1,16 +1,16 @@
 /**
- * @namespace biigle.transects.edit
+ * @namespace biigle.volumes.edit
  * @ngdoc controller
  * @name AnnotationSessionController
- * @memberOf biigle.transects.edit
+ * @memberOf biigle.volumes.edit
  * @description Controller for adding, editing and deleting annotation sessions
  */
-angular.module('biigle.transects.edit').controller('AnnotationSessionController', function ($scope, AnnotationSession, TRANSECT_ID, ANNOTATION_SESSIONS, msg, TransectUser) {
+angular.module('biigle.volumes.edit').controller('AnnotationSessionController', function ($scope, AnnotationSession, VOLUME_ID, ANNOTATION_SESSIONS, msg, VolumeUser) {
 		"use strict";
         var editing = false;
         var loading = false;
 
-        var transectUsers;
+        var volumeUsers;
 
         var errors = {};
 
@@ -146,8 +146,8 @@ angular.module('biigle.transects.edit').controller('AnnotationSessionController'
                 $scope.clearNewSession();
             }
 
-            if (transectUsers === undefined) {
-                transectUsers = TransectUser.query({transect_id: TRANSECT_ID});
+            if (volumeUsers === undefined) {
+                volumeUsers = VolumeUser.query({volume_id: VOLUME_ID});
             }
         };
 
@@ -210,7 +210,7 @@ angular.module('biigle.transects.edit').controller('AnnotationSessionController'
             } else {
                 // Date objects are automatically parsed to ISO8601 strings with timezone
                 // so the enpoint can handle the timezones correctly.
-                AnnotationSession.create({transect_id: TRANSECT_ID}, $scope.newSession, handleCreateSuccess, handleCreateError);
+                AnnotationSession.create({volume_id: VOLUME_ID}, $scope.newSession, handleCreateSuccess, handleCreateError);
             }
         };
 
@@ -239,8 +239,8 @@ angular.module('biigle.transects.edit').controller('AnnotationSessionController'
             $scope.sessionUsers = $scope.newSession.users;
         };
 
-        $scope.getTransectUsers = function () {
-            return transectUsers;
+        $scope.getVolumeUsers = function () {
+            return volumeUsers;
         };
 
         $scope.addUser = function (e, user) {

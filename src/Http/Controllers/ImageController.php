@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Transects\Http\Controllers;
+namespace Biigle\Modules\Volumes\Http\Controllers;
 
 use File;
 use Biigle\Image;
@@ -11,12 +11,12 @@ class ImageController extends Controller
     /**
      * Shows the image index page.
      *
-     * @param int $id transect ID
+     * @param int $id volume ID
      * @return \Illuminate\Http\Response
      */
     public function index($id)
     {
-        $image = Image::with('transect')->findOrFail($id);
+        $image = Image::with('volume')->findOrFail($id);
 
         $this->authorize('access', $image);
 
@@ -40,9 +40,9 @@ class ImageController extends Controller
             $image->size = round(File::size($image->url) / 1e4) / 1e2;
         }
 
-        return view('transects::images.index', [
+        return view('volumes::images.index', [
             'image' => $image,
-            'transect' => $image->transect,
+            'volume' => $image->volume,
             'exifKeys' => $exifKeys,
         ]);
     }

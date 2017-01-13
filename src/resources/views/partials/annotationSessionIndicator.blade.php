@@ -1,4 +1,4 @@
-@if ($session = $transect->getActiveAnnotationSession(auth()->user()))
+@if ($session = $volume->getActiveAnnotationSession(auth()->user()))
     <button class="btn btn-info btn-xs" title="Active annotation session '{{$session->name}}'" data-popover-title="Active annotation session" data-popover-placement="bottom" data-uib-popover-template="'annotationSessionIndicatorPopover.html'">
         <span class="glyphicon glyphicon-time" aria-hidden="true" ></span>
         <script type="text/ng-template" id="annotationSessionIndicatorPopover.html">

@@ -1,14 +1,14 @@
-.transect-menubar {
+.volume-menubar {
     min-width: 50px;
     padding: 1em 0.5em;
 }
 
-.transect-menubar__item {
+.volume-menubar__item {
     display: block;
     margin-bottom: 1em;
 }
 
-.transect-filter-popover {
+.volume-filter-popover {
 
     .filter-list {
         margin-top: 1em;
@@ -29,13 +29,13 @@
     }
 }
 
-.transect-filter-menu-group {
+.volume-filter-menu-group {
     .popover {
         max-width: none;
     }
 }
 
-.transect-sort-popover {
+.volume-sort-popover {
     min-width: 200px;
 
     .sorter-list-group {

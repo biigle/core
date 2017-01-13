@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Transects\Http\Controllers;
+namespace Biigle\Tests\Modules\Volumes\Http\Controllers;
 
 use TestCase;
 use Biigle\Role;
@@ -15,7 +15,7 @@ class ImageControllerTest extends TestCase
       $project = ProjectTest::create();
       $user = UserTest::create();
       $image = ImageTest::create();
-      $project->addTransectId($image->transect->id);
+      $project->addVolumeId($image->volume->id);
 
       // not logged in
       $this->get('images/'.$image->id);
