@@ -1,5 +1,5 @@
 <div class="settings-foldout__item"  data-ng-controller="SettingsSectionCyclingController">
-    <label title="Cycle through image sections">Cycle through image sections</label>
+    <label title="Cycle through image sections">Cycle through image sections <small>(Lawnmower mode)</small></label>
     <div class="btn-group">
         <button type="button" class="btn btn-default" data-ng-class="{active: cycling()}" data-ng-click="startCycling()" title="Start cycling through image sections">on</button>
         <button type="button" class="btn btn-default" data-ng-class="{active: !cycling()}" data-ng-click="stopCycling()" title="Stop cycling through image sections 𝗘𝘀𝗰">off</button>

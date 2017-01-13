@@ -11,7 +11,7 @@
     angular.module('biigle.annotations').constant('IMAGE_ID', {!!$image->id!!});
     angular.module('biigle.annotations').constant('EDIT_MODE', {!!$editMode ? 'true' : 'false'!!});
     angular.module('biigle.annotations').constant('USER_ID', {!!$user->id!!});
-    angular.module('biigle.annotations').constant('TRANSECT_ID', {!!$image->transect_id!!});
+    angular.module('biigle.annotations').constant('VOLUME_ID', {!!$image->volume_id!!});
     angular.module('biigle.annotations').constant('IMAGES_IDS', {!!$images->keys()!!});
     angular.module('biigle.annotations').constant('IMAGES_FILENAMES', {!!$images->values()!!});
     angular.module('biigle.annotations').constant('SHAPES', {!!$shapes!!});
@@ -37,8 +37,8 @@
 
 @section('navbar')
 <div class="navbar-text navbar-annotations-breadcrumbs">
-    @include('transects::partials.projectsBreadcrumb', ['projects' => $transect->projects])/ <a href="{{route('transect', $transect->id)}}" class="navbar-link" title="Show transect {{$transect->name}}">{{$transect->name}}</a>
-    / <strong class="navbar-annotations-filename" title="{{$image->filename}}">{{$image->filename}}</strong> @include('transects::partials.annotationSessionIndicator')
+    @include('volumes::partials.projectsBreadcrumb', ['projects' => $volume->projects])/ <a href="{{route('volume', $volume->id)}}" class="navbar-link" title="Show volume {{$volume->name}}">{{$volume->name}}</a>
+    / <strong class="navbar-annotations-filename" title="{{$image->filename}}">{{$image->filename}}</strong> @include('volumes::partials.annotationSessionIndicator')
 </div>
 @endsection
 

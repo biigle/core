@@ -1,6 +1,6 @@
 <div class="settings-foldout__item"  data-ng-controller="SettingsAnnotationsCyclingController">
     <div class="form-group">
-        <label title="Cycle through all annotations">Cycle through annotations</label>
+        <label title="Cycle through all annotations">Cycle through annotations <small>(Volare)</small></label>
         <div class="btn-group">
             <button type="button" class="btn btn-default" data-ng-class="{active: cycling()}" data-ng-click="startCycling()" title="Start cycling through all annotations">on</button>
             <button type="button" class="btn btn-default" data-ng-class="{active: !cycling()}" data-ng-click="stopCycling()" title="Stop cycling through all annotations 𝗘𝘀𝗰">off</button>

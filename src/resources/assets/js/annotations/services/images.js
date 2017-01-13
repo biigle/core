@@ -5,11 +5,11 @@
  * @memberOf biigle.annotations
  * @description Manages (pre-)loading of the images to annotate.
  */
-angular.module('biigle.annotations').service('images', function ($rootScope, URL, $q, filterSubset, TRANSECT_ID, IMAGES_IDS, IMAGES_FILENAMES) {
+angular.module('biigle.annotations').service('images', function ($rootScope, URL, $q, filterSubset, VOLUME_ID, IMAGES_IDS, IMAGES_FILENAMES) {
       "use strict";
 
       var _this = this;
-      // array of all image IDs of the transect
+      // array of all image IDs of the volume
       var imageIds = [];
       // maximum number of images to hold in buffer
       var MAX_BUFFER_SIZE = 5;
@@ -119,24 +119,24 @@ angular.module('biigle.annotations').service('images', function ($rootScope, URL
         };
 
       /**
-       * Initializes the service for a given transect. Returns a promise that
+       * Initializes the service for a given volume. Returns a promise that
        * is resolved, when the service is initialized.
        */
       this.init = function () {
             imageIds = IMAGES_IDS;
             // look for a sequence of image IDs in local storage.
-            // this sequence is produces by the transect index page when the images are
+            // this sequence is produces by the volume index page when the images are
             // sorted or filtered. we want to reflect the same ordering or filtering here
             // in the annotator
-            var storedSequence = window.localStorage['biigle.transects.' + TRANSECT_ID + '.images'];
+            var storedSequence = window.localStorage['biigle.volumes.' + VOLUME_ID + '.images'];
             if (storedSequence) {
                 storedSequence = JSON.parse(storedSequence);
                 // if there is such a stored sequence, filter out any image IDs that do not
-                // belong to the transect (any more), since some of them may have been deleted
+                // belong to the volume (any more), since some of them may have been deleted
                 // in the meantime
                 filterSubset(storedSequence, imageIds);
                 // then set the stored sequence as the sequence of image IDs instead of simply
-                // all IDs belonging to the transect
+                // all IDs belonging to the volume
                 imageIds = storedSequence;
             }
 

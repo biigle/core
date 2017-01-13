@@ -9,20 +9,20 @@ use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
 
-class TransectImageControllerTest extends ApiTestCase {
+class VolumeImageControllerTest extends ApiTestCase {
 
     public function testHasAnnotation() {
-        $id = $this->transect()->id;
+        $id = $this->volume()->id;
 
-        $image = ImageTest::create(['transect_id' => $id]);
+        $image = ImageTest::create(['volume_id' => $id]);
         AnnotationTest::create(['image_id' => $image->id]);
         // this image shouldn't appear
-        ImageTest::create(['transect_id' => $id, 'filename' => 'b.jpg']);
+        ImageTest::create(['volume_id' => $id, 'filename' => 'b.jpg']);
 
-        $this->doTestApiRoute('GET', "/api/v1/transects/{$id}/images/filter/annotations");
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/images/filter/annotations");
 
         $this->beUser();
-        $this->get("/api/v1/transects/{$id}/images/filter/annotations");
+        $this->get("/api/v1/volumes/{$id}/images/filter/annotations");
         $this->assertResponseStatus(403);
 
         $expect = [$image->id];
@@ -31,16 +31,16 @@ class TransectImageControllerTest extends ApiTestCase {
         }
 
         $this->beGuest();
-        $this->get("/api/v1/transects/{$id}/images/filter/annotations")
+        $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
             ->seeJsonEquals($expect);
         $this->assertResponseOk();
     }
 
     public function testHasAnnotationAnnotationSession()
     {
-        $id = $this->transect()->id;
+        $id = $this->volume()->id;
 
-        $image = ImageTest::create(['transect_id' => $id]);
+        $image = ImageTest::create(['volume_id' => $id]);
         $a = AnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2010-01-01',
@@ -51,7 +51,7 @@ class TransectImageControllerTest extends ApiTestCase {
         ]);
 
         $session = AnnotationSessionTest::create([
-            'transect_id' => $id,
+            'volume_id' => $id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
             'hide_own_annotations' => true,
@@ -59,11 +59,11 @@ class TransectImageControllerTest extends ApiTestCase {
         ]);
 
         $this->beGuest();
-        $this->get("/api/v1/transects/{$id}/images/filter/annotations")
+        $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
             ->dontSeeJson([]);
 
         $session->users()->attach($this->guest());
-        $this->get("/api/v1/transects/{$id}/images/filter/annotations")
+        $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
             ->seeJsonEquals([]);
 
         $a = AnnotationTest::create([
@@ -80,14 +80,14 @@ class TransectImageControllerTest extends ApiTestCase {
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/transects/{$id}/images/filter/annotations")
+        $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
             ->seeJsonEquals($expect);
     }
 
     public function testHasAnnotationUser() {
-        $tid = $this->transect()->id;
+        $tid = $this->volume()->id;
 
-        $image = ImageTest::create(['transect_id' => $tid]);
+        $image = ImageTest::create(['volume_id' => $tid]);
         $annotation = AnnotationTest::create(['image_id' => $image->id]);
         $label = AnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
@@ -101,17 +101,17 @@ class TransectImageControllerTest extends ApiTestCase {
         $uid = $this->editor()->id;
 
         // this image shouldn't appear
-        $image2 = ImageTest::create(['transect_id' => $tid, 'filename' => 'b.jpg']);
+        $image2 = ImageTest::create(['volume_id' => $tid, 'filename' => 'b.jpg']);
         $annotation = AnnotationTest::create(['image_id' => $image2->id]);
         $label = AnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
             'user_id' => $this->admin()->id,
         ]);
 
-        $this->doTestApiRoute('GET', "/api/v1/transects/{$tid}/images/filter/annotation-user/{$uid}");
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}");
 
         $this->beUser();
-        $this->get("/api/v1/transects/{$tid}/images/filter/annotation-user/{$uid}");
+        $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}");
         $this->assertResponseStatus(403);
 
         $expect = [$image->id];
@@ -120,24 +120,24 @@ class TransectImageControllerTest extends ApiTestCase {
         }
 
         $this->beGuest();
-        $this->get("/api/v1/transects/{$tid}/images/filter/annotation-user/{$uid}")
+        $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}")
             ->seeJsonEquals($expect);
         $this->assertResponseOk();
     }
 
     public function testHasAnnotationUserAnnotationSession()
     {
-        $tid = $this->transect()->id;
+        $tid = $this->volume()->id;
 
         $session = AnnotationSessionTest::create([
-            'transect_id' => $tid,
+            'volume_id' => $tid,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
             'hide_own_annotations' => true,
             'hide_other_users_annotations' => false,
         ]);
 
-        $image = ImageTest::create(['transect_id' => $tid]);
+        $image = ImageTest::create(['volume_id' => $tid]);
         $annotation = AnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => Carbon::yesterday(),
@@ -155,11 +155,11 @@ class TransectImageControllerTest extends ApiTestCase {
         }
 
         $this->beEditor();
-        $this->get("/api/v1/transects/{$tid}/images/filter/annotation-user/{$uid}")
+        $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}")
             ->seeJsonEquals($expect);
 
         $session->users()->attach($this->editor());
-        $this->get("/api/v1/transects/{$tid}/images/filter/annotation-user/{$uid}")
+        $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}")
             ->seeJsonEquals([]);
     }
 }

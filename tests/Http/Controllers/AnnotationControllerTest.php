@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Tests\TransectTest;
+use Biigle\Tests\VolumeTest;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationSessionTest;
 
@@ -16,9 +16,9 @@ class AnnotationControllerTest extends ApiTestCase {
 
     public function testIndex() {
         $project = ProjectTest::create();
-        $transect = TransectTest::create();
-        $image = ImageTest::create(['transect_id' => $transect->id]);
-        $project->addTransectId($transect->id);
+        $volume = VolumeTest::create();
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+        $project->addVolumeId($volume->id);
         // not logged in
         $this->get('annotate/'.$image->id);
         $this->assertResponseStatus(302);
@@ -41,7 +41,7 @@ class AnnotationControllerTest extends ApiTestCase {
 
     public function testShow() {
         $annotation = AnnotationTest::create();
-        $this->project()->addTransectId($annotation->image->transect_id);
+        $this->project()->addVolumeId($annotation->image->volume_id);
 
         $this->beUser();
         $this->json('GET', 'annotations/'.$annotation->id);
@@ -57,10 +57,10 @@ class AnnotationControllerTest extends ApiTestCase {
         $annotation = AnnotationTest::create([
             'created_at' => Carbon::yesterday(),
         ]);
-        $this->project()->addTransectId($annotation->image->transect_id);
+        $this->project()->addVolumeId($annotation->image->volume_id);
 
         $session = AnnotationSessionTest::create([
-            'transect_id' => $annotation->image->transect_id,
+            'volume_id' => $annotation->image->volume_id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
             'hide_own_annotations' => true,

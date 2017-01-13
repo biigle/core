@@ -19,15 +19,15 @@ $router->group([
     'prefix' => 'api/v1',
     ], function ($router) {
 
-    $router->get('transects/{id}/images/filter/annotations', [
-        'uses' => 'TransectImageController@hasAnnotation'
+    $router->get('volumes/{id}/images/filter/annotations', [
+        'uses' => 'VolumeImageController@hasAnnotation'
     ]);
 
-    $router->get('transects/{id}/images/filter/annotation-user/{id2}', [
-        'uses' => 'TransectImageController@hasAnnotationUser'
+    $router->get('volumes/{id}/images/filter/annotation-user/{id2}', [
+        'uses' => 'VolumeImageController@hasAnnotationUser'
     ]);
 
-    $router->get('transects/{id}/annotation-labels/find/{pattern}', [
-        'uses' => 'TransectLabelController@find'
+    $router->get('volumes/{id}/annotation-labels/find/{pattern}', [
+        'uses' => 'VolumeLabelController@find'
     ]);
 });
