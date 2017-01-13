@@ -33,7 +33,7 @@ class AnnotationObserver
     public function deleting(Annotation $annotation)
     {
         $this->dispatch(new RemoveAnnotationPatches(
-            $annotation->image->transect_id,
+            $annotation->image->volume_id,
             [$annotation->id]
         ));
 

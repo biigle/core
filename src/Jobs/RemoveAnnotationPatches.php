@@ -15,11 +15,11 @@ class RemoveAnnotationPatches extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     /**
-     * The transect ID of which the annotation patches should be removed
+     * The volume ID of which the annotation patches should be removed
      *
      * @var int
      */
-    private $transectId;
+    private $volumeId;
 
     /**
      * The annotation IDs whose patches should be removed
@@ -31,14 +31,14 @@ class RemoveAnnotationPatches extends Job implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param int $transectId
+     * @param int $volumeId
      * @param array $annotationIds
      *
      * @return void
      */
-    public function __construct($transectId, array $annotationIds)
+    public function __construct($volumeId, array $annotationIds)
     {
-        $this->transectId = $transectId;
+        $this->volumeId = $volumeId;
         $this->annotationIds = $annotationIds;
     }
 
@@ -49,7 +49,7 @@ class RemoveAnnotationPatches extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $prefix = config('ate.patch_storage').'/'.$this->transectId;
+        $prefix = config('ate.patch_storage').'/'.$this->volumeId;
         $format = config('ate.patch_format');
 
         // use a loop because this may be a massive amount of files

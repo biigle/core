@@ -6,23 +6,23 @@
     }
 }
 
-.transect-container {
+.volume-container {
     &.dismiss-mode {
-        .transect-figure:before {
+        .volume-figure:before {
             // glyphicon-remove
             content: "\e014";
         }
     }
 
     &.re-labelling-mode {
-        .transect-figure:before {
+        .volume-figure:before {
             // glyphicon-ok
             content: "\e013";
         }
     }
 }
 
-.transect-figure {
+.volume-figure {
 
     &:before {
         font-family: 'Glyphicons Halflings';

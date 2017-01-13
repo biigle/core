@@ -4,9 +4,9 @@ $router->group([
     'namespace' => 'Views',
     'middleware' => 'auth'
 ], function ($router) {
-    $router->get('transects/{id}/ate', [
+    $router->get('volumes/{id}/ate', [
         'as'   => 'ate',
-        'uses' => 'AteController@indexTransect',
+        'uses' => 'AteController@indexVolume',
     ]);
 
     $router->get('projects/{id}/ate', [
@@ -24,12 +24,12 @@ $router->group([
         'uses' => 'AteController@showPatch',
     ]);
 
-    $router->post('transects/{id}/ate', [
-        'uses' => 'AteController@saveTransect',
+    $router->post('volumes/{id}/ate', [
+        'uses' => 'AteController@saveVolume',
     ]);
 
-    $router->get('transects/{id}/annotations/filter/label/{id2}', [
-        'uses' => 'TransectsAnnotationsController@filter',
+    $router->get('volumes/{id}/annotations/filter/label/{id2}', [
+        'uses' => 'VolumesAnnotationsController@filter',
     ]);
 
     $router->post('projects/{id}/ate', [

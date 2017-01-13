@@ -1,7 +1,7 @@
 {
     "name": "biigle/ate",
     "require": {
-        "biigle/transects": "~1.1",
+        "biigle/volumes": "~1.1",
         "intervention/image": "~2.1",
         "intervention/imagecache": "~2.1"
     },

@@ -1,5 +1,5 @@
-<div class="transect__images label-mode" data-ng-controller="ImagesController">
-    <figure class="transect-figure ng-cloak" data-ate-figure="" data-ng-repeat="id in getImageIds()" data-ng-class="getClass()">
+<div class="volume__images label-mode" data-ng-controller="ImagesController">
+    <figure class="volume-figure ng-cloak" data-ate-figure="" data-ng-repeat="id in getImageIds()" data-ng-class="getClass()">
         <div class ="image-wrapper" title="@{{getTitle()}}" data-ng-click="handleClick($event)">
             <img src="{{ asset(config('thumbnails.empty_url')) }}" data-ng-src="{{ url('api/v1/annotations/') }}/@{{ id }}/patch" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
         </div>

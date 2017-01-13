@@ -12,7 +12,7 @@ class ProjectsAnnotationsControllerTest extends ApiTestCase
     public function testFilter() {
         $id = $this->project()->id;
 
-        $image = ImageTest::create(['transect_id' => $this->transect()->id]);
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
         $a1 = AnnotationTest::create(['image_id' => $image->id]);
         $a2 = AnnotationTest::create(['image_id' => $image->id]);
         $a3 = AnnotationTest::create(['image_id' => $image->id]);
@@ -21,7 +21,7 @@ class ProjectsAnnotationsControllerTest extends ApiTestCase
         $l2 = AnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l1->label_id]);
         $l3 = AnnotationLabelTest::create(['annotation_id' => $a3->id]);
 
-        // annotation from other transect should not appear
+        // annotation from other volume should not appear
         AnnotationTest::create();
 
         $this->doTestApiRoute('GET', "/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}");

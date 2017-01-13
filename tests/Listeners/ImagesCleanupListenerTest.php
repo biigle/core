@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Modules\Ate\Listeners;
 
 use TestCase;
-use Copria\Transect;
+use Copria\Volume;
 use Biigle\Tests\ImageTest;
 use Faker\Factory as Faker;
 use Illuminate\Database\QueryException;

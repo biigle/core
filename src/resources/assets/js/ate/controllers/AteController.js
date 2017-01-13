@@ -3,7 +3,7 @@
  * @ngdoc controller
  * @name AteController
  * @memberOf biigle.ate
- * @description Controller for the transect view
+ * @description Controller for the volume view
  */
 angular.module('biigle.ate').controller('AteController', function ($scope, labels, annotations, msg) {
 		"use strict";

@@ -13,9 +13,9 @@ class RemoveAnnotationPatchesTest extends TestCase
 {
     public function testHandleEmpty()
     {
-        $transectId = rand();
+        $volumeId = rand();
         $annotationId = rand();
-        $path = config('ate.patch_storage').'/'.$transectId;
+        $path = config('ate.patch_storage').'/'.$volumeId;
         $patchPath = $path.'/'.$annotationId.'.'.config('ate.patch_format');
 
         File::shouldReceive('delete')
@@ -38,14 +38,14 @@ class RemoveAnnotationPatchesTest extends TestCase
             ->with($path)
             ->once();
 
-        with(new RemoveAnnotationPatches($transectId, [$annotationId]))->handle();
+        with(new RemoveAnnotationPatches($volumeId, [$annotationId]))->handle();
     }
 
     public function testHandleNotEmpty()
     {
-        $transectId = rand();
+        $volumeId = rand();
         $annotationId = rand();
-        $path = config('ate.patch_storage').'/'.$transectId;
+        $path = config('ate.patch_storage').'/'.$volumeId;
         $patchPath = $path.'/'.$annotationId.'.'.config('ate.patch_format');
 
         File::shouldReceive('delete')
@@ -66,14 +66,14 @@ class RemoveAnnotationPatchesTest extends TestCase
         File::shouldReceive('deleteDirectory')
             ->never();
 
-        with(new RemoveAnnotationPatches($transectId, [$annotationId]))->handle();
+        with(new RemoveAnnotationPatches($volumeId, [$annotationId]))->handle();
     }
 
     public function testHandleThrowsException()
     {
-        $transectId = rand();
+        $volumeId = rand();
         $annotationId = rand();
-        $path = config('ate.patch_storage').'/'.$transectId;
+        $path = config('ate.patch_storage').'/'.$volumeId;
         $patchPath = $path.'/'.$annotationId.'.'.config('ate.patch_format');
 
         File::shouldReceive('delete')
@@ -92,6 +92,6 @@ class RemoveAnnotationPatchesTest extends TestCase
         });
 
         // no exception should be thrown
-        with(new RemoveAnnotationPatches($transectId, [$annotationId]))->handle();
+        with(new RemoveAnnotationPatches($volumeId, [$annotationId]))->handle();
     }
 }

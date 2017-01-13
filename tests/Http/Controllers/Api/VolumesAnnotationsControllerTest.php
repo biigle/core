@@ -9,12 +9,12 @@ use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
 
-class TransectsAnnotationsControllerTest extends ApiTestCase
+class VolumesAnnotationsControllerTest extends ApiTestCase
 {
     public function testFilter() {
-        $id = $this->transect()->id;
+        $id = $this->volume()->id;
 
-        $image = ImageTest::create(['transect_id' => $id]);
+        $image = ImageTest::create(['volume_id' => $id]);
         $a1 = AnnotationTest::create(['image_id' => $image->id]);
         $a2 = AnnotationTest::create(['image_id' => $image->id]);
         $a3 = AnnotationTest::create(['image_id' => $image->id]);
@@ -23,17 +23,17 @@ class TransectsAnnotationsControllerTest extends ApiTestCase
         $l2 = AnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l1->label_id]);
         $l3 = AnnotationLabelTest::create(['annotation_id' => $a3->id]);
 
-        // annotation from other transect should not appear
+        // annotation from other volume should not appear
         AnnotationTest::create();
 
-        $this->doTestApiRoute('GET', "/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
 
         $this->beUser();
-        $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
+        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->json('GET', "/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}", ['take' => 'abc']);
+        $this->json('GET', "/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}", ['take' => 'abc']);
         // take must be integer
         $this->assertResponseStatus(422);
 
@@ -47,23 +47,23 @@ class TransectsAnnotationsControllerTest extends ApiTestCase
             $expect3 = [$a1->id];
         }
 
-        $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
+        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
         $this->assertResponseOk();
         $this->seeJsonEquals($expect1);
 
-        $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l3->label_id}");
+        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l3->label_id}");
         $this->assertResponseOk();
         $this->seeJsonEquals($expect2);
 
-        $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}?take=1");
+        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}?take=1");
         $this->assertResponseOk();
         $this->seeJsonEquals($expect3);
     }
 
     public function testFilterAnnotationSession()
     {
-        $id = $this->transect()->id;
-        $image = ImageTest::create(['transect_id' => $id]);
+        $id = $this->volume()->id;
+        $image = ImageTest::create(['volume_id' => $id]);
 
         $a1 = AnnotationTest::create([
             'image_id' => $image->id,
@@ -101,7 +101,7 @@ class TransectsAnnotationsControllerTest extends ApiTestCase
 
         // test hide own
         $session = AnnotationSessionTest::create([
-            'transect_id' => $id,
+            'volume_id' => $id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
             'hide_own_annotations' => true,
@@ -115,7 +115,7 @@ class TransectsAnnotationsControllerTest extends ApiTestCase
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
+        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
         $this->assertResponseOk();
         $this->seeJsonEquals($expect);
 
@@ -129,7 +129,7 @@ class TransectsAnnotationsControllerTest extends ApiTestCase
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
+        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
         $this->assertResponseOk();
         $this->seeJsonEquals($expect);
 
@@ -142,7 +142,7 @@ class TransectsAnnotationsControllerTest extends ApiTestCase
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
+        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
         $this->assertResponseOk();
         $this->seeJsonEquals($expect);
 
@@ -153,7 +153,7 @@ class TransectsAnnotationsControllerTest extends ApiTestCase
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/transects/{$id}/annotations/filter/label/{$l1->label_id}");
+        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
         $this->assertResponseOk();
         $this->seeJsonEquals($expect);
     }
