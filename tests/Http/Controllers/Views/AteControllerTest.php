@@ -7,19 +7,19 @@ use ApiTestCase;
 
 class AteControllerTest extends ApiTestCase
 {
-    public function testIndexTransect()
+    public function testIndexVolume()
     {
-        $id = $this->transect()->id;
+        $id = $this->volume()->id;
 
-        $this->get("transects/{$id}/ate")
+        $this->get("volumes/{$id}/ate")
             ->assertResponseStatus(302);
 
         $this->beGuest();
-        $this->get("transects/{$id}/ate")
+        $this->get("volumes/{$id}/ate")
             ->assertResponseStatus(403);
 
         $this->beEditor();
-        $this->get("transects/{$id}/ate")
+        $this->get("volumes/{$id}/ate")
             ->assertResponseOk();
     }
 

@@ -2,21 +2,21 @@
 
 namespace Biigle\Modules\Ate\Http\Controllers\Api;
 
-use Biigle\Transect;
+use Biigle\Volume;
 use Biigle\Annotation;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Api\Controller;
 
-class TransectsAnnotationsController extends Controller
+class VolumesAnnotationsController extends Controller
 {
     /**
-     * Show all annotations of the transect that have a specific label attached
+     * Show all annotations of the volume that have a specific label attached
      *
-     * @api {get} transects/:tid/annotations/filter/label/:lid Get annotations with a specific label
-     * @apiGroup Transects
-     * @apiName ShowTransectsAnnotationsFilterLabels
-     * @apiParam {Number} tid The transect ID
+     * @api {get} volumes/:tid/annotations/filter/label/:lid Get annotations with a specific label
+     * @apiGroup Volumes
+     * @apiName ShowVolumesAnnotationsFilterLabels
+     * @apiParam {Number} tid The volume ID
      * @apiParam {Number} lit The Label ID
      * @apiParam (Optional arguments) {Number} take Number of annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited and unordered.
      * @apiPermission projectMember
@@ -24,19 +24,19 @@ class TransectsAnnotationsController extends Controller
      *
      * @param Request $request
      * @param Guard $auth
-     * @param  int  $tid Transect ID
+     * @param  int  $tid Volume ID
      * @param int $lid Label ID
      * @return \Illuminate\Http\Response
      */
     public function filter(Request $request, Guard $auth, $tid, $lid)
     {
-        $transect = Transect::findOrFail($tid);
-        $this->authorize('access', $transect);
+        $volume = Volume::findOrFail($tid);
+        $this->authorize('access', $volume);
         $this->validate($request, ['take' => 'integer']);
         $take = $request->input('take');
 
         $user = $auth->user();
-        $session = $transect->getActiveAnnotationSession($user);
+        $session = $volume->getActiveAnnotationSession($user);
 
         if ($session) {
             $query = Annotation::allowedBySession($session, $user);
@@ -48,7 +48,7 @@ class TransectsAnnotationsController extends Controller
             ->whereIn('annotations.image_id', function ($query) use ($tid) {
                 $query->select('id')
                     ->from('images')
-                    ->where('transect_id', $tid);
+                    ->where('volume_id', $tid);
             })
             ->where('annotation_labels.label_id', $lid)
             ->when(!is_null($take), function ($query) use ($take) {

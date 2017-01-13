@@ -57,7 +57,7 @@ class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
             ->andReturn($this->image);
 
         $this->image->shouldReceive('save')
-            ->with(config('ate.patch_storage').'/'.$annotation->image->transect_id.'/'.$annotation->id.'.jpg')
+            ->with(config('ate.patch_storage').'/'.$annotation->image->volume_id.'/'.$annotation->id.'.jpg')
             ->once()
             ->andReturn($this->image);
 

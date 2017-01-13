@@ -40,7 +40,7 @@ class AteServiceProvider extends ServiceProvider {
 
         \Event::listen('images.cleanup', ImagesCleanupListener::class);
 
-        $modules->addMixin('ate', 'transectsMenubar');
+        $modules->addMixin('ate', 'volumesMenubar');
         $modules->addMixin('ate', 'annotationsScripts');
         $modules->addMixin('ate', 'annotationsStyles');
         $modules->addMixin('ate', 'annotationsSidebar');

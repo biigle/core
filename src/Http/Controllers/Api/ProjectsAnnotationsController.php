@@ -3,7 +3,7 @@
 namespace Biigle\Modules\Ate\Http\Controllers\Api;
 
 use Biigle\Project;
-use Biigle\Transect;
+use Biigle\Volume;
 use Biigle\Annotation;
 use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
@@ -36,9 +36,9 @@ class ProjectsAnnotationsController extends Controller
 
         return Annotation::join('annotation_labels', 'annotations.id', '=', 'annotation_labels.annotation_id')
             ->join('images', 'annotations.image_id', '=', 'images.id')
-            ->whereIn('images.transect_id', function ($query) use ($pid) {
-                $query->select('transect_id')
-                    ->from('project_transect')
+            ->whereIn('images.volume_id', function ($query) use ($pid) {
+                $query->select('volume_id')
+                    ->from('project_volume')
                     ->where('project_id', $pid);
             })
             ->where('annotation_labels.label_id', $lid)

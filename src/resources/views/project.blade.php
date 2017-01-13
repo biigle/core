@@ -3,7 +3,7 @@
 @section('title'){{ $project->name }} @stop
 
 @push('scripts')
-    <script src="{{ cachebust_asset('vendor/transects/scripts/main.js') }}"></script>
+    <script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
     <script src="{{ cachebust_asset('vendor/ate/scripts/main.js') }}"></script>
     <script src="{{ cachebust_asset('vendor/ate/scripts/project-ate.js') }}"></script>
     <script type="text/javascript">
@@ -14,7 +14,7 @@
 @endpush
 
 @push('styles')
-    <link href="{{ cachebust_asset('vendor/transects/styles/main.css') }}" rel="stylesheet">
+    <link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
     <link href="{{ cachebust_asset('vendor/ate/styles/main.css') }}" rel="stylesheet">
 @endpush
 
@@ -26,9 +26,9 @@
 @endsection
 
 @section('content')
-<div class="transect-container" data-ng-app="biigle.project-ate" data-ng-controller="AteController" data-ng-class="getClass()">
+<div class="volume-container" data-ng-app="biigle.project-ate" data-ng-controller="AteController" data-ng-class="getClass()">
     @include('ate::index.images')
-    @include('transects::index.progress')
+    @include('volumes::index.progress')
     @include('ate::index.label')
 </div>
 @endsection

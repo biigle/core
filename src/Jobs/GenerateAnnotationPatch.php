@@ -50,7 +50,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         }
 
         $image = $annotation->image;
-        $prefix = config('ate.patch_storage').'/'.$image->transect_id;
+        $prefix = config('ate.patch_storage').'/'.$image->volume_id;
         $format = config('ate.patch_format');
         $padding = config('ate.patch_padding');
         $points = $annotation->points;

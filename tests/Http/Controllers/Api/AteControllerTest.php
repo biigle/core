@@ -10,13 +10,13 @@ use Biigle\Modules\Ate\Jobs\RemoveAnnotationPatches;
 
 class AteControllerTest extends ApiTestCase
 {
-    public function testSaveTransect()
+    public function testSaveVolume()
     {
-        $id = $this->transect()->id;
+        $id = $this->volume()->id;
         // make sure the label tree and label are set up
         $this->labelRoot();
 
-        $image = ImageTest::create(['transect_id' => $id]);
+        $image = ImageTest::create(['volume_id' => $id]);
         $a1 = AnnotationTest::create(['image_id' => $image->id]);
         $a2 = AnnotationTest::create(['image_id' => $image->id]);
         $a3 = AnnotationTest::create(['image_id' => $image->id]);
@@ -32,14 +32,14 @@ class AteControllerTest extends ApiTestCase
         ]);
         $l3 = AnnotationLabelTest::create(['annotation_id' => $a3->id]);
 
-        // annotation from other transect should not be affected
+        // annotation from other volume should not be affected
         $a4 = AnnotationTest::create();
         $l4 = AnnotationLabelTest::create(['annotation_id' => $a4->id]);
 
-        $this->doTestApiRoute('POST', "/api/v1/transects/{$id}/ate");
+        $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/ate");
 
         $this->beUser();
-        $this->post("/api/v1/transects/{$id}/ate", [
+        $this->post("/api/v1/volumes/{$id}/ate", [
             'dismissed' => [
                 $l1->label_id => [$a1->id, $a2->id],
                 $l3->label_id => [$a3->id],
@@ -52,7 +52,7 @@ class AteControllerTest extends ApiTestCase
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->post("/api/v1/transects/{$id}/ate", [
+        $this->post("/api/v1/volumes/{$id}/ate", [
             'dismissed' => [
                 $l1->label_id => [$a1->id, $a2->id],
                 $l3->label_id => [$a3->id],
@@ -65,7 +65,7 @@ class AteControllerTest extends ApiTestCase
         $this->assertResponseStatus(403);
 
         $this->beEditor();
-        $this->post("/api/v1/transects/{$id}/ate", [
+        $this->post("/api/v1/volumes/{$id}/ate", [
             'dismissed' => [
                 $l1->label_id => [$a1->id, $a2->id],
                 $l3->label_id => [$a3->id],
@@ -76,11 +76,11 @@ class AteControllerTest extends ApiTestCase
                 $a4->id => $this->labelRoot()->id,
             ]
         ]);
-        // a4 does not belong to the same transect
+        // a4 does not belong to the same volume
         $this->assertResponseStatus(400);
 
         $this->beEditor();
-        $this->post("/api/v1/transects/{$id}/ate", [
+        $this->post("/api/v1/volumes/{$id}/ate", [
             'dismissed' => [
                 $l1->label_id => [$a1->id, $a2->id],
                 $l3->label_id => [$a3->id],
@@ -90,12 +90,12 @@ class AteControllerTest extends ApiTestCase
                 $a3->id => $this->labelRoot()->id,
             ]
         ]);
-        // a label in 'changed' does not belong to a label tree available for the transect
+        // a label in 'changed' does not belong to a label tree available for the volume
         $this->assertResponseStatus(403);
 
         $this->expectsJobs(RemoveAnnotationPatches::class);
         $this->beEditor();
-        $this->post("/api/v1/transects/{$id}/ate", [
+        $this->post("/api/v1/volumes/{$id}/ate", [
             'dismissed' => [
                 $l1->label_id => [$a1->id, $a2->id],
                 $l3->label_id => [$a3->id],
@@ -133,7 +133,7 @@ class AteControllerTest extends ApiTestCase
         // make sure the label tree and label are set up
         $this->labelRoot();
 
-        $image = ImageTest::create(['transect_id' => $this->transect()->id]);
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
         $a1 = AnnotationTest::create(['image_id' => $image->id]);
         $a2 = AnnotationTest::create(['image_id' => $image->id]);
         $a3 = AnnotationTest::create(['image_id' => $image->id]);
@@ -246,8 +246,8 @@ class AteControllerTest extends ApiTestCase
 
     public function testSaveChangedAlreadyExists()
     {
-        $id = $this->transect()->id;
-        $image = ImageTest::create(['transect_id' => $this->transect()->id]);
+        $id = $this->volume()->id;
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
         $a1 = AnnotationTest::create(['image_id' => $image->id]);
 
         $l1 = AnnotationLabelTest::create([
@@ -262,7 +262,7 @@ class AteControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->post("/api/v1/transects/{$id}/ate", [
+        $this->post("/api/v1/volumes/{$id}/ate", [
             'dismissed' => [
                 $l1->label_id => [$a1->id],
             ],
@@ -278,8 +278,8 @@ class AteControllerTest extends ApiTestCase
 
     public function testAnnotationMeanwhileDeleted()
     {
-        $id = $this->transect()->id;
-        $image = ImageTest::create(['transect_id' => $this->transect()->id]);
+        $id = $this->volume()->id;
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
         $a1 = AnnotationTest::create(['image_id' => $image->id]);
         $a2 = AnnotationTest::create(['image_id' => $image->id]);
 
@@ -309,7 +309,7 @@ class AteControllerTest extends ApiTestCase
         $a2->delete();
 
         $this->beEditor();
-        $this->post("/api/v1/transects/{$id}/ate", $request);
+        $this->post("/api/v1/volumes/{$id}/ate", $request);
         $this->assertResponseOk();
         $this->assertEquals($this->labelChild()->id, $a1->labels()->first()->label_id);
     }

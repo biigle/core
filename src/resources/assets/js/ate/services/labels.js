@@ -3,7 +3,7 @@
  * @ngdoc service
  * @name labels
  * @memberOf biigle.ate
- * @description Service managing the list of labels. This service overrides the labels service of biigle.transects!
+ * @description Service managing the list of labels. This service overrides the labels service of biigle.volumes!
  */
 angular.module('biigle.ate').service('labels', function (LABEL_TREES) {
         "use strict";

@@ -5,7 +5,7 @@
  * @memberOf biigle.annotations
  * @description Service to manage example annotation images
  */
-angular.module('biigle.annotations').service('exampleAnnotations', function (TransectFilterAnnotationLabel, TRANSECT_ID) {
+angular.module('biigle.annotations').service('exampleAnnotations', function (VolumeFilterAnnotationLabel, VOLUME_ID) {
         "use strict";
 
         // number of annotations to display
@@ -22,8 +22,8 @@ angular.module('biigle.annotations').service('exampleAnnotations', function (Tra
 
             // fetch anew as long as there are not enough sample annotations available
             if (!cache.hasOwnProperty(label.id) || cache[label.id].length < TAKE) {
-                cache[label.id] = TransectFilterAnnotationLabel.query({
-                    transect_id: TRANSECT_ID,
+                cache[label.id] = VolumeFilterAnnotationLabel.query({
+                    volume_id: VOLUME_ID,
                     label_id: label.id,
                     take: TAKE
                 });

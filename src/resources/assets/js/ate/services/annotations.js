@@ -5,7 +5,7 @@
  * @memberOf biigle.ate
  * @description Service for managing the dismissed/replaced annotation labels of the ATE view
  */
-angular.module('biigle.ate').service('annotations', function (TRANSECT_IMAGES, ate, labels, images, msg) {
+angular.module('biigle.ate').service('annotations', function (VOLUME_IMAGES, ate, labels, images, msg) {
         "use strict";
 
         // cache that maps label IDs to IDs of annotations with this label
@@ -35,7 +35,7 @@ angular.module('biigle.ate').service('annotations', function (TRANSECT_IMAGES, a
         var annotationCountElement = document.getElementById('annotation-count');
 
         var updateAnnotationCount = function (count) {
-            count = count || TRANSECT_IMAGES.length;
+            count = count || VOLUME_IMAGES.length;
             annotationCountElement.innerHTML = count;
         };
 
@@ -80,7 +80,7 @@ angular.module('biigle.ate').service('annotations', function (TRANSECT_IMAGES, a
             loading = false;
             annotationsExist = ids.length > 0;
             if (annotationsExist) {
-                Array.prototype.push.apply(TRANSECT_IMAGES, ids);
+                Array.prototype.push.apply(VOLUME_IMAGES, ids);
             }
             images.updateFiltering();
             updateAnnotationCount();
@@ -115,7 +115,7 @@ angular.module('biigle.ate').service('annotations', function (TRANSECT_IMAGES, a
         };
 
         var switchToDismissedAnnotations = function () {
-            TRANSECT_IMAGES.length = 0;
+            VOLUME_IMAGES.length = 0;
             updateDisplayedAnnotations(dismissedFlat);
             images.scrollToPercent(0);
         };
@@ -154,7 +154,7 @@ angular.module('biigle.ate').service('annotations', function (TRANSECT_IMAGES, a
             }
 
             var id = label.id;
-            TRANSECT_IMAGES.length = 0;
+            VOLUME_IMAGES.length = 0;
             updateAnnotationCount();
             images.updateFiltering();
             images.scrollToPercent(0);
@@ -198,7 +198,7 @@ angular.module('biigle.ate').service('annotations', function (TRANSECT_IMAGES, a
 
         this.save = function () {
             saving = true;
-            TRANSECT_IMAGES.length = 0;
+            VOLUME_IMAGES.length = 0;
             updateAnnotationCount();
             images.updateFiltering();
             var promise = ate.save(dismissed, changed).$promise;

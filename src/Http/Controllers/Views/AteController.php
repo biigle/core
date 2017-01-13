@@ -5,7 +5,7 @@ namespace Biigle\Modules\Ate\Http\Controllers\Views;
 use DB;
 use Biigle\Role;
 use Biigle\Project;
-use Biigle\Transect;
+use Biigle\Volume;
 use Biigle\LabelTree;
 use Biigle\Annotation;
 use Illuminate\Contracts\Auth\Guard;
@@ -14,30 +14,30 @@ use Biigle\Http\Controllers\Views\Controller;
 class AteController extends Controller
 {
     /**
-     * Show the the ATE view for a transect
+     * Show the the ATE view for a volume
      *
      * @param Guard $auth
-     * @param int $id Transect ID
+     * @param int $id Volume ID
      * @return \Illuminate\Http\Response
      */
-    public function indexTransect(Guard $auth, $id)
+    public function indexVolume(Guard $auth, $id)
     {
-        $transect = Transect::findOrFail($id);
-        $this->authorize('edit-in', $transect);
+        $volume = Volume::findOrFail($id);
+        $this->authorize('edit-in', $volume);
         $user = $auth->user();
 
         if ($user->isAdmin) {
             // admins have no restrictions
-            $projects = $transect->projects;
+            $projects = $volume->projects;
         } else {
-            // all projects that the user and the transect have in common
+            // all projects that the user and the volume have in common
             // and where the user is editor or admin
             $projects = $user->projects()
-                ->whereIn('id', function ($query) use ($transect) {
-                    $query->select('project_transect.project_id')
-                        ->from('project_transect')
-                        ->join('project_user', 'project_transect.project_id', '=', 'project_user.project_id')
-                        ->where('project_transect.transect_id', $transect->id)
+                ->whereIn('id', function ($query) use ($volume) {
+                    $query->select('project_volume.project_id')
+                        ->from('project_volume')
+                        ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
+                        ->where('project_volume.volume_id', $volume->id)
                         ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id]);
                 })
                 ->get();
@@ -55,7 +55,7 @@ class AteController extends Controller
 
         return view('ate::index', [
             'user' => $user,
-            'transect' => $transect,
+            'volume' => $volume,
             'projects' => $projects,
             'labelTrees' => $labelTrees,
         ]);

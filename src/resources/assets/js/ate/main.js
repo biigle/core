@@ -2,7 +2,7 @@
  * @namespace biigle.ate
  * @description The BIIGLE ATE module.
  */
-angular.module('biigle.ate', ['biigle.transects']);
+angular.module('biigle.ate', ['biigle.volumes']);
 
 /*
  * Disable debug info in production for better performance.

@@ -6,7 +6,7 @@ use DB;
 use Biigle\Role;
 use Biigle\Label;
 use Biigle\Project;
-use Biigle\Transect;
+use Biigle\Volume;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
 use Illuminate\Http\Request;
@@ -37,7 +37,7 @@ class AteController extends Controller
         $this->authorize('access', $annotation);
 
         $file = config('ate.patch_storage').'/'.
-            $annotation->image->transect_id.'/'.
+            $annotation->image->volume_id.'/'.
             $annotation->id.'.'.config('ate.patch_format');
 
         try {
@@ -49,14 +49,14 @@ class AteController extends Controller
 
 
     /**
-     * Save changes of an ATE session for a transect
+     * Save changes of an ATE session for a volume
      *
-     * @api {post} transects/:id/ate Save ATE session
+     * @api {post} volumes/:id/ate Save ATE session
      * @apiGroup ATE
-     * @apiName TransectsStoreATE
-     * @apiParam {Number} id The transect ID.
+     * @apiName VolumesStoreATE
+     * @apiParam {Number} id The volume ID.
      * @apiPermission projectEditor
-     * @apiDescription From the `dismissed` map only annotation labels that were attached by the requesting user will be detached. If the map contains annotation labels that were not attached by the user, the information will be ignored. From the `changed` map, new annotation labels will be created. If, after detaching `dismissed` annotation labels and attaching `changed` annotation labels, there is an annotation whithout any label, the annotation will be deleted. All affected annotations must belong to the same transect. If the user is not allowed to edit in this transect, the whole request will be denied.
+     * @apiDescription From the `dismissed` map only annotation labels that were attached by the requesting user will be detached. If the map contains annotation labels that were not attached by the user, the information will be ignored. From the `changed` map, new annotation labels will be created. If, after detaching `dismissed` annotation labels and attaching `changed` annotation labels, there is an annotation whithout any label, the annotation will be deleted. All affected annotations must belong to the same volume. If the user is not allowed to edit in this volume, the whole request will be denied.
      *
      * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of annotations from which this label should be detached.
      * @apiParam (Optional arguments) {Object} changed Map from annotation ID to a label ID that should be attached to the annotation.
@@ -76,13 +76,13 @@ class AteController extends Controller
      *
      * @param Request $request
      * @param Guard $auth
-     * @param int $id Transect ID
+     * @param int $id Volume ID
      * @return \Illuminate\Http\Response
      */
-    public function saveTransect(Request $request, Guard $auth, $id)
+    public function saveVolume(Request $request, Guard $auth, $id)
     {
-        $transect = Transect::findOrFail($id);
-        $this->authorize('edit-in', $transect);
+        $volume = Volume::findOrFail($id);
+        $this->authorize('edit-in', $volume);
         $this->validateAteInput($request);
 
         $user = $auth->user();
@@ -96,22 +96,22 @@ class AteController extends Controller
 
         $affectedAnnotations = $this->getAffectedAnnotations($dismissed, $changed);
 
-        if (!$this->anotationsBelongToTransects($affectedAnnotations, [$id])) {
-            abort(400, 'All annotations must belong to the specified transect.');
+        if (!$this->anotationsBelongToVolumes($affectedAnnotations, [$id])) {
+            abort(400, 'All annotations must belong to the specified volume.');
         }
 
         if ($user->isAdmin) {
             // admins have no restrictions
-            $projects = $transect->projects()->pluck('id');
+            $projects = $volume->projects()->pluck('id');
         } else {
-            // all projects that the user and the transect have in common
+            // all projects that the user and the volume have in common
             // and where the user is editor or admin
             $projects = $user->projects()
-                ->whereIn('id', function ($query) use ($transect) {
-                    $query->select('project_transect.project_id')
-                        ->from('project_transect')
-                        ->join('project_user', 'project_transect.project_id', '=', 'project_user.project_id')
-                        ->where('project_transect.transect_id', $transect->id)
+                ->whereIn('id', function ($query) use ($volume) {
+                    $query->select('project_volume.project_id')
+                        ->from('project_volume')
+                        ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
+                        ->where('project_volume.volume_id', $volume->id)
                         ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id]);
                 })
                 ->pluck('id');
@@ -125,7 +125,7 @@ class AteController extends Controller
         $requiredLabelTreeIds = $this->getRequiredLabelTrees($changed);
 
         if ($requiredLabelTreeIds->diff($availableLabelTreeIds)->count() > 0) {
-            throw new AuthorizationException('You may only attach labels that belong to one of the label trees available for the specified transect.');
+            throw new AuthorizationException('You may only attach labels that belong to one of the label trees available for the specified volume.');
         }
 
         $this->save($user, $dismissed, $changed);
@@ -150,7 +150,7 @@ class AteController extends Controller
      * @apiName ProjectsStoreATE
      * @apiParam {Number} id The project ID.
      * @apiPermission projectEditor
-     * @apiDescription see the 'Save ATE session' endpoint for a transect for more information
+     * @apiDescription see the 'Save ATE session' endpoint for a volume for more information
      *
      * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of annotations from which this label should be detached.
      * @apiParam (Optional arguments) {Object} changed Map from annotation ID to a label ID that should be attached to the annotation.
@@ -166,7 +166,7 @@ class AteController extends Controller
         $this->authorize('edit-in', $project);
         $this->validateAteInput($request);
 
-        $transectIds = $project->transects()->pluck('id');
+        $volumeIds = $project->volumes()->pluck('id');
 
         $dismissed = $request->input('dismissed', []);
         $changed = $request->input('changed', []);
@@ -177,8 +177,8 @@ class AteController extends Controller
 
         $affectedAnnotations = $this->getAffectedAnnotations($dismissed, $changed);
 
-        if (!$this->anotationsBelongToTransects($affectedAnnotations, $transectIds)) {
-            abort(400, 'All annotations must belong to the transects of the project.');
+        if (!$this->anotationsBelongToVolumes($affectedAnnotations, $volumeIds)) {
+            abort(400, 'All annotations must belong to the volumes of the project.');
         }
 
         $requiredLabelTreeIds = $this->getRequiredLabelTrees($changed);
@@ -194,16 +194,16 @@ class AteController extends Controller
         $toDelete = Annotation::join('images', 'images.id', '=', 'annotations.image_id')
             ->whereIn('annotations.id', $affectedAnnotations)
             ->whereDoesntHave('labels')
-            ->select('annotations.id', 'images.transect_id')
+            ->select('annotations.id', 'images.volume_id')
             ->get();
 
         Annotation::whereIn('id', $toDelete->pluck('id'))->delete();
 
         // the annotation model observer does not fire for this query so we dispatch
         // the remove patch job manually here
-        $toDelete->groupBy('transect_id')->each(function ($annotations, $transectId) {
+        $toDelete->groupBy('volume_id')->each(function ($annotations, $volumeId) {
             $this->dispatch(new RemoveAnnotationPatches(
-                $transectId,
+                $volumeId,
                 $annotations->pluck('id')->toArray()
             ));
         });
@@ -240,18 +240,18 @@ class AteController extends Controller
     }
 
     /**
-     * Check if all given annotations belong to the given transects
+     * Check if all given annotations belong to the given volumes
      *
      * @param array $annotations Annotation IDs
-     * @param array $transects Transect IDs
+     * @param array $volumes Volume IDs
      *
      * @return bool
      */
-    protected function anotationsBelongToTransects($annotations, $transects)
+    protected function anotationsBelongToVolumes($annotations, $volumes)
     {
         return !Annotation::join('images', 'annotations.image_id', '=', 'images.id')
             ->whereIn('annotations.id', $annotations)
-            ->whereNotIn('images.transect_id', $transects)
+            ->whereNotIn('images.volume_id', $volumes)
             ->exists();
     }
 

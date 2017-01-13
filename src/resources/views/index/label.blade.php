@@ -1,5 +1,5 @@
-<div class="transect__label" data-ng-controller="ImageLabelController">
-    <div class="transect__label-body">
+<div class="volume__label" data-ng-controller="ImageLabelController">
+    <div class="volume__label-body">
         <div class="labels-search clearfix">
             <span class="pull-right" data-ng-switch="isInDismissMode()">
                 <button class="btn btn-success" data-ng-click="goToReLabelling()" title="@{{canContinue() ? 'Go to the re-labelling step' : 'Please select annotations for dismissal first'}}" data-ng-switch-when="true" data-ng-disabled="!canContinue()" disabled="">
