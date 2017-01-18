@@ -10,7 +10,7 @@ use Biigle\Http\Controllers\Api\Controller;
 class VolumeLabelController extends Controller
 {
     /**
-     * Find a label category in all categories that were used in a volume
+     * Find a label category in all categories that were used in a volume.
      *
      * @api {get} volumes/:id/annotation-labels/find/:pattern Find a label category in all categories that were used in a volume
      * @apiGroup Volumes
@@ -40,7 +40,8 @@ class VolumeLabelController extends Controller
      * @param  string  $pattern
      * @return \Illuminate\Http\Response
      */
-    public function find($id, $pattern) {
+    public function find($id, $pattern)
+    {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 

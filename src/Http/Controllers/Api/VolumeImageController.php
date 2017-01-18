@@ -2,8 +2,6 @@
 
 namespace Biigle\Modules\Annotations\Http\Controllers\Api;
 
-use DB;
-use Biigle\Image;
 use Biigle\Volume;
 use Biigle\Annotation;
 use Illuminate\Contracts\Auth\Guard;
@@ -12,7 +10,7 @@ use Biigle\Http\Controllers\Api\Controller;
 class VolumeImageController extends Controller
 {
     /**
-     * List the IDs of images having one or more annotations
+     * List the IDs of images having one or more annotations.
      *
      * @api {get} volumes/:id/images/filter/annotations Get all images having annotations
      * @apiGroup Volumes

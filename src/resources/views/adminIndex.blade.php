@@ -11,10 +11,11 @@ if (!(\DB::connection() instanceof \Illuminate\Database\SQLiteConnection)) {
     $week = collect([7, 6, 5, 4, 3, 2, 1, 0])->map(function ($item) use ($days, $max) {
         $day = \Carbon\Carbon::today()->subDays($item);
         $count = $days->get($day->toDateString(), 0);
+
         return [
             'day' => $day,
             'count' => $count,
-            'percent' => ($max !== 0) ? $count/$max : 0,
+            'percent' => ($max !== 0) ? $count / $max : 0,
         ];
     });
     $height = 50;

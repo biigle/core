@@ -21,7 +21,8 @@ class AnnotationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth, $id) {
+    public function index(Guard $auth, $id)
+    {
         $image = Image::with('volume')->findOrFail($id);
         $this->authorize('access', $image);
         $user = $auth->user();
@@ -80,7 +81,7 @@ class AnnotationController extends Controller
     }
 
     /**
-     * Redirect to the annotator link that shows a specified annotation
+     * Redirect to the annotator link that shows a specified annotation.
      *
      * @param int $id Annotation ID
      * @return \Illuminate\Http\Response

@@ -9,9 +9,10 @@ use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
 
-class VolumeImageControllerTest extends ApiTestCase {
-
-    public function testHasAnnotation() {
+class VolumeImageControllerTest extends ApiTestCase
+{
+    public function testHasAnnotation()
+    {
         $id = $this->volume()->id;
 
         $image = ImageTest::create(['volume_id' => $id]);
@@ -84,7 +85,8 @@ class VolumeImageControllerTest extends ApiTestCase {
             ->seeJsonEquals($expect);
     }
 
-    public function testHasAnnotationUser() {
+    public function testHasAnnotationUser()
+    {
         $tid = $this->volume()->id;
 
         $image = ImageTest::create(['volume_id' => $tid]);

@@ -5,8 +5,8 @@ namespace Biigle\Modules\Annotations\Console\Commands;
 use Illuminate\Console\Command;
 use Biigle\Modules\Annotations\AnnotationsServiceProvider as ServiceProvider;
 
-class Publish extends Command {
-
+class Publish extends Command
+{
     /**
      * The console command name.
      *

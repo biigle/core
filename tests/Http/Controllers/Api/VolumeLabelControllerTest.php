@@ -8,9 +8,10 @@ use Biigle\Tests\LabelTest;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 
-class VolumeLabelControllerTest extends ApiTestCase {
-
-    public function testFind() {
+class VolumeLabelControllerTest extends ApiTestCase
+{
+    public function testFind()
+    {
         $tid = $this->volume()->id;
 
         $label1 = LabelTest::create(['name' => 'my-label']);
@@ -58,7 +59,7 @@ class VolumeLabelControllerTest extends ApiTestCase {
                     'name' => $label2->name,
                     'color' => $label2->color,
                     'parent_id' => $label2->parent_id,
-                ]
+                ],
             ]);
     }
 }

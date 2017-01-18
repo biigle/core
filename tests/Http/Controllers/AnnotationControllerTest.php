@@ -2,7 +2,6 @@
 
 namespace Biigle\Tests\Modules\Annotations\Http\Controllers;
 
-use Biigle\Role;
 use ApiTestCase;
 use Carbon\Carbon;
 use Biigle\Tests\UserTest;
@@ -12,9 +11,10 @@ use Biigle\Tests\VolumeTest;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationSessionTest;
 
-class AnnotationControllerTest extends ApiTestCase {
-
-    public function testIndex() {
+class AnnotationControllerTest extends ApiTestCase
+{
+    public function testIndex()
+    {
         $project = ProjectTest::create();
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id]);
@@ -39,7 +39,8 @@ class AnnotationControllerTest extends ApiTestCase {
         $this->assertResponseStatus(404);
     }
 
-    public function testShow() {
+    public function testShow()
+    {
         $annotation = AnnotationTest::create();
         $this->project()->addVolumeId($annotation->image->volume_id);
 
@@ -73,5 +74,4 @@ class AnnotationControllerTest extends ApiTestCase {
         $this->get("annotations/{$annotation->id}");
         $this->assertResponseStatus(403);
     }
-
 }
