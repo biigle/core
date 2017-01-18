@@ -8,7 +8,7 @@ use Biigle\Http\Controllers\Api\Controller;
 class VolumeUserController extends Controller
 {
     /**
-     * List the users of a volume
+     * List the users of a volume.
      *
      * @api {get} volumes/:id/users Get all users
      * @apiGroup Volumes
@@ -44,7 +44,8 @@ class VolumeUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($id) {
+    public function index($id)
+    {
         $volume = Volume::findOrFail($id);
         $this->authorize('update', $volume);
 

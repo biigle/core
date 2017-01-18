@@ -2,7 +2,6 @@
 
 namespace Biigle\Tests\Modules\Volumes\Http\Controllers\Api;
 
-use Biigle\Role;
 use ApiTestCase;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ImageLabelTest;
@@ -80,8 +79,7 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->get("/api/v1/volumes/{$tid}/images/filter/image-label-user/{$uid}");
         $this->assertResponseOk();
 
-        if ($this->isSqlite())
-        {
+        if ($this->isSqlite()) {
             $expect = ["{$image->id}"];
         } else {
             $expect = [$image->id];
@@ -120,8 +118,7 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->get("/api/v1/volumes/{$tid}/images/filter/image-label/{$lid}");
         $this->assertResponseOk();
 
-        if ($this->isSqlite())
-        {
+        if ($this->isSqlite()) {
             $expect = ["{$image->id}"];
         } else {
             $expect = [$image->id];

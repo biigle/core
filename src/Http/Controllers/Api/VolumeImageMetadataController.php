@@ -12,14 +12,14 @@ use Biigle\Http\Controllers\Api\Controller;
 class VolumeImageMetadataController extends Controller
 {
     /**
-     * Allowed columns for the CSV file of the store route
+     * Allowed columns for the CSV file of the store route.
      *
      * @var array
      */
     protected $allowedColumns = ['filename', 'taken_at', 'lng', 'lat'];
 
     /**
-     * Add or update image metadata for a volume
+     * Add or update image metadata for a volume.
      *
      * @api {post} volumes/:id/images/metadata Add/update image metadata
      * @apiGroup Volumes
@@ -50,7 +50,7 @@ class VolumeImageMetadataController extends Controller
         $volume = Volume::findOrFail($id);
         $this->authorize('update', $volume);
         $this->validate($request, [
-            'file' => 'required|file|mimetypes:text/plain,text/csv'
+            'file' => 'required|file|mimetypes:text/plain,text/csv',
         ]);
 
         $csv = $request->file('file')->openFile();
@@ -114,7 +114,6 @@ class VolumeImageMetadataController extends Controller
 
         // Read all rows of the CSV and update the image models.
         while (is_array($data) && isset($data[0])) {
-
             if (count($data) !== $colCount) {
                 return $this->buildFailedValidationResponse($request, [
                     'file' => 'Column count in the CSV file does not match the given columns: '.implode(', ', $columns).'.',

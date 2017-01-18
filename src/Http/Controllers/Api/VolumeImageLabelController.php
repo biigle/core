@@ -10,7 +10,7 @@ use Biigle\Http\Controllers\Api\Controller;
 class VolumeImageLabelController extends Controller
 {
     /**
-     * Find a label in all image labels that were used in a volume
+     * Find a label in all image labels that were used in a volume.
      *
      * @api {get} volumes/:id/image-labels/find/:pattern Find a label in all image labels that were used in a volume
      * @apiGroup Volumes
@@ -41,7 +41,8 @@ class VolumeImageLabelController extends Controller
      * @param  string  $pattern
      * @return \Illuminate\Http\Response
      */
-    public function findLabel($id, $pattern) {
+    public function findLabel($id, $pattern)
+    {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 

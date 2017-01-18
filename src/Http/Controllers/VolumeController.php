@@ -99,7 +99,7 @@ class VolumeController extends Controller
             'images' => $volume->orderedImages()->pluck('filename', 'id'),
             'mediaTypes' => MediaType::all(),
             'annotationSessions' => $sessions,
-            'today' => Carbon::today()
+            'today' => Carbon::today(),
         ]);
     }
 }

@@ -79,7 +79,7 @@ class VolumeControllerTest extends ApiTestCase
         $this->get("volumes/edit/{$id}");
         $this->assertResponseOk();
 
-        $this->get("volumes/edit/999");
+        $this->get('volumes/edit/999');
         $this->assertResponseStatus(404);
     }
 }

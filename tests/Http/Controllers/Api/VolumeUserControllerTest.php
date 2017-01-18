@@ -2,7 +2,6 @@
 
 namespace Biigle\Tests\Modules\Volumes\Http\Controllers\Api;
 
-use Biigle\Role;
 use ApiTestCase;
 
 class VolumeUserControllerTest extends ApiTestCase
@@ -26,6 +25,7 @@ class VolumeUserControllerTest extends ApiTestCase
                 ->get()
                 ->map(function ($item) {
                     unset($item->project_role_id);
+
                     return $item;
                 })
                 ->toArray()
