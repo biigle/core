@@ -7,7 +7,7 @@ if (!(\DB::connection() instanceof \Illuminate\Database\SQLiteConnection)) {
         ->where('created_at', '>=', \Carbon\Carbon::today()->subWeek())
         ->groupBy('day')
         ->pluck('count', 'day');
-    $max = max($days->toArray());
+    $max = $days->count() > 0 ? max($days->toArray()) : 0;
     $week = collect([7, 6, 5, 4, 3, 2, 1, 0])->map(function ($item) use ($days, $max) {
         $day = \Carbon\Carbon::today()->subDays($item);
         $count = $days->get($day->toDateString(), 0);
