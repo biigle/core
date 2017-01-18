@@ -4,14 +4,14 @@ $router->group([
     'namespace' => 'Views',
     'middleware' => 'auth'
 ], function ($router) {
-    $router->get('volumes/{id}/ate', [
-        'as'   => 'ate',
-        'uses' => 'AteController@indexVolume',
+    $router->get('volumes/{id}/largo', [
+        'as'   => 'largo',
+        'uses' => 'LargoController@indexVolume',
     ]);
 
-    $router->get('projects/{id}/ate', [
-        'as'   => 'projectsAte',
-        'uses' => 'AteController@indexProject',
+    $router->get('projects/{id}/largo', [
+        'as'   => 'projectsLargo',
+        'uses' => 'LargoController@indexProject',
     ]);
 });
 
@@ -21,19 +21,19 @@ $router->group([
     'middleware' => 'auth.api',
 ], function ($router) {
     $router->get('annotations/{id}/patch', [
-        'uses' => 'AteController@showPatch',
+        'uses' => 'LargoController@showPatch',
     ]);
 
-    $router->post('volumes/{id}/ate', [
-        'uses' => 'AteController@saveVolume',
+    $router->post('volumes/{id}/largo', [
+        'uses' => 'LargoController@saveVolume',
     ]);
 
     $router->get('volumes/{id}/annotations/filter/label/{id2}', [
         'uses' => 'VolumesAnnotationsController@filter',
     ]);
 
-    $router->post('projects/{id}/ate', [
-        'uses' => 'AteController@saveProject',
+    $router->post('projects/{id}/largo', [
+        'uses' => 'LargoController@saveProject',
     ]);
 
     $router->get('projects/{id}/annotations/filter/label/{id2}', [

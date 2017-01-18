@@ -1,11 +1,11 @@
 <?php
 
-namespace Biigle\Modules\Ate\Observers;
+namespace Biigle\Modules\Largo\Observers;
 
 use Biigle\Annotation;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Biigle\Modules\Ate\Jobs\RemoveAnnotationPatches;
-use Biigle\Modules\Ate\Jobs\GenerateAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
 class AnnotationObserver
 {
@@ -20,7 +20,7 @@ class AnnotationObserver
     public function saved(Annotation $annotation)
     {
         $job = new GenerateAnnotationPatch($annotation);
-        $job->delay(config('ate.patch_generation_delay'));
+        $job->delay(config('largo.patch_generation_delay'));
         $this->dispatch($job);
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Biigle\Tests\Modules\Ate\Jobs;
+namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use App;
 use File;
@@ -12,9 +12,9 @@ use Intervention\Image\Image;
 use Biigle\Tests\AnnotationTest;
 use Intervention\Image\ImageCache;
 use Intervention\Image\ImageManager;
-use Biigle\Modules\Ate\Jobs\GenerateAnnotationPatch;
+use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
-class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
+class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
 {
     public function setUp()
     {
@@ -57,7 +57,7 @@ class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
             ->andReturn($this->image);
 
         $this->image->shouldReceive('save')
-            ->with(config('ate.patch_storage').'/'.$annotation->image->volume_id.'/'.$annotation->id.'.jpg')
+            ->with(config('largo.patch_storage').'/'.$annotation->image->volume_id.'/'.$annotation->id.'.jpg')
             ->once()
             ->andReturn($this->image);
 
@@ -110,7 +110,7 @@ class AteModuleJobsGenerateAnnotationPatchTest extends TestCase
 
     public function testHandleOther()
     {
-        $padding = config('ate.patch_padding');
+        $padding = config('largo.patch_padding');
         $annotation = AnnotationTest::create([
             'points' => [100, 100, 100, 200, 200, 200, 200, 100],
             'shape_id' => Shape::$rectangleId,

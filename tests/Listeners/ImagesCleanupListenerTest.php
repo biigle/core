@@ -1,16 +1,16 @@
 <?php
 
-namespace Biigle\Tests\Modules\Ate\Listeners;
+namespace Biigle\Tests\Modules\Largo\Listeners;
 
 use TestCase;
 use Copria\Volume;
 use Biigle\Tests\ImageTest;
 use Faker\Factory as Faker;
 use Illuminate\Database\QueryException;
-use Biigle\Modules\Ate\Jobs\RemoveAnnotationPatches;
-use Biigle\Modules\Ate\Listeners\ImagesCleanupListener;
+use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
 
-class AteModuleListenersImagesCleanupListenerTest extends TestCase
+class LargoModuleListenersImagesCleanupListenerTest extends TestCase
 {
     public function testHandleEmpty()
     {

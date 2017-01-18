@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Ate\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Tests\ImageTest;

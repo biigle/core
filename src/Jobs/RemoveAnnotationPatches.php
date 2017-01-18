@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Ate\Jobs;
+namespace Biigle\Modules\Largo\Jobs;
 
 use App;
 use File;
@@ -49,8 +49,8 @@ class RemoveAnnotationPatches extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $prefix = config('ate.patch_storage').'/'.$this->volumeId;
-        $format = config('ate.patch_format');
+        $prefix = config('largo.patch_storage').'/'.$this->volumeId;
+        $format = config('largo.patch_format');
 
         // use a loop because this may be a massive amount of files
         // (the alternative would be array_map to assemble all file paths first)

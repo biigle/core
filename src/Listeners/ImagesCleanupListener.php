@@ -1,11 +1,11 @@
 <?php
 
-namespace Biigle\Modules\Ate\Listeners;
+namespace Biigle\Modules\Largo\Listeners;
 
 use Biigle\Image;
 use Biigle\Annotation;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Biigle\Modules\Ate\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 
 class ImagesCleanupListener
 {
