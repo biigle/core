@@ -47,7 +47,7 @@ class LargoControllerTest extends ApiTestCase
             'changed' => [
                 $a1->id => $this->labelRoot()->id,
                 $a3->id => $this->labelRoot()->id,
-            ]
+            ],
         ]);
         $this->assertResponseStatus(403);
 
@@ -60,7 +60,7 @@ class LargoControllerTest extends ApiTestCase
             'changed' => [
                 $a1->id => $this->labelRoot()->id,
                 $a3->id => $this->labelRoot()->id,
-            ]
+            ],
         ]);
         $this->assertResponseStatus(403);
 
@@ -74,7 +74,7 @@ class LargoControllerTest extends ApiTestCase
                 $a1->id => $this->labelRoot()->id,
                 $a3->id => $this->labelRoot()->id,
                 $a4->id => $this->labelRoot()->id,
-            ]
+            ],
         ]);
         // a4 does not belong to the same volume
         $this->assertResponseStatus(400);
@@ -88,7 +88,7 @@ class LargoControllerTest extends ApiTestCase
             'changed' => [
                 $a1->id => $l3->id,
                 $a3->id => $this->labelRoot()->id,
-            ]
+            ],
         ]);
         // a label in 'changed' does not belong to a label tree available for the volume
         $this->assertResponseStatus(403);
@@ -103,7 +103,7 @@ class LargoControllerTest extends ApiTestCase
             'changed' => [
                 $a1->id => $this->labelRoot()->id,
                 $a3->id => $this->labelRoot()->id,
-            ]
+            ],
         ]);
         $this->assertResponseOk();
 
@@ -164,7 +164,7 @@ class LargoControllerTest extends ApiTestCase
             'changed' => [
                 $a1->id => $this->labelRoot()->id,
                 $a3->id => $this->labelRoot()->id,
-            ]
+            ],
         ]);
         $this->assertResponseStatus(403);
 
@@ -177,7 +177,7 @@ class LargoControllerTest extends ApiTestCase
             'changed' => [
                 $a1->id => $this->labelRoot()->id,
                 $a3->id => $this->labelRoot()->id,
-            ]
+            ],
         ]);
         $this->assertResponseStatus(403);
 
@@ -191,7 +191,7 @@ class LargoControllerTest extends ApiTestCase
                 $a1->id => $this->labelRoot()->id,
                 $a3->id => $this->labelRoot()->id,
                 $a4->id => $this->labelRoot()->id,
-            ]
+            ],
         ]);
         // a4 does not belong to the same project
         $this->assertResponseStatus(400);
@@ -205,7 +205,7 @@ class LargoControllerTest extends ApiTestCase
             'changed' => [
                 $a1->id => $l3->id,
                 $a3->id => $this->labelRoot()->id,
-            ]
+            ],
         ]);
         // a label in 'changed' does not belong to a label tree available for the project
         $this->assertResponseStatus(403);
@@ -220,7 +220,7 @@ class LargoControllerTest extends ApiTestCase
             'changed' => [
                 $a1->id => $this->labelRoot()->id,
                 $a3->id => $this->labelRoot()->id,
-            ]
+            ],
         ]);
         $this->assertResponseOk();
 
@@ -268,7 +268,7 @@ class LargoControllerTest extends ApiTestCase
             ],
             'changed' => [
                 $a1->id => $l2->label_id, // but this already exists from the same user!
-            ]
+            ],
         ]);
         $this->assertResponseOk();
 
@@ -302,7 +302,7 @@ class LargoControllerTest extends ApiTestCase
             'changed' => [
                 $a1->id => $this->labelChild()->id,
                 $a2->id => $this->labelChild()->id,
-            ]
+            ],
         ];
 
         // annotation was deleted during the Largo session but saving should still work

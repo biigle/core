@@ -5,8 +5,8 @@ namespace Biigle\Modules\Largo\Console\Commands;
 use Illuminate\Console\Command;
 use Biigle\Modules\Largo\LargoServiceProvider as ServiceProvider;
 
-class Publish extends Command {
-
+class Publish extends Command
+{
     /**
      * The console command name.
      *

@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 class LargoController extends Controller
 {
     /**
-     * Show the patch image of an annotation
+     * Show the patch image of an annotation.
      *
      * @api {get} annotations/:id/patch Get an annotation patch
      * @apiGroup Annotations
@@ -47,9 +47,8 @@ class LargoController extends Controller
         }
     }
 
-
     /**
-     * Save changes of an Largo session for a volume
+     * Save changes of an Largo session for a volume.
      *
      * @api {post} volumes/:id/largo Save Largo session
      * @apiGroup Largo
@@ -143,7 +142,7 @@ class LargoController extends Controller
     }
 
     /**
-     * Save changes of an Largo session for a project
+     * Save changes of an Largo session for a project.
      *
      * @api {post} projects/:id/largo Save Largo session
      * @apiGroup Largo
@@ -210,7 +209,7 @@ class LargoController extends Controller
     }
 
     /**
-     * Validates the input for saving an Largo session
+     * Validates the input for saving an Largo session.
      *
      * @param Request $request
      */
@@ -223,7 +222,7 @@ class LargoController extends Controller
     }
 
     /**
-     * Get a list of unique annotation IDs that are either dismissed or changed
+     * Get a list of unique annotation IDs that are either dismissed or changed.
      *
      * @param array $dismissed Array of all dismissed annotation IDs for each label
      * @param array $changed Array of IDs of changed annotations
@@ -240,7 +239,7 @@ class LargoController extends Controller
     }
 
     /**
-     * Check if all given annotations belong to the given volumes
+     * Check if all given annotations belong to the given volumes.
      *
      * @param array $annotations Annotation IDs
      * @param array $volumes Volume IDs
@@ -256,7 +255,7 @@ class LargoController extends Controller
     }
 
     /**
-     * Returns the IDs of all label trees that must be available to apply the changes
+     * Returns the IDs of all label trees that must be available to apply the changes.
      *
      * @param array $changed Array of IDs of changed annotations
      *
@@ -270,7 +269,7 @@ class LargoController extends Controller
     }
 
     /**
-     * Apply the changes of an Largo session
+     * Apply the changes of an Largo session.
      *
      * Removes the dismissed annotation labels and creates the changed annotation labels.
      *

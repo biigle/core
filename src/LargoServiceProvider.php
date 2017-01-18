@@ -7,8 +7,8 @@ use Illuminate\Routing\Router;
 use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
 use Biigle\Services\Modules;
 
-class LargoServiceProvider extends ServiceProvider {
-
+class LargoServiceProvider extends ServiceProvider
+{
     /**
      * Bootstrap the application events.
      *

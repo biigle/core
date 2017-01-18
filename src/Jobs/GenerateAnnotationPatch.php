@@ -16,7 +16,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
     use InteractsWithQueue;
 
     /**
-     * The ID of the annotation to generate a patch for
+     * The ID of the annotation to generate a patch for.
      *
      * @var int
      */

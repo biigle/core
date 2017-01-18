@@ -3,7 +3,6 @@
 namespace Biigle\Modules\Largo\Http\Controllers\Api;
 
 use Biigle\Project;
-use Biigle\Volume;
 use Biigle\Annotation;
 use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
@@ -11,7 +10,7 @@ use Biigle\Http\Controllers\Api\Controller;
 class ProjectsAnnotationsController extends Controller
 {
     /**
-     * Show all annotations of the project that have a specific label attached
+     * Show all annotations of the project that have a specific label attached.
      *
      * @api {get} projects/:tid/annotations/filter/label/:lid Get annotations with a specific label
      * @apiGroup Projects
@@ -48,5 +47,4 @@ class ProjectsAnnotationsController extends Controller
             })
             ->pluck('annotations.id');
     }
-
 }

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Views;
 
 use ApiTestCase;

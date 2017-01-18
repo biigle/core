@@ -2,7 +2,7 @@
 
 $router->group([
     'namespace' => 'Views',
-    'middleware' => 'auth'
+    'middleware' => 'auth',
 ], function ($router) {
     $router->get('volumes/{id}/largo', [
         'as'   => 'largo',
