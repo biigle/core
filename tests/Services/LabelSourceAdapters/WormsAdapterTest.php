@@ -27,33 +27,33 @@ class WormsAdapterTest extends TestCase
             ->with('%Kolga%')
             ->andReturn([
                 (object) [
-                    "AphiaID" => 124731,
-                    "url" => "http://www.marinespecies.org/aphia.php?p=taxdetails&id=124731",
-                    "scientificname" => "Kolga hyalina",
-                    "rank" => "Species",
-                    "status" => "accepted",
-                    "kingdom" => "Animalia",
-                    "phylum" => "Echinodermata",
-                    "class" => "Holothuroidea",
-                    "order" => "Elasipodida",
-                    "family" => "Elpidiidae",
+                    'AphiaID' => 124731,
+                    'url' => 'http://www.marinespecies.org/aphia.php?p=taxdetails&id=124731',
+                    'scientificname' => 'Kolga hyalina',
+                    'rank' => 'Species',
+                    'status' => 'accepted',
+                    'kingdom' => 'Animalia',
+                    'phylum' => 'Echinodermata',
+                    'class' => 'Holothuroidea',
+                    'order' => 'Elasipodida',
+                    'family' => 'Elpidiidae',
                     // is not raeally null but we want to test if this is omitted later
-                    "genus" => null,
+                    'genus' => null,
                 ],
                 (object) [
                     // should not be returned
-                    "AphiaID" => 124732,
-                    "url" => "http://www.marinespecies.org/aphia.php?p=taxdetails&id=124731",
-                    "scientificname" => "Kolga hyalina",
-                    "rank" => "Species",
-                    "status" => "unaccepted",
-                    "kingdom" => "Animalia",
-                    "phylum" => "Echinodermata",
-                    "class" => "Holothuroidea",
-                    "order" => "Elasipodida",
-                    "family" => "Elpidiidae",
-                    "genus" => null,
-                ]
+                    'AphiaID' => 124732,
+                    'url' => 'http://www.marinespecies.org/aphia.php?p=taxdetails&id=124731',
+                    'scientificname' => 'Kolga hyalina',
+                    'rank' => 'Species',
+                    'status' => 'unaccepted',
+                    'kingdom' => 'Animalia',
+                    'phylum' => 'Echinodermata',
+                    'class' => 'Holothuroidea',
+                    'order' => 'Elasipodida',
+                    'family' => 'Elpidiidae',
+                    'genus' => null,
+                ],
             ]);
 
         $mock->shouldReceive('getAphiaRecords')
@@ -78,7 +78,7 @@ class WormsAdapterTest extends TestCase
                 'Holothuroidea',
                 'Elasipodida',
                 'Elpidiidae',
-            ]
+            ],
         ]];
 
         $this->assertEquals($expect, $results);

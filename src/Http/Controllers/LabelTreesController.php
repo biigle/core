@@ -14,7 +14,7 @@ use Biigle\Http\Controllers\Views\Controller;
 class LabelTreesController extends Controller
 {
     /**
-     * Show the label tree page
+     * Show the label tree page.
      *
      * @param Guard $auth
      * @param int $id Label tree ID
@@ -90,13 +90,14 @@ class LabelTreesController extends Controller
     }
 
     /**
-     * Show the label tree list
+     * Show the label tree list.
      *
      * @param Request $request
      * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, Guard $auth) {
+    public function index(Request $request, Guard $auth)
+    {
         $query = LabelTree::query();
         $user = $auth->user();
 
@@ -137,11 +138,12 @@ class LabelTreesController extends Controller
     }
 
     /**
-     * Show the label tree admin page
+     * Show the label tree admin page.
      *
      * @return \Illuminate\Http\Response
      */
-    public function admin() {
+    public function admin()
+    {
         $trees = LabelTree::whereDoesntHave('members')->get();
 
         return view('label-trees::admin', [
@@ -150,11 +152,12 @@ class LabelTreesController extends Controller
     }
 
     /**
-     * Show the create label tree page
+     * Show the create label tree page.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create() {
+    public function create()
+    {
         $visibilities = [
             Visibility::$public,
             Visibility::$private,
@@ -165,7 +168,7 @@ class LabelTreesController extends Controller
         ]);
     }
 
-        /**
+    /**
      * Show a tutorials article.
      *
      * @param string $name Article name

@@ -9,31 +9,30 @@ use Biigle\Contracts\LabelSourceAdapterContract;
 use Illuminate\Validation\ValidationException;
 
 /**
- * WoRMS label source adapter
+ * WoRMS label source adapter.
  */
 class WormsAdapter implements LabelSourceAdapterContract
 {
-
     /**
-     * SOAP client for the WoRMS webservice
+     * SOAP client for the WoRMS webservice.
      *
      * @var SoapClient
      */
     private $client;
 
     /**
-     * Create a new WoRMS label adapter
+     * Create a new WoRMS label adapter.
      */
-    public function __construct ()
+    public function __construct()
     {
         $this->client = app()->make(SoapClient::class, [
-            "http://www.marinespecies.org/aphia.php?p=soap&wsdl=1",
-            config('label-trees.soap_options')
+            'http://www.marinespecies.org/aphia.php?p=soap&wsdl=1',
+            config('label-trees.soap_options'),
         ]);
     }
 
     /**
-     * Find labels by scientific name
+     * Find labels by scientific name.
      *
      * Uses the `getAphiaRecords` function of the WoRMS web service.
      * see: http://www.marinespecies.org/aphia.php?p=soap
@@ -109,12 +108,11 @@ class WormsAdapter implements LabelSourceAdapterContract
             return $this->createRecursiveLabels($attributes);
         }
 
-
         return [$this->createSingleLabel($attributes)];
     }
 
     /**
-     * Returns `true` for accepted WoRMS items and `false` otherwise
+     * Returns `true` for accepted WoRMS items and `false` otherwise.
      *
      * @param object $item
      * @return bool
@@ -125,7 +123,7 @@ class WormsAdapter implements LabelSourceAdapterContract
     }
 
     /**
-     * Parse a WoRMS item to the internal representation
+     * Parse a WoRMS item to the internal representation.
      *
      * @param object $item
      * @return array
@@ -133,6 +131,7 @@ class WormsAdapter implements LabelSourceAdapterContract
     private function parseItem($item)
     {
         $item = (array) $item;
+
         return [
             'aphia_id' => $item['AphiaID'],
             'name' => $item['scientificname'],
@@ -153,7 +152,7 @@ class WormsAdapter implements LabelSourceAdapterContract
     }
 
     /**
-     * Create (and save) a single label
+     * Create (and save) a single label.
      *
      * @param array $attributes All label attributes
      *
@@ -174,7 +173,7 @@ class WormsAdapter implements LabelSourceAdapterContract
     }
 
     /**
-     * Create (and save) a label and all WoRMS parents that don't already exist in the tree
+     * Create (and save) a label and all WoRMS parents that don't already exist in the tree.
      *
      * @param array $attributes All label attributes
      *
@@ -202,7 +201,7 @@ class WormsAdapter implements LabelSourceAdapterContract
         // find index of the first item in $parents that should be created.
         // all lower indices are assumend to exist
         $index = 0;
-        for ($i = sizeof($parents) - 1; $i >= 0 ; $i--) {
+        for ($i = sizeof($parents) - 1; $i >= 0; $i--) {
             if (array_key_exists($parents[$i]['aphia_id'], $existing)) {
                 $index = $i + 1;
                 break;
@@ -231,7 +230,7 @@ class WormsAdapter implements LabelSourceAdapterContract
     }
 
     /**
-     * Extract the aphia IDs in correct ordering from a WoRMS classification hierarchy
+     * Extract the aphia IDs in correct ordering from a WoRMS classification hierarchy.
      *
      * @param object $hierarchy
      *

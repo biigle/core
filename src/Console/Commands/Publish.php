@@ -5,8 +5,8 @@ namespace Biigle\Modules\LabelTrees\Console\Commands;
 use Illuminate\Console\Command;
 use Biigle\Modules\LabelTrees\LabelTreesServiceProvider as ServiceProvider;
 
-class Publish extends Command {
-
+class Publish extends Command
+{
     /**
      * The console command name.
      *

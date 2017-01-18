@@ -10,7 +10,8 @@ use Biigle\Tests\LabelTreeTest;
 
 class LabelTreeControllerTest extends TestCase
 {
-    public function testShow() {
+    public function testShow()
+    {
         $tree = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
         $user = UserTest::create();
 
@@ -32,16 +33,18 @@ class LabelTreeControllerTest extends TestCase
         $this->assertResponseStatus(404);
     }
 
-    public function testAdmin() {
-        $this->visit("admin/label-trees")->seePageIs('login');
+    public function testAdmin()
+    {
+        $this->visit('admin/label-trees')->seePageIs('login');
         $user = UserTest::create();
         $this->be($user);
-        $this->get("admin/label-trees")->assertResponseStatus(403);
+        $this->get('admin/label-trees')->assertResponseStatus(403);
         $user->role()->associate(Role::$admin);
-        $this->visit("admin/label-trees")->assertResponseOk();
+        $this->visit('admin/label-trees')->assertResponseOk();
     }
 
-    public function testIndex() {
+    public function testIndex()
+    {
         $user = UserTest::create();
         $tree = LabelTreeTest::create(['name' => 'random name']);
         $tree2 = LabelTreeTest::create(['name' => 'another tree']);
@@ -51,10 +54,10 @@ class LabelTreeControllerTest extends TestCase
         ]);
         $tree->addMember($user, Role::$editor);
 
-        $this->visit("label-trees")->seePageIs('login');
+        $this->visit('label-trees')->seePageIs('login');
 
         $this->be($user);
-        $this->get("label-trees")->assertResponseOk();
+        $this->get('label-trees')->assertResponseOk();
         $this->see('random name');
         $this->see('another tree');
         $this->dontSee('private one');
@@ -66,10 +69,11 @@ class LabelTreeControllerTest extends TestCase
         $this->dontSee('private one');
     }
 
-    public function testCreate() {
-        $this->visit("label-trees/create")->seePageIs('login');
+    public function testCreate()
+    {
+        $this->visit('label-trees/create')->seePageIs('login');
         $user = UserTest::create();
         $this->be($user);
-        $this->visit("label-trees/create")->assertResponseOk();
+        $this->visit('label-trees/create')->assertResponseOk();
     }
 }
