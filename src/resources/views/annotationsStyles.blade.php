@@ -1,1 +1,1 @@
-<link href="{{ cachebust_asset('vendor/ate/styles/annotations.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/largo/styles/annotations.css') }}" rel="stylesheet">

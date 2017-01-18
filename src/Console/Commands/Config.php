@@ -1,9 +1,9 @@
 <?php
 
-namespace Biigle\Modules\Ate\Console\Commands;
+namespace Biigle\Modules\Largo\Console\Commands;
 
 use Illuminate\Console\Command;
-use Biigle\Modules\Ate\AteServiceProvider as ServiceProvider;
+use Biigle\Modules\Largo\LargoServiceProvider as ServiceProvider;
 
 class Config extends Command {
 
@@ -12,7 +12,7 @@ class Config extends Command {
      *
      * @var string
      */
-    protected $name = 'ate:config';
+    protected $name = 'largo:config';
 
     /**
      * The console command description.

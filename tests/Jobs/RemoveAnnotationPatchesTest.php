@@ -1,13 +1,13 @@
 <?php
 
-namespace Biigle\Tests\Modules\Ate\Jobs;
+namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use App;
 use File;
 use Mockery;
 use TestCase;
 use FilesystemIterator;
-use Biigle\Modules\Ate\Jobs\RemoveAnnotationPatches;
+use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 
 class RemoveAnnotationPatchesTest extends TestCase
 {
@@ -15,8 +15,8 @@ class RemoveAnnotationPatchesTest extends TestCase
     {
         $volumeId = rand();
         $annotationId = rand();
-        $path = config('ate.patch_storage').'/'.$volumeId;
-        $patchPath = $path.'/'.$annotationId.'.'.config('ate.patch_format');
+        $path = config('largo.patch_storage').'/'.$volumeId;
+        $patchPath = $path.'/'.$annotationId.'.'.config('largo.patch_format');
 
         File::shouldReceive('delete')
             ->with($patchPath)
@@ -45,8 +45,8 @@ class RemoveAnnotationPatchesTest extends TestCase
     {
         $volumeId = rand();
         $annotationId = rand();
-        $path = config('ate.patch_storage').'/'.$volumeId;
-        $patchPath = $path.'/'.$annotationId.'.'.config('ate.patch_format');
+        $path = config('largo.patch_storage').'/'.$volumeId;
+        $patchPath = $path.'/'.$annotationId.'.'.config('largo.patch_format');
 
         File::shouldReceive('delete')
             ->with($patchPath)
@@ -73,8 +73,8 @@ class RemoveAnnotationPatchesTest extends TestCase
     {
         $volumeId = rand();
         $annotationId = rand();
-        $path = config('ate.patch_storage').'/'.$volumeId;
-        $patchPath = $path.'/'.$annotationId.'.'.config('ate.patch_format');
+        $path = config('largo.patch_storage').'/'.$volumeId;
+        $patchPath = $path.'/'.$annotationId.'.'.config('largo.patch_format');
 
         File::shouldReceive('delete')
             ->with($patchPath)

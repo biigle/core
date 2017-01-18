@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Ate\Http\Controllers\Api;
+namespace Biigle\Modules\Largo\Http\Controllers\Api;
 
 use Biigle\Project;
 use Biigle\Volume;

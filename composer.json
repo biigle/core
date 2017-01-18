@@ -1,5 +1,5 @@
 {
-    "name": "biigle/ate",
+    "name": "biigle/largo",
     "require": {
         "biigle/volumes": "~1.1",
         "intervention/image": "~2.1",
@@ -9,7 +9,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Biigle\\Modules\\Ate\\": "src"
+            "Biigle\\Modules\\Largo\\": "src"
         }
     }
 }

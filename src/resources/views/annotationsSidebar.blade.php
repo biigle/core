@@ -1,5 +1,5 @@
 @if ($editMode)
-    <div class="ate-example-patches" data-ng-controller="AteExamplePatchesController">
+    <div class="largo-example-patches" data-ng-controller="LargoExamplePatchesController">
         <div class="patch-container ng-cloak" data-ng-switch="isLoading()" data-ng-if="isEnabled() && hasLabel()">
             <div class="alert alert-info" data-ng-switch-when="true">
                 Loading example annotations...

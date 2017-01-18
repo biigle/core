@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Ate\Jobs;
+namespace Biigle\Modules\Largo\Jobs;
 
 use App;
 use File;
@@ -50,9 +50,9 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         }
 
         $image = $annotation->image;
-        $prefix = config('ate.patch_storage').'/'.$image->volume_id;
-        $format = config('ate.patch_format');
-        $padding = config('ate.patch_padding');
+        $prefix = config('largo.patch_storage').'/'.$image->volume_id;
+        $format = config('largo.patch_format');
+        $padding = config('largo.patch_padding');
         $points = $annotation->points;
 
         $thumbWidth = config('thumbnails.width');
@@ -65,7 +65,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
 
         switch ($annotation->shape_id) {
             case Shape::$pointId:
-                $pointPadding = config('ate.point_padding');
+                $pointPadding = config('largo.point_padding');
                 $xmin = $points[0] - $pointPadding;
                 $xmax = $points[0] + $pointPadding;
                 $ymin = $points[1] - $pointPadding;
@@ -127,7 +127,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         $memoryLimit = ini_get('memory_limit');
 
         // increase memory limit for modifying large images
-        ini_set('memory_limit', config('ate.memory_limit'));
+        ini_set('memory_limit', config('largo.memory_limit'));
 
         // Like InterventionImage::cache() from the documentation but this has better
         // testability.
@@ -135,7 +135,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
             ->make($image->url)
             // Cache the encoding so we don't have to do do it the next time.
             ->encode($format)
-            ->get(config('ate.imagecache_lifetime'), true);
+            ->get(config('largo.imagecache_lifetime'), true);
 
         $cachedImage->crop($width, $height, $xmin, $ymin)
             ->save("{$prefix}/{$annotation->id}.{$format}")
