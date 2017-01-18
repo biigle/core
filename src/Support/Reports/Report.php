@@ -100,7 +100,7 @@ class Report
     }
 
     /**
-     * Get the report name
+     * Get the report name.
      *
      * @return string
      */
@@ -123,7 +123,7 @@ class Report
     }
 
     /**
-     * Get the filename
+     * Get the filename.
      *
      * @return string
      */
@@ -133,7 +133,7 @@ class Report
     }
 
     /**
-     * Get the file extension
+     * Get the file extension.
      *
      * @return string
      */
@@ -143,7 +143,7 @@ class Report
     }
 
     /**
-     * Get the ID associated with this report (e.g. project ID)
+     * Get the ID associated with this report (e.g. project ID).
      *
      * @return int
      */
@@ -153,7 +153,7 @@ class Report
     }
 
     /**
-     * Get the filename used for downloading the report
+     * Get the filename used for downloading the report.
      *
      * @return string
      */
@@ -225,7 +225,7 @@ class Report
     /**
      * Should this report separate the output files for different label trees?
      *
-     * @return boolean
+     * @return bool
      */
     protected function shouldSeparateLabelTrees()
     {

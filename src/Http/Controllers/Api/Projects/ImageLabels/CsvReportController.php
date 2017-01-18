@@ -8,13 +8,13 @@ use Biigle\Modules\Export\Http\Controllers\Api\Projects\ProjectReportController;
 class CsvReportController extends ProjectReportController
 {
     /**
-     * The report classname
+     * The report classname.
      *
      * @var string
      */
     protected $report = CsvReport::class;
 
-    /**
+    /*
      * @api {post} projects/:id/reports/image-labels/csv Generate a new csv image label report
      * @apiGroup Projects
      * @apiName GenerateCsvVolumeImageLabelReport

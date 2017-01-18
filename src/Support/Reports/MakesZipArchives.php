@@ -36,7 +36,7 @@ trait MakesZipArchives
     }
 
     /**
-     * Sanitizes a filename
+     * Sanitizes a filename.
      *
      * @param string $name Filename to sanitize
      * @param string $extension File extension to use (since dots are sanitized, too)

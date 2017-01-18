@@ -5,8 +5,8 @@ namespace Biigle\Modules\Export\Console\Commands;
 use Illuminate\Console\Command;
 use Biigle\Modules\Export\ExportServiceProvider as ServiceProvider;
 
-class Publish extends Command {
-
+class Publish extends Command
+{
     /**
      * The console command name.
      *

@@ -34,7 +34,7 @@ class BasicReportTest extends TestCase
             'image_id' => ImageTest::create([
                 'volume_id' => $volume->id,
                 'filename' => 'foo.jpg',
-            ])->id
+            ])->id,
         ]);
 
         $il2 = ImageLabelTest::create([
@@ -141,7 +141,7 @@ class BasicReportTest extends TestCase
 
         $mock->shouldReceive('put')
             ->once()
-            ->with([$image->id, $image->filename, $label2->name]);;
+            ->with([$image->id, $image->filename, $label2->name]);
 
         $mock->shouldReceive('close')
             ->twice();

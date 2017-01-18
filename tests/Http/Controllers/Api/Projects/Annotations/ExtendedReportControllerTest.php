@@ -27,7 +27,7 @@ class ExtendedReportControllerTest extends ApiTestCase
         $this->assertEquals(false, $report->options['exportArea']);
 
         $this->post("api/v1/projects/{$id}/reports/annotations/extended", [
-                'exportArea' => true
+                'exportArea' => true,
             ])
             ->assertResponseOk();
 

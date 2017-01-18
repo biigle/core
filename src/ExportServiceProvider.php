@@ -6,8 +6,8 @@ use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
-class ExportServiceProvider extends ServiceProvider {
-
+class ExportServiceProvider extends ServiceProvider
+{
     /**
      * Bootstrap the application events.
      *
@@ -16,7 +16,7 @@ class ExportServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-    public function boot(Modules $modules,Router $router)
+    public function boot(Modules $modules, Router $router)
     {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'export');
 

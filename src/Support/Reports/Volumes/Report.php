@@ -31,7 +31,7 @@ class Report extends BaseReport
     }
 
     /**
-     * Get the ID associated with this report (e.g. project ID)
+     * Get the ID associated with this report (e.g. project ID).
      *
      * @return int
      */
@@ -90,7 +90,7 @@ class Report extends BaseReport
     }
 
     /**
-     * Execute the external report parsing Python script
+     * Execute the external report parsing Python script.
      *
      * @param string $name Name of the script to execute (in the `export.scripts` config namespace)
      * @throws Exception If the script returned an error code.

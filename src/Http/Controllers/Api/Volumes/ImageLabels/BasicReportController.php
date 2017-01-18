@@ -8,13 +8,13 @@ use Biigle\Modules\Export\Http\Controllers\Api\Volumes\VolumeReportController;
 class BasicReportController extends VolumeReportController
 {
     /**
-     * The report classname
+     * The report classname.
      *
      * @var string
      */
     protected $report = BasicReport::class;
 
-    /**
+    /*
      * @api {post} volumes/:id/reports/image-labels/basic Generate a new basic image label report
      * @apiGroup Volumes
      * @apiName GenerateBasicVolumeImageLabelReport

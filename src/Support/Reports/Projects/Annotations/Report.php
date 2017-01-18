@@ -2,14 +2,12 @@
 
 namespace Biigle\Modules\Export\Support\Reports\Projects\Annotations;
 
-use DB;
-use Biigle\Modules\Export\Volume;
 use Biigle\Modules\Export\Support\Reports\Projects\Report as BaseReport;
 
 class Report extends BaseReport
 {
     /**
-     * Get the report name
+     * Get the report name.
      *
      * @return string
      */
@@ -23,7 +21,7 @@ class Report extends BaseReport
     }
 
     /**
-     * Get the filename
+     * Get the filename.
      *
      * @return string
      */
@@ -39,7 +37,7 @@ class Report extends BaseReport
     /**
      * Should this report be restricted to the export area?
      *
-     * @return boolean
+     * @return bool
      */
     protected function isRestrictedToExportArea()
     {

@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Export\Support\Reports\Projects\Annotations;
 
-
 use Biigle\Modules\Export\Support\Reports\Volumes\Annotations\ExtendedReport as VolumeReport;
 
 class ExtendedReport extends Report

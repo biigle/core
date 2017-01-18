@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Export\Support\Reports\Projects\ImageLabels;
 
-
 use Biigle\Modules\Export\Support\Reports\Projects\Report;
 use Biigle\Modules\Export\Support\Reports\Volumes\ImageLabels\BasicReport as VolumeReport;
 

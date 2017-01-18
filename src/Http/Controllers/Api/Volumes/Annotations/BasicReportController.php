@@ -8,13 +8,13 @@ use Biigle\Modules\Export\Http\Controllers\Api\Volumes\VolumeReportController;
 class BasicReportController extends VolumeReportController
 {
     /**
-     * The report classname
+     * The report classname.
      *
      * @var string
      */
     protected $report = BasicReport::class;
 
-    /**
+    /*
      * @api {post} volumes/:id/reports/annotations/basic Generate a new basic annotation report
      * @apiGroup Volumes
      * @apiName GenerateBasicVolumeAnnotationReport

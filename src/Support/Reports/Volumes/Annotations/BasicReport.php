@@ -45,7 +45,6 @@ class BasicReport extends Report
             foreach ($trees as $id => $name) {
                 $this->tmpFiles[] = $this->createCsv($labels->get($id), $name);
             }
-
         } else {
             $this->tmpFiles[] = $this->createCsv($labels);
         }
@@ -68,7 +67,7 @@ class BasicReport extends Report
     }
 
     /**
-     * Create a CSV file for a single plot of this report
+     * Create a CSV file for a single plot of this report.
      *
      * @param \Illuminate\Support\Collection $labels The labels/rows for the CSV
      * @param string $title The title to put in the first row of the CSV

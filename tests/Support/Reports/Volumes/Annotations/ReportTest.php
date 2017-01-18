@@ -2,9 +2,6 @@
 
 namespace Biigle\Tests\Modules\Export\Support\Reports\Volumes\Annotations;
 
-use App;
-use File;
-use Mockery;
 use TestCase;
 use Biigle\Shape;
 use Biigle\Annotation;
@@ -16,8 +13,6 @@ use Biigle\Tests\AnnotationTest;
 use Biigle\Modules\Export\Volume;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Modules\Export\Support\Exec;
-use Biigle\Modules\Export\Support\CsvFile;
 use Biigle\Modules\Export\Support\Reports\Volumes\Annotations\Report;
 
 class ReportTest extends TestCase

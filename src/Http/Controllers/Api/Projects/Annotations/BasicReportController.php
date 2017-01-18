@@ -8,13 +8,13 @@ use Biigle\Modules\Export\Http\Controllers\Api\Projects\ProjectReportController;
 class BasicReportController extends ProjectReportController
 {
     /**
-     * The report classname
+     * The report classname.
      *
      * @var string
      */
     protected $report = BasicReport::class;
 
-    /**
+    /*
      * @api {post} projects/:id/reports/annotations/basic Generate a new basic annotation report
      * @apiGroup Projects
      * @apiName GenerateBasicProjectAnnotationReport

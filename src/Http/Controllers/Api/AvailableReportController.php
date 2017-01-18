@@ -8,7 +8,7 @@ use Biigle\Http\Controllers\Api\Controller;
 class AvailableReportController extends Controller
 {
     /**
-     * Retrieve a report from the filesystem
+     * Retrieve a report from the filesystem.
      *
      * @api {get} reports/:uid/:filename
      * @apiGroup Files
@@ -24,6 +24,7 @@ class AvailableReportController extends Controller
     public function show($uid, $filename)
     {
         $report = AvailableReport::findOrFail($uid);
+
         return response()
             ->download($report->path, $filename)
             ->deleteFileAfterSend(true);

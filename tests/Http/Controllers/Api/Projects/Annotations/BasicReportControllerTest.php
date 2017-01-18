@@ -8,7 +8,6 @@ use Biigle\Modules\Export\Support\Reports\Projects\Annotations\BasicReport;
 
 class BasicReportControllerTest extends ApiTestCase
 {
-
     public function testStore()
     {
         $id = $this->project()->id;
@@ -28,7 +27,7 @@ class BasicReportControllerTest extends ApiTestCase
         $this->assertEquals(false, $report->options['exportArea']);
 
         $this->post("api/v1/projects/{$id}/reports/annotations/basic", [
-                'exportArea' => true
+                'exportArea' => true,
             ])
             ->assertResponseOk();
 

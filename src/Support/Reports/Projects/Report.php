@@ -3,7 +3,6 @@
 namespace Biigle\Modules\Export\Support\Reports\Projects;
 
 use App;
-use Biigle\Label;
 use Biigle\Project;
 use Biigle\Modules\Export\Support\Reports\MakesZipArchives;
 use Biigle\Modules\Export\Support\Reports\Report as BaseReport;
@@ -46,7 +45,7 @@ class Report extends BaseReport
     }
 
     /**
-     * Get the ID associated with this report (e.g. project ID)
+     * Get the ID associated with this report (e.g. project ID).
      *
      * @return int
      */

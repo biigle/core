@@ -51,7 +51,6 @@ class CsvReport extends Report
                 $this->tmpFiles[] = $csv;
                 $toZip[$csv->getPath()] = $this->sanitizeFilename("{$id}-{$name}", 'csv');
             }
-
         } else {
             $csv = $this->createCsv($rows);
             $this->tmpFiles[] = $csv;
@@ -90,7 +89,7 @@ class CsvReport extends Report
     }
 
     /**
-     * Create a CSV file for this report
+     * Create a CSV file for this report.
      *
      * @param \Illuminate\Support\Collection $rows The rows for the CSV
      * @return CsvFile

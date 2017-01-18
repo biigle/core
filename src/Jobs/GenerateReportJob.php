@@ -48,7 +48,7 @@ class GenerateReportJob extends Job implements ShouldQueue
     }
 
     /**
-     * Execute the job
+     * Execute the job.
      */
     public function handle()
     {

@@ -8,13 +8,13 @@ use Biigle\Modules\Export\Http\Controllers\Api\Projects\ProjectReportController;
 class CsvReportController extends ProjectReportController
 {
     /**
-     * The report classname
+     * The report classname.
      *
      * @var string
      */
     protected $report = CsvReport::class;
 
-    /**
+    /*
      * @api {post} projects/:id/reports/annotations/csv Generate a new csv annotation report
      * @apiGroup Projects
      * @apiName GenerateCsvProjectAnnotationReport

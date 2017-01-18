@@ -45,7 +45,6 @@ class FullReport extends Report
             foreach ($trees as $id => $name) {
                 $this->tmpFiles[] = $this->createCsv($rows->get($id), $name);
             }
-
         } else {
             $this->tmpFiles[] = $this->createCsv($rows, $this->volume->name);
         }
@@ -75,7 +74,7 @@ class FullReport extends Report
     }
 
     /**
-     * Create a CSV file for a single sheet of the spreadsheet of this report
+     * Create a CSV file for a single sheet of the spreadsheet of this report.
      *
      * @param \Illuminate\Support\Collection $rows The rows for the CSV
      * @param string $title The title to put in the first row of the CSV
@@ -94,7 +93,7 @@ class FullReport extends Report
                 $this->expandLabelName($row->label_id),
                 $row->shape_name,
                 $row->points,
-                $this->getArea($row->attrs)
+                $this->getArea($row->attrs),
             ]);
         }
 
@@ -115,7 +114,5 @@ class FullReport extends Report
         if (is_array($attrs)) {
             return array_get($attrs, 'laserpoints.area');
         }
-
-        return null;
     }
 }

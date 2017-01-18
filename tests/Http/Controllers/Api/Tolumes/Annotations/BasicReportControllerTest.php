@@ -27,7 +27,7 @@ class BasicReportControllerTest extends ApiTestCase
         $this->assertEquals(false, $report->options['exportArea']);
 
         $this->post("api/v1/volumes/{$id}/reports/annotations/basic", [
-                'exportArea' => true
+                'exportArea' => true,
             ])
             ->assertResponseOk();
 

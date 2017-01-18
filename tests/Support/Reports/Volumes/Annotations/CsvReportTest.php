@@ -61,7 +61,6 @@ class CsvReportTest extends TestCase
         $al->annotation->image->attrs = ['image' => 'attrs'];
         $al->annotation->image->save();
 
-
         // for the AvailableReport
         File::shouldReceive('exists')
             ->once()

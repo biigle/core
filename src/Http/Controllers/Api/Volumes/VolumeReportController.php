@@ -9,7 +9,7 @@ use Biigle\Modules\Export\Http\Controllers\Api\ReportController;
 abstract class VolumeReportController extends ReportController
 {
     /**
-     * Get the options of the requested report
+     * Get the options of the requested report.
      *
      * @param Request $request
      * @return array
@@ -19,7 +19,7 @@ abstract class VolumeReportController extends ReportController
         $options = parent::getOptions($request);
 
         $this->validate($request, [
-            'annotationSession' => "nullable|exists:annotation_sessions,id,volume_id,{$this->model->id}"
+            'annotationSession' => "nullable|exists:annotation_sessions,id,volume_id,{$this->model->id}",
         ]);
 
         return array_merge($options, [
@@ -28,7 +28,7 @@ abstract class VolumeReportController extends ReportController
     }
 
     /**
-     * Get the model to generate the report for
+     * Get the model to generate the report for.
      *
      * @param int $id
      * @return mixed

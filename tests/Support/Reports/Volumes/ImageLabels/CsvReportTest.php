@@ -12,7 +12,6 @@ use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\ImageLabelTest;
-use Biigle\Modules\Export\Support\Exec;
 use Biigle\Modules\Export\Support\CsvFile;
 use Biigle\Modules\Export\Support\Reports\Volumes\ImageLabels\CsvReport;
 

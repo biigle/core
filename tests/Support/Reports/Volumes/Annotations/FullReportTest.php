@@ -171,5 +171,4 @@ class FullReportTest extends TestCase
         $report = new FullReport($image->volume, ['separateLabelTrees' => true]);
         $report->generateReport();
     }
-
 }

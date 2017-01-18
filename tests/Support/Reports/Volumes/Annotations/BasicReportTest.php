@@ -6,7 +6,6 @@ use App;
 use File;
 use Mockery;
 use TestCase;
-use Biigle\Shape;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;

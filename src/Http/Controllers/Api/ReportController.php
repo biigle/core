@@ -10,21 +10,21 @@ use Biigle\Modules\Export\Jobs\GenerateReportJob;
 abstract class ReportController extends Controller
 {
     /**
-     * The report classname
+     * The report classname.
      *
      * @var string
      */
     protected $report;
 
     /**
-     * The model for which the report will be generated
+     * The model for which the report will be generated.
      *
      * @var mixed
      */
     protected $model;
 
     /**
-     * Generate a report
+     * Generate a report.
      *
      * @param Request $request
      * @param Guard $auth
@@ -40,7 +40,7 @@ abstract class ReportController extends Controller
     }
 
     /**
-     * Get the options of the requested report
+     * Get the options of the requested report.
      *
      * @param Request $request
      * @return array
@@ -59,7 +59,7 @@ abstract class ReportController extends Controller
     }
 
     /**
-     * Get the model to generate the report for
+     * Get the model to generate the report for.
      *
      * @param int $id
      * @return mixed

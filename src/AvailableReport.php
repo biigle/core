@@ -7,12 +7,12 @@ use Biigle\Modules\Export\Contracts\DeletableContract;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
- * Represents the file of a generated report
+ * Represents the file of a generated report.
  */
 class AvailableReport implements DeletableContract
 {
     /**
-     * The file path of this report
+     * The file path of this report.
      *
      * @var string
      */
@@ -30,7 +30,7 @@ class AvailableReport implements DeletableContract
     }
 
     /**
-     * Create a new report object
+     * Create a new report object.
      *
      * @param string $basename Optional basename of an existing report file. If not specified, a new one will be generated.
      */
@@ -50,7 +50,7 @@ class AvailableReport implements DeletableContract
     }
 
     /**
-     * Return the basename of the file of this report
+     * Return the basename of the file of this report.
      *
      * @return string
      */
@@ -60,7 +60,7 @@ class AvailableReport implements DeletableContract
     }
 
     /**
-     * Return the dirname of the file of this report
+     * Return the dirname of the file of this report.
      *
      * @return string
      */
@@ -70,7 +70,7 @@ class AvailableReport implements DeletableContract
     }
 
     /**
-     * Delete the report file
+     * Delete the report file.
      */
     public function delete()
     {
@@ -78,7 +78,7 @@ class AvailableReport implements DeletableContract
     }
 
     /**
-     * Check if the report exists
+     * Check if the report exists.
      *
      * @return bool
      */

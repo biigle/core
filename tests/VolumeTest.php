@@ -16,7 +16,7 @@ class VolumeTest extends TestCase
     public function testConvert()
     {
         $volume = BaseVolumeTest::create([
-            'attrs' => [Volume::EXPORT_AREA_ATTRIBUTE => [1, 2, 3, 4]]
+            'attrs' => [Volume::EXPORT_AREA_ATTRIBUTE => [1, 2, 3, 4]],
         ]);
         $exportVolume = Volume::convert($volume);
         $this->assertEquals($volume->id, $exportVolume->id);

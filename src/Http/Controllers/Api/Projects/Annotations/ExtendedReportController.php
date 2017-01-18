@@ -8,13 +8,13 @@ use Biigle\Modules\Export\Http\Controllers\Api\Projects\ProjectReportController;
 class ExtendedReportController extends ProjectReportController
 {
     /**
-     * The report classname
+     * The report classname.
      *
      * @var string
      */
     protected $report = ExtendedReport::class;
 
-    /**
+    /*
      * @api {post} projects/:id/reports/annotations/extended Generate a new extended annotation report
      * @apiGroup Projects
      * @apiName GenerateExtendedProjectAnnotationReport

@@ -10,14 +10,14 @@ use Biigle\Modules\Export\Support\Reports\Volumes\Report as BaseReport;
 class Report extends BaseReport
 {
     /**
-     * Cache for the annotation session this report may be restricted to
+     * Cache for the annotation session this report may be restricted to.
      *
      * @var Biigle\AnnotationSession
      */
     protected $annotationSession;
 
     /**
-     * Get the report name
+     * Get the report name.
      *
      * @return string
      */
@@ -25,11 +25,13 @@ class Report extends BaseReport
     {
         if ($this->isRestrictedToExportArea() && $this->isRestrictedToAnnotationSession()) {
             $name = $this->getAnnotationSession()->name;
+
             return "{$this->name} (restricted to export area and annotation session {$name})";
-        } else if ($this->isRestrictedToExportArea()) {
+        } elseif ($this->isRestrictedToExportArea()) {
             return "{$this->name} (restricted to export area)";
-        } else if ($this->isRestrictedToAnnotationSession()) {
+        } elseif ($this->isRestrictedToAnnotationSession()) {
             $name = $this->getAnnotationSession()->name;
+
             return "{$this->name} (restricted to annotation session {$name})";
         }
 
@@ -37,7 +39,7 @@ class Report extends BaseReport
     }
 
     /**
-     * Get the filename
+     * Get the filename.
      *
      * @return string
      */
@@ -47,7 +49,7 @@ class Report extends BaseReport
             $suffix = '_restricted_to';
 
             if ($this->isRestrictedToExportArea()) {
-                $suffix .= "_export_area";
+                $suffix .= '_export_area';
             }
 
             if ($this->isRestrictedToAnnotationSession()) {
@@ -81,6 +83,7 @@ class Report extends BaseReport
     public function restrictToAnnotationSessionQuery($query)
     {
         $session = $this->getAnnotationSession();
+
         return $query->where(function ($query) use ($session) {
             // take only annotation labels that belong to the time span...
             $query->where('annotation_labels.created_at', '>=', $session->starts_at)
@@ -92,11 +95,10 @@ class Report extends BaseReport
                         ->where('annotation_session_id', $session->id);
                 });
         });
-
     }
 
     /**
-     * Returns the annotation IDs to skip as outside of the volume export area
+     * Returns the annotation IDs to skip as outside of the volume export area.
      *
      * We collect the IDs to skip rather than the IDs to include since there are probably
      * fewer annotations outside of the export area.
@@ -134,7 +136,7 @@ class Report extends BaseReport
                         $points[$x] <= $exportArea[2] &&
                         $points[$y] >= $exportArea[1] &&
                         $points[$y] <= $exportArea[3]) {
-                            // As long as one point of the annotation is inside the
+                        // As long as one point of the annotation is inside the
                             // area, don't skip it.
                             continue 2;
                     }
@@ -154,7 +156,7 @@ class Report extends BaseReport
     }
 
     /**
-     * Assembles the part of the DB query that is the same for all annotation reports
+     * Assembles the part of the DB query that is the same for all annotation reports.
      *
      * @param mixed $columns The columns to select
      * @return \Illuminate\Database\Query\Builder
@@ -180,7 +182,7 @@ class Report extends BaseReport
     /**
      * Is this report restricted in any way?
      *
-     * @return boolean
+     * @return bool
      */
     protected function hasRestriction()
     {
@@ -190,7 +192,7 @@ class Report extends BaseReport
     /**
      * Should this report be restricted to the export area?
      *
-     * @return boolean
+     * @return bool
      */
     protected function isRestrictedToExportArea()
     {
@@ -200,7 +202,7 @@ class Report extends BaseReport
     /**
      * Should this report be restricted an annotation session?
      *
-     * @return boolean
+     * @return bool
      */
     protected function isRestrictedToAnnotationSession()
     {
@@ -208,7 +210,7 @@ class Report extends BaseReport
     }
 
     /**
-     * Returns the annotation session this report should be restricted to
+     * Returns the annotation session this report should be restricted to.
      *
      * @return Biigle\AnnotationSession|null
      */

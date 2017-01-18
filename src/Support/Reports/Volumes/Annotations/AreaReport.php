@@ -34,7 +34,7 @@ class AreaReport extends Report
     protected $extension = 'xlsx';
 
     /**
-     * All images that contain annotations which are included in this report
+     * All images that contain annotations which are included in this report.
      *
      * @var Illuminate\Database\Eloquent\Collection
      */
@@ -61,7 +61,6 @@ class AreaReport extends Report
             foreach ($trees as $id => $name) {
                 $this->tmpFiles[] = $this->createCsv($rows->get($id), $name);
             }
-
         } else {
             $this->tmpFiles[] = $this->createCsv($rows, $this->volume->name);
         }
@@ -98,7 +97,7 @@ class AreaReport extends Report
     }
 
     /**
-     * Create a CSV file for a single sheet of the spreadsheet of this report
+     * Create a CSV file for a single sheet of the spreadsheet of this report.
      *
      * @param \Illuminate\Support\Collection $rows The rows for the CSV
      * @param string $title The title to put in the first row of the CSV
@@ -149,7 +148,7 @@ class AreaReport extends Report
     }
 
     /**
-     * Creates the array of annotations that is inserted into the CSV file
+     * Creates the array of annotations that is inserted into the CSV file.
      *
      * @param  Illuminate\Support\Collection $rows
      * @return array

@@ -11,7 +11,7 @@ use Biigle\Http\Controllers\Api\Controller;
 class ExportAreaController extends Controller
 {
     /**
-     * Show the export area of the volume
+     * Show the export area of the volume.
      *
      * @api {get} volumes/:id/export-area Show the export area
      * @apiGroup Volumes
@@ -35,7 +35,7 @@ class ExportAreaController extends Controller
     }
 
     /**
-     * Set the export area
+     * Set the export area.
      *
      * @api {post} volumes/:id/export-area Set the export area
      * @apiGroup Volumes
@@ -67,7 +67,7 @@ class ExportAreaController extends Controller
     }
 
     /**
-     * Remove the export area
+     * Remove the export area.
      *
      * @api {delete} volumes/:id/export-area Remove the export area
      * @apiGroup Volumes

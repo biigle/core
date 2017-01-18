@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 class ReportReady extends Notification
 {
     /**
-     * The report that is ready
+     * The report that is ready.
      *
      * @var Report
      */

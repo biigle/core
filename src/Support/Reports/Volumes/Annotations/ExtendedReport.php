@@ -45,7 +45,6 @@ class ExtendedReport extends Report
             foreach ($trees as $id => $name) {
                 $this->tmpFiles[] = $this->createCsv($rows->get($id), $name);
             }
-
         } else {
             $this->tmpFiles[] = $this->createCsv($rows, $this->volume->name);
         }
@@ -75,7 +74,7 @@ class ExtendedReport extends Report
     }
 
     /**
-     * Create a CSV file for a single sheet of the spreadsheet of this report
+     * Create a CSV file for a single sheet of the spreadsheet of this report.
      *
      * @param \Illuminate\Support\Collection $rows The rows for the CSV
      * @param string $title The title to put in the first row of the CSV
@@ -99,5 +98,4 @@ class ExtendedReport extends Report
 
         return $csv;
     }
-
 }

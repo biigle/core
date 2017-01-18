@@ -125,7 +125,7 @@ class AreaReportTest extends TestCase
                 "{$al11->label->name}, {$al12->label->name}",
                 $image->id, $image->filename,
                 '', '', '',
-                200, 200, 10000*M_PI
+                200, 200, 10000 * M_PI,
             ]);
 
         $mock->shouldReceive('put')
@@ -136,7 +136,7 @@ class AreaReportTest extends TestCase
                 $al2->id, $al2->label->name,
                 $image->id, $image->filename,
                 '', '', '',
-                200, 100, 20000
+                200, 100, 20000,
             ]);
 
         $mock->shouldReceive('put')
@@ -147,7 +147,7 @@ class AreaReportTest extends TestCase
                 $al3->id, $al3->label->name,
                 $image->id, $image->filename,
                 '', '', '',
-                100, 200, 10000
+                100, 200, 10000,
             ]);
 
         $mock->shouldReceive('close')
@@ -174,7 +174,7 @@ class AreaReportTest extends TestCase
 
         $image = ImageTest::create([
             'volume_id' => $volume->id,
-            'attrs' => ['laserpoints' => ['area' => 1, 'px' => 1000*1000]],
+            'attrs' => ['laserpoints' => ['area' => 1, 'px' => 1000 * 1000]],
         ]);
 
         $a = AnnotationTest::create([
@@ -214,7 +214,7 @@ class AreaReportTest extends TestCase
                 $al->id, $al->label->name,
                 $image->id, $image->filename,
                 0.2, 0.1, 0.02,
-                200, 100, 20000
+                200, 100, 20000,
             ]);
 
         $mock->shouldReceive('close')
@@ -284,7 +284,7 @@ class AreaReportTest extends TestCase
                 $al1->id, $al1->label->name,
                 $image->id, $image->filename,
                 '', '', '',
-                200, 100, 20000
+                200, 100, 20000,
             ]);
 
         $mock->shouldReceive('put')
@@ -295,7 +295,7 @@ class AreaReportTest extends TestCase
                 $al2->id, $al2->label->name,
                 $image->id, $image->filename,
                 '', '', '',
-                200, 100, 20000
+                200, 100, 20000,
             ]);
 
         $mock->shouldReceive('close')

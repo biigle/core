@@ -8,13 +8,13 @@ use Biigle\Modules\Export\Http\Controllers\Api\Projects\ProjectReportController;
 class AreaReportController extends ProjectReportController
 {
     /**
-     * The report classname
+     * The report classname.
      *
      * @var string
      */
     protected $report = AreaReport::class;
 
-    /**
+    /*
      * @api {post} projects/:id/reports/annotations/area Generate a new annotation area report
      * @apiGroup Projects
      * @apiName GenerateAreaProjectAnnotationReport

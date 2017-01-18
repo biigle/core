@@ -8,7 +8,7 @@ use Biigle\Modules\Export\Http\Controllers\Api\ReportController;
 abstract class ProjectReportController extends ReportController
 {
     /**
-     * Get the model to generate the report for
+     * Get the model to generate the report for.
      *
      * @param int $id
      * @return mixed

@@ -5,12 +5,10 @@ $router->group([
     'prefix' => 'api/v1',
     'middleware' => 'auth.api',
 ], function ($router) {
-
     $router->group([
         'namespace' => 'Volumes',
         'prefix' => 'volumes',
     ], function ($router) {
-
         $router->post('{id}/reports/annotations/basic', [
             'uses' => 'Annotations\BasicReportController@store',
         ]);
@@ -50,14 +48,12 @@ $router->group([
         $router->delete('{id}/export-area', [
             'uses' => 'ExportAreaController@destroy',
         ]);
-
     });
 
     $router->group([
         'namespace' => 'Projects',
         'prefix' => 'projects',
     ], function ($router) {
-
         $router->post('{id}/reports/annotations/basic', [
             'uses' => 'Annotations\BasicReportController@store',
         ]);
@@ -85,9 +81,7 @@ $router->group([
         $router->post('{id}/reports/image-labels/csv', [
             'uses' => 'ImageLabels\CsvReportController@store',
         ]);
-
     });
-
 });
 
 $router->group([

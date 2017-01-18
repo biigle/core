@@ -6,19 +6,19 @@ use Exception;
 use Biigle\Volume as BaseVolume;
 
 /**
- * Extends the base Biigle volume
+ * Extends the base Biigle volume.
  */
-class Volume extends BaseVolume {
-
+class Volume extends BaseVolume
+{
     /**
-     * Name of the attribute that stores export area rectangle for the volume
+     * Name of the attribute that stores export area rectangle for the volume.
      *
      * @var string
      */
     const EXPORT_AREA_ATTRIBUTE = 'export_area';
 
     /**
-     * Validation rules for setting the export area
+     * Validation rules for setting the export area.
      *
      * @var array
      */
@@ -27,7 +27,7 @@ class Volume extends BaseVolume {
     ];
 
     /**
-     * Converts a regular Biigle volume to an export volume
+     * Converts a regular Biigle volume to an export volume.
      *
      * @param BaseVolume $volume Regular Biigle volume instance
      *
@@ -38,11 +38,12 @@ class Volume extends BaseVolume {
         $instance = new static;
         $instance->setRawAttributes($volume->attributes);
         $instance->exists = $volume->exists;
+
         return $instance->setRelations($volume->relations);
     }
 
     /**
-     * Return the dynamic attribute for the export area
+     * Return the dynamic attribute for the export area.
      *
      * @return array
      */
@@ -52,14 +53,14 @@ class Volume extends BaseVolume {
     }
 
     /**
-     * Set or update the dynamic attribute for the export area
+     * Set or update the dynamic attribute for the export area.
      *
      * @param array $value The value to set
      */
     public function setExportAreaAttribute($value)
     {
         if (!is_array($value) && !is_null($value)) {
-            throw new Exception("Export area coordinates must be an array!");
+            throw new Exception('Export area coordinates must be an array!');
         }
 
         $attrs = $this->attrs;
@@ -68,12 +69,12 @@ class Volume extends BaseVolume {
             unset($attrs[self::EXPORT_AREA_ATTRIBUTE]);
         } else {
             if (sizeof($value) !== 4) {
-                throw new Exception("Malformed export area coordinates!");
+                throw new Exception('Malformed export area coordinates!');
             }
 
             foreach ($value as $coordinate) {
                 if (!is_int($coordinate)) {
-                    throw new Exception("Malformed export area coordinates!");
+                    throw new Exception('Malformed export area coordinates!');
                 }
             }
 

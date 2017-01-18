@@ -8,13 +8,13 @@ use Biigle\Modules\Export\Http\Controllers\Api\Projects\ProjectReportController;
 class FullReportController extends ProjectReportController
 {
     /**
-     * The report classname
+     * The report classname.
      *
      * @var string
      */
     protected $report = FullReport::class;
 
-    /**
+    /*
      * @api {post} projects/:id/reports/annotations/full Generate a new full annotation report
      * @apiGroup Projects
      * @apiName GenerateFullProjectAnnotationReport

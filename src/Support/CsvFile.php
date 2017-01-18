@@ -9,42 +9,42 @@ use Biigle\Modules\Export\Contracts\DeletableContract;
 class CsvFile implements DeletableContract
 {
     /**
-     * File path
+     * File path.
      *
      * @var string
      */
     protected $path;
 
     /**
-     * File handle for the CSV file
+     * File handle for the CSV file.
      *
      * @var resource
      */
     protected $handle;
 
     /**
-     * Field delimiter
+     * Field delimiter.
      *
      * @var string
      */
     protected $delimiter;
 
     /**
-     * String enclosure character
+     * String enclosure character.
      *
      * @var string
      */
     protected $enclosure;
 
     /**
-     * Escape character
+     * Escape character.
      *
      * @var string
      */
     protected $escape_char;
 
     /**
-     * Create a new CSV file
+     * Create a new CSV file.
      *
      * @param string $path File path. If not set, a temporary file will be created.
      * @param string $delimiter Optional field delimiter
@@ -71,7 +71,7 @@ class CsvFile implements DeletableContract
     }
 
     /**
-     * Creates a new temporary CsvFile
+     * Creates a new temporary CsvFile.
      *
      * @return CsvFile
      */
@@ -81,7 +81,7 @@ class CsvFile implements DeletableContract
     }
 
     /**
-     * Append a new row to the CSV file
+     * Append a new row to the CSV file.
      *
      * @param array $items Row items
      */
@@ -91,7 +91,7 @@ class CsvFile implements DeletableContract
     }
 
     /**
-     * Delete the CSV file
+     * Delete the CSV file.
      */
     public function delete()
     {
@@ -100,7 +100,7 @@ class CsvFile implements DeletableContract
     }
 
     /**
-     * Close the CSV file
+     * Close the CSV file.
      */
     public function close()
     {
@@ -112,7 +112,7 @@ class CsvFile implements DeletableContract
     }
 
     /**
-     * Returns the path of the CSV file
+     * Returns the path of the CSV file.
      *
      * @return string
      */

@@ -3,7 +3,7 @@
 namespace Biigle\Modules\Export\Support;
 
 /**
- * Tiny wrapper class for the exec function
+ * Tiny wrapper class for the exec function.
  */
 class Exec
 {
