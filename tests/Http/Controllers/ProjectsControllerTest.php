@@ -10,44 +10,43 @@ use Biigle\Tests\ProjectTest;
 
 class ProjectsControllerTest extends TestCase
 {
-   public function testEdit()
-   {
-      $project = ProjectTest::create();
-      $user = UserTest::create();
+    public function testEdit()
+    {
+        $project = ProjectTest::create();
+        $user = UserTest::create();
 
       // not logged in
       $this->get('projects/1');
-      $this->assertResponseStatus(302);
+        $this->assertResponseStatus(302);
 
       // doesn't belong to project
       $this->be($user);
-      $this->get('projects/1');
-      $this->assertResponseStatus(403);
+        $this->get('projects/1');
+        $this->assertResponseStatus(403);
 
       // can't admin the project
       $project->addUserId($user->id, Role::$editor->id);
-      Cache::flush();
-      $this->get('projects/1');
-      $this->assertResponseOk();
+        Cache::flush();
+        $this->get('projects/1');
+        $this->assertResponseOk();
 
       // diesn't exist
       $this->get('projects/-1');
-      $this->assertResponseStatus(404);
-   }
+        $this->assertResponseStatus(404);
+    }
 
-   public function testCreate()
-   {
-      $user = UserTest::create();
+    public function testCreate()
+    {
+        $user = UserTest::create();
 
       // not logged in
       $this->get('projects/create');
-      $this->assertResponseStatus(302);
+        $this->assertResponseStatus(302);
 
-      $this->be($user);
-      $r = $this->get('projects/create');
-      $this->assertResponseOk();
-   }
-
+        $this->be($user);
+        $r = $this->get('projects/create');
+        $this->assertResponseOk();
+    }
 
     public function testIndex()
     {
@@ -58,10 +57,10 @@ class ProjectsControllerTest extends TestCase
         $project->addUserId($user->id, Role::$guest->id);
         $project2->addUserId($user->id, Role::$admin->id);
 
-        $this->visit("projects")->seePageIs('login');
+        $this->visit('projects')->seePageIs('login');
 
         $this->be($user);
-        $this->get("projects")->assertResponseOk();
+        $this->get('projects')->assertResponseOk();
         $this->see('random name');
         $this->see('another project');
         $this->dontSee('and again');

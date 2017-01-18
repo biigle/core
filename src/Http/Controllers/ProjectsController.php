@@ -67,13 +67,14 @@ class ProjectsController extends Controller
     }
 
     /**
-     * Show the project list
+     * Show the project list.
      *
      * @param Request $request
      * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, Guard $auth) {
+    public function index(Request $request, Guard $auth)
+    {
         $query = Project::query();
         $user = $auth->user();
 
@@ -123,5 +124,4 @@ class ProjectsController extends Controller
             abort(404);
         }
     }
-
 }

@@ -9,7 +9,8 @@ use Biigle\Tests\VolumeTest;
 
 class AttachableVolumesControllerTest extends ApiTestCase
 {
-    public function testIndex() {
+    public function testIndex()
+    {
         $validVolume = VolumeTest::create();
         $validProject = ProjectTest::create();
         $validProject->addVolumeId($validVolume->id);
@@ -37,7 +38,7 @@ class AttachableVolumesControllerTest extends ApiTestCase
         $this->seeJsonEquals([[
             'id' => $validVolume->id,
             'name' => $validVolume->name,
-            'thumbnail' => null
+            'thumbnail' => null,
         ]]);
     }
 }
