@@ -10,6 +10,8 @@
 <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
 <script type="text/javascript">
     angular.module('biigle.label-trees').constant('LABEL_TREE', {!! $tree !!});
+    biigle.$declare('labelTrees.labels', {!! $labels !!});
+
     angular.module('biigle.label-trees').constant('LABELS', {!! $labels !!});
     angular.module('biigle.label-trees').constant('USER_ID', {!! $user->id !!});
     angular.module('biigle.label-trees').constant('REDIRECT_URL', '{{route('label-trees-index')}}');

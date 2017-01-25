@@ -29,6 +29,7 @@ class LabelTreesController extends Controller
 
         $labels = $tree->labels()
             ->select('id', 'name', 'parent_id', 'color')
+            ->orderBy('name')
             ->get();
 
         $members = $tree->members()
