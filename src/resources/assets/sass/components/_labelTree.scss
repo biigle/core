@@ -1,0 +1,16 @@
+.label-tree {
+    .label-tree__title {
+        margin-top: 0;
+    }
+}
+
+.label-tree__list {
+    list-style-type: none;
+    padding: 0;
+
+    .label-tree__list {
+        padding-left: 15px;
+    }
+}
+
+@import 'labelTreeLabel';

@@ -1,3 +1,5 @@
+@import "variables";
+
 .list-group-restricted {
     max-height: 400px;
     max-width: 100%;
@@ -70,3 +72,5 @@
         width: 300px;
     }
 }
+
+@import 'components/labelTree'
