@@ -5,15 +5,15 @@
  */
 biigle.$component('labelTrees.components.labelTree', {
     template: '<div class="label-tree">' +
-        '<h4 class="label-tree__title" :if="showTitle">' +
+        '<h4 class="label-tree__title" v-if="showTitle">' +
             '<button v-if="collapsible" @click.stop="collapse" class="btn btn-default btn-xs pull-right" :title="collapseTitle">' +
                 '<span v-if="collapsed" class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>' +
                 '<span v-else class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>' +
             '</button>' +
-            '{{tree.name}}' +
+            '{{name}}' +
         '</h4>' +
         '<ul v-if="!collapsed" class="label-tree__list">' +
-            '<label-tree-label :label="label" v-for="label in rootLabels" @select="emitSelect" @deselect="emitDeselect"></label-tree-label>' +
+            '<label-tree-label :label="label" :deletable="deletable" v-for="label in rootLabels" @select="emitSelect" @deselect="emitDeselect" @delete="emitDelete"></label-tree-label>' +
         '</ul>' +
     '</div>',
     data: function () {
@@ -22,11 +22,15 @@ biigle.$component('labelTrees.components.labelTree', {
         };
     },
     components: {
-        labelTreeLabel: biigle.$require('geo.components.labelTreeLabel'),
+        labelTreeLabel: biigle.$require('labelTrees.components.labelTreeLabel'),
     },
     props: {
-        tree: {
-            type: Object,
+        name: {
+            type: String,
+            required: true,
+        },
+        labels: {
+            type: Array,
             required: true,
         },
         showTitle: {
@@ -44,12 +48,13 @@ biigle.$component('labelTrees.components.labelTree', {
         multiselect: {
             type: Boolean,
             default: false,
+        },
+        deletable: {
+            type: Boolean,
+            default: false,
         }
     },
     computed: {
-        labels: function () {
-            return this.tree.labels;
-        },
         labelMap: function () {
             var map = {};
             for (var i = this.labels.length - 1; i >= 0; i--) {
@@ -61,13 +66,23 @@ biigle.$component('labelTrees.components.labelTree', {
         compiledLabels: function () {
             var compiled = {};
             var parent;
-            // Create datastructure that maps label IDs to the child labels
-            for (var i = this.labels.length - 1; i >= 0; i--) {
+            // Create datastructure that maps label IDs to the child labels.
+            // Go from 0 to length so the labels are kept in order.
+            for (var i = 0, length = this.labels.length; i < length; i++) {
                 parent = this.labels[i].parent_id;
                 if (compiled.hasOwnProperty(parent)) {
                     compiled[parent].push(this.labels[i]);
                 } else {
                     compiled[parent] = [this.labels[i]];
+                }
+            }
+
+            // update the label children with the compiled datastructure
+            for (i = this.labels.length - 1; i >= 0; i--) {
+                if (compiled.hasOwnProperty(this.labels[i].id)) {
+                    Vue.set(this.labels[i], 'children', compiled[this.labels[i].id]);
+                } else {
+                    Vue.set(this.labels[i], 'children', undefined);
                 }
             }
 
@@ -102,6 +117,9 @@ biigle.$component('labelTrees.components.labelTree', {
         emitDeselect: function (label) {
             this.$emit('deselect', label);
         },
+        emitDelete: function (label) {
+            this.$emit('delete', label);
+        },
         selectLabel: function (label) {
             if (!this.multiselect) {
                 this.clearSelectedLabels();
@@ -134,19 +152,14 @@ biigle.$component('labelTrees.components.labelTree', {
     },
     created: function () {
         // Set the label properties
-        var compiled = this.compiledLabels;
         for (i = this.labels.length - 1; i >= 0; i--) {
-            if (compiled.hasOwnProperty(this.labels[i].id)) {
-                Vue.set(this.labels[i], 'children', compiled[this.labels[i].id]);
-            }
-
             Vue.set(this.labels[i], 'open', false);
             Vue.set(this.labels[i], 'selected', false);
         }
 
         // The label tree can be used in a label-trees component or as a single label
         // tree. In a label-trees component only one label can be selected in all label
-        // trees so the parent handles the event. A single label tree handley the event
+        // trees so the parent handles the event. A single label tree handles the event
         // by itself.
         if (this.standalone) {
             this.$on('select', this.selectLabel);

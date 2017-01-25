@@ -12,9 +12,10 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
             '<span v-if="showFavourite" class="label-tree-label__favourite" @click.stop="toggleFavourite">' +
                 '<span class="glyphicon" :class="favouriteClass" aria-hidden="true" title=""></span>' +
             '</span>' +
+            '<button v-if="deletable" type="button" class="close label-tree-label__delete" :title="deleteTitle" @click.stop="deleteThis"><span aria-hidden="true">&times;</span></button>' +
         '</div>' +
         '<ul v-if="label.open" class="label-tree__list">' +
-            '<label-tree-label :label="label" v-for="label in label.children" @select="emitSelect" @deselect="emitDeselect"></label-tree-label>' +
+            '<label-tree-label :label="child" :deletable="deletable" v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @delete="emitDelete"></label-tree-label>' +
         '</ul>' +
     '</li>',
     data: function () {
@@ -30,6 +31,10 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         showFavourite: {
             type: Boolean,
             required: false,
+        },
+        deletable: {
+            type: Boolean,
+            default: false,
         }
     },
     computed: {
@@ -49,6 +54,9 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
                 'glyphicon-star-empty': !this.favourite,
                 'glyphicon-star': this.favourite,
             };
+        },
+        deleteTitle: function () {
+            return 'Remove label ' + this.label.name;
         }
     },
     methods: {
@@ -58,6 +66,10 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
             } else {
                 this.$emit('deselect', this.label);
             }
+        },
+        // a method called 'delete' didn't work
+        deleteThis: function () {
+            this.emitDelete(this.label);
         },
         toggleOpen: function () {
             // If the label cannot be opened, it will be selected here instead.
@@ -77,6 +89,10 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         emitDeselect: function (label) {
             // bubble the event upwards
             this.$emit('deselect', label);
+        },
+        emitDelete: function (label) {
+            // bubble the event upwards
+            this.$emit('delete', label);
         }
     }
 });
