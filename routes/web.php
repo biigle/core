@@ -123,6 +123,16 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as' => 'admin-system-messages-edit',
             'uses' => 'SystemMessagesController@update',
         ]);
+
+        $router->get('logs', [
+            'as' => 'admin-logs-index',
+            'uses' => 'LogsController@index',
+        ]);
+
+        $router->get('logs/{file}', [
+            'as' => 'admin-logs-show',
+            'uses' => 'LogsController@show',
+        ]);
     });
 
 });

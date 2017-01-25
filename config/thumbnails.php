@@ -6,7 +6,7 @@ return [
     | The service for generating thumbnails, this application should use.
     | Default 'Biigle\Services\Thumbnails\InterventionImage' is provided by the core application.
     */
-    'service' => 'Biigle\Services\Thumbnails\InterventionImage',
+    'service' => Biigle\Services\Thumbnails\InterventionImage::class,
 
     /*
     | URI where the image thumbnails are available from.
