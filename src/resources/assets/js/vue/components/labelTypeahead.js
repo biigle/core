@@ -4,10 +4,10 @@
  * @type {Object}
  */
 biigle.$component('labelTrees.components.labelTypeahead', {
-    template: '<typeahead class="label-typeahead" :data="labels" placeholder="Label name" :on-hit="selectLabel" :template="template" match-property="name"></typeahead>',
+    template: '<typeahead class="label-typeahead clearfix" :data="labels" :placeholder="placeholder" :on-hit="selectLabel" :template="template" :disabled="disabled" :value="value" match-property="name"></typeahead>',
     data: function () {
         return {
-            template: '{{item.name}}'
+            template: '{{item.name}}',
         };
     },
     components: {
@@ -17,7 +17,19 @@ biigle.$component('labelTrees.components.labelTypeahead', {
         labels: {
             type: Array,
             required: true,
-        }
+        },
+        placeholder: {
+            type: String,
+            default: 'Label name',
+        },
+        disabled: {
+            type: Boolean,
+            default: false,
+        },
+        value: {
+            type: String,
+            default: '',
+        },
     },
     methods: {
         selectLabel: function (label, typeahead) {

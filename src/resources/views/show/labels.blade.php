@@ -52,10 +52,14 @@
     @can('create-label', $tree)
         <div v-if="editing" v-cloak class="panel-body">
             <tabs>
-                <tab header="Manual" title="Manually add new labels"></tab>
+                <tab header="Manual" title="Manually add new labels">
+                    <manual-label-form inline-template="" :labels="labels" :color="selectedColor" :parent="selectedLabel" :name="selectedName" v-on:color="selectColor" v-on:parent="selectLabel" v-on:name="selectName" v-on:submit="createLabel">
+                        @include('label-trees::show.labels.manualLabelForm')
+                    </manual-label-form>
+                </tab>
                 <tab header="WoRMS" title="Import labels from the World Register of Marine Species"></tab>
             </tabs>
         </div>
     @endcan
-    <label-tree class="label-tree--panel" name="{{$tree->name}}" :labels="labels" :show-title="false" :standalone="true" :collapsible="false" :deletable="editing" v-on:delete="deleteLabel"></label-tree>
+    <label-tree class="label-tree--panel" name="{{$tree->name}}" :labels="labels" :show-title="false" :collapsible="false" :deletable="editing && !loading" v-on:delete="deleteLabel" v-on:select="selectLabel" v-on:deselect="deselectLabel"></label-tree>
 </div>
