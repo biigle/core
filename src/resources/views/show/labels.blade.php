@@ -49,13 +49,13 @@
             </span>
         @endcan
     </div>
-    <div class="panel-body">
     @can('create-label', $tree)
-        <tabs v-if="editing" v-cloak>
-            <tab header="Manual" title="Manually add new labels"></tab>
-            <tab header="WoRMS" title="Import labels from the World Register of Marine Species"></tab>
-        </tabs>
+        <div v-if="editing" v-cloak class="panel-body">
+            <tabs>
+                <tab header="Manual" title="Manually add new labels"></tab>
+                <tab header="WoRMS" title="Import labels from the World Register of Marine Species"></tab>
+            </tabs>
+        </div>
     @endcan
-        <label-tree name="{{$tree->name}}" :labels="labels" :show-title="false" :standalone="true" :collapsible="false" :deletable="editing" v-on:delete="deleteLabel"></label-tree>
-    </div>
+    <label-tree class="label-tree--panel" name="{{$tree->name}}" :labels="labels" :show-title="false" :standalone="true" :collapsible="false" :deletable="editing" v-on:delete="deleteLabel"></label-tree>
 </div>

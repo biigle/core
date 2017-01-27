@@ -45,7 +45,15 @@
   .label-tree-info-form .label-tree-name {
     width: 300px; }
 
-.label-tree .label-tree__title {
+.label-tree.label-tree--panel .label-tree__list {
+  margin: 0;
+  padding-left: 10px; }
+
+.label-tree.label-tree--panel .label-tree-label__name {
+  padding-top: 5px;
+  padding-bottom: 5px; }
+
+.label-tree__title {
   margin-top: 0; }
 
 .label-tree__list {

@@ -1,7 +1,19 @@
 .label-tree {
-    .label-tree__title {
-        margin-top: 0;
+    &.label-tree--panel {
+        .label-tree__list {
+            margin: 0;
+            padding-left: $padding-small-horizontal;
+        }
+
+        .label-tree-label__name {
+            padding-top: $padding-small-vertical;
+            padding-bottom: $padding-small-vertical;
+        }
     }
+}
+
+.label-tree__title {
+    margin-top: 0;
 }
 
 .label-tree__list {
