@@ -73,5 +73,14 @@
     }
 }
 
+.panel-body--labels {
+    padding-bottom: 0;
+    border-bottom: 1px solid $list-group-border;
+
+    [tabs] > .tab-content {
+        margin-bottom: 0;
+    }
+}
+
 @import 'components/labelTree';
 @import 'components/labelTreeLabel';

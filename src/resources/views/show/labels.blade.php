@@ -50,7 +50,7 @@
         @endcan
     </div>
     @can('create-label', $tree)
-        <div v-if="editing" v-cloak class="panel-body">
+        <div v-if="editing" v-cloak class="panel-body panel-body--labels">
             <tabs>
                 <tab header="Manual" title="Manually add new labels">
                     <manual-label-form inline-template="" :labels="labels" :color="selectedColor" :parent="selectedLabel" :name="selectedName" v-on:color="selectColor" v-on:parent="selectLabel" v-on:name="selectName" v-on:submit="createLabel">

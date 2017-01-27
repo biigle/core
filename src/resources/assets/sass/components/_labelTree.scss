@@ -1,8 +1,9 @@
 .label-tree {
+    padding: $padding-small-vertical $padding-small-horizontal;
+
     &.label-tree--panel {
         .label-tree__list {
             margin: 0;
-            padding-left: $padding-small-horizontal;
         }
 
         .label-tree-label__name {
