@@ -23,6 +23,7 @@ biigle.$viewModel('label-trees-labels', function (element) {
             tab: VueStrap.tab,
             labelTree: biigle.$require('labelTrees.components.labelTree'),
             manualLabelForm: biigle.$require('labelTrees.components.manualLabelForm'),
+            wormsLabelForm: biigle.$require('labelTrees.components.wormsLabelForm'),
         },
         computed: {
             classObject: function () {
@@ -35,12 +36,15 @@ biigle.$viewModel('label-trees-labels', function (element) {
             toggleEditing: function () {
                 this.editing = !this.editing;
             },
+            startLoading: function () {
+                this.loading = true;
+            },
             finishLoading: function () {
                 this.loading = false;
             },
             deleteLabel: function (label) {
                 var self = this;
-                this.loading = true;
+                this.startLoading();
                 labels.delete({id: label.id})
                     .then(function () {
                         self.labelDeleted(label);
@@ -90,29 +94,20 @@ biigle.$viewModel('label-trees-labels', function (element) {
                 // the other labels.
                 this.labels.push(label);
             },
-            createLabel: function () {
+            createLabel: function (label) {
                 if (this.loading) {
                     return;
                 }
 
-                this.loading = true;
-                var self = this;
-                var label = {
-                    name: this.selectedName,
-                    color: this.selectedColor,
-                };
-
-                if (this.selectedLabel) {
-                    label.parent_id = this.selectedLabel.id;
-                }
-
+                this.startLoading();
                 labels.save({label_tree_id: labelTree.id}, label)
                     .then(this.labelCreated, messages.handleErrorResponse)
                     .finally(this.finishLoading);
             },
             labelCreated: function (response) {
-                this.insertLabel(response.data[0]);
+                response.data.forEach(this.insertLabel);
                 this.selectedColor = randomColor();
+                this.selectedName = '';
             }
         }
     });

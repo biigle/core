@@ -3,7 +3,7 @@
         <div class="col-xs-12 help-block">
             To add a new label, choose a color, an optional parent label and a name.
         </div>
-        <div class="col-xs-4 form-group form-group">
+        <div class="col-xs-4 form-group">
             <div class="input-group">
                 <input type="color" class="form-control" title="Label color" v-model="selectedColor" />
                 <span class="input-group-btn">

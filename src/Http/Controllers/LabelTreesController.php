@@ -86,6 +86,8 @@ class LabelTreesController extends Controller
             'authorizedProjects' => $authorizedProjects,
             'authorizedOwnProjects' => $authorizedOwnProjects,
             'private' => (int) $tree->visibility_id === Visibility::$private->id,
+            'wormsLabelSource' => LabelSource::where('name', 'worms')->first(),
+            // TODO to delete once Vue migration is finished
             'labelSources' => $labelSources,
         ]);
     }

@@ -23,6 +23,7 @@
         angular.module('biigle.label-trees').constant('ROLES', {!! $roles !!});
         angular.module('biigle.label-trees').constant('DEFAULT_ROLE_ID', {!! Biigle\Role::$editor->id !!});
         angular.module('biigle.label-trees').constant('LABEL_SOURCES', {!! $labelSources !!});
+        biigle.$declare('labelTrees.wormsLabelSource', {!! $wormsLabelSource !!});
     @endcan
 </script>
 @endpush
