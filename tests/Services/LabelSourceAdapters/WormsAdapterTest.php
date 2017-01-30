@@ -24,7 +24,7 @@ class WormsAdapterTest extends TestCase
         $mock = Mockery::mock();
         $mock->shouldReceive('getAphiaRecords')
             ->once()
-            ->with('%Kolga%')
+            ->with('%Kolga%', null, null, true, 1)
             ->andReturn([
                 (object) [
                     'AphiaID' => 124731,
@@ -58,7 +58,7 @@ class WormsAdapterTest extends TestCase
 
         $mock->shouldReceive('getAphiaRecords')
             ->once()
-            ->with('%%')
+            ->with('%%', null, null, true, 1)
             ->andReturn(null);
 
         app()->singleton(SoapClient::class, function () use ($mock) {

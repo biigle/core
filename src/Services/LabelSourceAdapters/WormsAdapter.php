@@ -14,6 +14,15 @@ use Illuminate\Validation\ValidationException;
 class WormsAdapter implements LabelSourceAdapterContract
 {
     /**
+     * WoRMS limits their results to a maximum of 50. We use a loop to get more results
+     * for each "find" request. This is the number of maximum results that the loop will
+     * return to prevent too many requests.
+     *
+     * @var int
+     */
+    const MAX_RESULTS = 500;
+
+    /**
      * SOAP client for the WoRMS webservice.
      *
      * @var SoapClient
@@ -43,12 +52,26 @@ class WormsAdapter implements LabelSourceAdapterContract
      */
     public function find($query)
     {
-        // add '%' for SQL LIKE matching
-        $results = $this->client->getAphiaRecords("%{$query}%");
+        $results = [];
+        $currentResults = [];
+        $offset = 1;
 
-        if (!is_array($results)) {
-            return [];
-        }
+        // WoRMS returns a maximum of 50 results per request. We use a loop to get more
+        // results but take care to stop it if it runs too often.
+        do {
+            // Method signature is:
+            // string $like Add a '%'-sign added after the ScientificName (SQL LIKE function). Default=true
+            // bool $like (deprecated)
+            // bool $fuzzy (deprecated)
+            // bool $marine_only Limit to marine taxa. Default=true
+            // int $offset Starting recordnumber, when retrieving next chunk of (50) records. Default=1
+            $currentResults = $this->client->getAphiaRecords("%{$query}%", null, null, true, $offset);
+            if (!is_array($currentResults)) {
+                break;
+            }
+            $results = array_merge($results, $currentResults);
+            $offset += 50;
+        } while (count($currentResults) === 50 && $offset < self::MAX_RESULTS);
 
         // use array_values because array_filter retains the keys and this might
         // produce a JSON object output and no array output in the HTTP response
