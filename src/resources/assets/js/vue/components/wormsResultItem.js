@@ -45,7 +45,7 @@ biigle.$component('labelTrees.components.wormsResultItem', {
         selected: function () {
             var self = this;
             return !!this.labels.find(function (label) {
-                return label.aphia_id === self.item.aphia_id;
+                return label.source_id == self.item.aphia_id;
             });
         }
     },

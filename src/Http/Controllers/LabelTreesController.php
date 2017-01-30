@@ -28,7 +28,7 @@ class LabelTreesController extends Controller
         $user = $auth->user();
 
         $labels = $tree->labels()
-            ->select('id', 'name', 'parent_id', 'color')
+            ->select('id', 'name', 'parent_id', 'color', 'source_id')
             ->orderBy('name')
             ->get();
 

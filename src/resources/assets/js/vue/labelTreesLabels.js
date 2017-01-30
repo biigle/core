@@ -10,7 +10,7 @@ biigle.$viewModel('label-trees-labels', function (element) {
     new Vue({
         el: element,
         data: {
-            editing: true,
+            editing: false,
             loading: false,
             labels: biigle.$require('labelTrees.labels'),
             selectedColor: randomColor(),
@@ -68,6 +68,7 @@ biigle.$viewModel('label-trees-labels', function (element) {
                 if (!label) {
                     this.$emit('clear');
                 } else {
+                    this.selectedColor = '#' + label.color;
                     this.$emit('select', label);
                 }
             },
@@ -82,6 +83,8 @@ biigle.$viewModel('label-trees-labels', function (element) {
                 this.selectedName = name;
             },
             insertLabel: function (label) {
+                Vue.set(label, 'open', false);
+                Vue.set(label, 'selected', false);
                 var name = label.name.toLowerCase();
                 // add the label to the array so the labels remain sorted by their name
                 for (var i = 0, length = this.labels.length; i < length; i++) {

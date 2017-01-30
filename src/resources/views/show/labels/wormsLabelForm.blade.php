@@ -19,9 +19,8 @@
                 </span>
             </div>
         </div>
-        {{--
         <div class="col-xs-6 form-group">
-            <button class="btn btn-default btn-block" data-ng-click="toggleRecursive()" data-ng-class="{active:isRecursive(), 'btn-primary':isRecursive()}" title="Recursively import all parent labels from WoRMS (if they don't already exist)">
+            <button type="button" class="btn btn-default btn-block" v-on:click="toggleRecursive" :class="recursiveButtonClass" title="Recursively import all parent labels from WoRMS (if they don't already exist)">
                 Recursive
             </button>
         </div>
@@ -32,15 +31,15 @@
                     <button class="btn btn-default" type="button" title="Reset parent" v-on:click="resetParent" v-bind:disabled="hasNoParent"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                 </span>
             </div>
-        </div>--}}
-        <div class="col-xs-12">
+        </div>
+        <div class="col-xs-12" v-if="hasSearched">
             <ul class="list-group list-group-restricted">
                 <worms-result-item v-for="result in results" :item="result" :recursive="recursive" :parent="parent" :labels="labels" v-on:select="importItem" inline-template>
                     <li class="list-group-item" :class="classObject">
                         <small class="text-muted" v-text="classification"></small>
                         <div class="clearfix">
                             <span class="pull-right">
-                                <button class="btn btn-default btn-xs" v-on:click.prevent="select" :title="buttonTitle"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                                <button class="btn btn-default btn-xs" v-on:click.prevent="select" :title="buttonTitle" :disabled="selected"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
                             </span>
                             <span v-text="item.rank"></span>: <a :href="item.url" target="_blank" title="Show WoRMS page" v-text="item.name"></a>
                         </div>

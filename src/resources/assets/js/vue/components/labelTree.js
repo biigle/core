@@ -83,6 +83,8 @@ biigle.$component('labelTrees.components.labelTree', {
                     Vue.set(this.labels[i], 'children', compiled[this.labels[i].id]);
                 } else {
                     Vue.set(this.labels[i], 'children', undefined);
+                    // If the last child was deleted, close the label.
+                    this.labels[i].open = false;
                 }
             }
 

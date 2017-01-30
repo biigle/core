@@ -18,6 +18,12 @@ biigle.$component('labelTrees.components.wormsLabelForm', {
     computed: {
         hasResults: function () {
             return this.results.length > 0;
+        },
+        recursiveButtonClass: function () {
+            return {
+                active: this.recursive,
+                'btn-primary': this.recursive,
+            };
         }
     },
     methods: {
@@ -58,6 +64,9 @@ biigle.$component('labelTrees.components.wormsLabelForm', {
             }
 
             this.$emit('submit', label);
+        },
+        toggleRecursive: function () {
+            this.recursive = !this.recursive;
         }
     },
 });
