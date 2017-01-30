@@ -1,44 +1,39 @@
-<div class="col-md-12 clearfix" data-ng-controller="LabelTreeController">
+<div class="col-md-12 clearfix" id="label-trees-title">
     @can('update', $tree)
-        <div data-ng-switch="isEditing()">
-            <span class="pull-right ng-cloak" data-ng-switch-when="true">
-                <span data-ng-switch="isSaving()">
-                    <button class="btn btn-success ng-cloak" title="Save changes" data-ng-switch-when="true" disabled="">Saving...</button>
-                    <button class="btn btn-success" title="Save changes" data-ng-click="saveChanges()" data-ng-switch-default="">Save</button>
-                </span>
-                <button class="btn btn-default" title="Discard changes" data-ng-click="discardChanges()" data-ng-disabled="isSaving()">Cancel</button>
+        <span class="pull-right label-tree-buttons" v-if="editing" v-cloak>
+            <button class="btn btn-success" title="Save changes" v-on:click="saveChanges" :disabled="loading || !isChanged"><span v-if="loading">Saving...</span><span v-else>Save</span></button>
+            <button class="btn btn-default" title="Discard changes" v-on:click="discardChanges" :disabled="loading">Cancel</button>
+        </span>
+        <span class="pull-right label-tree-buttons" v-else>
+            <button class="btn btn-default" v-on:click="startEditing" :disabled="loading">Edit</button>
+            <button class="btn btn-default" v-on:click="deleteTree" :disabled="loading">Delete</button>
+            <button class="btn btn-default" v-on:click="leaveTree" :disabled="loading">Leave</button>
+        </span>
+        <form v-if="editing" v-cloak class="form-inline label-tree-info-form" v-on:submit.prevent="saveChanges">
+            <div class="form-group">
+                <select class="form-control" title="Label tree visibility" v-model="visibility_id">
+                    @foreach ($visibilities as $id => $name)
+                        <option value="{{$id}}">{{$name}}</option>
+                    @endforeach
+                </select>
+                <input class="form-control label-tree-name" type="text" title="Label tree name" placeholder="Name" v-model="name"/>
+                <br>
+                <input class="form-control input-sm label-tree-description" type="text" title="Label tree description" placeholder="Description" v-model="description"/>
+                <input class="hidden" type="submit" name="submit">
+            </div>
+        </form>
+        <h2 v-else>
+            <small class="text-muted glyphicon glyphicon-lock" @if(!$private) v-cloak @endif aria-hidden="true" title="This label tree is private" v-if="isPrivate"></small>
+            <span v-text="name">{{$tree->name}}</span>
+            <span v-if="hasDescription" @if(!$tree->description) v-cloak @endif>
+                <br><small v-text="description">{{$tree->description}}</small>
             </span>
-            <span class="pull-right" data-ng-switch-default="">
-                <button class="btn btn-default" data-ng-click="toggleEditing()">Edit</button>
-                <button class="btn btn-default" data-ng-click="deleteTree()">Delete</button>
-                <button class="btn btn-default" data-ng-click="leaveTree(getVisibilityId() === {{\Biigle\Visibility::$private->id}})">Leave</button>
-            </span>
-            <form class="ng-cloak form-inline label-tree-info-form" data-ng-switch-when="true" data-ng-submit="saveChanges()">
-                <div class="form-group">
-                    <select class="form-control" title="Label tree visibility" data-ng-model="labelTreeInfo.visibility_id">
-                        @foreach ($visibilities as $id => $name)
-                            <option value="{{$id}}">{{$name}}</option>
-                        @endforeach
-                    </select>
-                    <input class="form-control label-tree-name" type="text" title="Label tree name" placeholder"Name" data-ng-model="labelTreeInfo.name"/>
-                    <br>
-                    <input class="form-control input-sm label-tree-description" type="text" title="Label tree description" placeholder="Description" data-ng-model="labelTreeInfo.description"/>
-                    <input class="hidden" type="submit" name="submit">
-                </div>
-            </form>
-            <h2 data-ng-switch-default="">
-                <small class="text-muted glyphicon glyphicon-lock @if(!$private) ng-hide @endif" aria-hidden="true" title="This label tree is private" data-ng-show="getVisibilityId() === {{\Biigle\Visibility::$private->id}}"></small>
-                <span data-ng-bind="getName()">{{$tree->name}}</span>
-                <span class="@if(!$tree->description) hidden @endif" data-ng-if="getDescription()">
-                    <br><small data-ng-bind="getDescription()">{{$tree->description}}</small>
-                </span>
-            </h2>
-        </div>
+        </h2>
     @else
         <h2>
             @can('create-label', $tree)
                 <span class="pull-right">
-                    <button class="btn btn-default" data-ng-click="leaveTree(getVisibilityId() === {{\Biigle\Visibility::$private->id}})">Leave</button>
+                    <button class="btn btn-default" v-on:click="leaveTree" :disabled="loading">Leave</button>
                 </span>
             @endcan
             @if($private)

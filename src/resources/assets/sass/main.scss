@@ -6,54 +6,6 @@
     overflow: auto;
 }
 
-.label-tree-item {
-    cursor: pointer;
-
-    & > .item:hover {
-        color: white;
-    }
-
-    & .label-tree-item {
-        padding-left: 1em;
-        padding-top: 0.5em;
-    }
-
-    &.expandable > .item .item__name {
-        text-decoration: underline;
-    }
-
-    &.expandable.open > .item {
-        color: white;
-    }
-
-    & > .label-tree-subtree {
-        max-height: 0;
-        overflow: hidden;
-    }
-
-    &.open > .label-tree-subtree {
-        max-height: none;
-    }
-
-    &.selected > .item {
-        color: white;
-        font-weight: bold;
-    }
-
-    .item {
-        white-space: nowrap;
-    }
-
-    .item__color {
-        width: 1em;
-        height: 1em;
-        display: inline-block;
-        border-radius: 50%;
-        border: 2px solid #eee;
-        vertical-align: middle;
-    }
-}
-
 .label-tree-title {
     display: inline-block;
 }
@@ -71,6 +23,10 @@
     .label-tree-name {
         width: 300px;
     }
+}
+
+.label-tree-buttons {
+    margin-top: 20px;
 }
 
 .panel-body--labels {
