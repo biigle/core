@@ -149,6 +149,8 @@ Animalia
             <li><strong>User lastname</strong></li>
             <li><strong>Image ID</strong></li>
             <li><strong>Image filename</strong></li>
+            <li><strong>Image longitude</strong></li>
+            <li><strong>Image latitude</strong></li>
             <li><strong>Annotation shape ID</strong></li>
             <li><strong>Annotation shape name</strong></li>
             <li>
@@ -187,6 +189,8 @@ Animalia
             <li><strong>Image label ID</strong></li>
             <li><strong>Image ID</strong></li>
             <li><strong>Image filename</strong></li>
+            <li><strong>Image longitude</strong></li>
+            <li><strong>Image latitude</strong></li>
             <li><strong>ID of the user who attached the image label</strong></li>
             <li><strong>User firstname</strong></li>
             <li><strong>User lastname</strong></li>
