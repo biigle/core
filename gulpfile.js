@@ -1,19 +1,25 @@
 "use strict"
-process.env.DISABLE_NOTIFIER = true;
 
-var gulp    = require('gulp');
-var elixir  = require('laravel-elixir');
-var angular = require('laravel-elixir-angular');
-var shell   = require('gulp-shell');
+var gulp = require('gulp');
+var h = require('gulp-helpers');
+var publish = h.publish('Biigle\\Modules\\LabelTrees\\LabelTreesServiceProvider', 'public');
 
-elixir(function (mix) {
-   process.chdir('src');
-   mix.sass('main.scss', 'public/assets/styles/main.css')
-      .angular('resources/assets/js/', 'public/assets/scripts', 'main.js');
+h.paths.sass = 'src/resources/assets/sass/';
+h.paths.js = 'src/resources/assets/js/';
+h.paths.public = 'src/public/assets/';
 
-    mix.task('publish', 'public/assets/**/*');
+gulp.task('sass', function () {
+    h.sass('main.scss', 'main.css');
 });
 
-gulp.task('publish', function () {
-    gulp.src('').pipe(shell('php ../../../../artisan vendor:publish --provider="Biigle\\Modules\\LabelTrees\\LabelTreesServiceProvider" --force'));
+gulp.task('js', function (cb) {
+    h.angular('**/*.js', 'main.js', cb);
 });
+
+gulp.task('watch', function () {
+    gulp.watch(h.paths.sass + '**/*.scss', ['sass']);
+    gulp.watch(h.paths.js + '**/*.js', ['js']);
+    gulp.watch(h.paths.public + '**/*', publish);
+});
+
+gulp.task('default', ['sass', 'js'], publish);
