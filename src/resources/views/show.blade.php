@@ -10,7 +10,9 @@
 <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
 <script type="text/javascript">
     angular.module('biigle.label-trees').constant('LABEL_TREE', {!! $tree !!});
-    angular.module('biigle.label-trees').constant('LABELS', {!! $labels !!});
+    biigle.$declare('labelTrees.labelTree', {!! $tree !!});
+    biigle.$declare('labelTrees.labels', {!! $labels !!});
+
     angular.module('biigle.label-trees').constant('USER_ID', {!! $user->id !!});
     angular.module('biigle.label-trees').constant('REDIRECT_URL', '{{route('label-trees-index')}}');
     @can('update', $tree)
@@ -19,7 +21,7 @@
         angular.module('biigle.label-trees').constant('MEMBERS', {!! $members !!});
         angular.module('biigle.label-trees').constant('ROLES', {!! $roles !!});
         angular.module('biigle.label-trees').constant('DEFAULT_ROLE_ID', {!! Biigle\Role::$editor->id !!});
-        angular.module('biigle.label-trees').constant('LABEL_SOURCES', {!! $labelSources !!});
+        biigle.$declare('labelTrees.wormsLabelSource', {!! $wormsLabelSource !!});
     @endcan
 </script>
 @endpush

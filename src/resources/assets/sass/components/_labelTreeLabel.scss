@@ -1,0 +1,39 @@
+.label-tree-label {
+    &.label-tree-label--selected > .label-tree-label__name {
+        color: white;
+        font-weight: bold;
+    }
+
+    &.label-tree-label--expandable > .label-tree-label__name {
+        text-decoration: underline;
+    }
+
+    .label-tree-label__color {
+        position: absolute;
+        top: 7px;
+        left: .25em;
+        width: 1em;
+        height: 1em;
+        border: 2px solid white;
+        border-radius: 50%;
+    }
+
+    .label-tree-label__name {
+        position: relative;
+        padding: .25em;
+        padding-left: 22px;
+        border-radius: $border-radius-small;
+
+        &:hover {
+            color: white;
+            cursor: pointer;
+            background-color: $gray-lighter;
+        }
+    }
+
+    .label-tree-label__favourite, .label-tree-label__delete {
+        position: absolute;
+        top: 0;
+        right: 5px;
+    }
+}

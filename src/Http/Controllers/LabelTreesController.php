@@ -28,7 +28,8 @@ class LabelTreesController extends Controller
         $user = $auth->user();
 
         $labels = $tree->labels()
-            ->select('id', 'name', 'parent_id', 'color')
+            ->select('id', 'name', 'parent_id', 'color', 'source_id')
+            ->orderBy('name')
             ->get();
 
         $members = $tree->members()
@@ -72,8 +73,6 @@ class LabelTreesController extends Controller
             Visibility::$private->id => Visibility::$private->name,
         ]);
 
-        $labelSources = LabelSource::all();
-
         return view('label-trees::show', [
             'tree' => $tree,
             'labels' => $labels,
@@ -85,7 +84,7 @@ class LabelTreesController extends Controller
             'authorizedProjects' => $authorizedProjects,
             'authorizedOwnProjects' => $authorizedOwnProjects,
             'private' => (int) $tree->visibility_id === Visibility::$private->id,
-            'labelSources' => $labelSources,
+            'wormsLabelSource' => LabelSource::where('name', 'worms')->first(),
         ]);
     }
 

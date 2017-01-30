@@ -1,0 +1,27 @@
+.label-tree {
+    padding: $padding-small-vertical $padding-small-horizontal;
+
+    &.label-tree--panel {
+        .label-tree__list {
+            margin: 0;
+        }
+
+        .label-tree-label__name {
+            padding-top: $padding-small-vertical;
+            padding-bottom: $padding-small-vertical;
+        }
+    }
+}
+
+.label-tree__title {
+    margin-top: 0;
+}
+
+.label-tree__list {
+    list-style-type: none;
+    padding: 0;
+
+    .label-tree__list {
+        padding-left: 15px;
+    }
+}
