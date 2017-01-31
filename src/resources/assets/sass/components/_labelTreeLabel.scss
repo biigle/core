@@ -20,8 +20,7 @@
 
     .label-tree-label__name {
         position: relative;
-        padding: .25em;
-        padding-left: 22px;
+        padding: $padding-small-vertical $padding-small-horizontal $padding-small-vertical 22px;
         border-radius: $border-radius-small;
 
         &:hover {

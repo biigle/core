@@ -1,0 +1,28 @@
+.label-trees {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .label-trees__head {
+        display: flex;
+        margin-bottom: 1em;
+    }
+
+    .label-trees__body {
+        flex: 1;
+        overflow: auto;
+        // Negate the padding of the sidebar tab so a possible scroll bar is placed there
+        margin-right: -1em;
+        padding-right: 1em;
+        // No padding at the bottom
+        margin-bottom: -1em;
+    }
+
+    .typeahead {
+        flex: 1;
+
+        &:not(:first-child) {
+            margin-left: 1em;
+        }
+    }
+}
