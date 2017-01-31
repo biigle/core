@@ -3,7 +3,7 @@
         Labels
         @can('create-label', $tree)
             <span class="pull-right">
-                <span class="loader" v-bind:class="{'loader--active':loading}"></span>
+                <loader :active="loading"></loader>
                 <button class="btn btn-default btn-xs" title="Edit labels" v-on:click="toggleEditing" v-bind:class="{active: editing}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
             </span>
         @endcan

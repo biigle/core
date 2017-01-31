@@ -4,6 +4,9 @@
  * @type {Object}
  */
 biigle.$component('labelTrees.mixins.loader', {
+    components: {
+        loader: biigle.$require('labelTrees.components.loader'),
+    },
     data: {
         loading: false,
     },

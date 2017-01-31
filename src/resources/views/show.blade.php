@@ -19,8 +19,9 @@
 
     angular.module('biigle.label-trees').constant('USER_ID', {!! $user->id !!});
     @can('update', $tree)
-        angular.module('biigle.label-trees').constant('AUTH_PROJECTS', {!! $authorizedProjects !!});
-        angular.module('biigle.label-trees').constant('AUTH_OWN_PROJECTS', {!! $authorizedOwnProjects !!});
+        biigle.$declare('labelTrees.authorizedProjects', {!! $authorizedProjects !!});
+        biigle.$declare('labelTrees.authorizedOwnProjects', {!! $authorizedOwnProjects !!});
+
         angular.module('biigle.label-trees').constant('MEMBERS', {!! $members !!});
         angular.module('biigle.label-trees').constant('ROLES', {!! $roles !!});
         angular.module('biigle.label-trees').constant('DEFAULT_ROLE_ID', {!! Biigle\Role::$editor->id !!});

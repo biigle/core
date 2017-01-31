@@ -10,12 +10,18 @@ biigle.$component('labelTrees.mixins.editor', {
     methods: {
         startEditing: function () {
             this.editing = true;
+            this.$emit('editing.start');
         },
         finishEditing: function () {
             this.editing = false;
+            this.$emit('editing.stop');
         },
         toggleEditing: function () {
-            this.editing = !this.editing;
+            if (this.editing) {
+                this.finishEditing();
+            } else {
+                this.startEditing();
+            }
         },
     },
 });

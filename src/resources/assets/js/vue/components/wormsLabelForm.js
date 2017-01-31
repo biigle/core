@@ -27,9 +27,6 @@ biigle.$component('labelTrees.components.wormsLabelForm', {
         }
     },
     methods: {
-        submit: function () {
-            // this.$emit('submit');
-        },
         findName: function () {
             var worms = biigle.$require('labelTrees.wormsLabelSource');
             var labelSource = biigle.$require('api.labelSource');

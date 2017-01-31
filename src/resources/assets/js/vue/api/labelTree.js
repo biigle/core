@@ -15,6 +15,21 @@
  * Delete a label tree:
  * resource.delete({id: 1}).then(...);
  *
+ * Add an authorized project:
+ * resource.addAuthorizedProject({id: labelTreeId}, {id: projectId}).then(...);
+ *
+ * Remove an authorized project:
+ * resource.removeAuthorizedProject({id: labelTreeId, project_id: projectId}).then(...);
+ *
  * @type {Vue.resource}
  */
-biigle.$declare('api.labelTree', Vue.resource('/api/v1/label-trees{/id}'));
+biigle.$declare('api.labelTree', Vue.resource('/api/v1/label-trees{/id}', {}, {
+    addAuthorizedProject: {
+        method: 'POST',
+        url: '/api/v1/label-trees{/id}/authorized-projects',
+    },
+    removeAuthorizedProject: {
+        method: 'DELETE',
+        url: '/api/v1/label-trees{/id}/authorized-projects{/project_id}',
+    }
+}));

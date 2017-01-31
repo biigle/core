@@ -1,32 +1,29 @@
-<div class="panel panel-default @if(!$private) ng-hide @endif" data-ng-controller="AuthorizedProjectsController" data-ng-class="{'panel-warning':isEditing()}" data-ng-hide="getVisibilityId() !== {{Biigle\Visibility::$private->id}}">
+<div v-if="isPrivate" @if(!$private) v-cloak @endif class="panel panel-default" id="label-trees-authorized-projects" :class="classObject">
     <div class="panel-heading">
         Authorized Projects
         <span class="pull-right">
-            <span class="loader" data-ng-class="{'loader--active':isLoading()}"></span>
-            <button class="btn btn-default btn-xs" title="Edit authorized projects" data-ng-click="toggleEditing()" data-ng-class="{active: isEditing()}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+            <loader :active="loading"></loader>
+            <button class="btn btn-default btn-xs" title="Edit authorized projects" v-on:click="toggleEditing" :class="{active: editing}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
         </span>
     </div>
-    <div data-ng-if="isEditing()" class="panel-body ng-cloak">
+    <div v-if="editing" v-cloak class="panel-body">
         <form class="form-inline">
             <div class="form-group">
-                <input type="text" class="form-control" id="new-authorized-project" placeholder="Project name" data-ng-model="selected.project" data-uib-typeahead="project as project.name for project in getProjectsForAuthorization() | filter:$viewValue | limitTo:10" data-typeahead-on-select="addAuthorizedProject($item)" title="Authorize one of your projects to use this tree" />
+                <typeahead :items="authorizableProjects" placeholder="Project name" title="Authorize one of your projects to use this tree" v-on:select="addAuthorizedProject"></typeahead>
             </div>
         </form>
     </div>
-    <ul class="list-group list-group-restricted">
-        @if (Route::has('project'))
-            <li class="ng-cloak list-group-item" data-ng-repeat="project in getProjects()" data-ng-switch="isOwnProject(project)">
-                <button data-ng-if="isEditing()" type="button" class="close pull-right" aria-label="Close" title="Remove authorization of this tree" data-ng-click="removeAuthorizedProject(project)"><span aria-hidden="true">&times;</span></button>
-                <a href="{{route('project', '')}}/@{{project.id}}" data-ng-switch-when="true" data-ng-bind="project.name"></a>
-                <span data-ng-switch-default="" data-ng-bind="project.name"></span>
-            </li>
-        @else
-            <li class="ng-cloak list-group-item" data-ng-repeat="project in getProjects()">
-                <button data-ng-if="isEditing()" type="button" class="close pull-right" aria-label="Close" title="Remove authorization of this tree" data-ng-click="removeAuthorizedProject(project)"><span aria-hidden="true">&times;</span></button>
-                <span data-ng-bind="project.name"></span>
-            </li>
-        @endif
-        <li class="ng-cloak list-group-item" data-ng-if="!hasProjects()">
+    <ul v-cloak class="list-group list-group-restricted">
+        <li v-for="project in authorizedProjects" class="list-group-item">
+            <button v-if="editing" type="button" class="close pull-right" aria-label="Close" title="Remove authorization for this project" v-on:click="removeAuthorizedProject(project)"><span aria-hidden="true">&times;</span></button>
+            @if (Route::has('project'))
+                <a v-if="isOwnProject(project)" :href="'{{route('project', '')}}/' + project.id" v-text="project.name"></a>
+                <span v-else v-text="project.name"></span>
+            @else
+                <span v-text="project.name"></span>
+            @endif
+        </li>
+        <li class="list-group-item" v-if="!hasAuthorizedProjects">
             There are no projects authorized to use this label tree.
         </li>
     </ul>
