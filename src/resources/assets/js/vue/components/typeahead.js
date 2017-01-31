@@ -4,7 +4,7 @@
  * @type {Object}
  */
 biigle.$component('labelTrees.components.typeahead', {
-    template: '<typeahead class="typeahead clearfix" :data="items" :placeholder="placeholder" :on-hit="selectItem" :template="template" :disabled="disabled" :value="value" match-property="name"></typeahead>',
+    template: '<typeahead class="typeahead clearfix" :data="items" :placeholder="placeholder" :on-hit="selectItem" :template="template" :disabled="disabled" :value="value" match-property="name" @clear="clear"></typeahead>',
     data: function () {
         return {
             template: '{{item.name}}',
@@ -36,6 +36,12 @@ biigle.$component('labelTrees.components.typeahead', {
             if (!item) return;
             this.$emit('select', item);
             typeahead.reset();
+            this.$nextTick(function () {
+                typeahead.val = typeahead.value;
+            });
+        },
+        clear: function () {
+            this.$emit('select', undefined);
         }
     }
 });

@@ -5,7 +5,6 @@ biigle.$viewModel('label-trees-title', function (element) {
     var messages = biigle.$require('messages.store');
     var labelTree = biigle.$require('labelTrees.labelTree');
     var privateId = biigle.$require('labelTrees.privateVisibilityId');
-    var labelTreeUserApi = biigle.$require('api.labelTreeUser');
     var labelTreeApi = biigle.$require('api.labelTree');
 
     new Vue({
@@ -45,9 +44,9 @@ biigle.$viewModel('label-trees-title', function (element) {
 
                 if (confirmed) {
                     this.startLoading();
-                    labelTreeUserApi.delete({
-                        label_tree_id: this.labelTree.id,
-                        id: biigle.$require('labelTrees.userId'),
+                    labelTreeApi.removeUser({
+                        id: this.labelTree.id,
+                        user_id: biigle.$require('labelTrees.userId'),
                     })
                     .then(this.treeLeft, messages.handleErrorResponse)
                     .finally(this.finishLoading);

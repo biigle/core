@@ -63,10 +63,7 @@ class LabelTreesController extends Controller
             })->pluck('id');
         }
 
-        $roles = collect([
-            Role::$admin->id => Role::$admin->name,
-            Role::$editor->id => Role::$editor->name,
-        ]);
+        $roles = collect([Role::$admin, Role::$editor]);
 
         $visibilities = collect([
             Visibility::$public->id => Visibility::$public->name,

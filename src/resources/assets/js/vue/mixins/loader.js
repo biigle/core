@@ -7,8 +7,10 @@ biigle.$component('labelTrees.mixins.loader', {
     components: {
         loader: biigle.$require('labelTrees.components.loader'),
     },
-    data: {
-        loading: false,
+    data: function () {
+        return {
+            loading: false,
+        };
     },
     methods: {
         startLoading: function () {

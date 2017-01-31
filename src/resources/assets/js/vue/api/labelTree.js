@@ -21,6 +21,15 @@
  * Remove an authorized project:
  * resource.removeAuthorizedProject({id: labelTreeId, project_id: projectId}).then(...);
  *
+ * Attach a user to a label tree:
+ * resource.save({id: 1}, {id: 1, role_id: 2}).then(...);
+ *
+ * Update the role of a user:
+ * resource.update({id: 1, user_id: 1}, {role_id: 1}).then(...);
+ *
+ * Detach a user from a label tree:
+ * resource.delete({id: 1, user_id: 1}).then(...);
+ *
  * @type {Vue.resource}
  */
 biigle.$declare('api.labelTree', Vue.resource('/api/v1/label-trees{/id}', {}, {
@@ -31,5 +40,17 @@ biigle.$declare('api.labelTree', Vue.resource('/api/v1/label-trees{/id}', {}, {
     removeAuthorizedProject: {
         method: 'DELETE',
         url: '/api/v1/label-trees{/id}/authorized-projects{/project_id}',
-    }
+    },
+    addUser: {
+        method: 'POST',
+        url: '/api/v1/label-trees{/id}/users',
+    },
+    updateUser: {
+        method: 'PUT',
+        url: '/api/v1/label-trees{/id}/users{/user_id}',
+    },
+    removeUser: {
+        method: 'DELETE',
+        url: '/api/v1/label-trees{/id}/users{/user_id}',
+    },
 }));

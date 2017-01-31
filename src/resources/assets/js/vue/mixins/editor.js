@@ -4,8 +4,10 @@
  * @type {Object}
  */
 biigle.$component('labelTrees.mixins.editor', {
-    data: {
-        editing: false,
+    data: function () {
+        return {
+            editing: false,
+        };
     },
     methods: {
         startEditing: function () {

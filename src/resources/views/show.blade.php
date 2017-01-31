@@ -9,7 +9,6 @@
 @push('scripts')
 <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
 <script type="text/javascript">
-    angular.module('biigle.label-trees').constant('LABEL_TREE', {!! $tree !!});
     biigle.$declare('labelTrees.labelTree', {!! $tree !!});
     biigle.$declare('labelTrees.labels', {!! $labels !!});
     biigle.$declare('labelTrees.privateVisibilityId', {!! \Biigle\Visibility::$private->id !!});
@@ -17,14 +16,15 @@
     biigle.$declare('labelTrees.redirectUrl', '{{route('label-trees-index')}}');
     biigle.$declare('labelTrees.wormsLabelSource', {!! $wormsLabelSource !!});
 
-    angular.module('biigle.label-trees').constant('USER_ID', {!! $user->id !!});
+    biigle.$declare('labelTrees.userId', {!! $user->id !!});
+
     @can('update', $tree)
         biigle.$declare('labelTrees.authorizedProjects', {!! $authorizedProjects !!});
         biigle.$declare('labelTrees.authorizedOwnProjects', {!! $authorizedOwnProjects !!});
 
-        angular.module('biigle.label-trees').constant('MEMBERS', {!! $members !!});
-        angular.module('biigle.label-trees').constant('ROLES', {!! $roles !!});
-        angular.module('biigle.label-trees').constant('DEFAULT_ROLE_ID', {!! Biigle\Role::$editor->id !!});
+        biigle.$declare('labelTrees.members', {!! $members !!});
+        biigle.$declare('labelTrees.roles', {!! $roles !!});
+        biigle.$declare('labelTrees.defaultRoleId', {!! Biigle\Role::$editor->id !!});
     @endcan
 </script>
 @endpush
