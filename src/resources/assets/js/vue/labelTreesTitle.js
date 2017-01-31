@@ -8,46 +8,45 @@ biigle.$viewModel('label-trees-title', function (element) {
     var labelTreeUserApi = biigle.$require('api.labelTreeUser');
     var labelTreeApi = biigle.$require('api.labelTree');
 
-
     new Vue({
         el: element,
-        mixins: [biigle.$require('labelTrees.mixins.loader')],
+        mixins: [
+            biigle.$require('labelTrees.mixins.loader'),
+            biigle.$require('labelTrees.mixins.editor'),
+        ],
         data: {
-            editing: false,
+            labelTree: labelTree,
+            // Duplicate the label tree properties so they can be changed and possibly
+            // discarded without affecting the original label tree object.
             name: labelTree.name,
             description: labelTree.description,
             visibility_id: labelTree.visibility_id,
         },
-        components: {
-        },
         computed: {
             isPrivate: function () {
-                return parseInt(this.visibility_id) === privateId;
+                return this.labelTree.visibility_id === privateId;
             },
             hasDescription: function () {
                 return !!this.description.length;
             },
             isChanged: function () {
-                return this.name !== labelTree.name || this.description !== labelTree.description || parseInt(this.visibility_id) !== labelTree.visibility_id;
+                return this.name !== this.labelTree.name || this.description !== this.labelTree.description || parseInt(this.visibility_id) !== this.labelTree.visibility_id;
             },
         },
         methods: {
-            startEditing: function () {
-                this.editing = true;
-            },
             discardChanges: function () {
-                this.editing = false;
-                this.name = labelTree.name;
-                this.description = labelTree.description;
-                this.visibility_id = labelTree.visibility_id;
+                this.finishEditing();
+                this.name = this.labelTree.name;
+                this.description = this.labelTree.description;
+                this.visibility_id = this.labelTree.visibility_id;
             },
             leaveTree: function () {
-                var confirmed = confirm('Do you really want to leave the label tree ' + labelTree.name + '?');
+                var confirmed = confirm('Do you really want to leave the label tree ' + this.labelTree.name + '?');
 
                 if (confirmed) {
                     this.startLoading();
                     labelTreeUserApi.delete({
-                        label_tree_id: labelTree.id,
+                        label_tree_id: this.labelTree.id,
                         id: biigle.$require('labelTrees.userId'),
                     })
                     .then(this.treeLeft, messages.handleErrorResponse)
@@ -65,11 +64,11 @@ biigle.$viewModel('label-trees-title', function (element) {
                 }
             },
             deleteTree: function () {
-                var confirmed = confirm('Do you really want to delete the label tree ' + labelTree.name + '?');
+                var confirmed = confirm('Do you really want to delete the label tree ' + this.labelTree.name + '?');
 
                 if (confirmed) {
                     this.startLoading();
-                    labelTreeApi.delete({id: labelTree.id})
+                    labelTreeApi.delete({id: this.labelTree.id})
                         .then(this.treeDeleted, messages.handleErrorResponse)
                         .finally(this.finishLoading);
                 }
@@ -82,7 +81,7 @@ biigle.$viewModel('label-trees-title', function (element) {
             },
             saveChanges: function () {
                 this.startLoading();
-                labelTreeApi.update({id: labelTree.id}, {
+                labelTreeApi.update({id: this.labelTree.id}, {
                         name: this.name,
                         description: this.description,
                         visibility_id: this.visibility_id,
@@ -91,10 +90,10 @@ biigle.$viewModel('label-trees-title', function (element) {
                     .finally(this.finishLoading);
             },
             changesSaved: function () {
-                labelTree.name = this.name;
-                labelTree.description = this.description;
-                labelTree.visibility_id = parseInt(this.visibility_id);
-                this.editing = false;
+                this.labelTree.name = this.name;
+                this.labelTree.description = this.description;
+                this.labelTree.visibility_id = parseInt(this.visibility_id);
+                this.finishEditing();
             }
         }
     });

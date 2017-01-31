@@ -13,7 +13,7 @@
         </div>
         <div class="col-xs-4 form-group">
             <div class="input-group">
-                <label-typeahead placeholder="Label parent" :disabled="hasNoLabels" title="Parent label" :labels="labels" :value="selectedParent" v-on:select="selectLabel" ></label-typeahead>
+                <typeahead placeholder="Label parent" :disabled="hasNoLabels" title="Parent label" :items="labels" :value="selectedParent" v-on:select="selectLabel" ></typeahead>
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="button" title="Reset parent" v-on:click="resetParent" v-bind:disabled="hasNoParent"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                 </span>

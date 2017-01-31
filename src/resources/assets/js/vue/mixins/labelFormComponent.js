@@ -23,7 +23,7 @@ biigle.$component('labelTrees.mixins.labelFormComponent', {
         },
     },
     components: {
-        labelTypeahead: biigle.$require('labelTrees.components.labelTypeahead'),
+        typeahead: biigle.$require('labelTrees.components.typeahead'),
     },
     computed: {
         selectedColor: {

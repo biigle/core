@@ -7,14 +7,14 @@ biigle.$component('labelTrees.components.labelTrees', {
     template: '<div class="label-trees">' +
         '<div v-if="typeahead || clearable" class="label-trees__head">' +
             '<button v-if="clearable" @click="clear" class="btn btn-default" title="Clear selected labels"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>' +
-            '<label-typeahead v-if="typeahead" :labels="labels" @select="handleSelect"></label-typeahead>' +
+            '<typeahead v-if="typeahead" :items="labels" @select="handleSelect" placeholder="Label name"></typeahead>' +
         '</div>' +
         '<div class="label-trees__body">' +
             '<label-tree :name="tree.name" :labels="tree.labels" :multiselect="multiselect" v-for="tree in trees" @select="handleSelect" @deselect="handleDeselect"></label-tree>' +
         '</div>' +
     '</div>',
     components: {
-        labelTypeahead: biigle.$require('labelTrees.components.labelTypeahead'),
+        typeahead: biigle.$require('labelTrees.components.typeahead'),
         labelTree: biigle.$require('labelTrees.components.labelTree'),
     },
     props: {

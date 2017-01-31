@@ -1,10 +1,10 @@
 /**
- * A component that displays a typeahead to find labels.
+ * A component that displays a typeahead to find items.
  *
  * @type {Object}
  */
-biigle.$component('labelTrees.components.labelTypeahead', {
-    template: '<typeahead class="label-typeahead clearfix" :data="labels" :placeholder="placeholder" :on-hit="selectLabel" :template="template" :disabled="disabled" :value="value" match-property="name"></typeahead>',
+biigle.$component('labelTrees.components.typeahead', {
+    template: '<typeahead class="typeahead clearfix" :data="items" :placeholder="placeholder" :on-hit="selectItem" :template="template" :disabled="disabled" :value="value" match-property="name"></typeahead>',
     data: function () {
         return {
             template: '{{item.name}}',
@@ -14,13 +14,13 @@ biigle.$component('labelTrees.components.labelTypeahead', {
         typeahead: VueStrap.typeahead,
     },
     props: {
-        labels: {
+        items: {
             type: Array,
             required: true,
         },
         placeholder: {
             type: String,
-            default: 'Label name',
+            default: 'Item name',
         },
         disabled: {
             type: Boolean,
@@ -32,8 +32,9 @@ biigle.$component('labelTrees.components.labelTypeahead', {
         },
     },
     methods: {
-        selectLabel: function (label, typeahead) {
-            this.$emit('select', label);
+        selectItem: function (item, typeahead) {
+            if (!item) return;
+            this.$emit('select', item);
             typeahead.reset();
         }
     }

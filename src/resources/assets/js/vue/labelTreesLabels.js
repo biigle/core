@@ -9,16 +9,17 @@ biigle.$viewModel('label-trees-labels', function (element) {
 
     new Vue({
         el: element,
+        mixins: [
+            biigle.$require('labelTrees.mixins.loader'),
+            biigle.$require('labelTrees.mixins.editor'),
+        ],
         data: {
-            editing: false,
-            loading: false,
             labels: biigle.$require('labelTrees.labels'),
             selectedColor: randomColor(),
             selectedLabel: null,
             selectedName: '',
         },
         components: {
-            typeahead: VueStrap.typeahead,
             tabs: VueStrap.tabs,
             tab: VueStrap.tab,
             labelTree: biigle.$require('labelTrees.components.labelTree'),
@@ -33,15 +34,6 @@ biigle.$viewModel('label-trees-labels', function (element) {
             },
         },
         methods: {
-            toggleEditing: function () {
-                this.editing = !this.editing;
-            },
-            startLoading: function () {
-                this.loading = true;
-            },
-            finishLoading: function () {
-                this.loading = false;
-            },
             deleteLabel: function (label) {
                 var self = this;
                 this.startLoading();
