@@ -12,8 +12,6 @@
 <script src="{{ cachebust_asset('vendor/projects/scripts/vue.js') }}"></script>
 <script type="text/javascript">
     angular.module('biigle.projects').constant('PROJECT', {!!$project!!});
-    angular.module('biigle.projects').constant('USER_ID', {!! $user->id !!});
-    angular.module('biigle.projects').constant('REDIRECT_URL', '{{route('projects-index')}}');
     angular.module('biigle.projects').constant('LABEL_TREES', {!! $labelTrees !!});
 
     biigle.$declare('projects.volumes', {!! $volumes !!});
@@ -22,6 +20,7 @@
     biigle.$declare('projects.roles', {!! $roles !!});
     biigle.$declare('projects.defaultRoleId', {!! Biigle\Role::$guest->id !!});
     biigle.$declare('projects.userId', {!! $user->id !!});
+    biigle.$declare('projects.redirectUrl', '{{route('projects-index')}}');
 </script>
 @foreach ($modules->getMixins('projectsShowScripts') as $module => $nestedMixins)
     @include($module.'::projectsShowScripts')

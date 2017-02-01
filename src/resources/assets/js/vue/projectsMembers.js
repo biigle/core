@@ -29,7 +29,7 @@ biigle.$viewModel('projects-members', function (element) {
                     })
                     .then(function () {
                         self.memberAttached(user);
-                    }, messages.handleResponseError)
+                    }, messages.handleErrorResponse)
                     .finally(this.finishLoading);
             },
             memberAttached: function (user) {
@@ -43,7 +43,7 @@ biigle.$viewModel('projects-members', function (element) {
                     })
                     .then(function () {
                         self.memberUpdated(user, props);
-                    }, messages.handleResponseError)
+                    }, messages.handleErrorResponse)
                     .finally(this.finishLoading);
             },
             memberUpdated: function (user, props) {
@@ -55,7 +55,7 @@ biigle.$viewModel('projects-members', function (element) {
                 projectsApi.removeUser({id: project.id, user_id: user.id})
                     .then(function () {
                         self.memberRemoved(user);
-                    }, messages.handleResponseError)
+                    }, messages.handleErrorResponse)
                     .finally(this.finishLoading);
             },
             memberRemoved: function (user) {
