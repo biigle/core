@@ -13,9 +13,9 @@
     </div>
     @can('update', $project)
         <div class="panel-body" v-if="editing" v-cloak>
-            <form v-on:submit.prevent="attachVolume">
+            <form>
                 <label>Volume to attach</label>
-                <typeahead class="typeahead--volumes" :items="attachableVolumes" placeholder="Volume name" v-on:select="attachVolume"></typeahead>
+                <typeahead class="typeahead--block" :items="attachableVolumes" placeholder="Volume name" v-on:select="attachVolume"></typeahead>
                 <p class="help-block">
                     Volumes can be shared between projects. Here you can attach volumes from other projects to this project. To attach a volume, you need to be admin in one of the projects, the volume is already attached to.
                 </p>
