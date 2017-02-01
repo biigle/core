@@ -9,7 +9,6 @@
 
 @push('scripts')
 <script src="{{ cachebust_asset('vendor/projects/scripts/main.js') }}"></script>
-<script src="{{ cachebust_asset('vendor/projects/scripts/vue.js') }}"></script>
 <script type="text/javascript">
     biigle.$declare('projects.volumes', {!! $volumes !!});
     biigle.$declare('projects.project', {!!$project!!});
