@@ -30,7 +30,7 @@
  * }).then(...);
  *
  * Attach an existing volume to a project:
- * resource.attachVolume({id: 1, volume_id: 12}).then(...);
+ * resource.attachVolume({id: 1, volume_id: 12}, {}).then(...);
  *
  * Detach a volume from a project:
  * resource.detachVolume({id: 1, volume_id: 12}).then(...);
@@ -57,5 +57,5 @@ biigle.$declare('api.projects', Vue.resource('/api/v1/projects{/id}', {}, {
     detachVolume: {
         method: 'DELETE',
         url: '/api/v1/projects{/id}/volumes{/volume_id}',
-    }
+    },
 }));
