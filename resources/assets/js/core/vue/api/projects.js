@@ -35,6 +35,15 @@
  * Detach a volume from a project:
  * resource.detachVolume({id: 1, volume_id: 12}).then(...);
  *
+ * Attach a user to a project:
+ * resource.save({id: 1, user_id: 1}, {project_role_id: 2}).then(...);
+ *
+ * Update the role of a user:
+ * resource.update({id: 1, user_id: 1}, {project_role_id: 1}).then(...);
+ *
+ * Detach a user from a project:
+ * resource.delete({id: 1, user_id: 1}).then(...);
+ *
  * @type {Vue.resource}
  */
 biigle.$declare('api.projects', Vue.resource('/api/v1/projects{/id}', {}, {
@@ -57,5 +66,17 @@ biigle.$declare('api.projects', Vue.resource('/api/v1/projects{/id}', {}, {
     detachVolume: {
         method: 'DELETE',
         url: '/api/v1/projects{/id}/volumes{/volume_id}',
+    },
+    addUser: {
+        method: 'POST',
+        url: '/api/v1/projects{/id}/users{/user_id}',
+    },
+    updateUser: {
+        method: 'PUT',
+        url: '/api/v1/projects{/id}/users{/user_id}',
+    },
+    removeUser: {
+        method: 'DELETE',
+        url: '/api/v1/projects{/id}/users{/user_id}',
     },
 }));
