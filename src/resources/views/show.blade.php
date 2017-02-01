@@ -31,7 +31,7 @@
 
 
 @section('content')
-<div class="container" data-ng-app="biigle.label-trees">
+<div class="container">
     @include('label-trees::show.title')
     <div class="col-md-6">
         @include('label-trees::show.labels')
