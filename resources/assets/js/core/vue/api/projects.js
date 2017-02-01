@@ -3,33 +3,26 @@
  *
  * var resource = biigle.$require('api.projects');
  *
- * Get all projects of the current user:
- *
+ * Get all projects the current user belongs to:
  * resource.query().then(...);
  *
- * Get a specific project:
+ * Get one project:
+ * resource.get({id: 1}).then(...);
  *
- * resource.get({id: projectId}).then(...);
- *
- * Create a project:
- *
- * resource.save({}, {
- *     name: 'My project',
- *     description: 'My description'
- * }).then(...);
+ * Create a new project:
+ * resource.save({}, {name: 'Test', description: 'Test project'}).then(...);
  *
  * Update a project:
- *
- * resource.update({id: projectId}, {
- *     name: 'My new project name',
- * }).then(...);
+ * resource.update({id: 1}, {name: 'My new name'}).then(...);
  *
  * Delete a project:
- *
- * resource.delete({id: projectId}).then(...);
+ * resource.delete({id: 1}).then(...);
  *
  * @type {Vue.resource}
  */
 biigle.$declare('api.projects', Vue.resource('/api/v1/projects{/id}', {}, {
-    query: {method: 'GET', params: {id: 'my'}}
+    query: {
+        // a user can only query their own projects
+        url: '/api/v1/projects/my',
+    }
 }));
