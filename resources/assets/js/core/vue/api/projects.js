@@ -44,6 +44,15 @@
  * Detach a user from a project:
  * resource.delete({id: 1, user_id: 1}).then(...);
  *
+ * Get all label trees available for a project:
+ * resource.queryAvailableLabelTrees({id: 1}).then(...);
+ *
+ * Attach a label tree (with ID 31) to a project:
+ * resource.attachLabelTree({id: 1}, {id: 31}).then(...);
+ *
+ * Detach a label tree from a project:
+ * resource.detachLabelTree({id: 1, label_tree_id: 31}).then(...);
+ *
  * @type {Vue.resource}
  */
 biigle.$declare('api.projects', Vue.resource('/api/v1/projects{/id}', {}, {
@@ -78,5 +87,17 @@ biigle.$declare('api.projects', Vue.resource('/api/v1/projects{/id}', {}, {
     removeUser: {
         method: 'DELETE',
         url: '/api/v1/projects{/id}/users{/user_id}',
+    },
+    queryAvailableLabelTrees: {
+        method: 'GET',
+        url: '/api/v1/projects{/id}/label-trees/available',
+    },
+    attachLabelTree: {
+        method: 'POST',
+        url: '/api/v1/projects{/id}/label-trees',
+    },
+    detachLabelTree: {
+        method: 'DELETE',
+        url: '/api/v1/projects{/id}/label-trees{/label_tree_id}',
     },
 }));
