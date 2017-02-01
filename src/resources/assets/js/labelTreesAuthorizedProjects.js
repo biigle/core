@@ -11,8 +11,8 @@ biigle.$viewModel('label-trees-authorized-projects', function (element) {
     new Vue({
         el: element,
         mixins: [
-            biigle.$require('labelTrees.mixins.loader'),
-            biigle.$require('labelTrees.mixins.editor'),
+            biigle.$require('core.mixins.loader'),
+            biigle.$require('core.mixins.editor'),
         ],
         data: {
             labelTree: biigle.$require('labelTrees.labelTree'),
@@ -21,7 +21,7 @@ biigle.$viewModel('label-trees-authorized-projects', function (element) {
             authorizedOwnProjects: biigle.$require('labelTrees.authorizedOwnProjects'),
         },
         components: {
-            typeahead: biigle.$require('labelTrees.components.typeahead'),
+            typeahead: biigle.$require('core.components.typeahead'),
         },
         computed: {
             isPrivate: function () {

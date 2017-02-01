@@ -10,8 +10,8 @@ biigle.$viewModel('label-trees-labels', function (element) {
     new Vue({
         el: element,
         mixins: [
-            biigle.$require('labelTrees.mixins.loader'),
-            biigle.$require('labelTrees.mixins.editor'),
+            biigle.$require('core.mixins.loader'),
+            biigle.$require('core.mixins.editor'),
         ],
         data: {
             labels: biigle.$require('labelTrees.labels'),

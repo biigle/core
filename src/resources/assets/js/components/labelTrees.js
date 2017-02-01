@@ -14,7 +14,7 @@ biigle.$component('labelTrees.components.labelTrees', {
         '</div>' +
     '</div>',
     components: {
-        typeahead: biigle.$require('labelTrees.components.typeahead'),
+        typeahead: biigle.$require('core.components.typeahead'),
         labelTree: biigle.$require('labelTrees.components.labelTree'),
     },
     props: {

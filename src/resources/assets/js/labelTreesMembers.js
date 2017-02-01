@@ -8,7 +8,7 @@ biigle.$viewModel('label-trees-members', function (element) {
 
     new Vue({
         el: element,
-        mixins: [biigle.$require('labelTrees.mixins.loader')],
+        mixins: [biigle.$require('core.mixins.loader')],
         data: {
             members: biigle.$require('labelTrees.members'),
             roles: biigle.$require('labelTrees.roles'),
@@ -16,7 +16,7 @@ biigle.$viewModel('label-trees-members', function (element) {
             userId: biigle.$require('labelTrees.userId'),
         },
         components: {
-            membersPanel: biigle.$require('labelTrees.components.membersPanel'),
+            membersPanel: biigle.$require('core.components.membersPanel'),
         },
         computed: {
         },
