@@ -5,7 +5,7 @@
  */
 biigle.$component('core.components.sidebar', {
     template: '<aside class="sidebar" :class="classObject">' +
-        '<div class="sidebar__buttons">' +
+        '<div class="sidebar__buttons" v-if="showButtons">' +
             '<sidebar-button v-for="tab in tabs" :tab="tab"></sidebar-button>' +
         '</div>' +
         '<div class="sidebar__tabs"><slot name="tabs"></slot></div>' +
@@ -21,7 +21,11 @@ biigle.$component('core.components.sidebar', {
     props: {
         openTab: {
             type: String
-        }
+        },
+        showButtons: {
+            type: Boolean,
+            default: true,
+        },
     },
     computed: {
         classObject: function () {
