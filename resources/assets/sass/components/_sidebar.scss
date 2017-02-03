@@ -1,0 +1,45 @@
+.sidebar {
+    width: 50px;
+    display: flex;
+
+    &.sidebar--open {
+        width: 350px;
+    }
+
+    .sidebar__buttons {
+        width: 50px;
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar__button {
+        // Distribute the buttons evenly to the full height of the buttons container.
+        flex: 1;
+        display: block;
+        border-radius: 0;
+        width: 100%;
+        border: 0;
+
+        &:not(:last-child) {
+            border-bottom: 1px solid $btn-default-border;
+        }
+    }
+
+    .sidebar__tabs {
+        flex: 1;
+    }
+
+    .sidebar__tab {
+        display: none;
+        padding: 1em;
+        height: 100%;
+        overflow: auto;
+        border-left: 1px solid $btn-default-border;
+
+        &.sidebar__tab--open {
+            display: block;
+        }
+    }
+}
