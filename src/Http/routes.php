@@ -9,6 +9,11 @@ $router->group([
         'uses' => 'LargoController@indexVolume',
     ]);
 
+    $router->get('volumes/{id}/largo-vue', [
+        'as'   => 'largo-vue',
+        'uses' => 'VueLargoController@indexVolume',
+    ]);
+
     $router->get('projects/{id}/largo', [
         'as'   => 'projectsLargo',
         'uses' => 'LargoController@indexProject',

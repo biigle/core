@@ -94,3 +94,38 @@
 .largo-alert {
     margin-top: 1em;
 }
+
+.largo-container {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: calc(100% - 50px);
+    margin-top: 50px;
+}
+
+.largo-images {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+.largo-tab {
+    display: flex !important;
+    flex-direction: column;
+
+    .largo-tab__button {
+        padding-bottom: $padding-large-vertical;
+    }
+
+    .largo-tab__label-trees {
+        flex: 1;
+        overflow: auto;
+    }
+}
+
+
+@import 'components/image-grid';

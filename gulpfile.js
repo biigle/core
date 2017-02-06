@@ -30,7 +30,11 @@ gulp.task('js-annotations', function (cb) {
    h.angular('annotations/**/*.js', 'annotations.js', cb);
 });
 
-gulp.task('js', ['js-main', 'js-project-largo', 'js-annotations']);
+gulp.task('js-vue', function (cb) {
+   h.angular('vue/**/*.js', 'vue.js', cb);
+});
+
+gulp.task('js', ['js-main', 'js-project-largo', 'js-annotations', 'js-vue']);
 
 gulp.task('watch', function () {
     gulp.watch(h.paths.sass + 'main.scss', ['sass-main']);
@@ -38,6 +42,7 @@ gulp.task('watch', function () {
     gulp.watch(h.paths.js + 'largo/**/*.js', ['js-main']);
     gulp.watch(h.paths.js + 'project-largo/**/*.js', ['js-project-largo']);
     gulp.watch(h.paths.js + 'annotations/**/*.js', ['js-annotations']);
+    gulp.watch(h.paths.js + 'vue/**/*.js', ['js-vue']);
     gulp.watch(h.paths.public + '**/*', publish);
 });
 
