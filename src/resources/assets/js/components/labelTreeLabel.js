@@ -14,7 +14,7 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
             '</span>' +
             '<button v-if="deletable" type="button" class="close label-tree-label__delete" :title="deleteTitle" @click.stop="deleteThis"><span aria-hidden="true">&times;</span></button>' +
         '</div>' +
-        '<ul v-if="label.open" class="label-tree__list">' +
+        '<ul v-if="expandable && label.open" class="label-tree__list">' +
             '<label-tree-label :label="child" :deletable="deletable" :show-favourites="showFavourites" v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>' +
         '</ul>' +
     '</li>',
@@ -30,13 +30,17 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         deletable: {
             type: Boolean,
             default: false,
+        },
+        flat: {
+            type: Boolean,
+            default: false,
         }
     },
     computed: {
         classObject: function () {
             return {
                 'label-tree-label--selected': this.label.selected,
-                'label-tree-label--expandable': this.label.children,
+                'label-tree-label--expandable': this.expandable,
             };
         },
         colorStyle: function () {
@@ -52,7 +56,10 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         },
         deleteTitle: function () {
             return 'Remove label ' + this.label.name;
-        }
+        },
+        expandable: function () {
+            return !this.flat && this.label.children;
+        },
     },
     methods: {
         toggleSelect: function () {
@@ -68,10 +75,10 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         },
         toggleOpen: function () {
             // If the label cannot be opened, it will be selected here instead.
-            if (!this.label.children) {
-                this.toggleSelect();
-            } else {
+            if (this.expandable) {
                 this.label.open = !this.label.open;
+            } else {
+                this.toggleSelect();
             }
         },
         toggleFavourite: function () {
@@ -96,5 +103,5 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         emitRemoveFavourite: function (label) {
             this.$emit('remove-favourite', label);
         },
-    }
+    },
 });

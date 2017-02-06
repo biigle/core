@@ -13,7 +13,7 @@ biigle.$component('labelTrees.components.labelTree', {
             '{{name}}' +
         '</h4>' +
         '<ul v-if="!collapsed" class="label-tree__list">' +
-            '<label-tree-label :label="label" :deletable="deletable" :show-favourites="showFavourites" v-for="label in rootLabels" @select="emitSelect" @deselect="emitDeselect" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>' +
+            '<label-tree-label :label="label" :deletable="deletable" :show-favourites="showFavourites" :flat="flat" v-for="label in rootLabels" @select="emitSelect" @deselect="emitDeselect" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>' +
         '</ul>' +
     '</div>',
     data: function () {
@@ -37,6 +37,7 @@ biigle.$component('labelTrees.components.labelTree', {
             type: Boolean,
             default: true,
         },
+        // If false the label tree assumes it is used in a label-trees component.
         standalone: {
             type: Boolean,
             default: false,
@@ -45,18 +46,26 @@ biigle.$component('labelTrees.components.labelTree', {
             type: Boolean,
             default: true,
         },
+        // Indicated whether multiple labels can be selected at the same time.
         multiselect: {
             type: Boolean,
             default: false,
         },
+        // Indicated whether labels can be deleted.
         deletable: {
             type: Boolean,
             default: false,
         },
+        // Indicated whether labels can be selected as favourites.
         showFavourites: {
             type: Boolean,
             default: false,
-        }
+        },
+        // Indicates whether the labels should be displayed in a flat list instead of a tree.
+        flat: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         labelMap: function () {
@@ -68,27 +77,35 @@ biigle.$component('labelTrees.components.labelTree', {
             return map;
         },
         compiledLabels: function () {
-            var compiled = {};
-            var parent;
-            // Create datastructure that maps label IDs to the child labels.
-            // Go from 0 to length so the labels are kept in order.
-            for (var i = 0, length = this.labels.length; i < length; i++) {
-                parent = this.labels[i].parent_id;
-                if (compiled.hasOwnProperty(parent)) {
-                    compiled[parent].push(this.labels[i]);
-                } else {
-                    compiled[parent] = [this.labels[i]];
-                }
-            }
+            var compiled = {null: []};
+            var i;
 
-            // update the label children with the compiled datastructure
-            for (i = this.labels.length - 1; i >= 0; i--) {
-                if (compiled.hasOwnProperty(this.labels[i].id)) {
-                    Vue.set(this.labels[i], 'children', compiled[this.labels[i].id]);
-                } else {
-                    Vue.set(this.labels[i], 'children', undefined);
-                    // If the last child was deleted, close the label.
-                    this.labels[i].open = false;
+            if (this.flat) {
+                for (i = 0, length = this.labels.length; i < length; i++) {
+                    compiled[null].push(this.labels[i]);
+                }
+            } else {
+                var parent;
+                // Create datastructure that maps label IDs to the child labels.
+                // Go from 0 to length so the labels are kept in order.
+                for (i = 0, length = this.labels.length; i < length; i++) {
+                    parent = this.labels[i].parent_id;
+                    if (compiled.hasOwnProperty(parent)) {
+                        compiled[parent].push(this.labels[i]);
+                    } else {
+                        compiled[parent] = [this.labels[i]];
+                    }
+                }
+
+                // update the label children with the compiled datastructure
+                for (i = this.labels.length - 1; i >= 0; i--) {
+                    if (compiled.hasOwnProperty(this.labels[i].id)) {
+                        Vue.set(this.labels[i], 'children', compiled[this.labels[i].id]);
+                    } else {
+                        Vue.set(this.labels[i], 'children', undefined);
+                        // If the last child was deleted, close the label.
+                        this.labels[i].open = false;
+                    }
                 }
             }
 
@@ -136,9 +153,11 @@ biigle.$component('labelTrees.components.labelTree', {
             if (this.hasLabel(label.id)) {
                 label.selected = true;
                 this.collapsed = false;
-                var parents = this.getParents(label);
-                for (var i = parents.length - 1; i >= 0; i--) {
-                    this.getLabel(parents[i]).open = true;
+                if (!this.flat) {
+                    var parents = this.getParents(label);
+                    for (var i = parents.length - 1; i >= 0; i--) {
+                        this.getLabel(parents[i]).open = true;
+                    }
                 }
             }
         },
@@ -173,8 +192,8 @@ biigle.$component('labelTrees.components.labelTree', {
         },
     },
     created: function () {
-        // Set the label properties
-        for (i = this.labels.length - 1; i >= 0; i--) {
+        // Set the reactive label properties
+        for (var i = this.labels.length - 1; i >= 0; i--) {
             if (!this.labels[i].hasOwnProperty('open')) {
                 Vue.set(this.labels[i], 'open', false);
             }
@@ -195,12 +214,11 @@ biigle.$component('labelTrees.components.labelTree', {
         if (this.standalone) {
             this.$on('select', this.selectLabel);
             this.$on('deselect', this.deselectLabel);
-            this.$on('add-favourite', this.addFavouriteLabel);
-            this.$on('remove-favourite', this.removeFavouriteLabel);
         } else {
             this.$parent.$on('select', this.selectLabel);
             this.$parent.$on('deselect', this.deselectLabel);
             this.$parent.$on('clear', this.clearSelectedLabels);
+            // Label favourites only work with the label-trees component.
             this.$parent.$on('add-favourite', this.addFavouriteLabel);
             this.$parent.$on('remove-favourite', this.removeFavouriteLabel);
         }
