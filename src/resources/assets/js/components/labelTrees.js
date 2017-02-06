@@ -18,6 +18,11 @@ biigle.$component('labelTrees.components.labelTrees', {
         typeahead: biigle.$require('core.components.typeahead'),
         labelTree: biigle.$require('labelTrees.components.labelTree'),
     },
+    data: function () {
+        return {
+            favourites: [],
+        };
+    },
     props: {
         trees: {
             type: Array,
@@ -52,11 +57,6 @@ biigle.$component('labelTrees.components.labelTrees', {
             }
 
             return labels;
-        },
-        favourites: function () {
-            return this.labels.filter(function (label) {
-                return label.favourite;
-            });
         },
         favouriteIds: function () {
             return this.favourites.map(function (label) {
@@ -102,11 +102,16 @@ biigle.$component('labelTrees.components.labelTrees', {
         handleAddFavourite: function (label) {
             if (this.canHaveMoreFavourites) {
                 this.$emit('add-favourite', label);
+                this.favourites.push(label);
                 this.updateFavouriteStorage();
             }
         },
         handleRemoveFavourite: function (label) {
             this.$emit('remove-favourite', label);
+            var index = this.favourites.indexOf(label);
+            if (index !== -1) {
+                this.favourites.splice(index, 1);
+            }
             this.updateFavouriteStorage();
         },
         updateFavouriteStorage: function () {
@@ -116,17 +121,37 @@ biigle.$component('labelTrees.components.labelTrees', {
                 localStorage.removeItem(this.favouriteStorageKey);
             }
         },
+        selectFavourite: function (index) {
+            if (this.favourites[index]) {
+                this.handleSelect(this.favourites[index]);
+            }
+        },
     },
     mounted: function () {
         if (this.showFavourites) {
             var favouriteIds = JSON.parse(localStorage.getItem(this.favouriteStorageKey));
+            var i;
             if (favouriteIds) {
-                for (var i = this.labels.length - 1; i >= 0; i--) {
+                for (i = this.labels.length - 1; i >= 0; i--) {
                     if (favouriteIds.indexOf(this.labels[i].id) !== -1) {
                         this.handleAddFavourite(this.labels[i]);
                     }
                 }
             }
+
+            var keyboard = biigle.$require('labelTrees.stores.keyboard');
+            var self = this;
+
+            var bindFavouriteKey = function (key, index) {
+                keyboard.on(key, function() {
+                    self.selectFavourite(index);
+                });
+            };
+
+            for (i = 1; i <= 9; i++) {
+                bindFavouriteKey(i.toString(), i - 1);
+            }
+            bindFavouriteKey('0', 9);
         }
     },
 });
