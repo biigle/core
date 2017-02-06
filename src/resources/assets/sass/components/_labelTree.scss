@@ -1,7 +1,7 @@
 .label-tree {
-    padding: $padding-small-vertical $padding-small-horizontal;
-
     &.label-tree--panel {
+        padding: $padding-small-vertical $padding-small-horizontal;
+
         .label-tree__list {
             margin: 0;
         }

@@ -30,6 +30,12 @@
         }
     }
 
+    .label-tree-label__favourite {
+        background: none;
+        padding: 0;
+        border: 0;
+    }
+
     .label-tree-label__favourite, .label-tree-label__delete {
         position: absolute;
         top: $padding-small-vertical;

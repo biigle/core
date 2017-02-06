@@ -5,13 +5,13 @@
  */
 biigle.$component('labelTrees.components.labelTreeLabel', {
     name: 'label-tree-label',
-    template: '<li class="label-tree-label cf" :class="classObject">' +
+    template: '<li class="label-tree-label" :class="classObject">' +
         '<div class="label-tree-label__name" @click="toggleOpen">' +
             '<span class="label-tree-label__color" :style="colorStyle"></span>' +
             '<span v-text="label.name" @click.stop="toggleSelect"></span>' +
-            '<span v-if="showFavourites" class="label-tree-label__favourite" @click.stop="toggleFavourite">' +
+            '<button v-if="showFavourites" class="label-tree-label__favourite" @click.stop="toggleFavourite" :title="favouriteTitle">' +
                 '<span class="glyphicon" :class="favouriteClass" aria-hidden="true" title=""></span>' +
-            '</span>' +
+            '</button>' +
             '<button v-if="deletable" type="button" class="close label-tree-label__delete" :title="deleteTitle" @click.stop="deleteThis"><span aria-hidden="true">&times;</span></button>' +
         '</div>' +
         '<ul v-if="expandable && label.open" class="label-tree__list">' +
@@ -53,6 +53,9 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
                 'glyphicon-star-empty': !this.label.favourite,
                 'glyphicon-star': this.label.favourite,
             };
+        },
+        favouriteTitle: function () {
+            return (this.label.favourite ? 'Remove' : 'Add') + ' as favourite';
         },
         deleteTitle: function () {
             return 'Remove label ' + this.label.name;
