@@ -13,7 +13,7 @@ biigle.$component('labelTrees.components.labelTree', {
             '{{name}}' +
         '</h4>' +
         '<ul v-if="!collapsed" class="label-tree__list">' +
-            '<label-tree-label :label="label" :deletable="deletable" v-for="label in rootLabels" @select="emitSelect" @deselect="emitDeselect" @delete="emitDelete"></label-tree-label>' +
+            '<label-tree-label :label="label" :deletable="deletable" :show-favourites="showFavourites" v-for="label in rootLabels" @select="emitSelect" @deselect="emitDeselect" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>' +
         '</ul>' +
     '</div>',
     data: function () {
@@ -50,6 +50,10 @@ biigle.$component('labelTrees.components.labelTree', {
             default: false,
         },
         deletable: {
+            type: Boolean,
+            default: false,
+        },
+        showFavourites: {
             type: Boolean,
             default: false,
         }
@@ -150,13 +154,38 @@ biigle.$component('labelTrees.components.labelTree', {
         },
         collapse: function () {
             this.collapsed = !this.collapsed;
-        }
+        },
+        emitAddFavourite: function (label) {
+            this.$emit('add-favourite', label);
+        },
+        emitRemoveFavourite: function (label) {
+            this.$emit('remove-favourite', label);
+        },
+        addFavouriteLabel: function (label) {
+            if (this.hasLabel(label.id)) {
+                label.favourite = true;
+            }
+        },
+        removeFavouriteLabel: function (label) {
+            if (this.hasLabel(label.id)) {
+                label.favourite = false;
+            }
+        },
     },
     created: function () {
         // Set the label properties
         for (i = this.labels.length - 1; i >= 0; i--) {
-            Vue.set(this.labels[i], 'open', false);
-            Vue.set(this.labels[i], 'selected', false);
+            if (!this.labels[i].hasOwnProperty('open')) {
+                Vue.set(this.labels[i], 'open', false);
+            }
+
+            if (!this.labels[i].hasOwnProperty('selected')) {
+                Vue.set(this.labels[i], 'selected', false);
+            }
+
+            if (!this.labels[i].hasOwnProperty('favourite')) {
+                Vue.set(this.labels[i], 'favourite', false);
+            }
         }
 
         // The label tree can be used in a label-trees component or as a single label
@@ -166,10 +195,14 @@ biigle.$component('labelTrees.components.labelTree', {
         if (this.standalone) {
             this.$on('select', this.selectLabel);
             this.$on('deselect', this.deselectLabel);
+            this.$on('add-favourite', this.addFavouriteLabel);
+            this.$on('remove-favourite', this.removeFavouriteLabel);
         } else {
             this.$parent.$on('select', this.selectLabel);
             this.$parent.$on('deselect', this.deselectLabel);
             this.$parent.$on('clear', this.clearSelectedLabels);
+            this.$parent.$on('add-favourite', this.addFavouriteLabel);
+            this.$parent.$on('remove-favourite', this.removeFavouriteLabel);
         }
     }
 });

@@ -10,7 +10,8 @@ biigle.$component('labelTrees.components.labelTrees', {
             '<typeahead v-if="typeahead" :items="labels" @select="handleSelect" placeholder="Label name"></typeahead>' +
         '</div>' +
         '<div class="label-trees__body">' +
-            '<label-tree :name="tree.name" :labels="tree.labels" :multiselect="multiselect" v-for="tree in trees" @select="handleSelect" @deselect="handleDeselect"></label-tree>' +
+            '<label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>' +
+            '<label-tree :name="tree.name" :labels="tree.labels" :multiselect="multiselect" :show-favourites="showFavourites" v-for="tree in trees" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>' +
         '</div>' +
     '</div>',
     components: {
@@ -21,6 +22,9 @@ biigle.$component('labelTrees.components.labelTrees', {
         trees: {
             type: Array,
             required: true,
+        },
+        id: {
+            type: String,
         },
         typeahead: {
             type: Boolean,
@@ -33,7 +37,11 @@ biigle.$component('labelTrees.components.labelTrees', {
         multiselect: {
             type: Boolean,
             default: false,
-        }
+        },
+        showFavourites: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         // All labels of all label trees in a flat list.
@@ -44,7 +52,42 @@ biigle.$component('labelTrees.components.labelTrees', {
             }
 
             return labels;
-        }
+        },
+        favourites: function () {
+            return this.labels.filter(function (label) {
+                return label.favourite;
+            });
+        },
+        favouriteIds: function () {
+            return this.favourites.map(function (label) {
+                return label.id;
+            });
+        },
+        canHaveMoreFavourites: function () {
+            return this.favourites.length < 10;
+        },
+        hasFavourites: function () {
+            return this.favourites.length > 0;
+        },
+        ownId: function () {
+            if (this.id) {
+                return this.id;
+            }
+
+            var ids = [];
+            for (var prop in this.trees) {
+                if (!this.trees.hasOwnProperty(prop)) {
+                    continue;
+                }
+
+                ids.push(this.trees[prop].id);
+            }
+
+            return ids.join('-');
+        },
+        favouriteStorageKey: function () {
+            return 'biigle.label-trees.' + this.ownId + '.favourites';
+        },
     },
     methods: {
         handleSelect: function (label) {
@@ -55,6 +98,33 @@ biigle.$component('labelTrees.components.labelTrees', {
         },
         clear: function () {
             this.$emit('clear');
+        },
+        handleAddFavourite: function (label) {
+            if (this.canHaveMoreFavourites) {
+                this.$emit('add-favourite', label);
+                this.updateFavouriteStorage();
+            }
+        },
+        handleRemoveFavourite: function (label) {
+            this.$emit('remove-favourite', label);
+            this.updateFavouriteStorage();
+        },
+        updateFavouriteStorage: function () {
+            if (this.hasFavourites) {
+                localStorage.setItem(this.favouriteStorageKey, JSON.stringify(this.favouriteIds));
+            } else {
+                localStorage.removeItem(this.favouriteStorageKey);
+            }
+        },
+    },
+    mounted: function () {
+        var favouriteIds = JSON.parse(localStorage.getItem(this.favouriteStorageKey));
+        if (favouriteIds) {
+            for (var i = this.labels.length - 1; i >= 0; i--) {
+                if (favouriteIds.indexOf(this.labels[i].id) !== -1) {
+                    this.handleAddFavourite(this.labels[i]);
+                }
+            }
         }
-    }
+    },
 });

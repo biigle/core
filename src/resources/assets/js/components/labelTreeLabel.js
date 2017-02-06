@@ -9,26 +9,21 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         '<div class="label-tree-label__name" @click="toggleOpen">' +
             '<span class="label-tree-label__color" :style="colorStyle"></span>' +
             '<span v-text="label.name" @click.stop="toggleSelect"></span>' +
-            '<span v-if="showFavourite" class="label-tree-label__favourite" @click.stop="toggleFavourite">' +
+            '<span v-if="showFavourites" class="label-tree-label__favourite" @click.stop="toggleFavourite">' +
                 '<span class="glyphicon" :class="favouriteClass" aria-hidden="true" title=""></span>' +
             '</span>' +
             '<button v-if="deletable" type="button" class="close label-tree-label__delete" :title="deleteTitle" @click.stop="deleteThis"><span aria-hidden="true">&times;</span></button>' +
         '</div>' +
         '<ul v-if="label.open" class="label-tree__list">' +
-            '<label-tree-label :label="child" :deletable="deletable" v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @delete="emitDelete"></label-tree-label>' +
+            '<label-tree-label :label="child" :deletable="deletable" :show-favourites="showFavourites" v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>' +
         '</ul>' +
     '</li>',
-    data: function () {
-        return {
-            favourite: false
-        };
-    },
     props: {
         label: {
             type: Object,
             required: true,
         },
-        showFavourite: {
+        showFavourites: {
             type: Boolean,
             required: false,
         },
@@ -51,8 +46,8 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         },
         favouriteClass: function () {
             return {
-                'glyphicon-star-empty': !this.favourite,
-                'glyphicon-star': this.favourite,
+                'glyphicon-star-empty': !this.label.favourite,
+                'glyphicon-star': this.label.favourite,
             };
         },
         deleteTitle: function () {
@@ -80,19 +75,26 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
             }
         },
         toggleFavourite: function () {
-            this.favourite = !this.favourite;
+            if (!this.label.favourite) {
+                this.emitAddFavourite(this.label);
+            } else {
+                this.emitRemoveFavourite(this.label);
+            }
         },
         emitSelect: function (label) {
-            // bubble the event upwards
             this.$emit('select', label);
         },
         emitDeselect: function (label) {
-            // bubble the event upwards
             this.$emit('deselect', label);
         },
         emitDelete: function (label) {
-            // bubble the event upwards
             this.$emit('delete', label);
-        }
+        },
+        emitAddFavourite: function (label) {
+            this.$emit('add-favourite', label);
+        },
+        emitRemoveFavourite: function (label) {
+            this.$emit('remove-favourite', label);
+        },
     }
 });

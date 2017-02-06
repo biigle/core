@@ -32,7 +32,7 @@
 
     .label-tree-label__favourite, .label-tree-label__delete {
         position: absolute;
-        top: 0;
+        top: $padding-small-vertical;
         right: 5px;
     }
 }
