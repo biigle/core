@@ -26,7 +26,7 @@
         </div>
         <div class="col-xs-6 form-group">
             <div class="input-group">
-                <typeahead placeholder="Label parent" :disabled="hasNoLabels" title="Parent label" :items="labels" :value="selectedParent" v-on:select="selectLabel" ></typeahead>
+                <typeahead class="typeahead--block" placeholder="Label parent" :disabled="hasNoLabels" title="Parent label" :items="labels" :value="selectedParent" v-on:select="selectLabel" ></typeahead>
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="button" title="Reset parent" v-on:click="resetParent" v-bind:disabled="hasNoParent"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                 </span>
