@@ -7,4 +7,4 @@
  *
  * resource.save({id: volumeId}, data).then(...);
  */
-biigle.$declare('api.volumeImageMetadata', Vue.resource('/api/v1/volumes{/id}/images/metadata'));
+biigle.$declare('api.volumeImageMetadata', Vue.resource('api/v1/volumes{/id}/images/metadata'));
