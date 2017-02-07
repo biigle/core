@@ -11,6 +11,7 @@
         // angular.module('biigle.largo').constant('LABEL_TREES', {!!$labelTrees!!});
         biigle.$declare('largo.volumeId', {!! $volume->id !!});
         biigle.$declare('largo.labelTrees', {!! $labelTrees !!});
+        biigle.$declare('largo.showAnnotationRoute', '@if(Route::has('show-annotation')){{ route('show-annotation', '') }}/' @else '' @endif);
     </script>
 @endpush
 
@@ -28,20 +29,23 @@
 @section('content')
 <div id="largo-container" class="largo-container">
     <div class="largo-images">
-        <div v-cloak v-if="loading" class="largo-container__loader">
-            <div class="alert alert-info">
+        <div class="largo-images__alerts">
+            <div v-if="!selectedLabel" class="alert alert-info">
+                Please choose a label in the sidebar.
+            </div>
+            <div v-cloak v-if="loading" class="alert alert-info">
                 <loader :active="true"></loader>
             </div>
+            <div v-cloak v-if="hasNoAnnotations" class="alert alert-info">
+                There are no annotations with the label <strong v-text="selectedLabel.name"></strong>.
+            </div>
         </div>
-        <div v-if="!selectedLabel" class="alert alert-info">
-            Please choose a label in the sidebar.
-        </div>
-        <image-grid :images="annotations" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-else></image-grid>
+        <image-grid :images="annotations" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:select="handleDismissedImage" v-on:deselect="handleUndismissedImage"></image-grid>
     </div>
     <sidebar :show-buttons="false" open-tab="labels">
-        <sidebar-tab v-cloak class="largo-tab" slot="tabs" name="labels" icon="tags" title="Label trees">
-            <div class="largo-tab__button">
-                <button class="btn btn-success btn-block" :disabled="true">Continue</button>
+        <sidebar-tab class="largo-tab" slot="tabs" name="labels" icon="tags" title="Label trees">
+            <div v-cloak class="largo-tab__button">
+                <button class="btn btn-success btn-block" :disabled="!hasDismissedAnnotations" title="Go to the re-labelling step">Continue</button>
             </div>
             <label-trees class="largo-tab__label-trees" :trees="labelTrees" :show-favourites="true" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
         </sidebar-tab>

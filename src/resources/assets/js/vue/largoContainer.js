@@ -16,7 +16,7 @@ biigle.$viewModel('largo-container', function (element) {
             labelTrees: biigle.$require('labelTrees.components.labelTrees'),
             sidebar: biigle.$require('core.components.sidebar'),
             sidebarTab: biigle.$require('core.components.sidebarTab'),
-            imageGrid: biigle.$require('largo.components.imageGrid'),
+            imageGrid: biigle.$require('largo.components.dismissImageGrid'),
         },
         data: {
             labelTrees: biigle.$require('largo.labelTrees'),
@@ -38,6 +38,26 @@ biigle.$viewModel('largo-container', function (element) {
 
                 return [];
             },
+            allAnnotations: function () {
+                var annotations = [];
+                for (var id in this.annotationsCache) {
+                    if (!this.annotationsCache.hasOwnProperty(id)) continue;
+                    Array.prototype.push.apply(annotations, this.annotationsCache[id]);
+                }
+
+                return annotations;
+            },
+            hasNoAnnotations: function () {
+                return this.selectedLabel && !this.loading && this.annotations.length === 0;
+            },
+            dismissedAnnotations: function () {
+                return this.allAnnotations.filter(function (item) {
+                    return item.dismissed;
+                });
+            },
+            hasDismissedAnnotations: function () {
+                return this.dismissedAnnotations.length > 0;
+            },
         },
         methods: {
             getAnnotations: function (label) {
@@ -48,10 +68,24 @@ biigle.$viewModel('largo-container', function (element) {
                     this.startLoading();
                     volumesApi.queryAnnotations({id: volumeId, label_id: label.id})
                         .then(function (response) {
-                            Vue.set(self.annotationsCache, label.id, response.data);
+                            self.gotAnnotations(label, response.data);
                         }, messages.handleResponseError)
                         .finally(this.finishLoading);
                 }
+            },
+            gotAnnotations: function (label, annotations) {
+                // This is the object that we will use to store information for each
+                // annotation patch.
+                annotations = annotations.map(function (id) {
+                    return {
+                        id: id,
+                        blob: null,
+                        dismissed: false,
+                        newLabel: null,
+                    };
+                });
+
+                Vue.set(this.annotationsCache, label.id, annotations);
             },
             handleSelectedLabel: function (label) {
                 this.selectedLabel = label;
@@ -62,6 +96,12 @@ biigle.$viewModel('largo-container', function (element) {
             },
             handleDeselectedLabel: function () {
                 this.selectedLabel = null;
+            },
+            handleDismissedImage: function (image) {
+                image.dismissed = true;
+            },
+            handleUndismissedImage: function (image) {
+                image.dismissed = false;
             },
         },
         watch: {

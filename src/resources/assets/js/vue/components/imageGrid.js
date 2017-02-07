@@ -6,7 +6,7 @@
 biigle.$component('largo.components.imageGrid', {
     template: '<div class="image-grid">' +
         '<div class="image-grid__images" ref="images">' +
-            '<image-grid-image v-for="id in displayedImages" :key="id" :id="id" :empty-url="emptyUrl"></image-grid-image>' +
+            '<component :is="imageComponent" v-for="image in displayedImages" :key="image.id" :image="image" :empty-url="emptyUrl" @select="emitSelect" @deselect="emitDeselect"></component>' +
         '</div>' +
         '<image-grid-progress :progress="progress" @top="jumpToStart" @prev-page="reversePage" @prev-row="reverseRow" @jump="jumpToPercent" @next-row="advanceRow" @next-page="advancePage" @bottom="jumpToEnd"></image-grid-progress>' +
     '</div>',
@@ -15,6 +15,7 @@ biigle.$component('largo.components.imageGrid', {
             clientWidth: 0,
             clientHeight: 0,
             privateOffset: 0,
+            imageComponent: 'imageGridImage',
         };
     },
     components: {
@@ -103,12 +104,18 @@ biigle.$component('largo.components.imageGrid', {
         jumpToEnd: function () {
             this.jumpToPercent(1);
         },
+        emitSelect: function (image) {
+            this.$emit('select', image);
+        },
+        emitDeselect: function (image) {
+            this.$emit('deselect', image);
+        },
     },
     created: function () {
         window.addEventListener('resize', this.updateDimensions);
     },
     mounted: function () {
-        this.updateDimensions();
+        this.$nextTick(this.updateDimensions);
         this.$el.addEventListener('wheel', this.scroll);
     },
 });
