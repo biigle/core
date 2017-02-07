@@ -11,4 +11,4 @@
  *
  * resource.get({id: volumeId, number: 2}, {}).then(...)
  */
-biigle.$declare('api.volumeSample', Vue.resource('/api/v1/volumes{/id}/sample{/number}'));
+biigle.$declare('api.volumeSample', Vue.resource('api/v1/volumes{/id}/sample{/number}'));
