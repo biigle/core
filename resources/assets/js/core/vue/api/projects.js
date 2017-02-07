@@ -55,49 +55,49 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.projects', Vue.resource('/api/v1/projects{/id}', {}, {
+biigle.$declare('api.projects', Vue.resource('api/v1/projects{/id}', {}, {
     query: {
         // a user can only query their own projects
-        url: '/api/v1/projects/my',
+        url: 'api/v1/projects/my',
     },
     queryVolumes: {
         method: 'GET',
-        url: '/api/v1/projects{/id}/volumes',
+        url: 'api/v1/projects{/id}/volumes',
     },
     saveVolume: {
         method: 'POST',
-        url: '/api/v1/projects{/id}/volumes',
+        url: 'api/v1/projects{/id}/volumes',
     },
     attachVolume: {
         method: 'POST',
-        url: '/api/v1/projects{/id}/volumes{/volume_id}',
+        url: 'api/v1/projects{/id}/volumes{/volume_id}',
     },
     detachVolume: {
         method: 'DELETE',
-        url: '/api/v1/projects{/id}/volumes{/volume_id}',
+        url: 'api/v1/projects{/id}/volumes{/volume_id}',
     },
     addUser: {
         method: 'POST',
-        url: '/api/v1/projects{/id}/users{/user_id}',
+        url: 'api/v1/projects{/id}/users{/user_id}',
     },
     updateUser: {
         method: 'PUT',
-        url: '/api/v1/projects{/id}/users{/user_id}',
+        url: 'api/v1/projects{/id}/users{/user_id}',
     },
     removeUser: {
         method: 'DELETE',
-        url: '/api/v1/projects{/id}/users{/user_id}',
+        url: 'api/v1/projects{/id}/users{/user_id}',
     },
     queryAvailableLabelTrees: {
         method: 'GET',
-        url: '/api/v1/projects{/id}/label-trees/available',
+        url: 'api/v1/projects{/id}/label-trees/available',
     },
     attachLabelTree: {
         method: 'POST',
-        url: '/api/v1/projects{/id}/label-trees',
+        url: 'api/v1/projects{/id}/label-trees',
     },
     detachLabelTree: {
         method: 'DELETE',
-        url: '/api/v1/projects{/id}/label-trees{/label_tree_id}',
+        url: 'api/v1/projects{/id}/label-trees{/label_tree_id}',
     },
 }));

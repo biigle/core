@@ -16,9 +16,9 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.labels', Vue.resource('/api/v1/labels{/id}', {}, {
+biigle.$declare('api.labels', Vue.resource('api/v1/labels{/id}', {}, {
     save: {
         method: 'POST',
-        url: '/api/v1/label-trees{/label_tree_id}/labels',
+        url: 'api/v1/label-trees{/label_tree_id}/labels',
     }
 }));

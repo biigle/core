@@ -32,25 +32,25 @@
  *
  * @type {Vue.resource}
  */
-biigle.$declare('api.labelTree', Vue.resource('/api/v1/label-trees{/id}', {}, {
+biigle.$declare('api.labelTree', Vue.resource('api/v1/label-trees{/id}', {}, {
     addAuthorizedProject: {
         method: 'POST',
-        url: '/api/v1/label-trees{/id}/authorized-projects',
+        url: 'api/v1/label-trees{/id}/authorized-projects',
     },
     removeAuthorizedProject: {
         method: 'DELETE',
-        url: '/api/v1/label-trees{/id}/authorized-projects{/project_id}',
+        url: 'api/v1/label-trees{/id}/authorized-projects{/project_id}',
     },
     addUser: {
         method: 'POST',
-        url: '/api/v1/label-trees{/id}/users',
+        url: 'api/v1/label-trees{/id}/users',
     },
     updateUser: {
         method: 'PUT',
-        url: '/api/v1/label-trees{/id}/users{/user_id}',
+        url: 'api/v1/label-trees{/id}/users{/user_id}',
     },
     removeUser: {
         method: 'DELETE',
-        url: '/api/v1/label-trees{/id}/users{/user_id}',
+        url: 'api/v1/label-trees{/id}/users{/user_id}',
     },
 }));
