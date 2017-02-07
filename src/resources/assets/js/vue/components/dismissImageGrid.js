@@ -1,5 +1,5 @@
 /**
- * A component that displays a grid of lots of images for Largo
+ * A variant of the image grid used for the dismiss step of Largo
  *
  * @type {Object}
  */

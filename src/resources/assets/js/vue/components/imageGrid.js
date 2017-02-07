@@ -6,7 +6,7 @@
 biigle.$component('largo.components.imageGrid', {
     template: '<div class="image-grid">' +
         '<div class="image-grid__images" ref="images">' +
-            '<component :is="imageComponent" v-for="image in displayedImages" :key="image.id" :image="image" :empty-url="emptyUrl" @select="emitSelect" @deselect="emitDeselect"></component>' +
+            '<image-grid-image v-for="image in displayedImages" :key="image.id" :image="image" :empty-url="emptyUrl" @select="emitSelect" @deselect="emitDeselect"></image-grid-image>' +
         '</div>' +
         '<image-grid-progress :progress="progress" @top="jumpToStart" @prev-page="reversePage" @prev-row="reverseRow" @jump="jumpToPercent" @next-row="advanceRow" @next-page="advancePage" @bottom="jumpToEnd"></image-grid-progress>' +
     '</div>',
@@ -15,7 +15,6 @@ biigle.$component('largo.components.imageGrid', {
             clientWidth: 0,
             clientHeight: 0,
             privateOffset: 0,
-            imageComponent: 'imageGridImage',
         };
     },
     components: {

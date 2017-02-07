@@ -60,13 +60,8 @@
     }
 }
 
-.image-grid__image--dismiss {
+.image-grid__image--dismiss, .image-grid__image--relabel {
     cursor: pointer;
-
-    &:before {
-        // glyphicon-remove
-        content: "\e014";
-    }
 
     &:before {
         font-family: 'Glyphicons Halflings';
@@ -106,5 +101,44 @@
 
     img {
         transition: opacity .25s ease;
+    }
+}
+
+.image-grid__image--dismiss {
+    &:before {
+        // glyphicon-remove
+        content: "\e014";
+    }
+}
+
+.image-grid__image--relabel {
+    &:before {
+        // glyphicon-ok
+        content: "\e013";
+    }
+
+    .new-label {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        bottom: 0;
+        padding: .5em;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .new-label__name {
+        padding-right: 16px;
+    }
+
+    .new-label__color {
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        border-radius: 50%;
+        border: 2px solid #eee;
+        vertical-align: middle;
     }
 }

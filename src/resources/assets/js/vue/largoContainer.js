@@ -16,7 +16,8 @@ biigle.$viewModel('largo-container', function (element) {
             labelTrees: biigle.$require('labelTrees.components.labelTrees'),
             sidebar: biigle.$require('core.components.sidebar'),
             sidebarTab: biigle.$require('core.components.sidebarTab'),
-            imageGrid: biigle.$require('largo.components.dismissImageGrid'),
+            dismissImageGrid: biigle.$require('largo.components.dismissImageGrid'),
+            relabelImageGrid: biigle.$require('largo.components.relabelImageGrid'),
         },
         data: {
             labelTrees: biigle.$require('largo.labelTrees'),
@@ -102,11 +103,36 @@ biigle.$viewModel('largo-container', function (element) {
             },
             handleUndismissedImage: function (image) {
                 image.dismissed = false;
+                image.newLabel = null;
+            },
+            goToRelabel: function () {
+                this.step = 1;
+            },
+            goToDismiss: function () {
+                this.step = 0;
+            },
+            handleRelabelledImage: function (image) {
+                if (this.selectedLabel) {
+                    image.newLabel = this.selectedLabel;
+                }
+            },
+            handleUnrelabelledImage: function (image) {
+                // If a new label is selected, swap the label instead of removing it.
+                if (image.newLabel.id !== this.selectedLabel.id) {
+                    image.newLabel = this.selectedLabel;
+                } else {
+                    image.newLabel = null;
+                }
+            },
+            save: function () {
             },
         },
         watch: {
             annotations: function (annotations) {
                 events.$emit('annotations-count', annotations.length);
+            },
+            dismissedAnnotations: function (annotations) {
+                events.$emit('dismissed-annotations-count', annotations.length);
             },
             step: function (step) {
                 events.$emit('step', step);
