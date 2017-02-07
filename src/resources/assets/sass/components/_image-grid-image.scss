@@ -1,0 +1,29 @@
+.image-grid__image {
+    height: 135px;
+    width: 180px;
+    display: inline-flex;
+    justify-content: center;
+    position: relative;
+    margin: 4px;
+    border: 2px solid transparent;
+    // create a gap between volume figure border and image so the image color does
+    // not interfere with the border color
+    padding: 2px;
+    border-radius: $border-radius-large;
+    transition: border .25s ease;
+    text-align: center;
+    overflow: hidden;
+
+    img {
+        width: auto;
+        height: 100%;
+        border-radius: $border-radius-base;
+    }
+}
+
+@supports (object-fit: cover) {
+    .image-grid__image img {
+        width: 100%;
+        object-fit: cover;
+    }
+}

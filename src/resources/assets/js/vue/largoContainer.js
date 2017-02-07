@@ -16,6 +16,7 @@ biigle.$viewModel('largo-container', function (element) {
             labelTrees: biigle.$require('labelTrees.components.labelTrees'),
             sidebar: biigle.$require('core.components.sidebar'),
             sidebarTab: biigle.$require('core.components.sidebarTab'),
+            imageGrid: biigle.$require('largo.components.imageGrid'),
         },
         data: {
             labelTrees: biigle.$require('largo.labelTrees'),
@@ -36,7 +37,7 @@ biigle.$viewModel('largo-container', function (element) {
                 }
 
                 return [];
-            }
+            },
         },
         methods: {
             getAnnotations: function (label) {

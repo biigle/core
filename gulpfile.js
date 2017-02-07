@@ -37,7 +37,7 @@ gulp.task('js-vue', function (cb) {
 gulp.task('js', ['js-main', 'js-project-largo', 'js-annotations', 'js-vue']);
 
 gulp.task('watch', function () {
-    gulp.watch(h.paths.sass + 'main.scss', ['sass-main']);
+    gulp.watch(h.paths.sass + '**/*.scss', ['sass-main']);
     gulp.watch(h.paths.sass + 'annotations.scss', ['sass-annotations']);
     gulp.watch(h.paths.js + 'largo/**/*.js', ['js-main']);
     gulp.watch(h.paths.js + 'project-largo/**/*.js', ['js-project-largo']);

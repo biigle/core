@@ -28,13 +28,15 @@
 @section('content')
 <div id="largo-container" class="largo-container">
     <div class="largo-images">
+        <div v-cloak v-if="loading" class="largo-container__loader">
+            <div class="alert alert-info">
+                <loader :active="true"></loader>
+            </div>
+        </div>
         <div v-if="!selectedLabel" class="alert alert-info">
             Please choose a label in the sidebar.
         </div>
-        <div v-cloak v-if="loading" class="alert alert-info">
-            <loader :active="true"></loader>
-        </div>
-        <div v-text="annotations.join(', ')"></div>
+        <image-grid :images="annotations" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-else></image-grid>
     </div>
     <sidebar :show-buttons="false" open-tab="labels">
         <sidebar-tab v-cloak class="largo-tab" slot="tabs" name="labels" icon="tags" title="Label trees">
