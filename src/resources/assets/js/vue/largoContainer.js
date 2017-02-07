@@ -1,11 +1,11 @@
 /**
- * The panel for editing the title information of a label tree
+ * View model for the main Largo container
  */
 biigle.$viewModel('largo-container', function (element) {
     var messages = biigle.$require('messages.store');
-
     var volumesApi = biigle.$require('largo.api.volumes');
     var volumeId = biigle.$require('largo.volumeId');
+    var events = biigle.$require('largo.stores.events');
 
     new Vue({
         el: element,
@@ -62,6 +62,14 @@ biigle.$viewModel('largo-container', function (element) {
             },
             handleDeselectedLabel: function () {
                 this.selectedLabel = null;
+            },
+        },
+        watch: {
+            annotations: function (annotations) {
+                events.$emit('annotations-count', annotations.length);
+            },
+            step: function (step) {
+                events.$emit('step', step);
             },
         },
         created: function () {
