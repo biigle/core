@@ -6,91 +6,55 @@
     }
 }
 
-.volume-container {
-    &.dismiss-mode {
-        .volume-figure:before {
-            // glyphicon-remove
-            content: "\e014";
-        }
-    }
+.largo-container {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: calc(100% - 51px);
+    margin-top: 51px;
+}
 
-    &.re-labelling-mode {
-        .volume-figure:before {
-            // glyphicon-ok
-            content: "\e013";
-        }
+.largo-images {
+    position: relative;
+    flex: 1;
+}
+
+.largo-images__alerts {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    transition: .25s background-color ease;
+    z-index: 2;
+
+    &.block {
+        pointer-events: auto;
+        background-color: rgba(0, 0, 0, .5);
     }
 }
 
-.volume-figure {
+.largo-tab {
+    display: flex !important;
+    flex-direction: column;
 
-    &:before {
-        font-family: 'Glyphicons Halflings';
-        position: absolute;
-        display: block;
-        z-index: 1;
-        width: 100%;
-        height: 100%;
-        font-size: $font-size-h1;
-        text-align: center;
-        padding-top: 1em;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity .25s ease;
-        // text "border"
-        text-shadow: -2px 0 $body-bg, 0 2px $body-bg, 2px 0 $body-bg, 0 -2px $body-bg;
-        color: white;
+    .largo-tab__button {
+        padding-bottom: $padding-large-vertical;
     }
 
-    &:hover {
-        &:before {
-            opacity: 1;
-        }
-    }
-
-    &.annotation-selected {
-
-        &:before {
-            opacity: .5;
-        }
-
-        .image-wrapper {
-            opacity: .25;
-        }
-    }
-
-    .image-wrapper {
-        height: 100%;
-        position: relative;
-        transition: opacity .25s ease;
-    }
-
-    .changed-label {
-        position: absolute;
-        width: 100%;
-        left: 0;
-        bottom: 0;
-        padding: .5em;
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .changed-label-name {
-        // the star to toggle favourite
-        padding-right: 16px;
-    }
-
-    .changed-label-color {
-        width: 1em;
-        height: 1em;
-        display: inline-block;
-        border-radius: 50%;
-        border: 2px solid #eee;
-        vertical-align: middle;
+    .largo-tab__label-trees {
+        flex: 1;
+        overflow: auto;
     }
 }
 
-.largo-alert {
-    margin-top: 1em;
-}
+
+@import 'components/image-grid';
+@import 'components/image-grid-image';
+@import 'components/image-grid-progress';

@@ -22,22 +22,22 @@ gulp.task('js-main', function (cb) {
    h.angular('largo/**/*.js', 'main.js', cb);
 });
 
-gulp.task('js-project-largo', function (cb) {
-   h.angular('project-largo/**/*.js', 'project-largo.js', cb);
-});
-
 gulp.task('js-annotations', function (cb) {
    h.angular('annotations/**/*.js', 'annotations.js', cb);
 });
 
-gulp.task('js', ['js-main', 'js-project-largo', 'js-annotations']);
+gulp.task('js-vue', function (cb) {
+   h.angular('vue/**/*.js', 'vue.js', cb);
+});
+
+gulp.task('js', ['js-main', 'js-annotations', 'js-vue']);
 
 gulp.task('watch', function () {
-    gulp.watch(h.paths.sass + 'main.scss', ['sass-main']);
+    gulp.watch(h.paths.sass + '**/*.scss', ['sass-main']);
     gulp.watch(h.paths.sass + 'annotations.scss', ['sass-annotations']);
     gulp.watch(h.paths.js + 'largo/**/*.js', ['js-main']);
-    gulp.watch(h.paths.js + 'project-largo/**/*.js', ['js-project-largo']);
     gulp.watch(h.paths.js + 'annotations/**/*.js', ['js-annotations']);
+    gulp.watch(h.paths.js + 'vue/**/*.js', ['js-vue']);
     gulp.watch(h.paths.public + '**/*', publish);
 });
 

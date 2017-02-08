@@ -1,0 +1,145 @@
+.image-grid__image {
+    height: 135px;
+    width: 180px;
+    display: inline-flex;
+    justify-content: center;
+    position: relative;
+    margin: 4px;
+    border: 2px solid transparent;
+    // create a gap between volume figure border and image so the image color does
+    // not interfere with the border color
+    padding: 2px;
+    border-radius: $border-radius-large;
+    transition: border .25s ease;
+    overflow: hidden;
+
+    &:hover {
+        .image-button {
+            opacity: .75;
+        }
+    }
+
+    img {
+        width: auto;
+        height: 100%;
+        border-radius: $border-radius-base;
+        background-color: $gray-lighter;
+    }
+
+    .image-buttons {
+        position: absolute;
+        top: $padding-base-vertical;
+        right: $padding-base-vertical;
+        // width of a single button
+        width: 28px;
+    }
+
+    .image-button {
+        padding: 0.3em 0.5em;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: $border-radius-base;
+        color: white;
+        display: block;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+
+        &:not(:last-child) {
+            margin-bottom: $padding-base-vertical;
+        }
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+@supports (object-fit: cover) {
+    .image-grid__image img {
+        width: 100%;
+        object-fit: cover;
+    }
+}
+
+.image-grid__image--dismiss, .image-grid__image--relabel {
+    cursor: pointer;
+
+    &:before {
+        font-family: 'Glyphicons Halflings';
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        font-size: $font-size-h1;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .25s ease;
+        // text "border"
+        text-shadow: -2px 0 $body-bg, 0 2px $body-bg, 2px 0 $body-bg, 0 -2px $body-bg;
+        color: white;
+    }
+
+    &:hover {
+        &:before {
+            opacity: 1;
+        }
+    }
+
+    &.image-grid__image--selected {
+        &:before {
+            opacity: .5;
+        }
+
+        img {
+            opacity: .25;
+        }
+    }
+
+    img {
+        transition: opacity .25s ease;
+    }
+}
+
+.image-grid__image--dismiss {
+    &:before {
+        // glyphicon-remove
+        content: "\e014";
+    }
+}
+
+.image-grid__image--relabel {
+    &:before {
+        // glyphicon-ok
+        content: "\e013";
+    }
+
+    .new-label {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        bottom: 0;
+        padding: .5em;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: center;
+        pointer-events: none;
+    }
+
+    .new-label__name {
+        padding-right: 16px;
+    }
+
+    .new-label__color {
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        border-radius: 50%;
+        border: 2px solid #eee;
+        vertical-align: middle;
+    }
+}
