@@ -21,7 +21,10 @@ biigle.$component('core.components.sidebarTab', {
         },
         title: {
             type: String
-        }
+        },
+        href: {
+            type: String
+        },
     },
     computed: {
         classObject: function () {

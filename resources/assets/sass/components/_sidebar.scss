@@ -33,10 +33,12 @@
     .sidebar__button {
         // Distribute the buttons evenly to the full height of the buttons container.
         flex: 1;
-        display: block;
         border-radius: 0;
         width: 100%;
         border: 0;
+        // Vertically center align icons.
+        display: flex;
+        align-items: center;
 
         &:not(:last-child) {
             border-bottom: 1px solid $btn-default-border;

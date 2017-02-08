@@ -4,10 +4,10 @@
  * @type {Object}
  */
 biigle.$component('core.components.sidebarButton', {
-    template: '<button class="sidebar__button btn btn-default btn-lg" :class="classObject" @click="toggle" :title="tab.title">' +
+    template: '<a :href="href" class="sidebar__button btn btn-default btn-lg" :class="classObject" @click="toggle" :title="tab.title">' +
         '<span v-if="open" class="glyphicon" :class="chevronClass" aria-hidden="true"></span>' +
         '<span v-else class="glyphicon" :class="iconClass" aria-hidden="true"></span>' +
-    '</button>',
+    '</a>',
     data: function () {
         return {
             open: false
@@ -38,9 +38,15 @@ biigle.$component('core.components.sidebarButton', {
                 active: this.open
             };
         },
+        href: function () {
+            return this.tab.href;
+        },
     },
     methods: {
-        toggle: function () {
+        toggle: function (e) {
+            if (this.href) return;
+
+            e.preventDefault();
             if (this.open) {
                 this.$parent.$emit('close');
             } else {
