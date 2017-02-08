@@ -6,9 +6,6 @@
     <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
     <script src="{{ cachebust_asset('vendor/largo/scripts/vue.js') }}"></script>
     <script type="text/javascript">
-        // angular.module('biigle.largo').constant('LARGO_VOLUME_ID', {{$volume->id}});
-        // angular.module('biigle.largo').constant('THUMB_DIMENSION', {WIDTH: {{config('thumbnails.width')}}, HEIGHT: {{config('thumbnails.height')}} });
-        // angular.module('biigle.largo').constant('LABEL_TREES', {!!$labelTrees!!});
         biigle.$declare('largo.volumeId', {!! $volume->id !!});
         biigle.$declare('largo.labelTrees', {!! $labelTrees !!});
         biigle.$declare('largo.showAnnotationRoute', '@if(Route::has('show-annotation')){{ route('show-annotation', '') }}/' @else '' @endif);
@@ -22,7 +19,7 @@
 
 @section('navbar')
 <div class="navbar-text navbar-largo-breadcrumbs">
-    @include('volumes::partials.projectsBreadcrumb') / <a href="{{route('volume', $volume->id)}}" title="Show volume {{$volume->name}}" class="navbar-link">{{$volume->name}}</a> / <span id="largo-title"><strong v-if="isInDismissStep">Largo - dismiss existing annotations</strong><strong v-cloak v-else>Largo - re-label dismissed annotations</strong> <small>(<span v-text="shownCount">0</span>&nbsp;annotations)</small></span> @include('volumes::partials.annotationSessionIndicator')
+    @include('volumes::partials.projectsBreadcrumb') / <a href="{{route('volume', $volume->id)}}" title="Show volume {{$volume->name}}" class="navbar-link">{{$volume->name}}</a> / <span id="largo-title">Largo / <strong v-if="isInDismissStep">dismiss existing annotations</strong><strong v-cloak v-else>re-label dismissed annotations</strong> <small>(<span v-text="shownCount">0</span>&nbsp;annotations)</small></span> @include('volumes::partials.annotationSessionIndicator')
 </div>
 @endsection
 

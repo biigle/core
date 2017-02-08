@@ -51,7 +51,7 @@ class LargoController extends Controller
             })
             ->get();
 
-        return view('largo::index', [
+        return view('largo::show', [
             'user' => $user,
             'volume' => $volume,
             'projects' => $projects,

@@ -137,6 +137,9 @@ biigle.$viewModel('largo-container', function (element) {
             },
             goToDismiss: function () {
                 this.step = 0;
+                if (this.selectedLabel) {
+                    this.getAnnotations(this.selectedLabel);
+                }
             },
             handleRelabelledImage: function (image) {
                 if (this.selectedLabel) {
@@ -145,7 +148,7 @@ biigle.$viewModel('largo-container', function (element) {
             },
             handleUnrelabelledImage: function (image) {
                 // If a new label is selected, swap the label instead of removing it.
-                if (image.newLabel.id !== this.selectedLabel.id) {
+                if (this.selectedLabel && image.newLabel.id !== this.selectedLabel.id) {
                     image.newLabel = this.selectedLabel;
                 } else {
                     image.newLabel = null;
