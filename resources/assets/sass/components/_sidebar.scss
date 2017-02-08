@@ -5,6 +5,23 @@
         width: 350px;
     }
 
+    &.sidebar--left {
+        flex-direction: row-reverse;
+        border-right: 1px solid $btn-default-border;
+
+        .sidebar__tab {
+            border-right: 1px solid $btn-default-border;
+        }
+    }
+
+    &.sidebar--right {
+        border-left: 1px solid $btn-default-border;
+
+        .sidebar__tab {
+            border-left: 1px solid $btn-default-border;
+        }
+    }
+
     .sidebar__buttons {
         width: 50px;
         height: 100%;
@@ -35,7 +52,6 @@
         padding: 1em;
         height: 100%;
         overflow: auto;
-        border-left: 1px solid $btn-default-border;
 
         &.sidebar__tab--open {
             display: block;

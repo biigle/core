@@ -6,7 +6,7 @@
 biigle.$component('core.components.sidebar', {
     template: '<aside class="sidebar" :class="classObject">' +
         '<div class="sidebar__buttons" v-if="showButtons">' +
-            '<sidebar-button v-for="tab in tabs" :tab="tab"></sidebar-button>' +
+            '<sidebar-button v-for="tab in tabs" :tab="tab" :direction="direction"></sidebar-button>' +
         '</div>' +
         '<div class="sidebar__tabs"><slot name="tabs"></slot></div>' +
     '</aside>',
@@ -26,11 +26,21 @@ biigle.$component('core.components.sidebar', {
             type: Boolean,
             default: true,
         },
+        // Indicates whether the sidebar is on the 'left' or on the 'right'
+        direction: {
+            type: String,
+            default: 'right',
+            validator: function (value) {
+                return value === 'left' || value === 'right';
+            },
+        },
     },
     computed: {
         classObject: function () {
             return {
-                'sidebar--open': this.open
+                'sidebar--open': this.open,
+                'sidebar--left': this.isLeft,
+                'sidebar--right': !this.isLeft,
             };
         },
         tabs: function () {
@@ -40,7 +50,10 @@ biigle.$component('core.components.sidebar', {
             }
 
             return tabs;
-        }
+        },
+        isLeft: function () {
+            return this.direction === 'left';
+        },
     },
     created: function () {
         var self = this;

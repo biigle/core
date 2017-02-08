@@ -5,7 +5,7 @@
  */
 biigle.$component('core.components.sidebarButton', {
     template: '<button class="sidebar__button btn btn-default btn-lg" :class="classObject" @click="toggle" :title="tab.title">' +
-        '<span v-if="open" class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>' +
+        '<span v-if="open" class="glyphicon" :class="chevronClass" aria-hidden="true"></span>' +
         '<span v-else class="glyphicon" :class="iconClass" aria-hidden="true"></span>' +
     '</button>',
     data: function () {
@@ -18,16 +18,26 @@ biigle.$component('core.components.sidebarButton', {
             type: Object,
             required: true
         },
+        direction: {
+            type: String,
+            default: 'right',
+            validator: function (value) {
+                return value === 'left' || value === 'right';
+            },
+        },
     },
     computed: {
         iconClass: function () {
             return 'glyphicon-' + this.tab.icon;
         },
+        chevronClass: function () {
+            return 'glyphicon-chevron-' + this.direction;
+        },
         classObject: function () {
             return {
                 active: this.open
             };
-        }
+        },
     },
     methods: {
         toggle: function () {
