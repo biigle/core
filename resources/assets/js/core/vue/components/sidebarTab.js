@@ -25,6 +25,10 @@ biigle.$component('core.components.sidebarTab', {
         href: {
             type: String
         },
+        disabled: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         classObject: function () {
