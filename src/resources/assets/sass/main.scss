@@ -54,7 +54,86 @@
     }
 }
 
+.image-grid__image--dismiss, .image-grid__image--relabel {
+    cursor: pointer;
 
-@import 'components/image-grid';
-@import 'components/image-grid-image';
-@import 'components/image-grid-progress';
+    &:before {
+        font-family: 'Glyphicons Halflings';
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        font-size: $font-size-h1;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .25s ease;
+        // text "border"
+        text-shadow: -2px 0 $body-bg, 0 2px $body-bg, 2px 0 $body-bg, 0 -2px $body-bg;
+        color: white;
+    }
+
+    &:hover {
+        &:before {
+            opacity: 1;
+        }
+    }
+
+    &.image-grid__image--selected {
+        &:before {
+            opacity: .5;
+        }
+
+        img {
+            opacity: .25;
+        }
+    }
+
+    img {
+        transition: opacity .25s ease;
+    }
+}
+
+.image-grid__image--dismiss {
+    &:before {
+        // glyphicon-remove
+        content: "\e014";
+    }
+}
+
+.image-grid__image--relabel {
+    &:before {
+        // glyphicon-ok
+        content: "\e013";
+    }
+
+    .new-label {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        bottom: 0;
+        padding: .5em;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: center;
+        pointer-events: none;
+    }
+
+    .new-label__name {
+        padding-right: 16px;
+    }
+
+    .new-label__color {
+        width: 1em;
+        height: 1em;
+        display: inline-block;
+        border-radius: 50%;
+        border: 2px solid #eee;
+        vertical-align: middle;
+    }
+}

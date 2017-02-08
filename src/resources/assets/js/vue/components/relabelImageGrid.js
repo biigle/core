@@ -4,7 +4,7 @@
  * @type {Object}
  */
 biigle.$component('largo.components.relabelImageGrid', {
-    mixins: [biigle.$require('largo.components.imageGrid')],
+    mixins: [biigle.$require('volumes.components.imageGrid')],
     components: {
         imageGridImage: biigle.$require('largo.components.relabelImageGridImage'),
     },

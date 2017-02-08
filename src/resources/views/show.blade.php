@@ -4,6 +4,7 @@
 
 @push('scripts')
     <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
+    <script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
     <script src="{{ cachebust_asset('vendor/largo/scripts/main.js') }}"></script>
     <script type="text/javascript">
         biigle.$declare('largo.volumeId', {!! $volume->id !!});
@@ -14,6 +15,7 @@
 
 @push('styles')
     <link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
+    <link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
     <link href="{{ cachebust_asset('vendor/largo/styles/main.css') }}" rel="stylesheet">
 @endpush
 

@@ -4,7 +4,7 @@
  * @type {Object}
  */
 biigle.$component('largo.components.dismissImageGridImage', {
-    mixins: [biigle.$require('largo.components.imageGridImage')],
+    mixins: [biigle.$require('volumes.components.imageGridImage')],
     template: '<figure class="image-grid__image image-grid__image--dismiss" :class="classObject" :title="title">' +
         '<img @click="toggleSelect" :src="url || emptyUrl">' +
         '<div v-if="showAnnotationLink" class="image-buttons">' +
