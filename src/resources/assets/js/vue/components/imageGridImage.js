@@ -41,6 +41,11 @@ biigle.$component('largo.components.imageGridImage', {
                 this.$emit('select', this.image);
             }
         },
+        gotBlob: function (response) {
+            var urlCreator = window.URL || window.webkitURL;
+            this.url = urlCreator.createObjectURL(response.body);
+            this.image.blob = this.url;
+        },
     },
     created: function () {
         if (this.image.blob) {
@@ -49,11 +54,7 @@ biigle.$component('largo.components.imageGridImage', {
             var self = this;
             // use a timeout to skip requests when scrolling fast
             this.timeout = setTimeout(function () {
-                self.getBlob().then(function (response) {
-                    var urlCreator = window.URL || window.webkitURL;
-                    self.url = urlCreator.createObjectURL(response.body);
-                    self.image.blob = self.url;
-                });
+                self.getBlob().then(self.gotBlob);
             }, 50);
         }
     },

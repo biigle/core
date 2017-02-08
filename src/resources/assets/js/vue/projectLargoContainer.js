@@ -1,9 +1,9 @@
 /**
- * View model for the main Largo container
+ * View model for the main Largo container (for projects)
  */
-biigle.$viewModel('largo-container', function (element) {
-    var volumesApi = biigle.$require('largo.api.volumes');
-    var volumeId = biigle.$require('largo.volumeId');
+biigle.$viewModel('project-largo-container', function (element) {
+    var projectsApi = biigle.$require('largo.api.projects');
+    var projectId = biigle.$require('largo.projectId');
 
     new Vue({
         el: element,
@@ -13,10 +13,10 @@ biigle.$viewModel('largo-container', function (element) {
         },
         methods: {
             queryAnnotations: function (label) {
-                return volumesApi.queryAnnotations({id: volumeId, label_id: label.id});
+                return projectsApi.queryAnnotations({id: projectId, label_id: label.id});
             },
             performSave: function (dismissed, changed) {
-                return volumesApi.save({id: volumeId}, {
+                return projectsApi.save({id: projectId}, {
                     dismissed: dismissed,
                     changed: changed,
                 });
