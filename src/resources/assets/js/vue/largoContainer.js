@@ -59,6 +59,32 @@ biigle.$viewModel('largo-container', function (element) {
             hasDismissedAnnotations: function () {
                 return this.dismissedAnnotations.length > 0;
             },
+            dismissedToSave: function () {
+                var annotations = this.dismissedAnnotations;
+                var dismissed = {};
+
+                for (var i = annotations.length - 1; i >= 0; i--) {
+                    if (dismissed.hasOwnProperty(annotations[i].label_id)) {
+                        dismissed[annotations[i].label_id].push(annotations[i].id);
+                    } else {
+                        dismissed[annotations[i].label_id] = [annotations[i].id];
+                    }
+                }
+
+                return dismissed;
+            },
+            changedToSave: function () {
+                var annotations = this.dismissedAnnotations.filter(function (item) {
+                    return !!item.newLabel;
+                });
+                var changed = {};
+
+                for (var i = annotations.length - 1; i >= 0; i--) {
+                    changed[annotations[i].id] = annotations[i].newLabel.id;
+                }
+
+                return changed;
+            },
         },
         methods: {
             getAnnotations: function (label) {
@@ -70,7 +96,7 @@ biigle.$viewModel('largo-container', function (element) {
                     volumesApi.queryAnnotations({id: volumeId, label_id: label.id})
                         .then(function (response) {
                             self.gotAnnotations(label, response.data);
-                        }, messages.handleResponseError)
+                        }, messages.handleErrorResponse)
                         .finally(this.finishLoading);
                 }
             },
@@ -80,6 +106,7 @@ biigle.$viewModel('largo-container', function (element) {
                 annotations = annotations.map(function (id) {
                     return {
                         id: id,
+                        label_id: label.id,
                         blob: null,
                         dismissed: false,
                         newLabel: null,
@@ -125,6 +152,24 @@ biigle.$viewModel('largo-container', function (element) {
                 }
             },
             save: function () {
+                if (this.loading) return;
+                this.loading = true;
+
+                volumesApi.save({id: volumeId}, {
+                        dismissed: this.dismissedToSave,
+                        changed: this.changedToSave,
+                    })
+                    .then(this.saved, messages.handleErrorResponse)
+                    .finally(this.finishLoading);
+            },
+            saved: function () {
+                messages.success('Saved.  You can now start a new re-evaluation session.');
+                this.step = 0;
+                for (var key in this.annotationsCache) {
+                    if (!this.annotationsCache.hasOwnProperty(key)) continue;
+                    delete this.annotationsCache[key];
+                }
+                this.handleSelectedLabel(this.selectedLabel);
             },
         },
         watch: {

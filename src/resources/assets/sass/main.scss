@@ -122,6 +122,13 @@
     justify-content: center;
     align-items: center;
     pointer-events: none;
+    transition: .25s background-color ease;
+    z-index: 2;
+
+    &.block {
+        pointer-events: auto;
+        background-color: rgba(0, 0, 0, .5);
+    }
 }
 
 .largo-tab {
