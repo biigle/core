@@ -4,7 +4,7 @@
  * @type {Object}
  */
 biigle.$component('largo.components.imageGrid', {
-    template: '<div class="image-grid">' +
+    template: '<div class="image-grid" @wheel="scroll">' +
         '<div class="image-grid__images" ref="images">' +
             '<image-grid-image v-for="image in displayedImages" :key="image.id" :image="image" :empty-url="emptyUrl" @select="emitSelect" @deselect="emitDeselect"></image-grid-image>' +
         '</div>' +
@@ -64,7 +64,7 @@ biigle.$component('largo.components.imageGrid', {
         progress: function () {
             return this.offset / (this.columns * this.lastRow);
         },
-        // number of the topmost row of the last "page"
+        // Number of the topmost row of the last "page".
         lastRow: function () {
             return Math.ceil(this.images.length / this.columns) - this.rows;
         },
@@ -73,6 +73,9 @@ biigle.$component('largo.components.imageGrid', {
         updateDimensions: function () {
             this.clientHeight = this.$refs.images.clientHeight;
             this.clientWidth = this.$refs.images.clientWidth;
+            // Update the offset if the grid is scrolled to the very bottom
+            // (this.lastRow may have changed).
+            this.offset = this.offset;
         },
         scrollRows: function (rows) {
             this.offset = this.offset + this.columns * rows;
@@ -93,8 +96,8 @@ biigle.$component('largo.components.imageGrid', {
             this.scrollRows(-this.rows);
         },
         jumpToPercent: function (percent) {
-            // the percentage from 0 to 1 goes from row 0 to the topmost row
-            // of the last "page" and *not* to the very last row
+            // The percentage from 0 to 1 goes from row 0 to the topmost row
+            // of the last "page" and *not* to the very last row.
             this.offset = this.columns * Math.round(this.lastRow * percent);
         },
         jumpToStart: function () {
@@ -112,9 +115,25 @@ biigle.$component('largo.components.imageGrid', {
     },
     created: function () {
         window.addEventListener('resize', this.updateDimensions);
+        var keyboard = biigle.$require('labelTrees.stores.keyboard');
+        // arrow up
+        keyboard.on(38, this.reverseRow);
+        // arrow down
+        keyboard.on(40, this.advanceRow);
+        // arrow left
+        keyboard.on(37, this.reversePage);
+        // page up
+        keyboard.on(33, this.reversePage);
+        // arrow right
+        keyboard.on(39, this.advancePage);
+        // page down
+        keyboard.on(34, this.advancePage);
+        // home
+        keyboard.on(36, this.jumpToStart);
+        // end
+        keyboard.on(35, this.jumpToEnd);
     },
     mounted: function () {
         this.$nextTick(this.updateDimensions);
-        this.$el.addEventListener('wheel', this.scroll);
     },
 });
