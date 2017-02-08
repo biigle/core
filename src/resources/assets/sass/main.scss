@@ -9,8 +9,8 @@ $volume-image-padding: 0.5em;
     position: absolute;
     top: 0;
     width: 100%;
-    height: calc(100% - #{$navbar-height});
-    margin-top: $navbar-height;
+    height: calc(100% - #{$navbar-height} - 1px);
+    margin-top: $navbar-height + 1px;
 }
 
 
@@ -26,3 +26,6 @@ $volume-image-padding: 0.5em;
 @import "main/menubar";
 @import "main/label";
 
+@import 'components/image-grid';
+@import 'components/image-grid-image';
+@import 'components/image-grid-progress';

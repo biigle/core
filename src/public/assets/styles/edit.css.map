@@ -1,1 +1,0 @@
-{"version":3,"sources":["edit.scss"],"names":[],"mappings":"AACI,oCACI,WAAA,MACA,WAAA","file":"edit.css","sourcesContent":[".volume-images-panel {\n    .images-list {\n        max-height: 300px;\n        overflow-y: auto;\n    }\n}\n"],"sourceRoot":"/source/"}

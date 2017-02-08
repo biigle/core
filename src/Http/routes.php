@@ -18,6 +18,11 @@ $router->group([
             'uses' => 'VolumeController@index',
         ]);
 
+        $router->get('volumes-vue/{id}', [
+            'as'   => 'volume',
+            'uses' => 'VolumeVueController@index',
+        ]);
+
         $router->get('images/{id}', [
             'as'   => 'image',
             'uses' => 'ImageController@index',
