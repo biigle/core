@@ -19,25 +19,20 @@ gulp.task('sass-annotations', function () {
 gulp.task('sass', ['sass-main', 'sass-annotations']);
 
 gulp.task('js-main', function (cb) {
-   h.angular('largo/**/*.js', 'main.js', cb);
+   h.angular('vue/**/*.js', 'main.js', cb);
 });
 
 gulp.task('js-annotations', function (cb) {
    h.angular('annotations/**/*.js', 'annotations.js', cb);
 });
 
-gulp.task('js-vue', function (cb) {
-   h.angular('vue/**/*.js', 'vue.js', cb);
-});
-
-gulp.task('js', ['js-main', 'js-annotations', 'js-vue']);
+gulp.task('js', ['js-main', 'js-annotations']);
 
 gulp.task('watch', function () {
     gulp.watch(h.paths.sass + '**/*.scss', ['sass-main']);
     gulp.watch(h.paths.sass + 'annotations.scss', ['sass-annotations']);
-    gulp.watch(h.paths.js + 'largo/**/*.js', ['js-main']);
+    gulp.watch(h.paths.js + 'vue/**/*.js', ['js-main']);
     gulp.watch(h.paths.js + 'annotations/**/*.js', ['js-annotations']);
-    gulp.watch(h.paths.js + 'vue/**/*.js', ['js-vue']);
     gulp.watch(h.paths.public + '**/*', publish);
 });
 
