@@ -7,17 +7,14 @@
 
     &.sidebar--left {
         flex-direction: row-reverse;
-        border-right: 1px solid $btn-default-border;
 
-        .sidebar__tab {
+        .sidebar__tab, .sidebar__buttons {
             border-right: 1px solid $btn-default-border;
         }
     }
 
     &.sidebar--right {
-        border-left: 1px solid $btn-default-border;
-
-        .sidebar__tab {
+        .sidebar__tab, .sidebar__buttons {
             border-left: 1px solid $btn-default-border;
         }
     }
