@@ -15,7 +15,8 @@ biigle.$component('core.components.sidebar', {
     },
     data: function () {
         return {
-            open: false
+            open: false,
+            tabs: [],
         };
     },
     props: {
@@ -43,16 +44,13 @@ biigle.$component('core.components.sidebar', {
                 'sidebar--right': !this.isLeft,
             };
         },
-        tabs: function () {
-            var tabs = [];
-            for (var i = this.$slots.tabs.length - 1; i >= 0; i--) {
-                tabs.unshift(this.$slots.tabs[i].componentOptions.propsData);
-            }
-
-            return tabs;
-        },
         isLeft: function () {
             return this.direction === 'left';
+        },
+    },
+    methods: {
+        registerTab: function (tab) {
+            this.tabs.push(tab);
         },
     },
     created: function () {

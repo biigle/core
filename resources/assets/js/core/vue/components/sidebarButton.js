@@ -8,11 +8,6 @@ biigle.$component('core.components.sidebarButton', {
         '<span v-if="open" class="glyphicon" :class="chevronClass" aria-hidden="true"></span>' +
         '<span v-else class="glyphicon" :class="iconClass" aria-hidden="true"></span>' +
     '</a>',
-    data: function () {
-        return {
-            open: false
-        };
-    },
     props: {
         tab: {
             type: Object,
@@ -45,6 +40,9 @@ biigle.$component('core.components.sidebarButton', {
         href: function () {
             return this.disabled ? null : this.tab.href;
         },
+        open: function () {
+            return this.tab.open;
+        },
     },
     methods: {
         toggle: function (e) {
@@ -58,14 +56,4 @@ biigle.$component('core.components.sidebarButton', {
             }
         }
     },
-    mounted: function () {
-        var self = this;
-        this.$parent.$on('open', function (name) {
-            self.open = name === self.tab.name;
-        });
-
-        this.$parent.$on('close', function () {
-            self.open = false;
-        });
-    }
 });

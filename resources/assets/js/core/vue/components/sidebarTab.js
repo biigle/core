@@ -41,7 +41,7 @@ biigle.$component('core.components.sidebarTab', {
             };
         }
     },
-    created: function () {
+    beforeCreate: function () {
         var self = this;
         this.$parent.$on('open', function (name) {
             self.open = name === self.name;
@@ -51,5 +51,6 @@ biigle.$component('core.components.sidebarTab', {
             self.open = false;
         });
 
-    }
+        this.$parent.registerTab(this);
+    },
 });
