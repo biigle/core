@@ -10,16 +10,14 @@ use Biigle\Http\Controllers\Api\Controller;
 class VolumeImageLabelController extends Controller
 {
     /**
-     * Find a label in all image labels that were used in a volume.
+     * Get all image labels that were used in a volume
      *
-     * @api {get} volumes/:id/image-labels/find/:pattern Find a label in all image labels that were used in a volume
+     * @api {get} volumes/:id/image-labels Get all image labels that were used in a volume
      * @apiGroup Volumes
-     * @apiName VolumeFindImageLabel
+     * @apiName VolumeIndexImageLabels
      * @apiPermission projectMember
-     * @apiDescription Returns only the first 10 matches
      *
      * @apiParam {Number} id The volume ID
-     * @apiParam {String} pattern Part of the label name to find
      *
      * @apiSuccessExample {json} Success response:
      * [
@@ -38,22 +36,14 @@ class VolumeImageLabelController extends Controller
      * ]
      *
      * @param  int  $id
-     * @param  string  $pattern
      * @return \Illuminate\Http\Response
      */
-    public function findLabel($id, $pattern)
+    public function index($id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        if (DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
-            $operator = 'ilike';
-        } else {
-            $operator = 'like';
-        }
-
         return Label::select('id', 'name', 'color', 'parent_id')
-            ->where('name', $operator, "%{$pattern}%")
             ->whereExists(function ($query) use ($id) {
                 // take only labels that are attached to images of this volume
                 $query->select(DB::raw(1))
@@ -62,7 +52,6 @@ class VolumeImageLabelController extends Controller
                     ->where('images.volume_id', $id)
                     ->whereRaw('image_labels.label_id = labels.id');
             })
-            ->take(10)
             ->get();
     }
 }

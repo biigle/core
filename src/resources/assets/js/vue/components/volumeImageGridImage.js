@@ -21,16 +21,5 @@ biigle.$component('volumes.components.volumeImageGridImage', {
             var route = biigle.$require('largo.showAnnotationRoute');
             return route ? (route + this.image.id) : '';
         },
-        selected: function () {
-            return this.image.dismissed;
-        },
-        title: function () {
-            return this.selected ? 'Undo dismissing this annotation' : 'Dismiss this annotation';
-        },
-    },
-    methods: {
-        getBlob: function () {
-            return biigle.$require('largo.api.annotations').get({id: this.image.id});
-        },
     },
 });

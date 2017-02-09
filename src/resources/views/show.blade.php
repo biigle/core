@@ -60,6 +60,22 @@
 
 @section('content')
 <div id="volume-container" class="volume-container">
-    <image-grid :images="imagesToShow" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}"></image-grid>
+    <sidebar direction="left" v-on:toggle="handleSidebarToggle" open-tab="filter">
+        @can ('update', $volume)
+            <sidebar-tab slot="tabs" name="edit" icon="pencil" title="Edit this volume" href="{{ route('volume-edit', $volume->id) }}"></sidebar-tab>
+        @endcan
+        @can ('edit-in', $volume)
+            <sidebar-tab slot="tabs" name="labels" icon="tags" title="Toggle image label mode" :disabled="true"></sidebar-tab>
+        @endcan
+        <sidebar-tab slot="tabs" name="filter" icon="filter" title="Filter images" :highlight="hasFilterSequence">
+            @include('volumes::show.filters')
+        </sidebar-tab>
+        <sidebar-tab slot="tabs" name="sort" icon="sort" title="Sort images"></sidebar-tab>
+    </sidebar>
+    <div class="volume-content">
+        <loader-block v-cloak :active="loading"></loader-block>
+        <image-grid :images="imagesToShow" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" ref="imageGrid"></image-grid>
+
+    </div>
 </div>
 @endsection

@@ -60,8 +60,8 @@ $router->group([
             'uses' => 'VolumeImageAnnotationLabelController@index',
         ]);
 
-        $router->get('volumes/{id}/image-labels/find/{pattern}', [
-            'uses' => 'VolumeImageLabelController@findLabel',
+        $router->get('volumes/{id}/image-labels', [
+            'uses' => 'VolumeImageLabelController@index',
         ]);
 
         $router->get('volumes/{id}/users', [

@@ -13,7 +13,10 @@ $volume-image-padding: 0.5em;
     margin-top: $navbar-height + 1px;
 }
 
-
+.volume-content {
+    position: relative;
+    flex: 1;
+}
 
 .navbar-text.navbar-volumes-breadcrumbs {
     &, a {
