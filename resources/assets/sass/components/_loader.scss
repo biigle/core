@@ -3,6 +3,7 @@
 // <span class="loader loader--active"></span>
 
 .loader {
+    position: relative;
     display: none;
     width: 16px;
     height: 16px;
@@ -11,8 +12,28 @@
     border-left: 3px solid $text-color;
     vertical-align: middle;
     animation: rotate 1.1s infinite linear;
+    pointer-events: none;
 
     &.loader--active {
       display: inline-block;
+    }
+
+    &.loader--fancy {
+        border: 0;
+        height: 50px;
+        width: 50px;
+        animation-duration: 5s;
+        background-color: rgba(0, 0, 0, 0.75);
+
+        &:before {
+            position: absolute;
+            content: '';
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background: url(../images/biigle-wheel.png) center no-repeat;
+            background-size: contain;
+        }
     }
 }
