@@ -122,6 +122,7 @@ biigle.$component('volumes.components.imageGrid', {
     },
     created: function () {
         window.addEventListener('resize', this.updateDimensions);
+        this.$on('resize', this.updateDimensions);
         var keyboard = biigle.$require('labelTrees.stores.keyboard');
         // arrow up
         keyboard.on(38, this.reverseRow);
