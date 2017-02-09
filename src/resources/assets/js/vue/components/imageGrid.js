@@ -113,6 +113,13 @@ biigle.$component('volumes.components.imageGrid', {
             this.$emit('deselect', image);
         },
     },
+    watch: {
+        images: function () {
+            // Update the offset if the grid is scrolled to the very bottom
+            // (this.lastRow may have changed).
+            this.offset = this.offset;
+        },
+    },
     created: function () {
         window.addEventListener('resize', this.updateDimensions);
         var keyboard = biigle.$require('labelTrees.stores.keyboard');
