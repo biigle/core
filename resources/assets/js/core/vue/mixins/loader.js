@@ -15,9 +15,11 @@ biigle.$component('core.mixins.loader', {
     methods: {
         startLoading: function () {
             this.loading = true;
+            this.$emit('loading', true);
         },
         finishLoading: function () {
             this.loading = false;
+            this.$emit('loading', false);
         },
     },
 });
