@@ -1,29 +1,33 @@
 <filter-tab v-cloak :volume-id="volumeId" :image-ids="imageIds" v-on:loading="toggleLoading" v-on:update="updateFilterSequence" inline-template>
-    <div>
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default" title="Show only images matching the filter rules" data-ng-class="{active: isFilterMode('filter')}" data-ng-click="setFilterMode('filter')"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
-            <button type="button" class="btn btn-default" title="Show all images but flag those matching the filter rules" data-ng-class="{active: isFilterMode('flag')}" data-ng-click="setFilterMode('flag')"><span class="glyphicon glyphicon-flag" aria-hidden="true"></span></button>
-        </div>
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default" title="Clear all filter rules" data-ng-click="resetFiltering()" data-ng-disabled="!active()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+    <div class="filter-tab">
+        <div class="filter-tab__buttons">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default" title="Show only images matching the filter rules" data-ng-class="{active: isFilterMode('filter')}" data-ng-click="setFilterMode('filter')"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" title="Show all images but flag those matching the filter rules" data-ng-class="{active: isFilterMode('flag')}" data-ng-click="setFilterMode('flag')"><span class="glyphicon glyphicon-flag" aria-hidden="true"></span></button>
+            </div>
+            <div class="btn-group pull-right" role="group">
+                <button type="button" class="btn btn-default" title="Clear all filter rules" data-ng-click="resetFiltering()" data-ng-disabled="!active()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+            </div>
         </div>
 
-        <form class="form-inline" v-on:submit.prevent="addRule">
-            <div class="form-group">
-                <select class="form-control" v-model="negate" required>
-                    <option :value="false">has</option>
-                    <option :value="true">has no</option>
-                </select>
+        <form class="form clearfix" v-on:submit.prevent>
+            <div class="filter-form__selects">
+                <div class="form-group">
+                    <select class="form-control" v-model="negate" required>
+                        <option :value="false">has</option>
+                        <option :value="true">has no</option>
+                    </select>
+                </div>
+                <div class="form-group filter-select">
+                    <select class="form-control" v-model="selectedFilterId" required>
+                        <option v-for="filter in filters" :value="filter.id" v-text="filter.label"></option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <select class="form-control" v-model="selectedFilterId" required>
-                    <option v-for="filter in filters" :value="filter.id" v-text="filter.label"></option>
-                </select>
-            </div>
-            <div v-if="hasSelectComponent">
+            <div v-if="hasSelectComponent" class="select-component">
                 <component :is="selectComponent" :volume-id="volumeId" v-on:select="addRule"></component>
             </div>
-            <button type="submit" class="btn btn-default">Add</button>
+            <button v-else v-if="selectedFilter" type="submit" class="btn btn-default pull-right" v-on:click="addRule">Add rule</button>
         </form>
         <h3>Filter rules:</h3>
         <ul class="list-group">

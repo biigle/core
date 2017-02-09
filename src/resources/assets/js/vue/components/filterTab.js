@@ -75,16 +75,26 @@ biigle.$component('volumes.components.filterTab', {
                 typeof filter.listComponent === 'object' &&
                 typeof filter.getSequence === 'function';
         },
+        hasRule: function (rule) {
+            return this.rules.findIndex(function (item) {
+                return item.id === rule.id &&
+                    item.negate === rule.negate &&
+                    item.data === rule.data;
+            }) !== -1;
+        },
         addRule: function (data) {
             if (!this.selectedFilter) return;
 
-            this.startLoading();
-            var self = this;
             var rule = {
                 id: this.selectedFilter.id,
                 data: data,
                 negate: this.negate,
             };
+
+            if (this.hasRule(rule)) return;
+
+            this.startLoading();
+            var self = this;
 
             this.selectedFilter.getSequence(this.volumeId, data)
                 .catch(biigle.$require('messages.store').handleErrorResponse)

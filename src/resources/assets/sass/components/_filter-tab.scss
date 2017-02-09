@@ -1,0 +1,15 @@
+.filter-tab {
+    .filter-tab__buttons, .select-component {
+        margin-bottom: $form-group-margin-bottom;
+    }
+}
+
+
+.filter-form__selects {
+    display: flex;
+
+    .filter-select {
+        flex: 1;
+        margin-left: $padding-base-horizontal;
+    }
+}

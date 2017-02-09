@@ -7,39 +7,19 @@ biigle.$declare('volumes.stores.filters', [
         id: 'imageLabel',
         label: 'image label',
         listComponent: {
-            template: '<span><strong>with<span v-if="rule.negate">out</span></strong> image label <strong v-text="rule.data.name"></strong></span>',
-            props: {
-                rule: {
-                    type: Object,
-                    required: true,
-                }
+            mixins: [biigle.$require('volumes.components.filterListComponent')],
+            data: function () {
+                return {name: 'image label'};
             },
         },
         selectComponent: {
-            template: '<typeahead :items="labels" placeholder="Label name" @select="select"></typeahead>',
-            components: {
-                typeahead: biigle.$require('core.components.typeahead'),
-            },
-            props: {
-                volumeId: {
-                    type: Number,
-                    required: true,
-                }
-            },
+            mixins: [biigle.$require('volumes.components.filterSelectComponent')],
             data: function () {
-                return {labels: []};
-            },
-            methods: {
-                select: function (label) {
-                    this.$emit('select', label);
-                },
-                gotImageLabels: function (response) {
-                    this.labels = response.data;
-                },
+                return {placeholder: 'Label name'};
             },
             created: function () {
                 biigle.$require('api.volumes').queryImageLabels({id: this.volumeId})
-                    .then(this.gotImageLabels, biigle.$require('messages.store').handleErrorResponse);
+                    .then(this.gotItems, biigle.$require('messages.store').handleErrorResponse);
             },
         },
         getSequence: function (volumeId, label) {
