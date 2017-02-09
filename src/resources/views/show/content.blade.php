@@ -2,8 +2,8 @@
     <dismiss-image-grid v-if="isInDismissStep" :images="annotations" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:select="handleDismissedImage" v-on:deselect="handleUndismissedImage"></dismiss-image-grid>
     <relabel-image-grid v-cloak v-else :images="dismissedAnnotations" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:select="handleRelabelledImage" v-on:deselect="handleUnrelabelledImage"></relabel-image-grid>
     <div class="largo-images__alerts" :class="{block: loading}">
-        <div v-cloak v-if="loading" class="alert alert-info">
-            <loader :active="true"></loader>
+        <div v-cloak v-if="loading">
+            <loader :active="true" :fancy="true"></loader>
         </div>
         <div v-if="isInDismissStep && !selectedLabel" class="alert alert-info">
             Please choose a label in the sidebar.
