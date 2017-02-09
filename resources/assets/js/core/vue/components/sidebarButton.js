@@ -35,7 +35,8 @@ biigle.$component('core.components.sidebarButton', {
         },
         classObject: function () {
             return {
-                active: this.open
+                active: this.open,
+                'btn-info': this.tab.highlight,
             };
         },
         disabled: function () {

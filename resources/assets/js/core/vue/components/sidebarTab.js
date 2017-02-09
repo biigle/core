@@ -29,6 +29,10 @@ biigle.$component('core.components.sidebarTab', {
             type: Boolean,
             default: false,
         },
+        highlight: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         classObject: function () {
