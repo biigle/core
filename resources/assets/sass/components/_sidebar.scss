@@ -2,7 +2,7 @@
     display: flex;
 
     &.sidebar--open {
-        width: 350px;
+        max-width: 350px;
     }
 
     &.sidebar--left {
@@ -54,6 +54,7 @@
         padding: 1em;
         height: 100%;
         overflow: auto;
+        width: 300px;
 
         &.sidebar__tab--open {
             display: block;
