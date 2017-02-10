@@ -4,8 +4,25 @@
 biigle.$declare('volumes.stores.filters', [
     // default filters
     {
+        id: 'imageLabels',
+        label: 'image labels',
+        help: "All images that (don't) have image labels attached.",
+        listComponent: {
+            mixins: [biigle.$require('volumes.components.filterListComponent')],
+            data: function () {
+                return {name: 'image labels'};
+            },
+        },
+        getSequence: function (volumeId) {
+            return biigle.$require('api.volumes').queryImagesWithImageLabels({
+                id: volumeId,
+            });
+        }
+    },
+    {
         id: 'imageLabel',
         label: 'image label',
+        help: "All images that (don't) have the given image label attached.",
         listComponent: {
             mixins: [biigle.$require('volumes.components.filterListComponent')],
             data: function () {
@@ -17,7 +34,6 @@ biigle.$declare('volumes.stores.filters', [
             data: function () {
                 return {
                     placeholder: 'Label name',
-                    help: "All images that (don't) have the given image label attached.",
                 };
             },
             created: function () {

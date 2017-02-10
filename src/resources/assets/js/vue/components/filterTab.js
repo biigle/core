@@ -44,21 +44,35 @@ biigle.$component('volumes.components.filterTab', {
         sequence: function () {
             var only = [];
             var except = [];
-            for (var i = this.rules.length - 1; i >= 0; i--) {
+            var i;
+            var nonNegatedRules = 0;
+
+            for (i = this.rules.length - 1; i >= 0; i--) {
                 if (this.rules[i].negate) {
                     Array.prototype.push.apply(except, this.rules[i].sequence);
                 } else {
+                    nonNegatedRules++;
                     Array.prototype.push.apply(only, this.rules[i].sequence);
                 }
             }
 
-            var ids;
+            var ids = [];
 
             if (only.length > 0) {
-                // Remove duplicates.
-                ids = only.filter(function (value, index, self) {
-                    return self.indexOf(value) === index;
-                });
+                var occurrence = {};
+                // Remove duplicates and take only those IDs that are accepted by all
+                // non-negated filter rules.
+                for (i = only.length - 1; i >= 0; i--) {
+                    if (occurrence.hasOwnProperty(only[i])) {
+                        occurrence[only[i]]++;
+                    } else {
+                        occurrence[only[i]] = 1;
+                    }
+
+                    if (occurrence[only[i]] === nonNegatedRules) {
+                        ids.push(only[i]);
+                    }
+                }
             } else {
                 ids = this.imageIds;
             }
@@ -72,6 +86,9 @@ biigle.$component('volumes.components.filterTab', {
         },
         inFlagMode: function () {
             return this.mode === 'flag';
+        },
+        helpText: function () {
+            return this.selectedFilter ? this.selectedFilter.help : null;
         },
     },
     methods: {
