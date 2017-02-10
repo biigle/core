@@ -19,21 +19,13 @@ biigle.$viewModel('volume-container', function (element) {
         },
         data: {
             imageIds: imageIds,
+            images: [],
             filterSequence: imageIds,
             sortingSequence: imageIds,
             volumeId: biigle.$require('volumes.volumeId'),
+            filterMode: null,
         },
         computed: {
-            images: function () {
-                return this.imageIds.map(function (id) {
-                    return {
-                        id: id,
-                        url: thumbUri.replace('{uuid}', imageUuids[id]),
-                        annotateUrl: annotateUri.replace('{id}', id),
-                        imageUrl: imageUri.replace('{id}', id),
-                    };
-                });
-            },
             sortedImages: function () {
                 // Map from image ID to index od sorted array.
                 var map = {};
@@ -52,7 +44,16 @@ biigle.$viewModel('volume-container', function (element) {
             },
             imagesToShow: function () {
                 var self = this;
+
+                if (this.filterMode === 'flag') {
+                    return this.sortedImages.map(function (image) {
+                        image.flagged = self.filterSequence.indexOf(image.id) !== -1;
+                        return image;
+                    });
+                }
+
                 return this.sortedImages.filter(function (image) {
+                    image.flagged = false;
                     return self.filterSequence.indexOf(image.id) !== -1;
                 });
             },
@@ -70,9 +71,25 @@ biigle.$viewModel('volume-container', function (element) {
             toggleLoading: function (loading) {
                 this.loading = loading;
             },
-            updateFilterSequence: function (sequence) {
-                this.filterSequence = sequence;
+            updateFilterSequence: function (data) {
+                this.filterSequence = data.sequence;
+                this.filterMode = data.mode;
             },
+        },
+        created: function () {
+            // Do this here instead of a computed property so the image objects get
+            // reactive. Also, this array does never change between page reloads.
+            var images = this.imageIds.map(function (id) {
+                return {
+                    id: id,
+                    url: thumbUri.replace('{uuid}', imageUuids[id]),
+                    annotateUrl: annotateUri.replace('{id}', id),
+                    imageUrl: imageUri.replace('{id}', id),
+                    flagged: false,
+                };
+            });
+
+            Vue.set(this, 'images', images);
         },
     });
 });

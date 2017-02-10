@@ -3,7 +3,6 @@
  */
 biigle.$component('volumes.components.filterTab', {
     mixins: [biigle.$require('core.mixins.loader')],
-    components: {},
     props: {
         volumeId: {
             type: Number,
@@ -20,6 +19,7 @@ biigle.$component('volumes.components.filterTab', {
             rules: [],
             selectedFilterId: null,
             negate: false,
+            mode: 'filter',
         };
     },
     computed: {
@@ -67,6 +67,12 @@ biigle.$component('volumes.components.filterTab', {
                 return except.indexOf(value) === -1;
             });
         },
+        inFilterMode: function () {
+            return this.mode === 'filter';
+        },
+        inFlagMode: function () {
+            return this.mode === 'flag';
+        },
     },
     methods: {
         filterValid: function (filter) {
@@ -110,10 +116,31 @@ biigle.$component('volumes.components.filterTab', {
         removeRule: function (index) {
             this.rules.splice(index, 1);
         },
+        reset: function () {
+            this.rules = [];
+            this.selectedFilterId = null;
+            this.negate = false;
+            this.mode = 'filter';
+        },
+        activateFilterMode: function () {
+            this.mode = 'filter';
+        },
+        activateFlagMode: function () {
+            this.mode = 'flag';
+        },
+        emitUpdate: function () {
+            this.$emit('update', {
+                sequence: this.sequence,
+                mode: this.mode,
+            });
+        },
     },
     watch: {
-        sequence: function (sequence) {
-            this.$emit('update', sequence);
+        sequence: function () {
+            this.emitUpdate();
+        },
+        mode: function () {
+            this.emitUpdate();
         },
     },
     created: function () {

@@ -5,7 +5,7 @@
  */
 biigle.$component('volumes.components.volumeImageGridImage', {
     mixins: [biigle.$require('volumes.components.imageGridImage')],
-    template: '<figure class="image-grid__image">' +
+    template: '<figure class="image-grid__image image-grid__image--volume" :class="classObject">' +
         '<a v-if="image.annotateUrl" :href="image.annotateUrl">' +
             '<img @click="toggleSelect" :src="url || emptyUrl" @error="showEmptyImage">' +
         '</a>' +
@@ -20,6 +20,9 @@ biigle.$component('volumes.components.volumeImageGridImage', {
         showAnnotationLink: function () {
             var route = biigle.$require('largo.showAnnotationRoute');
             return route ? (route + this.image.id) : '';
+        },
+        selected: function () {
+            return this.image.flagged;
         },
     },
 });

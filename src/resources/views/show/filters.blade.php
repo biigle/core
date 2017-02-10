@@ -2,11 +2,11 @@
     <div class="filter-tab">
         <div class="filter-tab__buttons">
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" title="Show only images matching the filter rules" data-ng-class="{active: isFilterMode('filter')}" data-ng-click="setFilterMode('filter')"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
-                <button type="button" class="btn btn-default" title="Show all images but flag those matching the filter rules" data-ng-class="{active: isFilterMode('flag')}" data-ng-click="setFilterMode('flag')"><span class="glyphicon glyphicon-flag" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" title="Show only images matching the filter rules" :class="{active: inFilterMode}" v-on:click="activateFilterMode"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" title="Show all images but flag those matching the filter rules" :class="{active: inFlagMode}" v-on:click="activateFlagMode"><span class="glyphicon glyphicon-flag" aria-hidden="true"></span></button>
             </div>
             <div class="btn-group pull-right" role="group">
-                <button type="button" class="btn btn-default" title="Clear all filter rules" data-ng-click="resetFiltering()" data-ng-disabled="!active()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" title="Clear all filter rules" v-on:click="reset"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
             </div>
         </div>
 

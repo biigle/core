@@ -1,0 +1,17 @@
+.image-grid__image--volume {
+    position: relative;
+
+    &.image-grid__image--selected {
+        &:before {
+            position: absolute;
+            content: '';
+            top: $padding-base-horizontal;
+            left: $padding-base-horizontal;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: $brand-info;
+            border: 2px solid white;
+        }
+    }
+}
