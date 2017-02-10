@@ -7,6 +7,7 @@ biigle.$component('volumes.components.filterSelectComponent', {
     template: '<div class="filter-select">' +
         '<typeahead :items="items" :value="value" :placeholder="placeholder" @select="select"></typeahead>' +
         '<button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem">Add rule</button>' +
+        '<div v-if="help" class="help-block" v-text="help"></div>' +
     '</div>',
     components: {
         typeahead: biigle.$require('core.components.typeahead'),

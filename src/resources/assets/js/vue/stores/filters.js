@@ -15,7 +15,10 @@ biigle.$declare('volumes.stores.filters', [
         selectComponent: {
             mixins: [biigle.$require('volumes.components.filterSelectComponent')],
             data: function () {
-                return {placeholder: 'Label name'};
+                return {
+                    placeholder: 'Label name',
+                    help: "All images that (don't) have the given image label attached.",
+                };
             },
             created: function () {
                 biigle.$require('api.volumes').queryImageLabels({id: this.volumeId})
