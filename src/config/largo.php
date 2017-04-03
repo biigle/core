@@ -39,7 +39,7 @@ return [
     | When Largo patches are generated, the source image is cached. This saves the encoding
     | process when the next patch of the same image is be generated and most importantly | it saves costly HTTP requests if the image comes from a remote source.
     |
-    | This is the time in minutes that an image should be cached. Default is 1 hour.
+    | This is the time in minutes that an image should be cached. Default is 5 minutes.
     */
-    'imagecache_lifetime' => 60,
+    'imagecache_lifetime' => 5,
 ];
