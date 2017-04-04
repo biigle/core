@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\NewUser::class,
+        Commands\GarbageCollectCache::class,
     ];
 
     /**
@@ -24,7 +25,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //
+        // Run at 1:35 because the cronjob of the original BIIGLE instance at the CeBiTec
+        // runs only at 5,20,35,50 and not every minute.
+        $schedule->command('cache:gc')->dailyAt('1:35');
     }
 
     /**

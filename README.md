@@ -52,6 +52,12 @@ Next, run `php artisan migrate` to set up the database tables.
 The document / web root of the web server must point to the `public` directory. Never make anything outside of the `public` directory accessible through the web!
 Make sure that the web server user has write permissions in the `storage` directory and any of its subdirectories as well as the `bootstrap/cache` directory.
 
+Now set up a cronjob (`crontab -e`) for the task scheduler:
+
+```
+* * * * * php /path/to/biigle/application/artisan schedule:run >> /dev/null 2>&1
+```
+
 Finally, you have to configure a supervised process for the queue worker daemon. The worker runs in parallel to the web server and is used for longer running tasks that should not be handled during a single request. The recommended setup for a supervised process is to use [Supervisor](http://supervisord.org/) but you can use any equivalent service as well. A supervisor configuration might look like this:
 
 ```
