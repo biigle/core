@@ -90,6 +90,12 @@ biigle.$component('volumes.components.filterTab', {
         helpText: function () {
             return this.selectedFilter ? this.selectedFilter.help : null;
         },
+        rulesStorageKey: function () {
+            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.filter.rules';
+        },
+        modeStorageKey: function () {
+            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.filter.mode';
+        },
     },
     methods: {
         filterValid: function (filter) {
@@ -158,9 +164,22 @@ biigle.$component('volumes.components.filterTab', {
         },
         mode: function () {
             this.emitUpdate();
+            if (this.mode !== 'filter') {
+                localStorage.setItem(this.modeStorageKey, this.mode);
+            } else {
+                localStorage.removeItem(this.modeStorageKey);
+            }
+        },
+        rules: function () {
+            if (this.rules.length > 0) {
+                localStorage.setItem(this.rulesStorageKey, JSON.stringify(this.rules));
+            } else {
+                localStorage.removeItem(this.rulesStorageKey);
+            }
         },
     },
     created: function () {
+        // Dynamically assign the components of the available filters.
         var filter;
         for (var i = 0; i < this.filters.length; i++) {
             filter = this.filters[i];
@@ -175,6 +194,17 @@ biigle.$component('volumes.components.filterTab', {
             if (filter.selectComponent) {
                 this.$options.components[filter.id + 'Select'] = filter.selectComponent;
             }
+        }
+
+        // Load saved state from local storage
+        var rules = JSON.parse(localStorage.getItem(this.rulesStorageKey));
+        if (rules) {
+            Vue.set(this, 'rules', rules);
+        }
+
+        var mode = localStorage.getItem(this.modeStorageKey);
+        if (mode) {
+            this.mode = mode;
         }
     },
 });

@@ -45,10 +45,12 @@ biigle.$component('volumes.components.imageGrid', {
     },
     computed: {
         columns: function () {
-            return Math.floor(this.clientWidth / (this.width + this.margin));
+            // This might be 0 if the clientWidth is not yet initialized, so force 1.
+            return Math.max(1, Math.floor(this.clientWidth / (this.width + this.margin)));
         },
         rows: function () {
-            return Math.floor(this.clientHeight / (this.height + this.margin));
+            // This might be 0 if the clientHeight is not yet initialized, so force 1.
+            return Math.max(1, Math.floor(this.clientHeight / (this.height + this.margin)));
         },
         displayedImages: function () {
             return this.images.slice(this.offset, this.offset + this.columns * this.rows);
@@ -66,7 +68,7 @@ biigle.$component('volumes.components.imageGrid', {
         },
         // Number of the topmost row of the last "page".
         lastRow: function () {
-            return Math.ceil(this.images.length / this.columns) - this.rows;
+            return Math.max(1, Math.ceil(this.images.length / this.columns) - this.rows);
         },
     },
     methods: {
