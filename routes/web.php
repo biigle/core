@@ -181,7 +181,7 @@ $router->group(['prefix' => 'api/v1', 'namespace' => 'Api', 'middleware' => 'aut
     ]);
 
     $router->resource('labels', 'LabelController', [
-        'only' => ['destroy'],
+        'only' => ['update', 'destroy'],
         'parameters' => ['labels' => 'id'],
     ]);
 
