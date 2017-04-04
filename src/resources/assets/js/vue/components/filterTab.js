@@ -58,7 +58,7 @@ biigle.$component('volumes.components.filterTab', {
 
             var ids = [];
 
-            if (only.length > 0) {
+            if (nonNegatedRules > 0) {
                 var occurrence = {};
                 // Remove duplicates and take only those IDs that are accepted by all
                 // non-negated filter rules.

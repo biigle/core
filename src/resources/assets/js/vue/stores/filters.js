@@ -47,5 +47,44 @@ biigle.$declare('volumes.stores.filters', [
                 label_id: label.id,
             });
         }
+    },
+    {
+        id: 'imageLabelUser',
+        label: 'image label by user',
+        help: "All images that (don't) have one or more image labels attached by the given user.",
+        listComponent: {
+            mixins: [biigle.$require('volumes.components.filterListComponent')],
+            data: function () {
+                return {name: 'image label by user'};
+            },
+        },
+        selectComponent: {
+            mixins: [biigle.$require('volumes.components.filterSelectComponent')],
+            data: function () {
+                return {
+                    placeholder: 'User name',
+                };
+            },
+            methods: {
+                gotItems: function (response) {
+                    response.data = response.data.map(function (user) {
+                        user.name = user.firstname + ' ' + user.lastname;
+                        return user;
+                    });
+
+                    this.items = response.data;
+                },
+            },
+            created: function () {
+                biigle.$require('api.volumes').queryUsers({id: this.volumeId})
+                    .then(this.gotItems, biigle.$require('messages.store').handleErrorResponse);
+            },
+        },
+        getSequence: function (volumeId, user) {
+            return biigle.$require('api.volumes').queryImagesWithImageLabelFromUser({
+                id: volumeId,
+                user_id: user.id,
+            });
+        }
     }
 ]);
