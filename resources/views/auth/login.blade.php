@@ -15,7 +15,7 @@
             <div data-ng-app="biigle.ui.collapse" class="info-text">
                 <h1 class="logo logo--standalone"><a href="{{ route('home') }}" class="logo__biigle">BIIGLE</a></h1>
                 <a class="info-text__sign" href="" data-ng-click="isShown = !isShown" data-ng-hide="isShown" title="What is BIIGLE?"><span class="glyphicon glyphicon-info-sign"></span></a>
-                <p class="ng-cloak" data-uib-collapse="!isShown" data-ng-click="isShown = !isShown">{{ trans('biigle.info') }} <a href="{{url('manual')}}">Read more in the manual</a>.</p>
+                <p class="ng-cloak" data-uib-collapse="!isShown">{{ trans('biigle.info') }}<br> Read <a href="https://doi.org/10.3389/fmars.2017.00083">the paper</a> or take a look at <a href="{{url('manual')}}">the manual</a>.</p>
             </div>
             <form class="well clearfix" role="form" method="POST" action="{{ url('login') }}">
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
