@@ -2,20 +2,13 @@
 
 @section('title'){{ trans('biigle.titles.login') }}@stop
 
-@push('scripts')
-    <script type="text/javascript">
-        angular.module('biigle.ui.collapse', ['ui.bootstrap.collapse', 'ngAnimate']);
-    </script>
-@endpush
-
 @section('content')
 <div class="container">
     <div class="row center-form">
         <div class="col-md-4 col-sm-6">
-            <div data-ng-app="biigle.ui.collapse" class="info-text">
+            <div class="info-text">
                 <h1 class="logo logo--standalone"><a href="{{ route('home') }}" class="logo__biigle">BIIGLE</a></h1>
-                <a class="info-text__sign" href="" data-ng-click="isShown = !isShown" data-ng-hide="isShown" title="What is BIIGLE?"><span class="glyphicon glyphicon-info-sign"></span></a>
-                <p class="ng-cloak" data-uib-collapse="!isShown">{{ trans('biigle.info') }}<br> Read <a href="https://doi.org/10.3389/fmars.2017.00083">the paper</a> or take a look at <a href="{{url('manual')}}">the manual</a>.</p>
+                <p class="text-muted">{{ trans('biigle.info') }} Read <a href="https://doi.org/10.3389/fmars.2017.00083">the paper</a> or take a look at <a href="{{url('manual')}}">the manual</a>.</p>
             </div>
             <form class="well clearfix" role="form" method="POST" action="{{ url('login') }}">
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
