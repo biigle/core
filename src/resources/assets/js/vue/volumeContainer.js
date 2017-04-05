@@ -57,8 +57,16 @@ biigle.$viewModel('volume-container', function (element) {
                     return self.filterSequence.indexOf(image.id) !== -1;
                 });
             },
+            imageIdsToShow: function () {
+                return this.imagesToShow.map(function (image) {
+                    return image.id;
+                });
+            },
             hasFilterSequence: function () {
                 return this.imageIds.length > this.filterSequence.length;
+            },
+            imagesStorageKey: function () {
+                return 'biigle.volumes.' + this.volumeId + '.images';
             },
         },
         methods: {
@@ -74,6 +82,23 @@ biigle.$viewModel('volume-container', function (element) {
             updateFilterSequence: function (data) {
                 this.filterSequence = data.sequence;
                 this.filterMode = data.mode;
+            },
+        },
+        watch: {
+            imageIdsToShow: function () {
+                // If the shown images differ from the default sequence, store them for
+                // the annotation tool.
+                for (var i = this.imageIdsToShow.length - 1; i >= 0; i--) {
+                    if (this.imageIdsToShow[i] !== this.imageIds[i]) {
+                        localStorage.setItem(
+                            this.imagesStorageKey,
+                            JSON.stringify(this.imageIdsToShow)
+                        );
+                        return;
+                    }
+                }
+
+                localStorage.removeItem(this.imagesStorageKey);
             },
         },
         created: function () {
