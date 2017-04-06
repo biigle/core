@@ -28,6 +28,17 @@ class Label extends Model
     ];
 
     /**
+     * Validation rules for updating a label.
+     *
+     * @var array
+     */
+    public static $updateRules = [
+        'name' => 'filled',
+        'color' => 'filled|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
+        'parent_id' => 'filled|integer|exists:labels,id',
+    ];
+
+    /**
      * The attributes that should be casted to native types.
      *
      * @var array

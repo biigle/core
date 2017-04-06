@@ -2,7 +2,7 @@
 
 return array(
 
-	'info' => 'BIIGLE is a browser-based application for the most efficient and effective rapid manual annotation of still images with a focus on underwater images.',
+	'info' => 'The Bio-Image Indexing and Graphical Labelling Environment is a sophisticated web service for efficient and rapid annotation of still images.',
 	'new_acc' => 'Create an account',
 	'back' => 'back',
 

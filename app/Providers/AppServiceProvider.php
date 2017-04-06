@@ -21,9 +21,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Configure global proxy settings for readfile() and the likes.
-        if (env('HTTP_PROXY')) {
+        if (config('app.proxy')) {
             stream_context_set_default(['http' => [
-                'proxy' => 'tcp://'.env('HTTP_PROXY'),
+                'proxy' => 'tcp://'.config('app.proxy'),
                 'request_fulluri' => true,
             ]]);
         }
