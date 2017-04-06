@@ -71,6 +71,9 @@
             @include('volumes::show.filters')
         </sidebar-tab>
         <sidebar-tab slot="tabs" name="sort" icon="sort" title="Sort images"></sidebar-tab>
+        @foreach ($modules->getMixins('volumesSidebar') as $module => $nestedMixins)
+            @include($module.'::volumesSidebar')
+        @endforeach
     </sidebar>
     <div class="volume-content">
         <loader-block v-cloak :active="loading"></loader-block>
