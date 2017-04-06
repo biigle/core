@@ -40,7 +40,7 @@ class LargoServiceProvider extends ServiceProvider
 
         \Event::listen('images.cleanup', ImagesCleanupListener::class);
 
-        $modules->addMixin('largo', 'volumesMenubar');
+        $modules->addMixin('largo', 'volumesSidebar');
         $modules->addMixin('largo', 'annotationsScripts');
         $modules->addMixin('largo', 'annotationsStyles');
         $modules->addMixin('largo', 'annotationsSidebar');
