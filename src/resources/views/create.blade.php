@@ -25,6 +25,11 @@
                <span class="help-block">{{ $errors->first('url') }}</span>
             @endif
          </div>
+         <div class="panel panel-warning">
+            <div class="panel-body text-warning">
+                Please contact the <a href="mailto:{{config('biigle.admin_email')}}">BIIGLE administrators</a> if you want to upload images for a new volume. Alternatively you can always create a new <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote volume</a>.
+            </div>
+        </div>
 
          <div class="form-group{{ $errors->has('media_type_id') ? ' has-error' : '' }}">
             <label for="media_type_id">Volume media type</label>
