@@ -8,7 +8,7 @@ biigle.$component('volumes.components.imageGrid', {
         '<div class="image-grid__images" ref="images">' +
             '<image-grid-image v-for="image in displayedImages" :key="image.id" :image="image" :empty-url="emptyUrl" @select="emitSelect" @deselect="emitDeselect"></image-grid-image>' +
         '</div>' +
-        '<image-grid-progress :progress="progress" @top="jumpToStart" @prev-page="reversePage" @prev-row="reverseRow" @jump="jumpToPercent" @next-row="advanceRow" @next-page="advancePage" @bottom="jumpToEnd"></image-grid-progress>' +
+        '<image-grid-progress v-if="canScroll" :progress="progress" @top="jumpToStart" @prev-page="reversePage" @prev-row="reverseRow" @jump="jumpToPercent" @next-row="advanceRow" @next-page="advancePage" @bottom="jumpToEnd"></image-grid-progress>' +
     '</div>',
     data: function () {
         return {
@@ -70,6 +70,9 @@ biigle.$component('volumes.components.imageGrid', {
         lastRow: function () {
             return Math.max(0, Math.ceil(this.images.length / this.columns) - this.rows);
         },
+        canScroll: function () {
+            return this.lastRow > 0;
+        },
     },
     methods: {
         updateDimensions: function () {
@@ -120,6 +123,9 @@ biigle.$component('volumes.components.imageGrid', {
             // Update the offset if the grid is scrolled to the very bottom
             // (this.lastRow may have changed).
             this.offset = this.offset;
+        },
+        canScroll: function () {
+            this.updateDimensions();
         },
     },
     created: function () {
