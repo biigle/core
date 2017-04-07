@@ -10,15 +10,14 @@ use Biigle\Http\Controllers\Api\Controller;
 class VolumeLabelController extends Controller
 {
     /**
-     * Find a label category in all categories that were used in a volume.
+     * Get all annotation labels that were used in a volume.
      *
-     * @api {get} volumes/:id/annotation-labels/find/:pattern Find a label category in all categories that were used in a volume
+     * @api {get} volumes/:id/annotation-labels Get all annotation labels that were used in a volume.
      * @apiGroup Volumes
-     * @apiName VolumeFindLabel
+     * @apiName VolumeIndexLabels
      * @apiPermission projectMember
      *
      * @apiParam {Number} id The volume ID
-     * @apiParam {String} pattern Part of the label name to find
      *
      * @apiSuccessExample {json} Success response:
      * [
@@ -37,22 +36,14 @@ class VolumeLabelController extends Controller
      * ]
      *
      * @param  int  $id
-     * @param  string  $pattern
      * @return \Illuminate\Http\Response
      */
-    public function find($id, $pattern)
+    public function index($id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        if (DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
-            $operator = 'ilike';
-        } else {
-            $operator = 'like';
-        }
-
         return Label::select('id', 'name', 'color', 'parent_id')
-            ->where('name', $operator, "%{$pattern}%")
             ->whereExists(function ($query) use ($id) {
                 // take only labels that are used in annotations of this volume
                 $query->select(DB::raw(1))
@@ -62,7 +53,6 @@ class VolumeLabelController extends Controller
                     ->where('images.volume_id', $id)
                     ->whereRaw('annotation_labels.label_id = labels.id');
             })
-            ->take(10)
             ->get();
     }
 }
