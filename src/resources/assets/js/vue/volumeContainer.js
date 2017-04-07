@@ -88,7 +88,7 @@ biigle.$viewModel('volume-container', function (element) {
             imageIdsToShow: function () {
                 // If the shown images differ from the default sequence, store them for
                 // the annotation tool.
-                var equal = this.imageIdsToShow.length === this.imageIds;
+                var equal = this.imageIdsToShow.length === this.imageIds.length;
 
                 if (equal) {
                     for (var i = this.imageIdsToShow.length - 1; i >= 0; i--) {
