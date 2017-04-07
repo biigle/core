@@ -88,17 +88,25 @@ biigle.$viewModel('volume-container', function (element) {
             imageIdsToShow: function () {
                 // If the shown images differ from the default sequence, store them for
                 // the annotation tool.
-                for (var i = this.imageIdsToShow.length - 1; i >= 0; i--) {
-                    if (this.imageIdsToShow[i] !== this.imageIds[i]) {
-                        localStorage.setItem(
-                            this.imagesStorageKey,
-                            JSON.stringify(this.imageIdsToShow)
-                        );
-                        return;
+                var equal = this.imageIdsToShow.length === this.imageIds;
+
+                if (equal) {
+                    for (var i = this.imageIdsToShow.length - 1; i >= 0; i--) {
+                        if (this.imageIdsToShow[i] !== this.imageIds[i]) {
+                            equal = false;
+                            break;
+                        }
                     }
                 }
 
-                localStorage.removeItem(this.imagesStorageKey);
+                if (equal) {
+                    localStorage.removeItem(this.imagesStorageKey);
+                } else {
+                    localStorage.setItem(
+                        this.imagesStorageKey,
+                        JSON.stringify(this.imageIdsToShow)
+                    );
+                }
             },
         },
         created: function () {
