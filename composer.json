@@ -1,8 +1,8 @@
 {
     "name": "biigle/volumes",
     "require": {
-        "biigle/projects": ">=1.1.2",
-        "biigle/label-trees": "~1.0"
+        "biigle/projects": "~1.4",
+        "biigle/label-trees": "~1.3"
     },
     "require-dev": {
     },

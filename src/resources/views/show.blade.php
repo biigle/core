@@ -9,10 +9,6 @@
     <script type="text/javascript">
         {{-- Add image IDs as array, too, because the ordering is important! --}}
         {{--
-        angular.module('biigle.volumes').constant('VOLUME_IMAGES', {!!$imageIds->keys()!!});
-        angular.module('biigle.volumes').constant('IMAGES_UUIDS', {!!$imageIds!!});
-        angular.module('biigle.volumes').constant('VOLUME_ID', {{$volume->id}});
-        angular.module('biigle.volumes').constant('THUMB_DIMENSION', {WIDTH: {{config('thumbnails.width')}}, HEIGHT: {{config('thumbnails.height')}} });
         angular.module('biigle.volumes').constant('USER_ID', {{$user->id}});
         --}}
 
@@ -29,19 +25,15 @@
         @else
             angular.module('biigle.volumes').constant('IS_ADMIN', false);
         @endcan
+    --}}
 
         @can('edit-in', $volume)
-            angular.module('biigle.volumes').constant('LABEL_TREES', {!!$labelTrees!!});
-        @else
-            angular.module('biigle.volumes').constant('LABEL_TREES', []);
+            biigle.$declare('volumes.labelTrees', {!!$labelTrees!!});
         @endcan
-    --}}
     </script>
-    {{--
     @foreach ($modules->getMixins('volumesScripts') as $module => $nestedMixins)
         @include($module.'::volumesScripts', ['mixins' => $nestedMixins])
     @endforeach
-    --}}
 @endpush
 
 @push('styles')
@@ -60,25 +52,30 @@
 
 @section('content')
 <div id="volume-container" class="volume-container">
-    <sidebar direction="left" v-on:toggle="handleSidebarToggle" open-tab="filter">
+    <sidebar direction="left" v-on:toggle="handleSidebarToggle" v-on:open="handleSidebarOpen" v-on:close="handleSidebarClose" open-tab="labels">
         @can ('update', $volume)
             <sidebar-tab slot="tabs" name="edit" icon="pencil" title="Edit this volume" href="{{ route('volume-edit', $volume->id) }}"></sidebar-tab>
         @endcan
         @can ('edit-in', $volume)
-            <sidebar-tab slot="tabs" name="labels" icon="tags" title="Toggle image label mode" :disabled="true"></sidebar-tab>
+            <sidebar-tab slot="tabs" name="labels" icon="tags" title="Toggle image label mode">
+                @include('volumes::show.labels')
+            </sidebar-tab>
         @endcan
         <sidebar-tab slot="tabs" name="filter" icon="filter" title="Filter images" :highlight="hasFilterSequence">
             @include('volumes::show.filters')
         </sidebar-tab>
-        <sidebar-tab slot="tabs" name="sort" icon="sort" title="Sort images"></sidebar-tab>
+        <sidebar-tab slot="tabs" name="sort" icon="sort" title="Sort images" :disabled="true"></sidebar-tab>
         @foreach ($modules->getMixins('volumesSidebar') as $module => $nestedMixins)
             @include($module.'::volumesSidebar')
         @endforeach
     </sidebar>
     <div class="volume-content">
         <loader-block v-cloak :active="loading"></loader-block>
-        <image-grid :images="imagesToShow" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" ref="imageGrid"></image-grid>
 
+        <keep-alive>
+            <label-image-grid v-if="imageLabelMode" :images="imagesToShow" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" ref="imageGrid"></label-image-grid>
+            <image-grid v-else :images="imagesToShow" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" ref="imageGrid"></image-grid>
+        </keep-alive>
     </div>
 </div>
 @endsection

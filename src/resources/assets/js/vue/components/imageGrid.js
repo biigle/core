@@ -124,13 +124,8 @@ biigle.$component('volumes.components.imageGrid', {
             // (this.lastRow may have changed).
             this.offset = this.offset;
         },
-        canScroll: function () {
-            this.updateDimensions();
-        },
     },
     created: function () {
-        window.addEventListener('resize', this.updateDimensions);
-        this.$on('resize', this.updateDimensions);
         var keyboard = biigle.$require('labelTrees.stores.keyboard');
         // arrow up
         keyboard.on(38, this.reverseRow);
@@ -150,6 +145,10 @@ biigle.$component('volumes.components.imageGrid', {
         keyboard.on(35, this.jumpToEnd);
     },
     mounted: function () {
+        // Only call updateDimensions when the element actually exists.
+        window.addEventListener('resize', this.updateDimensions);
+        this.$on('resize', this.updateDimensions);
         this.$nextTick(this.updateDimensions);
+        this.$watch('canScroll', this.updateDimensions);
     },
 });
