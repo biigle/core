@@ -68,7 +68,7 @@ biigle.$component('volumes.components.imageGrid', {
         },
         // Number of the topmost row of the last "page".
         lastRow: function () {
-            return Math.max(1, Math.ceil(this.images.length / this.columns) - this.rows);
+            return Math.max(0, Math.ceil(this.images.length / this.columns) - this.rows);
         },
     },
     methods: {
