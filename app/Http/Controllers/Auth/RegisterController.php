@@ -62,7 +62,7 @@ class RegisterController extends Controller
         $user = new User;
         $user->firstname = $data['firstname'];
         $user->lastname = $data['lastname'];
-        $user->email = $data['email'];
+        $user->email = strtolower($data['email']);
         $user->password = bcrypt($data['password']);
         $user->save();
 

@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Auth;
 
 use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -18,7 +19,9 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    use AuthenticatesUsers{
+        AuthenticatesUsers::login as baselogin;
+    }
 
     /**
      * Where to redirect users after login / registration.
@@ -26,6 +29,12 @@ class LoginController extends Controller
      * @var string
      */
     protected $redirectTo = '/';
+
+   public function login(Request $request)
+    {
+        $request['email']=strtolower($request['email']);
+        return $this->baselogin($request);
+    }
 
     /**
      * Create a new controller instance.
