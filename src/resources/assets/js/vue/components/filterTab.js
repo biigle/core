@@ -24,13 +24,7 @@ biigle.$component('volumes.components.filterTab', {
     },
     computed: {
         selectedFilter: function () {
-            for (var i = this.filters.length - 1; i >= 0; i--) {
-                if (this.filters[i].id === this.selectedFilterId) {
-                    return this.filters[i];
-                }
-            }
-
-            return null;
+            return this.getFilter(this.selectedFilterId);
         },
         hasSelectComponent: function () {
             return this.selectedFilter && this.selectedFilter.selectComponent;
@@ -104,6 +98,15 @@ biigle.$component('volumes.components.filterTab', {
                 typeof filter.listComponent === 'object' &&
                 typeof filter.getSequence === 'function';
         },
+        getFilter: function (id) {
+            for (var i = this.filters.length - 1; i >= 0; i--) {
+                if (this.filters[i].id === id) {
+                    return this.filters[i];
+                }
+            }
+
+            return null;
+        },
         hasRule: function (rule) {
             return this.rules.findIndex(function (item) {
                 return item.id === rule.id &&
@@ -132,6 +135,18 @@ biigle.$component('volumes.components.filterTab', {
                 })
                 .finally(this.finishLoading);
         },
+        refreshRule: function (rule) {
+            var filter = this.getFilter(rule.id);
+            if (!filter) return;
+
+            this.startLoading();
+            filter.getSequence(this.volumeId, rule.data)
+                .catch(biigle.$require('messages.store').handleErrorResponse)
+                .then(function (response) {
+                    rule.sequence = response.data;
+                })
+                .finally(this.finishLoading);
+        },
         ruleAdded: function (rule, response) {
             rule.sequence = response.data;
             this.rules.push(rule);
@@ -157,6 +172,13 @@ biigle.$component('volumes.components.filterTab', {
                 mode: this.mode,
             });
         },
+        refreshFilter: function (id) {
+            for (var i = this.rules.length - 1; i >= 0; i--) {
+                if (this.rules[i].id === id) {
+                    this.refreshRule(this.rules[i]);
+                }
+            }
+        },
     },
     watch: {
         sequence: function () {
@@ -170,12 +192,18 @@ biigle.$component('volumes.components.filterTab', {
                 localStorage.removeItem(this.modeStorageKey);
             }
         },
-        rules: function () {
-            if (this.rules.length > 0) {
-                localStorage.setItem(this.rulesStorageKey, JSON.stringify(this.rules));
-            } else {
-                localStorage.removeItem(this.rulesStorageKey);
-            }
+        rules: {
+            handler: function () {
+                if (this.rules.length > 0) {
+                    localStorage.setItem(
+                        this.rulesStorageKey,
+                        JSON.stringify(this.rules)
+                    );
+                } else {
+                    localStorage.removeItem(this.rulesStorageKey);
+                }
+            },
+            deep: true,
         },
     },
     created: function () {
@@ -206,5 +234,7 @@ biigle.$component('volumes.components.filterTab', {
         if (mode) {
             this.mode = mode;
         }
+
+        biigle.$require('volumes.events').$on('filters.refresh', this.refreshFilter);
     },
 });
