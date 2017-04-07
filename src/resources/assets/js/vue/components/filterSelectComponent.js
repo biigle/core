@@ -36,6 +36,14 @@ biigle.$component('volumes.components.filterSelectComponent', {
         gotItems: function (response) {
             this.items = response.data;
         },
+        parseUsernames: function (response) {
+            response.data = response.data.map(function (user) {
+                user.name = user.firstname + ' ' + user.lastname;
+                return user;
+            });
+
+            return response;
+        },
         submit: function () {
             this.$emit('select', this.selectedItem);
         },

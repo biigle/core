@@ -50,12 +50,12 @@ biigle.$declare('volumes.stores.filters', [
     },
     {
         id: 'imageLabelUser',
-        label: 'image label by user',
+        label: 'image label from user',
         help: "All images that (don't) have one or more image labels attached by the given user.",
         listComponent: {
             mixins: [biigle.$require('volumes.components.filterListComponent')],
             data: function () {
-                return {name: 'image label by user'};
+                return {name: 'image label from user'};
             },
         },
         selectComponent: {
@@ -65,19 +65,10 @@ biigle.$declare('volumes.stores.filters', [
                     placeholder: 'User name',
                 };
             },
-            methods: {
-                gotItems: function (response) {
-                    response.data = response.data.map(function (user) {
-                        user.name = user.firstname + ' ' + user.lastname;
-                        return user;
-                    });
-
-                    this.items = response.data;
-                },
-            },
             created: function () {
                 biigle.$require('api.volumes').queryUsers({id: this.volumeId})
-                    .then(this.gotItems, biigle.$require('messages.store').handleErrorResponse);
+                    .then(this.parseUsernames, biigle.$require('messages.store').handleErrorResponse)
+                    .then(this.gotItems);
             },
         },
         getSequence: function (volumeId, user) {
