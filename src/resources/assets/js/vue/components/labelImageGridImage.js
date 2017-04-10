@@ -15,11 +15,17 @@ biigle.$component('volumes.components.labelImageGridImage', {
     '</figure>',
     data: function () {
         return {
-            selectedLabel: null,
             loading: false,
             success: null,
             attachedLabels: [],
+            timeout: null,
         };
+    },
+    props: {
+        selectedLabel: {
+            type: Object,
+            default: null,
+        }
     },
     computed: {
         selectable: function () {
@@ -58,19 +64,10 @@ biigle.$component('volumes.components.labelImageGridImage', {
         },
         resetSuccess: function () {
             var self = this;
-            setTimeout(function() {
+            clearTimeout(this.timeout);
+            this.timeout = setTimeout(function() {
                 self.success = null;
             }, 3000);
         },
     },
-    created: function () {
-        var self = this;
-        biigle.$require('volumes.events').$on('labels.select', function (label) {
-            self.selectedLabel = label;
-        });
-
-        biigle.$require('volumes.events').$on('labels.deselect', function (label) {
-            self.selectedLabel = null;
-        });
-    }
 });
