@@ -3,6 +3,7 @@
 namespace Biigle\Services\Thumbnails;
 
 use Log;
+use File;
 use Biigle\Image;
 use Biigle\Volume;
 use InterventionImage as IImage;
@@ -45,6 +46,11 @@ class InterventionImage implements ThumbnailService
      */
     public static function makeThumbnail(Image $image)
     {
+        // Skip existing thumbnails.
+        if (File::exists($image->thumbPath)) {
+            return;
+        }
+
         try {
             IImage::make($image->url)
                 ->resize(static::$width, static::$height, function ($constraint) {

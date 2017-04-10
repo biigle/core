@@ -7,6 +7,7 @@ use File;
 use TestCase;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;
+use InterventionImage as IImage;
 use Biigle\Services\Thumbnails\InterventionImage;
 
 class InterventionImageTest extends TestCase
@@ -39,20 +40,37 @@ class InterventionImageTest extends TestCase
         File::delete($image1->thumbPath);
         File::delete($image2->thumbPath);
 
-        with(new InterventionImage)->generateThumbnails($volume, [$image1->id]);
+        try {
+            with(new InterventionImage)->generateThumbnails($volume, [$image1->id]);
 
-        $this->assertTrue(File::exists($image1->thumbPath));
-        $this->assertFalse(File::exists($image2->thumbPath));
-
-        File::delete($image1->thumbPath);
-        File::delete($image2->thumbPath);
+            $this->assertTrue(File::exists($image1->thumbPath));
+            $this->assertFalse(File::exists($image2->thumbPath));
+        } finally {
+            File::delete($image1->thumbPath);
+            File::delete($image2->thumbPath);
+        }
     }
 
     public function testNotReadable()
     {
         Log::shouldReceive('error')->once();
-        $volume = VolumeTest::create();
-        $image = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'random']);
-        with(new InterventionImage)->generateThumbnails($volume, [$image->id]);
+        $image = ImageTest::create(['filename' => 'does_not_exist']);
+        with(new InterventionImage)->generateThumbnails($image->volume, [$image->id]);
+    }
+
+    public function testSkipExisting()
+    {
+        // This actually doesn't work and IImake::make() will throw an error afterwards.
+        // But we want to test that make() isn't called anyway so if an error is thrown
+        // this test fails as expected.
+        IImage::shouldReceive('make')->never();
+
+        $image = ImageTest::create(['filename' => 'random']);
+        touch($image->thumbPath);
+        try {
+            with(new InterventionImage)->generateThumbnails($image->volume, [$image->id]);
+        } finally {
+            File::delete($image->thumbPath);
+        }
     }
 }
