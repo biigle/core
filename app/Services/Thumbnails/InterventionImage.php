@@ -2,10 +2,12 @@
 
 namespace Biigle\Services\Thumbnails;
 
+use Log;
 use Biigle\Image;
 use Biigle\Volume;
 use InterventionImage as IImage;
 use Biigle\Contracts\ThumbnailService;
+use Intervention\Image\Exception\NotReadableException;
 
 /**
  * The default thumbnails service using the InterventionImage package
@@ -43,15 +45,19 @@ class InterventionImage implements ThumbnailService
      */
     public static function makeThumbnail(Image $image)
     {
-        IImage::make($image->url)
-            ->resize(static::$width, static::$height, function ($constraint) {
-                // resize images proportionally
-                $constraint->aspectRatio();
-            })
-            ->encode(config('thumbnails.format'))
-            ->save($image->thumbPath)
-            // free memory; very important for scaling 1000s of images!!
-            ->destroy();
+        try {
+            IImage::make($image->url)
+                ->resize(static::$width, static::$height, function ($constraint) {
+                    // resize images proportionally
+                    $constraint->aspectRatio();
+                })
+                ->encode(config('thumbnails.format'))
+                ->save($image->thumbPath)
+                // free memory; very important for scaling 1000s of images!!
+                ->destroy();
+        } catch (NotReadableException $e) {
+            Log::error('Could not generate thumbnail for image '.$image->id.': '.$e->getMessage());
+        }
     }
 
     /**

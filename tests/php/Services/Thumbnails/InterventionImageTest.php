@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Services\Thumbnails;
 
+use Log;
 use File;
 use TestCase;
 use Biigle\Tests\ImageTest;
@@ -45,5 +46,13 @@ class InterventionImageTest extends TestCase
 
         File::delete($image1->thumbPath);
         File::delete($image2->thumbPath);
+    }
+
+    public function testNotReadable()
+    {
+        Log::shouldReceive('error')->once();
+        $volume = VolumeTest::create();
+        $image = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'random']);
+        with(new InterventionImage)->generateThumbnails($volume, [$image->id]);
     }
 }
