@@ -21,10 +21,10 @@ biigle.$component('volumes.components.labelsTab', {
     },
     methods: {
         handleSelectedLabel: function (label) {
-
+            biigle.$require('volumes.events').$emit('labels.select', label);
         },
         handleDeselectedLabel: function (label) {
-
+            biigle.$require('volumes.events').$emit('labels.deselect', label);
         },
     },
     watch: {

@@ -1,0 +1,22 @@
+.image-grid__image--label {
+    &.image-grid__image--selectable {
+        cursor: pointer;
+
+        &:hover {
+            border-color: $brand-info;
+        }
+    }
+
+    &.image-grid__image--success {
+        border-color: $brand-success;
+    }
+
+    &.image-grid__image--error {
+        border-color: $brand-danger;
+    }
+
+    &.image-grid__image--loading {
+        border-color: $brand-warning;
+    }
+}
+
