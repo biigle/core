@@ -17,18 +17,12 @@ biigle.$component('volumes.components.labelsTab', {
             labelTrees: biigle.$require('volumes.labelTrees'),
         };
     },
-    computed: {
-    },
     methods: {
         handleSelectedLabel: function (label) {
-            biigle.$require('volumes.events').$emit('labels.select', label);
+            this.$emit('select', label);
         },
         handleDeselectedLabel: function (label) {
-            biigle.$require('volumes.events').$emit('labels.deselect', label);
+            this.$emit('deselect', label);
         },
-    },
-    watch: {
-    },
-    created: function () {
     },
 });

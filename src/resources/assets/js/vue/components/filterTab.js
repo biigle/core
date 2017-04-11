@@ -172,13 +172,6 @@ biigle.$component('volumes.components.filterTab', {
                 mode: this.mode,
             });
         },
-        refreshFilter: function (id) {
-            for (var i = this.rules.length - 1; i >= 0; i--) {
-                if (this.rules[i].id === id) {
-                    this.refreshRule(this.rules[i]);
-                }
-            }
-        },
     },
     watch: {
         sequence: function () {
@@ -234,7 +227,5 @@ biigle.$component('volumes.components.filterTab', {
         if (mode) {
             this.mode = mode;
         }
-
-        biigle.$require('volumes.events').$on('filters.refresh', this.refreshFilter);
     },
 });

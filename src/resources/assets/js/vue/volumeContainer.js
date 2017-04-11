@@ -26,6 +26,7 @@ biigle.$viewModel('volume-container', function (element) {
             volumeId: biigle.$require('volumes.volumeId'),
             filterMode: null,
             imageLabelMode: false,
+            selectedLabel: null,
         },
         computed: {
             sortedImages: function () {
@@ -107,6 +108,12 @@ biigle.$viewModel('volume-container', function (element) {
                     biigle.$require('volumes.urlParams').unset('offset');
                     localStorage.removeItem(this.offsetStorageKey);
                 }
+            },
+            handleSelectedLabel: function (label) {
+                this.selectedLabel = label;
+            },
+            handleDeselectedLabel: function (label) {
+                this.selectedLabel = null;
             },
         },
         watch: {

@@ -19,20 +19,9 @@ biigle.$component('volumes.components.volumeImageGrid', {
             type: Boolean,
             default: false,
         },
+        selectedLabel: {
+            type: Object,
+            default: null,
+        },
     },
-    data: function () {
-        return {
-            selectedLabel: null,
-        };
-    },
-    created: function () {
-        var self = this;
-        biigle.$require('volumes.events').$on('labels.select', function (label) {
-            self.selectedLabel = label;
-        });
-
-        biigle.$require('volumes.events').$on('labels.deselect', function (label) {
-            self.selectedLabel = null;
-        });
-    }
 });
