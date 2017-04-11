@@ -70,6 +70,14 @@ biigle.$viewModel('volume-container', function (element) {
             imagesStorageKey: function () {
                 return 'biigle.volumes.' + this.volumeId + '.images';
             },
+            offsetStorageKey: function () {
+                return 'biigle.volumes.' + this.volumeId + '.offset';
+            },
+            initialOffset: function () {
+                return parseInt(biigle.$require('volumes.urlParams').get('offset')) ||
+                    parseInt(localStorage.getItem(this.offsetStorageKey)) ||
+                    0;
+            },
         },
         methods: {
             handleSidebarToggle: function () {
@@ -90,6 +98,15 @@ biigle.$viewModel('volume-container', function (element) {
             updateFilterSequence: function (data) {
                 this.filterSequence = data.sequence;
                 this.filterMode = data.mode;
+            },
+            handleImageGridScroll: function (offset) {
+                if (offset > 0) {
+                    biigle.$require('volumes.urlParams').set({offset: offset});
+                    localStorage.setItem(this.offsetStorageKey, offset);
+                } else {
+                    biigle.$require('volumes.urlParams').unset('offset');
+                    localStorage.removeItem(this.offsetStorageKey);
+                }
             },
         },
         watch: {

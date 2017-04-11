@@ -62,7 +62,7 @@
     </sidebar>
     <div class="volume-content">
         <loader-block v-cloak :active="loading"></loader-block>
-        <image-grid :label-mode="imageLabelMode" :images="imagesToShow" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" ref="imageGrid"></image-grid>
+        <image-grid :label-mode="imageLabelMode" :images="imagesToShow" :initial-offset="initialOffset" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:scroll="handleImageGridScroll" ref="imageGrid"></image-grid>
     </div>
 </div>
 @endsection

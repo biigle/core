@@ -42,6 +42,10 @@ biigle.$component('volumes.components.imageGrid', {
             type: Number,
             default: 8,
         },
+        initialOffset: {
+            type: Number,
+            default: 0,
+        },
     },
     computed: {
         columns: function () {
@@ -124,6 +128,9 @@ biigle.$component('volumes.components.imageGrid', {
             // (this.lastRow may have changed).
             this.offset = this.offset;
         },
+        offset: function () {
+            this.$emit('scroll', this.offset);
+        },
     },
     created: function () {
         var keyboard = biigle.$require('labelTrees.stores.keyboard');
@@ -143,6 +150,8 @@ biigle.$component('volumes.components.imageGrid', {
         keyboard.on(36, this.jumpToStart);
         // end
         keyboard.on(35, this.jumpToEnd);
+
+        this.offset = this.initialOffset;
     },
     mounted: function () {
         // Only call updateDimensions when the element actually exists.
