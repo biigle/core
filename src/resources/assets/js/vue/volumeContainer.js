@@ -16,6 +16,7 @@ biigle.$viewModel('volume-container', function (element) {
             sidebarTab: biigle.$require('core.components.sidebarTab'),
             imageGrid: biigle.$require('volumes.components.volumeImageGrid'),
             filterTab: biigle.$require('volumes.components.filterTab'),
+            sortingTab: biigle.$require('volumes.components.sortingTab'),
             labelsTab: biigle.$require('volumes.components.labelsTab'),
         },
         data: {
@@ -114,6 +115,9 @@ biigle.$viewModel('volume-container', function (element) {
             },
             handleDeselectedLabel: function (label) {
                 this.selectedLabel = null;
+            },
+            updateSortingSequence: function (sequence) {
+                this.sortingSequence = sequence;
             },
         },
         watch: {
