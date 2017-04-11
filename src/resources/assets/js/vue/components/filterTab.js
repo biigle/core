@@ -30,7 +30,7 @@ biigle.$component('volumes.components.filterTab', {
             return this.selectedFilter && this.selectedFilter.selectComponent;
         },
         selectComponent: function () {
-            return this.selectedFilter.id + 'Select';
+            return this.selectedFilter.selectComponent;
         },
         hasRules: function () {
             return this.rules.length > 0;
@@ -172,6 +172,13 @@ biigle.$component('volumes.components.filterTab', {
                 mode: this.mode,
             });
         },
+        getListComponent: function (rule) {
+            for (var i = this.filters.length - 1; i >= 0; i--) {
+                if (this.filters[i].id === rule.id) {
+                    return this.filters[i].listComponent;
+                }
+            }
+        },
     },
     watch: {
         sequence: function () {
@@ -200,7 +207,6 @@ biigle.$component('volumes.components.filterTab', {
         },
     },
     created: function () {
-        // Dynamically assign the components of the available filters.
         var filter;
         for (var i = 0; i < this.filters.length; i++) {
             filter = this.filters[i];
@@ -208,12 +214,6 @@ biigle.$component('volumes.components.filterTab', {
             if (!this.filterValid(filter)) {
                 console.error('Filter ' + filter.id + ' invalid. Ignoring...');
                 this.filters.splice(i, 1);
-            }
-
-            this.$options.components[filter.id + 'List'] = filter.listComponent;
-
-            if (filter.selectComponent) {
-                this.$options.components[filter.id + 'Select'] = filter.selectComponent;
             }
         }
 

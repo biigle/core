@@ -32,7 +32,7 @@
         </form>
         <ul class="list-group">
             <li v-cloak v-for="(rule, index) in rules" class="list-group-item">
-                <span v-if="index > 0">and</span><span v-else>Images</span> <component :is="rule.id + 'List'" :rule="rule" v-on:refresh="refreshRule"></component> <button type="button" class="close pull-right" title="Remove this rule" v-on:click="removeRule(index)"><span aria-hidden="true">&times;</span></button>
+                <span v-if="index > 0">and</span><span v-else>Images</span> <component :is="getListComponent(rule)" :rule="rule" v-on:refresh="refreshRule"></component> <button type="button" class="close pull-right" title="Remove this rule" v-on:click="removeRule(index)"><span aria-hidden="true">&times;</span></button>
             </li>
             <li v-if="!hasRules" class="list-group-item text-muted">No filter rules</li>
         </ul>
