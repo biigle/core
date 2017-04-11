@@ -14,4 +14,37 @@
             border: 2px solid white;
         }
     }
+
+    &.image-grid__image--selectable {
+        cursor: pointer;
+
+        &:hover {
+            border-color: $brand-info;
+        }
+    }
+
+    &.image-grid__image--success {
+        border-color: $brand-success;
+    }
+
+    &.image-grid__image--error {
+        border-color: $brand-danger;
+    }
+
+    &.image-grid__image--saving {
+        border-color: $brand-warning;
+    }
+
+    .image-labels {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 135px;
+        max-height: 100%;
+        padding: 0.3em 0.5em;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: $border-radius-base;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
 }

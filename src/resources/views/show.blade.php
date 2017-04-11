@@ -7,25 +7,16 @@
     <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
     <script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
     <script type="text/javascript">
-        {{-- Add image IDs as array, too, because the ordering is important! --}}
-        {{--
-        angular.module('biigle.volumes').constant('USER_ID', {{$user->id}});
-        --}}
-
         biigle.$declare('volumes.volumeId', {!! $volume->id !!});
+        {{-- Add image IDs as array, too, because the ordering is important! --}}
         biigle.$declare('volumes.imageIds', {!! $imageIds->keys() !!});
         biigle.$declare('volumes.imageUuids', {!! $imageIds !!});
         biigle.$declare('volumes.thumbUri', '{{ asset(config('thumbnails.uri')) }}/{uuid}.{{ config('thumbnails.format') }}');
         biigle.$declare('volumes.annotateUri', '@if (Route::has('annotate')){{ route('annotate', '') }}/{id}@endif');
         biigle.$declare('volumes.imageUri', '{{ route('image', '') }}/{id}');
 
-    {{--
-        @can('update', $volume)
-            angular.module('biigle.volumes').constant('IS_ADMIN', true);
-        @else
-            angular.module('biigle.volumes').constant('IS_ADMIN', false);
-        @endcan
-    --}}
+        biigle.$declare('volumes.userId', {!! $user->id !!});
+        biigle.$declare('volumes.isAdmin', @can('update', $volume) true @else false @endcan);
 
         @can('edit-in', $volume)
             biigle.$declare('volumes.labelTrees', {!!$labelTrees!!});
@@ -52,7 +43,7 @@
 
 @section('content')
 <div id="volume-container" class="volume-container">
-    <sidebar direction="left" v-on:toggle="handleSidebarToggle" v-on:open="handleSidebarOpen" v-on:close="handleSidebarClose" open-tab="labels">
+    <sidebar direction="left" v-on:toggle="handleSidebarToggle" v-on:open="handleSidebarOpen" v-on:close="handleSidebarClose">
         @can ('update', $volume)
             <sidebar-tab slot="tabs" name="edit" icon="pencil" title="Edit this volume" href="{{ route('volume-edit', $volume->id) }}"></sidebar-tab>
         @endcan
@@ -71,11 +62,7 @@
     </sidebar>
     <div class="volume-content">
         <loader-block v-cloak :active="loading"></loader-block>
-
-        <keep-alive>
-            <label-image-grid v-if="imageLabelMode" :images="imagesToShow" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" ref="imageGrid"></label-image-grid>
-            <image-grid v-else :images="imagesToShow" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" ref="imageGrid"></image-grid>
-        </keep-alive>
+        <image-grid :label-mode="imageLabelMode" :images="imagesToShow" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" ref="imageGrid"></image-grid>
     </div>
 </div>
 @endsection

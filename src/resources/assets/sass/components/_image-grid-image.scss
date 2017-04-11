@@ -6,9 +6,6 @@
     position: relative;
     margin: 4px;
     border: 2px solid transparent;
-    // create a gap between volume figure border and image so the image color does
-    // not interfere with the border color
-    padding: 2px;
     border-radius: $border-radius-large;
     transition: border .25s ease;
     overflow: hidden;
@@ -24,6 +21,9 @@
         height: 100%;
         border-radius: $border-radius-base;
         background-color: $gray-lighter;
+        // create a gap between volume figure border and image so the image color does
+        // not interfere with the border color
+        border: 2px solid transparent;
     }
 
     .image-buttons {
@@ -42,6 +42,7 @@
         display: block;
         opacity: 0;
         transition: opacity 0.25s ease;
+        border: 0;
 
         &:not(:last-child) {
             margin-bottom: $padding-base-vertical;

@@ -15,7 +15,6 @@ biigle.$viewModel('volume-container', function (element) {
             sidebar: biigle.$require('core.components.sidebar'),
             sidebarTab: biigle.$require('core.components.sidebarTab'),
             imageGrid: biigle.$require('volumes.components.volumeImageGrid'),
-            labelImageGrid: biigle.$require('volumes.components.labelImageGrid'),
             filterTab: biigle.$require('volumes.components.filterTab'),
             labelsTab: biigle.$require('volumes.components.labelsTab'),
         },
