@@ -61,11 +61,11 @@ biigle.$component('volumes.components.sortingTab', {
             var self = this;
             this.startLoading();
             sorter.getSequence()
-                .catch(biigle.$require('messages.store').handleErrorResponse)
                 .then(function (sequence) {
                     self.activeSorter = sorter.id;
                     self.privateSequence = sequence;
                 })
+                .catch(biigle.$require('messages.store').handleErrorResponse)
                 .finally(this.finishLoading);
         },
     },
