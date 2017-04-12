@@ -43,7 +43,7 @@
 
 @section('content')
 <div id="volume-container" class="volume-container">
-    <sidebar direction="left" v-on:toggle="handleSidebarToggle" v-on:open="handleSidebarOpen" v-on:close="handleSidebarClose" open-tab="sorting">
+    <sidebar direction="left" v-on:toggle="handleSidebarToggle" v-on:open="handleSidebarOpen" v-on:close="handleSidebarClose">
         @can ('update', $volume)
             <sidebar-tab slot="tabs" name="edit" icon="pencil" title="Edit this volume" href="{{ route('volume-edit', $volume->id) }}"></sidebar-tab>
         @endcan
@@ -55,7 +55,7 @@
         <sidebar-tab slot="tabs" name="filter" icon="filter" title="Filter images" :highlight="hasFilterSequence">
             @include('volumes::show.filters')
         </sidebar-tab>
-        <sidebar-tab slot="tabs" name="sorting" icon="sort" title="Sort images">
+        <sidebar-tab slot="tabs" name="sorting" icon="sort" title="Sort images" :highlight="hasSortingSequence">
             @include('volumes::show.sorting')
         </sidebar-tab>
         @foreach ($modules->getMixins('volumesSidebar') as $module => $nestedMixins)

@@ -69,6 +69,15 @@ biigle.$viewModel('volume-container', function (element) {
             hasFilterSequence: function () {
                 return this.imageIds.length > this.filterSequence.length;
             },
+            hasSortingSequence: function () {
+                for (var i = this.imageIds.length - 1; i >= 0; i--) {
+                    if (this.imageIds[i] !== this.sortingSequence[i]) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
             imagesStorageKey: function () {
                 return 'biigle.volumes.' + this.volumeId + '.images';
             },

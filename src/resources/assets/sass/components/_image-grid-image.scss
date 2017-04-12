@@ -5,10 +5,14 @@
     justify-content: center;
     position: relative;
     margin: 4px;
-    border: 2px solid transparent;
+    border: 2px solid $body-bg;
     border-radius: $border-radius-large;
     transition: border .25s ease;
     overflow: hidden;
+    background-color: $gray-lighter;
+    // create a gap between volume figure border and image so the image color does
+    // not interfere with the border color
+    padding: 2px;
 
     &:hover {
         .image-button {
@@ -20,10 +24,6 @@
         width: auto;
         height: 100%;
         border-radius: $border-radius-base;
-        background-color: $gray-lighter;
-        // create a gap between volume figure border and image so the image color does
-        // not interfere with the border color
-        border: 2px solid transparent;
     }
 
     .image-buttons {

@@ -16,17 +16,18 @@ biigle.$component('volumes.components.sortingTab', {
     data: function () {
         return {
             sorters: biigle.$require('volumes.stores.sorters'),
-            direction: 'asc',
+            // true for ascending, false for descending
+            direction: true,
             activeSorter: null,
             privateSequence: biigle.$require('volumes.imageIds'),
         };
     },
     computed: {
         isSortedAscending: function () {
-            return this.direction === 'asc';
+            return this.direction;
         },
         isSortedDescending: function () {
-            return this.direction === 'desc';
+            return !this.direction;
         },
         sorterStorageKey: function () {
             return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.sorting.sorter';
@@ -35,24 +36,24 @@ biigle.$component('volumes.components.sortingTab', {
             return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.sorting.direction';
         },
         sequence: function () {
-            if (this.direction === 'desc') {
-                return this.privateSequence.slice().reverse();
+            if (this.direction) {
+                return this.privateSequence;
             }
 
-            return this.privateSequence;
+            return this.privateSequence.slice().reverse();
         },
     },
     methods: {
         reset: function () {
-            this.direction = 'asc';
+            this.direction = true;
             this.activeSorter = this.sorters[0].id;
             this.privateSequence = biigle.$require('volumes.imageIds');
         },
         sortAscending: function () {
-            this.direction = 'asc';
+            this.direction = true;
         },
         sortDescending: function () {
-            this.direction = 'desc';
+            this.direction = false;
         },
         handleSelect: function (sorter) {
             if (this.loading) return;
@@ -73,13 +74,35 @@ biigle.$component('volumes.components.sortingTab', {
             this.$emit('update', this.sequence);
         },
         privateSequence: function () {
-            // store
+            if (this.activeSorter === this.sorters[0].id) {
+                localStorage.removeItem(this.sorterStorageKey);
+            } else {
+                localStorage.setItem(this.sorterStorageKey, JSON.stringify({
+                    id: this.activeSorter,
+                    sequence: this.privateSequence,
+                }));
+            }
         },
         direction: function () {
-            // store
+            if (this.direction) {
+                localStorage.removeItem(this.directionStorageKey);
+            } else {
+                localStorage.setItem(this.directionStorageKey, this.direction);
+            }
         },
     },
     created: function () {
-        this.activeSorter = this.sorters[0].id;
+        var sorter = JSON.parse(localStorage.getItem(this.sorterStorageKey));
+        if (sorter) {
+            this.activeSorter = sorter.id;
+            this.privateSequence = sorter.sequence;
+        } else {
+            this.activeSorter = this.sorters[0].id;
+        }
+
+        var direction = JSON.parse(localStorage.getItem(this.directionStorageKey));
+        if (direction !== null) {
+            this.direction = direction;
+        }
     },
 });

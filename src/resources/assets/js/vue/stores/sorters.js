@@ -57,7 +57,7 @@ biigle.$declare('volumes.stores.sorters', [
                         });
                     },
                     handleClick: function () {
-                        // Emit the event even when active so a new random sequence is
+                        // Emit the event even if active so a new random sequence is
                         // generated.
                         this.$emit('select', this);
                     },
