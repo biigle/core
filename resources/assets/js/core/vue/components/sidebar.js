@@ -55,14 +55,20 @@ biigle.$component('core.components.sidebar', {
     },
     created: function () {
         var self = this;
-        this.$on('open', function () {
+        var events = biigle.$require('biigle.events');
+
+        this.$on('open', function (tabName) {
             this.open = true;
-            this.$emit('toggle');
+            this.$emit('toggle', tabName);
+            events.$emit('sidebar.toggle', tabName);
+            events.$emit('sidebar.open.' + tabName);
         });
 
-        this.$on('close', function () {
+        this.$on('close', function (tabName) {
             this.open = false;
-            this.$emit('toggle');
+            this.$emit('toggle', tabName);
+            events.$emit('sidebar.toggle', tabName);
+            events.$emit('sidebar.close.' + tabName);
         });
     },
     mounted: function () {

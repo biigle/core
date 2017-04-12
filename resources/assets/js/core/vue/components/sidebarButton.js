@@ -50,7 +50,7 @@ biigle.$component('core.components.sidebarButton', {
 
             e.preventDefault();
             if (this.open) {
-                this.$parent.$emit('close');
+                this.$parent.$emit('close', this.tab.name);
             } else {
                 this.$parent.$emit('open', this.tab.name);
             }
