@@ -8,7 +8,7 @@ biigle.$component('core.components.sidebar', {
         '<div class="sidebar__buttons" v-if="showButtons">' +
             '<sidebar-button v-for="tab in tabs" :tab="tab" :direction="direction"></sidebar-button>' +
         '</div>' +
-        '<div class="sidebar__tabs"><slot name="tabs"></slot></div>' +
+        '<div class="sidebar__tabs"><slot></slot></div>' +
     '</aside>',
     components: {
         sidebarButton: biigle.$require('core.components.sidebarButton'),
