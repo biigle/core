@@ -14,7 +14,7 @@
     </div>
 </div>
 <sidebar :show-buttons="false" open-tab="labels">
-    <sidebar-tab class="largo-tab" slot="tabs" name="labels" icon="tags" title="Label trees">
+    <sidebar-tab class="largo-tab" name="labels" icon="tags" title="Label trees">
         <div v-cloak class="largo-tab__button">
             <button v-if="isInDismissStep" class="btn btn-success btn-block" :disabled="!hasDismissedAnnotations" title="Go to the re-labelling step" v-on:click="goToRelabel">Continue</button>
             <div v-cloak v-else class="btn-group btn-group-justified">
