@@ -13,11 +13,6 @@ $router->group([
             'uses' => 'VolumeController@edit',
         ]);
 
-        $router->get('volumes-angular/{id}', [
-            'as'   => 'volume-angular',
-            'uses' => 'VolumeController@indexAngular',
-        ]);
-
         $router->get('volumes/{id}', [
             'as'   => 'volume',
             'uses' => 'VolumeController@index',

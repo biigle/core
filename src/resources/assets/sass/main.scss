@@ -24,11 +24,6 @@ $volume-image-padding: 0.5em;
     }
 }
 
-@import "main/progress";
-@import "main/images";
-@import "main/menubar";
-@import "main/label";
-
 @import 'components/image-grid';
 @import 'components/image-grid-image';
 @import 'components/image-grid-progress';

@@ -82,57 +82,6 @@ class VolumeController extends Controller
     }
 
     /**
-     * Shows the volume index page.
-     *
-     * @param Guard $auth
-     * @param int $id volume ID
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function indexAngular(Guard $auth, $id)
-    {
-        $volume = Volume::findOrFail($id);
-        $this->authorize('access', $volume);
-        $user = $auth->user();
-
-        if ($user->isAdmin) {
-            // admins have no restrictions
-            $projects = $volume->projects;
-        } else {
-            // all projects that the user and the volume have in common
-            $projects = $user->projects()
-                ->whereIn('id', function ($query) use ($volume) {
-                    $query->select('project_volume.project_id')
-                        ->from('project_volume')
-                        ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
-                        ->where('project_volume.volume_id', $volume->id)
-                        ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id]);
-                })
-                ->get();
-        }
-
-        // all label trees that are used by all projects which are visible to the user
-        $labelTrees = LabelTree::with('labels')
-            ->select('id', 'name')
-            ->whereIn('id', function ($query) use ($projects) {
-                $query->select('label_tree_id')
-                    ->from('label_tree_project')
-                    ->whereIn('project_id', $projects->pluck('id'));
-            })
-            ->get();
-
-        $imageIds = $volume->orderedImages()
-            ->pluck('uuid', 'id');
-
-        return view('volumes::index')
-            ->with('user', $user)
-            ->with('volume', $volume)
-            ->with('labelTrees', $labelTrees)
-            ->with('projects', $projects)
-            ->with('imageIds', $imageIds);
-    }
-
-    /**
      * Shows the volume edit page.
      *
      * @param int $id volume ID
