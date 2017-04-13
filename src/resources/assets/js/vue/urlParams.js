@@ -7,10 +7,10 @@ biigle.$declare('volumes.urlParams', new Vue({
     },
     methods: {
         setSlug: function (s) {
-            var oldPath = location.pathname.replace(/\/$/, '');
+            var oldPath = window.location.pathname.replace(/\/$/, '');
             // Replace the old slug with the new slug.
             var newPath = oldPath.substring(0, oldPath.lastIndexOf('/') + 1) + s;
-            this.replaceState(location.href.replace(oldPath, newPath));
+            this.replaceState(window.location.href.replace(oldPath, newPath));
         },
         set: function (params) {
             this.params = params;
@@ -25,7 +25,7 @@ biigle.$declare('volumes.urlParams', new Vue({
         },
         updateSearch: function () {
             var search = [];
-            var loc = location.href;
+            var loc = window.location.href;
             for (var key in this.params) {
                 if (!this.params.hasOwnProperty(key)) continue;
                 search.push(key + '=' + this.params[key]);
@@ -33,12 +33,20 @@ biigle.$declare('volumes.urlParams', new Vue({
 
             search = search.length > 0 ? '?' + search.join('&') : '';
 
-            if (location.search) {
-                this.replaceState(loc.replace(location.search, search));
-            } else if (location.hash) {
-                this.replaceState(loc.replace(location.hash, search + location.hash));
+            if (window.location.search) {
+                this.replaceState(loc.replace(window.location.search, search));
+            } else if (loc.indexOf("#") !== -1) {
+                if (window.location.hash) {
+                    this.replaceState(
+                        loc.replace(window.location.hash, search + window.location.hash)
+                    );
+                } else {
+                    // this is the case where there is a trailing '#' in the href which
+                    // can be removed
+                    this.replaceState(loc.slice(0, -1) + search);
+                }
             } else {
-                this.replaceState(location + search);
+                this.replaceState(loc + search);
             }
         },
         replaceState: function (url) {
@@ -47,7 +55,7 @@ biigle.$declare('volumes.urlParams', new Vue({
     },
     created: function () {
         // Populate the params object.
-        var search = location.search.substr(1);
+        var search = window.location.search.substr(1);
         if (!search) return;
 
         search = search.split('&');
