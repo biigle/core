@@ -46,8 +46,7 @@ class VolumeImageAnnotationLabelControllerTest extends ApiTestCase
         $this->assertResponseStatus(403);
 
         $expect = [$image->id];
-        if ($this->isSqlite())
-        {
+        if ($this->isSqlite()) {
             $expect = array_map('strval', $expect);
         }
 
@@ -82,8 +81,7 @@ class VolumeImageAnnotationLabelControllerTest extends ApiTestCase
         $lid = $label->label_id;
 
         $expect = [$image->id];
-        if ($this->isSqlite())
-        {
+        if ($this->isSqlite()) {
             $expect = array_map('strval', $expect);
         }
 

@@ -4,7 +4,6 @@ namespace Biigle\Tests\Modules\Volumes\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Tests\ImageTest;
-use Biigle\Tests\VolumeTest;
 use Illuminate\Http\UploadedFile;
 
 class VolumeImageMetadataControllerTest extends ApiTestCase
@@ -12,6 +11,7 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
     protected function getCsv($name)
     {
         $csv = __DIR__."/../../../files/{$name}";
+
         return new UploadedFile($csv, 'image-metadata.csv', 'text/csv', null, null, true);
     }
 

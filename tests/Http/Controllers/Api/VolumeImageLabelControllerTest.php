@@ -2,7 +2,6 @@
 
 namespace Biigle\Tests\Modules\Volumes\Http\Controllers\Api;
 
-use Biigle\Role;
 use ApiTestCase;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ImageTest;
@@ -58,7 +57,7 @@ class VolumeImageLabelControllerTest extends ApiTestCase
                     'name' => $label2->name,
                     'color' => $label2->color,
                     'parent_id' => $label2->parent_id,
-                ]
+                ],
             ]);
     }
 }

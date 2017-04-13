@@ -5,8 +5,8 @@ namespace Biigle\Modules\Volumes\Console\Commands;
 use Illuminate\Console\Command;
 use Biigle\Modules\Volumes\VolumesServiceProvider as ServiceProvider;
 
-class Publish extends Command {
-
+class Publish extends Command
+{
     /**
      * The console command name.
      *

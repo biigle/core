@@ -9,7 +9,7 @@ use Biigle\Http\Controllers\Api\Controller;
 class VolumeImageController extends Controller
 {
     /**
-     * List the image IDs of the specified volume, ordered by filename
+     * List the image IDs of the specified volume, ordered by filename.
      *
      * @api {get} volumes/:id/images/order-by/filename Get all images ordered by filename
      * @apiGroup Volumes
@@ -26,7 +26,8 @@ class VolumeImageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function indexOrderByFilename($id) {
+    public function indexOrderByFilename($id)
+    {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
@@ -35,7 +36,7 @@ class VolumeImageController extends Controller
     }
 
     /**
-     * List the IDs of images having one or more image labels attached
+     * List the IDs of images having one or more image labels attached.
      *
      * @api {get} volumes/:id/images/filter/labels Get all images having image labels
      * @apiGroup Volumes

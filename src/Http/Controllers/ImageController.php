@@ -28,7 +28,7 @@ class ImageController extends Controller
             'Flash',
             'GPS Latitude',
             'GPS Longitude',
-            'GPS Altitude'
+            'GPS Altitude',
         ];
 
         $image->exif = $image->getExif();
