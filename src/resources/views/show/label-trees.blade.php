@@ -13,7 +13,7 @@
             <form>
                 <div class="form-group">
                     <label>Label tree to attach</label>
-                    <typeahead class="typeahead--block" :items="attachableLabelTrees" placeholder="Label tree name" :disabled="loading" v-on:select="attachTree" title="Attach a new label tree"></typeahead>
+                    <typeahead class="typeahead--block" :items="attachableLabelTrees" placeholder="Label tree name" :disabled="loading" v-on:select="attachTree" :clear-on-select="true" title="Attach a new label tree"></typeahead>
                 </div>
             </form>
         </div>

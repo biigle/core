@@ -15,7 +15,7 @@
         <div class="panel-body" v-if="editing" v-cloak>
             <form>
                 <label>Volume to attach</label>
-                <typeahead class="typeahead--block" :items="attachableVolumes" placeholder="Volume name" v-on:select="attachVolume"></typeahead>
+                <typeahead class="typeahead--block" :items="attachableVolumes" placeholder="Volume name" v-on:select="attachVolume" :clear-on-select="true"></typeahead>
                 <p class="help-block">
                     Volumes can be shared between projects. Here you can attach volumes from other projects to this project. To attach a volume, you need to be admin in one of the projects, the volume is already attached to.
                 </p>
