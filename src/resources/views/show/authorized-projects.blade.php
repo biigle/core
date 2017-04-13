@@ -9,7 +9,7 @@
     <div v-if="editing" v-cloak class="panel-body">
         <form class="form-inline">
             <div class="form-group">
-                <typeahead :items="authorizableProjects" placeholder="Project name" title="Authorize one of your projects to use this tree" v-on:select="addAuthorizedProject"></typeahead>
+                <typeahead :items="authorizableProjects" placeholder="Project name" title="Authorize one of your projects to use this tree" v-on:select="addAuthorizedProject" :clear-on-select="true"></typeahead>
             </div>
         </form>
     </div>
