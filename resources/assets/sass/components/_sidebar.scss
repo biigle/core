@@ -1,0 +1,60 @@
+.sidebar {
+    display: flex;
+
+    &.sidebar--open {
+        max-width: 350px;
+    }
+
+    &.sidebar--left {
+        flex-direction: row-reverse;
+
+        .sidebar__tab, .sidebar__buttons {
+            border-right: 1px solid $btn-default-border;
+        }
+    }
+
+    &.sidebar--right {
+        .sidebar__tab, .sidebar__buttons {
+            border-left: 1px solid $btn-default-border;
+        }
+    }
+
+    .sidebar__buttons {
+        width: 50px;
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar__button {
+        // Distribute the buttons evenly to the full height of the buttons container.
+        flex: 1;
+        border-radius: 0;
+        width: 100%;
+        border: 0;
+        // Vertically center align icons.
+        display: flex;
+        align-items: center;
+
+        &:not(:last-child) {
+            border-bottom: 1px solid $btn-default-border;
+        }
+    }
+
+    .sidebar__tabs {
+        flex: 1;
+    }
+
+    .sidebar__tab {
+        display: none;
+        padding: 1em;
+        height: 100%;
+        overflow: auto;
+        width: 300px;
+
+        &.sidebar__tab--open {
+            display: block;
+        }
+    }
+}
