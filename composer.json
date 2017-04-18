@@ -1,8 +1,8 @@
 {
     "name": "biigle/annotations",
     "require": {
-        "biigle/volumes": "~1.2",
-        "biigle/label-trees": "~1.0"
+        "biigle/volumes": "~1.5",
+        "biigle/label-trees": "~1.3"
     },
     "require-dev": {
     },

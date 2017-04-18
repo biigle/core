@@ -10,11 +10,11 @@ use Biigle\Tests\AnnotationLabelTest;
 
 class VolumeLabelControllerTest extends ApiTestCase
 {
-    public function testFind()
+    public function testIndex()
     {
         $tid = $this->volume()->id;
 
-        $label1 = LabelTest::create(['name' => 'my-label']);
+        $label1 = LabelTest::create();
         $image = ImageTest::create(['volume_id' => $tid]);
         $annotation = AnnotationTest::create(['image_id' => $image->id]);
         AnnotationLabelTest::create([
@@ -22,31 +22,22 @@ class VolumeLabelControllerTest extends ApiTestCase
             'annotation_id' => $annotation->id,
             'user_id' => $this->editor()->id,
         ]);
-        $label2 = LabelTest::create(['name' => 'other-label']);
+        $label2 = LabelTest::create();
         AnnotationLabelTest::create([
             'label_id' => $label2->id,
             'annotation_id' => $annotation->id,
             'user_id' => $this->editor()->id,
         ]);
 
-        $this->doTestApiRoute('GET', "/api/v1/volumes/{$tid}/annotation-labels/find/my");
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$tid}/annotation-labels");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$tid}/annotation-labels/find/my");
+        $this->get("/api/v1/volumes/{$tid}/annotation-labels");
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$tid}/annotation-labels/find/my")
-            // other-label should not appear
-            ->seeJsonEquals([[
-                'id' => $label1->id,
-                'name' => $label1->name,
-                'color' => $label1->color,
-                'parent_id' => $label1->parent_id,
-            ]]);
-        $this->assertResponseOk();
 
-        $this->get("/api/v1/volumes/{$tid}/annotation-labels/find/label")
+        $this->get("/api/v1/volumes/{$tid}/annotation-labels/")
             ->seeJsonEquals([
                 [
                     'id' => $label1->id,
@@ -61,5 +52,6 @@ class VolumeLabelControllerTest extends ApiTestCase
                     'parent_id' => $label2->parent_id,
                 ],
             ]);
+        $this->assertResponseOk();
     }
 }

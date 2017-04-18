@@ -26,7 +26,7 @@ $router->group([
             'uses' => 'VolumeImageController@hasAnnotationUser',
         ]);
 
-        $router->get('volumes/{id}/annotation-labels/find/{pattern}', [
-            'uses' => 'VolumeLabelController@find',
+        $router->get('volumes/{id}/annotation-labels', [
+            'uses' => 'VolumeLabelController@index',
         ]);
     });
