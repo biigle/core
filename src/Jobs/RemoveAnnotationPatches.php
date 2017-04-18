@@ -15,14 +15,14 @@ class RemoveAnnotationPatches extends Job implements ShouldQueue
     use InteractsWithQueue, SerializesModels;
 
     /**
-     * The volume ID of which the annotation patches should be removed
+     * The volume ID of which the annotation patches should be removed.
      *
      * @var int
      */
     private $volumeId;
 
     /**
-     * The annotation IDs whose patches should be removed
+     * The annotation IDs whose patches should be removed.
      *
      * @var array
      */

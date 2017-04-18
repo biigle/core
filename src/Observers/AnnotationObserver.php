@@ -9,11 +9,10 @@ use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
 class AnnotationObserver
 {
-
     use DispatchesJobs;
 
     /**
-     * Handle the event of creating/saving a single annotation
+     * Handle the event of creating/saving a single annotation.
      *
      * @param Annotation $annotation
      */
@@ -25,7 +24,7 @@ class AnnotationObserver
     }
 
     /**
-     * Handle the event of deleting a single annotation
+     * Handle the event of deleting a single annotation.
      *
      * @param Annotation $annotation
      * @return bool

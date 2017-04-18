@@ -2,19 +2,17 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Views;
 
-use DB;
 use Biigle\Role;
 use Biigle\Project;
 use Biigle\Volume;
 use Biigle\LabelTree;
-use Biigle\Annotation;
 use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Views\Controller;
 
 class LargoController extends Controller
 {
     /**
-     * Show the the Largo view for a volume
+     * Show the the Largo view for a volume.
      *
      * @param Guard $auth
      * @param int $id Volume ID
@@ -53,7 +51,7 @@ class LargoController extends Controller
             })
             ->get();
 
-        return view('largo::index', [
+        return view('largo::show', [
             'user' => $user,
             'volume' => $volume,
             'projects' => $projects,
@@ -62,7 +60,7 @@ class LargoController extends Controller
     }
 
     /**
-     * Show the Largo view for a project
+     * Show the Largo view for a project.
      *
      * @param Guard $auth
      * @param int $id Project ID

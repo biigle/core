@@ -9,7 +9,8 @@ use Biigle\Tests\AnnotationLabelTest;
 
 class ProjectsAnnotationsControllerTest extends ApiTestCase
 {
-    public function testFilter() {
+    public function testFilter()
+    {
         $id = $this->project()->id;
 
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);

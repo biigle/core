@@ -11,7 +11,8 @@ use Biigle\Tests\AnnotationSessionTest;
 
 class VolumesAnnotationsControllerTest extends ApiTestCase
 {
-    public function testFilter() {
+    public function testFilter()
+    {
         $id = $this->volume()->id;
 
         $image = ImageTest::create(['volume_id' => $id]);

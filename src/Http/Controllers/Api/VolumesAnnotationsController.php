@@ -11,7 +11,7 @@ use Biigle\Http\Controllers\Api\Controller;
 class VolumesAnnotationsController extends Controller
 {
     /**
-     * Show all annotations of the volume that have a specific label attached
+     * Show all annotations of the volume that have a specific label attached.
      *
      * @api {get} volumes/:tid/annotations/filter/label/:lid Get annotations with a specific label
      * @apiGroup Volumes
@@ -57,5 +57,4 @@ class VolumesAnnotationsController extends Controller
             })
             ->pluck('annotations.id');
     }
-
 }

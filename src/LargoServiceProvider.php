@@ -7,8 +7,8 @@ use Illuminate\Routing\Router;
 use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
 use Biigle\Services\Modules;
 
-class LargoServiceProvider extends ServiceProvider {
-
+class LargoServiceProvider extends ServiceProvider
+{
     /**
      * Bootstrap the application events.
      *
@@ -40,7 +40,7 @@ class LargoServiceProvider extends ServiceProvider {
 
         \Event::listen('images.cleanup', ImagesCleanupListener::class);
 
-        $modules->addMixin('largo', 'volumesMenubar');
+        $modules->addMixin('largo', 'volumesSidebar');
         $modules->addMixin('largo', 'annotationsScripts');
         $modules->addMixin('largo', 'annotationsStyles');
         $modules->addMixin('largo', 'annotationsSidebar');

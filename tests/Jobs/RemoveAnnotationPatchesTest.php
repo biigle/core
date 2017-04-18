@@ -31,6 +31,7 @@ class RemoveAnnotationPatchesTest extends TestCase
         $mock->shouldReceive('valid')->once()->andReturn(false);
         App::bind(FilesystemIterator::class, function ($app, $args) use ($path, $mock) {
             $this->assertEquals([$path, null], $args);
+
             return $mock;
         });
 
