@@ -4,14 +4,11 @@
 @section('title')Edit volume {{ $volume->name }} @stop
 
 @push('scripts')
-    <script src="{{ cachebust_asset('vendor/volumes/scripts/edit.js') }}"></script>
     <script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
     <script type="text/javascript">
-        angular.module('biigle.volumes.edit').constant('VOLUME_ID', {!!$volume->id!!});
-        angular.module('biigle.volumes.edit').constant('ANNOTATION_SESSIONS', {!!$annotationSessions!!});
-
         biigle.$declare('volumes.id', {!! $volume->id !!});
         biigle.$declare('volumes.annotationSessions', {!! $annotationSessions !!});
+        biigle.$declare('volumes.images', {!! $images !!});
     </script>
     @foreach ($modules->getMixins('volumesEditScripts') as $module => $nestedMixins)
         @include($module.'::volumesEditScripts', ['mixins' => $nestedMixins])
@@ -27,7 +24,7 @@
 
 @section('content')
 
-<div class="container" data-ng-app="biigle.volumes.edit">
+<div class="container">
     <h2 class="col-xs-12 clearfix">
         Edit {{$volume->name}}
         <span class="pull-right">

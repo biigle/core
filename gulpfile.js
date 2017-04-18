@@ -22,20 +22,15 @@ gulp.task('sass-dashboard', function () {
 
 gulp.task('sass', ['sass-main', 'sass-edit', 'sass-dashboard']);
 
-gulp.task('js-edit', function (cb) {
-    h.angular('edit/**/*.js', 'edit.js', cb);
-});
-
 gulp.task('js-main', function (cb) {
     h.angular('volumes/**/*.js', 'main.js', cb);
 });
 
-gulp.task('js', ['js-main', 'js-edit']);
+gulp.task('js', ['js-main']);
 
 gulp.task('watch', function () {
     gulp.watch(h.paths.sass + '**/*.scss', ['sass']);
     gulp.watch(h.paths.js + 'volumes/**/*.js', ['js-main']);
-    gulp.watch(h.paths.js + 'edit/**/*.js', ['js-edit']);
     gulp.watch(h.paths.public + '**/*', publish);
 });
 

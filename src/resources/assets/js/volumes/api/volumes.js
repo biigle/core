@@ -18,6 +18,12 @@
  * Get all users that have access to a volume:
  * resource.queryUsers({id: 1}).then(...);
  *
+ * Get IDs of all images of the volume:
+ * resource.queryImages({id: 1}).then(...);
+ *
+ * Add images to a volume:
+ * resource.saveImages({id: 1}, {images: '1.jpg, 2.jpg'}).then(...);
+ *
  * @type {Vue.resource}
  */
 biigle.$declare('api.volumes', Vue.resource('api/v1/volumes{/id}', {}, {
@@ -40,5 +46,13 @@ biigle.$declare('api.volumes', Vue.resource('api/v1/volumes{/id}', {}, {
     queryUsers: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/users',
-    }
+    },
+    queryImages: {
+        method: 'GET',
+        url: 'api/v1/volumes{/id}/images',
+    },
+    saveImages: {
+        method: 'POST',
+        url: 'api/v1/volumes{/id}/images',
+    },
 }));
