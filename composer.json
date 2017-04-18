@@ -2,7 +2,7 @@
     "name": "biigle/export",
     "require": {
         "ext-zip": "*",
-        "biigle/projects": "~1.1"
+        "biigle/projects": "~1.4"
     },
     "require-dev": {
     },
