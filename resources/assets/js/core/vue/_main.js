@@ -31,7 +31,9 @@ biigle.$require = function (namespace) {
     namespace = Array.isArray(namespace) ? namespace : namespace.split('.');
     var object = biigle;
     for (var i = 0, j = namespace.length; i < j; i++) {
-        object[namespace[i]] = object[namespace[i]] || {};
+        if (!object.hasOwnProperty(namespace[i])) {
+            object[namespace[i]] = {};
+        }
         object = object[namespace[i]];
     }
 
