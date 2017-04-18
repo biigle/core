@@ -1,7 +1,7 @@
 {
     "name": "biigle/largo",
     "require": {
-        "biigle/label-trees": "~1.2",
+        "biigle/label-trees": "~1.3",
         "biigle/volumes": "~1.5",
         "intervention/image": "~2.1",
         "intervention/imagecache": "~2.1"
