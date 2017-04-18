@@ -69,26 +69,25 @@
                 </div>
             </div>
             <div v-if="hasNewSession">
-                <button type="button" class="btn btn-default pull-right" title="Clear form data" v-on:click="clearEditedSession">Clear</button>
-                <button type="submit" class="btn btn-success" title="Create new annotation session">Create</button>
+                <button type="button" class="btn btn-default pull-right" title="Clear form data" v-on:click="clearEditedSession" :disabled="loading">Clear</button>
+                <button type="submit" class="btn btn-success" title="Create new annotation session" :disabled="loading">Create</button>
             </div>
             <div v-else>
                 <span class="pull-right">
-                    <button type="button" class="btn btn-default" title="Cancel editing" v-on:click="clearEditedSession">Cancel</button>
-                    <button type="button" class="btn btn-danger" title="Delete this annotation session" v-on:click="deleteSession">Delete</button>
+                    <button type="button" class="btn btn-default" title="Cancel editing" v-on:click="clearEditedSession" :disabled="loading">Cancel</button>
+                    <button type="button" class="btn btn-danger" title="Delete this annotation session" v-on:click="deleteSession" :disabled="loading">Delete</button>
                 </span>
-                <button type="submit" class="btn btn-success" title="Save changes">Save</button>
+                <button type="submit" class="btn btn-success" title="Save changes" :disabled="loading">Save</button>
             </div>
         </form>
     </div>
     <ul class="list-group images-list" v-cloak>
-        <list-item v-for="session in sessions" :session="session" :editing="editing" :edit-id="editedSession.id" v-on:edit="editSession" inline-template>
+        <list-item v-for="session in orderedSessions" :session="session" :editing="editing" :edit-id="editedSession.id" v-on:edit="editSession" inline-template>
             <li class="list-group-item session" :title="title" :class="classObject" v-on:click="edit">
                 <div>
                     <span class="session__dates"><span :title="session.starts_at_iso8601" v-text="session.starts_at"></span> - <span :title="session.ends_at_iso8601" v-text="session.ends_at"></span></span></span> <strong v-text="session.name"></strong>
                 </div>
-                <div v-text="session.description">
-                </div>
+                <div v-text="session.description"></div>
                 <div>
                     <span class="label label-default"><span v-text="session.users.length"></span> user(s)</span>
                     <span class="label label-default" v-if="session.hide_other_users_annotations" title="Hide annotations of other users while this annotation session is active">hide&nbsp;other</span>

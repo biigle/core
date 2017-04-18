@@ -4,6 +4,7 @@
 biigle.$viewModel('annotation-session-panel', function (element) {
     var messages = biigle.$require('messages.store');
     var volumesApi = biigle.$require('api.volumes');
+    var sessionsApi = biigle.$require('api.annotationSessions');
 
     var volumeId = biigle.$require('volumes.id');
     var now = new Date();
@@ -12,7 +13,9 @@ biigle.$viewModel('annotation-session-panel', function (element) {
             name: null,
             description: null,
             starts_at_iso8601: null,
+            starts_at: null,
             ends_at_iso8601: null,
+            ends_at: null,
             hide_other_users_annotations: false,
             hide_own_annotations: false,
             users: [],
@@ -105,10 +108,64 @@ biigle.$viewModel('annotation-session-panel', function (element) {
 
                 return users;
             },
+            orderedSessions: function () {
+                return this.sessions.sort(function (a, b) {
+                    return b.starts_at_iso8601.getTime() - a.starts_at_iso8601.getTime();
+                });
+            },
         },
         methods: {
+            clone: function (thing) {
+                return JSON.parse(JSON.stringify(thing));
+            },
             submit: function () {
-                console.log('submit', JSON.stringify(this.editedSession));
+                if (this.loading) return;
+
+                this.startLoading();
+                var self = this;
+                var session = this.editedSession;
+                if (this.hasNewSession) {
+                    sessionsApi.save({volume_id: volumeId}, this.packSession(session))
+                        .then(this.sessionSaved)
+                        .catch(this.handleErrorResponse)
+                        .finally(this.finishLoading);
+                } else {
+                    sessionsApi.update({id: session.id}, this.packSession(session))
+                        .then(function () {self.sessionUpdated(session);})
+                        .catch(this.handleErrorResponse)
+                        .finally(this.finishLoading);
+                }
+            },
+            sessionUpdated: function (session) {
+                for (var i = this.sessions.length - 1; i >= 0; i--) {
+                    if (this.sessions[i].id === session.id) {
+                        this.sessions.splice(i, 1, session);
+                        this.clearEditedSession();
+                    }
+                }
+            },
+            sessionSaved: function (response) {
+                this.sessions.push(this.parseSession(response.data));
+                this.clearEditedSession();
+            },
+            packSession: function (session) {
+                // The API endpoint expects an array of user IDs and not user objects.
+                // Deep copy the session first so the original object remains the same.
+                session = this.clone(session);
+                session.users = session.users.map(function (user) {
+                    return user.id;
+                });
+                // Replace the human readable dates with the exact dates for storage.
+                session.starts_at = session.starts_at_iso8601;
+                session.ends_at = session.ends_at_iso8601;
+                // Remove these to minimize the request payload.
+                delete session.starts_at_iso8601;
+                delete session.ends_at_iso8601;
+
+                return session;
+            },
+            handleErrorResponse: function (response) {
+                messages.handleErrorResponse(response);
             },
             hasError: function (name) {
                 return false;
@@ -117,12 +174,27 @@ biigle.$viewModel('annotation-session-panel', function (element) {
                 return '';
             },
             editSession: function (session) {
-                // lazy way to deep copy the object
-                this.editedSession = JSON.parse(JSON.stringify(session));
+                this.editedSession = this.clone(session);
             },
             deleteSession: function () {
+                if (this.loading || this.hasNewSession) return;
+
                 if (confirm('Are you sure you want to delete the annotation session \'' + this.editedSession.name + '\'?')) {
-                    console.log('delete', this.editedSession);
+                    this.startLoading();
+                    var self = this;
+                    var id = this.editedSession.id;
+                    sessionsApi.delete({id: id})
+                        .then(function () {self.sessionDeleted(id);})
+                        .catch(messages.handleErrorResponse)
+                        .finally(this.finishLoading);
+                }
+            },
+            sessionDeleted: function (id) {
+                for (var i = this.sessions.length - 1; i >= 0; i--) {
+                    if (this.sessions[i].id === id) {
+                        this.sessions.splice(i, 1);
+                        this.clearEditedSession();
+                    }
                 }
             },
             clearEditedSession: function () {
@@ -130,7 +202,7 @@ biigle.$viewModel('annotation-session-panel', function (element) {
             },
             loadUsers: function () {
                 volumesApi.queryUsers({id: volumeId})
-                    .then(this.usersLoaded, messages.handleResponseError);
+                    .then(this.usersLoaded, messages.handleErrorResponse);
             },
             usersLoaded: function (response) {
                 response.data.forEach(function (user) {
@@ -162,6 +234,17 @@ biigle.$viewModel('annotation-session-panel', function (element) {
                 s = s.split('-');
                 return new Date(s[0], s[1] - 1, s[2]);
             },
+            // convert session date strings to date objects
+            parseSession: function (session) {
+                var date = new Date(session.starts_at_iso8601);
+                session.starts_at_iso8601 = date;
+                session.starts_at = this.stringifyDate(date);
+                date = new Date(session.ends_at_iso8601);
+                session.ends_at_iso8601 = date;
+                session.ends_at = this.stringifyDate(date);
+
+                return session;
+            },
             setStartsAt: function (date) {
                 this.editedSession.starts_at_iso8601 = this.parseDate(date);
                 this.editedSession.starts_at = date;
@@ -172,16 +255,7 @@ biigle.$viewModel('annotation-session-panel', function (element) {
             },
         },
         created: function () {
-            var date;
-            for (var i = this.sessions.length - 1; i >= 0; i--) {
-                date = new Date(this.sessions[i].starts_at_iso8601);
-                this.sessions[i].starts_at_iso8601 = date;
-                this.sessions[i].starts_at = this.stringifyDate(date);
-
-                date = new Date(this.sessions[i].ends_at_iso8601);
-                this.sessions[i].ends_at_iso8601 = date;
-                this.sessions[i].ends_at = this.stringifyDate(date);
-            }
+            this.sessions.map(this.parseSession);
             this.$once('editing.start', this.loadUsers);
         },
     });
