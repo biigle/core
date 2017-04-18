@@ -32,11 +32,7 @@ class ProjectsController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
 
-        $roles = collect([
-            Role::$admin->id => Role::$admin->name,
-            Role::$editor->id => Role::$editor->name,
-            Role::$guest->id => Role::$guest->name,
-        ]);
+        $roles = collect([Role::$admin, Role::$editor, Role::$guest]);
 
         $labelTrees = $project->labelTrees()
             ->select('id', 'name', 'description')
@@ -52,7 +48,7 @@ class ProjectsController extends Controller
         });
 
         $members = $project->users()
-            ->select('id', 'firstname', 'lastname', 'project_role_id')
+            ->select('id', 'firstname', 'lastname', 'project_role_id as role_id')
             ->orderBy('project_user.project_role_id', 'asc')
             ->get();
 
@@ -67,13 +63,14 @@ class ProjectsController extends Controller
     }
 
     /**
-     * Show the project list
+     * Show the project list.
      *
      * @param Request $request
      * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, Guard $auth) {
+    public function index(Request $request, Guard $auth)
+    {
         $query = Project::query();
         $user = $auth->user();
 
@@ -123,5 +120,4 @@ class ProjectsController extends Controller
             abort(404);
         }
     }
-
 }

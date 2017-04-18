@@ -10,7 +10,7 @@ use Biigle\Http\Controllers\Api\Controller;
 class VolumeSampleController extends Controller
 {
     /**
-     * Get sample volume images
+     * Get sample volume images.
      *
      * @api {get} volumes/:id/sample/:number Get sample volume images
      * @apiGroup Volumes
@@ -42,7 +42,6 @@ class VolumeSampleController extends Controller
         // We can cache this for 1 hour because it's unlikely to change as long as the
         // volume exists.
         return Cache::remember("volume-sample-{$id}-{$number}", 60, function () use ($volume, $number) {
-
             $total = $volume->images()->count();
             $query = $volume->orderedImages();
             $step = round($total / $number);

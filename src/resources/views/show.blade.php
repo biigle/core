@@ -9,18 +9,15 @@
 
 @push('scripts')
 <script src="{{ cachebust_asset('vendor/projects/scripts/main.js') }}"></script>
-<script src="{{ cachebust_asset('vendor/projects/scripts/vue.js') }}"></script>
 <script type="text/javascript">
-    angular.module('biigle.projects').constant('PROJECT', {!!$project!!});
-    angular.module('biigle.projects').constant('USER_ID', {!! $user->id !!});
-    angular.module('biigle.projects').constant('REDIRECT_URL', '{{route('projects-index')}}');
-    angular.module('biigle.projects').constant('ROLES', {!! $roles !!});
-    angular.module('biigle.projects').constant('DEFAULT_ROLE_ID', {!! Biigle\Role::$guest->id !!});
-    angular.module('biigle.projects').constant('LABEL_TREES', {!! $labelTrees !!});
-    angular.module('biigle.projects').constant('MEMBERS', {!! $members !!});
-
     biigle.$declare('projects.volumes', {!! $volumes !!});
     biigle.$declare('projects.project', {!!$project!!});
+    biigle.$declare('projects.members', {!! $members !!});
+    biigle.$declare('projects.roles', {!! $roles !!});
+    biigle.$declare('projects.defaultRoleId', {!! Biigle\Role::$guest->id !!});
+    biigle.$declare('projects.userId', {!! $user->id !!});
+    biigle.$declare('projects.redirectUrl', '{{route('projects-index')}}');
+    biigle.$declare('projects.labelTrees', {!! $labelTrees !!});
 </script>
 @foreach ($modules->getMixins('projectsShowScripts') as $module => $nestedMixins)
     @include($module.'::projectsShowScripts')
@@ -28,7 +25,7 @@
 @endpush
 
 @section('content')
-<div class="container" data-ng-app="biigle.projects">
+<div class="container">
     @include('projects::show.title')
     @include('projects::show.toolbar')
     <div class="col-md-6">

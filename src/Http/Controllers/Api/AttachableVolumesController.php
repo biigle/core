@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Projects\Http\Controllers\Api;
 
-use DB;
 use Biigle\Role;
 use Biigle\Project;
 use Biigle\Volume;
@@ -12,7 +11,7 @@ use Biigle\Http\Controllers\Api\Controller;
 class AttachableVolumesController extends Controller
 {
     /**
-     * Shows all volumes that can be attached to the project by the requesting user
+     * Shows all volumes that can be attached to the project by the requesting user.
      *
      * @api {get} projects/:id/attachable-volumes Get all volumes that can be attached
      * @apiGroup Projects

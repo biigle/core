@@ -23,4 +23,4 @@ $router->group(['middleware' => 'auth.api', 'namespace' => 'Api', 'prefix' => 'a
 
         $router->get('volumes/{id}/sample/{number?}', 'VolumeSampleController@index')
             ->where(['number' => '[0-9]+']);
-});
+    });

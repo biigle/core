@@ -7,7 +7,8 @@ use Biigle\Tests\ImageTest;
 
 class VolumeSampleControllerTest extends ApiTestCase
 {
-    public function testIndex() {
+    public function testIndex()
+    {
         $id = $this->volume()->id;
         $i1 = ImageTest::create([
             'volume_id' => $id,
