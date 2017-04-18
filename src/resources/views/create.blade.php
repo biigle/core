@@ -53,7 +53,6 @@
          <input type="hidden" name="_token" value="{{ csrf_token() }}">
          <a href="{{ URL::previous() }}" class="btn btn-link" :disabled="loading">Cancel</a>
          <input type="submit" class="btn btn-success pull-right" value="Create" :disabled="loading">
-         </div>
       </form>
    </div>
 </div>
