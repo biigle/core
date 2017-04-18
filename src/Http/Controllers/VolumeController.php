@@ -73,7 +73,7 @@ class VolumeController extends Controller
         $imageIds = $volume->orderedImages()
             ->pluck('uuid', 'id');
 
-        return view('volumes::index')
+        return view('volumes::show')
             ->with('user', $user)
             ->with('volume', $volume)
             ->with('labelTrees', $labelTrees)

@@ -3,10 +3,10 @@
 @section('title') Create new volume @stop
 
 @section('content')
-<div class="container" data-ng-app="">
+<div class="container">
    <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
       <h2>New volume for {{ $project->name }}</h2>
-      <form class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/volumes') }}" data-ng-submit="submitted=true">
+      <form id="create-volume-form" class="clearfix" role="form" method="POST" action="{{ url('api/v1/projects/'.$project->id.'/volumes') }}" v-on:submit="startLoading">
          <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
             <label for="name">Volume name</label>
             <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" required>
@@ -56,10 +56,17 @@
          </div>
 
          <input type="hidden" name="_token" value="{{ csrf_token() }}">
-         <a href="{{ URL::previous() }}" class="btn btn-link" data-ng-disabled="submitted">Cancel</a>
-         <input type="submit" class="btn btn-success pull-right" value="Create" data-ng-disabled="submitted">
-         </div>
+         <a href="{{ URL::previous() }}" class="btn btn-link" :disabled="loading">Cancel</a>
+         <input type="submit" class="btn btn-success pull-right" value="Create" :disabled="loading">
       </form>
    </div>
 </div>
 @endsection
+
+@push('scripts')
+    <script type="text/javascript">
+        biigle.$viewModel('create-volume-form', function (element) {
+            new Vue({el: element, mixins: [biigle.$require('core.mixins.loader')]});
+        });
+    </script>
+@endpush

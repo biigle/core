@@ -9,11 +9,14 @@ $volume-image-padding: 0.5em;
     position: absolute;
     top: 0;
     width: 100%;
-    height: calc(100% - #{$navbar-height});
-    margin-top: $navbar-height;
+    height: calc(100% - #{$navbar-height} - 1px);
+    margin-top: $navbar-height + 1px;
 }
 
-
+.volume-content {
+    position: relative;
+    flex: 1;
+}
 
 .navbar-text.navbar-volumes-breadcrumbs {
     &, a {
@@ -21,8 +24,11 @@ $volume-image-padding: 0.5em;
     }
 }
 
-@import "main/progress";
-@import "main/images";
-@import "main/menubar";
-@import "main/label";
-
+@import 'components/image-grid';
+@import 'components/image-grid-image';
+@import 'components/image-grid-progress';
+@import 'components/filter-tab';
+@import 'components/filter-select-component';
+@import 'components/sorting-tab';
+@import 'components/volume-image-grid-image';
+@import 'components/image-label-list';
