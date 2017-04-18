@@ -41,7 +41,6 @@
     </div>
     <div class="col-sm-6">
         @include('volumes::edit.images')
-        @include('volumes::edit.annotation-sessions-angular')
     </div>
 </div>
 
