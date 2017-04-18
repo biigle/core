@@ -358,6 +358,10 @@ class Volume extends Model
                     $query->where('starts_at', '<', $session->ends_at)
                         ->where('ends_at', '>=', $session->ends_at);
                 });
+                $query->orWhere(function ($query) use ($session) {
+                    $query->where('starts_at', '>=', $session->starts_at)
+                        ->where('ends_at', '<=', $session->ends_at);
+                });
             })
             ->exists();
     }
