@@ -30,7 +30,7 @@ biigle.$component('volumes.components.imageLabelList', {
     },
     methods: {
         canDelete: function (item) {
-            return this.isAdmin || this.userId === item.user.id;
+            return this.isAdmin === true || this.userId === item.user.id;
         },
         emitDeleted: function (item) {
             this.$emit('deleted', item);
