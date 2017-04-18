@@ -76,6 +76,7 @@ biigle.$viewModel('annotation-session-panel', function (element) {
             sessions: biigle.$require('volumes.annotationSessions'),
             editedSession: emptySession(),
             users: [],
+            errors: {},
         },
         components: {
             typeahead: biigle.$require('core.components.typeahead'),
@@ -85,9 +86,7 @@ biigle.$viewModel('annotation-session-panel', function (element) {
         },
         computed: {
             classObject: function () {
-                return {
-                    'panel-warning panel--editing': this.editing,
-                };
+                return {'panel-warning panel--editing': this.editing};
             },
             hasSessions: function () {
                 return this.sessions.length > 0;
@@ -99,14 +98,10 @@ biigle.$viewModel('annotation-session-panel', function (element) {
                 var members = this.editedSession.users.map(function (user) {
                     return user.id;
                 });
-                var users = [];
-                for (var i = this.users.length - 1; i >= 0; i--) {
-                    if (members.indexOf(this.users[i].id) === -1) {
-                        users.push(this.users[i]);
-                    }
-                }
 
-                return users;
+                return this.users.filter(function (user) {
+                    return members.indexOf(user.id) === -1;
+                });
             },
             orderedSessions: function () {
                 return this.sessions.sort(function (a, b) {
@@ -118,7 +113,11 @@ biigle.$viewModel('annotation-session-panel', function (element) {
             clone: function (thing) {
                 return JSON.parse(JSON.stringify(thing));
             },
-            submit: function () {
+            startLoading: function () {
+                this.errors = {};
+                this.loading = true;
+            },
+            submit: function (force) {
                 if (this.loading) return;
 
                 this.startLoading();
@@ -130,9 +129,11 @@ biigle.$viewModel('annotation-session-panel', function (element) {
                         .catch(this.handleErrorResponse)
                         .finally(this.finishLoading);
                 } else {
-                    sessionsApi.update({id: session.id}, this.packSession(session))
+                    var params = {id: session.id};
+                    if (force === true) params.force = 1;
+                    sessionsApi.update(params, this.packSession(session))
                         .then(function () {self.sessionUpdated(session);})
-                        .catch(this.handleErrorResponse)
+                        .catch(this.handleConfirm('Use the Force and update the annotation session?', this.submit))
                         .finally(this.finishLoading);
                 }
             },
@@ -164,28 +165,47 @@ biigle.$viewModel('annotation-session-panel', function (element) {
 
                 return session;
             },
+            handleConfirm: function (message, callback) {
+                var self = this;
+                return function (response) {
+                    if (response.status === 400) {
+                        self.finishLoading();
+                        if (confirm(response.data.message + ' ' + message)) {
+                            callback(true);
+                        }
+                    } else {
+                        this.handleErrorResponse(response);
+                    }
+                };
+            },
             handleErrorResponse: function (response) {
-                messages.handleErrorResponse(response);
+                if (response.status === 422) {
+                    this.errors = response.data;
+                } else {
+                    messages.handleErrorResponse(response);
+                }
             },
             hasError: function (name) {
-                return false;
+                return this.errors.hasOwnProperty(name);
             },
             getError: function (name) {
-                return '';
+                return this.errors[name].join(' ');
             },
             editSession: function (session) {
                 this.editedSession = this.clone(session);
             },
-            deleteSession: function () {
+            deleteSession: function (force) {
                 if (this.loading || this.hasNewSession) return;
 
-                if (confirm('Are you sure you want to delete the annotation session \'' + this.editedSession.name + '\'?')) {
+                if (force === true || confirm('Are you sure you want to delete the annotation session \'' + this.editedSession.name + '\'?')) {
                     this.startLoading();
                     var self = this;
                     var id = this.editedSession.id;
-                    sessionsApi.delete({id: id})
+                    var params = {id: id};
+                    if (force === true) params.force = 1;
+                    sessionsApi.delete(params)
                         .then(function () {self.sessionDeleted(id);})
-                        .catch(messages.handleErrorResponse)
+                        .catch(this.handleConfirm('Use the Force and delete the annotation session?', this.deleteSession))
                         .finally(this.finishLoading);
                 }
             },
@@ -194,6 +214,7 @@ biigle.$viewModel('annotation-session-panel', function (element) {
                     if (this.sessions[i].id === id) {
                         this.sessions.splice(i, 1);
                         this.clearEditedSession();
+                        return;
                     }
                 }
             },
@@ -205,9 +226,8 @@ biigle.$viewModel('annotation-session-panel', function (element) {
                     .then(this.usersLoaded, messages.handleErrorResponse);
             },
             usersLoaded: function (response) {
+                // Assemble full username that can be used for searching in the typeahead.
                 response.data.forEach(function (user) {
-                    // Assemble full username that can be used for searching in the
-                    // typeahead.
                     user.name = user.firstname + ' ' + user.lastname;
                 });
                 Vue.set(this, 'users', response.data);
