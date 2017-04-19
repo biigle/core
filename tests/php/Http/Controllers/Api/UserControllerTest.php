@@ -75,9 +75,9 @@ class UserControllerTest extends ApiTestCase
     {
         $this->doTestApiRoute('PUT', '/api/v1/users/'.$this->guest()->id);
 
-        // api key authentication is not allowed for this route
+        // api key authentication **is** allowed for this route
         $this->callToken('PUT', '/api/v1/users/'.$this->guest()->id, $this->globalAdmin());
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(200);
 
         $this->beGuest();
         $this->put('/api/v1/users/'.$this->guest()->id);
@@ -265,9 +265,9 @@ class UserControllerTest extends ApiTestCase
     {
         $this->doTestApiRoute('POST', '/api/v1/users');
 
-        // api key authentication is not allowed for this route
+        // api key authentication **is** allowed for this route
         $this->callToken('POST', '/api/v1/users', $this->globalAdmin());
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(422);
 
         $this->beAdmin();
         $this->post('/api/v1/users', [
@@ -340,9 +340,9 @@ class UserControllerTest extends ApiTestCase
         $id = $this->guest()->id;
         $this->doTestApiRoute('DELETE', '/api/v1/users/'.$id);
 
-        // api key authentication is not allowed for this route
+        // api key authentication **is** allowed for this route
         $this->callToken('DELETE', '/api/v1/users/'.$id, $this->globalAdmin());
-        $this->assertResponseStatus(401);
+        $this->assertResponseStatus(422);
 
         $this->beAdmin();
         $this->delete('/api/v1/users/'.$id, [

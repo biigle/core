@@ -15,11 +15,9 @@ class UserController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('session', ['except' => [
-            'find',
-            'index',
-            'show',
-            'showOwn',
+        $this->middleware('session', ['only' => [
+            'updateOwn',
+            'destroyOwn',
         ]]);
 
         $this->middleware('can:admin', ['only' => [
@@ -170,7 +168,6 @@ class UserController extends Controller
      * @apiGroup Users
      * @apiName UpdateUsers
      * @apiPermission admin
-     * @apiDescription This action is allowed only by session cookie authentication.
      *
      * @apiParam {Number} id The user ID.
      *
@@ -300,7 +297,7 @@ class UserController extends Controller
      * @apiGroup Users
      * @apiName StoreUsers
      * @apiPermission admin
-     * @apiDescription This action is allowed only by session cookie authentication. A new user gets the global role `editor` by default.
+     * @apiDescription A new user gets the global role `editor` by default.
      *
      * @apiParam (Required parameters) {String} email The email address of the new user. Must be unique for all users.
      * @apiParam (Required parameters) {String} password The password of the new user.
@@ -368,7 +365,7 @@ class UserController extends Controller
      * @apiName DestroyUsers
      * @apiPermission admin
      * @apiParam (Required parameters) {String} password The password of the global administrator.
-     * @apiDescription This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.
+     * @apiDescription If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.
      *
      * @apiParam {Number} id The user ID.
      *
