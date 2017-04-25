@@ -22,6 +22,7 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
             return this.ignoredTags.indexOf(e.target.tagName.toLowerCase()) !== -1;
         },
         handleKeyEvents: function (e) {
+            e = e || event; // see: http://stackoverflow.com/a/5630990/1796523
             if (this.shouldIgnoreTarget(e)) {
                 return;
             }
@@ -87,6 +88,6 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
         },
     },
     created: function () {
-        document.body.addEventListener('keydown', this.handleKeyEvents);
+        document.body.addEventListener('keypress', this.handleKeyEvents);
     },
 }));
