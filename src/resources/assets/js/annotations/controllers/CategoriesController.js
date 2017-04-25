@@ -23,11 +23,17 @@ angular.module('biigle.annotations').controller('CategoriesController', function
         // restores the favourites from the IDs in localStorage
         var loadFavourites = function () {
             if (window.localStorage[favouritesStorageKey]) {
+                // Keep the ordering of the favourites!
                 var tmp = JSON.parse(window.localStorage[favouritesStorageKey]);
-                $scope.favourites = $scope.categories.filter(function (item) {
-                    // only take those categories as favourites that are available for this image
-                    return tmp.indexOf(item.id) !== -1;
+                var favourites = [];
+                $scope.categories.forEach(function (item) {
+                    var index = tmp.indexOf(item.id);
+                    if (index !== -1) {
+                        favourites[index] = item;
+                    }
                 });
+                // Remove 'undefined' items in case labels were deleted in the meantime
+                $scope.favourites = favourites.filter(Boolean);
             }
         };
 
