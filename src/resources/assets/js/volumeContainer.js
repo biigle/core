@@ -8,6 +8,13 @@ biigle.$viewModel('volume-container', function (element) {
     var annotateUri = biigle.$require('volumes.annotateUri');
     var imageUri = biigle.$require('volumes.imageUri');
 
+    /*
+     * ABOUT PERFORMANCE
+     *
+     * Calling this.xxx on a Vue model inside a for loop is very slow because each call
+     * must pass through the reactive getter functions! To mitigate this we use the
+     * forEach method or set local variables wherever we can.
+     */
     new Vue({
         el: element,
         mixins: [biigle.$require('core.mixins.loader')],
@@ -30,43 +37,47 @@ biigle.$viewModel('volume-container', function (element) {
             selectedLabel: null,
         },
         computed: {
-            sortedImages: function () {
-                /*
-                 * Calling this.xxx on a Vue model is very slow because each call must
-                 * pass through the reactive getter functions! To mitigate this we
-                 * create local variables for this.sortingSequence and this.images
-                 * outside of the loops.
-                 */
-                var sortingSequence = this.sortingSequence;
-                // Map from image ID to index of sorted array.
+            // Map from image ID to index of sorted array to compute sortedImages fast.
+            sortingMap: function () {
                 var map = {};
-                var i;
-                for (i = sortingSequence.length - 1; i >= 0; i--) {
-                    map[sortingSequence[i]] = i;
-                }
+                this.sortingSequence.forEach(function (value, index) {
+                    map[value] = index;
+                });
 
+                return map;
+            },
+            sortedImages: function () {
                 // Create new array where each image is at its sorted index.
+                var map = this.sortingMap;
                 var images = [];
-                var thisImages = this.images;
-                for (i = thisImages.length - 1; i >= 0; i--) {
-                    images[map[thisImages[i].id]] = thisImages[i];
-                }
+                this.images.forEach(function (image) {
+                    images[map[image.id]] = image;
+                });
 
                 return images;
             },
+            // Datastructure to make the filtering in imagesToShow more performant.
+            filterMap: function () {
+                var map = {};
+                this.filterSequence.forEach(function (i) {
+                    map[i] = null;
+                });
+
+                return map;
+            },
             imagesToShow: function () {
-                var filterSequence = this.filterSequence;
+                var map = this.filterMap;
 
                 if (this.filterMode === 'flag') {
                     return this.sortedImages.map(function (image) {
-                        image.flagged = filterSequence.indexOf(image.id) !== -1;
+                        image.flagged = map.hasOwnProperty(image.id);
                         return image;
                     });
                 }
 
                 return this.sortedImages.filter(function (image) {
                     image.flagged = false;
-                    return filterSequence.indexOf(image.id) !== -1;
+                    return map.hasOwnProperty(image.id);
                 });
             },
             imageIdsToShow: function () {
@@ -168,7 +179,6 @@ biigle.$viewModel('volume-container', function (element) {
         created: function () {
             // Do this here instead of a computed property so the image objects get
             // reactive. Also, this array does never change between page reloads.
-            // console.profile('parsing');
             var images = this.imageIds.map(function (id) {
                 return {
                     id: id,
@@ -178,9 +188,6 @@ biigle.$viewModel('volume-container', function (element) {
                     flagged: false,
                 };
             });
-            // setTimeout(function() {
-            //     console.profileEnd('parsing');
-            // });
 
             Vue.set(this, 'images', images);
         },
