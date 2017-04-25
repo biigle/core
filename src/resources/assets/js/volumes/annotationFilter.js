@@ -1,5 +1,5 @@
 /**
- * Geo filter for the volume overview filters.
+ * Annotations filter for the volume overview filters.
  */
 biigle.$require('volumes.stores.filters').push({
     id: 'annotations',
