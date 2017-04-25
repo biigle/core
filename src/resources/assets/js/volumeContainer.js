@@ -8,6 +8,13 @@ biigle.$viewModel('volume-container', function (element) {
     var annotateUri = biigle.$require('volumes.annotateUri');
     var imageUri = biigle.$require('volumes.imageUri');
 
+    /*
+     * ABOUT PERFORMANCE
+     *
+     * Calling this.xxx on a Vue model inside a for loop is very slow because each call
+     * must pass through the reactive getter functions! To mitigate this we use the
+     * forEach method or set local variables wherever we can.
+     */
     new Vue({
         el: element,
         mixins: [biigle.$require('core.mixins.loader')],
@@ -30,35 +37,47 @@ biigle.$viewModel('volume-container', function (element) {
             selectedLabel: null,
         },
         computed: {
-            sortedImages: function () {
-                // Map from image ID to index od sorted array.
+            // Map from image ID to index of sorted array to compute sortedImages fast.
+            sortingMap: function () {
                 var map = {};
-                var i;
-                for (i = this.sortingSequence.length - 1; i >= 0; i--) {
-                    map[this.sortingSequence[i]] = i;
-                }
+                this.sortingSequence.forEach(function (value, index) {
+                    map[value] = index;
+                });
 
+                return map;
+            },
+            sortedImages: function () {
                 // Create new array where each image is at its sorted index.
+                var map = this.sortingMap;
                 var images = [];
-                for (i = this.images.length - 1; i >= 0; i--) {
-                    images[map[this.images[i].id]] = this.images[i];
-                }
+                this.images.forEach(function (image) {
+                    images[map[image.id]] = image;
+                });
 
                 return images;
             },
+            // Datastructure to make the filtering in imagesToShow more performant.
+            filterMap: function () {
+                var map = {};
+                this.filterSequence.forEach(function (i) {
+                    map[i] = null;
+                });
+
+                return map;
+            },
             imagesToShow: function () {
-                var self = this;
+                var map = this.filterMap;
 
                 if (this.filterMode === 'flag') {
                     return this.sortedImages.map(function (image) {
-                        image.flagged = self.filterSequence.indexOf(image.id) !== -1;
+                        image.flagged = map.hasOwnProperty(image.id);
                         return image;
                     });
                 }
 
                 return this.sortedImages.filter(function (image) {
                     image.flagged = false;
-                    return self.filterSequence.indexOf(image.id) !== -1;
+                    return map.hasOwnProperty(image.id);
                 });
             },
             imageIdsToShow: function () {
@@ -70,8 +89,10 @@ biigle.$viewModel('volume-container', function (element) {
                 return this.imageIds.length > this.filterSequence.length;
             },
             hasSortingSequence: function () {
-                for (var i = this.imageIds.length - 1; i >= 0; i--) {
-                    if (this.imageIds[i] !== this.sortingSequence[i]) {
+                var imageIds = this.imageIds;
+                var sortingSequence = this.sortingSequence;
+                for (var i = imageIds.length - 1; i >= 0; i--) {
+                    if (imageIds[i] !== sortingSequence[i]) {
                         return true;
                     }
                 }
@@ -130,14 +151,15 @@ biigle.$viewModel('volume-container', function (element) {
             },
         },
         watch: {
-            imageIdsToShow: function () {
+            imageIdsToShow: function (imageIdsToShow) {
                 // If the shown images differ from the default sequence, store them for
                 // the annotation tool.
-                var equal = this.imageIdsToShow.length === this.imageIds.length;
+                var imageIds = this.imageIds;
+                var equal = imageIdsToShow.length === imageIds.length;
 
                 if (equal) {
-                    for (var i = this.imageIdsToShow.length - 1; i >= 0; i--) {
-                        if (this.imageIdsToShow[i] !== this.imageIds[i]) {
+                    for (var i = imageIdsToShow.length - 1; i >= 0; i--) {
+                        if (imageIdsToShow[i] !== imageIds[i]) {
                             equal = false;
                             break;
                         }
@@ -149,7 +171,7 @@ biigle.$viewModel('volume-container', function (element) {
                 } else {
                     localStorage.setItem(
                         this.imagesStorageKey,
-                        JSON.stringify(this.imageIdsToShow)
+                        JSON.stringify(imageIdsToShow)
                     );
                 }
             },
