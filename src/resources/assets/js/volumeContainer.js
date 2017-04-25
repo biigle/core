@@ -7,6 +7,7 @@ biigle.$viewModel('volume-container', function (element) {
     var thumbUri = biigle.$require('volumes.thumbUri');
     var annotateUri = biigle.$require('volumes.annotateUri');
     var imageUri = biigle.$require('volumes.imageUri');
+    var events = biigle.$require('biigle.events');
 
     /*
      * ABOUT PERFORMANCE
@@ -174,6 +175,8 @@ biigle.$viewModel('volume-container', function (element) {
                         JSON.stringify(imageIdsToShow)
                     );
                 }
+
+                events.$emit('volumes.images.count', imageIdsToShow.length);
             },
         },
         created: function () {
