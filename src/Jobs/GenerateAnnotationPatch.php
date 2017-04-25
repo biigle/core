@@ -129,19 +129,22 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         // increase memory limit for modifying large images
         ini_set('memory_limit', config('largo.memory_limit'));
 
-        // Like InterventionImage::cache() from the documentation but this has better
-        // testability.
-        $cachedImage = App::make(ImageCache::class)
-            ->make($image->url)
-            // Cache the encoding so we don't have to do do it the next time.
-            ->encode($format)
-            ->get(config('largo.imagecache_lifetime'), true);
+        try {
+            // Like InterventionImage::cache() from the documentation but this has better
+            // testability.
+            $cachedImage = App::make(ImageCache::class)
+                ->make($image->url)
+                // Cache the encoding so we don't have to do do it the next time.
+                ->encode($format)
+                ->get(config('largo.imagecache_lifetime'), true);
 
-        $cachedImage->crop($width, $height, $xmin, $ymin)
-            ->save("{$prefix}/{$annotation->id}.{$format}")
-            ->destroy();
+            $cachedImage->crop($width, $height, $xmin, $ymin)
+                ->save("{$prefix}/{$annotation->id}.{$format}")
+                ->destroy();
+        } finally {
+            // restore default memory limit
+            ini_set('memory_limit', $memoryLimit);
+        }
 
-        // restore default memory limit
-        ini_set('memory_limit', $memoryLimit);
     }
 }
