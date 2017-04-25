@@ -9,7 +9,8 @@ angular.module('biigle.ui.utils').service('keyboard', function ($document) {
         "use strict";
 
         // maps key codes/characters to arrays of listeners
-        var listeners = {};
+        var charListeners = {};
+        var codeListeners = {};
         var body = $document[0].body;
 
         var executeCallbacks = function (list, e) {
@@ -21,6 +22,7 @@ angular.module('biigle.ui.utils').service('keyboard', function ($document) {
         };
 
         var handleKeyEvents = function (e) {
+            e = e || event; // IE compatibility
             if (e.target !== body) {
                 // don't do anything if e.g. the user types into an input field
                 return;
@@ -29,23 +31,25 @@ angular.module('biigle.ui.utils').service('keyboard', function ($document) {
             var code = e.keyCode;
             var character = String.fromCharCode(e.which || code).toLowerCase();
 
-            if (listeners[code]) {
-                executeCallbacks(listeners[code], e);
+            if (codeListeners[code]) {
+                executeCallbacks(codeListeners[code], e);
             }
 
-            if (listeners[character]) {
-                executeCallbacks(listeners[character], e);
+            if (charListeners[character]) {
+                executeCallbacks(charListeners[character], e);
             }
         };
 
-        $document.bind('keydown', handleKeyEvents);
+        $document.bind('keypress', handleKeyEvents);
 
         // register a new event listener for the key code or character with an optional priority
         // listeners with higher priority are called first anc can return 'false' to prevent the
         // listeners with lower priority from being called
         this.on = function (charOrCode, callback, priority) {
+            var listeners = codeListeners;
             if (typeof charOrCode === 'string' || charOrCode instanceof String) {
                 charOrCode = charOrCode.toLowerCase();
+                listeners = charListeners;
             }
 
             priority = priority || 0;
@@ -75,8 +79,10 @@ angular.module('biigle.ui.utils').service('keyboard', function ($document) {
 
         // unregister an event listener
         this.off = function (charOrCode, callback) {
+            var listeners = codeListeners;
             if (typeof charOrCode === 'string' || charOrCode instanceof String) {
                 charOrCode = charOrCode.toLowerCase();
+                listeners = charListeners;
             }
 
             if (listeners[charOrCode]) {
