@@ -132,11 +132,16 @@ biigle.$component('labelTrees.components.labelTrees', {
             var favouriteIds = JSON.parse(localStorage.getItem(this.favouriteStorageKey));
             var i;
             if (favouriteIds) {
-                for (i = this.labels.length - 1; i >= 0; i--) {
-                    if (favouriteIds.indexOf(this.labels[i].id) !== -1) {
-                        this.handleAddFavourite(this.labels[i]);
+                var favouriteLabels = [];
+                this.labels.forEach(function (label) {
+                    var index = favouriteIds.indexOf(label.id);
+                    if (index !== -1) {
+                        favouriteLabels[index] = label;
                     }
-                }
+                });
+                favouriteLabels.forEach(function (label) {
+                    this.handleAddFavourite(label);
+                }, this);
             }
 
             var keyboard = biigle.$require('labelTrees.stores.keyboard');
