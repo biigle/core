@@ -3,20 +3,16 @@
  */
 biigle.$declare('labelTrees.stores.keyboard', new Vue({
     data: {
-        listeners: {},
+        // Distinguish between char and code listeners because a key event with code
+        // 9 is not the same as one with char '9'!
+        charListeners: {},
+        codeListeners: {},
         // Events that have these tags as target will be ignored.
         ignoredTags: ['input', 'textarea', 'select'],
     },
     methods: {
-        hasListener: function (key) {
-            return this.listeners.hasOwnProperty(key);
-        },
-        parseCharOrCode: function (coc) {
-            if (typeof coc === 'string' || coc instanceof String) {
-                return coc.toLowerCase();
-            }
-
-            return coc;
+        isChar: function (key) {
+            return typeof key === 'string' || key instanceof String;
         },
         shouldIgnoreTarget: function (e) {
             return this.ignoredTags.indexOf(e.target.tagName.toLowerCase()) !== -1;
@@ -28,18 +24,17 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
             }
 
             var code = e.keyCode;
-            var character = String.fromCharCode(e.which || code).toLowerCase();
+            var char = String.fromCharCode(e.which || code).toLowerCase();
 
-            if (this.hasListener(code)) {
-                this.executeCallbacks(code, e);
+            if (this.codeListeners.hasOwnProperty(code)) {
+                this.executeCallbacks(this.codeListeners[code], e);
             }
 
-            if (this.hasListener(character)) {
-                this.executeCallbacks(character, e);
+            if (this.charListeners.hasOwnProperty(char)) {
+                this.executeCallbacks(this.charListeners[char], e);
             }
         },
-        executeCallbacks: function (key, e) {
-            var list = this.listeners[key];
+        executeCallbacks: function (list, e) {
             // go from highest priority down
             for (var i = list.length - 1; i >= 0; i--) {
                 // callbacks can cancel further propagation
@@ -47,7 +42,11 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
             }
         },
         on: function (charOrCode, callback, priority) {
-            charOrCode = this.parseCharOrCode(charOrCode);
+            var listeners = this.codeListeners;
+            if (this.isChar(charOrCode)) {
+                listeners = this.charListeners;
+                charOrCode = charOrCode.toLowerCase();
+            }
 
             priority = priority || 0;
             var listener = {
@@ -55,8 +54,8 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
                 priority: priority
             };
 
-            if (this.hasListener(charOrCode)) {
-                var list = this.listeners[charOrCode];
+            if (listeners.hasOwnProperty(charOrCode)) {
+                var list = listeners[charOrCode];
                 var i;
 
                 for (i = 0; i < list.length; i++) {
@@ -70,14 +69,18 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
                 }
 
             } else {
-                this.listeners[charOrCode] = [listener];
+                listeners[charOrCode] = [listener];
             }
         },
         off: function (charOrCode, callback) {
-            charOrCode = this.parseCharOrCode(charOrCode);
+            var listeners = this.codeListeners;
+            if (this.isChar(charOrCode)) {
+                listeners = this.charListeners;
+                charOrCode = charOrCode.toLowerCase();
+            }
 
-            if (this.hasListener(charOrCode)) {
-                var list = this.listeners[charOrCode];
+            if (listeners.hasOwnProperty(charOrCode)) {
+                var list = listeners[charOrCode];
                 for (var i = list.length - 1; i >= 0; i--) {
                     if (list[i].callback === callback) {
                         list.splice(i, 1);
