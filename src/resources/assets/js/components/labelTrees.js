@@ -130,8 +130,8 @@ biigle.$component('labelTrees.components.labelTrees', {
     mounted: function () {
         if (this.showFavourites) {
             var favouriteIds = JSON.parse(localStorage.getItem(this.favouriteStorageKey));
-            var i;
             if (favouriteIds) {
+                // Keep the ordering of the favourites!
                 var favouriteLabels = [];
                 this.labels.forEach(function (label) {
                     var index = favouriteIds.indexOf(label.id);
@@ -139,7 +139,8 @@ biigle.$component('labelTrees.components.labelTrees', {
                         favouriteLabels[index] = label;
                     }
                 });
-                favouriteLabels.forEach(function (label) {
+                // Remove 'undefined' items in case labels were deleted in the meantime
+                favouriteLabels.filter(Boolean).forEach(function (label) {
                     this.handleAddFavourite(label);
                 }, this);
             }
@@ -153,7 +154,7 @@ biigle.$component('labelTrees.components.labelTrees', {
                 });
             };
 
-            for (i = 1; i <= 9; i++) {
+            for (var i = 1; i <= 9; i++) {
                 bindFavouriteKey(i.toString(), i - 1);
             }
             bindFavouriteKey('0', 9);
