@@ -33,11 +33,11 @@
     </h2>
     <div class="col-sm-6">
         @include('volumes::edit.information')
-        @include('volumes::edit.metadata')
         @include('volumes::edit.annotation-sessions')
     </div>
     <div class="col-sm-6">
         @include('volumes::edit.images')
+        @include('volumes::edit.metadata')
     </div>
 </div>
 

@@ -41,6 +41,22 @@
                     @endif
                 </div>
             </div>
+            <div class="row">
+                <div class="form-group col-sm-6{{ $errors->has('video_link') ? ' has-error' : '' }}">
+                    <label for="video_link">Video link</label>
+                    <input type="text" class="form-control" name="video_link" id="video_link" value="{{ old('video_link', $volume->video_link) }}" placeholder="http://video.example.com">
+                    @if($errors->has('video_link'))
+                        <span class="help-block">{{ $errors->first('video_link') }}</span>
+                    @endif
+                </div>
+                <div class="form-group col-sm-6{{ $errors->has('gis_link') ? ' has-error' : '' }}">
+                    <label for="gis_link">GIS link</label>
+                    <input type="text" class="form-control" name="gis_link" id="gis_link" value="{{ old('gis_link', $volume->gis_link) }}" placeholder="http://gis.example.com">
+                    @if($errors->has('gis_link'))
+                        <span class="help-block">{{ $errors->first('gis_link') }}</span>
+                    @endif
+                </div>
+            </div>
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <input type="hidden" name="_method" value="PUT">
             <input type="hidden" name="_redirect" value="{{ route('volume-edit', $volume->id) }}">
