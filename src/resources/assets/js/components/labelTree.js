@@ -81,32 +81,29 @@ biigle.$component('labelTrees.components.labelTree', {
             var i;
 
             if (this.flat) {
-                for (i = 0, length = this.labels.length; i < length; i++) {
-                    compiled[null].push(this.labels[i]);
-                }
+                this.labels.forEach(function (label) {
+                    compiled[null].push(label);
+                });
             } else {
-                var parent;
                 // Create datastructure that maps label IDs to the child labels.
-                // Go from 0 to length so the labels are kept in order.
-                for (i = 0, length = this.labels.length; i < length; i++) {
-                    parent = this.labels[i].parent_id;
-                    if (compiled.hasOwnProperty(parent)) {
-                        compiled[parent].push(this.labels[i]);
+                this.labels.forEach(function (label) {
+                    if (compiled.hasOwnProperty(label.parent_id)) {
+                        compiled[label.parent_id].push(label);
                     } else {
-                        compiled[parent] = [this.labels[i]];
+                        compiled[label.parent_id] = [label];
                     }
-                }
+                });
 
                 // update the label children with the compiled datastructure
-                for (i = this.labels.length - 1; i >= 0; i--) {
-                    if (compiled.hasOwnProperty(this.labels[i].id)) {
-                        Vue.set(this.labels[i], 'children', compiled[this.labels[i].id]);
+                this.labels.forEach(function (label) {
+                    if (compiled.hasOwnProperty(label.id)) {
+                        Vue.set(label, 'children', compiled[label.id]);
                     } else {
-                        Vue.set(this.labels[i], 'children', undefined);
+                        Vue.set(label, 'children', undefined);
                         // If the last child was deleted, close the label.
-                        this.labels[i].open = false;
+                        label.open = false;
                     }
-                }
+                });
             }
 
             return compiled;
@@ -167,9 +164,9 @@ biigle.$component('labelTrees.components.labelTree', {
             }
         },
         clearSelectedLabels: function () {
-            for (var i = this.labels.length - 1; i >= 0; i--) {
-                this.labels[i].selected = false;
-            }
+            this.labels.forEach(function (label) {
+                label.selected = false;
+            });
         },
         collapse: function () {
             this.collapsed = !this.collapsed;
@@ -193,19 +190,19 @@ biigle.$component('labelTrees.components.labelTree', {
     },
     created: function () {
         // Set the reactive label properties
-        for (var i = this.labels.length - 1; i >= 0; i--) {
-            if (!this.labels[i].hasOwnProperty('open')) {
-                Vue.set(this.labels[i], 'open', false);
+        this.labels.forEach(function (label) {
+            if (!label.hasOwnProperty('open')) {
+                Vue.set(label, 'open', false);
             }
 
-            if (!this.labels[i].hasOwnProperty('selected')) {
-                Vue.set(this.labels[i], 'selected', false);
+            if (!label.hasOwnProperty('selected')) {
+                Vue.set(label, 'selected', false);
             }
 
-            if (!this.labels[i].hasOwnProperty('favourite')) {
-                Vue.set(this.labels[i], 'favourite', false);
+            if (!label.hasOwnProperty('favourite')) {
+                Vue.set(label, 'favourite', false);
             }
-        }
+        });
 
         // The label tree can be used in a label-trees component or as a single label
         // tree. In a label-trees component only one label can be selected in all label

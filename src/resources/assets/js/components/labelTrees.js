@@ -52,9 +52,9 @@ biigle.$component('labelTrees.components.labelTrees', {
         // All labels of all label trees in a flat list.
         labels: function () {
             var labels = [];
-            for (var i = this.trees.length - 1; i >= 0; i--) {
-                Array.prototype.push.apply(labels, this.trees[i].labels);
-            }
+            this.trees.forEach(function (tree) {
+                Array.prototype.push.apply(labels, tree.labels);
+            });
 
             return labels;
         },
