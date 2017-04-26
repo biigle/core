@@ -31,9 +31,10 @@ biigle.$viewModel('volume-container', function (element) {
             imageIds: imageIds,
             images: [],
             filterSequence: imageIds,
+            filterMode: null,
+            filterActive: false,
             sortingSequence: imageIds,
             volumeId: biigle.$require('volumes.volumeId'),
-            filterMode: null,
             imageLabelMode: false,
             selectedLabel: null,
         },
@@ -86,9 +87,6 @@ biigle.$viewModel('volume-container', function (element) {
                     return image.id;
                 });
             },
-            hasFilterSequence: function () {
-                return this.imageIds.length > this.filterSequence.length;
-            },
             hasSortingSequence: function () {
                 var imageIds = this.imageIds;
                 var sortingSequence = this.sortingSequence;
@@ -128,9 +126,10 @@ biigle.$viewModel('volume-container', function (element) {
             toggleLoading: function (loading) {
                 this.loading = loading;
             },
-            updateFilterSequence: function (data) {
-                this.filterSequence = data.sequence;
-                this.filterMode = data.mode;
+            updateFilterSequence: function (sequence, mode, active) {
+                this.filterSequence = sequence;
+                this.filterMode = mode;
+                this.filterActive = active;
             },
             handleImageGridScroll: function (offset) {
                 if (offset > 0) {

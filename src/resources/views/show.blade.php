@@ -52,7 +52,7 @@
                 @include('volumes::show.labels')
             </sidebar-tab>
         @endcan
-        <sidebar-tab name="filter" icon="filter" title="Filter images" :highlight="hasFilterSequence">
+        <sidebar-tab name="filter" icon="filter" title="Filter images" :highlight="filterActive">
             @include('volumes::show.filters')
         </sidebar-tab>
         <sidebar-tab name="sorting" icon="sort" title="Sort images" :highlight="hasSortingSequence">

@@ -20,6 +20,7 @@ biigle.$component('volumes.components.filterTab', {
             selectedFilterId: null,
             negate: false,
             mode: 'filter',
+            operator: 'and',
         };
     },
     computed: {
@@ -36,50 +37,68 @@ biigle.$component('volumes.components.filterTab', {
             return this.rules.length > 0;
         },
         sequence: function () {
-            var only = [];
-            var except = [];
-            var i;
+            if (!this.hasRules) {
+                return this.imageIds;
+            }
+
+            var only = {};
+            var except = {};
+            var negatedRules = 0;
             var nonNegatedRules = 0;
 
-            for (i = this.rules.length - 1; i >= 0; i--) {
-                if (this.rules[i].negate) {
-                    Array.prototype.push.apply(except, this.rules[i].sequence);
+            this.rules.forEach(function (rule) {
+                if (rule.negate) {
+                    negatedRules++;
+                    rule.sequence.forEach(function (id) {
+                        except[id] = except[id]++ || 1;
+                    });
                 } else {
                     nonNegatedRules++;
-                    Array.prototype.push.apply(only, this.rules[i].sequence);
+                    rule.sequence.forEach(function (id) {
+                        only[id] = only[id]++ || 1;
+                    });
                 }
-            }
+            });
 
-            var ids = [];
-
-            if (nonNegatedRules > 0) {
-                var occurrence = {};
-                // Remove duplicates and take only those IDs that are accepted by all
-                // non-negated filter rules.
-                for (i = only.length - 1; i >= 0; i--) {
-                    if (occurrence.hasOwnProperty(only[i])) {
-                        occurrence[only[i]]++;
-                    } else {
-                        occurrence[only[i]] = 1;
-                    }
-
-                    if (occurrence[only[i]] === nonNegatedRules) {
-                        ids.push(only[i]);
-                    }
+            if (this.operator === 'and') {
+                if (nonNegatedRules > 0) {
+                    // All IDs that occur in every non-negated rule and not in a negated
+                    // rule. Example: a && b && !c && !d === a && b && !(c || d)
+                    return this.imageIds.filter(function (id) {
+                        return only[id] === nonNegatedRules && !except.hasOwnProperty(id);
+                    });
+                } else {
+                    // All IDs that don't occur in a negated rule.
+                    return this.imageIds.filter(function (id) {
+                        return !except.hasOwnProperty(id);
+                    });
                 }
             } else {
-                ids = this.imageIds;
+                if (negatedRules > 0) {
+                    // All IDs that occur in a non-negated rule or not in every negated
+                    // rule. Example: a || b || !c || !d === a || b || !(c && d)
+                    return this.imageIds.filter(function (id) {
+                        return only.hasOwnProperty(id) || except[id] !== negatedRules;
+                    });
+                } else {
+                    // All IDs that occur in a non-negated rule.
+                    return this.imageIds.filter(function (id) {
+                        return only.hasOwnProperty(id);
+                    });
+                }
             }
-
-            return ids.filter(function (value) {
-                return except.indexOf(value) === -1;
-            });
         },
         inFilterMode: function () {
             return this.mode === 'filter';
         },
         inFlagMode: function () {
             return this.mode === 'flag';
+        },
+        usesAndOperator: function () {
+            return this.operator === 'and';
+        },
+        usesOrOperator: function () {
+            return this.operator === 'or';
         },
         helpText: function () {
             return this.selectedFilter ? this.selectedFilter.help : null;
@@ -89,6 +108,9 @@ biigle.$component('volumes.components.filterTab', {
         },
         modeStorageKey: function () {
             return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.filter.mode';
+        },
+        operatorStorageKey: function () {
+            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.filter.operator';
         },
     },
     methods: {
@@ -159,6 +181,7 @@ biigle.$component('volumes.components.filterTab', {
             this.selectedFilterId = null;
             this.negate = false;
             this.mode = 'filter';
+            this.operator = 'and';
         },
         activateFilterMode: function () {
             this.mode = 'filter';
@@ -166,11 +189,14 @@ biigle.$component('volumes.components.filterTab', {
         activateFlagMode: function () {
             this.mode = 'flag';
         },
+        activateAndOperator: function () {
+            this.operator = 'and';
+        },
+        activateOrOperator: function () {
+            this.operator = 'or';
+        },
         emitUpdate: function () {
-            this.$emit('update', {
-                sequence: this.sequence,
-                mode: this.mode,
-            });
+            this.$emit('update', this.sequence, this.mode, this.hasRules);
         },
         getListComponent: function (rule) {
             for (var i = this.filters.length - 1; i >= 0; i--) {
@@ -190,6 +216,14 @@ biigle.$component('volumes.components.filterTab', {
                 localStorage.setItem(this.modeStorageKey, this.mode);
             } else {
                 localStorage.removeItem(this.modeStorageKey);
+            }
+        },
+        operator: function () {
+            this.emitUpdate();
+            if (this.operator !== 'and') {
+                localStorage.setItem(this.operatorStorageKey, this.operator);
+            } else {
+                localStorage.removeItem(this.operatorStorageKey);
             }
         },
         rules: {
@@ -226,6 +260,11 @@ biigle.$component('volumes.components.filterTab', {
         var mode = localStorage.getItem(this.modeStorageKey);
         if (mode) {
             this.mode = mode;
+        }
+
+        var operator = localStorage.getItem(this.operatorStorageKey);
+        if (operator) {
+            this.operator = operator;
         }
     },
 });
