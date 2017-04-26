@@ -53,6 +53,32 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertEquals(MediaType::$locationSeriesId, $this->volume()->fresh()->media_type_id);
     }
 
+    public function testLinkAttrs()
+    {
+        $volume = $this->volume();
+        $id = $volume->id;
+        $this->doTestApiRoute('PUT', "/api/v1/volumes/{$id}");
+
+        $this->beAdmin();
+        $this->assertNull($volume->fresh()->video_link);
+        $this->assertNull($volume->fresh()->gis_link);
+        $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'video_link' => 'http://example.com',
+            'gis_link' => 'http://my.example.com',
+        ]);
+        $this->assertResponseOk();
+        $this->assertEquals('http://example.com', $this->volume()->fresh()->video_link);
+        $this->assertEquals('http://my.example.com', $this->volume()->fresh()->gis_link);
+
+        $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'video_link' => '',
+            'gis_link' => '',
+        ]);
+        $this->assertResponseOk();
+        $this->assertNull($this->volume()->fresh()->video_link);
+        $this->assertNull($this->volume()->fresh()->gis_link);
+    }
+
     public function testUpdateUrl()
     {
         // URL validation

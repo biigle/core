@@ -79,6 +79,13 @@ class Volume extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['video_link', 'gis_link'];
+
+    /**
      * Parses a comma separated list of image filenames to an array.
      *
      * @param string $string
@@ -416,6 +423,46 @@ class Volume extends Model
     }
 
     /**
+     * Set the video_link attribute of this volume.
+     *
+     * @param string $value
+     */
+    public function setVideoLinkAttribute($value)
+    {
+        return $this->setJsonAttr('video_link', $value);
+    }
+
+    /**
+     * Get the video_link attribute of this volume.
+     *
+     * @return string
+     */
+    public function getVideoLinkAttribute()
+    {
+        return $this->getJsonAttr('video_link');
+    }
+
+    /**
+     * Set the gis_link attribute of this volume.
+     *
+     * @param string $value
+     */
+    public function setGisLinkAttribute($value)
+    {
+        return $this->setJsonAttr('gis_link', $value);
+    }
+
+    /**
+     * Get the gis_link attribute of this volume.
+     *
+     * @return string
+     */
+    public function getGisLinkAttribute()
+    {
+        return $this->getJsonAttr('gis_link');
+    }
+
+    /**
      * (Re-) generates the thumbnail images for all images belonging to this volume.
      *
      * @param array $only (optional) Array of image IDs to restrict the (re-)generation
@@ -434,5 +481,38 @@ class Volume extends Model
     protected function collectMetaInfo($only = [])
     {
         $this->dispatch(new CollectImageMetaInfo($this, $only));
+    }
+
+    /**
+     * Get a dynamic attribute from the JSON attrs column
+     *
+     * @param string $name Name of the attribute
+     *
+     * @return mixed
+     */
+    protected function getJsonAttr($name)
+    {
+        $attrs = $this->attrs ?: [];
+        return array_key_exists($name, $attrs) ? $attrs[$name] : null;
+    }
+
+    /**
+     * Set a dynamic attribute to the JSON attrs column
+     *
+     * @param string $name Name of the attribute
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    protected function setJsonAttr($name, $value)
+    {
+        $attrs = $this->attrs ?: [];
+        if ($value) {
+            $attrs[$name] = $value;
+        } else {
+            unset($attrs[$name]);
+        }
+
+        $this->attrs = empty($attrs) ? null : $attrs;
     }
 }

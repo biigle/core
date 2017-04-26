@@ -53,6 +53,8 @@ class VolumeController extends Controller
      * @apiParam (Attributes that can be updated) {String} name Name of the volume.
      * @apiParam (Attributes that can be updated) {Number} media_type_id The ID of the media type of the volume.
      * @apiParam (Attributes that can be updated) {String} url The base URL ot the image files. Can be a local path like `/vol/volumes/1` or a remote path like `https://example.com/volumes/1`. Updating the URL will trigger a re-generation of all volume image thumbnails.
+     * @apiParam (Attributes that can be updated) {String} video_link Link to a video that belongs to or was the source of this volume.
+     * @apiParam (Attributes that can be updated) {String} gis_link Link to a GIS that belongs to this volume.
      *
      * @param Request $request
      * @param  int  $id
@@ -78,6 +80,8 @@ class VolumeController extends Controller
 
         $volume->name = $request->input('name', $volume->name);
         $volume->media_type_id = $request->input('media_type_id', $volume->media_type_id);
+        $volume->video_link = $request->input('video_link', $volume->video_link);
+        $volume->gis_link = $request->input('gis_link', $volume->gis_link);
 
         $isDirty = $volume->isDirty();
         $newUrl = $volume->isDirty('url');

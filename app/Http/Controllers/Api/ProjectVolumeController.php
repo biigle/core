@@ -59,11 +59,16 @@ class ProjectVolumeController extends Controller
      * @apiParam (Required attributes) {Number} media_type_id The ID of the media type of the new volume.
      * @apiParam (Required attributes) {String} images List of image file names of the images that can be found at the base URL, formatted as comma separated values. With the base URL `/vol/volumes/1` and the image `1.jpg`, the local file `/vol/volumes/1/1.jpg` will be used.
      *
+     * @apiParam (Optional attributes) {String} video_link Link to a video that belongs to or was the source of this volume.
+     * @apiParam (Optional attributes) {String} gis_link Link to a GIS that belongs to this volume.
+     *
      * @apiParamExample {String} Request example:
      * name: 'New volume'
      * url: '/vol/volumes/test-volume'
      * media_type_id: 1
      * images: '1.jpg,2.jpg,3.jpg'
+     * video_link: 'http://example.com'
+     * gis_link: 'http://gis.example.com'
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -73,7 +78,9 @@ class ProjectVolumeController extends Controller
      *    "creator_id": 2,
      *    "created_at": "2015-02-19 16:10:17",
      *    "updated_at": "2015-02-19 16:10:17",
-     *    "url": "/vol/volumes/test-volume"
+     *    "url": "/vol/volumes/test-volume",
+     *    "video_link": "http://example.com",
+     *    "gis_link": "http://gis.example.com"
      * }
      *
      * @param Request $request
@@ -91,6 +98,8 @@ class ProjectVolumeController extends Controller
         $volume->name = $request->input('name');
         $volume->url = $request->input('url');
         $volume->setMediaTypeId($request->input('media_type_id'));
+        $volume->video_link = $request->input('video_link');
+        $volume->gis_link = $request->input('gis_link');
         $volume->creator()->associate($auth->user());
 
         try {
