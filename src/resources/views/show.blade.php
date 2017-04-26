@@ -55,7 +55,7 @@
         <sidebar-tab name="filter" icon="filter" title="Filter images" :highlight="filterActive">
             @include('volumes::show.filters')
         </sidebar-tab>
-        <sidebar-tab name="sorting" icon="sort" title="Sort images" :highlight="hasSortingSequence">
+        <sidebar-tab name="sorting" icon="sort" title="Sort images" :highlight="sortingActive">
             @include('volumes::show.sorting')
         </sidebar-tab>
         @foreach ($modules->getMixins('volumesSidebar') as $module => $nestedMixins)

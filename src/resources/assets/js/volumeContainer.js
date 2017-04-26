@@ -34,6 +34,7 @@ biigle.$viewModel('volume-container', function (element) {
             filterMode: null,
             filterActive: false,
             sortingSequence: imageIds,
+            sortingActive: false,
             volumeId: biigle.$require('volumes.volumeId'),
             imageLabelMode: false,
             selectedLabel: null,
@@ -87,17 +88,6 @@ biigle.$viewModel('volume-container', function (element) {
                     return image.id;
                 });
             },
-            hasSortingSequence: function () {
-                var imageIds = this.imageIds;
-                var sortingSequence = this.sortingSequence;
-                for (var i = imageIds.length - 1; i >= 0; i--) {
-                    if (imageIds[i] !== sortingSequence[i]) {
-                        return true;
-                    }
-                }
-
-                return false;
-            },
             imagesStorageKey: function () {
                 return 'biigle.volumes.' + this.volumeId + '.images';
             },
@@ -146,8 +136,9 @@ biigle.$viewModel('volume-container', function (element) {
             handleDeselectedLabel: function (label) {
                 this.selectedLabel = null;
             },
-            updateSortingSequence: function (sequence) {
+            updateSortingSequence: function (sequence, active) {
                 this.sortingSequence = sequence;
+                this.sortingActive = active;
             },
         },
         watch: {

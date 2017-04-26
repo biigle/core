@@ -23,6 +23,12 @@ biigle.$component('volumes.components.sortingTab', {
         };
     },
     computed: {
+        defaultSorter: function () {
+            return this.sorters[0];
+        },
+        isActive: function () {
+            return this.activeSorter !== this.defaultSorter.id || !this.direction;
+        },
         isSortedAscending: function () {
             return this.direction;
         },
@@ -46,7 +52,7 @@ biigle.$component('volumes.components.sortingTab', {
     methods: {
         reset: function () {
             this.direction = true;
-            this.activeSorter = this.sorters[0].id;
+            this.activeSorter = this.defaultSorter.id;
             this.privateSequence = biigle.$require('volumes.imageIds');
         },
         sortAscending: function () {
@@ -71,10 +77,10 @@ biigle.$component('volumes.components.sortingTab', {
     },
     watch: {
         sequence: function () {
-            this.$emit('update', this.sequence);
+            this.$emit('update', this.sequence, this.isActive);
         },
         privateSequence: function () {
-            if (this.activeSorter === this.sorters[0].id) {
+            if (this.activeSorter === this.defaultSorter.id) {
                 localStorage.removeItem(this.sorterStorageKey);
             } else {
                 localStorage.setItem(this.sorterStorageKey, JSON.stringify({
@@ -97,7 +103,7 @@ biigle.$component('volumes.components.sortingTab', {
             this.activeSorter = sorter.id;
             this.privateSequence = sorter.sequence;
         } else {
-            this.activeSorter = this.sorters[0].id;
+            this.activeSorter = this.defaultSorter.id;
         }
 
         var direction = JSON.parse(localStorage.getItem(this.directionStorageKey));
