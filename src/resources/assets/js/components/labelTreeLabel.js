@@ -6,9 +6,11 @@
 biigle.$component('labelTrees.components.labelTreeLabel', {
     name: 'label-tree-label',
     template: '<li class="label-tree-label" :class="classObject">' +
-        '<div class="label-tree-label__name" @click="toggleOpen">' +
-            '<span class="label-tree-label__color" :style="colorStyle"></span>' +
-            '<span v-text="label.name" @click.stop="toggleSelect"></span>' +
+        '<div class="label-tree-label__name" @click="toggleOpen" @mouseover="doHover" @mouseout="dontHover">' +
+            '<span v-show="showColor" class="label-tree-label__color" :style="colorStyle"></span>' +
+            '<span v-if="showChevronDown" class="label-tree-label__chevron label-tree-label__chevron--down" :style="chevronStyle"></span>' +
+            '<span v-if="showChevronUp" class="label-tree-label__chevron label-tree-label__chevron--up" :style="chevronStyle"></span>' +
+            '<span v-text="label.name" @click.stop="toggleSelect" @mouseenter="dontHover"></span>' +
             '<button v-if="showFavourites" class="label-tree-label__favourite" @click.stop="toggleFavourite" :title="favouriteTitle">' +
                 '<span class="glyphicon" :class="favouriteClass" aria-hidden="true" title=""></span>' +
             '</button>' +
@@ -18,6 +20,11 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
             '<label-tree-label :label="child" :deletable="deletable" :show-favourites="showFavourites" v-for="child in label.children" @select="emitSelect" @deselect="emitDeselect" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>' +
         '</ul>' +
     '</li>',
+    data: function () {
+        return {
+            hover: false,
+        };
+    },
     props: {
         label: {
             type: Object,
@@ -34,9 +41,18 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         flat: {
             type: Boolean,
             default: false,
-        }
+        },
     },
     computed: {
+        showColor: function () {
+            return !this.expandable || !this.hover;
+        },
+        showChevronUp: function () {
+            return !this.showColor && this.label.open;
+        },
+        showChevronDown: function () {
+            return !this.showColor && !this.label.open;
+        },
         classObject: function () {
             return {
                 'label-tree-label--selected': this.label.selected,
@@ -45,7 +61,12 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         },
         colorStyle: function () {
             return {
-                'background-color': '#' + this.label.color
+                'background-color': '#' + this.label.color,
+            };
+        },
+        chevronStyle: function () {
+            return {
+                color: '#' + this.label.color,
             };
         },
         favouriteClass: function () {
@@ -61,7 +82,7 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
             return 'Remove label ' + this.label.name;
         },
         expandable: function () {
-            return !this.flat && this.label.children;
+            return !this.flat && !!this.label.children;
         },
     },
     methods: {
@@ -105,6 +126,12 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         },
         emitRemoveFavourite: function (label) {
             this.$emit('remove-favourite', label);
+        },
+        doHover: function () {
+            this.hover = true;
+        },
+        dontHover: function () {
+            this.hover = false;
         },
     },
 });

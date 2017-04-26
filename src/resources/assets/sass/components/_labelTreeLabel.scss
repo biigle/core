@@ -8,14 +8,41 @@
         text-decoration: underline;
     }
 
-    .label-tree-label__color {
+    .label-tree-label__color, .label-tree-label__chevron {
         position: absolute;
-        top: 9px;
         left: .25em;
         width: 1em;
         height: 1em;
+    }
+
+    .label-tree-label__color {
+        top: 9px;
         border: 2px solid white;
         border-radius: 50%;
+    }
+
+    .label-tree-label__chevron {
+        top: 6px;
+        text-shadow: -2px 0 white, 0 2px white, 2px 0 white, 0 -2px white;
+
+        &:before {
+            position: relative;
+            top: 1px;
+            display: inline-block;
+            font-family: 'Glyphicons Halflings';
+            font-style: normal;
+            font-weight: normal;
+            line-height: 1;
+        }
+
+        &.label-tree-label__chevron--up:before {
+            content: "\e113";
+        }
+
+        &.label-tree-label__chevron--down:before {
+            content: "\e114";
+        }
+
     }
 
     .label-tree-label__name {
