@@ -28,25 +28,27 @@ biigle.$viewModel('notifications-list', function (element) {
             }
         },
         methods: {
-            markRead: function (ignoreError) {
-                var _this = this;
+            markRead: function () {
+                var self = this;
                 this.isLoading = true;
-                notifications.markRead({id: this.item.id}, {})
+                return notifications.markRead({id: this.item.id}, {})
                     .then(function (response) {
-                        _this.item.read_at = new Date();
-                        if (_this.removeItem) {
-                            notificationStore.remove(_this.item.id);
-                        }
-                    }, function (response) {
-                        if (!ignoreError) {
-                            messageStore.handleErrorResponse(response);
+                        self.item.read_at = new Date();
+                        if (self.removeItem) {
+                            notificationStore.remove(self.item.id);
                         }
                     })
+                    .catch(messageStore.handleErrorResponse)
                     .finally(function () {
-                        _this.isLoading = false;
+                        self.isLoading = false;
                     });
-
-            }
+            },
+            markReadAndOpenLink: function () {
+                var link = this.item.data.actionLink;
+                this.markRead().finally(function () {
+                    window.location = link;
+                });
+            },
         }
     };
 

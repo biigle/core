@@ -35,14 +35,14 @@
                     <div class="panel-heading">
                         <span class="pull-right">
                             <span v-bind:title="item.created_at" v-text="item.created_at_diff"></span>
-                            <button class="btn btn-default btn-xs" title="Mark as read" v-on:click="markRead()" v-if="isUnread" v-bind:disabled="isLoading"><i class="glyphicon glyphicon-ok"></i></button>
+                            <button class="btn btn-default btn-xs" title="Mark as read" v-on:click="markRead" v-if="isUnread" v-bind:disabled="isLoading"><i class="glyphicon glyphicon-ok"></i></button>
                         </span>
                         <h3 class="panel-title" v-text="item.data.title"></h3>
                     </div>
                     <div class="panel-body">
                         @{{item.data.message}}
                         <p class="notification__action" v-if="item.data.action">
-                            <a v-bind:href="item.data.actionLink" v-text="item.data.action" v-on:click="markRead(true)" v-bind:title="item.data.action"></a>
+                            <a v-bind:href="item.data.actionLink" v-text="item.data.action" v-on:click.prevent="markReadAndOpenLink" v-bind:title="item.data.action"></a>
                         </p>
                     </div>
                 </div>
