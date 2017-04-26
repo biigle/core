@@ -26,7 +26,7 @@ biigle.$viewModel('label-trees-title', function (element) {
                 return this.labelTree.visibility_id === privateId;
             },
             hasDescription: function () {
-                return !!this.description.length;
+                return !!this.description;
             },
             isChanged: function () {
                 return this.name !== this.labelTree.name || this.description !== this.labelTree.description || parseInt(this.visibility_id) !== this.labelTree.visibility_id;
