@@ -3,9 +3,10 @@
 namespace Biigle\Modules\Volumes\Http\Controllers;
 
 use Biigle\Role;
-use Biigle\Project;
+use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
+use Biigle\Project;
 use Biigle\LabelTree;
 use Biigle\MediaType;
 use Illuminate\Http\Request;
@@ -44,21 +45,7 @@ class VolumeController extends Controller
         $this->authorize('access', $volume);
         $user = $auth->user();
 
-        if ($user->isAdmin) {
-            // admins have no restrictions
-            $projects = $volume->projects;
-        } else {
-            // all projects that the user and the volume have in common
-            $projects = $user->projects()
-                ->whereIn('id', function ($query) use ($volume) {
-                    $query->select('project_volume.project_id')
-                        ->from('project_volume')
-                        ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
-                        ->where('project_volume.volume_id', $volume->id)
-                        ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id]);
-                })
-                ->get();
-        }
+        $projects = $this->getProjects($user, $volume);
 
         // all label trees that are used by all projects which are visible to the user
         $labelTrees = LabelTree::with('labels')
@@ -84,22 +71,53 @@ class VolumeController extends Controller
     /**
      * Shows the volume edit page.
      *
+     * @param Guard $auth
      * @param int $id volume ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Guard $auth, $id)
     {
         $volume = Volume::with('projects')->findOrFail($id);
         $this->authorize('update', $volume);
         $sessions = $volume->annotationSessions()->with('users')->get();
+        $user = $auth->user();
+        $projects = $this->getProjects($user, $volume);
 
         return view('volumes::edit', [
+            'projects' => $projects,
             'volume' => $volume,
             'images' => $volume->orderedImages()->pluck('filename', 'id'),
             'mediaTypes' => MediaType::all(),
             'annotationSessions' => $sessions,
             'today' => Carbon::today(),
         ]);
+    }
+
+    /**
+     * Get all projects that belong to a volume and that the user can access
+     *
+     * @param User $user
+     * @param Volume $volume
+     *
+     * @return Collection
+     */
+    protected function getProjects(User $user, Volume $volume)
+    {
+        if ($user->isAdmin) {
+            // admins have no restrictions
+            return $volume->projects;
+        }
+
+        // all projects that the user and the volume have in common
+        return $user->projects()
+            ->whereIn('id', function ($query) use ($volume) {
+                $query->select('project_volume.project_id')
+                    ->from('project_volume')
+                    ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
+                    ->where('project_volume.volume_id', $volume->id)
+                    ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id]);
+            })
+            ->get();
     }
 }

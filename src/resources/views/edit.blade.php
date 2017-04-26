@@ -16,11 +16,17 @@
 @endpush
 
 @push('styles')
-    <link href="{{ cachebust_asset('vendor/volumes/styles/edit.css') }}" rel="stylesheet">
+    <link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
     @foreach ($modules->getMixins('volumesEditStyles') as $module => $nestedMixins)
         @include($module.'::volumesEditStyles', ['mixins' => $nestedMixins])
     @endforeach
 @endpush
+
+@section('navbar')
+<div class="navbar-text navbar-volumes-breadcrumbs">
+    @include('volumes::partials.projectsBreadcrumb') / <strong>{{$volume->name}}</strong>
+</div>
+@endsection
 
 @section('content')
 
