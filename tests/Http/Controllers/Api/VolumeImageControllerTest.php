@@ -53,9 +53,9 @@ class VolumeImageControllerTest extends ApiTestCase
 
     public function testHasImageLabelUser()
     {
-        $tid = $this->volume()->id;
+        $vid = $this->volume()->id;
 
-        $image = ImageTest::create(['volume_id' => $tid]);
+        $image = ImageTest::create(['volume_id' => $vid]);
         $label = ImageLabelTest::create([
             'image_id' => $image->id,
             'user_id' => $this->editor()->id,
@@ -63,20 +63,20 @@ class VolumeImageControllerTest extends ApiTestCase
         $uid = $this->editor()->id;
 
         // this image shouldn't appear
-        $image2 = ImageTest::create(['volume_id' => $tid, 'filename' => 'b.jpg']);
+        $image2 = ImageTest::create(['volume_id' => $vid, 'filename' => 'b.jpg']);
         $label = ImageLabelTest::create([
             'image_id' => $image->id,
             'user_id' => $this->admin()->id,
         ]);
 
-        $this->doTestApiRoute('GET', "/api/v1/volumes/{$tid}/images/filter/image-label-user/{$uid}");
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$tid}/images/filter/image-label-user/{$uid}");
+        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}");
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$tid}/images/filter/image-label-user/{$uid}");
+        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}");
         $this->assertResponseOk();
 
         if ($this->isSqlite()) {
@@ -85,15 +85,15 @@ class VolumeImageControllerTest extends ApiTestCase
             $expect = [$image->id];
         }
 
-        $this->get("/api/v1/volumes/{$tid}/images/filter/image-label-user/{$uid}")
+        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}")
             ->seeJsonEquals($expect);
     }
 
     public function testHasImageLabel()
     {
-        $tid = $this->volume()->id;
+        $vid = $this->volume()->id;
 
-        $image = ImageTest::create(['volume_id' => $tid]);
+        $image = ImageTest::create(['volume_id' => $vid]);
         $label = ImageLabelTest::create([
             'image_id' => $image->id,
             'user_id' => $this->editor()->id,
@@ -102,20 +102,20 @@ class VolumeImageControllerTest extends ApiTestCase
         $lid = $label->id;
 
         // this image shouldn't appear
-        $image2 = ImageTest::create(['volume_id' => $tid, 'filename' => 'b.jpg']);
+        $image2 = ImageTest::create(['volume_id' => $vid, 'filename' => 'b.jpg']);
         $label2 = ImageLabelTest::create([
             'image_id' => $image->id,
             'user_id' => $this->admin()->id,
         ]);
 
-        $this->doTestApiRoute('GET', "/api/v1/volumes/{$tid}/images/filter/image-label/{$lid}");
+        $this->doTestApiRoute('GET', "/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$tid}/images/filter/image-label/{$lid}");
+        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}");
         $this->assertResponseStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$tid}/images/filter/image-label/{$lid}");
+        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}");
         $this->assertResponseOk();
 
         if ($this->isSqlite()) {
@@ -124,7 +124,7 @@ class VolumeImageControllerTest extends ApiTestCase
             $expect = [$image->id];
         }
 
-        $this->get("/api/v1/volumes/{$tid}/images/filter/image-label/{$lid}")
+        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}")
             ->seeJsonEquals($expect);
     }
 }

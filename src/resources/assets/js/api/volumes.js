@@ -12,6 +12,9 @@
  * Get IDs of all images of the volume that have image labels attached by a certain user:
  * resource.queryImagesWithImageLabelFromUser({id: 1, user_id: 123}).then(...);
  *
+ * Get IDs of all images of the volume that have a filename matching the given pattern:
+ * resource.queryImagesWithFilename({id: 1, pattern: '*def.jpg'}).then(...);
+ *
  * Get all image labels that were used in the volume:
  * resource.queryImageLabels({id: 1}).then(...);
  *
@@ -38,6 +41,10 @@ biigle.$declare('api.volumes', Vue.resource('api/v1/volumes{/id}', {}, {
     queryImagesWithImageLabelFromUser: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/images/filter/image-label-user{/user_id}',
+    },
+    queryImagesWithFilename: {
+        method: 'GET',
+        url: 'api/v1/volumes{/id}/images/filter/filename{/pattern}',
     },
     queryImageLabels: {
         method: 'GET',

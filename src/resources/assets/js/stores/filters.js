@@ -77,5 +77,33 @@ biigle.$declare('volumes.stores.filters', [
                 user_id: user.id,
             });
         }
-    }
+    },
+    {
+        id: 'filename',
+        label: 'filename',
+        help: "All images that (don't) have a filename matching the given pattern.",
+        listComponent: {
+            mixins: [biigle.$require('volumes.components.filterListComponent')],
+            computed: {
+                dataName: function () {
+                    return this.rule.data;
+                },
+            },
+        },
+        selectComponent: {
+            template: '<div class="filter-select">' +
+                '<div class="typeahead">' +
+                    '<input class="form-control" type="text" v-model="selectedItem" placeholder="Filename pattern">' +
+                '</div>' +
+                '<button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem">Add rule</button>' +
+            '</div>',
+            mixins: [biigle.$require('volumes.components.filterSelectComponent')],
+        },
+        getSequence: function (volumeId, pattern) {
+            return biigle.$require('api.volumes').queryImagesWithFilename({
+                id: volumeId,
+                pattern: pattern,
+            });
+        }
+    },
 ]);

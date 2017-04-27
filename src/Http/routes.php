@@ -55,6 +55,10 @@ $router->group([
             'uses' => 'VolumeImageAnnotationLabelController@index',
         ]);
 
+        $router->get('volumes/{id}/images/filter/filename/{pattern}', [
+            'uses' => 'VolumeImageFilenameController@index',
+        ]);
+
         $router->get('volumes/{id}/image-labels', [
             'uses' => 'VolumeImageLabelController@index',
         ]);
