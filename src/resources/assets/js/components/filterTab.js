@@ -50,12 +50,12 @@ biigle.$component('volumes.components.filterTab', {
                 if (rule.negate) {
                     negatedRules++;
                     rule.sequence.forEach(function (id) {
-                        except[id] = except[id]++ || 1;
+                        except[id] = (except[id] + 1) || 1;
                     });
                 } else {
                     nonNegatedRules++;
                     rule.sequence.forEach(function (id) {
-                        only[id] = only[id]++ || 1;
+                        only[id] = (only[id] + 1) || 1;
                     });
                 }
             });
