@@ -20,9 +20,9 @@
     </div>
     <ul class="list-group images-list" v-cloak>
         <image-item v-for="image in orderedImages" key="image.id" :image="image" inline-template v-on:remove="handleRemove">
-            <li class="list-group-item" :class="classObject" v-once>
-                <button type="button" class="close" :title="title" v-on:click="remove"><span aria-hidden="true">&times;</span></button>
-                <span class="text-muted">#<span v-text="image.id"></span></span> <span v-text="image.filename"></span>
+            <li class="list-group-item" :class="classObject">
+                <button type="button" class="close" :title="title" v-on:click="remove" v-once><span aria-hidden="true">&times;</span></button>
+                <span class="text-muted" v-once>#<span v-text="image.id"></span></span> <span v-text="image.filename"></span>
             </li>
         </image-item>
         <li class="list-group-item text-muted" v-if="!hasImages">This volume has no images. <a v-if="!editing" href="#" v-on:click.prevent="toggleEditing">Add some.</a></li>

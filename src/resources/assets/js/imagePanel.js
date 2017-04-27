@@ -82,9 +82,10 @@ biigle.$viewModel('image-panel', function (element) {
                 }
             },
             imageRemoved: function (id) {
-                for (var i = this.images.length - 1; i >= 0; i--) {
-                    if (this.images[i].id === id) {
-                        this.images.splice(i, 1);
+                var images = this.images;
+                for (var i = images.length - 1; i >= 0; i--) {
+                    if (images[i].id === id) {
+                        images.splice(i, 1);
                         return;
                     }
                 }
