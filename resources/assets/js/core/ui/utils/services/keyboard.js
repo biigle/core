@@ -28,7 +28,7 @@ angular.module('biigle.ui.utils').service('keyboard', function ($document) {
                 return;
             }
 
-            var code = e.keyCode;
+            var code = e.keyCode || e.charCode;
             var character = String.fromCharCode(e.which || code).toLowerCase();
 
             if (codeListeners[code]) {
