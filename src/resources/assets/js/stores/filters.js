@@ -81,7 +81,7 @@ biigle.$declare('volumes.stores.filters', [
     {
         id: 'filename',
         label: 'filename',
-        help: "All images that (don't) have a filename matching the given pattern.",
+        help: "All images that (don't) have a filename matching the given pattern. A pattern may contain the wildcard character * that matches any string of zero or more characters.",
         listComponent: {
             mixins: [biigle.$require('volumes.components.filterListComponent')],
             computed: {
