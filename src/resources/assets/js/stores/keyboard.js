@@ -23,7 +23,7 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
                 return;
             }
 
-            var code = e.keyCode;
+            var code = e.keyCode || e.charCode;
             var char = String.fromCharCode(e.which || code).toLowerCase();
 
             if (this.codeListeners.hasOwnProperty(code)) {
