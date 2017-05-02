@@ -7,12 +7,20 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
         // 9 is not the same as one with char '9'!
         charListeners: {},
         codeListeners: {},
+        // Key codes that should be handled on the keydown event rather than keypress.
+        // This is because of the behavior of Chrome and IE not to fire keypress on some
+        // keys (like the arrow keys).
+        keyDownCodes: [37, 38, 39, 40],
+        keyDownListeners: {},
         // Events that have these tags as target will be ignored.
         ignoredTags: ['input', 'textarea', 'select'],
     },
     methods: {
         isChar: function (key) {
             return typeof key === 'string' || key instanceof String;
+        },
+        isKeyDownCode: function (code) {
+            return this.keyDownCodes.indexOf(code) !== -1;
         },
         shouldIgnoreTarget: function (e) {
             return this.ignoredTags.indexOf(e.target.tagName.toLowerCase()) !== -1;
@@ -34,6 +42,18 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
                 this.executeCallbacks(this.charListeners[char], e);
             }
         },
+        handleKeyDownEvents: function (e) {
+            e = e || event; // see: http://stackoverflow.com/a/5630990/1796523
+            if (this.shouldIgnoreTarget(e)) {
+                return;
+            }
+
+            var code = e.keyCode || e.charCode;
+
+            if (this.keyDownListeners.hasOwnProperty(code)) {
+                this.executeCallbacks(this.keyDownListeners[code], e);
+            }
+        },
         executeCallbacks: function (list, e) {
             // go from highest priority down
             for (var i = list.length - 1; i >= 0; i--) {
@@ -46,6 +66,8 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
             if (this.isChar(charOrCode)) {
                 listeners = this.charListeners;
                 charOrCode = charOrCode.toLowerCase();
+            } else if (this.isKeyDownCode(charOrCode)) {
+                listeners = this.keyDownListeners;
             }
 
             priority = priority || 0;
@@ -77,6 +99,8 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
             if (this.isChar(charOrCode)) {
                 listeners = this.charListeners;
                 charOrCode = charOrCode.toLowerCase();
+            } else if (this.isKeyDownCode(charOrCode)) {
+                listeners = this.keyDownListeners;
             }
 
             if (listeners.hasOwnProperty(charOrCode)) {
@@ -91,6 +115,9 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
         },
     },
     created: function () {
+        // We use keypress because it handles the numpad keys correctly.
         document.body.addEventListener('keypress', this.handleKeyEvents);
+        // Keydown is only used in special cases where keypress doesn't fire.
+        document.body.addEventListener('keydown', this.handleKeyDownEvents);
     },
 }));
