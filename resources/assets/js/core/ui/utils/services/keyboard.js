@@ -13,6 +13,12 @@ angular.module('biigle.ui.utils').service('keyboard', function ($document) {
         var codeListeners = {};
         var body = $document[0].body;
 
+        // Key codes that should be handled on the keydown event rather than keypress.
+        // This is because of the behavior of Chrome and IE not to fire keypress on some
+        // keys (like the arrow keys).
+        var keyDownCodes = [37, 38, 39, 40];
+        var keyDownCodeListeners = {};
+
         var executeCallbacks = function (list, e) {
             // go from highest priority down
             for (var i = list.length - 1; i >= 0; i--) {
@@ -40,7 +46,23 @@ angular.module('biigle.ui.utils').service('keyboard', function ($document) {
             }
         };
 
+        // We use keypress because it handles the numpad keys correctly.
         $document.bind('keypress', handleKeyEvents);
+
+        var handleKeyDownEvents = function (e) {
+            e = e || event; // IE compatibility
+            if (e.target !== body) {
+                // don't do anything if e.g. the user types into an input field
+                return;
+            }
+
+            var code = e.keyCode || e.charCode;
+            if (keyDownCodeListeners[code]) {
+                executeCallbacks(keyDownCodeListeners[code], e);
+            }
+        };
+
+        $document.bind('keydown', handleKeyDownEvents);
 
         // register a new event listener for the key code or character with an optional priority
         // listeners with higher priority are called first anc can return 'false' to prevent the
@@ -50,6 +72,8 @@ angular.module('biigle.ui.utils').service('keyboard', function ($document) {
             if (typeof charOrCode === 'string' || charOrCode instanceof String) {
                 charOrCode = charOrCode.toLowerCase();
                 listeners = charListeners;
+            } else if (keyDownCodes.indexOf(charOrCode) !== -1) {
+                listeners = keyDownCodeListeners;
             }
 
             priority = priority || 0;
@@ -83,6 +107,8 @@ angular.module('biigle.ui.utils').service('keyboard', function ($document) {
             if (typeof charOrCode === 'string' || charOrCode instanceof String) {
                 charOrCode = charOrCode.toLowerCase();
                 listeners = charListeners;
+            } else if (keyDownCodes.indexOf(charOrCode) !== -1) {
+                listeners = keyDownCodeListeners;
             }
 
             if (listeners[charOrCode]) {
