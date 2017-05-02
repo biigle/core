@@ -1,5 +1,5 @@
 /**
- * The volume thumbnail of the dashboard hot box.
+ * The metadata upload of the volume edit page.
  */
 biigle.$viewModel('volume-metadata-upload', function (element) {
     var messages = biigle.$require('messages.store');
