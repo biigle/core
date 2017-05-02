@@ -103,14 +103,16 @@ biigle.$component('volumes.components.filterTab', {
         helpText: function () {
             return this.selectedFilter ? this.selectedFilter.help : null;
         },
+        // Use "filter2" to avoid conflicts with the previous version of the volume
+        // filter written in AngularJS.
         rulesStorageKey: function () {
-            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.filter.rules';
+            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.filter2.rules';
         },
         modeStorageKey: function () {
-            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.filter.mode';
+            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.filter2.mode';
         },
         operatorStorageKey: function () {
-            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.filter.operator';
+            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.filter2.operator';
         },
     },
     methods: {

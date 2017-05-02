@@ -35,11 +35,13 @@ biigle.$component('volumes.components.sortingTab', {
         isSortedDescending: function () {
             return !this.direction;
         },
+        // Use "sorting2" to avoid conflicts with the previous version of the volume
+        // sorter written in AngularJS.
         sorterStorageKey: function () {
-            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.sorting.sorter';
+            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.sorting2.sorter';
         },
         directionStorageKey: function () {
-            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.sorting.direction';
+            return 'biigle.volumes.' + biigle.$require('volumes.volumeId') + '.sorting2.direction';
         },
         sequence: function () {
             if (this.direction) {
