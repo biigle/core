@@ -40,10 +40,16 @@
     <div class="col-sm-6">
         @include('volumes::edit.information')
         @include('volumes::edit.annotation-sessions')
+        @foreach ($modules->getMixins('volumesEditLeft') as $module => $nestedMixins)
+            @include($module.'::volumesEditLeft', ['mixins' => $nestedMixins])
+        @endforeach
     </div>
     <div class="col-sm-6">
         @include('volumes::edit.images')
         @include('volumes::edit.metadata')
+        @foreach ($modules->getMixins('volumesEditRight') as $module => $nestedMixins)
+            @include($module.'::volumesEditRight', ['mixins' => $nestedMixins])
+        @endforeach
     </div>
 </div>
 
