@@ -14,6 +14,7 @@ biigle.$component('labelTrees.components.labelTree', {
         '</h4>' +
         '<ul v-if="!collapsed" class="label-tree__list">' +
             '<label-tree-label :label="label" :deletable="deletable" :show-favourites="showFavourites" :flat="flat" v-for="label in rootLabels" @select="emitSelect" @deselect="emitDeselect" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>' +
+            '<li v-if="hasNoLabels" class="text-muted">No labels</li>' +
         '</ul>' +
     '</div>',
     data: function () {
@@ -113,7 +114,10 @@ biigle.$component('labelTrees.components.labelTree', {
         },
         collapseTitle: function () {
             return this.collapsed ? 'Expand' : 'Collapse';
-        }
+        },
+        hasNoLabels: function () {
+            return this.rootLabels.length === 0;
+        },
     },
     methods: {
         hasLabel: function (id) {
