@@ -1,0 +1,22 @@
+@import "variables";
+
+.navbar-text.navbar-annotations-breadcrumbs {
+    white-space: nowrap;
+    max-width: 850px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    &, a {
+        color: #ccc;
+    }
+
+    // make dropdown visible despite overflow:hidden
+    .dropdown {
+        position: static;
+
+        .dropdown-menu {
+            left: auto;
+            top: auto;
+        }
+    }
+}

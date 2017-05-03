@@ -7,6 +7,12 @@ $router->get('annotate/{id}', [
     'uses' => 'AnnotationController@index',
 ]);
 
+$router->get('annotate-vue/{id}', [
+    'middleware' => 'auth',
+    'as'   => 'annotate-vue',
+    'uses' => 'AnnotationController@showVue',
+]);
+
 $router->get('annotations/{id}', [
     'middleware' => 'auth',
     'as'   => 'show-annotation',

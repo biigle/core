@@ -3,7 +3,7 @@
  *
  * @type {Object}
  */
-biigle.annotations.utils = {
+biigle.$declare('annotations.utils', {
     /**
      * Check if the image comes from a cross origin without CORS enabled
      * @param  HTMLImage image
@@ -21,4 +21,4 @@ biigle.annotations.utils = {
 
         return true;
     }
-};
+});
