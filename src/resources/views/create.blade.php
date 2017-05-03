@@ -5,7 +5,11 @@
 @section('content')
 <div class="container">
     <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
-        <h2>New label tree</h2>
+        @if ($project)
+            <h2>New label tree for {{$project->name}}</h2>
+        @else
+            <h2>New label tree</h2>
+        @endif
         <form class="clearfix" role="form" method="POST" action="{{ url('api/v1/label-trees') }}">
             <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
                 <label for="name">Name</label>
@@ -34,10 +38,21 @@
                     <span class="help-block">{{ $errors->first('description') }}</span>
                 @endif
             </div>
+
+            @if ($project)
+                <div class="form-group{{ $errors->has('project_id') ? ' has-error' : '' }}">
+                    <label for="project_name">Project</label>
+                    <input class="form-control" type="text" id="project_name" value="{{ $project->name }} (#{{ $project->id }})" tabindex="-1" readonly>
+                    <input class="form-control" type="hidden" name="project_id" id="project_id" value="{{ $project->id }}">
+                    @if($errors->has('project_id'))
+                        <span class="help-block">{{ $errors->first('project_id') }}</span>
+                    @endif
+                </div>
+            @endif
             <input type="hidden" name="_redirect" value="{{route('label-trees-index')}}">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            <a href="{{ URL::previous() }}" class="btn btn-link">Cancel</a>
             <input type="submit" class="btn btn-success pull-right" value="Create">
+            <a href="{{ URL::previous() }}" class="btn btn-link">Cancel</a>
         </form>
     </div>
 </div>

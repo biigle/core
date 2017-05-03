@@ -6,6 +6,7 @@ use TestCase;
 use Biigle\Role;
 use Biigle\Visibility;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\ProjectTest;
 use Biigle\Tests\LabelTreeTest;
 
 class LabelTreeControllerTest extends TestCase
@@ -75,5 +76,16 @@ class LabelTreeControllerTest extends TestCase
         $user = UserTest::create();
         $this->be($user);
         $this->visit('label-trees/create')->assertResponseOk();
+
+        $project = ProjectTest::create();
+        $this->get('label-trees/create?project='.$project->id);
+        $this->assertResponseStatus(403);
+
+        $this->be($project->creator);
+        $this->get('label-trees/create?project='.$project->id);
+        $this->assertResponseOk();
+
+        $this->get('label-trees/create?project=999');
+        $this->assertResponseStatus(404);
     }
 }

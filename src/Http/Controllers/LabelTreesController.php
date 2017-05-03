@@ -150,17 +150,26 @@ class LabelTreesController extends Controller
     /**
      * Show the create label tree page.
      *
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         $visibilities = [
             Visibility::$public,
             Visibility::$private,
         ];
 
+        if ($request->has('project')) {
+            $project = Project::findOrFail($request->input('project'));
+            $this->authorize('update', $project);
+        } else {
+            $project = null;
+        }
+
         return view('label-trees::create', [
             'visibilities' => $visibilities,
+            'project' => $project,
         ]);
     }
 
