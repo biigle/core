@@ -238,6 +238,40 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->assertEquals(Role::$admin->id, $member->role_id);
     }
 
+    public function testStoreTargetProject()
+    {
+        $this->beEditor();
+        $this->json('POST', '/api/v1/label-trees', [
+            'name' => 'abc',
+            'visibility_id' => Visibility::$public->id,
+            'description' => 'my description',
+            'project_id' => $this->project()->id,
+        ]);
+        // User has no permission to create a tree for that project. Thus the project_id
+        // is 'invalid'.
+        $this->assertResponseStatus(422);
+
+        $this->beAdmin();
+        $this->json('POST', '/api/v1/label-trees', [
+            'name' => 'abc',
+            'visibility_id' => Visibility::$public->id,
+            'description' => 'my description',
+            'project_id' => 999,
+        ]);
+        $this->assertResponseStatus(422);
+
+        $this->json('POST', '/api/v1/label-trees', [
+            'name' => 'abc',
+            'visibility_id' => Visibility::$public->id,
+            'description' => 'my description',
+            'project_id' => $this->project()->id,
+        ]);
+        $this->assertResponseOk();
+        $tree = LabelTree::first();
+        $this->assertEquals($this->project()->id, $tree->projects()->first()->id);
+        $this->assertEquals($this->project()->id, $tree->authorizedProjects()->first()->id);
+    }
+
     public function testStoreFormRequest()
     {
         $this->beUser();

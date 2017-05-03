@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Role;
+use Biigle\Project;
 use Biigle\LabelTree;
 use Biigle\Visibility;
 use Illuminate\Http\Request;
@@ -162,6 +163,7 @@ class LabelTreeController extends Controller
      * @apiParam (Required attributes) {Number} visibility_id ID of the visibility of the new label tree (public or private).
      *
      * @apiParam (Optional attributes) {String} description Description of the new label tree.
+     * @apiParam (Optional attributes) {Number} project_id Target project for the new label tree. If this attribute is set and the user is an admin of the project, the new label tree will be immediately attached to this project.
      *
      * @apiSuccessExample {json} Success response:
      *
@@ -181,6 +183,16 @@ class LabelTreeController extends Controller
     public function store(Request $request, Guard $auth)
     {
         $this->validate($request, LabelTree::$createRules);
+        $user = $auth->user();
+
+        if ($request->has('project_id')) {
+            $project = Project::findOrFail($request->input('project_id'));
+            if (!$user->can('update', $project)) {
+                return $this->buildFailedValidationResponse($request, [
+                    'project_id' => ['You have no permission to create a label tree for this project.'],
+                ]);
+            }
+        }
 
         $tree = new LabelTree;
         $tree->name = $request->input('name');
@@ -188,7 +200,12 @@ class LabelTreeController extends Controller
         $tree->description = $request->input('description');
         $tree->save();
 
-        $tree->addMember($auth->user(), Role::$admin);
+        $tree->addMember($user, Role::$admin);
+
+        if (isset($project)) {
+            $tree->projects()->attach($project);
+            $tree->authorizedProjects()->attach($project);
+        }
 
         if (static::isAutomatedRequest($request)) {
             return $tree;
