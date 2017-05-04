@@ -20,3 +20,22 @@
         }
     }
 }
+
+.annotator-container {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: calc(100% - #{$navbar-height} - 1px);
+    margin-top: $navbar-height + 1px;
+}
+
+.annotator-canvas {
+    position: relative;
+    flex: 1;
+    height: 100%;
+    background-image: url(../images/noise.png);
+}
+
+@import "ol";
