@@ -38,20 +38,32 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         props: {
             image: {
                 type: HTMLCanvasElement,
-                required: true,
             },
             loading: {
                 type: Boolean,
                 default: false,
             },
+            center: {
+                type: Array,
+                default: undefined,
+            },
+            resolution: {
+                type: Number,
+                default: undefined,
+            },
         },
         data: function () {
             return {
+                initialized: false,
             };
         },
         computed: {
             extent: function () {
-                return [0, 0, this.image.width, this.image.height];
+                if (this.image) {
+                    return [0, 0, this.image.width, this.image.height];
+                }
+
+                return [0, 0, 0, 0];
             },
             projection: function () {
                 return new ol.proj.Projection({
@@ -60,6 +72,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     extent: this.extent
                 });
             },
+        },
+        methods: {
+
         },
         watch: {
             image: function (image) {
@@ -70,15 +85,25 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     canvasSize: [image.width, image.height]
                 }));
             },
-            extent: function (extent) {
-                // TODO use center and zoom of URL params if they xist
+            extent: function (extent, oldExtent) {
+                // The extent only truly changes if the width and height changed.
+                if (extent[2] === oldExtent[2] && extent[3] === oldExtent[3]) {
+                    return;
+                }
+
                 var center = ol.extent.getCenter(extent);
-                var zoom;
+
+                // Only use this.center once on initialization. If the extent changes
+                // afterwards, the center should be reset.
+                if (!this.initialized) {
+                    center = this.center || center;
+                    this.initialized = true;
+                }
 
                 map.setView(new ol.View({
                     projection: this.projection,
                     center: center,
-                    zoom: zoom,
+                    resolution: this.resolution,
                     zoomFactor: 1.5,
                     // allow a maximum of 4x magnification
                     minResolution: 0.25,
@@ -86,15 +111,25 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     extent: extent
                 }));
 
-                if (zoom === undefined) {
+                if (this.resolution === undefined) {
                     map.getView().fit(extent, map.getSize());
                 }
             },
         },
         created: function () {
+            var self = this;
+
             biigle.$require('biigle.events').$on('sidebar.toggle', function () {
-                this.$nextTick(function () {
+                self.$nextTick(function () {
                     map.updateSize();
+                });
+            });
+
+            map.on('moveend', function (e) {
+                var view = map.getView();
+                self.$emit('moveend', {
+                    center: view.getCenter(),
+                    resolution: view.getResolution(),
                 });
             });
         },

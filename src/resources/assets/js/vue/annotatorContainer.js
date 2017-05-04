@@ -5,6 +5,7 @@ biigle.$viewModel('annotator-container', function (element) {
     var events = biigle.$require('biigle.events');
     var imagesIds = biigle.$require('annotations.imagesIds');
     var imagesStore = biigle.$require('annotations.stores.images');
+    var urlParams = biigle.$require('volumes.urlParams');
 
     new Vue({
         el: element,
@@ -17,8 +18,10 @@ biigle.$viewModel('annotator-container', function (element) {
         },
         data: {
             currentImageIndex: 0,
-            // Initialize with empty canvas until the first image has been loaded.
-            currentImage: document.createElement('canvas'),
+            currentImage: null,
+            // Initial map viewport.
+            mapCenter: undefined,
+            mapResolution: undefined,
         },
         computed: {
             currentImageId: function () {
@@ -48,6 +51,15 @@ biigle.$viewModel('annotator-container', function (element) {
                     this.currentImageIndex = this.getPreviousIndex(this.currentImageIndex);
                 }
             },
+            handleMapMoveend: function (viewport) {
+                this.mapCenter = viewport.center;
+                this.mapResolution = viewport.resolution;
+                urlParams.set({
+                    r: Math.round(viewport.resolution * 100),
+                    x: Math.round(viewport.center[0]),
+                    y: Math.round(viewport.center[1]),
+                });
+            },
         },
         watch: {
             currentImageIndex: function (index) {
@@ -68,6 +80,17 @@ biigle.$viewModel('annotator-container', function (element) {
             keyboard.on(39, this.nextImage);
 
             this.currentImageIndex = imagesIds.indexOf(biigle.$require('annotations.imageId'));
+
+            if (urlParams.get('r') !== undefined) {
+                this.mapResolution = parseInt(urlParams.get('r'), 10) / 100;
+            }
+
+            if (urlParams.get('x') !== undefined && urlParams.get('y') !== undefined) {
+                this.mapCenter = [
+                    parseInt(urlParams.get('x'), 10),
+                    parseInt(urlParams.get('y'), 10),
+                ];
+            }
         },
     });
 });

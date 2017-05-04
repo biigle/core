@@ -5,6 +5,7 @@
 
 @push('scripts')
 <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/annotations/scripts/ol.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/annotations/scripts/glfx.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/annotations/scripts/vue.js') }}"></script>
@@ -43,7 +44,7 @@
 
 @section('content')
 <div id="annotator-container" class="annotator-container" v-cloak>
-    <annotation-canvas :loading="loading" :image="currentImage" inline-template>
+    <annotation-canvas :loading="loading" :image="currentImage" :center="mapCenter" :resolution="mapResolution" v-on:moveend="handleMapMoveend" inline-template>
         <div class="annotator-canvas">
             <loader-block v-cloak :active="loading"></loader-block>
         </div>
