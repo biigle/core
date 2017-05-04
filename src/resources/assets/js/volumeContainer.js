@@ -8,6 +8,7 @@ biigle.$viewModel('volume-container', function (element) {
     var annotateUri = biigle.$require('volumes.annotateUri');
     var imageUri = biigle.$require('volumes.imageUri');
     var events = biigle.$require('biigle.events');
+    var urlParams = biigle.$require('volumes.urlParams');
 
     /*
      * ABOUT PERFORMANCE
@@ -95,7 +96,7 @@ biigle.$viewModel('volume-container', function (element) {
                 return 'biigle.volumes.' + this.volumeId + '.offset';
             },
             initialOffset: function () {
-                return parseInt(biigle.$require('volumes.urlParams').get('offset')) ||
+                return parseInt(urlParams.get('offset')) ||
                     parseInt(localStorage.getItem(this.offsetStorageKey)) ||
                     0;
             },
@@ -123,10 +124,10 @@ biigle.$viewModel('volume-container', function (element) {
             },
             handleImageGridScroll: function (offset) {
                 if (offset > 0) {
-                    biigle.$require('volumes.urlParams').set({offset: offset});
+                    urlParams.set({offset: offset});
                     localStorage.setItem(this.offsetStorageKey, offset);
                 } else {
-                    biigle.$require('volumes.urlParams').unset('offset');
+                    urlParams.unset('offset');
                     localStorage.removeItem(this.offsetStorageKey);
                 }
             },
