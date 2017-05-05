@@ -3,8 +3,6 @@
  */
 biigle.$declare('annotations.stores.images', function () {
     var events = biigle.$require('biigle.events');
-    var imageApi = biigle.$require('api.images');
-    var url = window.URL || window.webkitURL;
 
     return new Vue({
         data: {
@@ -12,11 +10,13 @@ biigle.$declare('annotations.stores.images', function () {
             cachedIds: [],
             maxCachedImages: 10,
         },
-        methods: {
-            parseBlob: function (response) {
-                return url.createObjectURL(response.body);
+        computed: {
+            imageFileUri: function () {
+                return biigle.$require('annotations.imageFileUri');
             },
-            createImage: function (url) {
+        },
+        methods: {
+            createImage: function (id) {
                 var img = document.createElement('img');
                 var promise = new Vue.Promise(function (resolve, reject) {
                     img.onload = function () {
@@ -24,11 +24,11 @@ biigle.$declare('annotations.stores.images', function () {
                     };
 
                     img.onerror = function () {
-                        reject('Image ' + url + ' could not be loaded!');
+                        reject('Image ' + id + ' could not be loaded!');
                     };
                 });
 
-                img.src = url;
+                img.src = this.imageFileUri.replace('{id}', id);
 
                 return promise;
             },
@@ -42,9 +42,7 @@ biigle.$declare('annotations.stores.images', function () {
             },
             fetchImage: function (id) {
                 if (!this.imageCache.hasOwnProperty(id)) {
-                    this.imageCache[id] = imageApi.getFile({id: id})
-                        .then(this.parseBlob)
-                        .then(this.createImage);
+                    this.imageCache[id] = this.createImage(id);
                     this.cachedIds.push(id);
                 }
 

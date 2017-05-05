@@ -17,7 +17,7 @@ biigle.$viewModel('annotator-container', function (element) {
             annotationCanvas: biigle.$require('annotations.components.annotationCanvas'),
         },
         data: {
-            currentImageIndex: 0,
+            currentImageIndex: null,
             currentImage: null,
             // Initial map viewport.
             mapCenter: undefined,

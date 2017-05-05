@@ -18,6 +18,7 @@
     biigle.$declare('annotations.volumeId', {!! $image->volume_id !!});
     biigle.$declare('annotations.imagesIds', {!! $images->keys() !!});
     biigle.$declare('annotations.imagesFilenames', {!! $images->values() !!});
+    biigle.$declare('annotations.imageFileUri', '{!! url('api/v1/images/{id}/file') !!}');
 
 </script>
 {{--@foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
