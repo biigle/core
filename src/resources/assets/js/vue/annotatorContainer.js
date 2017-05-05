@@ -15,12 +15,13 @@ biigle.$viewModel('annotator-container', function (element) {
             sidebar: biigle.$require('annotations.components.sidebar'),
             sidebarTab: biigle.$require('core.components.sidebarTab'),
             labelsTab: biigle.$require('annotations.components.labelsTab'),
+            annotationsTab: biigle.$require('annotations.components.annotationsTab'),
             annotationCanvas: biigle.$require('annotations.components.annotationCanvas'),
         },
         data: {
             currentImageIndex: null,
             currentImage: null,
-            currentAnnotations: null,
+            currentAnnotations: [],
             // Initial map viewport.
             mapCenter: undefined,
             mapResolution: undefined,

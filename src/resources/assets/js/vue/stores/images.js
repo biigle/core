@@ -62,7 +62,6 @@ biigle.$declare('annotations.stores.images', function () {
                 if (cachedIds.length > this.maxCacheSize) {
                     var id = cachedIds.shift();
                     var image = this.cache[id];
-                    url.revokeObjectURL(image.src);
                     delete this.cache[id];
                 }
             },

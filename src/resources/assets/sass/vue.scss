@@ -38,4 +38,54 @@
     background-image: url(../images/noise.png);
 }
 
+.labels-tab {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .labels-tab__trees {
+        flex: 1;
+        overflow: hidden;
+    }
+}
+
+.annotations-tab-item {
+    // must not be position:relative because .annotation-list-item calculates the
+    // offsetTop property relative to .annotations-tab!
+    user-select: none;
+    padding: 0 1em;
+    border-bottom: 1px solid #353535;
+
+    &.selected {
+        .annotations-tab-item__title {
+            color: white;
+            padding-bottom: .5em;
+            font-weight: bold;
+        }
+    }
+
+    .annotations-tab-item__title {
+        position: relative;
+        padding: 1em 0 1em 1.25em;
+        cursor: pointer;
+
+        &:hover {
+            color: white;
+        }
+    }
+
+    .annotations-tab-item__color {
+        position: absolute;
+        left: 0;
+        top: 1.2em;
+        width: 1em;
+        height: 1em;
+        border: 2px solid white;
+        border-radius: 50%;
+    }
+
+    .label-tree-label__color {
+    }
+}
+
 @import "ol";

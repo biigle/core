@@ -51,7 +51,7 @@
             <loader-block v-cloak :active="loading"></loader-block>
         </div>
     </annotation-canvas>
-    <sidebar>
+    <sidebar open-tab="annotations">
         @include('annotations::show.tabs.annotations')
         @can('add-annotation', $image)
             @include('annotations::show.tabs.labels')
