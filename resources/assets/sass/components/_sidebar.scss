@@ -56,5 +56,9 @@
         &.sidebar__tab--open {
             display: block;
         }
+
+        &.sidebar__tab--nopad {
+            padding: 0;
+        }
     }
 }
