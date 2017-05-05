@@ -31,6 +31,18 @@ biigle.$component('annotations.components.annotationCanvas', function () {
     var imageLayer = new ol.layer.Image();
     map.addLayer(imageLayer);
 
+    var annotationFeatures = new ol.Collection();
+    var annotationSource = new ol.source.Vector({
+        features: annotationFeatures
+    });
+    var annotationLayer = new ol.layer.Vector({
+        source: annotationSource,
+        zIndex: 100,
+        updateWhileAnimating: true,
+        updateWhileInteracting: true
+    });
+    map.addLayer(annotationLayer);
+
     return {
         components: {
             loaderBlock: biigle.$require('core.components.loaderBlock'),
@@ -38,6 +50,12 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         props: {
             image: {
                 type: HTMLCanvasElement,
+            },
+            annotations: {
+                type: Array,
+                default: function () {
+                    return [];
+                },
             },
             loading: {
                 type: Boolean,
@@ -74,7 +92,54 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
         },
         methods: {
+            // Determines the OpenLayers geometry object for an annotation.
+            getGeometry: function (annotation) {
+                var points = annotation.points;
+                var newPoints = [];
+                var height = this.image.height;
+                for (var i = 0; i < points.length; i += 2) {
+                    newPoints.push([
+                        points[i],
+                        // Invert the y axis to OpenLayers coordinates.
+                        // Circles have no fourth point so we take 0.
+                        height - (points[i + 1] || 0)
+                    ]);
+                }
 
+                switch (annotation.shape) {
+                    case 'Point':
+                        return new ol.geom.Point(newPoints[0]);
+                    case 'Rectangle':
+                        return new ol.geom.Rectangle([newPoints]);
+                    case 'Polygon':
+                        return new ol.geom.Polygon([newPoints]);
+                    case 'LineString':
+                        return new ol.geom.LineString(newPoints);
+                    case 'Circle':
+                        // radius is the x value of the second point of the circle
+                        return new ol.geom.Circle(newPoints[0], newPoints[1][0]);
+                    // unsupported shapes are ignored
+                    default:
+                        console.error('Unknown annotation shape: ' + annotation.shape);
+                        return;
+                }
+            },
+            // Creates an OpenLayers feature object from an annotation.
+            createFeature: function (annotation) {
+                var feature = new ol.Feature({
+                    geometry: this.getGeometry(annotation),
+                    id: annotation.id,
+                });
+
+                feature.set('annotation', annotation);
+                if (annotation.labels && annotation.labels.length > 0) {
+                    feature.set('color', annotation.labels[0].label.color);
+                }
+                // TODO
+                // feature.on('change', handleGeometryChange);
+
+                return feature;
+            },
         },
         watch: {
             image: function (image) {
@@ -84,6 +149,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     canvasExtent: this.extent,
                     canvasSize: [image.width, image.height]
                 }));
+            },
+            annotations: function (annotations) {
+                annotationSource.clear(true);
+                annotationSource.addFeatures(this.annotations.map(this.createFeature));
             },
             extent: function (extent, oldExtent) {
                 // The extent only truly changes if the width and height changed.
@@ -132,6 +201,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     resolution: view.getResolution(),
                 });
             });
+
+            annotationLayer.setStyle(biigle.$require('annotations.stores.styles').features);
         },
         mounted: function () {
             map.setTarget(this.$el);

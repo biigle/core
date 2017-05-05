@@ -5,6 +5,7 @@ biigle.$viewModel('annotator-container', function (element) {
     var events = biigle.$require('biigle.events');
     var imagesIds = biigle.$require('annotations.imagesIds');
     var imagesStore = biigle.$require('annotations.stores.images');
+    var annotationsStore = biigle.$require('annotations.stores.annotations');
     var urlParams = biigle.$require('volumes.urlParams');
 
     new Vue({
@@ -19,6 +20,7 @@ biigle.$viewModel('annotator-container', function (element) {
         data: {
             currentImageIndex: null,
             currentImage: null,
+            currentAnnotations: null,
             // Initial map viewport.
             mapCenter: undefined,
             mapResolution: undefined,
@@ -30,10 +32,14 @@ biigle.$viewModel('annotator-container', function (element) {
             currentImagePromise: function () {
                 return imagesStore.fetchImage(this.currentImageId);
             },
+            currentAnnotationsPromise: function () {
+                return annotationsStore.fetchAnnotations(this.currentImageId);
+            },
         },
         methods: {
-            setCurrentImage: function (image) {
-                this.currentImage = image;
+            setCurrentImageAndAnnotations: function (args) {
+                this.currentImage = args[0];
+                this.currentAnnotations = args[1];
             },
             getNextIndex: function (index) {
                 return (index + 1) % imagesIds.length;
@@ -67,8 +73,12 @@ biigle.$viewModel('annotator-container', function (element) {
                 var nextId = imagesIds[this.getNextIndex(index)];
                 events.$emit('images.change', this.currentImageId, previousId, nextId);
                 this.startLoading();
-                this.currentImagePromise.then(this.setCurrentImage);
-                Vue.Promise.all([this.currentImagePromise]).then(this.finishLoading);
+                Vue.Promise.all([
+                    this.currentImagePromise,
+                    this.currentAnnotationsPromise
+                ])
+                .then(this.setCurrentImageAndAnnotations)
+                .then(this.finishLoading);
             },
         },
         created: function () {

@@ -16,6 +16,7 @@
     biigle.$declare('annotations.imageId', {!! $image->id !!});
     biigle.$declare('annotations.userId', {!! $user->id !!});
     biigle.$declare('annotations.volumeId', {!! $image->volume_id !!});
+    biigle.$declare('annotations.shapes', {!! $shapes !!});
     biigle.$declare('annotations.imagesIds', {!! $images->keys() !!});
     biigle.$declare('annotations.imagesFilenames', {!! $images->values() !!});
     biigle.$declare('annotations.imageFileUri', '{!! url('api/v1/images/{id}/file') !!}');
@@ -45,7 +46,7 @@
 
 @section('content')
 <div id="annotator-container" class="annotator-container" v-cloak>
-    <annotation-canvas :loading="loading" :image="currentImage" :center="mapCenter" :resolution="mapResolution" v-on:moveend="handleMapMoveend" inline-template>
+    <annotation-canvas :loading="loading" :image="currentImage" :annotations="currentAnnotations" :center="mapCenter" :resolution="mapResolution" v-on:moveend="handleMapMoveend" inline-template>
         <div class="annotator-canvas">
             <loader-block v-cloak :active="loading"></loader-block>
         </div>

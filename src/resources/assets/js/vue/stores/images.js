@@ -6,9 +6,9 @@ biigle.$declare('annotations.stores.images', function () {
 
     return new Vue({
         data: {
-            imageCache: {},
+            cache: {},
             cachedIds: [],
-            maxCachedImages: 10,
+            maxCacheSize: 10,
         },
         computed: {
             imageFileUri: function () {
@@ -24,7 +24,7 @@ biigle.$declare('annotations.stores.images', function () {
                     };
 
                     img.onerror = function () {
-                        reject('Image ' + id + ' could not be loaded!');
+                        reject('Failed to load image ' + id + '!');
                     };
                 });
 
@@ -41,12 +41,12 @@ biigle.$declare('annotations.stores.images', function () {
                 return canvas;
             },
             fetchImage: function (id) {
-                if (!this.imageCache.hasOwnProperty(id)) {
-                    this.imageCache[id] = this.createImage(id);
+                if (!this.cache.hasOwnProperty(id)) {
+                    this.cache[id] = this.createImage(id);
                     this.cachedIds.push(id);
                 }
 
-                return this.imageCache[id].then(this.drawImage);
+                return this.cache[id].then(this.drawImage);
             },
             updateCache: function (currentId, previousId, nextId) {
                 var self = this;
@@ -59,11 +59,11 @@ biigle.$declare('annotations.stores.images', function () {
             cachedIds: function (cachedIds) {
                 // If there are too many cached images, remove the oldest one to free
                 // resources.
-                if (cachedIds.length > this.maxCachedImages) {
+                if (cachedIds.length > this.maxCacheSize) {
                     var id = cachedIds.shift();
-                    var image = this.imageCache[id];
+                    var image = this.cache[id];
                     url.revokeObjectURL(image.src);
-                    delete this.imageCache[id];
+                    delete this.cache[id];
                 }
             },
         },
