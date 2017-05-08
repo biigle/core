@@ -6,6 +6,7 @@
 biigle.$component('annotations.components.annotationsTab', {
     components: {
         labelItem: biigle.$require('annotations.components.annotationsTabItem'),
+        annotationsFilter: biigle.$require('annotations.components.annotationsFilter'),
     },
     props: {
         annotations: {
@@ -44,14 +45,15 @@ biigle.$component('annotations.components.annotationsTab', {
     },
     methods: {
         reallyScrollIntoView: function (annotations) {
-            var scrollTop = this.$el.scrollTop;
-            var height = this.$el.offsetHeight;
+            var scrollElement = this.$refs.scrollList;
+            var scrollTop = scrollElement.scrollTop;
+            var height = scrollElement.offsetHeight;
             var top = Infinity;
             var bottom = 0;
 
             var element;
             annotations.forEach(function (annotation) {
-                var elements = this.$el.querySelectorAll(
+                var elements = scrollElement.querySelectorAll(
                     '[data-annotation-id="' + annotation.id + '"]'
                 );
                 for (var i = elements.length - 1; i >= 0; i--) {
@@ -61,15 +63,16 @@ biigle.$component('annotations.components.annotationsTab', {
                 }
             }, this);
 
-            // Scroll $el so all list items of selected annotations are visible or
-            // scroll to the first list item if all items don't fit inside $el.
+            // Scroll scrollElement so all list items of selected annotations are
+            // visible or scroll to the first list item if all items don't fit inside
+            // scrollElement.
             if (scrollTop > top) {
-                this.$el.scrollTop = top;
+                scrollElement.scrollTop = top;
             } else if ((scrollTop + height) < bottom) {
                 if (height >= (bottom - top)) {
-                    this.$el.scrollTop = bottom - this.$el.offsetHeight;
+                    scrollElement.scrollTop = bottom - scrollElement.offsetHeight;
                 } else {
-                    this.$el.scrollTop = top;
+                    scrollElement.scrollTop = top;
                 }
             }
         },
@@ -85,13 +88,14 @@ biigle.$component('annotations.components.annotationsTab', {
             });
         },
         keepElementPosition: function (element) {
-            var positionBefore = element.offsetTop - this.$el.scrollTop;
+            var scrollElement = this.$refs.scrollList;
+            var positionBefore = element.offsetTop - scrollElement.scrollTop;
             // Wait until everything is rendered.
             this.$nextTick(function () {
                 this.$nextTick(function () {
-                    var positionAfter = element.offsetTop - this.$el.scrollTop;
+                    var positionAfter = element.offsetTop - scrollElement.scrollTop;
                     // Scroll so the element has the same relative position than before.
-                    this.$el.scrollTop += positionAfter - positionBefore;
+                    scrollElement.scrollTop += positionAfter - positionBefore;
                 });
             });
         },

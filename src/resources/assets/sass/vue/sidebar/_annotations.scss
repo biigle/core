@@ -1,8 +1,30 @@
 .annotations-tab {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    overflow: none;
+}
+
+.annotations-tab__filter {
+    padding: 1em;
+    width: 100%;
+    overflow: hidden;
+
+    select.form-control {
+        width: 80px;
+    }
+
+    input.form-control {
+        width: 140px;
+    }
+}
+
+.annotations-tab__list {
     // Positioning is required for the automatic scrolling to selected annotations.
     position: relative;
-    height: 100%;
+    flex: 1;
     overflow: auto;
+    margin: 0;
 }
 
 .annotations-tab-item {
