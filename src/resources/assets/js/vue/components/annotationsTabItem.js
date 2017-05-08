@@ -4,31 +4,42 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.annotationsTabItem', {
+    components: {
+        annotationItem: biigle.$require('annotations.components.annotationsTabSubItem'),
+    },
     props: {
         item: {
             type: Object,
             required: true,
         },
     },
+    data: function () {
+        return {
+            isOpen: false,
+        };
+    },
     computed: {
         label: function () {
             return this.item.label;
         },
-        annotations: function () {
+        annotationItems: function () {
             return this.item.annotations;
         },
         count: function () {
-            return this.annotations.length;
+            return this.annotationItems.length;
         },
-        isSelected: function () {
-            var annotations = this.annotations;
-            for (var i = annotations.length - 1; i >= 0; i--) {
-                if (annotations[i].selected === true) {
+        hasSelectedAnnotation: function () {
+            var items = this.annotationItems;
+            for (var i = items.length - 1; i >= 0; i--) {
+                if (items[i].annotation.selected === true) {
                     return true;
                 }
             }
 
             return false;
+        },
+        isSelected: function () {
+            return this.isOpen || this.hasSelectedAnnotation;
         },
         classObject: function () {
             return {
@@ -45,6 +56,11 @@ biigle.$component('annotations.components.annotationsTabItem', {
         },
         countTitle: function () {
             return 'There are ' + this.count + ' annotations with this label';
+        },
+    },
+    methods: {
+        toggleOpen: function () {
+            this.isOpen = !this.isOpen;
         },
     },
 });

@@ -37,6 +37,13 @@ biigle.$declare('annotations.stores.annotations', function () {
 
                 return annotations;
             },
+            setSelected: function (annotations) {
+                annotations.forEach(function (annotation) {
+                    annotation.selected = false;
+                });
+
+                return annotations;
+            },
             fetchAnnotations: function (id) {
                 if (!this.cache.hasOwnProperty(id)) {
                     this.cache[id] = imagesApi.getAnnotations({id: id})
@@ -44,7 +51,7 @@ biigle.$declare('annotations.stores.annotations', function () {
                         .then(this.resolveShapes);
                 }
 
-                return this.cache[id];
+                return this.cache[id].then(this.setSelected);
             },
             updateCache: function (currentId, previousId, nextId) {
                 var self = this;

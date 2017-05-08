@@ -23,12 +23,17 @@ biigle.$component('annotations.components.annotationsTab', {
             var labels = [];
             var annotations = {};
             this.annotations.forEach(function (annotation) {
-                annotation.labels.forEach(function (annotation_label) {
-                    if (annotations.hasOwnProperty(annotation_label.label.id)) {
-                        annotations[annotation_label.label.id].push(annotation);
+                annotation.labels.forEach(function (annotationLabel) {
+                    var item = {
+                        annotation: annotation,
+                        annotationLabel: annotationLabel,
+                    };
+
+                    if (annotations.hasOwnProperty(annotationLabel.label.id)) {
+                        annotations[annotationLabel.label.id].push(item);
                     } else {
-                        annotations[annotation_label.label.id] = [annotation];
-                        labels.push(annotation_label.label);
+                        annotations[annotationLabel.label.id] = [item];
+                        labels.push(annotationLabel.label);
                     }
                 });
             });

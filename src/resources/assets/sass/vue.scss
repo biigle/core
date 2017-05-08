@@ -84,8 +84,32 @@
         border-radius: 50%;
     }
 
-    .label-tree-label__color {
+    .annotations-tab-item__list {
+        padding-bottom: 1em;
+    }
+
+    .annotations-tab-item__sub-item {
+        cursor: pointer;
+        padding: .25em 0 .25em 1em;
+        color: $text-muted;
+
+        &:hover, &.selected {
+            color: white;
+        }
+
+        &:hover .icon {
+            @extend .icon-white;
+        }
+
+        &.selected .icon {
+            @extend .icon-highlight;
+        }
+
+        .icon {
+           margin-right: .25em;
+        }
     }
 }
 
 @import "ol";
+@import "icons";
