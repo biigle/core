@@ -95,6 +95,8 @@ biigle.$viewModel('annotator-container', function (element) {
                 deselected.forEach(function (annotation) {
                     annotation.selected = false;
                 });
+
+                this.$refs.annotationsTab.scrollIntoView(this.currentSelectedAnnotations);
             },
             handleDeselectAnnotation: function (annotation, event) {
                 if (event && event.shiftKey) {

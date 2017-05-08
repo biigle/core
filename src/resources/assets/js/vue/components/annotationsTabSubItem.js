@@ -14,8 +14,6 @@ biigle.$component('annotations.components.annotationsTabSubItem', {
             required: true,
         },
     },
-    // TODO: Implement automatic scrolling of the label list so the selected annotations
-    // are always visible.
     computed: {
         annotation: function () {
             return this.item.annotation;
@@ -50,6 +48,8 @@ biigle.$component('annotations.components.annotationsTabSubItem', {
     },
     methods: {
         toggleSelect: function (e) {
+            this.$emit('select', this.$el);
+
             if (this.isSelected) {
                 this.events.$emit('annotations.deselect', this.annotation, e);
             } else {

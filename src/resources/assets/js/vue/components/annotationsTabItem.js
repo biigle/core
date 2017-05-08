@@ -62,5 +62,8 @@ biigle.$component('annotations.components.annotationsTabItem', {
         toggleOpen: function () {
             this.isOpen = !this.isOpen;
         },
+        bubbleSelect: function (element) {
+            this.$emit('select', element);
+        },
     },
 });

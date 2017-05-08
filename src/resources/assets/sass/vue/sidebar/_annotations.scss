@@ -1,3 +1,10 @@
+.annotations-tab {
+    // Positioning is required for the automatic scrolling to selected annotations.
+    position: relative;
+    height: 100%;
+    overflow: auto;
+}
+
 .annotations-tab-item {
     // must not be position:relative because .annotation-list-item calculates the
     // offsetTop property relative to .annotations-tab!

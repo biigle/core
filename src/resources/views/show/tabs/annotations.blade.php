@@ -1,16 +1,16 @@
 <sidebar-tab name="annotations" icon="map-marker" title="Toggle the annotations list" class="sidebar__tab--nopad">
-    <annotations-tab :annotations="currentAnnotations" v-cloak inline-template>
+    <annotations-tab :annotations="currentAnnotations" ref="annotationsTab" v-cloak inline-template>
         <div class="annotations-tab">
             <ul class="list-unstyled">
-                <label-item v-for="item in items" :key="item.label.id" :item="item" inline-template>
+                <label-item v-for="item in items" :key="item.label.id" :item="item" v-on:select="keepElementPosition" inline-template>
                     <li class="annotations-tab-item" :class="classObject" :title="title">
                         <div class="annotations-tab-item__title" v-on:click="toggleOpen">
                             <span class="pull-right" v-text="count" :title="countTitle"></span>
                             <span class="annotations-tab-item__color" :style="colorStyle"></span> <span v-text="label.name"></span>
                         </div>
                         <ul class="annotations-tab-item__list list-unstyled" v-show="isSelected">
-                            <annotation-item v-for="annotation in annotationItems" :item="annotation" :user-id="{!! $user->id !!}" inline-template>
-                                <li class="annotations-tab-item__sub-item" title="𝗗𝗼𝘂𝗯𝗹𝗲 𝗰𝗹𝗶𝗰𝗸 to zoom to the annotation" :class="classObject" v-on:click="toggleSelect" v-on:dblclick="focus">
+                            <annotation-item v-for="annotation in annotationItems" :item="annotation" :user-id="{!! $user->id !!}" v-on:select="bubbleSelect" inline-template>
+                                <li class="annotations-tab-item__sub-item" title="𝗗𝗼𝘂𝗯𝗹𝗲 𝗰𝗹𝗶𝗰𝗸 to zoom to the annotation" :class="classObject" :data-annotation-id="annotation.id" v-on:click="toggleSelect" v-on:dblclick="focus">
                                     @can('add-annotation', $image)
                                         <button type="button" class="close" title="Detach this label from the annotation" v-if="canBeDetached" v-on:click="detach"><span aria-hidden="true">&times;</span></button>
                                     @endcan
