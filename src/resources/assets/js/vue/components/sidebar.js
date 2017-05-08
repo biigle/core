@@ -6,6 +6,6 @@
 biigle.$component('annotations.components.sidebar', {
     mixins: [biigle.$require('core.components.sidebar')],
     created: function () {
-        // keyboard events to open and close individual tabs
+        //TODO: keyboard events to open and close individual tabs
     },
 });

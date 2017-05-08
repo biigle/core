@@ -13,10 +13,6 @@ biigle.$component('annotations.components.annotationsTab', {
             required: true,
         },
     },
-    data: function () {
-        return {
-        };
-    },
     computed: {
         // Compiles a list of all labels and their associated annotations.
         items: function () {
@@ -45,12 +41,5 @@ biigle.$component('annotations.components.annotationsTab', {
                 };
             });
         },
-    },
-    methods: {
-    },
-    watch: {
-    },
-    created: function () {
-        // console.log(this.annotationsByLabel);
     },
 });

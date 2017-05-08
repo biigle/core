@@ -46,7 +46,7 @@
 
 @section('content')
 <div id="annotator-container" class="annotator-container" v-cloak>
-    <annotation-canvas :loading="loading" :image="currentImage" :annotations="currentAnnotations" :center="mapCenter" :resolution="mapResolution" v-on:moveend="handleMapMoveend" inline-template>
+    <annotation-canvas :loading="loading" :image="currentImage" :annotations="currentAnnotations" :center="mapCenter" :resolution="mapResolution" v-on:moveend="handleMapMoveend" ref="canvas" inline-template>
         <div class="annotator-canvas">
             <loader-block v-cloak :active="loading"></loader-block>
         </div>

@@ -7,8 +7,6 @@ biigle.$component('annotations.components.labelsTab', {
     components: {
         labelTrees: biigle.$require('labelTrees.components.labelTrees'),
     },
-    props: {
-    },
     data: function () {
         return {
             labelTrees: biigle.$require('annotations.labelTrees'),

@@ -73,6 +73,11 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         data: function () {
             return {
                 initialized: false,
+                // options to use for the view.fit function
+                viewFitOptions: {
+                    padding: [50, 50, 50, 50],
+                    minResolution: 1,
+                },
             };
         },
         computed: {
@@ -128,10 +133,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             createFeature: function (annotation) {
                 var feature = new ol.Feature({
                     geometry: this.getGeometry(annotation),
-                    id: annotation.id,
                 });
 
-                feature.set('annotation', annotation);
+                feature.setId(annotation.id);
                 if (annotation.labels && annotation.labels.length > 0) {
                     feature.set('color', annotation.labels[0].label.color);
                 }
@@ -139,6 +143,21 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 // feature.on('change', handleGeometryChange);
 
                 return feature;
+            },
+            focusAnnotation: function (annotation) {
+                var feature = annotationSource.getFeatureById(annotation.id);
+                if (feature) {
+                    // animate fit
+                    var view = map.getView();
+                    var pan = ol.animation.pan({
+                        source: view.getCenter()
+                    });
+                    var zoom = ol.animation.zoom({
+                        resolution: view.getResolution()
+                    });
+                    map.beforeRender(pan, zoom);
+                    view.fit(feature.getGeometry(), map.getSize(), this.viewFitOptions);
+                }
             },
         },
         watch: {

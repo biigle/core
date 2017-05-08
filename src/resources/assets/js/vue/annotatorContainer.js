@@ -67,6 +67,9 @@ biigle.$viewModel('annotator-container', function (element) {
                     y: Math.round(viewport.center[1]),
                 });
             },
+            handleFocusAnnotation: function (annotation) {
+                this.$refs.canvas.focusAnnotation(annotation);
+            },
         },
         watch: {
             currentImageIndex: function (index) {
@@ -102,6 +105,8 @@ biigle.$viewModel('annotator-container', function (element) {
                     parseInt(urlParams.get('y'), 10),
                 ];
             }
+
+            events.$on('annotations.focus', this.handleFocusAnnotation);
         },
     });
 });
