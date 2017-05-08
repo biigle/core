@@ -36,6 +36,11 @@ biigle.$viewModel('annotator-container', function (element) {
             currentAnnotationsPromise: function () {
                 return annotationsStore.fetchAnnotations(this.currentImageId);
             },
+            currentSelectedAnnotations: function () {
+                return this.currentAnnotations.filter(function (annotation) {
+                    return annotation.selected;
+                });
+            },
         },
         methods: {
             setCurrentImageAndAnnotations: function (args) {
@@ -65,6 +70,37 @@ biigle.$viewModel('annotator-container', function (element) {
                     r: Math.round(viewport.resolution * 100),
                     x: Math.round(viewport.center[0]),
                     y: Math.round(viewport.center[1]),
+                });
+            },
+            // Handler for the select event fired by the global event bus.
+            handleSelectAnnotation: function (annotation, event) {
+                if (event && event.shiftKey) {
+                    annotation.selected = true;
+                    return;
+                }
+
+                this.currentAnnotations.forEach(function (a) {
+                    a.selected = annotation.id === a.id;
+                });
+            },
+            // Handler for the select event fired by the annotation-canvas component.
+            handleSelectAnnotations: function (selected, deselected) {
+                selected.forEach(function (annotation) {
+                    annotation.selected = true;
+                });
+
+                deselected.forEach(function (annotation) {
+                    annotation.selected = false;
+                });
+            },
+            handleDeselectAnnotation: function (annotation, event) {
+                if (event && event.shiftKey) {
+                    annotation.selected = false;
+                    return;
+                }
+
+                this.currentAnnotations.forEach(function (a) {
+                    a.selected = false;
                 });
             },
             handleFocusAnnotation: function (annotation) {
@@ -106,6 +142,8 @@ biigle.$viewModel('annotator-container', function (element) {
                 ];
             }
 
+            events.$on('annotations.select', this.handleSelectAnnotation);
+            events.$on('annotations.deselect', this.handleDeselectAnnotation);
             events.$on('annotations.focus', this.handleFocusAnnotation);
         },
     });

@@ -25,21 +25,18 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             shiftDragZoom: false,
             pinchRotate: false,
             pinchZoom: false
-        })
+        }),
     });
 
     var imageLayer = new ol.layer.Image();
     map.addLayer(imageLayer);
 
-    var annotationFeatures = new ol.Collection();
-    var annotationSource = new ol.source.Vector({
-        features: annotationFeatures
-    });
+    var annotationSource = new ol.source.Vector();
     var annotationLayer = new ol.layer.Vector({
         source: annotationSource,
         zIndex: 100,
         updateWhileAnimating: true,
-        updateWhileInteracting: true
+        updateWhileInteracting: true,
     });
     map.addLayer(annotationLayer);
 
@@ -52,6 +49,12 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 type: HTMLCanvasElement,
             },
             annotations: {
+                type: Array,
+                default: function () {
+                    return [];
+                },
+            },
+            selectedAnnotations: {
                 type: Array,
                 default: function () {
                     return [];
@@ -71,6 +74,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
         },
         data: function () {
+            var styles = biigle.$require('annotations.stores.styles');
+
             return {
                 initialized: false,
                 // options to use for the view.fit function
@@ -78,6 +83,15 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     padding: [50, 50, 50, 50],
                     minResolution: 1,
                 },
+                // We initialize this here because we need to make sure the styles are
+                // properly loaded and there is no setStyle() function like for the
+                // annotationLayer.
+                selectInteraction: new ol.interaction.Select({
+                    style: styles.highlight,
+                    layers: [annotationLayer],
+                    // enable selecting multiple overlapping features at once
+                    multi: true
+                }),
             };
         },
         computed: {
@@ -94,6 +108,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     units: 'pixels',
                     extent: this.extent
                 });
+            },
+            selectFeatures: function () {
+                return this.selectInteraction.getFeatures();
             },
         },
         methods: {
@@ -136,6 +153,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 });
 
                 feature.setId(annotation.id);
+                feature.set('annotation', annotation);
                 if (annotation.labels && annotation.labels.length > 0) {
                     feature.set('color', annotation.labels[0].label.color);
                 }
@@ -159,6 +177,12 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     view.fit(feature.getGeometry(), map.getSize(), this.viewFitOptions);
                 }
             },
+            handleFeatureSelect: function (event) {
+                var extractAnnotation = function (feature) {
+                    return feature.get('annotation');
+                };
+                this.$emit('select', event.selected.map(extractAnnotation), event.deselected.map(extractAnnotation));
+            },
         },
         watch: {
             image: function (image) {
@@ -172,6 +196,14 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             annotations: function (annotations) {
                 annotationSource.clear(true);
                 annotationSource.addFeatures(this.annotations.map(this.createFeature));
+            },
+            selectedAnnotations: function (annotations) {
+                var source = annotationSource;
+                var features = this.selectFeatures;
+                features.clear();
+                annotations.forEach(function (annotation) {
+                    features.push(source.getFeatureById(annotation.id));
+                });
             },
             extent: function (extent, oldExtent) {
                 // The extent only truly changes if the width and height changed.
@@ -221,6 +253,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 });
             });
 
+            map.addInteraction(this.selectInteraction);
+            this.selectInteraction.on('select', this.handleFeatureSelect);
             annotationLayer.setStyle(biigle.$require('annotations.stores.styles').features);
         },
         mounted: function () {
