@@ -9,6 +9,10 @@ biigle.$component('annotations.components.annotationsTabSubItem', {
             type: Object,
             required: true,
         },
+        userId: {
+            type: Number,
+            required: true,
+        },
     },
     // TODO: Implement automatic scrolling of the label list so the selected annotations
     // are always visible.
@@ -38,7 +42,7 @@ biigle.$component('annotations.components.annotationsTabSubItem', {
             return '(user deleted)';
         },
         canBeDetached: function () {
-            return this.label.user && this.label.user.id === biigle.$require('annotations.userId');
+            return this.label.user && this.label.user.id === this.userId;
         },
         events: function () {
             return biigle.$require('biigle.events');

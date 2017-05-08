@@ -14,7 +14,6 @@
         biigle.$declare('annotations.labelTrees', {!! $labelTrees !!});
     @endcan
     biigle.$declare('annotations.imageId', {!! $image->id !!});
-    biigle.$declare('annotations.userId', {!! $user->id !!});
     biigle.$declare('annotations.volumeId', {!! $image->volume_id !!});
     biigle.$declare('annotations.shapes', {!! $shapes !!});
     biigle.$declare('annotations.imagesIds', {!! $images->keys() !!});
