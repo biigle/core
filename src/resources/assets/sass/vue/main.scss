@@ -1,0 +1,44 @@
+@import "../variables";
+
+.navbar-text.navbar-annotations-breadcrumbs {
+    white-space: nowrap;
+    max-width: 850px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    &, a {
+        color: #ccc;
+    }
+
+    // make dropdown visible despite overflow:hidden
+    .dropdown {
+        position: static;
+
+        .dropdown-menu {
+            left: auto;
+            top: auto;
+        }
+    }
+}
+
+.annotator-container {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: calc(100% - #{$navbar-height} - 1px);
+    margin-top: $navbar-height + 1px;
+}
+
+.annotator-canvas {
+    position: relative;
+    flex: 1;
+    height: 100%;
+    background-image: url(../images/noise.png);
+}
+
+@import "ol";
+@import "icons";
+@import "sidebar/annotations";
+@import "sidebar/labels";

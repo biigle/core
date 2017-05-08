@@ -1,0 +1,26 @@
+%custom-icon {
+    color: white;
+    display: block;
+    font-family: "Glyphicons Halflings";
+    font-weight: normal;
+}
+
+.ol-zoom-extent button {
+    @extend %custom-icon;
+    padding-top: 1px;
+}
+
+.ol-full-screen button.ol-full-screen-false {
+    @extend %custom-icon;
+    padding-top: 2px;
+}
+
+.ol-control.zoom-to-native {
+    left: .5em;
+    top: 7.1em;
+
+    button {
+        @extend %custom-icon;
+        padding-top: 1px;
+    }
+}

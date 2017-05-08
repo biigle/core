@@ -13,7 +13,7 @@ gulp.task('sass-main', function () {
 });
 
 gulp.task('sass-vue', function () {
-    h.sass('vue.scss', 'vue.css');
+    h.sass('vue/main.scss', 'vue.css');
 });
 
 gulp.task('js-main', function (cb) {

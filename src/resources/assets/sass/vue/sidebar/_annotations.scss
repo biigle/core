@@ -1,54 +1,3 @@
-@import "variables";
-
-.navbar-text.navbar-annotations-breadcrumbs {
-    white-space: nowrap;
-    max-width: 850px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-
-    &, a {
-        color: #ccc;
-    }
-
-    // make dropdown visible despite overflow:hidden
-    .dropdown {
-        position: static;
-
-        .dropdown-menu {
-            left: auto;
-            top: auto;
-        }
-    }
-}
-
-.annotator-container {
-    display: flex;
-    flex-direction: row;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: calc(100% - #{$navbar-height} - 1px);
-    margin-top: $navbar-height + 1px;
-}
-
-.annotator-canvas {
-    position: relative;
-    flex: 1;
-    height: 100%;
-    background-image: url(../images/noise.png);
-}
-
-.labels-tab {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-
-    .labels-tab__trees {
-        flex: 1;
-        overflow: hidden;
-    }
-}
-
 .annotations-tab-item {
     // must not be position:relative because .annotation-list-item calculates the
     // offsetTop property relative to .annotations-tab!
@@ -110,6 +59,3 @@
         }
     }
 }
-
-@import "ol";
-@import "icons";
