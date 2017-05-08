@@ -47,6 +47,9 @@ biigle.$viewModel('annotator-container', function (element) {
                 this.currentImage = args[0];
                 this.currentAnnotations = args[1];
             },
+            updateUrlSlug: function () {
+                urlParams.setSlug(this.currentImageId);
+            },
             getNextIndex: function (index) {
                 return (index + 1) % imagesIds.length;
             },
@@ -113,12 +116,10 @@ biigle.$viewModel('annotator-container', function (element) {
                 var nextId = imagesIds[this.getNextIndex(index)];
                 events.$emit('images.change', this.currentImageId, previousId, nextId);
                 this.startLoading();
-                Vue.Promise.all([
-                    this.currentImagePromise,
-                    this.currentAnnotationsPromise
-                ])
-                .then(this.setCurrentImageAndAnnotations)
-                .then(this.finishLoading);
+                Vue.Promise.all([this.currentImagePromise, this.currentAnnotationsPromise])
+                    .then(this.setCurrentImageAndAnnotations)
+                    .then(this.updateUrlSlug)
+                    .then(this.finishLoading);
             },
         },
         created: function () {
