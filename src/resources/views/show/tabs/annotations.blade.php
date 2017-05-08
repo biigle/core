@@ -8,7 +8,7 @@
                             <span class="pull-right" v-text="count" :title="countTitle"></span>
                             <span class="annotations-tab-item__color" :style="colorStyle"></span> <span v-text="label.name"></span>
                         </div>
-                        <ul class="annotations-tab-item__list list-unstyled" v-if="isSelected">
+                        <ul class="annotations-tab-item__list list-unstyled" v-show="isSelected">
                             <annotation-item v-for="annotation in annotationItems" :item="annotation" inline-template>
                                 <li class="annotations-tab-item__sub-item" title="𝗗𝗼𝘂𝗯𝗹𝗲 𝗰𝗹𝗶𝗰𝗸 to zoom to the annotation" :class="classObject" v-on:click="toggleSelect" v-on:dblclick="focus">
                                     @can('add-annotation', $image)

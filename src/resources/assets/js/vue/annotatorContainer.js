@@ -109,6 +109,20 @@ biigle.$viewModel('annotator-container', function (element) {
             handleFocusAnnotation: function (annotation) {
                 this.$refs.canvas.focusAnnotation(annotation);
             },
+            maybeSelectAndFocusAnnotation: function () {
+                var id = urlParams.get('annotation');
+                if (id) {
+                    id = parseInt(id);
+                    var annotations = this.currentAnnotations;
+                    for (var i = annotations.length - 1; i >= 0; i--) {
+                        if (annotations[i].id === id) {
+                            this.handleFocusAnnotation(annotations[i]);
+                            annotations[i].selected = true;
+                            return;
+                        }
+                    }
+                }
+            },
         },
         watch: {
             currentImageIndex: function (index) {
@@ -119,6 +133,7 @@ biigle.$viewModel('annotator-container', function (element) {
                 Vue.Promise.all([this.currentImagePromise, this.currentAnnotationsPromise])
                     .then(this.setCurrentImageAndAnnotations)
                     .then(this.updateUrlSlug)
+                    .then(this.maybeSelectAndFocusAnnotation)
                     .then(this.finishLoading);
             },
         },
