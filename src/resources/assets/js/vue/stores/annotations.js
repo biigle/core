@@ -9,7 +9,6 @@ biigle.$declare('annotations.stores.annotations', function () {
     return new Vue({
         data: {
             cache: {},
-            activeFilter: null,
         },
         computed: {
             imageFileUri: function () {
@@ -45,13 +44,6 @@ biigle.$declare('annotations.stores.annotations', function () {
 
                 return annotations;
             },
-            maybeApplyFilter: function (annotations) {
-                if (typeof this.activeFilter === 'function') {
-                    return annotations.filter(this.activeFilter);
-                }
-
-                return annotations;
-            },
             fetchAnnotations: function (id) {
                 if (!this.cache.hasOwnProperty(id)) {
                     this.cache[id] = imagesApi.getAnnotations({id: id})
@@ -59,18 +51,13 @@ biigle.$declare('annotations.stores.annotations', function () {
                         .then(this.resolveShapes);
                 }
 
-                return this.cache[id]
-                    .then(this.setSelected)
-                    .then(this.maybeApplyFilter);
+                return this.cache[id].then(this.setSelected);
             },
             updateCache: function (currentId, previousId, nextId) {
                 var self = this;
                 this.fetchAnnotations(currentId)
                     .then(function() {self.fetchAnnotations(nextId);})
                     .then(function() {self.fetchAnnotations(previousId);});
-            },
-            setFilter: function (filter) {
-                this.activeFilter = filter;
             },
         },
         created: function () {

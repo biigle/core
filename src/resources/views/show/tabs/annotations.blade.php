@@ -1,12 +1,12 @@
-<sidebar-tab name="annotations" icon="map-marker" title="Toggle the annotations list" class="sidebar__tab--nopad">
-    <annotations-tab :annotations="currentAnnotations" ref="annotationsTab" v-cloak inline-template>
+<sidebar-tab name="annotations" icon="map-marker" title="Toggle the annotations list" class="sidebar__tab--nopad" :highlight="hasAnnotationFilter">
+    <annotations-tab :annotations="annotations" :filtered-annotations="filteredAnnotations" v-on:filter="handleFilter" ref="annotationsTab" v-cloak inline-template>
         <div class="annotations-tab">
-            <annotations-filter :annotations="annotations" inline-template>
+            <annotations-filter :annotations="annotations" v-on:filter="bubbleFilter" inline-template>
                 <form class="annotations-tab__filter form-inline" v-on:submit.prevent="activateFilter">
                     <select class="form-control" v-model="selectedFilter">
                         <option v-for="filter in availableFilters" :value="filter" v-text="filter"></option>
                     </select>
-                    <input class="form-control" type="text">
+                    <typeahead :items="data" :value="selectedDataName" v-on:select="selectData"></typeahead>
                     <button class="btn btn-info active" title="Clear annotation filter" v-if="active" v-on:click.prevent="deactivateFilter"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                     <button type="submit" class="btn btn-default" title="Filter annotations" v-else><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
                 </form>

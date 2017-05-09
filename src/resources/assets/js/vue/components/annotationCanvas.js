@@ -194,6 +194,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 }));
             },
             annotations: function (annotations) {
+                // TODO: Maybe optimize to only remove and draw features that were
+                // changed. Only call clear if too many were removed.
                 annotationSource.clear(true);
                 annotationSource.addFeatures(this.annotations.map(this.createFeature));
             },

@@ -19,36 +19,47 @@ biigle.$viewModel('annotator-container', function (element) {
             annotationCanvas: biigle.$require('annotations.components.annotationCanvas'),
         },
         data: {
-            currentImageIndex: null,
-            currentImage: null,
-            currentAnnotations: [],
+            imageIndex: null,
+            image: null,
+            annotations: [],
+            annotationFilter: null,
             // Initial map viewport.
             mapCenter: undefined,
             mapResolution: undefined,
         },
         computed: {
-            currentImageId: function () {
-                return imagesIds[this.currentImageIndex];
+            imageId: function () {
+                return imagesIds[this.imageIndex];
             },
-            currentImagePromise: function () {
-                return imagesStore.fetchImage(this.currentImageId);
-            },
-            currentAnnotationsPromise: function () {
-                return annotationsStore.fetchAnnotations(this.currentImageId);
-            },
-            currentSelectedAnnotations: function () {
-                return this.currentAnnotations.filter(function (annotation) {
+            selectedAnnotations: function () {
+                return this.annotations.filter(function (annotation) {
                     return annotation.selected;
                 });
             },
+            hasAnnotationFilter: function () {
+                return typeof this.annotationFilter === 'function';
+            },
+            filteredAnnotations: function () {
+                if (this.hasAnnotationFilter) {
+                    return this.annotations.filter(this.annotationFilter);
+                }
+
+                return this.annotations;
+            },
         },
         methods: {
+            getImageAndAnnotationsPromises: function () {
+                return [
+                    imagesStore.fetchImage(this.imageId),
+                    annotationsStore.fetchAnnotations(this.imageId),
+                ];
+            },
             setCurrentImageAndAnnotations: function (args) {
-                this.currentImage = args[0];
-                this.currentAnnotations = args[1];
+                this.image = args[0];
+                this.annotations = args[1];
             },
             updateUrlSlug: function () {
-                urlParams.setSlug(this.currentImageId);
+                urlParams.setSlug(this.imageId);
             },
             getNextIndex: function (index) {
                 return (index + 1) % imagesIds.length;
@@ -58,12 +69,12 @@ biigle.$viewModel('annotator-container', function (element) {
             },
             nextImage: function () {
                 if (!this.loading) {
-                    this.currentImageIndex = this.getNextIndex(this.currentImageIndex);
+                    this.imageIndex = this.getNextIndex(this.imageIndex);
                 }
             },
             previousImage: function () {
                 if (!this.loading) {
-                    this.currentImageIndex = this.getPreviousIndex(this.currentImageIndex);
+                    this.imageIndex = this.getPreviousIndex(this.imageIndex);
                 }
             },
             handleMapMoveend: function (viewport) {
@@ -82,7 +93,7 @@ biigle.$viewModel('annotator-container', function (element) {
                     return;
                 }
 
-                this.currentAnnotations.forEach(function (a) {
+                this.annotations.forEach(function (a) {
                     a.selected = annotation.id === a.id;
                 });
             },
@@ -96,7 +107,7 @@ biigle.$viewModel('annotator-container', function (element) {
                     annotation.selected = false;
                 });
 
-                this.$refs.annotationsTab.scrollIntoView(this.currentSelectedAnnotations);
+                this.$refs.annotationsTab.scrollIntoView(this.selectedAnnotations);
             },
             handleDeselectAnnotation: function (annotation, event) {
                 if (event && event.shiftKey) {
@@ -104,7 +115,7 @@ biigle.$viewModel('annotator-container', function (element) {
                     return;
                 }
 
-                this.currentAnnotations.forEach(function (a) {
+                this.annotations.forEach(function (a) {
                     a.selected = false;
                 });
             },
@@ -115,7 +126,7 @@ biigle.$viewModel('annotator-container', function (element) {
                 var id = urlParams.get('annotation');
                 if (id) {
                     id = parseInt(id);
-                    var annotations = this.currentAnnotations;
+                    var annotations = this.annotations;
                     for (var i = annotations.length - 1; i >= 0; i--) {
                         if (annotations[i].id === id) {
                             this.handleFocusAnnotation(annotations[i]);
@@ -125,14 +136,17 @@ biigle.$viewModel('annotator-container', function (element) {
                     }
                 }
             },
+            handleFilter: function (filter) {
+                this.annotationFilter = filter;
+            },
         },
         watch: {
-            currentImageIndex: function (index) {
+            imageIndex: function (index) {
                 var previousId = imagesIds[this.getPreviousIndex(index)];
                 var nextId = imagesIds[this.getNextIndex(index)];
-                events.$emit('images.change', this.currentImageId, previousId, nextId);
+                events.$emit('images.change', this.imageId, previousId, nextId);
                 this.startLoading();
-                Vue.Promise.all([this.currentImagePromise, this.currentAnnotationsPromise])
+                Vue.Promise.all(this.getImageAndAnnotationsPromises())
                     .then(this.setCurrentImageAndAnnotations)
                     .then(this.updateUrlSlug)
                     .then(this.maybeSelectAndFocusAnnotation)
@@ -147,7 +161,7 @@ biigle.$viewModel('annotator-container', function (element) {
             keyboard.on(32, this.nextImage);
             keyboard.on(39, this.nextImage);
 
-            this.currentImageIndex = imagesIds.indexOf(biigle.$require('annotations.imageId'));
+            this.imageIndex = imagesIds.indexOf(biigle.$require('annotations.imageId'));
 
             if (urlParams.get('r') !== undefined) {
                 this.mapResolution = parseInt(urlParams.get('r'), 10) / 100;

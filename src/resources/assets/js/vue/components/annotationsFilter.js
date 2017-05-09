@@ -5,6 +5,7 @@
  */
 biigle.$component('annotations.components.annotationsFilter', {
     components: {
+        typeahead: biigle.$require('core.components.typeahead'),
     },
     props: {
         annotations: {
@@ -61,7 +62,7 @@ biigle.$component('annotations.components.annotationsFilter', {
             var data = [];
             for (var id in shapes) {
                 if (shapes.hasOwnProperty(id)) {
-                    data.push({id: id, name: shapes[id]});
+                    data.push({id: parseInt(id, 10), name: shapes[id]});
                 }
             }
 
@@ -81,6 +82,9 @@ biigle.$component('annotations.components.annotationsFilter', {
             }
 
             return [];
+        },
+        selectedDataName: function () {
+            return this.selectedData ? this.selectedData.name : '';
         },
     },
     methods: {
@@ -132,6 +136,10 @@ biigle.$component('annotations.components.annotationsFilter', {
                 return false;
             };
         },
+        selectData: function (data) {
+            this.selectedData = data;
+            this.activateFilter();
+        },
         activateFilter: function () {
             if (this.selectedFilter && this.selectedData) {
                 this.active = true;
@@ -140,6 +148,7 @@ biigle.$component('annotations.components.annotationsFilter', {
         },
         deactivateFilter: function () {
             this.active = false;
+            this.selectedData = null;
             this.$emit('filter', null);
         },
     },

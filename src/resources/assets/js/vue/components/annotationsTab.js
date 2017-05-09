@@ -13,13 +13,17 @@ biigle.$component('annotations.components.annotationsTab', {
             type: Array,
             required: true,
         },
+        filteredAnnotations: {
+            type: Array,
+            required: true,
+        },
     },
     computed: {
         // Compiles a list of all labels and their associated annotations.
         items: function () {
             var labels = [];
             var annotations = {};
-            this.annotations.forEach(function (annotation) {
+            this.filteredAnnotations.forEach(function (annotation) {
                 annotation.labels.forEach(function (annotationLabel) {
                     var item = {
                         annotation: annotation,
@@ -98,6 +102,9 @@ biigle.$component('annotations.components.annotationsTab', {
                     scrollElement.scrollTop += positionAfter - positionBefore;
                 });
             });
+        },
+        bubbleFilter: function (filter) {
+            this.$emit('filter', filter);
         },
     },
 });
