@@ -73,7 +73,7 @@ biigle.$declare('annotations.stores.styles', function () {
         colors: colors,
         features: function (feature) {
             var color = feature.get('color');
-            color = color ? ('#' + color) : _colors.blue;
+            color = color ? ('#' + color) : colors.blue;
             return [
                 new ol.style.Style({
                     stroke: defaultStrokeOutline,

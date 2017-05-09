@@ -4,7 +4,7 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.controlButton', {
-    template: '<button class="control-button btn btn-sm" :title="title" :class="buttonClass" @click="handleClick"><span class="glyphicon" :class="iconClass" aria-hidden="true"></span></button>',
+    template: '<button class="control-button btn btn-sm" :title="title" :class="buttonClass" @click="handleClick"><span :class="iconClass" aria-hidden="true"></span></button>',
     props: {
         title: {
             type: String,
@@ -26,7 +26,11 @@ biigle.$component('annotations.components.controlButton', {
             };
         },
         iconClass: function () {
-            return 'glyphicon-' + this.icon;
+            if (this.icon.startsWith('glyphicon-')) {
+                return 'glyphicon ' + this.icon;
+            }
+
+            return 'icon icon-white ' + this.icon;
         },
     },
     methods: {

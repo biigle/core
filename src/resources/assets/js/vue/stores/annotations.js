@@ -17,6 +17,14 @@ biigle.$declare('annotations.stores.annotations', function () {
             shapeMap: function () {
                 return biigle.$require('annotations.shapes');
             },
+            inverseShapeMap: function () {
+                var map = {};
+                for (var id in this.shapeMap) {
+                    map[this.shapeMap[id]] = parseInt(id, 10);
+                }
+
+                return map;
+            },
         },
         methods: {
             parseAnnotations: function (response) {
@@ -30,10 +38,13 @@ biigle.$declare('annotations.stores.annotations', function () {
 
                 return promise;
             },
+            resolveShape: function (annotation) {
+                annotation.shape = this.shapeMap[annotation.shape_id];
+
+                return annotation;
+            },
             resolveShapes: function (annotations) {
-                annotations.forEach(function (annotation) {
-                    annotation.shape = this.shapeMap[annotation.shape_id];
-                }, this);
+                annotations.forEach(this.resolveShape, this);
 
                 return annotations;
             },
@@ -58,6 +69,20 @@ biigle.$declare('annotations.stores.annotations', function () {
                 this.fetchAnnotations(currentId)
                     .then(function() {self.fetchAnnotations(nextId);})
                     .then(function() {self.fetchAnnotations(previousId);});
+            },
+            create: function (imageId, annotation) {
+                annotation.shape_id = this.inverseShapeMap[annotation.shape];
+                delete annotation.shape;
+
+                var self = this;
+                var promise = imagesApi.saveAnnotations({id: imageId}, annotation)
+                    .then(function (response) {
+                        // TODO: resolve shape, put to cache
+                    });
+
+                // TODO: separately handle error but don't return it with the promise
+
+                return promise;
             },
         },
         created: function () {

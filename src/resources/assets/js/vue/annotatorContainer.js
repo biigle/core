@@ -143,6 +143,12 @@ biigle.$viewModel('annotator-container', function (element) {
             handleSelectedLabel: function (label) {
                 this.selectedLabel = label;
             },
+            handleNewAnnotation: function (annotation, removeCallback) {
+                annotation.label_id = this.selectedLabel.id;
+                // TODO: confidence control
+                annotation.confidence = 1;
+                annotationsStore.create(this.imageId, annotation);
+            },
         },
         watch: {
             imageIndex: function (index) {

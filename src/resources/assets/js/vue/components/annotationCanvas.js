@@ -6,7 +6,7 @@
 biigle.$component('annotations.components.annotationCanvas', function () {
     // Don't create these as reactive Vue properties because they should work as fast as
     // possible.
-    var map, selectInteraction;
+    var map, styles, selectInteraction, drawInteraction;
     var imageLayer = new ol.layer.Image();
 
     var annotationSource = new ol.source.Vector();
@@ -61,11 +61,15 @@ biigle.$component('annotations.components.annotationCanvas', function () {
 
             return {
                 initialized: false,
-                // options to use for the view.fit function
+                // Options to use for the view.fit function.
                 viewFitOptions: {
                     padding: [50, 50, 50, 50],
                     minResolution: 1,
                 },
+                // There are several interaction modes like 'drawingPoint',
+                // 'attachingLabels' or 'movingAnnotations' etc. For each mode the
+                // allowed/active OpenLayers map interactions are different.
+                interactionMode: 'default',
             };
         },
         computed: {
@@ -85,6 +89,27 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             selectFeatures: function () {
                 return selectInteraction ? selectInteraction.getFeatures() : [];
+            },
+            isDrawing: function () {
+                return this.interactionMode.startsWith('draw');
+            },
+            isDrawingPoint: function () {
+                return this.interactionMode === 'drawPoint';
+            },
+            isDrawingRectangle: function () {
+                return this.interactionMode === 'drawRectangle';
+            },
+            isDrawingCircle: function () {
+                return this.interactionMode === 'drawCircle';
+            },
+            isDrawingLineString: function () {
+                return this.interactionMode === 'drawLineString';
+            },
+            isDrawingPolygon: function () {
+                return this.interactionMode === 'drawPolygon';
+            },
+            hasNoSelectedLabel: function () {
+                return !this.selectedLabel;
             },
         },
         methods: {
@@ -163,6 +188,73 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             handleNextImage: function () {
                 this.$emit('next');
             },
+            resetInteractionMode: function () {
+                this.interactionMode = 'default';
+            },
+            draw: function (name) {
+                if (this['isDrawing' + name]) {
+                    this.resetInteractionMode();
+                } else {
+                    this.interactionMode = 'draw' + name;
+                }
+            },
+            drawPoint: function () {
+                this.draw('Point');
+            },
+            drawRectangle: function () {
+                this.draw('Rectangle');
+            },
+            drawCircle: function () {
+                this.draw('Circle');
+            },
+            drawLineString: function () {
+                this.draw('LineString');
+            },
+            drawPolygon: function () {
+                this.draw('Polygon');
+            },
+            // Assembles the points array depending on the OpenLayers geometry type.
+            getPoints: function (geometry) {
+                var points;
+                switch (geometry.getType()) {
+                    case 'Circle':
+                        // radius is the x value of the second point of the circle
+                        points = [geometry.getCenter(), [geometry.getRadius()]];
+                        break;
+                    case 'Polygon':
+                    case 'Rectangle':
+                        points = geometry.getCoordinates()[0];
+                        break;
+                    case 'Point':
+                        points = [geometry.getCoordinates()];
+                        break;
+                    default:
+                        points = geometry.getCoordinates();
+                }
+
+                // Merge the individual point arrays to a single array.
+                points = Array.prototype.concat.apply([], points);
+
+                // Invert y coordinates back to the format that is stored in the DB.
+                var height = this.image.height;
+                for (var i = 1; i < points.length; i += 2) {
+                    points[i] = height - points[i];
+                }
+
+                return points;
+            },
+            handleNewFeature: function (e) {
+                var geometry = e.feature.getGeometry();
+                this.$emit('new', {
+                    shape: geometry.getType(),
+                    points: this.getPoints(geometry),
+                }, function () {
+                    // This callback is called in case creating the annotation failed.
+                    // If creating the annotation succeeded, the feature will be removed
+                    // during the reactive update of the annotations property.
+                    annotationSource.removeFeature(e.feature);
+                });
+            },
         },
         watch: {
             image: function (image) {
@@ -217,10 +309,40 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     map.getView().fit(extent, map.getSize());
                 }
             },
+            interactionMode: function (mode) {
+                if (drawInteraction) {
+                    map.removeInteraction(drawInteraction);
+                }
+
+                // TODO: de-/activate map interactions here
+                if (this.isDrawing) {
+                    if (this.hasNoSelectedLabel) {
+                        biigle.$require('biigle.events').$emit('sidebar.open', 'labels');
+                        biigle.$require('messages.store').info('Please select a label first.');
+                        this.resetInteractionMode();
+                    } else {
+                        selectInteraction.setActive(false);
+                        drawInteraction = new ol.interaction.Draw({
+                            source: annotationSource,
+                            type: mode.slice(4), // remove 'draw' prefix
+                            style: styles.editing,
+                        });
+                        drawInteraction.on('drawend', this.handleNewFeature);
+                        map.addInteraction(drawInteraction);
+                    }
+                } else {
+                    selectInteraction.setActive(true);
+                }
+            },
+            selectedLabel: function (label) {
+                if (!label && this.interactionMode.startsWith('draw')) {
+                    this.resetInteractionMode();
+                }
+            },
         },
         created: function () {
             var self = this;
-            var styles = biigle.$require('annotations.stores.styles');
+            styles = biigle.$require('annotations.stores.styles');
             map = biigle.$require('annotations.stores.map');
 
             map.addLayer(imageLayer);
@@ -256,9 +378,20 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             selectInteraction.on('select', this.handleFeatureSelect);
 
             var keyboard = biigle.$require('labelTrees.stores.keyboard');
+            // Space bar.
             keyboard.on(32, this.handleNextImage);
+            // Arrow right key.
             keyboard.on(39, this.handleNextImage);
+            // Arrow left key.
             keyboard.on(37, this.handlePreviousImage);
+            // Esc key.
+            keyboard.on(27, this.resetInteractionMode);
+
+            keyboard.on('a', this.drawPoint);
+            keyboard.on('s', this.drawRectangle);
+            keyboard.on('d', this.drawCircle);
+            keyboard.on('f', this.drawLineString);
+            keyboard.on('g', this.drawPolygon);
         },
         mounted: function () {
             map.setTarget(this.$el);

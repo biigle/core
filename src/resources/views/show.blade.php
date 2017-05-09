@@ -58,6 +58,7 @@
         v-on:select="handleSelectAnnotations"
         v-on:previous="previousImage"
         v-on:next="nextImage"
+        v-on:new="handleNewAnnotation"
         ref="canvas"
         v-cloak
         inline-template
