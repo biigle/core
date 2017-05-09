@@ -1,0 +1,18 @@
+.control-button {
+    border-radius: 2px;
+    transition: background-color 0.25s ease;
+    background-color: fade-out($ol-control-color, 0.5);
+
+    &:not(:last-child) {
+        margin-right: 2px;
+    }
+
+    &:hover, &.active {
+        color: white;
+        background-color: fade-out($ol-control-color, 0.3);
+    }
+
+    &:focus {
+        color: white;
+    }
+}

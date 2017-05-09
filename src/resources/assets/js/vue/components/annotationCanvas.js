@@ -22,6 +22,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             loaderBlock: biigle.$require('core.components.loaderBlock'),
             minimap: biigle.$require('annotations.components.minimap'),
             labelIndicator: biigle.$require('annotations.components.labelIndicator'),
+            controlButton: biigle.$require('annotations.components.controlButton'),
         },
         props: {
             image: {
@@ -156,6 +157,12 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 };
                 this.$emit('select', event.selected.map(extractAnnotation), event.deselected.map(extractAnnotation));
             },
+            handlePreviousImage: function () {
+                this.$emit('previous');
+            },
+            handleNextImage: function () {
+                this.$emit('next');
+            },
         },
         watch: {
             image: function (image) {
@@ -247,6 +254,11 @@ biigle.$component('annotations.components.annotationCanvas', function () {
 
             map.addInteraction(selectInteraction);
             selectInteraction.on('select', this.handleFeatureSelect);
+
+            var keyboard = biigle.$require('labelTrees.stores.keyboard');
+            keyboard.on(32, this.handleNextImage);
+            keyboard.on(39, this.handleNextImage);
+            keyboard.on(37, this.handlePreviousImage);
         },
         mounted: function () {
             map.setTarget(this.$el);

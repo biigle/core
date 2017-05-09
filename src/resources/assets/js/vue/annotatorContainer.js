@@ -159,12 +159,6 @@ biigle.$viewModel('annotator-container', function (element) {
         },
         created: function () {
             this.startLoading();
-            var keyboard = biigle.$require('labelTrees.stores.keyboard');
-
-            keyboard.on(37, this.previousImage);
-            keyboard.on(32, this.nextImage);
-            keyboard.on(39, this.nextImage);
-
             this.imageIndex = imagesIds.indexOf(biigle.$require('annotations.imageId'));
 
             if (urlParams.get('r') !== undefined) {
