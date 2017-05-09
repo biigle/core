@@ -38,6 +38,19 @@
     background-image: url(../images/noise.png);
 }
 
+.annotator-canvas__minimap {
+    position: absolute;
+    z-index: 1;
+    top: 1em;
+    right: 1em;
+    background-image: url(../images/noise.png);
+    height: 200px;
+    width: 250px;
+    margin-bottom: 1em;
+    border: 1px solid #090909;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.75);
+}
+
 @import "ol";
 @import "icons";
 @import "sidebar/annotations";

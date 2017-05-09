@@ -4,32 +4,10 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.annotationCanvas', function () {
-    var map = new ol.Map({
-        renderer: 'canvas',
-        controls: [
-            new ol.control.Zoom(),
-            new ol.control.ZoomToExtent({
-                tipLabel: 'Zoom to show whole image',
-                // bootstrap glyphicons resize-small icon
-                label: '\ue097'
-            }),
-            new ol.control.FullScreen({
-                // bootstrap glyphicons fullscreen icon
-                label: '\ue140'
-            }),
-        ],
-        interactions: ol.interaction.defaults({
-            altShiftDragRotate: false,
-            doubleClickZoom: false,
-            keyboard: false,
-            shiftDragZoom: false,
-            pinchRotate: false,
-            pinchZoom: false
-        }),
-    });
-
+    // Don't create these as reactive Vue properties because they should work as fast as
+    // possible.
+    var map, selectInteraction;
     var imageLayer = new ol.layer.Image();
-    map.addLayer(imageLayer);
 
     var annotationSource = new ol.source.Vector();
     var annotationLayer = new ol.layer.Vector({
@@ -38,11 +16,11 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         updateWhileAnimating: true,
         updateWhileInteracting: true,
     });
-    map.addLayer(annotationLayer);
 
     return {
         components: {
             loaderBlock: biigle.$require('core.components.loaderBlock'),
+            minimap: biigle.$require('annotations.components.minimap'),
         },
         props: {
             image: {
@@ -83,15 +61,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     padding: [50, 50, 50, 50],
                     minResolution: 1,
                 },
-                // We initialize this here because we need to make sure the styles are
-                // properly loaded and there is no setStyle() function like for the
-                // annotationLayer.
-                selectInteraction: new ol.interaction.Select({
-                    style: styles.highlight,
-                    layers: [annotationLayer],
-                    // enable selecting multiple overlapping features at once
-                    multi: true
-                }),
             };
         },
         computed: {
@@ -110,7 +79,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 });
             },
             selectFeatures: function () {
-                return this.selectInteraction.getFeatures();
+                return selectInteraction ? selectInteraction.getFeatures() : [];
             },
         },
         methods: {
@@ -240,6 +209,13 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         },
         created: function () {
             var self = this;
+            var styles = biigle.$require('annotations.stores.styles');
+            map = biigle.$require('annotations.stores.map');
+
+            map.addLayer(imageLayer);
+
+            annotationLayer.setStyle(styles.features);
+            map.addLayer(annotationLayer);
 
             biigle.$require('biigle.events').$on('sidebar.toggle', function () {
                 self.$nextTick(function () {
@@ -255,18 +231,21 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 });
             });
 
-            map.addInteraction(this.selectInteraction);
-            this.selectInteraction.on('select', this.handleFeatureSelect);
-            annotationLayer.setStyle(biigle.$require('annotations.stores.styles').features);
+            // We initialize this here because we need to make sure the styles are
+            // properly loaded and there is no setStyle() function like for the
+            // annotationLayer.
+            selectInteraction = new ol.interaction.Select({
+                style: styles.highlight,
+                layers: [annotationLayer],
+                // enable selecting multiple overlapping features at once
+                multi: true
+            });
+
+            map.addInteraction(selectInteraction);
+            selectInteraction.on('select', this.handleFeatureSelect);
         },
         mounted: function () {
             map.setTarget(this.$el);
-
-            var ZoomToNativeControl = biigle.$require('annotations.ol.ZoomToNativeControl');
-            map.addControl(new ZoomToNativeControl({
-                // bootstrap glyphicons resize-full icon
-                label: '\ue096'
-            }));
         },
     };
 });

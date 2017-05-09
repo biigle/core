@@ -49,9 +49,12 @@
     <annotation-canvas :loading="loading" :image="image" :annotations="filteredAnnotations" :selected-annotations="selectedAnnotations" :center="mapCenter" :resolution="mapResolution" v-on:moveend="handleMapMoveend" v-on:select="handleSelectAnnotations" ref="canvas" inline-template>
         <div class="annotator-canvas">
             <loader-block v-cloak :active="loading"></loader-block>
+            <minimap :extent="extent" :projection="projection" inline-template>
+                <div class="annotator-canvas__minimap"></div>
+            </minimap>
         </div>
     </annotation-canvas>
-    <sidebar open-tab="annotations">
+    <sidebar>
         @include('annotations::show.tabs.annotations')
         @can('add-annotation', $image)
             @include('annotations::show.tabs.labels')
