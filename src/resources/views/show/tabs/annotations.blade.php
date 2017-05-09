@@ -6,7 +6,7 @@
                     <select class="form-control" v-model="selectedFilter">
                         <option v-for="filter in availableFilters" :value="filter" v-text="filter"></option>
                     </select>
-                    <typeahead :items="data" :value="selectedDataName" v-on:select="selectData"></typeahead>
+                    <typeahead :items="data" :value="selectedDataName" :placeholder="placeholder" v-on:select="selectData"></typeahead>
                     <button class="btn btn-info active" title="Clear annotation filter" v-if="active" v-on:click.prevent="deactivateFilter"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                     <button type="submit" class="btn btn-default" title="Filter annotations" v-else><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
                 </form>

@@ -22,6 +22,13 @@ biigle.$component('annotations.components.annotationsFilter', {
         };
     },
     computed: {
+        placeholder: function () {
+            if (this.selectedFilter) {
+                return this.selectedFilter + ' name';
+            }
+
+            return 'filter annotations';
+        },
         labelData: function () {
             var map = {};
             var data = [];
