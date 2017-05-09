@@ -46,12 +46,15 @@
 
 @section('content')
 <div id="annotator-container" class="annotator-container" v-cloak>
-    <annotation-canvas :loading="loading" :image="image" :annotations="filteredAnnotations" :selected-annotations="selectedAnnotations" :center="mapCenter" :resolution="mapResolution" v-on:moveend="handleMapMoveend" v-on:select="handleSelectAnnotations" ref="canvas" inline-template>
-        <div class="annotator-canvas">
+    <annotation-canvas :loading="loading" :image="image" :annotations="filteredAnnotations" :selected-annotations="selectedAnnotations" :center="mapCenter" :resolution="mapResolution" :selected-label="selectedLabel" v-on:moveend="handleMapMoveend" v-on:select="handleSelectAnnotations" ref="canvas" inline-template>
+        <div class="annotation-canvas">
             <loader-block v-cloak :active="loading"></loader-block>
             <minimap :extent="extent" :projection="projection" inline-template>
-                <div class="annotator-canvas__minimap"></div>
+                <div class="annotation-canvas__minimap"></div>
             </minimap>
+            <label-indicator :label="selectedLabel" inline-template>
+                <div class="label-indicator" title="Currently selected label" v-if="hasLabel" v-text="label.name"></div>
+            </label-indicator>
         </div>
     </annotation-canvas>
     <sidebar>

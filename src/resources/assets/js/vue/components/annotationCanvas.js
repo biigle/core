@@ -21,6 +21,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         components: {
             loaderBlock: biigle.$require('core.components.loaderBlock'),
             minimap: biigle.$require('annotations.components.minimap'),
+            labelIndicator: biigle.$require('annotations.components.labelIndicator'),
         },
         props: {
             image: {
@@ -49,6 +50,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             resolution: {
                 type: Number,
                 default: undefined,
+            },
+            selectedLabel: {
+                default: null,
             },
         },
         data: function () {

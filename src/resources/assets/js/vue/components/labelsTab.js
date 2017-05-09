@@ -14,10 +14,10 @@ biigle.$component('annotations.components.labelsTab', {
     },
     methods: {
         handleSelectedLabel: function (label) {
-
+            this.$emit('select', label);
         },
         handleDeselectedLabel: function (label) {
-
+            this.$emit('select', null);
         },
     }
 });

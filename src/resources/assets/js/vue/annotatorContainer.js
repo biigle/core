@@ -26,6 +26,7 @@ biigle.$viewModel('annotator-container', function (element) {
             // Initial map viewport.
             mapCenter: undefined,
             mapResolution: undefined,
+            selectedLabel: null,
         },
         computed: {
             imageId: function () {
@@ -138,6 +139,9 @@ biigle.$viewModel('annotator-container', function (element) {
             },
             handleFilter: function (filter) {
                 this.annotationFilter = filter;
+            },
+            handleSelectedLabel: function (label) {
+                this.selectedLabel = label;
             },
         },
         watch: {

@@ -1,5 +1,14 @@
 @import "../variables";
 
+%info-box {
+    z-index: 1;
+    border-radius: 4px;
+    position: absolute;
+    background-color: fade-out(#222, 0.3);
+    border: 1px solid #353535;
+    padding: .25em .5em;
+}
+
 .navbar-text.navbar-annotations-breadcrumbs {
     white-space: nowrap;
     max-width: 850px;
@@ -31,27 +40,10 @@
     margin-top: $navbar-height + 1px;
 }
 
-.annotator-canvas {
-    position: relative;
-    flex: 1;
-    height: 100%;
-    background-image: url(../images/noise.png);
-}
-
-.annotator-canvas__minimap {
-    position: absolute;
-    z-index: 1;
-    top: 1em;
-    right: 1em;
-    background-image: url(../images/noise.png);
-    height: 200px;
-    width: 250px;
-    margin-bottom: 1em;
-    border: 1px solid #090909;
-    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.75);
-}
-
 @import "ol";
 @import "icons";
 @import "sidebar/annotations";
 @import "sidebar/labels";
+@import "components/annotation-canvas";
+@import "components/label-indicator";
+@import "components/minimap";
