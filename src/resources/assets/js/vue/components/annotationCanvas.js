@@ -6,10 +6,16 @@
 biigle.$component('annotations.components.annotationCanvas', function () {
     // Don't create these as reactive Vue properties because they should work as fast as
     // possible.
-    var map, styles, selectInteraction, drawInteraction;
-    var imageLayer = new ol.layer.Image();
+    var map, styles, selectInteraction, drawInteraction, modifyInteraction;
+    // Map to detect which features were changed between modifystart and modifyend
+    // events of the modify interaction.
+    var featureRevisionMap = {};
 
-    var annotationSource = new ol.source.Vector();
+    var imageLayer = new ol.layer.Image();
+    var annotationFeatures = new ol.Collection();
+    var annotationSource = new ol.source.Vector({
+        features: annotationFeatures
+    });
     var annotationLayer = new ol.layer.Vector({
         source: annotationSource,
         zIndex: 100,
@@ -87,7 +93,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     extent: this.extent
                 });
             },
-            selectFeatures: function () {
+            selectedFeatures: function () {
                 return selectInteraction ? selectInteraction.getFeatures() : [];
             },
             isDrawing: function () {
@@ -159,10 +165,30 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 if (annotation.labels && annotation.labels.length > 0) {
                     feature.set('color', annotation.labels[0].label.color);
                 }
-                // TODO
-                // feature.on('change', handleGeometryChange);
 
                 return feature;
+            },
+            handleFeatureModifyStart: function (e) {
+                e.features.forEach(function (feature) {
+                    featureRevisionMap[feature.getId()] = feature.getRevision();
+                });
+            },
+            handleFeatureModifyEnd: function (e) {
+                var self = this;
+                var annotations = e.features.getArray()
+                    .filter(function (feature) {
+                        return featureRevisionMap[feature.getId()] !== feature.getRevision();
+                    })
+                    .map(function (feature) {
+                        return {
+                            id: feature.getId(),
+                            points: self.getPoints(feature.getGeometry()),
+                        };
+                    });
+
+                if (annotations.length > 0) {
+                    this.$emit('update', annotations);
+                }
             },
             focusAnnotation: function (annotation) {
                 var feature = annotationSource.getFeatureById(annotation.id);
@@ -285,7 +311,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             selectedAnnotations: function (annotations) {
                 var source = annotationSource;
-                var features = this.selectFeatures;
+                var features = this.selectedFeatures;
                 features.clear();
                 annotations.forEach(function (annotation) {
                     features.push(source.getFeatureById(annotation.id));
@@ -333,6 +359,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         biigle.$require('messages.store').info('Please select a label first.');
                         this.resetInteractionMode();
                     } else {
+                        modifyInteraction.setActive(true);
                         selectInteraction.setActive(false);
                         drawInteraction = new ol.interaction.Draw({
                             source: annotationSource,
@@ -343,6 +370,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         map.addInteraction(drawInteraction);
                     }
                 } else {
+                    modifyInteraction.setActive(false);
                     selectInteraction.setActive(true);
                 }
             },
@@ -386,8 +414,22 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 multi: true
             });
 
-            map.addInteraction(selectInteraction);
             selectInteraction.on('select', this.handleFeatureSelect);
+            map.addInteraction(selectInteraction);
+
+            modifyInteraction = new ol.interaction.Modify({
+                features: annotationFeatures,
+                // She Shift key must be pressed to delete vertices, so that new
+                // vertices can be drawn at the same position of existing vertices.
+                deleteCondition: function(event) {
+                    return ol.events.condition.shiftKeyOnly(event) &&
+                        ol.events.condition.singleClick(event);
+                },
+            });
+            modifyInteraction.setActive(false);
+            modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
+            modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
+            map.addInteraction(modifyInteraction);
 
             var keyboard = biigle.$require('labelTrees.stores.keyboard');
             // Space bar.

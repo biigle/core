@@ -59,6 +59,7 @@
         v-on:next="nextImage"
         v-on:new="handleNewAnnotation"
         v-on:select="handleSelectAnnotations"
+        v-on:update="handleUpdateAnnotations"
         v-on:delete="handleDeleteAnnotations"
         ref="canvas"
         v-cloak
