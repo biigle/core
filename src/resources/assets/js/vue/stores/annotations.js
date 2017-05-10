@@ -59,12 +59,6 @@ biigle.$declare('annotations.stores.annotations', function () {
 
                 return this.cache[id].then(this.setAllSelected);
             },
-            updateCache: function (currentId, previousId, nextId) {
-                var self = this;
-                this.fetchAnnotations(currentId)
-                    .then(function() {self.fetchAnnotations(nextId);})
-                    .then(function() {self.fetchAnnotations(previousId);});
-            },
             create: function (imageId, annotation) {
                 annotation.shape_id = this.inverseShapeMap[annotation.shape];
                 delete annotation.shape;
@@ -82,9 +76,6 @@ biigle.$declare('annotations.stores.annotations', function () {
                         return annotation;
                     });
             },
-        },
-        created: function () {
-            events.$on('images.change', this.updateCache);
         },
     });
 });

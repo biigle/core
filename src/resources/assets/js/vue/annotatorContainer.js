@@ -155,18 +155,33 @@ biigle.$viewModel('annotator-container', function (element) {
                         messages.handleErrorResponse(response);
                     });
             },
+            emitImageChanged: function () {
+                events.$emit('images.change', this.imageId);
+            },
+            cachePreviousAndNext: function () {
+                var previousId = imagesIds[this.getPreviousIndex(this.imageIndex)];
+                var nextId = imagesIds[this.getNextIndex(this.imageIndex)];
+                Vue.Promise.all([
+                    annotationsStore.fetchAnnotations(nextId),
+                    imagesStore.fetchImage(nextId),
+                ]).then(function () {
+                    annotationsStore.fetchAnnotations(previousId);
+                    imagesStore.fetchImage(previousId);
+                });
+            },
         },
         watch: {
             imageIndex: function (index) {
-                var previousId = imagesIds[this.getPreviousIndex(index)];
-                var nextId = imagesIds[this.getNextIndex(index)];
-                events.$emit('images.change', this.imageId, previousId, nextId);
                 this.startLoading();
                 Vue.Promise.all(this.getImageAndAnnotationsPromises())
                     .then(this.setCurrentImageAndAnnotations)
                     .then(this.updateUrlSlug)
                     .then(this.maybeSelectAndFocusAnnotation)
-                    .then(this.finishLoading);
+                    .then(this.emitImageChanged)
+                    .then(this.finishLoading)
+                    // When everything is loaded, pre-fetch the data of the next and
+                    // previous images so they can be switched fast.
+                    .then(this.cachePreviousAndNext);
             },
         },
         created: function () {

@@ -48,12 +48,6 @@ biigle.$declare('annotations.stores.images', function () {
 
                 return this.cache[id].then(this.drawImage);
             },
-            updateCache: function (currentId, previousId, nextId) {
-                var self = this;
-                this.fetchImage(currentId)
-                    .then(function() {self.fetchImage(nextId);})
-                    .then(function() {self.fetchImage(previousId);});
-            },
         },
         watch: {
             cachedIds: function (cachedIds) {
@@ -65,9 +59,6 @@ biigle.$declare('annotations.stores.images', function () {
                     delete this.cache[id];
                 }
             },
-        },
-        created: function () {
-            events.$on('images.change', this.updateCache);
         },
     });
 });

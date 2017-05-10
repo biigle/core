@@ -6,12 +6,20 @@ biigle.$viewModel('annotations-navbar', function (element) {
     new Vue({
         el: element,
         data: {
-            currentImageFilename: '',
             filenameMap: {},
+            currentImageId: null,
+        },
+        computed: {
+            currentImageFilename: function () {
+                // Take the pre-filled content of the element when the page is initially
+                // loaded until the image id has been set. Otherwise the filename would
+                // vanish and appear again what we don't want.
+                return this.filenameMap[this.currentImageId] || element.innerHTML;
+            },
         },
         methods: {
-            updateFilename: function (id) {
-                this.currentImageFilename = this.filenameMap[id];
+            updateId: function (id) {
+                this.currentImageId = id;
             },
         },
         watch: {
@@ -28,7 +36,7 @@ biigle.$viewModel('annotations-navbar', function (element) {
             imagesIds.forEach(function (id, index) {
                 map[id] = imagesFilenames[index];
             });
-            events.$on('images.change', this.updateFilename);
+            events.$on('images.change', this.updateId);
         },
     });
 });
