@@ -125,10 +125,15 @@ biigle.$viewModel('annotator-container', function (element) {
                 this.$refs.canvas.focusAnnotation(annotation);
             },
             handleDetachAnnotationLabel: function (annotation, label) {
-                annotationsStore.detachLabel(annotation, label);
+                annotationsStore.detachLabel(annotation, label)
+                    .catch(messages.handleErrorResponse);
             },
             handleDeleteAnnotation: function (annotation) {
-                annotationsStore.delete(annotation);
+                annotationsStore.delete(annotation)
+                    .catch(messages.handleErrorResponse);
+            },
+            handleDeleteAnnotations: function (annotations) {
+                annotations.forEach(this.handleDeleteAnnotation);
             },
             maybeSelectAndFocusAnnotation: function () {
                 var id = urlParams.get('annotation');

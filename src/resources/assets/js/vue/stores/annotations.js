@@ -77,15 +77,33 @@ biigle.$declare('annotations.stores.annotations', function () {
                     });
             },
             detachLabel: function (annotation, label) {
-                annotationsApi.detachLabel({annotation_label_id: label.id})
-                    .then(function () {
-                        // remove label from annotation (in cache?)
-                    });
-                    // handle error
+                var promise = annotationsApi.detachLabel({annotation_label_id: label.id});
+                promise.then(function () {
+                    for (var i = annotation.labels.length - 1; i >= 0; i--) {
+                        if (annotation.labels[i].id === label.id) {
+                            annotation.labels.splice(i, 1);
+                            return;
+                        }
+                    }
+                });
+
+                return promise;
             },
             delete: function (annotation) {
-                annotationsApi.delete({id: annotation.id});
-                // remove annotation from cache
+                var promise = annotationsApi.delete({id: annotation.id});
+                var annotationsPromise = this.cache[annotation.image_id];
+                promise.then(function () {
+                    annotationsPromise.then(function (annotations) {
+                        for (var i = annotations.length - 1; i >= 0; i--) {
+                            if (annotations[i].id === annotation.id) {
+                                annotations.splice(i, 1);
+                                return;
+                            }
+                        }
+                    });
+                });
+
+                return promise;
             },
         },
     });

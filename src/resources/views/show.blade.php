@@ -55,10 +55,11 @@
         :resolution="mapResolution"
         :selected-label="selectedLabel"
         v-on:moveend="handleMapMoveend"
-        v-on:select="handleSelectAnnotations"
         v-on:previous="previousImage"
         v-on:next="nextImage"
         v-on:new="handleNewAnnotation"
+        v-on:select="handleSelectAnnotations"
+        v-on:delete="handleDeleteAnnotations"
         ref="canvas"
         v-cloak
         inline-template

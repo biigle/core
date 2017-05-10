@@ -111,6 +111,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             hasNoSelectedLabel: function () {
                 return !this.selectedLabel;
             },
+            hasSelectedAnnotations: function () {
+                return this.selectedAnnotations.length > 0;
+            },
         },
         methods: {
             // Determines the OpenLayers geometry object for an annotation.
@@ -259,6 +262,11 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     points: this.getPoints(geometry),
                 }, removeCallback);
             },
+            emitDelete: function () {
+                if (this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
+                    this.$emit('delete', this.selectedAnnotations);
+                }
+            },
         },
         watch: {
             image: function (image) {
@@ -396,6 +404,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             keyboard.on('d', this.drawCircle);
             keyboard.on('f', this.drawLineString);
             keyboard.on('g', this.drawPolygon);
+
+            // Del key.
+            keyboard.on(46, this.emitDelete);
         },
         mounted: function () {
             map.setTarget(this.$el);
