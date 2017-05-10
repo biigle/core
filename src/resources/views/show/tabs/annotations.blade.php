@@ -22,7 +22,7 @@
                             <annotation-item v-for="annotation in annotationItems" :item="annotation" :user-id="{!! $user->id !!}" v-on:select="bubbleSelect" inline-template>
                                 <li class="annotations-tab-item__sub-item" title="𝗗𝗼𝘂𝗯𝗹𝗲 𝗰𝗹𝗶𝗰𝗸 to zoom to the annotation" :class="classObject" :data-annotation-id="annotation.id" v-on:click="toggleSelect" v-on:dblclick="focus">
                                     @can('add-annotation', $image)
-                                        <button type="button" class="close" title="Detach this label from the annotation" v-if="canBeDetached" v-on:click="detach"><span aria-hidden="true">&times;</span></button>
+                                        <button type="button" class="close" title="Detach this label from the annotation" v-if="canBeDetached" v-on:click.stop="detach"><span aria-hidden="true">&times;</span></button>
                                     @endcan
                                     <span class="icon" :class="shapeClass"></span> <span v-text="username"></span>
                                 </li>

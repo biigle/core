@@ -76,6 +76,17 @@ biigle.$declare('annotations.stores.annotations', function () {
                         return annotation;
                     });
             },
+            detachLabel: function (annotation, label) {
+                annotationsApi.detachLabel({annotation_label_id: label.id})
+                    .then(function () {
+                        // remove label from annotation (in cache?)
+                    });
+                    // handle error
+            },
+            delete: function (annotation) {
+                annotationsApi.delete({id: annotation.id});
+                // remove annotation from cache
+            },
         },
     });
 });

@@ -60,7 +60,11 @@ biigle.$component('annotations.components.annotationsTabSubItem', {
             this.events.$emit('annotations.focus', this.annotation);
         },
         detach: function () {
-            this.events.$emit('annotations.detach', this.annotation);
+            if (this.annotation.labels.length > 1) {
+                this.events.$emit('annotations.detachLabel', this.annotation, this.label);
+            } else if (confirm('Detaching the last label will delete the annotation. Proceed?')) {
+                this.events.$emit('annotations.delete', this.annotation);
+            }
         },
     },
 });

@@ -124,6 +124,12 @@ biigle.$viewModel('annotator-container', function (element) {
             handleFocusAnnotation: function (annotation) {
                 this.$refs.canvas.focusAnnotation(annotation);
             },
+            handleDetachAnnotationLabel: function (annotation, label) {
+                annotationsStore.detachLabel(annotation, label);
+            },
+            handleDeleteAnnotation: function (annotation) {
+                annotationsStore.delete(annotation);
+            },
             maybeSelectAndFocusAnnotation: function () {
                 var id = urlParams.get('annotation');
                 if (id) {
@@ -202,6 +208,8 @@ biigle.$viewModel('annotator-container', function (element) {
             events.$on('annotations.select', this.handleSelectAnnotation);
             events.$on('annotations.deselect', this.handleDeselectAnnotation);
             events.$on('annotations.focus', this.handleFocusAnnotation);
+            events.$on('annotations.detachLabel', this.handleDetachAnnotationLabel);
+            events.$on('annotations.delete', this.handleDeleteAnnotation);
         },
     });
 });
