@@ -27,42 +27,37 @@ biigle.$declare('annotations.stores.annotations', function () {
             },
         },
         methods: {
-            parseAnnotations: function (response) {
-                var promise = new Vue.Promise(function (resolve, reject) {
-                    if (response.status === 200) {
-                        resolve(response.data);
-                    } else {
-                        reject('Failed to load annotations!');
-                    }
-                });
-
-                return promise;
+            parseResponse: function (response) {
+                return response.data;
             },
             resolveShape: function (annotation) {
                 annotation.shape = this.shapeMap[annotation.shape_id];
 
                 return annotation;
             },
-            resolveShapes: function (annotations) {
+            resolveAllShapes: function (annotations) {
                 annotations.forEach(this.resolveShape, this);
 
                 return annotations;
             },
-            setSelected: function (annotations) {
-                annotations.forEach(function (annotation) {
-                    annotation.selected = false;
-                });
+            setSelected: function (annotation) {
+                annotation.selected = false;
+
+                return annotation;
+            },
+            setAllSelected: function (annotations) {
+                annotations.forEach(this.setSelected);
 
                 return annotations;
             },
             fetchAnnotations: function (id) {
                 if (!this.cache.hasOwnProperty(id)) {
                     this.cache[id] = imagesApi.getAnnotations({id: id})
-                        .then(this.parseAnnotations)
-                        .then(this.resolveShapes);
+                        .then(this.parseResponse)
+                        .then(this.resolveAllShapes);
                 }
 
-                return this.cache[id].then(this.setSelected);
+                return this.cache[id].then(this.setAllSelected);
             },
             updateCache: function (currentId, previousId, nextId) {
                 var self = this;
@@ -75,14 +70,17 @@ biigle.$declare('annotations.stores.annotations', function () {
                 delete annotation.shape;
 
                 var self = this;
-                var promise = imagesApi.saveAnnotations({id: imageId}, annotation)
-                    .then(function (response) {
-                        // TODO: resolve shape, put to cache
+                return imagesApi.saveAnnotations({id: imageId}, annotation)
+                    .then(this.parseResponse)
+                    .then(this.resolveShape)
+                    .then(this.setSelected)
+                    .then(function (annotation) {
+                        self.cache[imageId].then(function (annotations) {
+                            annotations.push(annotation);
+                        });
+
+                        return annotation;
                     });
-
-                // TODO: separately handle error but don't return it with the promise
-
-                return promise;
             },
         },
         created: function () {

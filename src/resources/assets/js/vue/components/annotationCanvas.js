@@ -245,15 +245,19 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             handleNewFeature: function (e) {
                 var geometry = e.feature.getGeometry();
+                e.feature.set('color', this.selectedLabel.color);
+
+                // This callback is called in case saving the annotation failed.
+                // If saving the annotation succeeded, the temporary feature will
+                // be removed during the reactive update of the annotations property.
+                var removeCallback = function () {
+                    annotationSource.removeFeature(e.feature);
+                };
+
                 this.$emit('new', {
                     shape: geometry.getType(),
                     points: this.getPoints(geometry),
-                }, function () {
-                    // This callback is called in case creating the annotation failed.
-                    // If creating the annotation succeeded, the feature will be removed
-                    // during the reactive update of the annotations property.
-                    annotationSource.removeFeature(e.feature);
-                });
+                }, removeCallback);
             },
         },
         watch: {

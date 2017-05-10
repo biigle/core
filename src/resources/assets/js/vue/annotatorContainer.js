@@ -7,6 +7,7 @@ biigle.$viewModel('annotator-container', function (element) {
     var imagesStore = biigle.$require('annotations.stores.images');
     var annotationsStore = biigle.$require('annotations.stores.annotations');
     var urlParams = biigle.$require('volumes.urlParams');
+    var messages = biigle.$require('messages.store');
 
     new Vue({
         el: element,
@@ -147,7 +148,12 @@ biigle.$viewModel('annotator-container', function (element) {
                 annotation.label_id = this.selectedLabel.id;
                 // TODO: confidence control
                 annotation.confidence = 1;
-                annotationsStore.create(this.imageId, annotation);
+                annotationsStore.create(this.imageId, annotation)
+                    .catch(function (response) {
+                        // Remove the temporary annotation if saving failed.
+                        removeCallback();
+                        messages.handleErrorResponse(response);
+                    });
             },
         },
         watch: {
