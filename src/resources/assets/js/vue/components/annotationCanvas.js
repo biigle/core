@@ -385,7 +385,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         biigle.$require('messages.store').info('Please select a label first.');
                         this.resetInteractionMode();
                     } else {
-                        modifyInteraction.setActive(true);
+                        modifyInteraction.setActive(false);
                         selectInteraction.setActive(false);
                         drawInteraction = new ol.interaction.Draw({
                             source: annotationSource,
@@ -396,7 +396,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         map.addInteraction(drawInteraction);
                     }
                 } else {
-                    modifyInteraction.setActive(false);
+                    modifyInteraction.setActive(true);
                     selectInteraction.setActive(true);
                 }
             },
@@ -444,7 +444,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             map.addInteraction(selectInteraction);
 
             modifyInteraction = new ol.interaction.Modify({
-                features: annotationFeatures,
+                features: selectInteraction.getFeatures(),
                 // She Shift key must be pressed to delete vertices, so that new
                 // vertices can be drawn at the same position of existing vertices.
                 deleteCondition: function(event) {
@@ -452,7 +452,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         ol.events.condition.singleClick(event);
                 },
             });
-            modifyInteraction.setActive(false);
             modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
             modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
             map.addInteraction(modifyInteraction);
