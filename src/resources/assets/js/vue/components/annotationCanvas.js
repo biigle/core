@@ -305,10 +305,35 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 }));
             },
             annotations: function (annotations) {
-                // TODO: Maybe optimize to only remove and draw features that were
-                // changed. Only call clear if too many were removed.
-                annotationSource.clear(true);
-                annotationSource.addFeatures(this.annotations.map(this.createFeature));
+                var annotationsMap = {};
+                annotations.forEach(function (annotation) {
+                    annotationsMap[annotation.id] = null;
+                });
+
+                var oldFeaturesMap = {};
+                var oldFeatures = annotationSource.getFeatures();
+                var removedFeatures = oldFeatures.filter(function (feature) {
+                    oldFeaturesMap[feature.getId()] = null;
+                    return !annotationsMap.hasOwnProperty(feature.getId());
+                });
+
+                if (removedFeatures.length === oldFeatures.length) {
+                    // In case we switched the images, we want to clear and redraw all
+                    // features.
+                    annotationSource.clear(true);
+                } else {
+                    // In case annotations were added/removed, we only want to update the
+                    // changed features.
+                    removedFeatures.forEach(function (feature) {
+                        annotationSource.removeFeature(feature);
+                    });
+
+                    annotations = annotations.filter(function (annotation) {
+                        return !oldFeaturesMap.hasOwnProperty(annotation.id);
+                    });
+                }
+
+                annotationSource.addFeatures(annotations.map(this.createFeature));
             },
             selectedAnnotations: function (annotations) {
                 var source = annotationSource;
