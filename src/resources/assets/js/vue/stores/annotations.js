@@ -76,6 +76,25 @@ biigle.$declare('annotations.stores.annotations', function () {
                         return annotation;
                     });
             },
+            update: function (annotation) {
+                var self = this;
+                var promise = annotationsApi.update({id: annotation.id}, {
+                    points: annotation.points,
+                });
+
+                promise.then(function () {
+                    self.cache[annotation.image_id].then(function (annotations) {
+                        for (var i = annotations.length - 1; i >= 0; i--) {
+                            if (annotations[i].id === annotation.id) {
+                                annotations[i].points = annotation.points;
+                                return;
+                            }
+                        }
+                    });
+                });
+
+                return promise;
+            },
             detachLabel: function (annotation, label) {
                 var promise = annotationsApi.detachLabel({annotation_label_id: label.id});
                 promise.then(function () {

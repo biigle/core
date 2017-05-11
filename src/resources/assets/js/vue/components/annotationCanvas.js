@@ -182,6 +182,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     .map(function (feature) {
                         return {
                             id: feature.getId(),
+                            image_id: feature.get('annotation').image_id,
                             points: self.getPoints(feature.getGeometry()),
                         };
                     });

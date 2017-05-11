@@ -136,10 +136,8 @@ biigle.$viewModel('annotator-container', function (element) {
                 annotations.forEach(this.handleDeleteAnnotation);
             },
             handleUpdateAnnotations: function (annotations) {
-                // TODO:
-                console.log(annotations);
-                Vue.Promise.all(annotations.forEach(annotationsStore.update))
-                    .catch(/* handle error */);
+                Vue.Promise.all(annotations.map(annotationsStore.update))
+                    .catch(messages.handleErrorResponse);
             },
             maybeSelectAndFocusAnnotation: function () {
                 var id = urlParams.get('annotation');
