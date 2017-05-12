@@ -22,9 +22,8 @@
             <div class="btn-group edit-controls" data-ng-controller="EditControlsController">
                 <control-button icon="glyphicon-tag" title="Attach the currently selected label to existing annotations 𝗟" :active="isAttaching" :disabled="hasNoSelectedLabel" v-on:click="toggleAttaching"></control-button>
                 <control-button icon="glyphicon-move" title="Move selected annotations 𝗠" :active="isTranslating" v-on:click="toggleTranslating"></control-button>
-                <control-button icon="glyphicon-trash" title="Delete selected annotations 𝗗𝗲𝗹" :disabled="!hasSelectedAnnotations" v-on:click="handleDeleteSelectedAnnotations"></control-button>
-                {{--<button class="btn btn-sm ng-cloak" title="Delete the last drawn annotation 𝗕𝗮𝗰𝗸𝘀𝗽𝗮𝗰𝗲" data-ng-click="deleteLastDrawnAnnotation()" data-ng-if="canDeleteLastAnnotation()"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></button>
-                <button class="btn btn-sm" title="Delete selected annotations 𝗗𝗲𝗹" data-ng-click="deleteSelectedAnnotations()" data-ng-if="!canDeleteLastAnnotation()" data-ng-disabled="!hasSelectedAnnotations()" disabled=""><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>--}}
+                <control-button v-if="hasLastCreatedAnnotation" icon="glyphicon-arrow-left" title="Delete the last drawn annotation 𝗕𝗮𝗰𝗸𝘀𝗽𝗮𝗰𝗲" v-on:click="handleDeleteLastCreatedAnnotation"></control-button>
+                <control-button v-else icon="glyphicon-trash" title="Delete selected annotations 𝗗𝗲𝗹" :disabled="!hasSelectedAnnotations" v-on:click="handleDeleteSelectedAnnotations"></control-button>
             </div>
         @endcan
     </div>

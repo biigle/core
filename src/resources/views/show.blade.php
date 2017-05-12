@@ -51,6 +51,7 @@
         :image="image"
         :annotations="filteredAnnotations"
         :selected-annotations="selectedAnnotations"
+        :last-created-annotation="lastCreatedAnnotation"
         :center="mapCenter"
         :resolution="mapResolution"
         :selected-label="selectedLabel"

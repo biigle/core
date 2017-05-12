@@ -68,6 +68,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             selectedLabel: {
                 default: null,
             },
+            lastCreatedAnnotation: {
+                default: null,
+            },
         },
         data: function () {
             var styles = biigle.$require('annotations.stores.styles');
@@ -132,6 +135,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             isAttaching: function () {
                 return this.interactionMode === 'attach';
+            },
+            hasLastCreatedAnnotation: function () {
+                return this.lastCreatedAnnotation !== null;
             },
         },
         methods: {
@@ -305,6 +311,11 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             handleDeleteSelectedAnnotations: function () {
                 if (this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
                     this.$emit('delete', this.selectedAnnotations);
+                }
+            },
+            handleDeleteLastCreatedAnnotation: function () {
+                if (this.hasLastCreatedAnnotation) {
+                    this.$emit('delete', [this.lastCreatedAnnotation]);
                 }
             },
             toggleTranslating: function () {
@@ -536,6 +547,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             keyboard.on(27, this.resetInteractionMode);
             // Del key.
             keyboard.on(46, this.handleDeleteSelectedAnnotations);
+            // Backspace key.
+            keyboard.on(8, this.handleDeleteLastCreatedAnnotation);
 
             keyboard.on('a', this.drawPoint);
             keyboard.on('s', this.drawRectangle);

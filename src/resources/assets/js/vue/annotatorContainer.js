@@ -24,6 +24,8 @@ biigle.$viewModel('annotator-container', function (element) {
             image: null,
             annotations: [],
             annotationFilter: null,
+            lastCreatedAnnotation: null,
+            lastCreatedAnnotationTimeout: null,
             // Initial map viewport.
             mapCenter: undefined,
             mapResolution: undefined,
@@ -129,6 +131,9 @@ biigle.$viewModel('annotator-container', function (element) {
                     .catch(messages.handleErrorResponse);
             },
             handleDeleteAnnotation: function (annotation) {
+                if (this.lastCreatedAnnotation && this.lastCreatedAnnotation.id === annotation.id) {
+                    this.lastCreatedAnnotation = null;
+                }
                 annotationsStore.delete(annotation)
                     .catch(messages.handleErrorResponse);
             },
@@ -164,6 +169,7 @@ biigle.$viewModel('annotator-container', function (element) {
                 // TODO: confidence control
                 annotation.confidence = 1;
                 annotationsStore.create(this.imageId, annotation)
+                    .then(this.setLastCreatedAnnotation)
                     .catch(function (response) {
                         // Remove the temporary annotation if saving failed.
                         removeCallback();
@@ -192,6 +198,16 @@ biigle.$viewModel('annotator-container', function (element) {
                     annotationsStore.fetchAnnotations(previousId);
                     imagesStore.fetchImage(previousId);
                 });
+            },
+            setLastCreatedAnnotation: function (annotation) {
+                if (this.lastCreatedAnnotationTimeout) {
+                    window.clearTimeout(this.lastCreatedAnnotationTimeout);
+                }
+                var self = this;
+                this.lastCreatedAnnotation = annotation;
+                this.lastCreatedAnnotationTimeout = window.setTimeout(function() {
+                    self.lastCreatedAnnotation = null;
+                }, 10000);
             },
         },
         watch: {
