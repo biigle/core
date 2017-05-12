@@ -47,6 +47,7 @@
 @section('content')
 <div id="annotator-container" class="annotator-container" v-cloak>
     <annotation-canvas
+        :editable="@can('add-annotation', $image) true @else false @endcan"
         :loading="loading"
         :image="image"
         :annotations="filteredAnnotations"

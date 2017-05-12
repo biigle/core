@@ -38,6 +38,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             controlButton: biigle.$require('annotations.components.controlButton'),
         },
         props: {
+            editable: {
+                type: Boolean,
+                default: false,
+            },
             image: {
                 type: HTMLCanvasElement,
             },
@@ -308,12 +312,12 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     points: this.getPoints(geometry),
                 }, removeCallback);
             },
-            handleDeleteSelectedAnnotations: function () {
+            deleteSelectedAnnotations: function () {
                 if (this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
                     this.$emit('delete', this.selectedAnnotations);
                 }
             },
-            handleDeleteLastCreatedAnnotation: function () {
+            deleteLastCreatedAnnotation: function () {
                 if (this.hasLastCreatedAnnotation) {
                     this.$emit('delete', [this.lastCreatedAnnotation]);
                 }
@@ -334,6 +338,51 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             handleAttachLabel: function (e) {
                 this.$emit('attach', e.feature.get('annotation'), this.selectedLabel);
+            },
+            handleNewInteractionMode: function (mode) {
+                if (drawInteraction) {
+                    map.removeInteraction(drawInteraction);
+                }
+
+                if (this.isDrawing) {
+                    if (this.hasNoSelectedLabel) {
+                        biigle.$require('biigle.events').$emit('sidebar.open', 'labels');
+                        biigle.$require('messages.store').info('Please select a label first.');
+                        this.resetInteractionMode();
+                    } else {
+                        selectInteraction.setActive(false);
+                        modifyInteraction.setActive(false);
+                        translateInteraction.setActive(false);
+                        attachLabelInteraction.setActive(false);
+                        drawInteraction = new ol.interaction.Draw({
+                            source: annotationSource,
+                            type: mode.slice(4), // remove 'draw' prefix
+                            style: styles.editing,
+                        });
+                        drawInteraction.on('drawend', this.handleNewFeature);
+                        map.addInteraction(drawInteraction);
+                    }
+                } else {
+                    switch (mode) {
+                        case 'translate':
+                            selectInteraction.setActive(true);
+                            modifyInteraction.setActive(false);
+                            translateInteraction.setActive(true);
+                            attachLabelInteraction.setActive(false);
+                            break;
+                        case 'attach':
+                            selectInteraction.setActive(false);
+                            modifyInteraction.setActive(false);
+                            translateInteraction.setActive(false);
+                            attachLabelInteraction.setActive(true);
+                            break;
+                        default:
+                            selectInteraction.setActive(true);
+                            modifyInteraction.setActive(true);
+                            translateInteraction.setActive(false);
+                            attachLabelInteraction.setActive(false);
+                    }
+                }
             },
         },
         watch: {
@@ -414,51 +463,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     map.getView().fit(extent, map.getSize());
                 }
             },
-            interactionMode: function (mode) {
-                if (drawInteraction) {
-                    map.removeInteraction(drawInteraction);
-                }
-
-                if (this.isDrawing) {
-                    if (this.hasNoSelectedLabel) {
-                        biigle.$require('biigle.events').$emit('sidebar.open', 'labels');
-                        biigle.$require('messages.store').info('Please select a label first.');
-                        this.resetInteractionMode();
-                    } else {
-                        selectInteraction.setActive(false);
-                        modifyInteraction.setActive(false);
-                        translateInteraction.setActive(false);
-                        attachLabelInteraction.setActive(false);
-                        drawInteraction = new ol.interaction.Draw({
-                            source: annotationSource,
-                            type: mode.slice(4), // remove 'draw' prefix
-                            style: styles.editing,
-                        });
-                        drawInteraction.on('drawend', this.handleNewFeature);
-                        map.addInteraction(drawInteraction);
-                    }
-                } else {
-                    switch (mode) {
-                        case 'translate':
-                            selectInteraction.setActive(true);
-                            modifyInteraction.setActive(false);
-                            translateInteraction.setActive(true);
-                            attachLabelInteraction.setActive(false);
-                            break;
-                        case 'attach':
-                            selectInteraction.setActive(false);
-                            modifyInteraction.setActive(false);
-                            translateInteraction.setActive(false);
-                            attachLabelInteraction.setActive(true);
-                            break;
-                        default:
-                            selectInteraction.setActive(true);
-                            modifyInteraction.setActive(true);
-                            translateInteraction.setActive(false);
-                            attachLabelInteraction.setActive(false);
-                    }
-                }
-            },
             selectedLabel: function (label) {
                 if (!label) {
                     if (this.isDrawing || this.isAttaching) {
@@ -504,37 +508,40 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             selectInteraction.on('select', this.handleFeatureSelect);
             map.addInteraction(selectInteraction);
 
-            modifyInteraction = new ol.interaction.Modify({
-                features: selectInteraction.getFeatures(),
-                // She Shift key must be pressed to delete vertices, so that new
-                // vertices can be drawn at the same position of existing vertices.
-                deleteCondition: function(event) {
-                    return ol.events.condition.shiftKeyOnly(event) &&
-                        ol.events.condition.singleClick(event);
-                },
-            });
-            modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
-            modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
-            map.addInteraction(modifyInteraction);
+            if (this.editable) {
+                modifyInteraction = new ol.interaction.Modify({
+                    features: selectInteraction.getFeatures(),
+                    // She Shift key must be pressed to delete vertices, so that new
+                    // vertices can be drawn at the same position of existing vertices.
+                    deleteCondition: function(event) {
+                        return ol.events.condition.shiftKeyOnly(event) &&
+                            ol.events.condition.singleClick(event);
+                    },
+                });
+                modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
+                modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
+                map.addInteraction(modifyInteraction);
 
-            var ExtendedTranslateInteraction = biigle.$require('annotations.ol.ExtendedTranslateInteraction');
-            translateInteraction = new ExtendedTranslateInteraction({
-                features: selectInteraction.getFeatures(),
-                map: map,
-            });
-            translateInteraction.setActive(false);
-            translateInteraction.on('translatestart', this.handleFeatureModifyStart);
-            translateInteraction.on('translateend', this.handleFeatureModifyEnd);
-            map.addInteraction(translateInteraction);
+                var ExtendedTranslateInteraction = biigle.$require('annotations.ol.ExtendedTranslateInteraction');
+                translateInteraction = new ExtendedTranslateInteraction({
+                    features: selectInteraction.getFeatures(),
+                    map: map,
+                });
+                translateInteraction.setActive(false);
+                translateInteraction.on('translatestart', this.handleFeatureModifyStart);
+                translateInteraction.on('translateend', this.handleFeatureModifyEnd);
+                map.addInteraction(translateInteraction);
 
-            var AttachLabelInteraction = biigle.$require('annotations.ol.AttachLabelInteraction');
-            attachLabelInteraction = new AttachLabelInteraction({
-                features: annotationFeatures,
-                map: map,
-            });
-            attachLabelInteraction.setActive(false);
-            attachLabelInteraction.on('attach', this.handleAttachLabel);
-            map.addInteraction(attachLabelInteraction);
+                var AttachLabelInteraction = biigle.$require('annotations.ol.AttachLabelInteraction');
+                attachLabelInteraction = new AttachLabelInteraction({
+                    features: annotationFeatures,
+                    map: map,
+                });
+                attachLabelInteraction.setActive(false);
+                attachLabelInteraction.on('attach', this.handleAttachLabel);
+                map.addInteraction(attachLabelInteraction);
+            }
+
 
             var keyboard = biigle.$require('labelTrees.stores.keyboard');
             // Space bar.
@@ -545,18 +552,23 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             keyboard.on(37, this.handlePreviousImage);
             // Esc key.
             keyboard.on(27, this.resetInteractionMode);
-            // Del key.
-            keyboard.on(46, this.handleDeleteSelectedAnnotations);
-            // Backspace key.
-            keyboard.on(8, this.handleDeleteLastCreatedAnnotation);
 
-            keyboard.on('a', this.drawPoint);
-            keyboard.on('s', this.drawRectangle);
-            keyboard.on('d', this.drawCircle);
-            keyboard.on('f', this.drawLineString);
-            keyboard.on('g', this.drawPolygon);
-            keyboard.on('m', this.toggleTranslating);
-            keyboard.on('l', this.toggleAttaching);
+            if (this.editable) {
+                // Del key.
+                keyboard.on(46, this.deleteSelectedAnnotations);
+                // Backspace key.
+                keyboard.on(8, this.deleteLastCreatedAnnotation);
+
+                keyboard.on('a', this.drawPoint);
+                keyboard.on('s', this.drawRectangle);
+                keyboard.on('d', this.drawCircle);
+                keyboard.on('f', this.drawLineString);
+                keyboard.on('g', this.drawPolygon);
+                keyboard.on('m', this.toggleTranslating);
+                keyboard.on('l', this.toggleAttaching);
+
+                this.$watch('interactionMode', this.handleNewInteractionMode);
+            }
         },
         mounted: function () {
             map.setTarget(this.$el);
