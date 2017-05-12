@@ -6,7 +6,13 @@
 biigle.$component('annotations.components.annotationCanvas', function () {
     // Don't create these as reactive Vue properties because they should work as fast as
     // possible.
-    var map, styles, selectInteraction, drawInteraction, modifyInteraction;
+    var map,
+        styles,
+        selectInteraction,
+        drawInteraction,
+        modifyInteraction,
+        translateInteraction;
+
     // Map to detect which features were changed between modifystart and modifyend
     // events of the modify interaction.
     var featureRevisionMap = {};
@@ -113,6 +119,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             isDrawingPolygon: function () {
                 return this.interactionMode === 'drawPolygon';
+            },
+            isTranslating: function () {
+                return this.interactionMode === 'translate';
             },
             hasNoSelectedLabel: function () {
                 return !this.selectedLabel;
@@ -294,6 +303,13 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     this.$emit('delete', this.selectedAnnotations);
                 }
             },
+            toggleTranslate: function () {
+                if (this.isTranslating) {
+                    this.resetInteractionMode();
+                } else {
+                    this.interactionMode = 'translate';
+                }
+            },
         },
         watch: {
             image: function (image) {
@@ -385,8 +401,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         biigle.$require('messages.store').info('Please select a label first.');
                         this.resetInteractionMode();
                     } else {
-                        modifyInteraction.setActive(false);
                         selectInteraction.setActive(false);
+                        modifyInteraction.setActive(false);
+                        translateInteraction.setActive(false);
                         drawInteraction = new ol.interaction.Draw({
                             source: annotationSource,
                             type: mode.slice(4), // remove 'draw' prefix
@@ -396,8 +413,16 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         map.addInteraction(drawInteraction);
                     }
                 } else {
-                    modifyInteraction.setActive(true);
-                    selectInteraction.setActive(true);
+                    switch (mode) {
+                        case 'translate':
+                            modifyInteraction.setActive(false);
+                            translateInteraction.setActive(true);
+                            break;
+                        default:
+                            selectInteraction.setActive(true);
+                            modifyInteraction.setActive(true);
+                            translateInteraction.setActive(false);
+                    }
                 }
             },
             selectedLabel: function (label) {
@@ -456,6 +481,16 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
             map.addInteraction(modifyInteraction);
 
+            var ExtendedTranslateInteraction = biigle.$require('annotations.ol.ExtendedTranslateInteraction');
+            translateInteraction = new ExtendedTranslateInteraction({
+                features: selectInteraction.getFeatures(),
+                map: map,
+            });
+            translateInteraction.setActive(false);
+            translateInteraction.on('translatestart', this.handleFeatureModifyStart);
+            translateInteraction.on('translateend', this.handleFeatureModifyEnd);
+            map.addInteraction(translateInteraction);
+
             var keyboard = biigle.$require('labelTrees.stores.keyboard');
             // Space bar.
             keyboard.on(32, this.handleNextImage);
@@ -465,15 +500,15 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             keyboard.on(37, this.handlePreviousImage);
             // Esc key.
             keyboard.on(27, this.resetInteractionMode);
+            // Del key.
+            keyboard.on(46, this.emitDelete);
 
             keyboard.on('a', this.drawPoint);
             keyboard.on('s', this.drawRectangle);
             keyboard.on('d', this.drawCircle);
             keyboard.on('f', this.drawLineString);
             keyboard.on('g', this.drawPolygon);
-
-            // Del key.
-            keyboard.on(46, this.emitDelete);
+            keyboard.on('m', this.toggleTranslate);
         },
         mounted: function () {
             map.setTarget(this.$el);
