@@ -43,7 +43,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 default: false,
             },
             image: {
-                type: HTMLCanvasElement,
+                type: Object,
+                default: null,
             },
             annotations: {
                 type: Array,
@@ -386,13 +387,19 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
         },
         watch: {
-            image: function (image) {
-                imageLayer.setSource(new ol.source.Canvas({
-                    canvas: image,
-                    projection: this.projection,
-                    canvasExtent: this.extent,
-                    canvasSize: [image.width, image.height]
-                }));
+            image: function (image, oldImage) {
+                // image.canvas points to the same object for all images for performance
+                // reasons. Because of this we only have to update the source if the
+                // image dimensions have changed. The content of the canvas element will
+                // be automatically updated.
+                if (!oldImage || oldImage.width !== image.width || oldImage.height !== image.height) {
+                    imageLayer.setSource(new ol.source.Canvas({
+                        canvas: image.canvas,
+                        projection: this.projection,
+                        canvasExtent: this.extent,
+                        canvasSize: [image.width, image.height]
+                    }));
+                }
             },
             annotations: function (annotations) {
                 var annotationsMap = {};

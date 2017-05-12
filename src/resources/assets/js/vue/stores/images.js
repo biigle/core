@@ -3,6 +3,7 @@
  */
 biigle.$declare('annotations.stores.images', function () {
     var events = biigle.$require('biigle.events');
+    var canvas = document.createElement('canvas');
 
     return new Vue({
         data: {
@@ -20,7 +21,18 @@ biigle.$declare('annotations.stores.images', function () {
                 var img = document.createElement('img');
                 var promise = new Vue.Promise(function (resolve, reject) {
                     img.onload = function () {
-                        resolve(this);
+                        // We want to use the same canvas element for drawing and to
+                        // apply the color adjustments for better performance. But we
+                        // also want Vue to detect switched images which would not work
+                        // if we simply passed on the canvas element as a prop to a
+                        // component. We therefore create this new object for each image.
+                        // And pass it as a prop instead.
+                        resolve({
+                            source: this,
+                            width: this.width,
+                            height: this.height,
+                            canvas: canvas,
+                        });
                     };
 
                     img.onerror = function () {
@@ -32,13 +44,12 @@ biigle.$declare('annotations.stores.images', function () {
 
                 return promise;
             },
-            drawImage: function (img) {
-                var canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                canvas.getContext('2d').drawImage(img, 0, 0);
+            drawImage: function (image) {
+                image.canvas.width = image.width;
+                image.canvas.height = image.height;
+                image.canvas.getContext('2d').drawImage(image.source, 0, 0);
 
-                return canvas;
+                return image;
             },
             fetchImage: function (id) {
                 if (!this.cache.hasOwnProperty(id)) {
@@ -46,8 +57,11 @@ biigle.$declare('annotations.stores.images', function () {
                     this.cachedIds.push(id);
                 }
 
-                return this.cache[id].then(this.drawImage);
+                return this.cache[id];
             },
+            fetchAndDrawImage: function (id) {
+                return this.fetchImage(id).then(this.drawImage);
+            }
         },
         watch: {
             cachedIds: function (cachedIds) {

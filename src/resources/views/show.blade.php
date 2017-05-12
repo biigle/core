@@ -66,8 +66,7 @@
         v-on:delete="handleDeleteAnnotations"
         ref="canvas"
         v-cloak
-        inline-template
-    >
+        inline-template>
         @include('annotations::show.annotationCanvas')
     </annotation-canvas>
     <sidebar>

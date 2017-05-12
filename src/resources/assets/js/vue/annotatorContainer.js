@@ -54,7 +54,7 @@ biigle.$viewModel('annotator-container', function (element) {
         methods: {
             getImageAndAnnotationsPromises: function () {
                 return [
-                    imagesStore.fetchImage(this.imageId),
+                    imagesStore.fetchAndDrawImage(this.imageId),
                     annotationsStore.fetchAnnotations(this.imageId),
                 ];
             },
