@@ -20,6 +20,7 @@
     biigle.$declare('annotations.imagesFilenames', {!! $images->values() !!});
     biigle.$declare('annotations.imageFileUri', '{!! url('api/v1/images/{id}/file') !!}');
     biigle.$declare('annotations.sessions', {!!$annotationSessions!!});
+    biigle.$declare('annotations.volumeIsRemote', @if($volume->isRemote()) true @else false @endif);
 
 </script>
 {{--TODO:@foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
