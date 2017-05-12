@@ -170,6 +170,15 @@ biigle.$viewModel('annotator-container', function (element) {
                         messages.handleErrorResponse(response);
                     });
             },
+            handleAttachLabel: function (annotation, label) {
+                var annotationLabel = {
+                    label_id: label.id,
+                    // TODO: confidence control
+                    confidence: 1,
+                };
+                annotationsStore.attachLabel(annotation, annotationLabel)
+                    .catch(messages.handleErrorResponse);
+            },
             emitImageChanged: function () {
                 events.$emit('images.change', this.imageId);
             },

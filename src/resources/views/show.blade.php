@@ -60,6 +60,7 @@
         v-on:new="handleNewAnnotation"
         v-on:select="handleSelectAnnotations"
         v-on:update="handleUpdateAnnotations"
+        v-on:attach="handleAttachLabel"
         v-on:delete="handleDeleteAnnotations"
         ref="canvas"
         v-cloak

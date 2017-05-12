@@ -11,7 +11,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         selectInteraction,
         drawInteraction,
         modifyInteraction,
-        translateInteraction;
+        translateInteraction,
+        attachLabelInteraction;
 
     // Map to detect which features were changed between modifystart and modifyend
     // events of the modify interaction.
@@ -128,6 +129,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             hasSelectedAnnotations: function () {
                 return this.selectedAnnotations.length > 0;
+            },
+            isAttaching: function () {
+                return this.interactionMode === 'attach';
             },
         },
         methods: {
@@ -298,17 +302,27 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     points: this.getPoints(geometry),
                 }, removeCallback);
             },
-            emitDelete: function () {
+            handleDeleteSelectedAnnotations: function () {
                 if (this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
                     this.$emit('delete', this.selectedAnnotations);
                 }
             },
-            toggleTranslate: function () {
+            toggleTranslating: function () {
                 if (this.isTranslating) {
                     this.resetInteractionMode();
                 } else {
                     this.interactionMode = 'translate';
                 }
+            },
+            toggleAttaching: function () {
+                if (this.isAttaching) {
+                    this.resetInteractionMode();
+                } else if (!this.hasNoSelectedLabel) {
+                    this.interactionMode = 'attach';
+                }
+            },
+            handleAttachLabel: function (e) {
+                this.$emit('attach', e.feature.get('annotation'), this.selectedLabel);
             },
         },
         watch: {
@@ -394,7 +408,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     map.removeInteraction(drawInteraction);
                 }
 
-                // TODO: de-/activate map interactions here
                 if (this.isDrawing) {
                     if (this.hasNoSelectedLabel) {
                         biigle.$require('biigle.events').$emit('sidebar.open', 'labels');
@@ -404,6 +417,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         selectInteraction.setActive(false);
                         modifyInteraction.setActive(false);
                         translateInteraction.setActive(false);
+                        attachLabelInteraction.setActive(false);
                         drawInteraction = new ol.interaction.Draw({
                             source: annotationSource,
                             type: mode.slice(4), // remove 'draw' prefix
@@ -415,19 +429,30 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 } else {
                     switch (mode) {
                         case 'translate':
+                            selectInteraction.setActive(true);
                             modifyInteraction.setActive(false);
                             translateInteraction.setActive(true);
+                            attachLabelInteraction.setActive(false);
+                            break;
+                        case 'attach':
+                            selectInteraction.setActive(false);
+                            modifyInteraction.setActive(false);
+                            translateInteraction.setActive(false);
+                            attachLabelInteraction.setActive(true);
                             break;
                         default:
                             selectInteraction.setActive(true);
                             modifyInteraction.setActive(true);
                             translateInteraction.setActive(false);
+                            attachLabelInteraction.setActive(false);
                     }
                 }
             },
             selectedLabel: function (label) {
-                if (!label && this.interactionMode.startsWith('draw')) {
-                    this.resetInteractionMode();
+                if (!label) {
+                    if (this.isDrawing || this.isAttaching) {
+                        this.resetInteractionMode();
+                    }
                 }
             },
         },
@@ -491,6 +516,15 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             translateInteraction.on('translateend', this.handleFeatureModifyEnd);
             map.addInteraction(translateInteraction);
 
+            var AttachLabelInteraction = biigle.$require('annotations.ol.AttachLabelInteraction');
+            attachLabelInteraction = new AttachLabelInteraction({
+                features: annotationFeatures,
+                map: map,
+            });
+            attachLabelInteraction.setActive(false);
+            attachLabelInteraction.on('attach', this.handleAttachLabel);
+            map.addInteraction(attachLabelInteraction);
+
             var keyboard = biigle.$require('labelTrees.stores.keyboard');
             // Space bar.
             keyboard.on(32, this.handleNextImage);
@@ -501,14 +535,15 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             // Esc key.
             keyboard.on(27, this.resetInteractionMode);
             // Del key.
-            keyboard.on(46, this.emitDelete);
+            keyboard.on(46, this.handleDeleteSelectedAnnotations);
 
             keyboard.on('a', this.drawPoint);
             keyboard.on('s', this.drawRectangle);
             keyboard.on('d', this.drawCircle);
             keyboard.on('f', this.drawLineString);
             keyboard.on('g', this.drawPolygon);
-            keyboard.on('m', this.toggleTranslate);
+            keyboard.on('m', this.toggleTranslating);
+            keyboard.on('l', this.toggleAttaching);
         },
         mounted: function () {
             map.setTarget(this.$el);

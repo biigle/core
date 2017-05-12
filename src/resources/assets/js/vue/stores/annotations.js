@@ -95,6 +95,14 @@ biigle.$declare('annotations.stores.annotations', function () {
 
                 return promise;
             },
+            attachLabel: function (annotation, label) {
+                var promise = annotationsApi.attachLabel({id: annotation.id}, label);
+                promise.then(function (response) {
+                    annotation.labels.push(response.data);
+                });
+
+                return promise;
+            },
             detachLabel: function (annotation, label) {
                 var promise = annotationsApi.detachLabel({annotation_label_id: label.id});
                 promise.then(function () {
