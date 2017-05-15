@@ -80,6 +80,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 type: Number,
                 default: 1,
             },
+            cycleMode: {
+                type: String,
+                default: 'default',
+            },
         },
         data: function () {
             var styles = biigle.$require('annotations.stores.styles');
@@ -95,6 +99,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 // 'attachingLabels' or 'movingAnnotations' etc. For each mode the
                 // allowed/active OpenLayers map interactions are different.
                 interactionMode: 'default',
+                // Index of the focussed annotation in the 'volare' cycle mode.
+                focussedAnnotationIndex: null,
             };
         },
         computed: {
@@ -147,6 +153,38 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             hasLastCreatedAnnotation: function () {
                 return this.lastCreatedAnnotation !== null;
+            },
+            isDefaultCycleMode: function () {
+                return this.cycleMode === 'default';
+            },
+            isVolareCycleMode: function () {
+                return this.cycleMode === 'volare';
+            },
+            isLawnmowerCycleMode: function () {
+                return this.cycleMode === 'lawnmower';
+            },
+            previousButtonTitle: function () {
+                if (this.isVolareCycleMode) {
+                    return 'Previous annotation';
+                } else if (this.isLawnmowerCycleMode) {
+                    return 'Previous image section';
+                } else {
+                    return 'Previous image';
+
+                }
+            },
+            nextButtonTitle: function () {
+                if (this.isVolareCycleMode) {
+                    return 'Next annotation';
+                } else if (this.isLawnmowerCycleMode) {
+                    return 'Next image section';
+                } else {
+                    return 'Next image';
+
+                }
+            },
+            focussedAnnotation: function () {
+                return this.annotations[this.focussedAnnotationIndex];
             },
         },
         methods: {
@@ -219,32 +257,52 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     this.$emit('update', annotations);
                 }
             },
-            focusAnnotation: function (annotation) {
+            focusAnnotation: function (annotation, noAnimation) {
                 var feature = annotationSource.getFeatureById(annotation.id);
                 if (feature) {
-                    // animate fit
                     var view = map.getView();
-                    var pan = ol.animation.pan({
-                        source: view.getCenter()
-                    });
-                    var zoom = ol.animation.zoom({
-                        resolution: view.getResolution()
-                    });
-                    map.beforeRender(pan, zoom);
+                    if (!noAnimation) {
+                        // animate fit
+                        var pan = ol.animation.pan({
+                            source: view.getCenter()
+                        });
+                        var zoom = ol.animation.zoom({
+                            resolution: view.getResolution()
+                        });
+                        map.beforeRender(pan, zoom);
+                    }
                     view.fit(feature.getGeometry(), map.getSize(), this.viewFitOptions);
                 }
             },
+            extractAnnotationFromFeature: function (feature) {
+                return feature.get('annotation');
+            },
             handleFeatureSelect: function (event) {
-                var extractAnnotation = function (feature) {
-                    return feature.get('annotation');
-                };
-                this.$emit('select', event.selected.map(extractAnnotation), event.deselected.map(extractAnnotation));
+                this.$emit('select', event.selected.map(this.extractAnnotationFromFeature), event.deselected.map(this.extractAnnotationFromFeature));
             },
-            handlePreviousImage: function () {
-                this.$emit('previous');
+            handlePrevious: function () {
+                if (this.isVolareCycleMode) {
+                    if (this.focussedAnnotationIndex > 0) {
+                        this.focussedAnnotationIndex--;
+                    } else {
+                        this.focussedAnnotationIndex = Infinity;
+                        this.$emit('previous');
+                    }
+                } else {
+                    this.$emit('previous');
+                }
             },
-            handleNextImage: function () {
-                this.$emit('next');
+            handleNext: function () {
+                if (this.isVolareCycleMode) {
+                    if (this.focussedAnnotationIndex < (this.annotations.length - 1)) {
+                        this.focussedAnnotationIndex++;
+                    } else {
+                        this.focussedAnnotationIndex = -Infinity;
+                        this.$emit('next');
+                    }
+                } else {
+                    this.$emit('next');
+                }
             },
             resetInteractionMode: function () {
                 this.interactionMode = 'default';
@@ -397,6 +455,19 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         },
         watch: {
             image: function (image, oldImage) {
+                if (this.isVolareCycleMode) {
+                    if (this.annotations.length > 0) {
+                        if (this.focussedAnnotationIndex === Infinity) {
+                            this.focussedAnnotationIndex = this.annotations.length - 1;
+                        } else {
+                            this.focussedAnnotationIndex = 0;
+                        }
+                    } else {
+                        this.focussedAnnotationIndex = null;
+                        map.getView().fit(this.extent, map.getSize());
+                    }
+                }
+
                 // image.canvas points to the same object for all images for performance
                 // reasons. Because of this we only have to update the source if the
                 // image dimensions have changed. The content of the canvas element will
@@ -489,6 +560,19 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             annotationOpacity: function (opacity) {
                 annotationLayer.setOpacity(opacity);
             },
+            cycleMode: function () {
+                if (this.isVolareCycleMode) {
+                    this.focussedAnnotationIndex = 0;
+                } else {
+                    this.focussedAnnotationIndex = null;
+                }
+            },
+            focussedAnnotation: function (annotation) {
+                if (annotation) {
+                    this.focusAnnotation(annotation, true);
+                    this.$emit('select', [annotation], this.selectedFeatures.getArray().map(this.extractAnnotationFromFeature));
+                }
+            },
         },
         created: function () {
             var self = this;
@@ -564,11 +648,11 @@ biigle.$component('annotations.components.annotationCanvas', function () {
 
             var keyboard = biigle.$require('labelTrees.stores.keyboard');
             // Space bar.
-            keyboard.on(32, this.handleNextImage);
+            keyboard.on(32, this.handleNext);
             // Arrow right key.
-            keyboard.on(39, this.handleNextImage);
+            keyboard.on(39, this.handleNext);
             // Arrow left key.
-            keyboard.on(37, this.handlePreviousImage);
+            keyboard.on(37, this.handlePrevious);
             // Esc key.
             keyboard.on(27, this.resetInteractionMode);
 

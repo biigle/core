@@ -8,8 +8,8 @@
     </label-indicator>
     <div class="annotation-canvas__toolbar">
         <div class="btn-group">
-            <control-button icon="glyphicon-step-backward" title="Previous image 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄" v-on:click="handlePreviousImage"></control-button>
-            <control-button icon="glyphicon-step-forward" title="Next image 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄/𝗦𝗽𝗮𝗰𝗲" v-on:click="handleNextImage"></control-button>
+            <control-button icon="glyphicon-step-backward" :title="previousButtonTitle + ' 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'" v-on:click="handlePrevious"></control-button>
+            <control-button icon="glyphicon-step-forward" :title="nextButtonTitle + ' 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄/𝗦𝗽𝗮𝗰𝗲'" v-on:click="handleNext"></control-button>
         </div>
         @can('add-annotation', $image)
             <div class="btn-group drawing-controls">

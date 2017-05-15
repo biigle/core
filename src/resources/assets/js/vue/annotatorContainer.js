@@ -34,6 +34,10 @@ biigle.$viewModel('annotator-container', function (element) {
             mapCenter: undefined,
             mapResolution: undefined,
             selectedLabel: null,
+            // Specifies what to cycle on the previous/next buttons or the arrow keys.
+            // Default is the image, others can be annotations (Volare) or image
+            // sections (lawnmower mode).
+            cycleMode: 'default',
         },
         computed: {
             imageId: function () {
@@ -227,6 +231,9 @@ biigle.$viewModel('annotator-container', function (element) {
                 switch (key) {
                     case 'annotationOpacity':
                         this.annotationOpacity = value;
+                        break;
+                    case 'cycleMode':
+                        this.cycleMode = value;
                         break;
                 }
             },

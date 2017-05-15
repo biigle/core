@@ -58,6 +58,7 @@
         :resolution="mapResolution"
         :selected-label="selectedLabel"
         :annotation-opacity="annotationOpacity"
+        :cycle-mode="cycleMode"
         v-on:moveend="handleMapMoveend"
         v-on:previous="previousImage"
         v-on:next="nextImage"
