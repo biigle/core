@@ -31,8 +31,10 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
                 return;
             }
 
-            var code = e.keyCode || e.charCode;
-            var char = String.fromCharCode(e.which || code).toLowerCase();
+            var code = e.charCode || e.keyCode;
+            // On Gecko e.which is 0 e.g. for F keys. We have to explicitly check if
+            // e.which is supported and not just use 'e.which || code' here!
+            var char = String.fromCharCode(e.which !== undefined ? e.which : code).toLowerCase();
 
             if (this.codeListeners.hasOwnProperty(code)) {
                 this.executeCallbacks(this.codeListeners[code], e);
@@ -48,7 +50,7 @@ biigle.$declare('labelTrees.stores.keyboard', new Vue({
                 return;
             }
 
-            var code = e.keyCode || e.charCode;
+            var code = e.charCode || e.keyCode;
 
             if (this.keyDownListeners.hasOwnProperty(code)) {
                 this.executeCallbacks(this.keyDownListeners[code], e);
