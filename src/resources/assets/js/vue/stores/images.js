@@ -157,8 +157,8 @@ biigle.$declare('annotations.stores.images', function () {
                 }
 
                 fxCanvas.update();
-                image.canvas.width = fxCanvas.width;
-                image.canvas.height = fxCanvas.height;
+                image.canvas.width = image.width;
+                image.canvas.height = image.height;
                 image.canvas.getContext('2d').drawImage(fxCanvas, 0, 0);
 
                 return image;
@@ -202,8 +202,12 @@ biigle.$declare('annotations.stores.images', function () {
                     }
                 }
 
-                if (hadColorAdjustment || this.hasColorAdjustment) {
+                if (this.hasColorAdjustment) {
                     this.drawColorAdjustedImage(this.currentlyDrawnImage);
+                } else if (hadColorAdjustment) {
+                    // This is the case where a previously active color adjustment was
+                    // reset and the original image should be rendered again.
+                    this.drawSimpleImage(this.currentlyDrawnImage);
                 }
             },
         },
