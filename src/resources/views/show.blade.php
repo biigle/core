@@ -57,6 +57,7 @@
         :center="mapCenter"
         :resolution="mapResolution"
         :selected-label="selectedLabel"
+        :annotation-opacity="annotationOpacity"
         v-on:moveend="handleMapMoveend"
         v-on:previous="previousImage"
         v-on:next="nextImage"
@@ -70,7 +71,7 @@
         inline-template>
         @include('annotations::show.annotationCanvas')
     </annotation-canvas>
-    <sidebar>
+    <sidebar open-tab="settings">
         @include('annotations::show.tabs.annotations')
         @can('add-annotation', $image)
             @include('annotations::show.tabs.labels')

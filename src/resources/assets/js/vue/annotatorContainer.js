@@ -18,6 +18,7 @@ biigle.$viewModel('annotator-container', function (element) {
             sidebarTab: biigle.$require('core.components.sidebarTab'),
             labelsTab: biigle.$require('annotations.components.labelsTab'),
             colorAdjustmentTab: biigle.$require('annotations.components.colorAdjustmentTab'),
+            settingsTab: biigle.$require('annotations.components.settingsTab'),
             annotationsTab: biigle.$require('annotations.components.annotationsTab'),
             annotationCanvas: biigle.$require('annotations.components.annotationCanvas'),
         },
@@ -28,6 +29,7 @@ biigle.$viewModel('annotator-container', function (element) {
             annotationFilter: null,
             lastCreatedAnnotation: null,
             lastCreatedAnnotationTimeout: null,
+            annotationOpacity: 1,
             // Initial map viewport.
             mapCenter: undefined,
             mapResolution: undefined,
@@ -220,6 +222,13 @@ biigle.$viewModel('annotator-container', function (element) {
                     imagesStore.updateColorAdjustment(params);
                     canvas.render();
                 }, 100, 'annotations.color-adjustment.update');
+            },
+            handleSettingsChange: function (key, value) {
+                switch (key) {
+                    case 'annotationOpacity':
+                        this.annotationOpacity = value;
+                        break;
+                }
             },
         },
         watch: {

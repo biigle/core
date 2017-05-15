@@ -76,6 +76,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             lastCreatedAnnotation: {
                 default: null,
             },
+            annotationOpacity: {
+                type: Number,
+                default: 1,
+            },
         },
         data: function () {
             var styles = biigle.$require('annotations.stores.styles');
@@ -481,6 +485,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         this.resetInteractionMode();
                     }
                 }
+            },
+            annotationOpacity: function (opacity) {
+                annotationLayer.setOpacity(opacity);
             },
         },
         created: function () {
