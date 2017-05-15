@@ -16,6 +16,19 @@ biigle.$declare('annotations.stores.images', function () {
         console.log('WebGL not supported. Color adjustment disabled.');
     }
 
+    window.onbeforeunload = function () {
+        // Make sure the texture is destroyed when the page is left.
+        // The browser may take its time to garbage collect it and it may cause
+        // crashes due to lack of memory if not explicitly destroyed like this.
+        if (fxTexture) {
+            fxTexture.destroy();
+            // tell the browser that we *really* no longer want to use the resources
+            // see: http://stackoverflow.com/a/23606581/1796523
+            fxCanvas.width = 1;
+            fxCanvas.height = 1;
+        }
+    };
+
     return new Vue({
         data: {
             cache: {},
@@ -23,6 +36,12 @@ biigle.$declare('annotations.stores.images', function () {
             maxCacheSize: 10,
             supportsColorAdjustment: false,
             currentlyDrawnImage: null,
+            colorAdjustment: {
+                brightnessContrast: [0, 0],
+                brightnessRGB: [0, 0, 0],
+                hueSaturation: [0, 0],
+                vibrance: [0],
+            },
         },
         computed: {
             imageFileUri: function () {
@@ -39,10 +58,21 @@ biigle.$declare('annotations.stores.images', function () {
                 return biigle.$require('annotations.volumeIsRemote');
             },
             hasColorAdjustment: function () {
+                for (var type in this.colorAdjustment) {
+                    if (this.colorAdjustment.hasOwnProperty(type) && this.isAdjustmentActive(type)) {
+                        return true;
+                    }
+                }
+
                 return false;
             },
         },
         methods: {
+            isAdjustmentActive: function (type) {
+                return this.colorAdjustment[type].reduce(function (acc, value) {
+                    return acc + value;
+                }) !== 0;
+            },
             checkSupportsColorAdjustment: function (image) {
                 if (!fxCanvas || this.isRemoteVolume) {
                     return false;
@@ -109,7 +139,29 @@ biigle.$declare('annotations.stores.images', function () {
                 return image;
             },
             drawColorAdjustedImage: function (image) {
-                // TODO implement color adjustment here
+                if (loadedImageTexture !== image.source.src) {
+                    if (fxTexture) {
+                        fxTexture.loadContentsOf(image.source);
+                    } else {
+                        fxTexture = fxCanvas.texture(image.source);
+                    }
+                    loadedImageTexture = image.source.src;
+                }
+
+                fxCanvas.draw(fxTexture);
+
+                for (var type in this.colorAdjustment) {
+                    if (this.colorAdjustment.hasOwnProperty(type) && this.isAdjustmentActive(type)) {
+                        fxCanvas[type].apply(fxCanvas, this.colorAdjustment[type]);
+                    }
+                }
+
+                fxCanvas.update();
+                image.canvas.width = fxCanvas.width;
+                image.canvas.height = fxCanvas.height;
+                image.canvas.getContext('2d').drawImage(fxCanvas, 0, 0);
+
+                return image;
             },
             drawImage: function (image) {
                 this.checkSupportsColorAdjustment(image);
@@ -131,7 +183,29 @@ biigle.$declare('annotations.stores.images', function () {
             },
             fetchAndDrawImage: function (id) {
                 return this.fetchImage(id).then(this.drawImage);
-            }
+            },
+            updateColorAdjustment: function (params) {
+                if (!this.supportsColorAdjustment) {
+                    return;
+                }
+
+                var type, i;
+                var colorAdjustment = this.colorAdjustment;
+                // Store this *before* the params are applied.
+                var hadColorAdjustment = this.hasColorAdjustment;
+
+                for (type in params) {
+                    if (params.hasOwnProperty(type)) {
+                        for (i = params[type].length - 1; i >= 0; i--) {
+                            colorAdjustment[type].splice(i, 1, params[type][i]);
+                        }
+                    }
+                }
+
+                if (hadColorAdjustment || this.hasColorAdjustment) {
+                    this.drawColorAdjustedImage(this.currentlyDrawnImage);
+                }
+            },
         },
         watch: {
             cachedIds: function (cachedIds) {

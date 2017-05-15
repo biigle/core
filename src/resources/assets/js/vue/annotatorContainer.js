@@ -8,6 +8,7 @@ biigle.$viewModel('annotator-container', function (element) {
     var annotationsStore = biigle.$require('annotations.stores.annotations');
     var urlParams = biigle.$require('volumes.urlParams');
     var messages = biigle.$require('messages.store');
+    var utils = biigle.$require('annotations.stores.utils');
 
     new Vue({
         el: element,
@@ -16,6 +17,7 @@ biigle.$viewModel('annotator-container', function (element) {
             sidebar: biigle.$require('annotations.components.sidebar'),
             sidebarTab: biigle.$require('core.components.sidebarTab'),
             labelsTab: biigle.$require('annotations.components.labelsTab'),
+            colorAdjustmentTab: biigle.$require('annotations.components.colorAdjustmentTab'),
             annotationsTab: biigle.$require('annotations.components.annotationsTab'),
             annotationCanvas: biigle.$require('annotations.components.annotationCanvas'),
         },
@@ -49,6 +51,9 @@ biigle.$viewModel('annotator-container', function (element) {
                 }
 
                 return this.annotations;
+            },
+            supportsColorAdjustment: function () {
+                return imagesStore.supportsColorAdjustment;
             },
         },
         methods: {
@@ -208,6 +213,13 @@ biigle.$viewModel('annotator-container', function (element) {
                 this.lastCreatedAnnotationTimeout = window.setTimeout(function() {
                     self.lastCreatedAnnotation = null;
                 }, 10000);
+            },
+            updateColorAdjustment: function (params) {
+                var canvas = this.$refs.canvas;
+                utils.debounce(function () {
+                    imagesStore.updateColorAdjustment(params);
+                    canvas.render();
+                }, 100, 'annotations.color-adjustment.update');
             },
         },
         watch: {

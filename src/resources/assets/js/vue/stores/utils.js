@@ -3,12 +3,21 @@
  */
 biigle.$declare('annotations.stores.utils', function () {
     var debounceTimeouts = {};
+    var delayTimeouts = {};
     return {
         debounce: function (callback, wait, id) {
             if (debounceTimeouts.hasOwnProperty(id)) {
-                clearTimeout(debounceTimeouts[id]);
+                window.clearTimeout(debounceTimeouts[id]);
             }
-            debounceTimeouts[id] = setTimeout(callback, wait);
+            debounceTimeouts[id] = window.setTimeout(callback, wait);
+        },
+        delay: function (callback, wait, id) {
+            if (!delayTimeouts.hasOwnProperty(id)) {
+                delayTimeouts[id] = window.setTimeout(function () {
+                    callback();
+                    delete delayTimeouts[id];
+                }, wait);
+            }
         },
     };
 });

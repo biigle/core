@@ -385,6 +385,11 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     }
                 }
             },
+            render: function () {
+                if (map) {
+                    map.render();
+                }
+            },
         },
         watch: {
             image: function (image, oldImage) {
