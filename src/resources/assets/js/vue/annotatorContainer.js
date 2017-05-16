@@ -38,6 +38,8 @@ biigle.$viewModel('annotator-container', function (element) {
             // Default is the image, others can be annotations (Volare) or image
             // sections (lawnmower mode).
             cycleMode: 'default',
+            // Index of the focussed annotation in the 'volare' cycle mode.
+            focussedAnnotationIndex: null,
         },
         computed: {
             imageId: function () {
@@ -61,6 +63,18 @@ biigle.$viewModel('annotator-container', function (element) {
             supportsColorAdjustment: function () {
                 return imagesStore.supportsColorAdjustment;
             },
+            focussedAnnotation: function () {
+                return this.annotations[this.focussedAnnotationIndex];
+            },
+            isDefaultCycleMode: function () {
+                return this.cycleMode === 'default';
+            },
+            isVolareCycleMode: function () {
+                return this.cycleMode === 'volare';
+            },
+            isLawnmowerCycleMode: function () {
+                return this.cycleMode === 'lawnmower';
+            },
         },
         methods: {
             getImageAndAnnotationsPromises: function () {
@@ -82,14 +96,53 @@ biigle.$viewModel('annotator-container', function (element) {
             getPreviousIndex: function (index) {
                 return (index + imagesIds.length - 1) % imagesIds.length;
             },
-            nextImage: function () {
-                if (!this.loading) {
-                    this.imageIndex = this.getNextIndex(this.imageIndex);
+            handleNext: function () {
+                if (this.loading) {
+                    return;
                 }
+
+                if (this.focussedAnnotationIndex < (this.annotations.length - 1)) {
+                    this.focussedAnnotationIndex++;
+                    return;
+                } else {
+                    // Show the next image in this case, so don't return.
+                    this.focussedAnnotationIndex = -Infinity;
+                }
+
+                // Show next image.
+                this.imageIndex = this.getNextIndex(this.imageIndex);
             },
-            previousImage: function () {
-                if (!this.loading) {
-                    this.imageIndex = this.getPreviousIndex(this.imageIndex);
+            handlePrevious: function () {
+                if (this.loading) {
+                    return;
+                }
+
+                if (this.isVolareCycleMode) {
+                    if (this.focussedAnnotationIndex > 0) {
+                        this.focussedAnnotationIndex--;
+                        return;
+                    } else {
+                        // Show the previous image in this case, so don't return.
+                        this.focussedAnnotationIndex = Infinity;
+                    }
+                }
+
+                // Show previous image.
+                this.imageIndex = this.getPreviousIndex(this.imageIndex);
+            },
+            maybeUpdateFocussedAnnotation: function () {
+                if (this.isVolareCycleMode) {
+                    if (this.annotations.length > 0) {
+                        if (this.focussedAnnotationIndex === Infinity) {
+                            this.focussedAnnotationIndex = this.annotations.length - 1;
+                        } else {
+                            this.focussedAnnotationIndex = 0;
+                        }
+                    } else {
+                        this.focussedAnnotationIndex = null;
+                        // Show the whole image if there are no annotations.
+                        this.$refs.canvas.fitImage();
+                    }
                 }
             },
             handleMapMoveend: function (viewport) {
@@ -134,8 +187,8 @@ biigle.$viewModel('annotator-container', function (element) {
                     a.selected = false;
                 });
             },
-            handleFocusAnnotation: function (annotation) {
-                this.$refs.canvas.focusAnnotation(annotation);
+            focusAnnotation: function (annotation, fast) {
+                this.$refs.canvas.focusAnnotation(annotation, fast);
             },
             handleDetachAnnotationLabel: function (annotation, label) {
                 annotationsStore.detachLabel(annotation, label)
@@ -162,7 +215,7 @@ biigle.$viewModel('annotator-container', function (element) {
                     var annotations = this.annotations;
                     for (var i = annotations.length - 1; i >= 0; i--) {
                         if (annotations[i].id === id) {
-                            this.handleFocusAnnotation(annotations[i]);
+                            this.focusAnnotation(annotations[i]);
                             annotations[i].selected = true;
                             return;
                         }
@@ -234,6 +287,7 @@ biigle.$viewModel('annotator-container', function (element) {
                         break;
                     case 'cycleMode':
                         this.cycleMode = value;
+                        this.maybeUpdateFocussedAnnotation();
                         break;
                 }
             },
@@ -245,11 +299,20 @@ biigle.$viewModel('annotator-container', function (element) {
                     .then(this.setCurrentImageAndAnnotations)
                     .then(this.updateUrlSlug)
                     .then(this.maybeSelectAndFocusAnnotation)
+                    .then(this.maybeUpdateFocussedAnnotation)
                     .then(this.emitImageChanged)
                     .then(this.finishLoading)
                     // When everything is loaded, pre-fetch the data of the next and
                     // previous images so they can be switched fast.
                     .then(this.cachePreviousAndNext);
+            },
+            focussedAnnotation: function (annotation) {
+                if (annotation) {
+                    this.focusAnnotation(annotation, true);
+                    this.annotations.forEach(function (a) {
+                        a.selected = a.id === annotation.id;
+                    });
+                }
             },
         },
         created: function () {
@@ -269,7 +332,7 @@ biigle.$viewModel('annotator-container', function (element) {
 
             events.$on('annotations.select', this.handleSelectAnnotation);
             events.$on('annotations.deselect', this.handleDeselectAnnotation);
-            events.$on('annotations.focus', this.handleFocusAnnotation);
+            events.$on('annotations.focus', this.focusAnnotation);
             events.$on('annotations.detachLabel', this.handleDetachAnnotationLabel);
             events.$on('annotations.delete', this.handleDeleteAnnotation);
         },
