@@ -21,6 +21,7 @@
     biigle.$declare('annotations.imageFileUri', '{!! url('api/v1/images/{id}/file') !!}');
     biigle.$declare('annotations.sessions', {!!$annotationSessions!!});
     biigle.$declare('annotations.volumeIsRemote', @if($volume->isRemote()) true @else false @endif);
+    biigle.$declare('annotations.isEditor', @can('add-annotation', $image) true @else false @endcan);
 
 </script>
 {{--TODO:@foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
@@ -48,7 +49,7 @@
 @section('content')
 <div id="annotator-container" class="annotator-container" v-cloak>
     <annotation-canvas
-        :editable="@can('add-annotation', $image) true @else false @endcan"
+        :editable="isEditor"
         :loading="loading"
         :image="image"
         :annotations="filteredAnnotations"

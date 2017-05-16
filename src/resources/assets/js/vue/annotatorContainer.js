@@ -23,6 +23,7 @@ biigle.$viewModel('annotator-container', function (element) {
             annotationCanvas: biigle.$require('annotations.components.annotationCanvas'),
         },
         data: {
+            isEditor: biigle.$require('annotations.isEditor'),
             imageIndex: null,
             image: null,
             annotations: [],
@@ -245,13 +246,19 @@ biigle.$viewModel('annotator-container', function (element) {
                     });
             },
             handleAttachLabel: function (annotation, label) {
-                var annotationLabel = {
-                    label_id: label.id,
-                    // TODO: confidence control
-                    confidence: 1,
-                };
-                annotationsStore.attachLabel(annotation, annotationLabel)
-                    .catch(messages.handleErrorResponse);
+                label = label || this.selectedLabel;
+                if (this.isEditor && label) {
+                    var annotationLabel = {
+                        label_id: label.id,
+                        // TODO: confidence control
+                        confidence: 1,
+                    };
+                    annotationsStore.attachLabel(annotation, annotationLabel)
+                        .catch(messages.handleErrorResponse);
+                }
+            },
+            handleAttachAllSelected: function () {
+                this.selectedAnnotations.forEach(this.handleAttachLabel);
             },
             emitImageChanged: function () {
                 events.$emit('images.change', this.imageId);

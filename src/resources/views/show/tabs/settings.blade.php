@@ -1,5 +1,5 @@
 <sidebar-tab name="settings" icon="cog" title="Toggle the settings tab">
-    <settings-tab v-cloak v-on:change="handleSettingsChange" inline-template>
+    <settings-tab v-cloak v-on:change="handleSettingsChange" v-on:attach-label="handleAttachAllSelected" inline-template>
         <div class="settings-tab">
             <h4>Settings</h4>
 
@@ -16,9 +16,9 @@
                         <button type="button" class="btn btn-default" :class="{active: !isVolareActive}" v-on:click="resetCycleMode" title="Stop cycling through all annotations 𝗘𝘀𝗰">off</button>
                     </div>
                     <div class="btn-group">
-                        @if ($editMode)
+                        @can('add-annotation', $image)
                             <button class="btn btn-default" :disabled="!isVolareActive" v-on:click="emitAttachLabel" title="Attach the current label to the selected annotation 𝗘𝗻𝘁𝗲𝗿"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-                        @endif
+                        @endcan
                     </div>
                 </div>
                 <p class="help-text">Use the annotation filter to cycle through annotations with certain properties.</p>

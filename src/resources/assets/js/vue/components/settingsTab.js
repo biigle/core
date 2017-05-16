@@ -29,8 +29,7 @@ biigle.$component('annotations.components.settingsTab', {
             this.cycleMode = 'default';
         },
         emitAttachLabel: function () {
-            // TODO
-            console.log('attach');
+            this.$emit('attach-label');
         },
     },
     watch: {
@@ -48,10 +47,16 @@ biigle.$component('annotations.components.settingsTab', {
                 // ESC key.
                 this.keyboard.on(27, this.resetCycleMode);
             }
+
+            if (mode === 'volare') {
+                // Enter key.
+                this.keyboard.on(13, this.emitAttachLabel);
+            } else {
+                this.keyboard.off(13, this.emitAttachLabel);
+            }
         },
     },
     created: function () {
-        // TODO listen to ESC to reset cycle mode if not default
         if (this.settings.has('annotationOpacity')) {
             this.annotationOpacity = this.settings.get('annotationOpacity');
         }

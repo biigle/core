@@ -139,7 +139,6 @@ class AnnotationController extends Controller
             'user' => $user,
             'image' => $image,
             'volume' => $image->volume,
-            'editMode' => $user->can('add-annotation', $image),
             'images' => $images,
             'labelTrees' => $trees,
             'shapes' => $shapes,
