@@ -95,10 +95,23 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     padding: [50, 50, 50, 50],
                     minResolution: 1,
                 },
-                // There are several interaction modes like 'drawingPoint',
-                // 'attachingLabels' or 'movingAnnotations' etc. For each mode the
-                // allowed/active OpenLayers map interactions are different.
+                // There are several interaction modes like 'drawPoint', 'attach' or
+                // 'translate' etc. For each mode the allowed/active OpenLayers map
+                // interactions are different.
                 interactionMode: 'default',
+                // Size of the OpenLayers map in px.
+                mapSize: [0, 0],
+                // The image section information is needed for the lawnmower cycling mode
+                imageSection: {
+                    // Index of the current image section in x and y direction.
+                    current: [0, 0],
+                    // View center point of the first image section.
+                    startCenter: [0, 0],
+                    // Number of pixels to proceed in x or y direction for each step.
+                    stepSize: [0, 0],
+                    // Number of available steps in x and y direction.
+                    stepCount: [0, 0],
+                },
             };
         },
         computed: {
@@ -107,7 +120,22 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     return [0, 0, this.image.width, this.image.height];
                 }
 
-                return [0, 0, 0, 0];
+                return [0, 0, 1, 1];
+            },
+            viewExtent: function () {
+                // The view can't calculate the extent if the resolution is not set.
+                if (this.resolution && map) {
+                    return map.getView().calculateExtent(this.mapSize);
+                }
+
+                return [0, 0, 1, 1];
+            },
+            imageSectionSteps: function () {
+                // TODO continue here. This replaces the imageSection.stepCount.
+                return [
+                    Math.ceil(this.extent[2] / (this.viewExtent[2] - this.viewExtent[0])),
+                    Math.ceil(this.extent[3] / (this.viewExtent[3] - this.viewExtent[1])),
+                ];
             },
             projection: function () {
                 return new ol.proj.Projection({
@@ -174,6 +202,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
         },
         methods: {
+            updateMapSize: function () {
+                this.mapSize = map.getSize();
+            },
             // Determines the OpenLayers geometry object for an annotation.
             getGeometry: function (annotation) {
                 var points = annotation.points;
@@ -423,8 +454,23 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     map.render();
                 }
             },
+            showLastImageSection: function () {
+
+            },
+            showFirstImageSection: function () {
+
+            },
+            showPreviousImageSection: function () {
+
+            },
+            showNextImageSection: function () {
+
+            },
         },
         watch: {
+            imageSectionSteps: function (s) {
+                console.log(s);
+            },
             image: function (image, oldImage) {
                 // image.canvas points to the same object for all images for performance
                 // reasons. Because of this we only have to update the source if the
@@ -542,6 +588,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     resolution: view.getResolution(),
                 });
             });
+
+            map.on('change:size', this.updateMapSize);
 
             // We initialize this here because we need to make sure the styles are
             // properly loaded and there is no setStyle() function like for the

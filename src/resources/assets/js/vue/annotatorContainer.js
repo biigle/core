@@ -196,22 +196,28 @@ biigle.$viewModel('annotator-container', function (element) {
                 this.$refs.canvas.focusAnnotation(annotation, fast);
             },
             handleDetachAnnotationLabel: function (annotation, label) {
-                annotationsStore.detachLabel(annotation, label)
-                    .catch(messages.handleErrorResponse);
+                if (this.isEditor) {
+                    annotationsStore.detachLabel(annotation, label)
+                        .catch(messages.handleErrorResponse);
+                }
             },
             handleDeleteAnnotation: function (annotation) {
-                if (this.lastCreatedAnnotation && this.lastCreatedAnnotation.id === annotation.id) {
-                    this.lastCreatedAnnotation = null;
+                if (this.isEditor) {
+                    if (this.lastCreatedAnnotation && this.lastCreatedAnnotation.id === annotation.id) {
+                        this.lastCreatedAnnotation = null;
+                    }
+                    annotationsStore.delete(annotation)
+                        .catch(messages.handleErrorResponse);
                 }
-                annotationsStore.delete(annotation)
-                    .catch(messages.handleErrorResponse);
             },
             handleDeleteAnnotations: function (annotations) {
                 annotations.forEach(this.handleDeleteAnnotation);
             },
             handleUpdateAnnotations: function (annotations) {
-                Vue.Promise.all(annotations.map(annotationsStore.update))
-                    .catch(messages.handleErrorResponse);
+                if (this.isEditor) {
+                    Vue.Promise.all(annotations.map(annotationsStore.update))
+                        .catch(messages.handleErrorResponse);
+                }
             },
             maybeSelectAndFocusAnnotation: function () {
                 var id = urlParams.get('annotation');
@@ -234,16 +240,18 @@ biigle.$viewModel('annotator-container', function (element) {
                 this.selectedLabel = label;
             },
             handleNewAnnotation: function (annotation, removeCallback) {
-                annotation.label_id = this.selectedLabel.id;
-                // TODO: confidence control
-                annotation.confidence = 1;
-                annotationsStore.create(this.imageId, annotation)
-                    .then(this.setLastCreatedAnnotation)
-                    .catch(function (response) {
-                        // Remove the temporary annotation if saving failed.
-                        removeCallback();
-                        messages.handleErrorResponse(response);
-                    });
+                if (this.isEditor) {
+                    annotation.label_id = this.selectedLabel.id;
+                    // TODO: confidence control
+                    annotation.confidence = 1;
+                    annotationsStore.create(this.imageId, annotation)
+                        .then(this.setLastCreatedAnnotation)
+                        .catch(function (response) {
+                            // Remove the temporary annotation if saving failed.
+                            removeCallback();
+                            messages.handleErrorResponse(response);
+                        });
+                }
             },
             handleAttachLabel: function (annotation, label) {
                 label = label || this.selectedLabel;

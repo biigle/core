@@ -20,10 +20,16 @@ biigle.$component('annotations.components.settingsTab', {
         isVolareActive: function () {
             return this.cycleMode === 'volare';
         },
+        isLawnmowerActive: function () {
+            return this.cycleMode === 'lawnmower';
+        },
     },
     methods: {
         startVolare: function () {
             this.cycleMode = 'volare';
+        },
+        startLawnmower: function () {
+            this.cycleMode = 'lawnmower';
         },
         resetCycleMode: function () {
             this.cycleMode = 'default';

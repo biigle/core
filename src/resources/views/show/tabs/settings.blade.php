@@ -24,6 +24,15 @@
                 <p class="help-text">Use the annotation filter to cycle through annotations with certain properties.</p>
             </div>
 
+            <div class="settings-tab__section">
+                <div class="form-group">
+                    <label title="Cycle through image sections">Cycle through image sections <small>(Lawnmower mode)</small></label>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default" :class="{active: isLawnmowerActive}" v-on:click="startLawnmower" title="Start cycling through image sections">on</button>
+                        <button type="button" class="btn btn-default" :class="{active: !isLawnmowerActive}" v-on:click="resetCycleMode" title="Stop cycling through image sections 𝗘𝘀𝗰">off</button>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </settings-tab>
