@@ -101,12 +101,14 @@ biigle.$viewModel('annotator-container', function (element) {
                     return;
                 }
 
-                if (this.focussedAnnotationIndex < (this.annotations.length - 1)) {
-                    this.focussedAnnotationIndex++;
-                    return;
-                } else {
-                    // Show the next image in this case, so don't return.
-                    this.focussedAnnotationIndex = -Infinity;
+                if (this.isVolareCycleMode) {
+                    if (this.focussedAnnotationIndex < (this.annotations.length - 1)) {
+                        this.focussedAnnotationIndex++;
+                        return;
+                    } else {
+                        // Show the next image in this case, so don't return.
+                        this.focussedAnnotationIndex = -Infinity;
+                    }
                 }
 
                 // Show next image.
@@ -143,6 +145,8 @@ biigle.$viewModel('annotator-container', function (element) {
                         // Show the whole image if there are no annotations.
                         this.$refs.canvas.fitImage();
                     }
+                } else {
+                    this.focussedAnnotationIndex = null;
                 }
             },
             handleMapMoveend: function (viewport) {
@@ -308,10 +312,11 @@ biigle.$viewModel('annotator-container', function (element) {
             },
             focussedAnnotation: function (annotation) {
                 if (annotation) {
-                    this.focusAnnotation(annotation, true);
-                    this.annotations.forEach(function (a) {
-                        a.selected = a.id === annotation.id;
+                    this.selectedAnnotations.forEach(function (a) {
+                        a.selected = false;
                     });
+                    annotation.selected = true;
+                    this.focusAnnotation(annotation, true);
                 }
             },
         },
