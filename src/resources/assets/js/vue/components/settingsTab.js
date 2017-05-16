@@ -14,6 +14,9 @@ biigle.$component('annotations.components.settingsTab', {
         settings: function () {
             return biigle.$require('annotations.stores.settings');
         },
+        keyboard: function () {
+            return biigle.$require('labelTrees.stores.keyboard');
+        },
         isVolareActive: function () {
             return this.cycleMode === 'volare';
         },
@@ -38,6 +41,13 @@ biigle.$component('annotations.components.settingsTab', {
         },
         cycleMode: function (mode) {
             this.$emit('change', 'cycleMode', mode);
+
+            if (mode === 'default') {
+                this.keyboard.off(27, this.resetCycleMode);
+            } else {
+                // ESC key.
+                this.keyboard.on(27, this.resetCycleMode);
+            }
         },
     },
     created: function () {
