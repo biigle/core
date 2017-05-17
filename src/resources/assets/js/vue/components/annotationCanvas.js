@@ -728,7 +728,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             selectInteraction.on('select', this.handleFeatureSelect);
             map.addInteraction(selectInteraction);
 
-            var keyboard = biigle.$require('labelTrees.stores.keyboard');
+            var keyboard = biigle.$require('core.keyboard');
             // Space bar.
             keyboard.on(32, this.handleNext);
             // Arrow right key.

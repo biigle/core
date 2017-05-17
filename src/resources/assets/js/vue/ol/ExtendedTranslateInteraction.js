@@ -26,7 +26,7 @@ biigle.$declare('annotations.ol.ExtendedTranslateInteraction', function () {
             return self.translate(1, 0);
         };
 
-        this.keyboard = biigle.$require('labelTrees.stores.keyboard');
+        this.keyboard = biigle.$require('core.keyboard');
         this.utils = biigle.$require('annotations.stores.utils');
         this.map = options.map;
         this.translating = false;
