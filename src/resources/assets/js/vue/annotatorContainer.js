@@ -44,6 +44,7 @@ biigle.$viewModel('annotator-container', function (element) {
             // Determines if the current image section is the last (Infinity) or the
             // first (0) one.
             focussedImageSectionIndex: null,
+            showMousePosition: false,
         },
         computed: {
             imageId: function () {
@@ -343,6 +344,8 @@ biigle.$viewModel('annotator-container', function (element) {
                         this.maybeUpdateFocussedAnnotation();
                         this.maybeUpdateShownImageSection();
                         break;
+                    case 'mousePosition':
+                        this.showMousePosition = value;
                 }
             },
         },

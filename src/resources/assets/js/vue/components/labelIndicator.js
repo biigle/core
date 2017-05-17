@@ -9,9 +9,4 @@ biigle.$component('annotations.components.labelIndicator', {
             required: true,
         },
     },
-    computed: {
-        hasLabel: function () {
-            return !!this.label;
-        },
-    },
 });

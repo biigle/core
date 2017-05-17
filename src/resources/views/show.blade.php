@@ -60,6 +60,7 @@
         :selected-label="selectedLabel"
         :annotation-opacity="annotationOpacity"
         :cycle-mode="cycleMode"
+        :show-mouse-position="showMousePosition"
         v-on:moveend="handleMapMoveend"
         v-on:previous="handlePrevious"
         v-on:next="handleNext"

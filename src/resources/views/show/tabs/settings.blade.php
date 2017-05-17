@@ -34,6 +34,16 @@
                 </div>
             </div>
 
+            <div class="settings-tab__section">
+                <div class="form-group">
+                    <label>Mouse position</label>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default" :class="{active: mousePosition}" v-on:click="showMousePosition" title="Show mouse position">show</button>
+                        <button type="button" class="btn btn-default" :class="{active: !mousePosition}" v-on:click="hideMousePosition" title="Hide mouse position">hide</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </settings-tab>
 </sidebar-tab>

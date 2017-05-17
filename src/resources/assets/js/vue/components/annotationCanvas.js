@@ -35,6 +35,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             loaderBlock: biigle.$require('core.components.loaderBlock'),
             minimap: biigle.$require('annotations.components.minimap'),
             labelIndicator: biigle.$require('annotations.components.labelIndicator'),
+            mousePositionIndicator: biigle.$require('annotations.components.mousePositionIndicator'),
             controlButton: biigle.$require('annotations.components.controlButton'),
         },
         props: {
@@ -84,6 +85,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 type: String,
                 default: 'default',
             },
+            showMousePosition: {
+                type: Boolean,
+                default: false,
+            },
         },
         data: function () {
             var styles = biigle.$require('annotations.stores.styles');
@@ -106,6 +111,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 imageSection: [0, 0],
                 // Actual center point of the current image section.
                 imageSectionCenter: [0, 0],
+                mousePosition: [0, 0],
             };
         },
         computed: {
@@ -535,6 +541,15 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     return this.showImageSection([0, this.imageSection[1] + 1]);
                 }
             },
+            updateMousePosition: function (e) {
+                var self = this;
+                biigle.$require('annotations.stores.utils').throttle(function () {
+                    self.mousePosition = [
+                        Math.round(e.coordinate[0]),
+                        Math.round(self.extent[3] - e.coordinate[1]),
+                    ];
+                }, 100, 'annotations.canvas.mouse-position');
+            },
         },
         watch: {
             image: function (image, oldImage) {
@@ -655,6 +670,13 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 }
 
                 this.showImageSection(nearestStep);
+            },
+            showMousePosition: function (show) {
+                if (show) {
+                    map.on('pointermove', this.updateMousePosition);
+                } else {
+                    map.un('pointermove', this.updateMousePosition);
+                }
             },
         },
         created: function () {

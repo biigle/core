@@ -1,0 +1,5 @@
+.mouse-position-indicator {
+    @extend %info-box;
+    left: 0.5em;
+    bottom: 0.5em;
+}

@@ -21,6 +21,9 @@ biigle.$declare('annotations.stores.settings', new Vue({
                 Vue.set(this.settings, key, value);
             }
         },
+        delete: function (key) {
+            Vue.delete(this.settings, key);
+        },
         get: function (key) {
             return this.settings[key];
         },
@@ -28,7 +31,15 @@ biigle.$declare('annotations.stores.settings', new Vue({
             return this.settings.hasOwnProperty(key);
         },
         storeSettings: function () {
-            window.localStorage.setItem(this.storageKey, JSON.stringify(this.settings));
+            var hasItems = false;
+            for (var key in this.settings) {
+                if (this.settings.hasOwnProperty(key)) {
+                    window.localStorage.setItem(this.storageKey, JSON.stringify(this.settings));
+                    return;
+                }
+            }
+
+            window.localStorage.removeItem(this.storageKey);
         },
     },
     created: function () {

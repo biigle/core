@@ -1,10 +1,13 @@
 <div class="annotation-canvas">
-    <loader-block v-cloak :active="loading"></loader-block>
+
     <minimap :extent="extent" :projection="projection" inline-template>
         <div class="annotation-canvas__minimap"></div>
     </minimap>
-    <label-indicator :label="selectedLabel" inline-template>
-        <div class="label-indicator" title="Currently selected label" v-if="hasLabel" v-text="label.name"></div>
+    <mouse-position-indicator v-if="showMousePosition" :position="mousePosition" inline-template>
+        <div class="mouse-position-indicator" title="Mouse position on the image" v-text="positionText"></div>
+    </mouse-position-indicator>
+    <label-indicator v-if="selectedLabel" :label="selectedLabel" inline-template>
+        <div class="label-indicator" title="Currently selected label" v-text="label.name"></div>
     </label-indicator>
     <div class="annotation-canvas__toolbar">
         <div class="btn-group">

@@ -8,6 +8,7 @@ biigle.$component('annotations.components.settingsTab', {
         return {
             annotationOpacity: 1.0,
             cycleMode: 'default',
+            mousePosition: false,
         };
     },
     computed: {
@@ -37,11 +38,21 @@ biigle.$component('annotations.components.settingsTab', {
         emitAttachLabel: function () {
             this.$emit('attach-label');
         },
+        showMousePosition: function () {
+            this.mousePosition = true;
+        },
+        hideMousePosition: function () {
+            this.mousePosition = false;
+        },
     },
     watch: {
         annotationOpacity: function (opacity) {
             opacity = parseFloat(opacity);
-            this.settings.set('annotationOpacity', opacity);
+            if (opacity === 1) {
+                this.settings.delete('annotationOpacity');
+            } else {
+                this.settings.set('annotationOpacity', opacity);
+            }
             this.$emit('change', 'annotationOpacity', opacity);
         },
         cycleMode: function (mode) {
@@ -61,10 +72,21 @@ biigle.$component('annotations.components.settingsTab', {
                 this.keyboard.off(13, this.emitAttachLabel);
             }
         },
+        mousePosition: function (position) {
+            if (position) {
+                this.settings.set('mousePosition', true);
+            } else {
+                this.settings.delete('mousePosition');
+            }
+            this.$emit('change', 'mousePosition', position);
+        },
     },
     created: function () {
-        if (this.settings.has('annotationOpacity')) {
-            this.annotationOpacity = this.settings.get('annotationOpacity');
-        }
+        var storedProperties = ['annotationOpacity', 'mousePosition'];
+        storedProperties.forEach(function (property) {
+            if (this.settings.has(property)) {
+                this[property] = this.settings.get(property);
+            }
+        }, this);
     },
 });
