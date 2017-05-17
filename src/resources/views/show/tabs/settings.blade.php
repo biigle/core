@@ -15,38 +15,31 @@
             </div>
 
             <div class="settings-tab__section">
-                <div class="form-group">
-                    <label title="Cycle through all annotations">Cycle through annotations <small>(Volare)</small></label>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default" :class="{active: isVolareActive}" v-on:click="startVolare" title="Start cycling through all annotations">on</button>
-                        <button type="button" class="btn btn-default" :class="{active: !isVolareActive}" v-on:click="resetCycleMode" title="Stop cycling through all annotations 𝗘𝘀𝗰">off</button>
-                    </div>
-                    <div class="btn-group">
-                        @can('add-annotation', $image)
-                            <button class="btn btn-default" :disabled="!isVolareActive" v-on:click="emitAttachLabel" title="Attach the current label to the selected annotation 𝗘𝗻𝘁𝗲𝗿"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-                        @endcan
-                    </div>
+                <label title="Cycle through all annotations">Volare<br><small>Cycle through annotations</small></label>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" :class="{active: isVolareActive}" v-on:click="startVolare" title="Start cycling through all annotations">on</button>
+                    <button type="button" class="btn btn-default" :class="{active: !isVolareActive}" v-on:click="resetCycleMode" title="Stop cycling through all annotations 𝗘𝘀𝗰">off</button>
                 </div>
-                <p class="help-text">Use the annotation filter to cycle through annotations with certain properties.</p>
-            </div>
-
-            <div class="settings-tab__section">
-                <div class="form-group">
-                    <label title="Cycle through image sections">Cycle through image sections <small>(Lawnmower mode)</small></label>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default" :class="{active: isLawnmowerActive}" v-on:click="startLawnmower" title="Start cycling through image sections">on</button>
-                        <button type="button" class="btn btn-default" :class="{active: !isLawnmowerActive}" v-on:click="resetCycleMode" title="Stop cycling through image sections 𝗘𝘀𝗰">off</button>
-                    </div>
+                <div class="btn-group">
+                    @can('add-annotation', $image)
+                        <button class="btn btn-default" :disabled="!isVolareActive" v-on:click="emitAttachLabel" title="Attach the current label to the selected annotation 𝗘𝗻𝘁𝗲𝗿"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                    @endcan
                 </div>
             </div>
 
             <div class="settings-tab__section">
-                <div class="form-group">
-                    <label>Mouse position</label>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default" :class="{active: mousePosition}" v-on:click="showMousePosition" title="Show mouse position">show</button>
-                        <button type="button" class="btn btn-default" :class="{active: !mousePosition}" v-on:click="hideMousePosition" title="Hide mouse position">hide</button>
-                    </div>
+                <label title="Cycle through image sections">Lawnmower mode<br><small>Cycle through image sections</small></label>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" :class="{active: isLawnmowerActive}" v-on:click="startLawnmower" title="Start cycling through image sections">on</button>
+                    <button type="button" class="btn btn-default" :class="{active: !isLawnmowerActive}" v-on:click="resetCycleMode" title="Stop cycling through image sections 𝗘𝘀𝗰">off</button>
+                </div>
+            </div>
+
+            <div class="settings-tab__section">
+                <label>Mouse position</label>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" :class="{active: mousePosition}" v-on:click="showMousePosition" title="Show mouse position">show</button>
+                    <button type="button" class="btn btn-default" :class="{active: !mousePosition}" v-on:click="hideMousePosition" title="Hide mouse position">hide</button>
                 </div>
             </div>
 

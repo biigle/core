@@ -33,6 +33,10 @@
     padding: 0 1em;
     border-bottom: 1px solid #353535;
 
+    &:first-child {
+        border-top: 1px solid #353535;
+    }
+
     &.selected {
         .annotations-tab-item__title {
             color: white;

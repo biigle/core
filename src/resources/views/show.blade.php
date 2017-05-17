@@ -75,7 +75,7 @@
             @include('annotations::show.annotationCanvas')
         </annotation-canvas>
     </div>
-    <sidebar open-tab="settings">
+    <sidebar>
         @include('annotations::show.tabs.annotations')
         @can('add-annotation', $image)
             @include('annotations::show.tabs.labels')
