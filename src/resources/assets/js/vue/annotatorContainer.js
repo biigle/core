@@ -9,6 +9,7 @@ biigle.$viewModel('annotator-container', function (element) {
     var urlParams = biigle.$require('volumes.urlParams');
     var messages = biigle.$require('messages.store');
     var utils = biigle.$require('annotations.stores.utils');
+    var settings = biigle.$require('annotations.stores.settings');
 
     new Vue({
         el: element,
@@ -45,6 +46,7 @@ biigle.$viewModel('annotator-container', function (element) {
             // first (0) one.
             focussedImageSectionIndex: null,
             showMousePosition: false,
+            openTab: null,
         },
         computed: {
             imageId: function () {
@@ -344,6 +346,12 @@ biigle.$viewModel('annotator-container', function (element) {
                         this.showMousePosition = value;
                 }
             },
+            handleOpenedTab: function (name) {
+                settings.set('openTab', name);
+            },
+            handleClosedTab: function (name) {
+                settings.delete('openTab');
+            },
         },
         watch: {
             imageIndex: function (index) {
@@ -401,6 +409,10 @@ biigle.$viewModel('annotator-container', function (element) {
                         }
                     }
                 });
+            }
+
+            if (settings.has('openTab')) {
+                this.openTab = settings.get('openTab');
             }
         },
     });

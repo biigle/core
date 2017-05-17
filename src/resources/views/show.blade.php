@@ -75,7 +75,7 @@
             @include('annotations::show.annotationCanvas')
         </annotation-canvas>
     </div>
-    <sidebar>
+    <sidebar :open-tab="openTab" v-on:open="handleOpenedTab" v-on:close="handleClosedTab">
         @include('annotations::show.tabs.annotations')
         @can('add-annotation', $image)
             @include('annotations::show.tabs.labels')
