@@ -40,6 +40,12 @@
     margin-top: $navbar-height + 1px;
 }
 
+.annotator-container__canvas {
+    flex: 1;
+    height: 100%;
+    position: relative;
+}
+
 @import "ol";
 @import "icons";
 @import "sidebar/annotations";

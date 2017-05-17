@@ -48,32 +48,33 @@
 
 @section('content')
 <div id="annotator-container" class="annotator-container" v-cloak>
-    <annotation-canvas
-        :editable="isEditor"
-        :loading="loading"
-        :image="image"
-        :annotations="filteredAnnotations"
-        :selected-annotations="selectedAnnotations"
-        :last-created-annotation="lastCreatedAnnotation"
-        :center="mapCenter"
-        :resolution="mapResolution"
-        :selected-label="selectedLabel"
-        :annotation-opacity="annotationOpacity"
-        :cycle-mode="cycleMode"
-        :show-mouse-position="showMousePosition"
-        v-on:moveend="handleMapMoveend"
-        v-on:previous="handlePrevious"
-        v-on:next="handleNext"
-        v-on:new="handleNewAnnotation"
-        v-on:select="handleSelectAnnotations"
-        v-on:update="handleUpdateAnnotations"
-        v-on:attach="handleAttachLabel"
-        v-on:delete="handleDeleteAnnotations"
-        ref="canvas"
-        v-cloak
-        inline-template>
-        @include('annotations::show.annotationCanvas')
-    </annotation-canvas>
+    <div class="annotator-container__canvas">
+        <loader-block :active="loading"></loader-block>
+        <annotation-canvas
+            :editable="isEditor"
+            :image="image"
+            :annotations="filteredAnnotations"
+            :selected-annotations="selectedAnnotations"
+            :last-created-annotation="lastCreatedAnnotation"
+            :center="mapCenter"
+            :resolution="mapResolution"
+            :selected-label="selectedLabel"
+            :annotation-opacity="annotationOpacity"
+            :cycle-mode="cycleMode"
+            :show-mouse-position="showMousePosition"
+            v-on:moveend="handleMapMoveend"
+            v-on:previous="handlePrevious"
+            v-on:next="handleNext"
+            v-on:new="handleNewAnnotation"
+            v-on:select="handleSelectAnnotations"
+            v-on:update="handleUpdateAnnotations"
+            v-on:attach="handleAttachLabel"
+            v-on:delete="handleDeleteAnnotations"
+            ref="canvas"
+            inline-template>
+            @include('annotations::show.annotationCanvas')
+        </annotation-canvas>
+    </div>
     <sidebar open-tab="settings">
         @include('annotations::show.tabs.annotations')
         @can('add-annotation', $image)

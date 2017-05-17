@@ -32,7 +32,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
 
     return {
         components: {
-            loaderBlock: biigle.$require('core.components.loaderBlock'),
             minimap: biigle.$require('annotations.components.minimap'),
             labelIndicator: biigle.$require('annotations.components.labelIndicator'),
             mousePositionIndicator: biigle.$require('annotations.components.mousePositionIndicator'),
@@ -58,10 +57,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 default: function () {
                     return [];
                 },
-            },
-            loading: {
-                type: Boolean,
-                default: false,
             },
             center: {
                 type: Array,
