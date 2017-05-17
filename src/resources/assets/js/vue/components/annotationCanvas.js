@@ -432,12 +432,17 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             toggleAttaching: function () {
                 if (this.isAttaching) {
                     this.resetInteractionMode();
-                } else if (!this.hasNoSelectedLabel) {
+                } else {
                     this.interactionMode = 'attach';
                 }
             },
             handleAttachLabel: function (e) {
                 this.$emit('attach', e.feature.get('annotation'), this.selectedLabel);
+            },
+            requireSelectedLabel: function () {
+                biigle.$require('biigle.events').$emit('sidebar.open', 'labels');
+                biigle.$require('messages.store').info('Please select a label first.');
+                this.resetInteractionMode();
             },
             handleNewInteractionMode: function (mode) {
                 if (drawInteraction) {
@@ -446,9 +451,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
 
                 if (this.isDrawing) {
                     if (this.hasNoSelectedLabel) {
-                        biigle.$require('biigle.events').$emit('sidebar.open', 'labels');
-                        biigle.$require('messages.store').info('Please select a label first.');
-                        this.resetInteractionMode();
+                        this.requireSelectedLabel();
                     } else {
                         selectInteraction.setActive(false);
                         modifyInteraction.setActive(false);
@@ -462,6 +465,15 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         drawInteraction.on('drawend', this.handleNewFeature);
                         map.addInteraction(drawInteraction);
                     }
+                } else if (this.isAttaching) {
+                    if (this.hasNoSelectedLabel) {
+                        this.requireSelectedLabel();
+                    } else {
+                        selectInteraction.setActive(false);
+                        modifyInteraction.setActive(false);
+                        translateInteraction.setActive(false);
+                        attachLabelInteraction.setActive(true);
+                    }
                 } else {
                     switch (mode) {
                         case 'translate':
@@ -469,12 +481,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                             modifyInteraction.setActive(false);
                             translateInteraction.setActive(true);
                             attachLabelInteraction.setActive(false);
-                            break;
-                        case 'attach':
-                            selectInteraction.setActive(false);
-                            modifyInteraction.setActive(false);
-                            translateInteraction.setActive(false);
-                            attachLabelInteraction.setActive(true);
                             break;
                         default:
                             selectInteraction.setActive(true);

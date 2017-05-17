@@ -80,6 +80,10 @@ biigle.$component('annotations.components.annotationsTab', {
                 }
             }
         },
+        // If an annotation is selected on the map the respective annotation labels
+        // should be visible in the annotations tab, too. This function adjusts the
+        // scrollTop of the list so all selected annotation labels are visible (if
+        // possible).
         scrollIntoView: function (annotations) {
             if (annotations.length === 0) {
                 return;
@@ -91,6 +95,10 @@ biigle.$component('annotations.components.annotationsTab', {
                 this.reallyScrollIntoView(annotations);
             });
         },
+        // If an annotation label is selected it may be that a preceding annotation item
+        // expands which would push the currently selected annotation label down. This
+        // function adjusts the scrollTop so the selected annotation label stays at the
+        // same position relative to the cursor.
         keepElementPosition: function (element) {
             var scrollElement = this.$refs.scrollList;
             var positionBefore = element.offsetTop - scrollElement.scrollTop;
