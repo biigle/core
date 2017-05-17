@@ -110,6 +110,9 @@ biigle.$viewModel('annotator-container', function (element) {
                         // Show the next image in this case, so don't return.
                         this.focussedAnnotationIndex = -Infinity;
                     }
+                } else if (this.isLawnmowerCycleMode) {
+                    this.$refs.canvas.showNextImageSection();
+                    return;
                 }
 
                 // Show next image.
@@ -128,6 +131,9 @@ biigle.$viewModel('annotator-container', function (element) {
                         // Show the previous image in this case, so don't return.
                         this.focussedAnnotationIndex = Infinity;
                     }
+                } else if (this.isLawnmowerCycleMode) {
+                    this.$refs.canvas.showPreviousImageSection();
+                    return;
                 }
 
                 // Show previous image.
@@ -148,6 +154,11 @@ biigle.$viewModel('annotator-container', function (element) {
                     }
                 } else {
                     this.focussedAnnotationIndex = null;
+                }
+            },
+            maybeUpdateShownImageSection: function () {
+                if (this.isLawnmowerCycleMode) {
+                    this.$refs.canvas.showFirstImageSection();
                 }
             },
             handleMapMoveend: function (viewport) {
@@ -307,6 +318,7 @@ biigle.$viewModel('annotator-container', function (element) {
                     case 'cycleMode':
                         this.cycleMode = value;
                         this.maybeUpdateFocussedAnnotation();
+                        this.maybeUpdateShownImageSection();
                         break;
                 }
             },

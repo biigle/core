@@ -102,16 +102,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 // Size of the OpenLayers map in px.
                 mapSize: [0, 0],
                 // The image section information is needed for the lawnmower cycling mode
-                imageSection: {
-                    // Index of the current image section in x and y direction.
-                    current: [0, 0],
-                    // View center point of the first image section.
-                    startCenter: [0, 0],
-                    // Number of pixels to proceed in x or y direction for each step.
-                    stepSize: [0, 0],
-                    // Number of available steps in x and y direction.
-                    stepCount: [0, 0],
-                },
+                // Index of the current image section in x and y direction.
+                imageSection: [0, 0],
+                // Actual center point of the current image section.
+                imageSectionCenter: [0, 0],
             };
         },
         computed: {
@@ -120,7 +114,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     return [0, 0, this.image.width, this.image.height];
                 }
 
-                return [0, 0, 1, 1];
+                return [0, 0, 0, 0];
             },
             viewExtent: function () {
                 // The view can't calculate the extent if the resolution is not set.
@@ -128,14 +122,51 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     return map.getView().calculateExtent(this.mapSize);
                 }
 
-                return [0, 0, 1, 1];
+                return [0, 0, 0, 0];
             },
             imageSectionSteps: function () {
-                // TODO continue here. This replaces the imageSection.stepCount.
                 return [
                     Math.ceil(this.extent[2] / (this.viewExtent[2] - this.viewExtent[0])),
                     Math.ceil(this.extent[3] / (this.viewExtent[3] - this.viewExtent[1])),
                 ];
+            },
+            imageSectionStepSize: function () {
+                var stepSize = [
+                    this.viewExtent[2] - this.viewExtent[0],
+                    this.viewExtent[3] - this.viewExtent[1],
+                ];
+                var overlap;
+                if (this.imageSectionSteps[0] > 1) {
+                    overlap = (stepSize[0] * this.imageSectionSteps[0]) - this.extent[2];
+                    stepSize[0] -= overlap / (this.imageSectionSteps[0] - 1);
+                } else {
+                    stepSize[0] = this.viewExtent[2];
+                }
+
+                if (this.imageSectionSteps[1] > 1) {
+                    overlap = (stepSize[1] * this.imageSectionSteps[1]) - this.extent[3];
+                    stepSize[1] -= overlap / (this.imageSectionSteps[1] - 1);
+                } else {
+                    stepSize[1] = this.viewExtent[3];
+                }
+
+                return stepSize;
+            },
+            imageSectionStartCenter: function () {
+                var startCenter = [
+                    (this.viewExtent[2] - this.viewExtent[0]) / 2,
+                    (this.viewExtent[3] - this.viewExtent[1]) / 2,
+                ];
+
+                if (this.imageSectionSteps[0] <= 1) {
+                    startCenter[0] = this.extent[2] / 2;
+                }
+
+                if (this.imageSectionSteps[1] <= 1) {
+                    startCenter[1] = this.extent[3] / 2;
+                }
+
+                return startCenter;
             },
             projection: function () {
                 return new ol.proj.Projection({
@@ -199,6 +230,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     default:
                         return 'Next image';
                 }
+            },
+            isLawnmowerCycleMode: function () {
+                return this.cycleMode === 'lawnmower';
             },
         },
         methods: {
@@ -454,23 +488,49 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     map.render();
                 }
             },
+            getImageSectionCenter: function (section) {
+                return [
+                    section[0] * this.imageSectionStepSize[0] + this.imageSectionStartCenter[0],
+                    section[1] * this.imageSectionStepSize[1] + this.imageSectionStartCenter[1],
+                ];
+            },
+            showImageSection: function (section) {
+                if (section[0] < this.imageSectionSteps[0] && section[1] < this.imageSectionSteps[1] && section[0] >= 0 && section[1] >= 0) {
+                    this.imageSection = section;
+                    // Don't make this a computed property because it would automatically
+                    // update when the resolution changes. But we need the old value to
+                    // compute the new image section in the resolution watcher first!
+                    this.imageSectionCenter = this.getImageSectionCenter(section);
+                    map.getView().setCenter(this.imageSectionCenter);
+                }
+            },
             showLastImageSection: function () {
-
+                this.showImageSection(this.imageSectionSteps);
             },
             showFirstImageSection: function () {
-
+                this.showImageSection([0, 0]);
             },
             showPreviousImageSection: function () {
-
+                var x = this.imageSection[0] - 1;
+                if (x >= 0) {
+                    this.showImageSection([x, this.imageSection[1]]);
+                } else {
+                    this.showImageSection([
+                        this.imageSectionSteps[0] - 1,
+                        this.imageSection[1] - 1,
+                    ]);
+                }
             },
             showNextImageSection: function () {
-
+                var x = this.imageSection[0] + 1;
+                if (x < this.imageSectionSteps[0]) {
+                    this.showImageSection([x, this.imageSection[1]]);
+                } else {
+                    this.showImageSection([0, this.imageSection[1] + 1]);
+                }
             },
         },
         watch: {
-            imageSectionSteps: function (s) {
-                console.log(s);
-            },
             image: function (image, oldImage) {
                 // image.canvas points to the same object for all images for performance
                 // reasons. Because of this we only have to update the source if the
@@ -563,6 +623,31 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             annotationOpacity: function (opacity) {
                 annotationLayer.setOpacity(opacity);
+            },
+            resolution: function () {
+                // Update the current image section.
+                if (!this.isLawnmowerCycleMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
+                    return;
+                }
+                var distance = function (p1, p2) {
+                    return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
+                };
+
+                var nearest = Infinity;
+                var current = 0;
+                var nearestStep = [0, 0];
+                for (var y = 0; y < this.imageSectionSteps[1]; y++) {
+                    for (var x = 0; x < this.imageSectionSteps[0]; x++) {
+                        current = distance(this.imageSectionCenter, this.getImageSectionCenter([x, y]));
+                        if (current < nearest) {
+                            nearestStep[0] = x;
+                            nearestStep[1] = y;
+                            nearest = current;
+                        }
+                    }
+                }
+
+                this.showImageSection(nearestStep);
             },
         },
         created: function () {
