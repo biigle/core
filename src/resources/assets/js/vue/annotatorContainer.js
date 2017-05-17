@@ -41,6 +41,9 @@ biigle.$viewModel('annotator-container', function (element) {
             cycleMode: 'default',
             // Index of the focussed annotation in the 'volare' cycle mode.
             focussedAnnotationIndex: null,
+            // Determines if the current image section is the last (Infinity) or the
+            // first (0) one.
+            focussedImageSectionIndex: null,
         },
         computed: {
             imageId: function () {
@@ -107,12 +110,20 @@ biigle.$viewModel('annotator-container', function (element) {
                         this.focussedAnnotationIndex++;
                         return;
                     } else {
-                        // Show the next image in this case, so don't return.
+                        // Show the first annotation of the next image in this case, so
+                        // don't return.
                         this.focussedAnnotationIndex = -Infinity;
                     }
                 } else if (this.isLawnmowerCycleMode) {
-                    this.$refs.canvas.showNextImageSection();
-                    return;
+                    // This returns false if the image section can't be advanced (i.e.
+                    // the last section is shown).
+                    if (this.$refs.canvas.showNextImageSection()) {
+                        return;
+                    } else {
+                        // Show the first image section in the next image in this case,
+                        // so don't return.
+                        this.focussedImageSectionIndex = 0;
+                    }
                 }
 
                 // Show next image.
@@ -128,12 +139,20 @@ biigle.$viewModel('annotator-container', function (element) {
                         this.focussedAnnotationIndex--;
                         return;
                     } else {
-                        // Show the previous image in this case, so don't return.
+                        // Show the last annotation of the previous image in this case,
+                        // so don't return.
                         this.focussedAnnotationIndex = Infinity;
                     }
                 } else if (this.isLawnmowerCycleMode) {
-                    this.$refs.canvas.showPreviousImageSection();
-                    return;
+                    // This returns false if the image section can't be reversed (i.e.
+                    // the first section is shown).
+                    if (this.$refs.canvas.showPreviousImageSection()) {
+                        return;
+                    } else {
+                        // Show the last image section in the previous image in this
+                        // case, so don't return.
+                        this.focussedImageSectionIndex = Infinity;
+                    }
                 }
 
                 // Show previous image.
@@ -158,7 +177,11 @@ biigle.$viewModel('annotator-container', function (element) {
             },
             maybeUpdateShownImageSection: function () {
                 if (this.isLawnmowerCycleMode) {
-                    this.$refs.canvas.showFirstImageSection();
+                    if (this.focussedImageSectionIndex === Infinity) {
+                        this.$refs.canvas.showLastImageSection();
+                    } else {
+                        this.$refs.canvas.showFirstImageSection();
+                    }
                 }
             },
             handleMapMoveend: function (viewport) {
@@ -331,6 +354,7 @@ biigle.$viewModel('annotator-container', function (element) {
                     .then(this.updateUrlSlug)
                     .then(this.maybeSelectAndFocusAnnotation)
                     .then(this.maybeUpdateFocussedAnnotation)
+                    .then(this.maybeUpdateShownImageSection)
                     .then(this.emitImageChanged)
                     .then(this.finishLoading)
                     // When everything is loaded, pre-fetch the data of the next and

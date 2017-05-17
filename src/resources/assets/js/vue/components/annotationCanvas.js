@@ -502,10 +502,16 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     // compute the new image section in the resolution watcher first!
                     this.imageSectionCenter = this.getImageSectionCenter(section);
                     map.getView().setCenter(this.imageSectionCenter);
+                    return true;
                 }
+
+                return false;
             },
             showLastImageSection: function () {
-                this.showImageSection(this.imageSectionSteps);
+                this.showImageSection([
+                    this.imageSectionSteps[0] - 1,
+                    this.imageSectionSteps[1] - 1,
+                ]);
             },
             showFirstImageSection: function () {
                 this.showImageSection([0, 0]);
@@ -513,9 +519,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             showPreviousImageSection: function () {
                 var x = this.imageSection[0] - 1;
                 if (x >= 0) {
-                    this.showImageSection([x, this.imageSection[1]]);
+                    return this.showImageSection([x, this.imageSection[1]]);
                 } else {
-                    this.showImageSection([
+                    return this.showImageSection([
                         this.imageSectionSteps[0] - 1,
                         this.imageSection[1] - 1,
                     ]);
@@ -524,9 +530,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             showNextImageSection: function () {
                 var x = this.imageSection[0] + 1;
                 if (x < this.imageSectionSteps[0]) {
-                    this.showImageSection([x, this.imageSection[1]]);
+                    return this.showImageSection([x, this.imageSection[1]]);
                 } else {
-                    this.showImageSection([0, this.imageSection[1] + 1]);
+                    return this.showImageSection([0, this.imageSection[1] + 1]);
                 }
             },
         },
@@ -624,8 +630,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             annotationOpacity: function (opacity) {
                 annotationLayer.setOpacity(opacity);
             },
-            resolution: function () {
-                // Update the current image section.
+            // Update the current image section if either the resolution or the map size
+            // changed.
+            viewExtent: function () {
                 if (!this.isLawnmowerCycleMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
                     return;
                 }
