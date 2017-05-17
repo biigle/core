@@ -50,11 +50,6 @@ biigle.$viewModel('annotator-container', function (element) {
             imageId: function () {
                 return imagesIds[this.imageIndex];
             },
-            selectedAnnotations: function () {
-                return this.annotations.filter(function (annotation) {
-                    return annotation.selected;
-                });
-            },
             hasAnnotationFilter: function () {
                 return typeof this.annotationFilter === 'function';
             },
@@ -65,11 +60,16 @@ biigle.$viewModel('annotator-container', function (element) {
 
                 return this.annotations;
             },
+            selectedAnnotations: function () {
+                return this.filteredAnnotations.filter(function (annotation) {
+                    return annotation.selected;
+                });
+            },
             supportsColorAdjustment: function () {
                 return imagesStore.supportsColorAdjustment;
             },
             focussedAnnotation: function () {
-                return this.annotations[this.focussedAnnotationIndex];
+                return this.filteredAnnotations[this.focussedAnnotationIndex];
             },
             isDefaultCycleMode: function () {
                 return this.cycleMode === 'default';
@@ -107,7 +107,7 @@ biigle.$viewModel('annotator-container', function (element) {
                 }
 
                 if (this.isVolareCycleMode) {
-                    if (this.focussedAnnotationIndex < (this.annotations.length - 1)) {
+                    if (this.focussedAnnotationIndex < (this.filteredAnnotations.length - 1)) {
                         this.focussedAnnotationIndex++;
                         return;
                     } else {
@@ -161,15 +161,18 @@ biigle.$viewModel('annotator-container', function (element) {
             },
             maybeUpdateFocussedAnnotation: function () {
                 if (this.isVolareCycleMode) {
-                    if (this.annotations.length > 0) {
+                    if (this.filteredAnnotations.length > 0) {
                         if (this.focussedAnnotationIndex === Infinity) {
-                            this.focussedAnnotationIndex = this.annotations.length - 1;
+                            // Show the last annotation if the previous image is shown.
+                            this.focussedAnnotationIndex = this.filteredAnnotations.length - 1;
                         } else {
+                            // Show the first annotation if the next image is shown or
+                            // the annotation filter changed.
                             this.focussedAnnotationIndex = 0;
                         }
                     } else {
-                        this.focussedAnnotationIndex = null;
                         // Show the whole image if there are no annotations.
+                        this.focussedAnnotationIndex = null;
                         this.$refs.canvas.fitImage();
                     }
                 } else {
@@ -360,6 +363,9 @@ biigle.$viewModel('annotator-container', function (element) {
                 if (annotation) {
                     this.selectAndFocusAnnotation(annotation);
                 }
+            },
+            annotationFilter: function () {
+                this.maybeUpdateFocussedAnnotation();
             },
         },
         created: function () {
