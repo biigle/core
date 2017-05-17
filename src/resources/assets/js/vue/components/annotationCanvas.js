@@ -125,12 +125,14 @@ biigle.$component('annotations.components.annotationCanvas', function () {
 
                 return [0, 0, 0, 0];
             },
+            // Number of available image sections in x and y direction.
             imageSectionSteps: function () {
                 return [
                     Math.ceil(this.extent[2] / (this.viewExtent[2] - this.viewExtent[0])),
                     Math.ceil(this.extent[3] / (this.viewExtent[3] - this.viewExtent[1])),
                 ];
             },
+            // Distance to travel between image sections in x and y direction.
             imageSectionStepSize: function () {
                 var stepSize = [
                     this.viewExtent[2] - this.viewExtent[0],
@@ -153,6 +155,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
 
                 return stepSize;
             },
+            // Center position of the first image section [0, 0].
             imageSectionStartCenter: function () {
                 var startCenter = [
                     (this.viewExtent[2] - this.viewExtent[0]) / 2,
@@ -333,7 +336,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 return feature.get('annotation');
             },
             handleFeatureSelect: function (event) {
-                this.$emit('select', event.selected.map(this.extractAnnotationFromFeature), event.deselected.map(this.extractAnnotationFromFeature));
+                this.$emit('select',
+                    event.selected.map(this.extractAnnotationFromFeature),
+                    event.deselected.map(this.extractAnnotationFromFeature)
+                );
             },
             handlePrevious: function () {
                 this.$emit('previous');
@@ -495,6 +501,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     map.render();
                 }
             },
+            // Calculate the center point of an image section based on its index in x and
+            // y direction (e.g. [0, 0] for the first section).
             getImageSectionCenter: function (section) {
                 return [
                     section[0] * this.imageSectionStepSize[0] + this.imageSectionStartCenter[0],
@@ -504,9 +512,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             showImageSection: function (section) {
                 if (section[0] < this.imageSectionSteps[0] && section[1] < this.imageSectionSteps[1] && section[0] >= 0 && section[1] >= 0) {
                     this.imageSection = section;
-                    // Don't make this a computed property because it would automatically
-                    // update when the resolution changes. But we need the old value to
-                    // compute the new image section in the resolution watcher first!
+                    // Don't make imageSectionCenter a computed property because it
+                    // would automatically update when the resolution changes. But we
+                    // need the old value to compute the new image section in the
+                    // resolution watcher first!
                     this.imageSectionCenter = this.getImageSectionCenter(section);
                     map.getView().setCenter(this.imageSectionCenter);
                     return true;
@@ -647,7 +656,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 annotationLayer.setOpacity(opacity);
             },
             // Update the current image section if either the resolution or the map size
-            // changed.
+            // changed. viewExtent depends on both so we can use it as watcher.
             viewExtent: function () {
                 if (!this.isLawnmowerCycleMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
                     return;

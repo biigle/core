@@ -30,6 +30,7 @@ biigle.$component('annotations.components.annotationsFilter', {
             return 'filter annotations';
         },
         labelData: function () {
+            // Use this map to get unique labels only.
             var map = {};
             var data = [];
             this.annotations.forEach(function (annotation) {
@@ -47,6 +48,7 @@ biigle.$component('annotations.components.annotationsFilter', {
             return data;
         },
         userData: function () {
+            // Use this map to get unique users only.
             var map = {};
             var data = [];
             this.annotations.forEach(function (annotation) {
@@ -132,10 +134,11 @@ biigle.$component('annotations.components.annotationsFilter', {
                  */
                 for (var i = annotation.labels.length - 1; i >= 0; i--) {
                     if (userMap.hasOwnProperty(annotation.labels[i].user.id)) {
-                        var created_at = new Date(annotation.created_at);
                         // If the annotation has a label of a user that belongs to the
-                        // session, it may be valid if created_at belongs to the session,
+                        // session, it is valid if created_at belongs to the session,
                         // too.
+                        var created_at = new Date(annotation.created_at);
+
                         return created_at >= session.starts_at && created_at < session.ends_at;
                     }
                 }

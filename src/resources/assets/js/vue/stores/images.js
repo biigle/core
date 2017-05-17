@@ -16,7 +16,7 @@ biigle.$declare('annotations.stores.images', function () {
         console.log('WebGL not supported. Color adjustment disabled.');
     }
 
-    window.onbeforeunload = function () {
+    window.addEventListener('beforeunload', function (e) {
         // Make sure the texture is destroyed when the page is left.
         // The browser may take its time to garbage collect it and it may cause
         // crashes due to lack of memory if not explicitly destroyed like this.
@@ -27,7 +27,7 @@ biigle.$declare('annotations.stores.images', function () {
             fxCanvas.width = 1;
             fxCanvas.height = 1;
         }
-    };
+    });
 
     return new Vue({
         data: {

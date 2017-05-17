@@ -11,10 +11,6 @@ biigle.$declare('annotations.stores.map', function () {
                 // bootstrap glyphicons resize-small icon
                 label: '\ue097'
             }),
-            // new ol.control.FullScreen({
-            //     // bootstrap glyphicons fullscreen icon
-            //     label: '\ue140'
-            // }),
         ],
         interactions: ol.interaction.defaults({
             altShiftDragRotate: false,
