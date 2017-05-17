@@ -17,6 +17,7 @@ biigle.$component('core.components.sidebar', {
         return {
             open: false,
             tabs: [],
+            lastOpenedTab: null,
         };
     },
     props: {
@@ -35,8 +36,15 @@ biigle.$component('core.components.sidebar', {
                 return value === 'left' || value === 'right';
             },
         },
+        toggleOnKeyboard: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
+        events: function () {
+            return biigle.$require('biigle.events');
+        },
         classObject: function () {
             return {
                 'sidebar--open': this.open,
@@ -52,24 +60,37 @@ biigle.$component('core.components.sidebar', {
         registerTab: function (tab) {
             this.tabs.push(tab);
         },
+        handleOpenTab: function (name) {
+            this.open = true;
+            this.lastOpenedTab = name;
+            this.$emit('toggle', name);
+            this.events.$emit('sidebar.toggle', name);
+            this.events.$emit('sidebar.open.' + name);
+        },
+        handleCloseTab: function (name) {
+            this.open = false;
+            this.$emit('toggle', name);
+            this.events.$emit('sidebar.toggle', name);
+            this.events.$emit('sidebar.close.' + name);
+        },
+        toggleLastOpenedTab: function (e) {
+            if (this.lastOpenedTab) {
+                e.preventDefault();
+                if (this.open) {
+                    this.$emit('close', this.lastOpenedTab);
+                } else {
+                    this.$emit('open', this.lastOpenedTab);
+                }
+            }
+        },
     },
     created: function () {
-        var self = this;
-        var events = biigle.$require('biigle.events');
+        this.$on('open', this.handleOpenTab);
+        this.$on('close', this.handleCloseTab);
 
-        this.$on('open', function (tabName) {
-            this.open = true;
-            this.$emit('toggle', tabName);
-            events.$emit('sidebar.toggle', tabName);
-            events.$emit('sidebar.open.' + tabName);
-        });
-
-        this.$on('close', function (tabName) {
-            this.open = false;
-            this.$emit('toggle', tabName);
-            events.$emit('sidebar.toggle', tabName);
-            events.$emit('sidebar.close.' + tabName);
-        });
+        if (this.toggleOnKeyboard) {
+            biigle.$require('core.keyboard').on(9, this.toggleLastOpenedTab);
+        }
     },
     mounted: function () {
         if (this.openTab) {
