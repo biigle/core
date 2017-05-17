@@ -254,19 +254,12 @@ biigle.$viewModel('annotator-container', function (element) {
                         .catch(messages.handleErrorResponse);
                 }
             },
-            maybeSelectAndFocusAnnotation: function () {
-                var id = urlParams.get('annotation');
-                if (id) {
-                    id = parseInt(id);
-                    var annotations = this.annotations;
-                    for (var i = annotations.length - 1; i >= 0; i--) {
-                        if (annotations[i].id === id) {
-                            this.focusAnnotation(annotations[i]);
-                            annotations[i].selected = true;
-                            return;
-                        }
-                    }
-                }
+            selectAndFocusAnnotation: function (annotation) {
+                this.selectedAnnotations.forEach(function (a) {
+                    a.selected = false;
+                });
+                annotation.selected = true;
+                this.focusAnnotation(annotation, true);
             },
             handleFilter: function (filter) {
                 this.annotationFilter = filter;
@@ -355,7 +348,6 @@ biigle.$viewModel('annotator-container', function (element) {
                 Vue.Promise.all(this.getImageAndAnnotationsPromises())
                     .then(this.setCurrentImageAndAnnotations)
                     .then(this.updateUrlSlug)
-                    .then(this.maybeSelectAndFocusAnnotation)
                     .then(this.maybeUpdateFocussedAnnotation)
                     .then(this.maybeUpdateShownImageSection)
                     .then(this.emitImageChanged)
@@ -366,11 +358,7 @@ biigle.$viewModel('annotator-container', function (element) {
             },
             focussedAnnotation: function (annotation) {
                 if (annotation) {
-                    this.selectedAnnotations.forEach(function (a) {
-                        a.selected = false;
-                    });
-                    annotation.selected = true;
-                    this.focusAnnotation(annotation, true);
+                    this.selectAndFocusAnnotation(annotation);
                 }
             },
         },
@@ -394,6 +382,20 @@ biigle.$viewModel('annotator-container', function (element) {
             events.$on('annotations.focus', this.focusAnnotation);
             events.$on('annotations.detachLabel', this.handleDetachAnnotationLabel);
             events.$on('annotations.delete', this.handleDeleteAnnotation);
+
+            if (urlParams.get('annotation')) {
+                var id = parseInt(urlParams.get('annotation'));
+                var self = this;
+                events.$once('images.change', function () {
+                    var annotations = self.annotations;
+                    for (var i = annotations.length - 1; i >= 0; i--) {
+                        if (annotations[i].id === id) {
+                            self.selectAndFocusAnnotation(annotations[i]);
+                            return;
+                        }
+                    }
+                });
+            }
         },
     });
 });
