@@ -4,6 +4,9 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.settingsTab', {
+    components: {
+        screenshotButton: biigle.$require('annotations.components.screenshotButton'),
+    },
     data: function () {
         return {
             annotationOpacity: 1.0,

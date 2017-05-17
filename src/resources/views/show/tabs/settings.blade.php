@@ -4,6 +4,12 @@
             <h4>Settings</h4>
 
             <div class="settings-tab__section">
+                <screenshot-button inline-template>
+                    <button class="btn btn-default" :title="screenshotTitle" :disabled="!screenshotSupported" v-on:click="capture"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> Capture screenshot</button>
+                </screenshot-button>
+            </div>
+
+            <div class="settings-tab__section">
                 <label title="Set the opacity of annotations on the map">Annotation opacity (<span v-text="annotationOpacity"></span>)</label>
                 <input type="range" min="0" max="1" step="0.01" v-model="annotationOpacity">
             </div>

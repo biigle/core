@@ -1,5 +1,5 @@
 /**
- * The minimap of the canvas element
+ * The mouse position indicator of the canvas element
  *
  * @type {Object}
  */
