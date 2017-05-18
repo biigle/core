@@ -1,14 +1,13 @@
-.largo-example-patches {
-
-    .patch-container {
+.largo-example-annotations {
+    .largo-example-annotations__images {
         overflow-x: auto;
         white-space: nowrap;
-        margin-bottom: 1em;
+        margin-right: -1em;
     }
 
-    .patch {
-        height: 100px;
-        max-width: 150px;
+    .largo-example-annotation {
+        height: 125px;
+        width: auto;
 
         &:not(:last-child) {
             margin-right: .5em;
@@ -16,6 +15,6 @@
     }
 
     .alert {
-        margin: 0 1em;
+        margin-bottom: 0;
     }
 }
