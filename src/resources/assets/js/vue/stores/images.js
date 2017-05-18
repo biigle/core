@@ -175,6 +175,7 @@ biigle.$declare('annotations.stores.images', function () {
             },
             fetchImage: function (id) {
                 if (!this.cache.hasOwnProperty(id)) {
+                    events.$emit('images.fetching', id);
                     this.cache[id] = this.createImage(id);
                     this.cachedIds.push(id);
                 }

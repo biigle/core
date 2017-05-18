@@ -331,7 +331,7 @@ biigle.$viewModel('annotator-container', function (element) {
                 this.selectedAnnotations.forEach(this.handleAttachLabel);
             },
             emitImageChanged: function () {
-                events.$emit('images.change', this.imageId);
+                events.$emit('images.change', this.imageId, this.image);
             },
             cachePreviousAndNext: function () {
                 var previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex)];
