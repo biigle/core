@@ -76,6 +76,9 @@ biigle.$declare('largo.mixins.largoContainer', {
 
             return changed;
         },
+        events: function () {
+            return biigle.$require('biigle.events');
+        },
     },
     methods: {
         getAnnotations: function (label) {
@@ -165,16 +168,13 @@ biigle.$declare('largo.mixins.largoContainer', {
     },
     watch: {
         annotations: function (annotations) {
-            biigle.$require('largo.stores.events')
-                .$emit('annotations-count', annotations.length);
+            this.events.$emit('annotations-count', annotations.length);
         },
         dismissedAnnotations: function (annotations) {
-            biigle.$require('largo.stores.events')
-                .$emit('dismissed-annotations-count', annotations.length);
+            this.events.$emit('dismissed-annotations-count', annotations.length);
         },
         step: function (step) {
-            biigle.$require('largo.stores.events')
-                .$emit('step', step);
+            this.events.$emit('step', step);
         },
     },
 });
