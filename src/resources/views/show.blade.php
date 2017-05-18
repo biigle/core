@@ -24,9 +24,9 @@
     biigle.$declare('annotations.isEditor', @can('add-annotation', $image) true @else false @endcan);
 
 </script>
-{{--TODO:@foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
+@foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
     @include($module.'::annotationsScripts', ['mixins' => $nestedMixins])
-@endforeach--}}
+@endforeach
 @endpush
 
 @push('styles')
