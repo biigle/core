@@ -106,10 +106,10 @@ biigle.$viewModel('annotator-container', function (element) {
             },
         },
         methods: {
-            getImageAndAnnotationsPromises: function () {
+            getImageAndAnnotationsPromises: function (id) {
                 return [
-                    imagesStore.fetchAndDrawImage(this.imageId),
-                    annotationsStore.fetchAnnotations(this.imageId),
+                    imagesStore.fetchAndDrawImage(id),
+                    annotationsStore.fetchAnnotations(id),
                 ];
             },
             setCurrentImageAndAnnotations: function (args) {
@@ -376,18 +376,20 @@ biigle.$viewModel('annotator-container', function (element) {
             },
         },
         watch: {
-            imageIndex: function (index) {
-                this.startLoading();
-                Vue.Promise.all(this.getImageAndAnnotationsPromises())
-                    .then(this.setCurrentImageAndAnnotations)
-                    .then(this.updateUrlSlug)
-                    .then(this.maybeUpdateFocussedAnnotation)
-                    .then(this.maybeUpdateShownImageSection)
-                    .then(this.emitImageChanged)
-                    .then(this.finishLoading)
-                    // When everything is loaded, pre-fetch the data of the next and
-                    // previous images so they can be switched fast.
-                    .then(this.cachePreviousAndNext);
+            imageId: function (id) {
+                if (id) {
+                    this.startLoading();
+                    Vue.Promise.all(this.getImageAndAnnotationsPromises(id))
+                        .then(this.setCurrentImageAndAnnotations)
+                        .then(this.updateUrlSlug)
+                        .then(this.maybeUpdateFocussedAnnotation)
+                        .then(this.maybeUpdateShownImageSection)
+                        .then(this.emitImageChanged)
+                        .then(this.finishLoading)
+                        // When everything is loaded, pre-fetch the data of the next and
+                        // previous images so they can be switched fast.
+                        .then(this.cachePreviousAndNext);
+                }
             },
             focussedAnnotation: function (annotation) {
                 if (annotation) {
@@ -400,7 +402,18 @@ biigle.$viewModel('annotator-container', function (element) {
         },
         created: function () {
             this.startLoading();
-            this.imageIndex = this.imagesIds.indexOf(biigle.$require('annotations.imageId'));
+            if (this.imagesIds.length === 0) {
+                messages.info('Your current volume filtering contains no images.');
+                return;
+            }
+
+            var index = this.imagesIds.indexOf(biigle.$require('annotations.imageId'));
+            if (index === -1) {
+                index = 0;
+                messages.info('The requested image does not exist in your current volume filtering. Switching to the first image.');
+            }
+            this.imageIndex = index;
+
             events.$emit('images.sequence', this.imagesIds);
 
             if (urlParams.get('r') !== undefined) {
