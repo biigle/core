@@ -40,13 +40,13 @@ biigle.$declare('annotations.stores.annotations', function () {
 
                 return annotations;
             },
-            setSelected: function (annotation) {
+            setDeselected: function (annotation) {
                 annotation.selected = false;
 
                 return annotation;
             },
-            setAllSelected: function (annotations) {
-                annotations.forEach(this.setSelected);
+            setAllDeselected: function (annotations) {
+                annotations.forEach(this.setDeselected);
 
                 return annotations;
             },
@@ -57,7 +57,7 @@ biigle.$declare('annotations.stores.annotations', function () {
                         .then(this.resolveAllShapes);
                 }
 
-                return this.cache[id].then(this.setAllSelected);
+                return this.cache[id].then(this.setAllDeselected);
             },
             create: function (imageId, annotation) {
                 annotation.shape_id = this.inverseShapeMap[annotation.shape];
@@ -67,7 +67,7 @@ biigle.$declare('annotations.stores.annotations', function () {
                 return imagesApi.saveAnnotations({id: imageId}, annotation)
                     .then(this.parseResponse)
                     .then(this.resolveShape)
-                    .then(this.setSelected)
+                    .then(this.setDeselected)
                     .then(function (annotation) {
                         self.cache[imageId].then(function (annotations) {
                             annotations.push(annotation);
