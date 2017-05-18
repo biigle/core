@@ -27,6 +27,9 @@ biigle.$component('annotations.components.settingsTab', {
         isLawnmowerActive: function () {
             return this.cycleMode === 'lawnmower';
         },
+        plugins: function () {
+            return biigle.$require('annotations.components.settingsTabPlugins');
+        },
     },
     methods: {
         startVolare: function () {
@@ -93,3 +96,12 @@ biigle.$component('annotations.components.settingsTab', {
         }, this);
     },
 });
+
+/**
+ * Additional components that can be dynamically added by other Biigle modules via
+ * view mixins. These components are meant for the "annotationsSettingsTab" view mixin
+ * mount point.
+ *
+ * @type {Object}
+ */
+biigle.$declare('annotations.components.settingsTabPlugins', {});
