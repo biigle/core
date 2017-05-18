@@ -9,6 +9,9 @@ biigle.$component('annotations.components.screenshotButton', {
         map: function () {
             return biigle.$require('annotations.stores.map');
         },
+        messages: function () {
+            return biigle.$require('messages.store');
+        },
         screenshotSupported: function () {
             return !biigle.$require('annotations.volumeIsRemote');
         },
@@ -87,7 +90,11 @@ biigle.$component('annotations.components.screenshotButton', {
             return copy.canvas;
         },
         makeBlob: function (canvas) {
-            canvas = this.trimCanvas(canvas);
+            try {
+                canvas = this.trimCanvas(canvas);
+            } catch (error) {
+                return Vue.Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
+            }
 
             var type = 'image/png';
             if (!HTMLCanvasElement.prototype.toBlob) {
@@ -125,9 +132,14 @@ biigle.$component('annotations.components.screenshotButton', {
         capture: function () {
             var self = this;
             this.map.once('postcompose', function (e) {
-                self.makeBlob(e.context.canvas).then(self.download);
+                self.makeBlob(e.context.canvas)
+                    .then(self.download)
+                    .catch(self.handleError);
             });
             this.map.renderSync();
+        },
+        handleError: function (message) {
+            this.messages.danger(message);
         },
     },
 });

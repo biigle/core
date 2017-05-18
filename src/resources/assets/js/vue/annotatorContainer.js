@@ -113,8 +113,15 @@ biigle.$viewModel('annotator-container', function (element) {
                 ];
             },
             setCurrentImageAndAnnotations: function (args) {
-                this.image = args[0];
-                this.annotations = args[1];
+                if (args) {
+                    this.image = args[0];
+                    this.annotations = args[1];
+                } else {
+                    // This might happen if there was an error loading the image or the
+                    // annotations.
+                    this.image = null;
+                    this.annotations = [];
+                }
             },
             updateUrlSlug: function () {
                 urlParams.setSlug(this.imageId);
@@ -330,12 +337,15 @@ biigle.$viewModel('annotator-container', function (element) {
                 var previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex)];
                 var nextId = this.imagesIds[this.getNextIndex(this.imageIndex)];
                 Vue.Promise.all([
-                    annotationsStore.fetchAnnotations(nextId),
-                    imagesStore.fetchImage(nextId),
-                ]).then(function () {
-                    annotationsStore.fetchAnnotations(previousId);
-                    imagesStore.fetchImage(previousId);
-                });
+                        annotationsStore.fetchAnnotations(nextId),
+                        imagesStore.fetchImage(nextId),
+                        annotationsStore.fetchAnnotations(previousId),
+                        imagesStore.fetchImage(previousId),
+                    ])
+                    // Ignore errors in this case. The application will try to reload
+                    // the data again if the user switches to the respective image and
+                    // display the error message then.
+                    .catch(function () {});
             },
             setLastCreatedAnnotation: function (annotation) {
                 if (this.lastCreatedAnnotationTimeout) {
@@ -374,21 +384,25 @@ biigle.$viewModel('annotator-container', function (element) {
             handleClosedTab: function (name) {
                 settings.delete('openTab');
             },
+            handleLoadingError: function (message) {
+                messages.danger(message);
+            },
         },
         watch: {
             imageId: function (id) {
                 if (id) {
                     this.startLoading();
                     Vue.Promise.all(this.getImageAndAnnotationsPromises(id))
+                        .catch(this.handleLoadingError)
                         .then(this.setCurrentImageAndAnnotations)
                         .then(this.updateUrlSlug)
                         .then(this.maybeUpdateFocussedAnnotation)
                         .then(this.maybeUpdateShownImageSection)
                         .then(this.emitImageChanged)
-                        .then(this.finishLoading)
                         // When everything is loaded, pre-fetch the data of the next and
                         // previous images so they can be switched fast.
-                        .then(this.cachePreviousAndNext);
+                        .then(this.cachePreviousAndNext)
+                        .finally(this.finishLoading);
                 }
             },
             focussedAnnotation: function (annotation) {

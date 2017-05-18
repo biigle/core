@@ -563,11 +563,13 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         },
         watch: {
             image: function (image, oldImage) {
-                // image.canvas points to the same object for all images for performance
-                // reasons. Because of this we only have to update the source if the
-                // image dimensions have changed. The content of the canvas element will
-                // be automatically updated.
-                if (!oldImage || oldImage.width !== image.width || oldImage.height !== image.height) {
+                if (!image) {
+                    imageLayer.setSource(null);
+                } else if (!oldImage || oldImage.width !== image.width || oldImage.height !== image.height) {
+                    // image.canvas points to the same object for all images for
+                    // performance reasons. Because of this we only have to update the
+                    // source if the image dimensions have changed. The content of the
+                    // canvas element will be automatically updated.
                     imageLayer.setSource(new ol.source.Canvas({
                         canvas: image.canvas,
                         projection: this.projection,
