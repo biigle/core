@@ -3,6 +3,7 @@
  */
 biigle.$viewModel('annotator-container', function (element) {
     var events = biigle.$require('biigle.events');
+    var volumeId = biigle.$require('annotations.volumeId');
     var imagesIds = biigle.$require('annotations.imagesIds');
     var imagesStore = biigle.$require('annotations.stores.images');
     var annotationsStore = biigle.$require('annotations.stores.annotations');
@@ -50,7 +51,7 @@ biigle.$viewModel('annotator-container', function (element) {
         },
         computed: {
             imageId: function () {
-                return imagesIds[this.imageIndex];
+                return this.imagesIds[this.imageIndex];
             },
             hasAnnotationFilter: function () {
                 return typeof this.annotationFilter === 'function';
@@ -82,6 +83,27 @@ biigle.$viewModel('annotator-container', function (element) {
             isLawnmowerCycleMode: function () {
                 return this.cycleMode === 'lawnmower';
             },
+            imagesIds: function () {
+                // Look for a sequence of image IDs in local storage. This sequence is
+                // produced by the volume overview page when the images are sorted or
+                // filtered. We want to reflect the same ordering or filtering here
+                // in the annotator.
+                var storedSequence = window.localStorage.getItem('biigle.volumes.' + volumeId + '.images');
+                if (storedSequence) {
+                    // If there is such a stored sequence, filter out any image IDs that
+                    // do not belong to the volume (any more), since some of them may
+                    // have been deleted in the meantime.
+                    var map = {};
+                    imagesIds.forEach(function (id) {
+                        map[id] = null;
+                    });
+                    return JSON.parse(storedSequence).filter(function (id) {
+                        return map.hasOwnProperty(id);
+                    });
+                }
+
+                return imagesIds;
+            },
         },
         methods: {
             getImageAndAnnotationsPromises: function () {
@@ -98,10 +120,10 @@ biigle.$viewModel('annotator-container', function (element) {
                 urlParams.setSlug(this.imageId);
             },
             getNextIndex: function (index) {
-                return (index + 1) % imagesIds.length;
+                return (index + 1) % this.imagesIds.length;
             },
             getPreviousIndex: function (index) {
-                return (index + imagesIds.length - 1) % imagesIds.length;
+                return (index + this.imagesIds.length - 1) % this.imagesIds.length;
             },
             handleNext: function () {
                 if (this.loading) {
@@ -305,8 +327,8 @@ biigle.$viewModel('annotator-container', function (element) {
                 events.$emit('images.change', this.imageId);
             },
             cachePreviousAndNext: function () {
-                var previousId = imagesIds[this.getPreviousIndex(this.imageIndex)];
-                var nextId = imagesIds[this.getNextIndex(this.imageIndex)];
+                var previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex)];
+                var nextId = this.imagesIds[this.getNextIndex(this.imageIndex)];
                 Vue.Promise.all([
                     annotationsStore.fetchAnnotations(nextId),
                     imagesStore.fetchImage(nextId),
@@ -378,7 +400,8 @@ biigle.$viewModel('annotator-container', function (element) {
         },
         created: function () {
             this.startLoading();
-            this.imageIndex = imagesIds.indexOf(biigle.$require('annotations.imageId'));
+            this.imageIndex = this.imagesIds.indexOf(biigle.$require('annotations.imageId'));
+            events.$emit('images.sequence', this.imagesIds);
 
             if (urlParams.get('r') !== undefined) {
                 this.mapResolution = parseInt(urlParams.get('r'), 10) / 100;

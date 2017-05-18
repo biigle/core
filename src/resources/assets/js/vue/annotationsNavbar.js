@@ -32,5 +32,11 @@ biigle.$viewModel('annotations-navbar', function (element) {
                 document.title = 'Annotate ' + filename;
             },
         },
+        created: function () {
+            var self = this;
+            biigle.$require('biigle.events').$on('images.sequence', function (ids) {
+                self.imageIdsToSee = ids.slice();
+            });
+        },
     });
 });
