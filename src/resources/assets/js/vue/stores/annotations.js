@@ -53,6 +53,9 @@ biigle.$declare('annotations.stores.annotations', function () {
             fetchAnnotations: function (id) {
                 if (!this.cache.hasOwnProperty(id)) {
                     this.cache[id] = imagesApi.getAnnotations({id: id})
+                        .catch(function () {
+                            return Vue.Promise.reject('Failed to load annotations for image ' + id + '!');
+                        })
                         .then(this.parseResponse)
                         .then(this.resolveAllShapes);
                 }
