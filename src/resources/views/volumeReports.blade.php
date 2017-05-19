@@ -65,7 +65,7 @@
                                 <div class="help-block" v-if="errors.annotationSession" v-text="getError('annotationSession')"></div>
                             </div>
                         </div>
-                        <div class="col-sm-5 help-block ng-cloak" v-if="options.annotationSession" v-cloak>
+                        <div class="col-sm-5 help-block" v-if="options.annotationSession" v-cloak>
                             Only annotations that were created during the selected annotation session will be included in the report.
                         </div>
                     </div>
