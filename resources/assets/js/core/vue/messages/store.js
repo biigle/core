@@ -69,8 +69,12 @@ biigle.$declare('messages.store', new Vue({
             } else {
                 this.danger("The server didn't respond, sorry.");
             }
-        }
-    }
+        },
+        // I always mix this up...
+        handleResponseError: function (response) {
+            return this.handleErrorResponse(response);
+        },
+    },
 }));
 
 // To support the legacy AngularJS biigle.ui.messages msg service
