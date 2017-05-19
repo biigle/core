@@ -19,12 +19,17 @@ biigle.$component('annotations.components.annotationsTab', {
         },
     },
     computed: {
+        sortedAnnotations: function () {
+            return this.filteredAnnotations.sort(this.sortById);
+        },
         // Compiles a list of all labels and their associated annotations.
         items: function () {
             var labels = [];
             var annotations = {};
-            this.filteredAnnotations.forEach(function (annotation) {
-                annotation.labels.forEach(function (annotationLabel) {
+            this.sortedAnnotations.forEach(function (annotation) {
+                // Put annotation labels with the largest ID first so the newest
+                // ones will be displayed at the top of the list in the sidebar.
+                annotation.labels.sort(this.sortById).forEach(function (annotationLabel) {
                     var item = {
                         annotation: annotation,
                         annotationLabel: annotationLabel,
@@ -39,15 +44,23 @@ biigle.$component('annotations.components.annotationsTab', {
                 });
             });
 
-            return labels.map(function (label) {
-                return {
-                    label: label,
-                    annotations: annotations[label.id]
-                };
-            });
+            // Sort labels alphabetically in the sidebar.
+            return labels.sort(this.sortByName)
+                .map(function (label) {
+                    return {
+                        label: label,
+                        annotations: annotations[label.id]
+                    };
+                });
         },
     },
     methods: {
+        sortById: function (a, b) {
+            return a.id > b.id ? -1 : 1;
+        },
+        sortByName: function (a, b) {
+            return a.name > b.name ? 1 : -1;
+        },
         reallyScrollIntoView: function (annotations) {
             var scrollElement = this.$refs.scrollList;
             var scrollTop = scrollElement.scrollTop;
