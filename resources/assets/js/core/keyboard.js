@@ -9,8 +9,21 @@ biigle.$declare('core.keyboard', new Vue({
         codeListeners: {},
         // Key codes that should be handled on the keydown event rather than keypress.
         // This is because of the behavior of Chrome and IE not to fire keypress on some
-        // keys (like the arrow keys).
-        keyDownCodes: [37, 38, 39, 40],
+        // keys (like the arrow keys) or supply the wrong key code.
+        keyDownCodes: [
+            8, // Backspace
+            9, // Tab
+            27, // ESC
+            33, // Pg Up
+            34, // Pg Down
+            35, // End
+            36, // Pos 1
+            37, // Arrow left
+            38, // Arrow up
+            39, // Arrow right
+            40, // Arrow down
+            46, // Del
+        ],
         keyDownListeners: {},
         // Events that have these tags as target will be ignored.
         ignoredTags: ['input', 'textarea', 'select'],
