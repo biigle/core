@@ -51,7 +51,7 @@ biigle.$component('annotations.components.annotationsTab', {
     },
     methods: {
         sortByName: function (a, b) {
-            return a.name > b.name ? 1 : -1;
+            return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
         },
         reallyScrollIntoView: function (annotations) {
             var scrollElement = this.$refs.scrollList;
