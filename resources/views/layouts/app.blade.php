@@ -31,14 +31,7 @@
         Vue.http.headers.common['X-CSRF-TOKEN'] = '{{csrf_token()}}';
     </script>
 
-    <script src="{{ cachebust_asset('assets/scripts/angular.min.js') }}"></script>
-    <script src="{{ cachebust_asset('assets/scripts/angular-resource.min.js') }}"></script>
-    <script src="{{ cachebust_asset('assets/scripts/angular-animate.min.js') }}"></script>
-    <script src="{{ cachebust_asset('assets/scripts/ui-bootstrap-tpls.min.js') }}"></script>
     <script src="{{ cachebust_asset('assets/scripts/main.js') }}"></script>
-    <script type="text/javascript">
-        angular.module('biigle.api').constant('URL', '{{ url('/') }}');
-    </script>
     @stack('scripts')
 </body>
 </html>

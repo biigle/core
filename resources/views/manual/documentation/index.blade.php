@@ -54,16 +54,4 @@
 			<a class="btn btn-default btn-lg btn-block" href="{{ url('doc/server/index.html') }}">Server API documentation</a>
 		</p>
 	</div>
-	<div class="row">
-		<h3>Client</h3>
-		<p>
-			The client side application is written in JavaScript using the <a href="https://angularjs.org/">AngularJS</a> framework. AngularJS, by default, wraps any application in a module, which works very well with the server side PHP modules for custom package development. The core modules of this application essentially provide utility functions like Angular resources for the RESTful API access or services for e.g. the user feedback <a onclick="window.$biiglePostMessage('info', 'I am the user feedback messaging system!');">messaging system</a>.
-		</p>
-		<p>
-			While custom BIIGLE modules are free to use any JavaScript framework (or none at all) for client side interactions, the AngularJS core modules are always available for convenient access to the RESTful API and integration in the application ecosystem. Therfore using AngularJS for custom module development is highly recommended.
-		</p>
-		<p>
-			<a class="btn btn-default btn-lg btn-block" href="{{ url('doc/client/index.html') }}">Client API documentation</a>
-		</p>
-	</div>
 @endsection

@@ -9,7 +9,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task('js', function (cb) {
-   h.angular('core/**/*.js', 'main.js', cb);
+   h.angular('**/*.js', 'main.js', cb);
 });
 
 gulp.task('apidoc', function (cb) {
@@ -21,7 +21,7 @@ gulp.task('apidoc', function (cb) {
 
 gulp.task('watch', function () {
     gulp.watch(h.paths.sass + '**/*.scss', ['sass']);
-    gulp.watch(h.paths.js + 'core/**/*.js', ['js']);
+    gulp.watch(h.paths.js + '**/*.js', ['js']);
 });
 
 gulp.task('default', ['sass', 'js'])

@@ -68,8 +68,7 @@
             "php artisan optimize"
         ],
         "test": [
-            "php vendor/bin/phpunit",
-            "npm test"
+            "php vendor/bin/phpunit"
         ],
         "fix": [
             "php-cs-fixer --config-file='.php_cs' fix"
@@ -77,9 +76,7 @@
         "doc": [
             "rm -rf public/doc/api",
             "rm -rf public/doc/server",
-            "rm -rf public/doc/client",
             "php sami.phar update sami.php -v",
-            "node node_modules/jsdoc/jsdoc.js -c node_modules/angular-jsdoc/conf.json -t node_modules/angular-jsdoc/template -d public/doc/client -r resources/assets/js",
             "gulp apidoc"
         ]
     },
