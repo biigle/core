@@ -21,7 +21,7 @@
                 <control-button icon="icon-linestring" title="Draw a line string 𝗙, hold 𝗦𝗵𝗶𝗳𝘁 for freehand" :active="isDrawingLineString" v-on:click="drawLineString"></control-button>
                 <control-button icon="icon-polygon" title="Draw a polygon 𝗚, hold 𝗦𝗵𝗶𝗳𝘁 for freehand" :active="isDrawingPolygon" v-on:click="drawPolygon"></control-button>
             </div>
-            <div class="btn-group edit-controls" data-ng-controller="EditControlsController">
+            <div class="btn-group edit-controls">
                 <control-button icon="glyphicon-tag" title="Attach the currently selected label to existing annotations 𝗟" :active="isAttaching" v-on:click="toggleAttaching"></control-button>
                 <control-button icon="glyphicon-move" title="Move selected annotations 𝗠" :active="isTranslating" v-on:click="toggleTranslating"></control-button>
                 <control-button v-if="hasLastCreatedAnnotation" icon="glyphicon-arrow-left" title="Delete the last drawn annotation 𝗕𝗮𝗰𝗸𝘀𝗽𝗮𝗰𝗲" v-on:click="deleteLastCreatedAnnotation"></control-button>
