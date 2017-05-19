@@ -15,7 +15,7 @@
                 <label-item v-for="item in items" :key="item.label.id" :item="item" v-on:select="keepElementPosition" inline-template>
                     <li class="annotations-tab-item" :class="classObject" :title="title">
                         <div class="annotations-tab-item__title" v-on:click="toggleOpen">
-                            <span class="pull-right" v-text="count" :title="countTitle"></span>
+                            <span class="pull-right badge" v-text="count" :title="countTitle"></span>
                             <span class="annotations-tab-item__color" :style="colorStyle"></span> <span v-text="label.name"></span>
                         </div>
                         <ul class="annotations-tab-item__list list-unstyled" v-show="isSelected">

@@ -39,9 +39,18 @@
 
     &.selected {
         .annotations-tab-item__title {
-            color: white;
             padding-bottom: .5em;
             font-weight: bold;
+        }
+    }
+
+    &.selected .annotations-tab-item__title,
+    .annotations-tab-item__title:hover {
+        color: white;
+
+        .badge {
+            background-color: white;
+            color: $body-bg;
         }
     }
 
@@ -49,10 +58,6 @@
         position: relative;
         padding: 1em 0 1em 1.25em;
         cursor: pointer;
-
-        &:hover {
-            color: white;
-        }
     }
 
     .annotations-tab-item__color {
