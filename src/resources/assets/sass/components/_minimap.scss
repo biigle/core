@@ -1,0 +1,10 @@
+.annotation-canvas__minimap {
+    @extend %info-box;
+    top: .5em;
+    right: .5em;
+    background-image: url(../images/noise.png);
+    height: 200px;
+    width: 250px;
+    padding: 0;
+    overflow: hidden;
+}

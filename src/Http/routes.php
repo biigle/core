@@ -4,13 +4,13 @@
 $router->get('annotate/{id}', [
     'middleware' => 'auth',
     'as'   => 'annotate',
-    'uses' => 'AnnotationController@index',
+    'uses' => 'AnnotationController@show',
 ]);
 
 $router->get('annotations/{id}', [
     'middleware' => 'auth',
     'as'   => 'show-annotation',
-    'uses' => 'AnnotationController@show',
+    'uses' => 'AnnotationController@showAnnotation',
 ]);
 
 $router->group([

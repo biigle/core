@@ -14,14 +14,14 @@ use Biigle\Http\Controllers\Views\Controller;
 class AnnotationController extends Controller
 {
     /**
-     * Shows the annotation index page.
+     * Shows the annotation tool.
      *
      * @param Guard $auth
      * @param int $id the image ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth, $id)
+    public function show(Guard $auth, $id)
     {
         $image = Image::with('volume')->findOrFail($id);
         $this->authorize('access', $image);
@@ -61,18 +61,17 @@ class AnnotationController extends Controller
             })
             ->get();
 
-        $shapes = Shape::all();
+        $shapes = Shape::pluck('name', 'id');
 
         $annotationSessions = $image->volume->annotationSessions()
             ->select('id', 'name', 'starts_at', 'ends_at')
             ->with('users')
             ->get();
 
-        return view('annotations::index', [
+        return view('annotations::show', [
             'user' => $user,
             'image' => $image,
             'volume' => $image->volume,
-            'editMode' => $user->can('add-annotation', $image),
             'images' => $images,
             'labelTrees' => $trees,
             'shapes' => $shapes,
@@ -86,7 +85,7 @@ class AnnotationController extends Controller
      * @param int $id Annotation ID
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function showAnnotation($id)
     {
         $annotation = Annotation::select('id', 'image_id')->findOrFail($id);
         $this->authorize('access', $annotation);

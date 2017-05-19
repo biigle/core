@@ -1,12 +1,34 @@
-.sidebar__annotations {
-	flex-grow: 2;
-	overflow-y: auto;
-    position: relative;
+.annotations-tab {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    overflow: none;
 }
 
-.labels-list-item {
+.annotations-tab__filter {
+    padding: 1em;
+    width: 100%;
+
+    select.form-control {
+        width: 80px;
+    }
+
+    input.form-control {
+        width: 140px;
+    }
+}
+
+.annotations-tab__list {
+    // Positioning is required for the automatic scrolling to selected annotations.
+    position: relative;
+    flex: 1;
+    overflow: auto;
+    margin: 0;
+}
+
+.annotations-tab-item {
     // must not be position:relative because .annotation-list-item calculates the
-    // offsetTop property relative to .sidebar__annotations!
+    // offsetTop property relative to .annotations-tab!
     user-select: none;
     padding: 0 1em;
     border-bottom: 1px solid #353535;
@@ -16,39 +38,45 @@
     }
 
     &.selected {
-        .list-item-title {
-            color: white;
+        .annotations-tab-item__title {
             padding-bottom: .5em;
             font-weight: bold;
         }
     }
 
-    .list-item-title {
-        padding: 1em 0;
-        cursor: pointer;
+    &.selected .annotations-tab-item__title,
+    .annotations-tab-item__title:hover {
+        color: white;
 
-        &:hover {
-            color: white;
+        .badge {
+            background-color: white;
+            color: $body-bg;
         }
     }
 
-    .list-item-color {
-        width: 1em;
-        height: 1em;
-        display: inline-block;
-        border-radius: 50%;
-        border: 2px solid #eee;
-        vertical-align: middle;
+    .annotations-tab-item__title {
+        position: relative;
+        padding: 1em 0 1em 1.25em;
+        cursor: pointer;
     }
 
+    .annotations-tab-item__color {
+        position: absolute;
+        left: 0;
+        top: 1.2em;
+        width: 1em;
+        height: 1em;
+        border: 2px solid white;
+        border-radius: 50%;
+    }
 
-    .annotations-list {
+    .annotations-tab-item__list {
         padding-bottom: 1em;
     }
 
-    .annotation-list-item {
+    .annotations-tab-item__sub-item {
         cursor: pointer;
-        padding: .25em 0 .25em 1em;
+        padding: .25em 0;
         color: $text-muted;
 
         &:hover, &.selected {
