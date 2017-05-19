@@ -73,7 +73,7 @@ biigle.$declare('annotations.stores.annotations', function () {
                     .then(this.setDeselected)
                     .then(function (annotation) {
                         self.cache[imageId].then(function (annotations) {
-                            annotations.push(annotation);
+                            annotations.unshift(annotation);
                         });
 
                         return annotation;
@@ -101,7 +101,7 @@ biigle.$declare('annotations.stores.annotations', function () {
             attachLabel: function (annotation, label) {
                 var promise = annotationsApi.attachLabel({id: annotation.id}, label);
                 promise.then(function (response) {
-                    annotation.labels.push(response.data);
+                    annotation.labels.unshift(response.data);
                 });
 
                 return promise;
