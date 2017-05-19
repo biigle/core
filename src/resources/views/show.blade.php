@@ -8,7 +8,7 @@
 <script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/annotations/scripts/ol.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/annotations/scripts/glfx.js') }}"></script>
-<script src="{{ cachebust_asset('vendor/annotations/scripts/vue.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/annotations/scripts/main.js') }}"></script>
 <script type="text/javascript">
     @can('add-annotation', $image)
         biigle.$declare('annotations.labelTrees', {!! $labelTrees !!});
@@ -32,7 +32,7 @@
 @push('styles')
 <link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
 <link href="{{ cachebust_asset('vendor/annotations/styles/ol.css') }}" rel="stylesheet">
-<link href="{{ cachebust_asset('vendor/annotations/styles/vue.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
 
 @foreach ($modules->getMixins('annotationsStyles') as $module => $nestedMixins)
     @include($module.'::annotationsStyles', ['mixins' => $nestedMixins])

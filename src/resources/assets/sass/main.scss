@@ -1,89 +1,12 @@
 @import "variables";
 
-html, body {
-	height: 100%;
-}
-
-.annotator__container {
-	position: absolute;
-	top: 0;
-	z-index: 0;
-	width: 100%;
-	height: 100%;
-	padding-top: 51px;
-	display: flex;
-	flex-flow: columns;
-}
-
-// this will be the fullscreen element
-.annotator__canvas {
-	height: 100%;
-    width: 100%;
-	flex: 2;
-	// so the element shrinks and grows independently from the size of the
-	// contained svg
-	overflow: hidden;
-	position: relative;
-    background-image: url(../images/noise.png);
-}
-
-@keyframes rotate {
-	100% {
-		transform: rotate(360deg);
-	}
-}
-
-.canvas__loader {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	height: 50px;
-	width: 50px;
-	background-color: rgba(0, 0, 0, 0.75);
-	border-radius: 50%;
-	opacity: 0;
-	pointer-events: none;
-	z-index: 1;
-	transition: opacity 0.25s;
-
-	&.active {
-		opacity: 1;
-
-		&:before {
-			animation: rotate 5s infinite linear;
-		}
-	}
-
-	&:before {
-		content: '';
-		width: 80%;
-		height: 80%;
-		position: absolute;
-		top: 10%;
-		left: 10%;
-		background: url(../images/biigle-wheel.png) center no-repeat;
-		background-size: contain;
-	}
-}
-
-.fullscreen__minimap {
-    position: absolute;
+%info-box {
     z-index: 1;
-    // below close full screen control
-    top: 3em;
-    right: .5em;
-    background-image: url(../images/noise.png);
-    height: 200px;
-    width: 250px;
-    margin-bottom: 1em;
-    border: 1px solid #090909;
-    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.75);
-    visibility: hidden;
-}
-
-.annotator__canvas:fullscreen .fullscreen__minimap {
-    visibility: visible;
+    border-radius: 4px;
+    position: absolute;
+    background-color: fade-out(#222, 0.3);
+    border: 1px solid #353535;
+    padding: .25em .5em;
 }
 
 .navbar-text.navbar-annotations-breadcrumbs {
@@ -107,11 +30,30 @@ html, body {
     }
 }
 
-@import "icons";
-@import "sidebar/main";
-@import "sidebar/annotations";
-@import "sidebar/categories";
-@import "sidebar/settings";
-@import "sidebar/annotationFilter";
-@import "map-controls";
+.annotator-container {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: calc(100% - #{$navbar-height} - 1px);
+    margin-top: $navbar-height + 1px;
+}
+
+.annotator-container__canvas {
+    flex: 1;
+    height: 100%;
+    position: relative;
+}
+
 @import "ol";
+@import "icons";
+@import "sidebar/annotations";
+@import "sidebar/labels";
+@import "sidebar/color-adjustment";
+@import "sidebar/settings";
+@import "components/annotation-canvas";
+@import "components/label-indicator";
+@import "components/mouse-position-indicator";
+@import "components/minimap";
+@import "components/control-button";
