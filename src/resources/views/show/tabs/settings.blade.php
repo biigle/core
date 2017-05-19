@@ -10,12 +10,12 @@
             </div>
 
             <div class="settings-tab__section">
-                <label title="Set the opacity of annotations on the map">Annotation opacity (<span v-text="annotationOpacity"></span>)</label>
+                <label title="Set the opacity of annotations on the map">Annotation Opacity (<span v-text="annotationOpacity"></span>)</label>
                 <input type="range" min="0" max="1" step="0.1" v-model="annotationOpacity">
             </div>
 
             <div class="settings-tab__section">
-                <label title="Cycle through all annotations">Volare<br><small>Cycle through annotations</small></label>
+                <label title="Cycle through all annotations">Volare<br><small>cycle through annotations</small></label>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" :class="{active: isVolareActive}" v-on:click="startVolare" title="Start cycling through all annotations">on</button>
                     <button type="button" class="btn btn-default" :class="{active: !isVolareActive}" v-on:click="resetCycleMode" title="Stop cycling through all annotations 𝗘𝘀𝗰">off</button>
@@ -28,7 +28,7 @@
             </div>
 
             <div class="settings-tab__section">
-                <label title="Cycle through image sections">Lawnmower mode<br><small>Cycle through image sections</small></label>
+                <label title="Cycle through image sections">Lawnmower Mode<br><small>cycle through image sections</small></label>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" :class="{active: isLawnmowerActive}" v-on:click="startLawnmower" title="Start cycling through image sections">on</button>
                     <button type="button" class="btn btn-default" :class="{active: !isLawnmowerActive}" v-on:click="resetCycleMode" title="Stop cycling through image sections 𝗘𝘀𝗰">off</button>
@@ -36,7 +36,7 @@
             </div>
 
             <div class="settings-tab__section">
-                <label>Mouse position</label>
+                <label>Mouse Position</label>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" :class="{active: mousePosition}" v-on:click="showMousePosition" title="Show mouse position">show</button>
                     <button type="button" class="btn btn-default" :class="{active: !mousePosition}" v-on:click="hideMousePosition" title="Hide mouse position">hide</button>

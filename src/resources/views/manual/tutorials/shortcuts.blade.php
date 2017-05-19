@@ -30,7 +30,7 @@
                 </tr>
                 <tr>
                     <td><code>Tab</code></td>
-                    <td>Show/hide the label trees</td>
+                    <td>Show/hide the current sidebar tab</td>
                 </tr>
                 <tr>
                     <td><code>A</code></td>
@@ -76,7 +76,7 @@
         </table>
 
         <p>
-            When "cycle through image sections" is activated:
+            When Lawnmower Mode (cycle through image sections) is activated:
         </p>
 
         <table class="table">
@@ -97,13 +97,13 @@
                 </tr>
                 <tr>
                     <td><code>Esc</code></td>
-                    <td>Exit cycle through image sections</td>
+                    <td>Exit Lawnmower Mode</td>
                 </tr>
             </tbody>
         </table>
 
         <p>
-            When "cycle through annotations" is activated:
+            When Volare (cycle through annotations) is activated:
         </p>
 
         <table class="table">
@@ -128,7 +128,7 @@
                 </tr>
                 <tr>
                     <td><code>Esc</code></td>
-                    <td>Exit cycle through annotations</td>
+                    <td>Exit Volare</td>
                 </tr>
             </tbody>
         </table>
