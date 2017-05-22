@@ -145,7 +145,7 @@ biigle.$component('labelTrees.components.labelTrees', {
                 }, this);
             }
 
-            var keyboard = biigle.$require('core.keyboard');
+            var keyboard = biigle.$require('keyboard');
             var self = this;
 
             var bindFavouriteKey = function (key, index) {
