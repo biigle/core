@@ -214,7 +214,7 @@ biigle.$require('annotations.components.settingsTabPlugins').exportArea = {
 
         this.exportArea = biigle.$require('annotations.exportArea');
 
-        var events = biigle.$require('biigle.events');
+        var events = biigle.$require('events');
         events.$on('images.change', this.updateCurrentImage);
 
         var map = biigle.$require('annotations.stores.map');
