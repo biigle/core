@@ -89,7 +89,7 @@ biigle.$component('core.components.sidebar', {
         this.$on('close', this.handleCloseTab);
 
         if (this.toggleOnKeyboard) {
-            biigle.$require('core.keyboard').on(9, this.toggleLastOpenedTab);
+            biigle.$require('keyboard').on(9, this.toggleLastOpenedTab);
         }
     },
     mounted: function () {
