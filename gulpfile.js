@@ -19,7 +19,7 @@ gulp.task('sass-dashboard', function () {
 gulp.task('sass', ['sass-main', 'sass-dashboard']);
 
 gulp.task('js-main', function (cb) {
-    h.angular('**/*.js', 'main.js', cb);
+    h.js('**/*.js', 'main.js', cb);
 });
 
 gulp.task('js', ['js-main']);
