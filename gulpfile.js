@@ -9,7 +9,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task('js', function (cb) {
-   h.angular('**/*.js', 'main.js', cb);
+   h.js('**/*.js', 'main.js', cb);
 });
 
 gulp.task('apidoc', function (cb) {
