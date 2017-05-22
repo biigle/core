@@ -43,7 +43,7 @@ biigle.$component('core.components.sidebar', {
     },
     computed: {
         events: function () {
-            return biigle.$require('biigle.events');
+            return biigle.$require('events');
         },
         classObject: function () {
             return {
