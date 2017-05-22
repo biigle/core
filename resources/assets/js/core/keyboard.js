@@ -136,3 +136,5 @@ biigle.$declare('keyboard', new Vue({
         document.body.addEventListener('keydown', this.handleKeyDownEvents);
     },
 }));
+// Legacy support of old name.
+biigle.$declare('core.keyboard', biigle.$require('keyboard'));
