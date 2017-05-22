@@ -216,7 +216,7 @@ class UserController extends Controller
         $user->role_id = $request->input('role_id', $user->role_id);
         $user->firstname = $request->input('firstname', $user->firstname);
         $user->lastname = $request->input('lastname', $user->lastname);
-        $user->email = $request->input('email', $user->email);
+        $user->email = strtolower($request->input('email', $user->email));
         $user->save();
 
         if (!static::isAutomatedRequest($request)) {
@@ -340,7 +340,7 @@ class UserController extends Controller
         $user = new User;
         $user->firstname = $request->input('firstname');
         $user->lastname = $request->input('lastname');
-        $user->email = $request->input('email');
+        $user->email = strtolower($request->input('email'));
         $user->password = bcrypt($request->input('password'));
         $user->save();
 
