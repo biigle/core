@@ -19,11 +19,11 @@ gulp.task('sass-annotations', function () {
 gulp.task('sass', ['sass-main', 'sass-annotations']);
 
 gulp.task('js-main', function (cb) {
-   h.angular('vue/**/*.js', 'main.js', cb);
+   h.js('vue/**/*.js', 'main.js', cb);
 });
 
 gulp.task('js-annotations', function (cb) {
-   h.angular('annotations/**/*.js', 'annotations.js', cb);
+   h.js('annotations/**/*.js', 'annotations.js', cb);
 });
 
 gulp.task('js', ['js-main', 'js-annotations']);
