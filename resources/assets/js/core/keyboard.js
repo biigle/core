@@ -1,7 +1,7 @@
 /**
  * Keyboard event handler.
  */
-biigle.$declare('core.keyboard', new Vue({
+biigle.$declare('keyboard', new Vue({
     data: {
         // Distinguish between char and code listeners because a key event with code
         // 9 is not the same as one with char '9'!
