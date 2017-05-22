@@ -197,6 +197,8 @@ class UserController extends Controller
             abort(400, 'The own user cannot be updated using this endpoint.');
         }
 
+        $request = $this->emailToLowercase($request);
+
         $user = User::findOrFail($id);
         $this->validate($request, $user->updateRules());
 
@@ -260,6 +262,8 @@ class UserController extends Controller
     {
         // save origin so the settings view can highlight the right form fields
         $request->session()->flash('origin', $request->input('_origin'));
+
+        $request = $this->emailToLowercase($request);
 
         $user = $auth->user();
         $this->validate($request, $user->updateRules());
@@ -335,6 +339,8 @@ class UserController extends Controller
          * own admin account. Once they have an admin account and know the password, they
          * can wreak havoc.
          */
+
+        $request = $this->emailToLowercase($request);
 
         $this->validate($request, User::$createRules);
         $user = new User;
@@ -459,5 +465,21 @@ class UserController extends Controller
         }
 
         return redirect('auth/login');
+    }
+
+    /**
+     * Transform the input email to lowercase
+     *
+     * @param Request $request
+     *
+     * @return Request
+     */
+    protected function emailToLowercase(Request $request)
+    {
+        if ($request->has('email')) {
+            $request->merge(['email' => strtolower($request->input('email'))]);
+        }
+
+        return $request;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Auth;
 
+use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 
@@ -18,7 +19,9 @@ class ForgotPasswordController extends Controller
     |
     */
 
-    use SendsPasswordResetEmails;
+    use SendsPasswordResetEmails {
+        sendResetLinkEmail as protected baseSendResetLinkEmail;
+    }
 
     /**
      * Create a new controller instance.
@@ -28,5 +31,20 @@ class ForgotPasswordController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+    }
+
+    /**
+     * Send a reset link to the given user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function sendResetLinkEmail(Request $request)
+    {
+        // Transform the username/email to lowercase because we want this to be case
+        // insensitive.
+        $request->merge(['email' => strtolower($request->input('email'))]);
+
+        return $this->baseSendResetLinkEmail($request);
     }
 }

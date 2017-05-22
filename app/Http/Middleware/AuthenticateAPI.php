@@ -32,7 +32,7 @@ class AuthenticateAPI
             return false;
         }
 
-        $email = $request->getUser();
+        $email = strtolower($request->getUser());
         $proposedToken = $request->getPassword();
 
         $user = User::where('email', $email)->with('apiTokens')->first();

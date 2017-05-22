@@ -98,6 +98,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Set the email attribute and transform it to lowercase.
+     *
+     * @param string $value
+     */
+    public function setEmailAttribute($value)
+    {
+        $this->attributes['email'] = $value ? strtolower($value) : null;
+    }
+
+    /**
      * The projects, this user is a member of.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany

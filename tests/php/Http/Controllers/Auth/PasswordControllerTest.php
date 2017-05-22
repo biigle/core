@@ -38,6 +38,20 @@ class PasswordControllerTest extends TestCase
         $this->assertNotNull(DB::table('password_resets')->where('email', $user->email)->first());
     }
 
+    public function testPostEmailCaseInsensitive()
+    {
+        Mail::shouldReceive('send')->once();
+
+        $user = UserTest::create(['email' => 'test@test.com']);
+
+        $this->post('password/email', [
+            '_token' => Session::token(),
+            'email' => 'Test@Test.com',
+        ]);
+
+        $this->assertNotNull(DB::table('password_resets')->where('email', $user->email)->first());
+    }
+
     public function testGetReset()
     {
         // token must be provided
@@ -62,6 +76,25 @@ class PasswordControllerTest extends TestCase
             '_token' => Session::token(),
             'token' => $token,
             'email' => $user->email,
+            'password' => 'new-password',
+            'password_confirmation' => 'new-password',
+        ]);
+
+        $this->assertTrue(Hash::check('new-password', $user->fresh()->password));
+    }
+
+    public function testPostResetCaseInsensitive()
+    {
+        $user = UserTest::create(['email' => 'test@test.com']);
+        Mail::shouldReceive('send')->once();
+        $this->post('password/email', ['_token' => Session::token(), 'email' => $user->email]);
+        $token = DB::table('password_resets')->where('email', $user->email)->first()->token;
+        $this->assertFalse(Hash::check('new-password', $user->fresh()->password));
+
+        $this->post('password/reset', [
+            '_token' => Session::token(),
+            'token' => $token,
+            'email' => 'Test@Test.com',
             'password' => 'new-password',
             'password_confirmation' => 'new-password',
         ]);

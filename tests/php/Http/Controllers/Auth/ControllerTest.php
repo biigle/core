@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Auth;
 
+use Auth;
 use Session;
 use TestCase;
 use Biigle\Tests\UserTest;
@@ -44,27 +45,50 @@ class ControllerTest extends TestCase
         $response = $this->post('/login', [
             '_token'   => Session::getToken(),
             'email'    => 'test@test.com',
-            'password' => 'example123',
+            'password' => 'password',
         ]);
 
+        $this->assertNull(Auth::user());
         $this->assertRedirectedTo('login');
     }
 
     public function testLoginSuccess()
     {
-        $user = UserTest::create(['email' => 'test@test.com', 'password' => bcrypt('example123')]);
+        $user = UserTest::create([
+            'email' => 'test@test.com',
+            // 'password'
+            'password' => '$2y$10$EEcVvtsqcG3cscQC9UE5.uLkWRM7IrsqPBiSPhtbslfnx9KdJtVMG',
+        ]);
         // login_at attribute should be null after creation
         $this->assertNull($user->login_at);
 
         $response = $this->post('/login', [
             '_token'   => Session::getToken(),
             'email'    => 'test@test.com',
-            'password' => 'example123',
+            'password' => 'password',
         ]);
 
         // login_at attribute should be set after login
         $this->assertNotNull($user->fresh()->login_at);
+        $this->assertEquals($user->id, Auth::user()->id);
         $this->assertRedirectedTo('/');
+    }
+
+    public function testLoginCaseInsensitive()
+    {
+        $user = UserTest::create([
+            'email' => 'test@test.com',
+            // 'password'
+            'password' => '$2y$10$EEcVvtsqcG3cscQC9UE5.uLkWRM7IrsqPBiSPhtbslfnx9KdJtVMG',
+        ]);
+
+        $response = $this->post('/login', [
+            '_token'   => Session::getToken(),
+            'email'    => 'Test@Test.com',
+            'password' => 'password',
+        ]);
+
+        $this->assertEquals($user->id, Auth::user()->id);
     }
 
     public function testLogout()
@@ -136,6 +160,25 @@ class ControllerTest extends TestCase
     //     $this->post('/register', [
     //         '_token'    => Session::getToken(),
     //         'email'     => 'test@test.com',
+    //         'password'  => 'password',
+    //         'password_confirmation'  => 'password',
+    //         'firstname' => 'a',
+    //         'lastname'  => 'b',
+    //     ]);
+
+    //     $this->assertRedirectedTo('/register');
+    //     $this->assertEquals(1, \Biigle\User::all()->count());
+    // }
+
+    // public function testRegisterEmailCaseInsensitive()
+    // {
+    //     UserTest::create(['email' => 'test@test.com']);
+    //     $this->assertEquals(1, \Biigle\User::all()->count());
+
+    //     $this->get('/register');
+    //     $this->post('/register', [
+    //         '_token'    => Session::getToken(),
+    //         'email'     => 'Test@Test.com',
     //         'password'  => 'password',
     //         'password_confirmation'  => 'password',
     //         'firstname' => 'a',

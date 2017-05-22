@@ -11,14 +11,20 @@ class MiddlewareAuthenticateAPITest extends TestCase
 {
     public function testNoCredentials()
     {
-        $token = ApiTokenTest::create(['hash' => bcrypt('test_token')]);
+        $token = ApiTokenTest::create([
+            // 'test_token'
+            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
+        ]);
         $this->get('/api/v1/users');
         $this->assertResponseStatus(401);
     }
 
     public function testWrongCredentials()
     {
-        $token = ApiTokenTest::create(['hash' => bcrypt('test_token')]);
+        $token = ApiTokenTest::create([
+            // 'test_token'
+            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
+        ]);
         $this->call('GET', '/api/v1/users', [], [], [], [
             'PHP_AUTH_USER' => $token->owner->email,
             'PHP_AUTH_PW' => 'test_tokens',
@@ -44,7 +50,10 @@ class MiddlewareAuthenticateAPITest extends TestCase
 
     public function testSuccess()
     {
-        $token = ApiTokenTest::create(['hash' => bcrypt('test_token')]);
+        $token = ApiTokenTest::create([
+            // 'test_token'
+            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
+        ]);
         $this->call('GET', '/api/v1/users', [], [], [], [
             'PHP_AUTH_USER' => $token->owner->email,
             'PHP_AUTH_PW' => 'test_token',
@@ -53,7 +62,8 @@ class MiddlewareAuthenticateAPITest extends TestCase
 
         $token2 = ApiTokenTest::create([
             'owner_id' => $token->owner->id,
-            'hash' => bcrypt('test_token2'),
+            // 'test_token2'
+            'hash' => '$2y$10$bqKeHzuH0hf9gIOUBnzd0ezQkVkUU12faCOu2twnBguONfx8.XhlO',
         ]);
 
         $this->call('GET', '/api/v1/users', [], [], [], [
@@ -63,9 +73,29 @@ class MiddlewareAuthenticateAPITest extends TestCase
         $this->assertResponseOk();
     }
 
+    public function testEmailCaseInsensitive()
+    {
+        $token = ApiTokenTest::create([
+            // 'test_token'
+            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
+        ]);
+
+        $token->owner->email = 'test@test.com';
+        $token->owner->save();
+
+        $this->call('GET', '/api/v1/users', [], [], [], [
+            'PHP_AUTH_USER' => 'Test@Test.com',
+            'PHP_AUTH_PW' => 'test_token',
+        ]);
+        $this->assertResponseOk();
+    }
+
     public function testTouchToken()
     {
-        $token = ApiTokenTest::create(['hash' => bcrypt('test_token')]);
+        $token = ApiTokenTest::create([
+            // 'test_token'
+            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
+        ]);
         $token->updated_at = Carbon::now(-5);
         $token->save();
 
