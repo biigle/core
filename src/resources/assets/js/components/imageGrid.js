@@ -133,7 +133,7 @@ biigle.$component('volumes.components.imageGrid', {
         },
     },
     created: function () {
-        var keyboard = biigle.$require('core.keyboard');
+        var keyboard = biigle.$require('keyboard');
         // arrow up
         keyboard.on(38, this.reverseRow);
         // arrow down
