@@ -27,7 +27,7 @@ biigle.$require('annotations.components.settingsTabPlugins').exampleAnnotations 
     },
     watch: {
         isShown: function (shown) {
-            biigle.$require('biigle.events').$emit('settings.exampleAnnotations', shown);
+            biigle.$require('events').$emit('settings.exampleAnnotations', shown);
         },
     },
     created: function () {

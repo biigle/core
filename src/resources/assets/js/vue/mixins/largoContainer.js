@@ -77,7 +77,7 @@ biigle.$declare('largo.mixins.largoContainer', {
             return changed;
         },
         events: function () {
-            return biigle.$require('biigle.events');
+            return biigle.$require('events');
         },
     },
     methods: {

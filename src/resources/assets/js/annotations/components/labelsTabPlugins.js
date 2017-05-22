@@ -92,6 +92,6 @@ biigle.$require('annotations.components.labelsTabPlugins').exampleAnnotations = 
         },
     },
     created: function () {
-        biigle.$require('biigle.events').$on('settings.exampleAnnotations', this.updateShown);
+        biigle.$require('events').$on('settings.exampleAnnotations', this.updateShown);
     },
 };

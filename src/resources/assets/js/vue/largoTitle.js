@@ -2,7 +2,7 @@
  * The dynamic part of the Largo breadcrumbs in the navbar
  */
 biigle.$viewModel('largo-title', function (element) {
-    var events = biigle.$require('biigle.events');
+    var events = biigle.$require('events');
 
     new Vue({
         el: element,
