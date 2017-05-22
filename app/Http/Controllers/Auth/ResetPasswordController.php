@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Auth;
 
+use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 
@@ -18,7 +19,9 @@ class ResetPasswordController extends Controller
     |
     */
 
-    use ResetsPasswords;
+    use ResetsPasswords {
+        credentials as baseCredentials;
+    }
 
     /**
      * Create a new controller instance.
@@ -29,5 +32,20 @@ class ResetPasswordController extends Controller
     {
         $this->middleware('guest');
         $this->redirectTo = route('home');
+    }
+
+    /**
+     * Get the password reset credentials from the request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    protected function credentials(Request $request)
+    {
+        // Transform the username/email to lowercase because we want this to be case
+        // insensitive.
+        $request->merge(['email' => strtolower($request->input('email'))]);
+
+        return $this->baseCredentials($request);
     }
 }

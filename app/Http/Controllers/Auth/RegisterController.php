@@ -48,6 +48,9 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        // Email should be case insensitive
+        $data['email'] = strtolower($data['email']);
+
         return Validator::make($data, User::$createRules);
     }
 

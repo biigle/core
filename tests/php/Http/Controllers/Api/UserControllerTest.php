@@ -16,7 +16,8 @@ class UserControllerTest extends ApiTestCase
     private function callToken($verb, $route, $user)
     {
         $token = ApiTokenTest::create([
-            'hash' => bcrypt('test_token'),
+            // 'test_token'
+            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
             'owner_id' => $user->id,
         ]);
 
@@ -87,7 +88,8 @@ class UserControllerTest extends ApiTestCase
         $this->put('/api/v1/users/'.$this->guest()->id);
         $this->assertResponseStatus(403);
 
-        $this->globalAdmin()->password = bcrypt('adminpassword');
+        // 'adminpassword'
+        $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
         $this->globalAdmin()->save();
         $this->beGlobalAdmin();
 
@@ -201,9 +203,34 @@ class UserControllerTest extends ApiTestCase
         $this->assertEquals('jackson', $this->guest()->fresh()->lastname);
     }
 
+    public function testUpdateEmailCaseInsensitive()
+    {
+        // 'adminpassword'
+        $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
+        $this->globalAdmin()->save();
+        $this->beGlobalAdmin();
+
+        $this->editor()->email = 'test@test.com';
+        $this->editor()->save();
+
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'email' => 'Test@Test.com',
+            'auth_password' => 'adminpassword',
+        ]);
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+            'email' => 'Test2@Test.com',
+            'auth_password' => 'adminpassword',
+        ]);
+        $this->assertResponseOk();
+        $this->assertEquals('test2@test.com', $this->guest()->fresh()->email);
+    }
+
     public function testUpdateOwn()
     {
-        $this->guest()->password = bcrypt('guest-password');
+        // 'guest-password'
+        $this->guest()->password = '$2y$10$X/s/ecsLboxkL7T/WQzI.emOeMDXIFjj2jVXEMAK1im.7IHwT0VWi';
         $this->guest()->save();
 
         $this->doTestApiRoute('PUT', '/api/v1/users/my');
@@ -259,6 +286,30 @@ class UserControllerTest extends ApiTestCase
         $this->assertEquals('jack', $user->firstname);
         $this->assertEquals('jackson', $user->lastname);
         $this->assertEquals('new@email.me', $user->email);
+    }
+
+    public function testUpdateOwnEmailCaseInsensitive()
+    {
+        // 'guest-password'
+        $this->guest()->password = '$2y$10$X/s/ecsLboxkL7T/WQzI.emOeMDXIFjj2jVXEMAK1im.7IHwT0VWi';
+        $this->guest()->save();
+        $this->beGuest();
+
+        $this->editor()->email = 'test@test.com';
+        $this->editor()->save();
+
+        $this->json('PUT', '/api/v1/users/my', [
+            'email' => 'Test@Test.com',
+            'auth_password' => 'guest-password',
+        ]);
+        $this->assertResponseStatus(422);
+
+        $this->json('PUT', '/api/v1/users/my', [
+            'email' => 'Test2@Test.com',
+            'auth_password' => 'guest-password',
+        ]);
+        $this->assertResponseOk();
+        $this->assertEquals('test2@test.com', $this->guest()->fresh()->email);
     }
 
     public function testStore()
@@ -332,9 +383,40 @@ class UserControllerTest extends ApiTestCase
         $this->assertRedirectedTo('/');
     }
 
+    public function testStoreEmailCaseInsensitive()
+    {
+
+        $this->beGlobalAdmin();
+
+        $this->editor()->email = 'test@test.com';
+        $this->editor()->save();
+
+        $this->json('POST', '/api/v1/users', [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+            'firstname' => 'jack',
+            'lastname' => 'jackson',
+            'email' => 'Test@Test.com',
+        ]);
+        $this->assertResponseStatus(422);
+
+        $this->assertFalse(User::where('email', 'test2@test.com')->exists());
+
+        $this->json('POST', '/api/v1/users', [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+            'firstname' => 'jack',
+            'lastname' => 'jackson',
+            'email' => 'Test2@Test.com',
+        ]);
+        $this->assertResponseOk();
+        $this->assertTrue(User::where('email', 'test2@test.com')->exists());
+    }
+
     public function testDestroy()
     {
-        $this->globalAdmin()->password = bcrypt('globalAdmin-password');
+        // 'globalAdmin-password'
+        $this->globalAdmin()->password = '$2y$10$44FMBIkBS2hNhI09ep6UMen7fDT4/RuQKNtDTOPRCvhQxg2H0TXIm';
         $this->globalAdmin()->save();
 
         $id = $this->guest()->id;
@@ -394,9 +476,11 @@ class UserControllerTest extends ApiTestCase
 
     public function testDestroyOwn()
     {
-        $this->guest()->password = bcrypt('guest-password');
+        // 'guest-password'
+        $this->guest()->password = '$2y$10$X/s/ecsLboxkL7T/WQzI.emOeMDXIFjj2jVXEMAK1im.7IHwT0VWi';
         $this->guest()->save();
-        $this->editor()->password = bcrypt('editor-password');
+        // 'editor-password'
+        $this->editor()->password = '$2y$10$2BwVwEw1AOzWx01twMmHg.FHp5N/TrK1X0KtHxRH0MN5CRrpc6k46';
         $this->guest()->save();
 
         $this->doTestApiRoute('DELETE', '/api/v1/users/my');

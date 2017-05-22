@@ -24,6 +24,13 @@ class UserTest extends ModelTestCase
         $this->assertNotNull($this->model->updated_at);
     }
 
+    public function testEmailToLowercase()
+    {
+        $this->model->email = 'Test@Example.com';
+        $this->model->save();
+        $this->assertEquals('test@example.com', $this->model->fresh()->email);
+    }
+
     public function testCastsLoginAt()
     {
         $this->be($this->model);
