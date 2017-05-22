@@ -6,6 +6,7 @@
     .label-trees__head {
         display: flex;
         margin-bottom: 1em;
+        min-height: $input-height-base;
     }
 
     .label-trees__body {
