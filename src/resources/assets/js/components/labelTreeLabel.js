@@ -6,7 +6,7 @@
 biigle.$component('labelTrees.components.labelTreeLabel', {
     name: 'label-tree-label',
     template: '<li class="label-tree-label" :class="classObject">' +
-        '<div class="label-tree-label__name" @click="toggleOpen" @mouseover="doHover" @mouseout="dontHover">' +
+        '<div class="label-tree-label__name" @click="toggleOpen" @mouseover="doHover" @mouseleave="dontHover">' +
             '<span v-show="showColor" class="label-tree-label__color" :style="colorStyle"></span>' +
             '<span v-if="showChevronDown" class="label-tree-label__chevron label-tree-label__chevron--down" :style="chevronStyle"></span>' +
             '<span v-if="showChevronUp" class="label-tree-label__chevron label-tree-label__chevron--up" :style="chevronStyle"></span>' +
