@@ -19,7 +19,7 @@ biigle.$component('annotations.components.settingsTab', {
             return biigle.$require('annotations.stores.settings');
         },
         keyboard: function () {
-            return biigle.$require('core.keyboard');
+            return biigle.$require('keyboard');
         },
         isVolareActive: function () {
             return this.cycleMode === 'volare';
