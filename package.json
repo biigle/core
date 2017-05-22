@@ -9,6 +9,6 @@
   },
   "devDependencies": {
     "gulp": "^3.9.1",
-    "gulp-helpers": "git+https://github.com/mzur/gulp-helpers.git"
+    "gulp-helpers": "git+https://github.com/mzur/gulp-helpers.git#v1.1.0"
   }
 }

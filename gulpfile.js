@@ -13,11 +13,11 @@ gulp.task('sass-main', function () {
 });
 
 gulp.task('js-main', function (cb) {
-    h.angular('annotations/**/*.js', 'main.js', cb);
+    h.js('annotations/**/*.js', 'main.js', cb);
 });
 
 gulp.task('js-volumes', function (cb) {
-    h.angular('volumes/**/*.js', 'volumes.js', cb);
+    h.js('volumes/**/*.js', 'volumes.js', cb);
 });
 
 gulp.task('sass', ['sass-main']);
