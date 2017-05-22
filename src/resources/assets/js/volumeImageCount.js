@@ -3,7 +3,7 @@
  */
 biigle.$viewModel('volume-image-count', function (element) {
     var imageIds = biigle.$require('volumes.imageIds');
-    var events = biigle.$require('biigle.events');
+    var events = biigle.$require('events');
 
     new Vue({
         el: element,
