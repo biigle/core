@@ -22,7 +22,7 @@ biigle.$component('annotations.mixins.imageFilenameTracker', {
         },
     },
     created: function () {
-        var events = biigle.$require('biigle.events');
+        var events = biigle.$require('events');
         var imagesIds = biigle.$require('annotations.imagesIds');
         var imagesFilenames = biigle.$require('annotations.imagesFilenames');
         var map = this.filenameMap;

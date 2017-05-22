@@ -2,7 +2,7 @@
  * Store for the annotations of the annotation tool
  */
 biigle.$declare('annotations.stores.annotations', function () {
-    var events = biigle.$require('biigle.events');
+    var events = biigle.$require('events');
     var imagesApi = biigle.$require('api.images');
     var annotationsApi = biigle.$require('api.annotations');
 

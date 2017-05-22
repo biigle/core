@@ -2,7 +2,7 @@
  * View model for the annotator container
  */
 biigle.$viewModel('annotator-container', function (element) {
-    var events = biigle.$require('biigle.events');
+    var events = biigle.$require('events');
     var volumeId = biigle.$require('annotations.volumeId');
     var imagesIds = biigle.$require('annotations.imagesIds');
     var imagesStore = biigle.$require('annotations.stores.images');

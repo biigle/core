@@ -2,7 +2,7 @@
  * Store for the images of the annotation tool
  */
 biigle.$declare('annotations.stores.images', function () {
-    var events = biigle.$require('biigle.events');
+    var events = biigle.$require('events');
     var canvas = document.createElement('canvas');
 
     var fxCanvas;

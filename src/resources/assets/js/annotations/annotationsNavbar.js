@@ -34,7 +34,7 @@ biigle.$viewModel('annotations-navbar', function (element) {
         },
         created: function () {
             var self = this;
-            biigle.$require('biigle.events').$on('images.sequence', function (ids) {
+            biigle.$require('events').$on('images.sequence', function (ids) {
                 self.imageIdsToSee = ids.slice();
             });
         },

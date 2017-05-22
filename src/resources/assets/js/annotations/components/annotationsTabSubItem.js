@@ -43,7 +43,7 @@ biigle.$component('annotations.components.annotationsTabSubItem', {
             return this.label.user && this.label.user.id === this.userId;
         },
         events: function () {
-            return biigle.$require('biigle.events');
+            return biigle.$require('events');
         },
     },
     methods: {

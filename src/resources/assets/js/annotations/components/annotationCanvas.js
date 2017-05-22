@@ -446,7 +446,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 this.$emit('attach', e.feature.get('annotation'), this.selectedLabel);
             },
             requireSelectedLabel: function () {
-                biigle.$require('biigle.events').$emit('sidebar.open', 'labels');
+                biigle.$require('events').$emit('sidebar.open', 'labels');
                 biigle.$require('messages.store').info('Please select a label first.');
                 this.resetInteractionMode();
             },
@@ -701,7 +701,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             annotationLayer.setStyle(styles.features);
             map.addLayer(annotationLayer);
 
-            biigle.$require('biigle.events').$on('sidebar.toggle', function () {
+            biigle.$require('events').$on('sidebar.toggle', function () {
                 self.$nextTick(function () {
                     map.updateSize();
                 });
