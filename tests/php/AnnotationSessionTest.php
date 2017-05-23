@@ -351,8 +351,8 @@ class AnnotationSessionTest extends ModelTestCase
             'ends_at' => '2016-09-07T00:00:00.000+02:00',
         ]);
 
-        $this->assertEquals('2016-09-04T22:00:00+0000', $session->starts_at_iso8601);
-        $this->assertEquals('2016-09-06T22:00:00+0000', $session->ends_at_iso8601);
+        $this->assertEquals('2016-09-04T22:00:00+00:00', $session->starts_at_iso8601);
+        $this->assertEquals('2016-09-06T22:00:00+00:00', $session->ends_at_iso8601);
 
         $this->assertArrayHasKey('starts_at_iso8601', $session->toArray());
         $this->assertArrayHasKey('ends_at_iso8601', $session->toArray());
