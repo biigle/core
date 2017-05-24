@@ -12,10 +12,6 @@
     img {
         width: auto;
         height: 100%;
-
-        &.hidden {
-            display: none;
-        }
     }
 
     figcaption {
@@ -40,6 +36,10 @@
             animation: pulse 1s infinite;
         }
     }
+}
+
+.volume-thumbnail__fallback {
+    height: 100%;
 }
 
 .volume-thumbnail__images {

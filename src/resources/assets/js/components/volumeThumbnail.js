@@ -5,15 +5,18 @@
  * @type {Object}
  */
 biigle.$component('projects.components.volumeThumbnail', {
+    mixins: [biigle.$require('core.mixins.loader')],
     template:
-    '<figure class="volume-thumbnail" v-bind:class="{loading: loading}" v-on:mouseover="fetchUuids" v-on:mousemove="updateIndex($event)" v-on:click="clearTimeout" v-on:mouseout="clearTimeout">' +
-        '<span class="volume-thumbnail__close close" v-if="removable" v-on:click.prevent="remove" v-bind:title="removeTitle">&times;</span>' +
-        '<slot></slot>' +
+    '<figure class="volume-thumbnail" :class="{loading: loading}" @mouseover="startFetching" @mousemove="updateIndex($event)" @click="clearTimeout" @mouseout="clearTimeout">' +
+        '<span class="volume-thumbnail__close close" v-if="removable" @click.prevent="remove" :title="removeTitle">&times;</span>' +
+        '<div class="volume-thumbnail__fallback" v-show="showFallback">' +
+            '<slot></slot>' +
+        '</div>' +
         '<div class="volume-thumbnail__images" v-if="initialized">' +
-            '<img v-on:error="failed[i] = true" v-bind:class="{hidden: thumbHidden(i)}" v-bind:src="thumbUri(uuid)" v-for="(uuid, i) in uuids">' +
+            '<img @error="failed[i] = true" v-show="thumbShown(i)" :src="thumbUri(uuid)" v-for="(uuid, i) in uuids">' +
         '</div>' +
         '<slot name="caption"></slot>' +
-        '<span class="volume-thumbnail__progress" v-bind:style="{width: progress}"></span>' +
+        '<span class="volume-thumbnail__progress" :style="{width: progress}"></span>' +
     '</figure>',
     props: {
         tid: {
@@ -43,8 +46,6 @@ biigle.$component('projects.components.volumeThumbnail', {
             uuids: [],
             // true if the UUIDs were fetched.
             initialized: false,
-            // true if the UUIDs are currently being fetched.
-            loading: false,
             // Index of the thumbnail to display.
             index: 0,
             // true at the index of the thumbnail if it failed to load (does not exist).
@@ -62,47 +63,47 @@ biigle.$component('projects.components.volumeThumbnail', {
             // If this.loading is true, the progress bar should serve as a loading
             // indicator.
             return this.loading ? '100%' : '0%';
-        }
+        },
+        showFallback: function () {
+            return !this.initialized || this.failed[this.index];
+        },
     },
     methods: {
         fetchUuids: function () {
-            if (this.initialized || this.loading) return;
-
-            var volumeSample = biigle.$require('api.volumeSample');
-
-            var self = this;
-            self.loading = true;
-            // Wait before fetching the thumbnails. Maybe the user just wants to go
-            // to the volume or just passes the mouse over the thumbnail. In this case
-            // the timeout is cancelled.
-            self.timeoutId = setTimeout(function () {
-                volumeSample.get({id: self.tid})
-                    .then(function (response) {
-                        if (response.ok) {
-                            self.uuids = response.data;
-                            self.initialized = true;
-                        }
-                    })
-                    .finally(function () {
-                        self.loading = false;
-                    });
-            }, 1000);
+            biigle.$require('api.volumeSample').get({id: this.tid})
+                .then(this.uuidsFetched)
+                .finally(this.finishLoading);
+        },
+        uuidsFetched: function (response) {
+            if (response.ok) {
+                this.uuids = response.data;
+                this.initialized = true;
+            }
+        },
+        startFetching: function () {
+            if (!this.initialized && !this.loading) {
+                this.startLoading();
+                // Wait before fetching the thumbnails. Maybe the user just wants to go
+                // to the volume or just passes the mouse over the thumbnail. In this
+                // case the timeout is cancelled.
+                this.timeoutId = window.setTimeout(this.fetchUuids, 1000);
+            }
         },
         thumbUri: function (uuid) {
             return this.uri + '/' + uuid + '.' + this.format;
         },
-        thumbHidden: function (i) {
-            return this.index !== i || this.failed[i];
+        thumbShown: function (i) {
+            return this.index === i && !this.failed[i];
         },
         updateIndex: function (event) {
             var rect = this.$el.getBoundingClientRect();
-            this.index = Math.floor(this.uuids.length * (event.clientX - rect.left) / (rect.width));
+            this.index = Math.max(0, Math.floor(this.uuids.length * (event.clientX - rect.left) / (rect.width)));
         },
         clearTimeout: function () {
             if (this.timeoutId) {
-                clearTimeout(this.timeoutId);
+                window.clearTimeout(this.timeoutId);
                 this.timeoutId = null;
-                this.loading = false;
+                this.finishLoading();
             }
         },
         remove: function () {
