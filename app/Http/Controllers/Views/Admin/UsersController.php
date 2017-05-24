@@ -66,4 +66,26 @@ class UsersController extends Controller
         return view('admin.users.delete')
             ->with('affectedUser', User::findOrFail($id));
     }
+
+    /**
+     * Shows the user information page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $user = User::findOrFail($id);
+        if ($user->role_id === Role::$admin->id) {
+            $roleClass = 'danger';
+        } elseif ($user->role_id === Role::$editor->id) {
+            $roleClass = 'primary';
+        } else {
+            $roleClass = 'default';
+        }
+
+        return view('admin.users.show', [
+            'shownUser' => $user,
+            'roleClass' => $roleClass,
+        ]);
+    }
 }

@@ -22,7 +22,7 @@
     <tbody>
         @foreach ($activeUsers as $u)
             <tr>
-                <td>{{$u->firstname}} {{$u->lastname}}</td>
+                <td><a href="{{route('admin-users-show', $u->id)}}">{{$u->firstname}} {{$u->lastname}}</a></td>
                 <td><a href="mailto:{{$u->email}}">{{$u->email}}</a></td>
                 <td>{{ucfirst($u->role->name)}}</td>
                 <td>
@@ -54,7 +54,7 @@
         <tbody>
             @foreach ($inactiveUsers as $u)
                 <tr @if (session('newUser') && session('newUser')->id === $u->id) class="bg-success" @endif>
-                    <td>{{$u->firstname}} {{$u->lastname}}</td>
+                    <td><a href="{{route('admin-users-show', $u->id)}}">{{$u->firstname}} {{$u->lastname}}</a></td>
                     <td><a href="mailto:{{$u->email}}">{{$u->email}}</a></td>
                     <td>{{ucfirst($u->role->name)}}</td>
                     <td>

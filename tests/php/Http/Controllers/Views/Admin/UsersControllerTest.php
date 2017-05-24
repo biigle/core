@@ -105,4 +105,34 @@ class UsersControllerTest extends TestCase
         $this->be($admin);
         $this->visit("admin/users/delete/{$id}")->assertResponseOk();
     }
+
+    public function testShowWhenNotLoggedIn()
+    {
+        $id = UserTest::create()->id;
+        $this->visit("admin/users/{$id}")->seePageIs('login');
+    }
+
+    public function testShowWhenNotAdmin()
+    {
+        $user = UserTest::create();
+        $this->be($user);
+        $this->get("admin/users/{$user->id}")->assertResponseStatus(403);
+    }
+
+    public function testShowDoesntExist()
+    {
+        $admin = UserTest::create();
+        $admin->role()->associate(Role::$admin);
+        $this->be($admin);
+        $this->get('admin/users/999')->assertResponseStatus(404);
+    }
+
+    public function testShowWhenLoggedIn()
+    {
+        $id = UserTest::create()->id;
+        $admin = UserTest::create();
+        $admin->role()->associate(Role::$admin);
+        $this->be($admin);
+        $this->visit("admin/users/{$id}")->assertResponseOk();
+    }
 }

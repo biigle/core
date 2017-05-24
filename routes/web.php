@@ -109,6 +109,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'uses' => 'UsersController@delete',
         ]);
 
+        $router->get('users/{id}', [
+            'as' => 'admin-users-show',
+            'uses' => 'UsersController@show',
+        ]);
+
         $router->get('system-messages', [
             'as' => 'admin-system-messages',
             'uses' => 'SystemMessagesController@index',
