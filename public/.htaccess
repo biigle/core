@@ -10,6 +10,8 @@
 
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
+    # ...and the request doesn't target the API
+    RewriteCond %{REQUEST_URI} !^/api/
     RewriteRule ^(.*)/$ /$1 [L,R=301]
 
     # Handle Front Controller...
