@@ -35,6 +35,7 @@ class AnnotationsServiceProvider extends ServiceProvider
         $modules->addMixin('annotations', 'volumesScripts');
         $modules->addMixin('annotations', 'adminIndex');
         $modules->addMixin('annotations', 'manualTutorial');
+        $modules->addMixin('annotations', 'adminShowUser');
     }
 
     /**
