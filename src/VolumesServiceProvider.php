@@ -38,6 +38,7 @@ class VolumesServiceProvider extends ServiceProvider
         $modules->addMixin('volumes', 'dashboardScripts');
         $modules->addMixin('volumes', 'dashboardHotBoxRight');
         $modules->addMixin('volumes', 'dashboardMain.projects');
+        $modules->addMixin('volumes', 'adminShowUser');
     }
 
     /**
