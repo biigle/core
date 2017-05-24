@@ -64,6 +64,11 @@
     </sidebar>
     <div class="volume-content">
         <loader-block v-cloak :active="loading"></loader-block>
+        <div class="volume-content__messages">
+            <div v-cloak v-if="filterEmpty" class="alert alert-info">
+                There are no images matching your filter rules.
+            </div>
+        </div>
         <image-grid :label-mode="imageLabelMode" :images="imagesToShow" :initial-offset="initialOffset" :selected-label="selectedLabel" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:scroll="handleImageGridScroll" ref="imageGrid"></image-grid>
     </div>
 </div>

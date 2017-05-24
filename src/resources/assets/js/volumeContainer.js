@@ -100,6 +100,9 @@ biigle.$viewModel('volume-container', function (element) {
                     parseInt(localStorage.getItem(this.offsetStorageKey)) ||
                     0;
             },
+            filterEmpty: function () {
+                return this.filterActive && this.filterSequence.length === 0;
+            },
         },
         methods: {
             handleSidebarToggle: function () {
