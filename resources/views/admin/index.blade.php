@@ -10,7 +10,7 @@
                 <a href="{{route('admin-users')}}" title="Users"><h3 class="panel-title">Users</h3></a>
             </div>
             <div class="panel-body">
-                <p class="h1 text-center">{{ Biigle\User::count() }}</p>
+                <p class="h1 text-center"><span title="All users">{{ $allUsers }}</span> <span class="text-muted" title="Users active in the past month">({{ $activeUsers }})</span></p>
             </div>
         </div>
     </div>

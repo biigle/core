@@ -2,6 +2,8 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
+use Biigle\User;
+use Carbon\Carbon;
 use Biigle\Http\Controllers\Controller;
 
 class IndexController extends Controller
@@ -13,6 +15,12 @@ class IndexController extends Controller
      */
     public function get()
     {
-        return view('admin.index');
+        $allUsers = User::count();
+        $activeUsers = User::where('login_at', '>', Carbon::now()->subMonth())->count();
+
+        return view('admin.index', [
+            'allUsers' => $allUsers,
+            'activeUsers' => $activeUsers,
+        ]);
     }
 }
