@@ -8,6 +8,7 @@
 <script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/annotations/scripts/ol.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/annotations/scripts/glfx.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/annotations/scripts/magic-wand-min.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/annotations/scripts/main.js') }}"></script>
 <script type="text/javascript">
     @can('add-annotation', $image)

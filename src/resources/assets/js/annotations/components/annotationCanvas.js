@@ -773,6 +773,15 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 attachLabelInteraction.on('attach', this.handleAttachLabel);
                 map.addInteraction(attachLabelInteraction);
 
+                var MagicWandInteraction = biigle.$require('annotations.ol.MagicWandInteraction');
+                var magicWandInteraction = new MagicWandInteraction({
+                    layer: imageLayer,
+                    map: map,
+                });
+                // magicWandInteraction.setActive(false);
+                // magicWandInteraction.on('attach', this.handleAttachLabel);
+                map.addInteraction(magicWandInteraction);
+
                 // Del key.
                 keyboard.on(46, this.deleteSelectedAnnotations);
                 // Backspace key.
