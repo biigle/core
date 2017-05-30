@@ -20,6 +20,7 @@
                 <control-button icon="icon-circle" title="Draw a circle 𝗗" :active="isDrawingCircle" v-on:click="drawCircle"></control-button>
                 <control-button icon="icon-linestring" title="Draw a line string 𝗙, hold 𝗦𝗵𝗶𝗳𝘁 for freehand" :active="isDrawingLineString" v-on:click="drawLineString"></control-button>
                 <control-button icon="icon-polygon" title="Draw a polygon 𝗚, hold 𝗦𝗵𝗶𝗳𝘁 for freehand" :active="isDrawingPolygon" v-on:click="drawPolygon"></control-button>
+                <control-button icon="fa-magic" title="Draw a polygon using the magic wand tool" :active="isMagicWanding" v-on:click="toggleMagicWand"></control-button>
             </div>
             <div class="btn-group edit-controls">
                 <control-button icon="glyphicon-tag" title="Attach the currently selected label to existing annotations 𝗟" :active="isAttaching" v-on:click="toggleAttaching"></control-button>

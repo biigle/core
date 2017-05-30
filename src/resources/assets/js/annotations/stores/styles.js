@@ -132,5 +132,25 @@ biigle.$declare('annotations.stores.styles', function () {
                 })
             })
         ],
+        cross: [
+            new ol.style.Style({
+                image: new ol.style.RegularShape({
+                    stroke: selectedStrokeOutline,
+                    points: 4,
+                    radius1: 6,
+                    radius2: 0,
+                    angle: Math.PI / 4
+                })
+            }),
+            new ol.style.Style({
+                image: new ol.style.RegularShape({
+                    stroke: selectedStroke,
+                    points: 4,
+                    radius1: 6,
+                    radius2: 0,
+                    angle: Math.PI / 4
+                })
+            }),
+        ]
     };
 });
