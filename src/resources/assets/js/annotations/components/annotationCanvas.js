@@ -801,6 +801,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     map: map,
                     layer: imageLayer,
                     source: annotationSource,
+                    style: styles.editing,
                     indicatorPointStyle: styles.editing,
                     indicatorCrossStyle: styles.cross,
                     simplifyTolerant: 0.1,

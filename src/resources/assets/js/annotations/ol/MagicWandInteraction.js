@@ -36,7 +36,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
         this.downPoint = [0, 0];
         this.map = options.map;
 
-        this.dragging = false;
+        this.isSketching = false;
 
         // Canvas element to draw the snapshot of the current view of the image layer to.
         this.snapshotCanvas = document.createElement('canvas');
@@ -65,6 +65,8 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
                 zIndex: 200,
             }));
         }
+
+        this.sketchStyle = options.style === undefined ? null : options.style;
 
         // The point that indicates the downPoint where drawing of the sketch started.
         this.isShowingPoint = false;
@@ -175,7 +177,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
      * Finish drawing of a sketch.
      */
     MagicWandInteraction.prototype.handleUpEvent = function (e) {
-        if (this.dragging) {
+        if (this.isSketching) {
             this.currentThreshold = this.colorThreshold;
 
             if (this.isShowingCross) {
@@ -189,7 +191,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
             this.indicatorSource.clear();
             this.isShowingPoint = false;
             this.isShowingCross = false;
-            this.dragging = false;
+            this.isSketching = false;
 
             return false;
         }
@@ -199,8 +201,8 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
      * Start drawing of a sketch.
      */
     MagicWandInteraction.prototype.handleDownEvent = function (e) {
-        if (!this.dragging) {
-            this.dragging = true;
+        if (!this.isSketching) {
+            this.isSketching = true;
             this.downPoint[0] = Math.round(e.coordinate[0]);
             this.downPoint[1] = Math.round(e.coordinate[1]);
             this.drawSketch();
@@ -219,7 +221,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
      * Update the currently drawn sketch.
      */
     MagicWandInteraction.prototype.handleMoveEvent = function (e) {
-        if (this.dragging) {
+        if (this.isSketching) {
             var coordinate = this.toSnapshotCoordinates([e.coordinate]).shift();
             var x = Math.round(coordinate[0]);
             var y = Math.round(coordinate[1]);
@@ -277,6 +279,11 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
             this.indicatorSource.clear();
             this.isShowingPoint = false;
             this.isShowingCross = false;
+            this.isSketching = false;
+            if (this.sketchFeature) {
+                this.sketchSource.removeFeature(this.sketchFeature);
+                this.sketchFeature = null;
+            }
         }
     };
 
@@ -329,9 +336,10 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
             if (this.sketchFeature) {
                 this.sketchFeature.getGeometry().setCoordinates([points]);
             } else {
-                this.sketchFeature = new ol.Feature({
-                    geometry: new ol.geom.Polygon([points])
-                });
+                this.sketchFeature = new ol.Feature(new ol.geom.Polygon([points]));
+                if (this.sketchStyle) {
+                    this.sketchFeature.setStyle(this.sketchStyle);
+                }
                 this.sketchSource.addFeature(this.sketchFeature);
             }
         }
