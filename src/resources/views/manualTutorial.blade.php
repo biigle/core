@@ -1,3 +1,4 @@
+<h3>Volumes</h3>
 <h4>
     <a href="{{route('manual-tutorials', ['volumes', 'annotation-sessions'])}}">Annotation sessions</a>
 </h4>
@@ -20,4 +21,12 @@
 
 <p>
     Learn how to upload image metadata.
+</p>
+
+<h4>
+    <a href="{{route('manual-tutorials', ['volumes', 'setting-image-labels'])}}">Setting Image Labels</a>
+</h4>
+
+<p>
+    See how to set a label for an whole image.
 </p>
