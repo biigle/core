@@ -249,8 +249,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
                     this.isShowingPoint = true;
                 }
 
-                len -= 2 * this.colorThreshold;
-                var thres = Math.min(Math.max(this.colorThreshold + Math.round(len / 2), 1), 255);
+                var thres = Math.min(Math.max(this.colorThreshold + Math.round(len / 2 - this.colorThreshold), 1), 255);
                 if (thres != this.currentThreshold) {
                     this.currentThreshold = thres;
                     this.drawSketch();
