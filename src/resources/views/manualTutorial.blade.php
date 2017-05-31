@@ -1,3 +1,4 @@
+<h3>Projects</h3>
 <h4>
     <a href="{{route('manual-tutorials', ['projects', 'create-a-project'])}}">Create a Project</a>
 </h4>
