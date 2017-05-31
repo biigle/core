@@ -1,6 +1,6 @@
 @extends('manual.base')
 
-@section('manual-title') Annotator shortcuts @stop
+@section('manual-title') Shortcuts @stop
 
 @section('manual-content')
     <div class="row">
