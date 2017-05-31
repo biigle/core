@@ -12,7 +12,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         drawInteraction,
         modifyInteraction,
         translateInteraction,
-        attachLabelInteraction;
+        attachLabelInteraction,
+        magicWandInteraction;
 
     // Map to detect which features were changed between modifystart and modifyend
     // events of the modify interaction.
@@ -81,6 +82,11 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 default: 'default',
             },
             showMousePosition: {
+                type: Boolean,
+                default: false,
+            },
+            // Specifies whether the displayed image is cross origin.
+            crossOrigin: {
                 type: Boolean,
                 default: false,
             },
@@ -203,14 +209,17 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             isTranslating: function () {
                 return this.interactionMode === 'translate';
             },
+            isMagicWanding: function () {
+                return this.interactionMode === 'magicWand';
+            },
+            isAttaching: function () {
+                return this.interactionMode === 'attach';
+            },
             hasNoSelectedLabel: function () {
                 return !this.selectedLabel;
             },
             hasSelectedAnnotations: function () {
                 return this.selectedAnnotations.length > 0;
-            },
-            isAttaching: function () {
-                return this.interactionMode === 'attach';
             },
             hasLastCreatedAnnotation: function () {
                 return this.lastCreatedAnnotation !== null;
@@ -277,9 +286,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             // Creates an OpenLayers feature object from an annotation.
             createFeature: function (annotation) {
-                var feature = new ol.Feature({
-                    geometry: this.getGeometry(annotation),
-                });
+                var feature = new ol.Feature(this.getGeometry(annotation));
 
                 feature.setId(annotation.id);
                 feature.set('annotation', annotation);
@@ -403,20 +410,24 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 return points;
             },
             handleNewFeature: function (e) {
-                var geometry = e.feature.getGeometry();
-                e.feature.set('color', this.selectedLabel.color);
-
-                // This callback is called in case saving the annotation failed.
-                // If saving the annotation succeeded, the temporary feature will
-                // be removed during the reactive update of the annotations property.
-                var removeCallback = function () {
+                if (this.hasNoSelectedLabel) {
                     annotationSource.removeFeature(e.feature);
-                };
+                } else {
+                    var geometry = e.feature.getGeometry();
+                    e.feature.set('color', this.selectedLabel.color);
 
-                this.$emit('new', {
-                    shape: geometry.getType(),
-                    points: this.getPoints(geometry),
-                }, removeCallback);
+                    // This callback is called in case saving the annotation failed.
+                    // If saving the annotation succeeded, the temporary feature will
+                    // be removed during the reactive update of the annotations property.
+                    var removeCallback = function () {
+                        annotationSource.removeFeature(e.feature);
+                    };
+
+                    this.$emit('new', {
+                        shape: geometry.getType(),
+                        points: this.getPoints(geometry),
+                    }, removeCallback);
+                }
             },
             deleteSelectedAnnotations: function () {
                 if (this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
@@ -442,6 +453,13 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     this.interactionMode = 'attach';
                 }
             },
+            toggleMagicWand: function () {
+                if (this.isMagicWanding) {
+                    this.resetInteractionMode();
+                } else {
+                    this.interactionMode = 'magicWand';
+                }
+            },
             handleAttachLabel: function (e) {
                 this.$emit('attach', e.feature.get('annotation'), this.selectedLabel);
             },
@@ -454,15 +472,16 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 if (drawInteraction) {
                     map.removeInteraction(drawInteraction);
                 }
+                selectInteraction.setActive(false);
+                modifyInteraction.setActive(false);
+                translateInteraction.setActive(false);
+                attachLabelInteraction.setActive(false);
+                magicWandInteraction.setActive(false);
 
                 if (this.isDrawing) {
                     if (this.hasNoSelectedLabel) {
                         this.requireSelectedLabel();
                     } else {
-                        selectInteraction.setActive(false);
-                        modifyInteraction.setActive(false);
-                        translateInteraction.setActive(false);
-                        attachLabelInteraction.setActive(false);
                         drawInteraction = new ol.interaction.Draw({
                             source: annotationSource,
                             type: mode.slice(4), // remove 'draw' prefix
@@ -475,24 +494,23 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     if (this.hasNoSelectedLabel) {
                         this.requireSelectedLabel();
                     } else {
-                        selectInteraction.setActive(false);
-                        modifyInteraction.setActive(false);
-                        translateInteraction.setActive(false);
                         attachLabelInteraction.setActive(true);
+                    }
+                } else if (this.isMagicWanding) {
+                    if (this.hasNoSelectedLabel) {
+                        this.requireSelectedLabel();
+                    } else {
+                        magicWandInteraction.setActive(true);
                     }
                 } else {
                     switch (mode) {
                         case 'translate':
                             selectInteraction.setActive(true);
-                            modifyInteraction.setActive(false);
                             translateInteraction.setActive(true);
-                            attachLabelInteraction.setActive(false);
                             break;
                         default:
                             selectInteraction.setActive(true);
                             modifyInteraction.setActive(true);
-                            translateInteraction.setActive(false);
-                            attachLabelInteraction.setActive(false);
                     }
                 }
             },
@@ -565,17 +583,27 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             image: function (image, oldImage) {
                 if (!image) {
                     imageLayer.setSource(null);
-                } else if (!oldImage || oldImage.width !== image.width || oldImage.height !== image.height) {
-                    // image.canvas points to the same object for all images for
-                    // performance reasons. Because of this we only have to update the
-                    // source if the image dimensions have changed. The content of the
-                    // canvas element will be automatically updated.
-                    imageLayer.setSource(new ol.source.Canvas({
-                        canvas: image.canvas,
-                        projection: this.projection,
-                        canvasExtent: this.extent,
-                        canvasSize: [image.width, image.height]
-                    }));
+                } else {
+                    if (!oldImage || oldImage.width !== image.width || oldImage.height !== image.height) {
+                        // image.canvas points to the same object for all images for
+                        // performance reasons. Because of this we only have to update
+                        // the source if the image dimensions have changed. The content
+                        // of the canvas element will be automatically updated.
+                        imageLayer.setSource(new ol.source.Canvas({
+                            canvas: image.canvas,
+                            projection: this.projection,
+                            canvasExtent: this.extent,
+                            canvasSize: [image.width, image.height]
+                        }));
+                    }
+
+                    // The same performance optimizations mentioned above make the magic
+                    // wand interaction unable to detect any change if the image is
+                    // swotched. So if the interaction is currently active we have to
+                    // update it manually here.
+                    if (this.isMagicWanding) {
+                        magicWandInteraction.updateSnapshot();
+                    }
                 }
             },
             annotations: function (annotations) {
@@ -772,6 +800,22 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 attachLabelInteraction.setActive(false);
                 attachLabelInteraction.on('attach', this.handleAttachLabel);
                 map.addInteraction(attachLabelInteraction);
+
+                if (!this.crossOrigin) {
+                    var MagicWandInteraction = biigle.$require('annotations.ol.MagicWandInteraction');
+                    magicWandInteraction = new MagicWandInteraction({
+                        map: map,
+                        layer: imageLayer,
+                        source: annotationSource,
+                        style: styles.editing,
+                        indicatorPointStyle: styles.editing,
+                        indicatorCrossStyle: styles.cross,
+                        simplifyTolerant: 0.1,
+                    });
+                    magicWandInteraction.on('drawend', this.handleNewFeature);
+                    magicWandInteraction.setActive(false);
+                    map.addInteraction(magicWandInteraction);
+                }
 
                 // Del key.
                 keyboard.on(46, this.deleteSelectedAnnotations);
