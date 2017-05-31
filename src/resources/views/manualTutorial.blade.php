@@ -1,3 +1,4 @@
+<h3>Label Trees</h3>
 <h4>
     <a href="{{route('manual-tutorials', ['label-trees', 'create-a-label-tree'])}}">Create a Label Tree</a>
 </h4>
