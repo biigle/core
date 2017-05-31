@@ -7,13 +7,13 @@
 <div class="container">
     <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
         <div class="row">
-            <h2>Manual</h2>
+            <h1>Manual</h1>
             <p class="lead">
                 This is the application manual of BIIGLE. Here you can find tutorials and videos on how to use the application as well as the developer documentation and API.
             </p>
         </div>
         <div class="row">
-            <h3>Tutorials</h3>
+            <h2>Tutorials</h2>
 
             <p>
                 Learn more about the different functions and tools of BIIGLE for an efficient workflow.
@@ -48,7 +48,7 @@
             @endforeach
         </div>
         <div class="row">
-            <h3>Developer Documentation</h3>
+            <h2>Developer Documentation</h2>
 
             <p>
                 BIIGLE consists of different modules, each of which provides their own set of functions. Here you can find the developer documentation of each module that this instance has installed.
