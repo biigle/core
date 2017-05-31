@@ -26,6 +26,10 @@
     transform: translate(-50%, -100%) scale(0);
     display: flex;
     flex-wrap: nowrap;
+
+    .btn {
+        padding: 3px 6px;
+    }
 }
 
 .control-button--open {

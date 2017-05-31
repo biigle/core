@@ -85,6 +85,11 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 type: Boolean,
                 default: false,
             },
+            // Specifies whether the displayed image is cross origin.
+            crossOrigin: {
+                type: Boolean,
+                default: false,
+            },
         },
         data: function () {
             var styles = biigle.$require('annotations.stores.styles');
@@ -796,19 +801,21 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 attachLabelInteraction.on('attach', this.handleAttachLabel);
                 map.addInteraction(attachLabelInteraction);
 
-                var MagicWandInteraction = biigle.$require('annotations.ol.MagicWandInteraction');
-                magicWandInteraction = new MagicWandInteraction({
-                    map: map,
-                    layer: imageLayer,
-                    source: annotationSource,
-                    style: styles.editing,
-                    indicatorPointStyle: styles.editing,
-                    indicatorCrossStyle: styles.cross,
-                    simplifyTolerant: 0.1,
-                });
-                magicWandInteraction.on('drawend', this.handleNewFeature);
-                magicWandInteraction.setActive(false);
-                map.addInteraction(magicWandInteraction);
+                if (!this.crossOrigin) {
+                    var MagicWandInteraction = biigle.$require('annotations.ol.MagicWandInteraction');
+                    magicWandInteraction = new MagicWandInteraction({
+                        map: map,
+                        layer: imageLayer,
+                        source: annotationSource,
+                        style: styles.editing,
+                        indicatorPointStyle: styles.editing,
+                        indicatorCrossStyle: styles.cross,
+                        simplifyTolerant: 0.1,
+                    });
+                    magicWandInteraction.on('drawend', this.handleNewFeature);
+                    magicWandInteraction.setActive(false);
+                    map.addInteraction(magicWandInteraction);
+                }
 
                 // Del key.
                 keyboard.on(46, this.deleteSelectedAnnotations);
