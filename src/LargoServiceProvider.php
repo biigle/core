@@ -66,6 +66,11 @@ class LargoServiceProvider extends ServiceProvider
             return new \Biigle\Modules\Largo\Console\Commands\Config();
         });
         $this->commands('command.largo.config');
+
+        $this->app->singleton('command.largo.generate-missing', function ($app) {
+            return new \Biigle\Modules\Largo\Console\Commands\GenerateMissing();
+        });
+        $this->commands('command.largo.generate-missing');
     }
 
     /**
@@ -78,6 +83,7 @@ class LargoServiceProvider extends ServiceProvider
         return [
             'command.largo.publish',
             'command.largo.config',
+            'command.largo.generate-missing',
         ];
     }
 }
