@@ -11,7 +11,6 @@
 </h4>
 
 <p>
-    TODO: Quick introduction to the tool
     See how to create different annotations on images using the annotation tool.
 </p>--}}
 
@@ -37,7 +36,6 @@
 
 <p>
     Learn about advanced ways to navigate the images in the annotation tool.
-TODO: Navigate images (normal cycling (filter of volume overview), pan, zoom, minimap, volare, lawnmower, zoom to extent/original)
 </p>
 
 <h4>

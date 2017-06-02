@@ -1,9 +1,5 @@
 @extends('manual.base')
 
-@push('styles')
-<link href="{{ cachebust_asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
-@endpush
-
 @section('manual-title') Editing Annotations @stop
 
 @section('manual-content')
