@@ -29,7 +29,7 @@
 
 <p>
     Learn about all the tools to modify or delete existing annotations.
-TODO: Edit annotations (modify, attach label, move, delete)
+TODO: Edit annotations (modify, attach label, move, delete/undo)
 </p>
 
 <h4>
