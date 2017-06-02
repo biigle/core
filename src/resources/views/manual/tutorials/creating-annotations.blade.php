@@ -31,7 +31,7 @@
             <a href="{{asset('vendor/annotations/images/manual/creating_annotations_1.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_1.jpg')}}" width="50%"></a>
         </p>
         <p>
-            As you will notice you are required to select a label from the <i class="glyphicon glyphicon-tags"></i> label trees tab in the sidebar first before you can activate one of these tools. A new annotation can only be created if there is a label attached to it. The currently selected label will be attached to all new annotations that you create.
+            As you will notice you are required to select a label from the <i class="fa fa-tags"></i> label trees tab in the sidebar first before you can activate one of these tools. A new annotation can only be created if there is a label attached to it. The currently selected label will be attached to all new annotations that you create.
         </p>
         <p>
             Once you have selected a label and activated an annotation tool you can start creating annotations. You can choose from the following shapes:

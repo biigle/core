@@ -22,7 +22,7 @@
             The main element of the annotation tool is the image which you can navigate similar to an interactive map (like Google Maps). You can grab and move the image with the mouse or zoom in and out using the mouse wheel.
         </p>
         <p>
-            On the right there is the annotation tool sidebar with different tabs like <i class="glyphicon glyphicon-map-marker"></i> annotations, <i class="glyphicon glyphicon-tags"></i> label trees, <i class="glyphicon glyphicon-adjust"></i> color adjustment or the <i class="glyphicon glyphicon-cog"></i> settings. Open a tab by clicking on an icon.
+            On the right there is the annotation tool sidebar with different tabs like <i class="glyphicon glyphicon-map-marker"></i> annotations, <i class="fa fa-tags"></i> label trees, <i class="glyphicon glyphicon-adjust"></i> color adjustment or the <i class="glyphicon glyphicon-cog"></i> settings. Open a tab by clicking on an icon.
         </p>
         <p>
             On the top right over the image there is the minimap. It always shows the entire image and highlights your current viewport depending on the zoom level and position.
@@ -31,7 +31,7 @@
             Finally, on the bottom there is the tool bar. Starting from the left there are the image navigation buttons (backward and forward), the annotation tools to create new annotations and the manipulation tools to edit existing annotations.
         </p>
         <p>
-            Let's create an annotation. First, select one of the labels from the <i class="glyphicon glyphicon-tags"></i> label trees tab in the sidebar:
+            Let's create an annotation. First, select one of the labels from the <i class="fa fa-tags"></i> label trees tab in the sidebar:
         </p>
         <p class="text-center">
             <a href="{{asset('vendor/annotations/images/manual/getting_started_2.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/getting_started_2.jpg')}}" width="75%"></a>
