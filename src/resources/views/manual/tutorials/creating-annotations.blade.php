@@ -150,6 +150,11 @@
             <a href="{{asset('vendor/annotations/images/manual/creating_annotations_magic_wand_6.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_magic_wand_6.jpg')}}" width="24%"></a>
             <a href="{{asset('vendor/annotations/images/manual/creating_annotations_magic_wand_7.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_magic_wand_7.jpg')}}" width="24%"></a>
         </p>
+        <div class="panel panel-warning">
+            <div class="panel-body text-warning">
+                The magic wand tool is not available for remote images.
+            </div>
+        </div>
         <p>
             Internally the magic wand tool uses a scanline flood fill algorithm with a variable threshold to detect a region. The flood fill algorithm starts with the pixel at the point where the mouse button was initially pressed and adds all neighboring pixels to the detected region that don't differ too much from the color of the initial pixel. The accepted difference is computed according to a specific threshold. The threshold is dynamically updated and depends on the distance of the cursor to the point where the mouse button was initially pressed. The larger the distance/threshold, the more pixels will be added to the detected region.
         </p>
