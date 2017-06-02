@@ -65,7 +65,6 @@
         </p>
         <p>
             Volare works great with the <a href="{{route('manual-tutorials', ['annotations', 'sidebar'])}}#annotations-tab">annotation filter</a> if you want to review only specific annotations.
-
         </p>
 
     </div>
