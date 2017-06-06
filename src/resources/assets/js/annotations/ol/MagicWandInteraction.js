@@ -121,6 +121,17 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
     ol.inherits(MagicWandInteraction, ol.interaction.Pointer);
 
     /**
+     * Scaling factor of high DPI displays. The snapshot will be by a factor of
+     * 'scaling' larger than the map so we have to include this factor in the
+     * transformation of the mouse position.
+     *
+     * @return {Float}
+     */
+    MagicWandInteraction.prototype.getHighDpiScaling = function () {
+        return this.snapshot.height / this.map.getSize()[1];
+    };
+
+    /**
      * Convert OpenLayers coordinates on the image layer to coordinates on the snapshot.
      *
      * @param {Array} points
@@ -129,13 +140,13 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
      */
     MagicWandInteraction.prototype.toSnapshotCoordinates = function (points) {
         var extent = this.map.getView().calculateExtent(this.map.getSize());
-        var resolution = this.map.getView().getResolution();
         var height = this.snapshot.height;
+        var factor = this.getHighDpiScaling() / this.map.getView().getResolution();
 
         return points.map(function (point) {
             return [
-                Math.round((point[0] - extent[0]) / resolution),
-                height - Math.round((point[1] - extent[1]) / resolution),
+                Math.round((point[0] - extent[0]) * factor),
+                height - Math.round((point[1] - extent[1]) * factor),
             ];
         });
     };
@@ -149,13 +160,13 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
      */
     MagicWandInteraction.prototype.fromSnapshotCoordinates = function (points) {
         var extent = this.map.getView().calculateExtent(this.map.getSize());
-        var resolution = this.map.getView().getResolution();
         var height = this.snapshot.height;
+        var factor = this.map.getView().getResolution() / this.getHighDpiScaling();
 
         return points.map(function (point) {
             return [
-                Math.round((point[0] * resolution) + extent[0]),
-                Math.round(((height - point[1]) * resolution) + extent[1]),
+                Math.round((point[0] * factor) + extent[0]),
+                Math.round(((height - point[1]) * factor) + extent[1]),
             ];
         });
     };
