@@ -37,14 +37,14 @@ return [
         'database' => [
             'driver' => 'database',
             'table' => 'jobs',
-            'queue' => 'high,default',
+            'queue' => 'default',
             'retry_after' => 1800,
         ],
 
         'beanstalkd' => [
             'driver' => 'beanstalkd',
             'host' => 'localhost',
-            'queue' => 'high,default',
+            'queue' => 'default',
             'retry_after' => 1800,
         ],
 
@@ -60,7 +60,7 @@ return [
         'redis' => [
             'driver' => 'redis',
             'connection' => 'default',
-            'queue' => 'high,default',
+            'queue' => 'default',
             'retry_after' => 1800,
         ],
 
