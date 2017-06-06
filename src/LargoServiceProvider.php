@@ -46,6 +46,8 @@ class LargoServiceProvider extends ServiceProvider
         $modules->addMixin('largo', 'annotationsSettingsTab');
         $modules->addMixin('largo', 'annotationsLabelsTab');
         $modules->addMixin('largo', 'projectsShowToolbar');
+        $modules->addMixin('largo', 'annotationsManualSidebarSettings');
+        $modules->addMixin('largo', 'annotationsManualSidebarLabelTrees');
     }
 
     /**
