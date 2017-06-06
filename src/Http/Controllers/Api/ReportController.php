@@ -36,8 +36,7 @@ abstract class ReportController extends Controller
         $this->model = $this->getModel($id);
         $this->authorize('access', $this->model);
         $report = new $this->report($this->model, $this->getOptions($request));
-        $job = new GenerateReportJob($report, $auth->user());
-        $this->dispatch($job->onQueue('high'));
+        $this->dispatch(new GenerateReportJob($report, $auth->user()));
     }
 
     /**
