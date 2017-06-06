@@ -318,6 +318,16 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
             sketch = MagicWand.gaussBlurOnlyBorder(sketch, this.blurRadius);
         }
 
+        // Crop the detected region of the sketch to the actual image extent. Wherever
+        // the snapshot is transparent, there should not be a detected region.
+        var sketchData = sketch.data;
+        var snapshotData = this.snapshot.data;
+        for (var i = sketchData.length - 1; i >= 0; i--) {
+            if (snapshotData[i * 4] === 0) {
+                sketchData[i] = 0;
+            }
+        }
+
         // Take only the outer contour.
         var contour = MagicWand.traceContours(sketch)
             .filter(function (c) {
