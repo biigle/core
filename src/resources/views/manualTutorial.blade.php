@@ -30,14 +30,13 @@
     Learn about advanced ways to navigate the images in the annotation tool.
 </p>
 
-{{--<h4>
+<h4>
     <a href="{{route('manual-tutorials', ['annotations', 'sidebar'])}}">Sidebar</a>
 </h4>
 
 <p>
     All sidebar tabs of the annotation tool explained.
-TODO: The sidebar (annotations (filter), labels, color adjustment, settings)
-</p>--}}
+</p>
 
 
 <h4>
