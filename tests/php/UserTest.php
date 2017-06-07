@@ -140,4 +140,33 @@ class UserTest extends ModelTestCase
         $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
         $this->model->checkCanBeDeleted();
     }
+
+    public function testCastSettings()
+    {
+        $user = self::create(['settings' => ['abc' => 'def']]);
+        $this->assertEquals(['abc' => 'def'], $user->fresh()->settings);
+    }
+
+    public function testSetSettings()
+    {
+        $this->model->setSettings(['a' => true]);
+        $this->assertEquals(['a' => true], $this->model->fresh()->settings);
+
+        $this->model->setSettings(['b' => 20]);
+        $this->assertEquals(['a' => true, 'b' => 20], $this->model->fresh()->settings);
+
+        $this->model->setSettings(['a' => null, 'b' => 10]);
+        $this->assertEquals(['b' => 10], $this->model->fresh()->settings);
+
+        $this->model->setSettings(['a' => null, 'b' => null]);
+        $this->assertNull($this->model->fresh()->settings);
+    }
+
+    public function testGetSettings()
+    {
+        $this->assertNull($this->model->getSettings('mysetting'));
+        $this->assertEquals('a', $this->model->getSettings('mysetting', 'a'));
+        $this->model->setSettings(['mysetting' => 'b']);
+        $this->assertEquals('b', $this->model->getSettings('mysetting', 'a'));
+    }
 }

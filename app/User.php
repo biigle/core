@@ -70,6 +70,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'role_id' => 'int',
+        'settings' => 'array',
     ];
 
     /**
@@ -173,5 +174,43 @@ class User extends Authenticatable
                 abort(400, "The user can't be removed from label tree '{$tree->name}'. The label tree needs at least one other admin.");
             }
         }
+    }
+
+    /**
+     * Set settings and merge them with the existing settings.
+     *
+     * @param array $settings
+     */
+    public function setSettings(array $settings)
+    {
+        $ownSettings = $this->settings ?: [];
+
+        foreach ($settings as $key => $value) {
+            if (is_null($value)) {
+                unset($ownSettings[$key]);
+            } else {
+                $ownSettings[$key] = $value;
+            }
+        }
+
+        $this->settings = empty($ownSettings) ? null : $ownSettings;
+        $this->save();
+    }
+
+    /**
+     * Get settings of a specific key
+     *
+     * @param string $key
+     * @param mixed $default Default value if the settings key was not set
+     *
+     * @return mixed
+     */
+    public function getSettings($key, $default = null)
+    {
+        if (is_array($this->settings) && array_key_exists($key, $this->settings)) {
+            return $this->settings[$key];
+        }
+
+        return $default;
     }
 }
