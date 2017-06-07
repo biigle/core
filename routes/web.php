@@ -80,6 +80,10 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as' => 'settings-tokens',
             'uses' => 'SettingsController@tokens',
         ]);
+        $router->get('notifications', [
+            'as' => 'settings-notifications',
+            'uses' => 'SettingsController@notifications',
+        ]);
     });
 
     $router->group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'can:admin'], function ($router) {

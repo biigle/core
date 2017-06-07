@@ -57,4 +57,14 @@ class SettingsController extends Controller
             ->withToken(session('token'))
             ->withDeleted(session('deleted'));
     }
+
+    /**
+     * Shows the notification settings.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function notifications()
+    {
+        return view('settings.notifications');
+    }
 }
