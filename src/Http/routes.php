@@ -82,6 +82,10 @@ $router->group([
             'uses' => 'ImageLabels\CsvReportController@store',
         ]);
     });
+
+    $router->post('users/my/settings/export', [
+        'uses' => 'SettingsController@store',
+    ]);
 });
 
 $router->group([

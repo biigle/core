@@ -34,6 +34,16 @@ class ReportReady extends Notification
      */
     public function via($notifiable)
     {
+        $settings = config('export.notifications.default_settings');
+
+        if (config('export.notifications.allow_user_settings') === true) {
+            $settings = $notifiable->getSettings('report_notifications', $settings);
+        }
+
+        if ($settings === 'web') {
+            return ['database'];
+        }
+
         return ['mail'];
     }
 
@@ -50,5 +60,21 @@ class ReportReady extends Notification
             ->line("Your {$this->report->getName()} for {$this->report->getSubject()} is ready for download!")
             ->line('The report will be removed once you have downloaded it.')
             ->action('Download report', $this->report->getUrl());
+    }
+
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+    public function toArray($notifiable)
+    {
+        return [
+            'title' => 'Your BIIGLE report is ready',
+            'message' => "Your {$this->report->getName()} for {$this->report->getSubject()} is ready for download! The report will be removed once you have downloaded it.",
+            'action' => 'Download report',
+            'actionLink' => $this->report->getUrl(),
+        ];
     }
 }
