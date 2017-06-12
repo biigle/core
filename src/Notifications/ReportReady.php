@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Export\Notifications;
 
+use Biigle\Modules\Export\Report;
 use Illuminate\Notifications\Notification;
-use Biigle\Modules\Export\Support\Reports\Report;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class ReportReady extends Notification

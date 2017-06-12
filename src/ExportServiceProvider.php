@@ -5,6 +5,7 @@ namespace Biigle\Modules\Export;
 use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 
 class ExportServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,7 @@ class ExportServiceProvider extends ServiceProvider
     public function boot(Modules $modules, Router $router)
     {
         $this->loadViewsFrom(__DIR__.'/resources/views', 'export');
+        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
 
         $router->group([
             'namespace' => 'Biigle\Modules\Export\Http\Controllers',
@@ -63,6 +65,8 @@ class ExportServiceProvider extends ServiceProvider
         $this->commands([
             'command.export.publish',
         ]);
+
+        $this->registerEloquentFactoriesFrom(__DIR__.'/database/factories');
     }
 
     /**
@@ -75,5 +79,16 @@ class ExportServiceProvider extends ServiceProvider
         return [
             'command.export.publish',
         ];
+    }
+
+    /**
+     * Register factories.
+     *
+     * @param  string  $path
+     * @return void
+     */
+    protected function registerEloquentFactoriesFrom($path)
+    {
+        $this->app->make(EloquentFactory::class)->load($path);
     }
 }

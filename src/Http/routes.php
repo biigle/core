@@ -9,32 +9,8 @@ $router->group([
         'namespace' => 'Volumes',
         'prefix' => 'volumes',
     ], function ($router) {
-        $router->post('{id}/reports/annotations/basic', [
-            'uses' => 'Annotations\BasicReportController@store',
-        ]);
-
-        $router->post('{id}/reports/annotations/extended', [
-            'uses' => 'Annotations\ExtendedReportController@store',
-        ]);
-
-        $router->post('{id}/reports/annotations/full', [
-            'uses' => 'Annotations\FullReportController@store',
-        ]);
-
-        $router->post('{id}/reports/annotations/csv', [
-            'uses' => 'Annotations\CsvReportController@store',
-        ]);
-
-        $router->post('{id}/reports/annotations/area', [
-            'uses' => 'Annotations\AreaReportController@store',
-        ]);
-
-        $router->post('{id}/reports/image-labels/basic', [
-            'uses' => 'ImageLabels\BasicReportController@store',
-        ]);
-
-        $router->post('{id}/reports/image-labels/csv', [
-            'uses' => 'ImageLabels\CsvReportController@store',
+        $router->post('{id}/reports/{id2}', [
+            'uses' => 'VolumeReportController@store',
         ]);
 
         $router->get('{id}/export-area', [
@@ -54,32 +30,8 @@ $router->group([
         'namespace' => 'Projects',
         'prefix' => 'projects',
     ], function ($router) {
-        $router->post('{id}/reports/annotations/basic', [
-            'uses' => 'Annotations\BasicReportController@store',
-        ]);
-
-        $router->post('{id}/reports/annotations/extended', [
-            'uses' => 'Annotations\ExtendedReportController@store',
-        ]);
-
-        $router->post('{id}/reports/annotations/full', [
-            'uses' => 'Annotations\FullReportController@store',
-        ]);
-
-        $router->post('{id}/reports/annotations/csv', [
-            'uses' => 'Annotations\CsvReportController@store',
-        ]);
-
-        $router->post('{id}/reports/annotations/area', [
-            'uses' => 'Annotations\AreaReportController@store',
-        ]);
-
-        $router->post('{id}/reports/image-labels/basic', [
-            'uses' => 'ImageLabels\BasicReportController@store',
-        ]);
-
-        $router->post('{id}/reports/image-labels/csv', [
-            'uses' => 'ImageLabels\CsvReportController@store',
+        $router->post('{id}/reports/{id2}', [
+            'uses' => 'ProjectReportController@store',
         ]);
     });
 

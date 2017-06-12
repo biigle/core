@@ -15,15 +15,17 @@ trait MakesZipArchives
      * This function will create a ZIP archive at `$this->availableReport->path`.
      *
      * @param array $files Array of files, with source path as keys and target filenames (in the ZIP) as values.
+     * @param string $path Path to the file to store the generated ZIP to
+     *
      * @throws Exception If the ZIP file could not be created.
      */
-    protected function makeZip($files)
+    protected function makeZip($files, $path)
     {
         $zip = App::make(ZipArchive::class);
-        $open = $zip->open($this->availableReport->path, ZipArchive::CREATE);
+        $open = $zip->open($path, ZipArchive::CREATE);
 
         if ($open !== true) {
-            throw new Exception("Could not open ZIP file '{$this->availableReport->path}'.");
+            throw new Exception("Could not open ZIP file '{$path}'.");
         }
 
         try {
