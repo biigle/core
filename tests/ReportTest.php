@@ -5,6 +5,8 @@ namespace Biigle\Tests\Modules\Export;
 use File;
 use Mockery;
 use ModelTestCase;
+use Biigle\Tests\VolumeTest;
+use Biigle\Tests\ProjectTest;
 use Biigle\Modules\Export\Report;
 use Biigle\Modules\Export\Support\Reports\ReportGenerator;
 
@@ -89,18 +91,42 @@ class ReportTest extends ModelTestCase
         $this->assertStringEndsWith('reports/'.$this->model->id, $this->model->getUrl());
     }
 
+    public function testObserveSelf()
+    {
+        File::shouldReceive('delete')->once()->with($this->model->getPath());
+        $this->model->delete();
+    }
+
     public function testObserveUser()
     {
-        $this->markTestIncomplete();
+        File::shouldReceive('delete')->once()->with([$this->model->getPath()]);
+        $this->model->user->delete();
+        $this->assertNull($this->model->fresh());
     }
 
     public function testObserveProjects()
     {
-        $this->markTestIncomplete();
+        $project = ProjectTest::create();
+        $this->model->source()->associate($project);
+        $this->model->save();
+
+        $this->assertNotNull($this->model->fresh()->source);
+        $project->delete();
+        $this->assertNull($this->model->fresh()->source);
+        $this->assertNull($this->model->fresh()->source_id);
+        $this->assertNull($this->model->fresh()->source_type);
     }
 
     public function testObserveVolumes()
     {
-        $this->markTestIncomplete();
+        $volume = VolumeTest::create();
+        $this->model->source()->associate($volume);
+        $this->model->save();
+
+        $this->assertNotNull($this->model->fresh()->source);
+        $volume->delete();
+        $this->assertNull($this->model->fresh()->source);
+        $this->assertNull($this->model->fresh()->source_id);
+        $this->assertNull($this->model->fresh()->source_type);
     }
 }

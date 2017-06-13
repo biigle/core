@@ -58,6 +58,10 @@ class ExportServiceProvider extends ServiceProvider
         }
 
         $this->registerPolicies();
+        Report::observe(new Observers\ReportObserver);
+        \Biigle\User::observe(new Observers\UserObserver);
+        \Biigle\Project::observe(new Observers\ProjectObserver);
+        \Biigle\Volume::observe(new Observers\VolumeObserver);
     }
 
     /**
