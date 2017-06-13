@@ -4,11 +4,20 @@ namespace Biigle\Modules\Export;
 
 use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class ExportServiceProvider extends ServiceProvider
 {
+    /**
+     * The policy mappings for the application.
+     *
+     * @var array
+     */
+    protected $policies = [
+        Report::class => Policies\ReportPolicy::class,
+    ];
+
     /**
      * Bootstrap the application events.
      *
@@ -47,6 +56,8 @@ class ExportServiceProvider extends ServiceProvider
         if (config('export.notifications.allow_user_settings')) {
             $modules->addMixin('export', 'settings.notifications');
         }
+
+        $this->registerPolicies();
     }
 
     /**
@@ -66,7 +77,9 @@ class ExportServiceProvider extends ServiceProvider
             'command.export.publish',
         ]);
 
-        $this->registerEloquentFactoriesFrom(__DIR__.'/database/factories');
+        if (config('app.env') === 'testing') {
+            $this->registerEloquentFactoriesFrom(__DIR__.'/database/factories');
+        }
     }
 
     /**

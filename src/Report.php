@@ -2,16 +2,28 @@
 
 namespace Biigle\Modules\Export;
 
+use File;
 use Illuminate\Database\Eloquent\Model;
+use Biigle\Modules\Export\Support\Reports\ReportGenerator;
 
 class Report extends Model
 {
+    /**
+     * The report generator for this report.
+     *
+     * @var ReportGenerator
+     */
+    protected $reportGenerator;
+
     /**
      * The attributes that should be casted to native types.
      *
      * @var array
      */
     protected $casts = [
+        'user_id' => 'int',
+        'type_id' => 'int',
+        'source_id' => 'int',
         'options' => 'array',
     ];
 
@@ -45,6 +57,92 @@ class Report extends Model
         return $this->morphTo();
     }
 
-    //TODO implement generate() function that gets the correct ReportGenerator and performs its generate($path) function with the correct path for this report.
-    // Make sure the directory to put the file to exists!
+    /**
+     * Set the report generator for this model.
+     *
+     * @param ReportGenerator $generator
+     */
+    public function setReportGenerator(ReportGenerator $generator)
+    {
+        $this->reportGenerator = $generator;
+    }
+
+    /**
+     * Get the report generator for this report;
+     *
+     * @return ReportGenerator
+     */
+    public function getReportGenerator()
+    {
+        if (!$this->reportGenerator) {
+            $this->reportGenerator = ReportGenerator::get($this->source, $this->type, $this->options);
+        }
+
+        return $this->reportGenerator;
+    }
+
+    /**
+     * Generate the report file for this report.
+     */
+    public function generate()
+    {
+        $path = $this->getPath();
+        $directory = File::dirname($path);
+
+        if (!File::isDirectory($directory)) {
+            File::makeDirectory($directory, 0755, true);
+        }
+
+        $this->getReportGenerator()->generate($path);
+    }
+
+    /**
+     * Get the path to the report file.
+     *
+     * @return string
+     */
+    public function getPath()
+    {
+        return config('export.reports_storage').'/'.$this->id;
+    }
+
+    /**
+     * Get the subject for this report.
+     *
+     * @return string
+     */
+    public function getSubject()
+    {
+        return $this->getReportGenerator()->getSubject();
+    }
+
+    /**
+     * Get the filename for this report.
+     *
+     * @return string
+     */
+    public function getFilename()
+    {
+        return $this->id.'_'.$this->getReportGenerator()->getFullFilename();
+    }
+
+    /**
+     * Get the name for this report.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->getReportGenerator()->getName();
+    }
+
+    /**
+     * Get the URL to download the report.
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return route('show-reports', $this->id);
+    }
 }

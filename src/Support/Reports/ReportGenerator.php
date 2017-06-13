@@ -68,7 +68,7 @@ class ReportGenerator
      *
      * @return ReportGenerator
      */
-    public static function get($source, ReportType $type, array $options = [])
+    public static function get($source, ReportType $type, $options = [])
     {
         $reflect = new ReflectionClass($source);
         $sourceClass = str_plural($reflect->getShortName());

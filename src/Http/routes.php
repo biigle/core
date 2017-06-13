@@ -9,7 +9,7 @@ $router->group([
         'namespace' => 'Volumes',
         'prefix' => 'volumes',
     ], function ($router) {
-        $router->post('{id}/reports/{id2}', [
+        $router->post('{id}/reports', [
             'uses' => 'VolumeReportController@store',
         ]);
 
@@ -30,10 +30,15 @@ $router->group([
         'namespace' => 'Projects',
         'prefix' => 'projects',
     ], function ($router) {
-        $router->post('{id}/reports/{id2}', [
+        $router->post('{id}/reports', [
             'uses' => 'ProjectReportController@store',
         ]);
     });
+
+    $router->get('reports/{id}', [
+        'uses' => 'ReportsController@show',
+        'as' => 'show-reports',
+    ]);
 
     $router->post('users/my/settings/export', [
         'uses' => 'SettingsController@store',
@@ -54,9 +59,3 @@ $router->group([
         'as' => 'project-reports',
     ]);
 });
-
-// this route should be public (is protected by random uids)
-$router->get('api/v1/reports/{uid}/{filename}', [
-    'as' => 'download_report',
-    'uses' => 'Api\AvailableReportController@show',
-]);

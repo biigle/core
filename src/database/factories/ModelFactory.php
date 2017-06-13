@@ -18,7 +18,7 @@ $factory->define(Biigle\Modules\Export\Report::class, function ($faker) {
             return factory(Biigle\User::class)->create()->id;
         },
         'type_id' => function () {
-            return factory(Biigle\Modules\Export\ReportType::class)->create()->id;
+            return Biigle\Modules\Export\ReportType::inRandomOrder()->first()->id;
         },
         'source_id' => function () use ($sourceType) {
             return factory($sourceType)->create()->id;

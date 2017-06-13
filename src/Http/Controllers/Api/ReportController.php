@@ -23,20 +23,20 @@ abstract class ReportController extends Controller
      *
      * @param Request $request
      * @param Guard $auth
-     * @param int $sourceId Source ID
-     * @param int $typeID ReportType ID
+     * @param int $id Source ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Guard $auth, $sourceId, $reportTypeId)
+    public function store(Request $request, Guard $auth, $id)
     {
-        $this->source = $this->getSource($sourceId);
+        $this->source = $this->getSource($id);
         $this->authorize('access', $this->source);
+        $this->validate($request, ['type_id' => 'required|exists:report_types,id']);
 
         $report = new Report;
-        $report->user()->associate($auth->user());
-        $report->type()->associate(ReportType::findOrFail($reportTypeId));
         $report->source()->associate($this->source);
+        $report->type_id = $request->input('type_id');
+        $report->user()->associate($auth->user());
         $report->options = $this->getOptions($request);
         $report->save();
 

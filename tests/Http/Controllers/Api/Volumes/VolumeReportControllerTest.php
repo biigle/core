@@ -5,48 +5,46 @@ namespace Biigle\Tests\Modules\Export\Http\Controllers\Api\Volumes;
 use ApiTestCase;
 use Biigle\Modules\Export\ReportType;
 use Biigle\Modules\Export\Jobs\GenerateReportJob;
-use Biigle\Modules\Export\Support\Reports\Volumes\Annotations\AreaReport;
 
 class VolumeReportControllerTest extends ApiTestCase
 {
     public function testStore()
     {
-        $id = $this->volume()->id;
-        $tid = ReportType::first()->id;
+        $volumeId = $this->volume()->id;
+        $typeId = ReportType::first()->id;
 
-        $this->post("api/v1/volumes/{$id}/reports/{$tid}")
-            ->assertResponseStatus(401);
-    }
+        $this->doTestApiRoute('POST', "api/v1/volumes/{$volumeId}/reports");
 
-    public function testStoreReports()
-    {
-        foreach (ReportType::pluck('id') as $tid) {
-            $this->storeReport($tid);
-        }
-    }
+        $this->beUser();
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports")
+            ->assertResponseStatus(403);
 
-    protected function storeReport($tid)
-    {
-        $id = $this->volume()->id;
+        $this->beGuest();
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports")
+            ->assertResponseStatus(422);
 
         $this->expectsJobs(GenerateReportJob::class);
-        $this->beGuest();
-        $this->post("api/v1/volumes/{$id}/reports/{$tid}")
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => $typeId,
+            ])
             ->assertResponseOk();
 
         $job = end($this->dispatchedJobs);
         $report = $job->report;
-        $this->assertEquals($tid, $report->type_id);
-        $this->assertEquals($id, $report->source_id);
+        $this->assertEquals($typeId, $report->type_id);
+        $this->assertEquals($volumeId, $report->source_id);
         $this->assertEquals(false, $report->options['exportArea']);
 
-        $this->post("api/v1/volumes/{$id}/reports/{$tid}", ['exportArea' => true])
+        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+                'type_id' => $typeId,
+                'exportArea' => true,
+            ])
             ->assertResponseOk();
 
         $job = end($this->dispatchedJobs);
         $report = $job->report;
-        $this->assertEquals($tid, $report->type_id);
-        $this->assertEquals($id, $report->source_id);
+        $this->assertEquals($typeId, $report->type_id);
+        $this->assertEquals($volumeId, $report->source_id);
         $this->assertEquals(true, $report->options['exportArea']);
     }
 }

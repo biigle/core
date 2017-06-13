@@ -8,15 +8,19 @@ use Biigle\Modules\Export\Http\Controllers\Api\ReportController;
 class ProjectReportController extends ReportController
 {
     /*
-     * @api {post} projects/:pid/reports/:tid Generate a new project report
+     * @api {post} projects/:id/reports Generate a new project report
      * @apiGroup Projects
      * @apiName GenerateProjectReport
+     *
+     * @apiParam {Number} id The project ID.
+     *
+     * @apiParam (Required arguments) {Number} type_id The report type ID.
+     *
      * @apiParam (Optional arguments) {Boolean} exportArea If `true`, restrict the report to the export area of the project.
      * @apiParam (Optional arguments) {Boolean} separateLabelTrees If `true`, separate annotations with labels of different label trees to different sheets of the spreadsheet.
+     *
      * @apiPermission projectMember
      *
-     * @apiParam {Number} vid The project ID.
-     * @apiParam {Number} tid The report type ID.
      */
 
     /**
