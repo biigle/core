@@ -59,3 +59,14 @@ $router->group([
         'as' => 'project-reports',
     ]);
 });
+
+/**
+ * @deprecated Will be deleted after a grace period that still allows downloading of old
+ * reports.
+ *
+ * This route should be public (is protected by random uids).
+ */
+$router->get('api/v1/reports/{uid}/{filename}', [
+    'as' => 'download_report',
+    'uses' => 'Api\AvailableReportController@show',
+]);
