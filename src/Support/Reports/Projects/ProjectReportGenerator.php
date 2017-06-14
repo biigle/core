@@ -56,14 +56,15 @@ class ProjectReportGenerator extends ReportGenerator
 
         foreach ($this->source->volumes as $volume) {
             $report = App::make($this->volumeReportClass, [
-                'options' => $this->options->merge(['source' => $volume]),
+                'source' => $volume,
+                'options' => $this->options,
             ]);
             $file = File::makeTmp();
             $report->generate($file->getPath());
             // The individual volume reports should be deleted again after
             // the ZIP of this report was created.
             $this->tmpFiles[] = $file;
-            $filesForZip[$file->getPath()] = $report->getFullFilename();
+            $filesForZip[$file->getPath()] = $volume->id.'_'.$report->getFullFilename();
         }
 
         $this->makeZip($filesForZip, $path);

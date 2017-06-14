@@ -48,7 +48,7 @@ class PythonScriptRunner
             return $csv->getPath();
         }, $csvs));
 
-        $command = "{$python} {$script} \"{$volumeName}\" {$path} {$csvs}";
+        $command = "{$python} {$script} \"{$volumeName}\" {$path} {$csvs} 2>&1";
 
         exec($command, $this->lines, $this->code);
 

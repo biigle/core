@@ -123,7 +123,7 @@ class Report extends Model
      */
     public function getFilename()
     {
-        return $this->id.'_'.$this->getReportGenerator()->getFullFilename();
+        return $this->source_id.'_'.$this->getReportGenerator()->getFullFilename();
     }
 
     /**

@@ -83,7 +83,8 @@ class ReportTest extends ModelTestCase
         $mock->shouldReceive('getFullFilename')->once()->andReturn('report.pdf');
 
         $this->model->setReportGenerator($mock);
-        $this->assertEquals($this->model->id.'_report.pdf', $this->model->getFilename());
+        $this->model->source_id = 123;
+        $this->assertEquals('123_report.pdf', $this->model->getFilename());
     }
 
     public function testGetUrl()
