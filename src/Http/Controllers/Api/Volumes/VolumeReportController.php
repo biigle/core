@@ -17,9 +17,9 @@ class VolumeReportController extends ReportController
      *
      * @apiParam (Required arguments) {Number} type_id The report type ID.
      *
-     * @apiParam (Optional arguments) {Boolean} exportArea If `true`, restrict the report to the export area of the volume.
-     * @apiParam (Optional arguments) {Boolean} separateLabelTrees If `true`, separate annotations with labels of different label trees to different sheets of the spreadsheet.
-     * @apiParam (Optional arguments) {Number} annotationSession ID of an annotation session of the volume. If given, only annotations belonging to the annotation session are included in the report.
+     * @apiParam (Optional arguments) {Boolean} export_area If `true`, restrict the report to the export area of the volume.
+     * @apiParam (Optional arguments) {Boolean} separate_label_trees If `true`, separate annotations with labels of different label trees to different sheets of the spreadsheet.
+     * @apiParam (Optional arguments) {Number} annotation_session_id ID of an annotation session of the volume. If given, only annotations belonging to the annotation session are included in the report.
      *
      * @apiPermission projectMember
      *
@@ -36,11 +36,11 @@ class VolumeReportController extends ReportController
         $options = parent::getOptions($request);
 
         $this->validate($request, [
-            'annotationSession' => "nullable|exists:annotation_sessions,id,volume_id,{$this->source->id}",
+            'annotation_session_id' => "nullable|exists:annotation_sessions,id,volume_id,{$this->source->id}",
         ]);
 
         return array_merge($options, [
-            'annotationSession' => $request->input('annotationSession'),
+            'annotationSession' => $request->input('annotation_session_id'),
         ]);
     }
 

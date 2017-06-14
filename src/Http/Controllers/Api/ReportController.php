@@ -52,13 +52,13 @@ abstract class ReportController extends Controller
     protected function getOptions(Request $request)
     {
         $this->validate($request, [
-            'separateLabelTrees' => 'nullable|boolean',
-            'exportArea' => 'nullable|boolean',
+            'separate_label_trees' => 'nullable|boolean',
+            'export_area' => 'nullable|boolean',
         ]);
 
         return [
-            'separateLabelTrees' => (bool) $request->input('separateLabelTrees', false),
-            'exportArea' => (bool) $request->input('exportArea', false),
+            'separateLabelTrees' => (bool) $request->input('separate_label_trees', false),
+            'exportArea' => (bool) $request->input('export_area', false),
         ];
     }
 

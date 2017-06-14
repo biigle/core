@@ -6,6 +6,7 @@
     <script src="{{ cachebust_asset('vendor/export/scripts/main.js') }}"></script>
     <script type="text/javascript">
         biigle.$declare('export.projectId', {!! $project->id !!});
+        biigle.$declare('export.reportTypes', {!! $reportTypes !!});
     </script>
 @endpush
 
@@ -34,10 +35,10 @@
                             <label>Report type</label>
                             <div class="btn-group btn-group-justified">
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-default" title="Request an annotation report" v-on:click="selectType('annotations')" :class="{active: wantsType('annotations')}">Annotation report</button>
+                                    <button type="button" class="btn btn-default" title="Request an annotation report" v-on:click="selectType('Annotations')" :class="{active: wantsType('Annotations')}">Annotation report</button>
                                 </div>
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-default" title="Request an image label report" v-on:click="selectType('image-labels')" :class="{active: wantsType('image-labels')}">Image label report</button>
+                                    <button type="button" class="btn btn-default" title="Request an image label report" v-on:click="selectType('ImageLabels')" :class="{active: wantsType('ImageLabels')}">Image label report</button>
                                 </div>
                             </div>
                         </div>
@@ -52,29 +53,29 @@
                         @include('export::partials.reportTypeInfo')
                     </div>
                 </div>
-                <div class="row" v-if="wantsType('annotations')" v-cloak>
-                    <div class="col-sm-7" :class="{'has-error': errors.exportArea}">
+                <div class="row" v-if="wantsType('Annotations')" v-cloak>
+                    <div class="col-sm-7" :class="{'has-error': errors.export_area}">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" v-model="options.exportArea"> Restrict to export area
+                                <input type="checkbox" v-model="options.export_area"> Restrict to export area
                             </label>
                         </div>
-                        <div v-if="errors.exportArea" v-cloak class="help-block" v-text="getError('exportArea')"></div>
+                        <div v-if="errors.export_area" v-cloak class="help-block" v-text="getError('export_area')"></div>
                     </div>
-                    <div class="col-sm-5 help-block" v-if="options.exportArea" v-cloak>
+                    <div class="col-sm-5 help-block" v-if="options.export_area" v-cloak>
                         Annotations that are outside of the export area will be discarded for this report.
                     </div>
                 </div>
                 <div class="row form-group">
-                    <div class="col-sm-7" :class="{'has-error': errors.separateLabelTrees}">
+                    <div class="col-sm-7" :class="{'has-error': errors.separate_label_trees}">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" v-model="options.separateLabelTrees"> Separate label trees
+                                <input type="checkbox" v-model="options.separate_label_trees"> Separate label trees
                             </label>
                         </div>
-                        <div class="help-block" v-if="errors.separateLabelTrees" v-cloak v-text="getError('separateLabelTrees')"></div>
+                        <div class="help-block" v-if="errors.separate_label_trees" v-cloak v-text="getError('separate_label_trees')"></div>
                     </div>
-                    <div class="col-sm-5 help-block" v-if="options.separateLabelTrees" v-cloak>
+                    <div class="col-sm-5 help-block" v-if="options.separate_label_trees" v-cloak>
                         Annotations belonging to different label trees will be separated to different files/sheets.
                     </div>
                 </div>

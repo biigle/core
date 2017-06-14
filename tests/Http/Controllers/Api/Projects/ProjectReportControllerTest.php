@@ -37,7 +37,7 @@ class ProjectReportControllerTest extends ApiTestCase
 
         $this->json('POST', "api/v1/projects/{$projectId}/reports", [
                 'type_id' => $typeId,
-                'exportArea' => true,
+                'export_area' => true,
             ])
             ->assertResponseOk();
 

@@ -37,7 +37,7 @@ class VolumeReportControllerTest extends ApiTestCase
 
         $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
-                'exportArea' => true,
+                'export_area' => true,
             ])
             ->assertResponseOk();
 

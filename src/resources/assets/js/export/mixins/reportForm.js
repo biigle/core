@@ -6,42 +6,61 @@
 biigle.$component('export.mixins.reportForm', {
     mixins: [biigle.$require('core.mixins.loader')],
     data: {
-        variants: {},
+        variants: {
+            'Annotations': [
+                'Basic',
+                'Extended',
+                'Area',
+                'Full',
+                'Csv',
+            ],
+            'ImageLabels': [
+                'Basic',
+                'Csv',
+            ]
+        },
         allowedOptions: {},
-        selectedType: 'annotations',
-        selectedVariant: 'basic',
+        selectedType: 'Annotations',
+        selectedVariant: 'Basic',
         success: false,
         errors: {},
         options: {
-            exportArea: false,
-            separateLabelTrees: false,
+            export_area: false,
+            separate_label_trees: false,
         },
     },
     computed: {
+        availableReportTypes: function () {
+            var types = {};
+            biigle.$require('export.reportTypes').forEach(function (type) {
+                types[type.name] = type.id;
+            });
+
+            return types;
+        },
+        selectedReportTypeId: function () {
+            return this.availableReportTypes[this.selectedType + '\\' + this.selectedVariant];
+        },
         availableVariants: function () {
             return this.variants[this.selectedType];
         },
         selectedOptions: function () {
-            var allowed = this.allowedOptions[this.selectedType];
             var options = {};
-            for (var i = allowed.length - 1; i >= 0; i--) {
-                options[allowed[i]] = this.options[allowed[i]];
-            }
+            this.allowedOptions[this.selectedType].forEach(function (allowed) {
+                options[allowed] = this.options[allowed];
+            }, this);
+
+            options.type_id = this.selectedReportTypeId;
 
             return options;
-        }
+        },
     },
     methods: {
-        request: function (id, model) {
+        request: function (id, resource) {
             if (this.loading) return;
             this.success = false;
             this.startLoading();
-            biigle.$require('export.api.reports').request({
-                    id: id,
-                    model: model,
-                    type: this.selectedType,
-                    variant: this.selectedVariant,
-                }, this.selectedOptions)
+            resource.save({id: id}, this.selectedOptions)
                 .then(this.submitted, this.handleError)
                 .finally(this.finishLoading);
         },
