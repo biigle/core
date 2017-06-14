@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container">
-    @include('system-messages.nav')
+    @include('partials.notification-tabs')
     <div class="row">
         <div class="col-sm-3 col-md-2 col-md-offset-1">
             <ul class="nav nav-pills nav-stacked">
