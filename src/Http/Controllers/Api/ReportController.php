@@ -3,40 +3,44 @@
 namespace Biigle\Modules\Export\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Biigle\Modules\Export\Report;
 use Illuminate\Contracts\Auth\Guard;
+use Biigle\Modules\Export\ReportType;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Modules\Export\Jobs\GenerateReportJob;
 
 abstract class ReportController extends Controller
 {
     /**
-     * The report classname.
-     *
-     * @var string
-     */
-    protected $report;
-
-    /**
-     * The model for which the report will be generated.
+     * The source for which the report will be generated.
      *
      * @var mixed
      */
-    protected $model;
+    protected $source;
 
     /**
      * Generate a report.
      *
      * @param Request $request
      * @param Guard $auth
-     * @param int $id model id
+     * @param int $id Source ID
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, Guard $auth, $id)
     {
-        $this->model = $this->getModel($id);
-        $this->authorize('access', $this->model);
-        $report = new $this->report($this->model, $this->getOptions($request));
-        $this->dispatch(new GenerateReportJob($report, $auth->user()));
+        $this->source = $this->getSource($id);
+        $this->authorize('access', $this->source);
+        $this->validate($request, ['type_id' => 'required|exists:report_types,id']);
+
+        $report = new Report;
+        $report->source()->associate($this->source);
+        $report->type_id = $request->input('type_id');
+        $report->user()->associate($auth->user());
+        $report->options = $this->getOptions($request);
+        $report->save();
+
+        $this->dispatch(new GenerateReportJob($report));
     }
 
     /**
@@ -48,21 +52,21 @@ abstract class ReportController extends Controller
     protected function getOptions(Request $request)
     {
         $this->validate($request, [
-            'separateLabelTrees' => 'nullable|boolean',
-            'exportArea' => 'nullable|boolean',
+            'separate_label_trees' => 'nullable|boolean',
+            'export_area' => 'nullable|boolean',
         ]);
 
         return [
-            'separateLabelTrees' => (bool) $request->input('separateLabelTrees', false),
-            'exportArea' => (bool) $request->input('exportArea', false),
+            'separateLabelTrees' => (bool) $request->input('separate_label_trees', false),
+            'exportArea' => (bool) $request->input('export_area', false),
         ];
     }
 
     /**
-     * Get the model to generate the report for.
+     * Get the source to generate the report for.
      *
      * @param int $id
      * @return mixed
      */
-    abstract protected function getModel($id);
+    abstract protected function getSource($id);
 }

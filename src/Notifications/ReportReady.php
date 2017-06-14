@@ -2,8 +2,8 @@
 
 namespace Biigle\Modules\Export\Notifications;
 
+use Biigle\Modules\Export\Report;
 use Illuminate\Notifications\Notification;
-use Biigle\Modules\Export\Support\Reports\Report;
 use Illuminate\Notifications\Messages\MailMessage;
 
 class ReportReady extends Notification
@@ -58,7 +58,6 @@ class ReportReady extends Notification
         return (new MailMessage)
             ->subject('Your BIIGLE report is ready')
             ->line("Your {$this->report->getName()} for {$this->report->getSubject()} is ready for download!")
-            ->line('The report will be removed once you have downloaded it.')
             ->action('Download report', $this->report->getUrl());
     }
 
@@ -72,7 +71,7 @@ class ReportReady extends Notification
     {
         return [
             'title' => 'Your BIIGLE report is ready',
-            'message' => "Your {$this->report->getName()} for {$this->report->getSubject()} is ready for download! The report will be removed once you have downloaded it.",
+            'message' => "Your {$this->report->getName()} for {$this->report->getSubject()} is ready for download!",
             'action' => 'Download report',
             'actionLink' => $this->report->getUrl(),
         ];

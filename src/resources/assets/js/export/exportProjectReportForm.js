@@ -8,32 +8,19 @@ biigle.$viewModel('export-project-report-form', function (element) {
         el: element,
         mixins: [biigle.$require('export.mixins.reportForm')],
         data: {
-            variants: {
-                'annotations': [
-                    'basic',
-                    'extended',
-                    'area',
-                    'full',
-                    'csv'
-                ],
-                'image-labels': [
-                    'basic',
-                    'csv'
-                ]
-            },
             allowedOptions: {
-                'annotations': [
-                    'exportArea',
-                    'separateLabelTrees'
+                'Annotations': [
+                    'export_area',
+                    'separate_label_trees'
                 ],
-                'image-labels': [
-                    'separateLabelTrees'
+                'ImageLabels': [
+                    'separate_label_trees'
                 ]
             },
         },
         methods: {
             submit: function () {
-                this.request(projectId, 'projects');
+                this.request(projectId, biigle.$require('export.api.projectReports'));
             }
         },
     });

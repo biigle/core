@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Export\Http\Controllers\Views;
 
 use Biigle\Project;
+use Biigle\Modules\Export\ReportType;
 use Biigle\Http\Controllers\Views\Controller;
 
 class ProjectReportsController extends Controller
@@ -17,9 +18,11 @@ class ProjectReportsController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
+        $types = ReportType::all();
 
         return view('export::projectReports', [
             'project' => $project,
+            'reportTypes' => $types,
         ]);
     }
 }

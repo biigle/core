@@ -8,38 +8,25 @@ biigle.$viewModel('export-volume-report-form', function (element) {
         el: element,
         mixins: [biigle.$require('export.mixins.reportForm')],
         data: {
-            variants: {
-                'annotations': [
-                    'basic',
-                    'extended',
-                    'area',
-                    'full',
-                    'csv'
-                ],
-                'image-labels': [
-                    'basic',
-                    'csv'
-                ]
-            },
             allowedOptions: {
-                'annotations': [
-                    'exportArea',
-                    'separateLabelTrees',
-                    'annotationSession'
+                'Annotations': [
+                    'export_area',
+                    'separate_label_trees',
+                    'annotation_session_id',
                 ],
-                'image-labels': [
-                    'separateLabelTrees',
-                    'annotationSession'
+                'ImageLabels': [
+                    'separate_label_trees',
+                    'annotation_session_id',
                 ]
             },
             options: {
-                annotationSession: null,
+                annotation_session_id: null,
             },
         },
         methods: {
             submit: function () {
-                this.request(volumeId, 'volumes');
-            }
-        }
+                this.request(volumeId, biigle.$require('export.api.volumeReports'));
+            },
+        },
     });
 });

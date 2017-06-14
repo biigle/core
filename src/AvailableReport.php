@@ -3,13 +3,12 @@
 namespace Biigle\Modules\Export;
 
 use File;
-use Biigle\Modules\Export\Contracts\DeletableContract;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * Represents the file of a generated report.
  */
-class AvailableReport implements DeletableContract
+class AvailableReport
 {
     /**
      * The file path of this report.

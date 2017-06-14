@@ -5,6 +5,10 @@ namespace Biigle\Modules\Export\Http\Controllers\Api;
 use Biigle\Modules\Export\AvailableReport;
 use Biigle\Http\Controllers\Api\Controller;
 
+/**
+ * @deprecated Will be deleted after a grace period that still allows downloading of old
+ * reports.
+ */
 class AvailableReportController extends Controller
 {
     /**
@@ -24,7 +28,6 @@ class AvailableReportController extends Controller
     public function show($uid, $filename)
     {
         $report = AvailableReport::findOrFail($uid);
-
         return response()
             ->download($report->path, $filename)
             ->deleteFileAfterSend(true);
