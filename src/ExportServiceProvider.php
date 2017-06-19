@@ -52,6 +52,7 @@ class ExportServiceProvider extends ServiceProvider
         $modules->addMixin('export', 'manualTutorial');
         $modules->addMixin('export', 'volumesSidebar');
         $modules->addMixin('export', 'annotationsManualSidebarSettings');
+        $modules->addMixin('export', 'notificationTabs');
 
         if (config('export.notifications.allow_user_settings')) {
             $modules->addMixin('export', 'settings.notifications');

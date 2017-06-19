@@ -35,7 +35,7 @@ class VolumeReportGenerator extends ReportGenerator
      */
     public function getSubject()
     {
-        return  "volume {$this->source->name}";
+        return "volume {$this->source->name}";
     }
 
     /**

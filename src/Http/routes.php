@@ -58,6 +58,11 @@ $router->group([
         'uses' => 'ProjectReportsController@show',
         'as' => 'project-reports',
     ]);
+
+    $router->get('reports', [
+        'uses' => 'ReportsController@index',
+        'as' => 'reports',
+    ]);
 });
 
 /**
