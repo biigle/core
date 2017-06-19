@@ -11,9 +11,9 @@
         </div>
         <div class="col-sm-9 col-md-7 col-md-offset-1">
             @forelse ($reports as $report)
-                <h3><a href="{{$report->getUrl()}}" class="btn btn-default"><i class="glyphicon glyphicon-download" title="Download this report"></i></a> {{$report->source->name}}</h3>
+                <h3><a href="{{$report->getUrl()}}" class="btn btn-default"><i class="glyphicon glyphicon-download" title="Download this report"></i></a> {{$report->source_name}}</h3>
                 <p class="text-muted">
-                    {{$report->getName()}}
+                    {{$report->name}}
                 </p>
             @empty
                 <p class="text-muted">You didn't request any reports yet.</p>

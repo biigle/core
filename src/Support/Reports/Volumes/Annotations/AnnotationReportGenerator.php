@@ -28,6 +28,7 @@ class AnnotationReportGenerator extends VolumeReportGenerator
 
             return "{$this->name} (restricted to export area and annotation session {$name})";
         } elseif ($this->isRestrictedToExportArea()) {
+
             return "{$this->name} (restricted to export area)";
         } elseif ($this->isRestrictedToAnnotationSession()) {
             $name = $this->getAnnotationSession()->name;

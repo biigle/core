@@ -19,4 +19,15 @@ class ReportsControllerTest extends TestCase
             ->see($r1->source->name)
             ->dontSee($r2->source->name);
     }
+
+    public function testIndexDeleted()
+    {
+        $r1 = ReportTest::create();
+        $name= $r1->source->name;
+        $r1->source()->delete();
+
+        $this->be($r1->user);
+        $this->visit('reports')
+            ->see($name);
+    }
 }

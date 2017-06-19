@@ -43,14 +43,18 @@ class GenerateReportJob extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $memoryLimit = ini_get('memory_limit');
-        // increase memory limit for generating large reports
-        ini_set('memory_limit', self::MEMORY_LIMIT);
 
-        $this->report->generate();
+        try {
+            $memoryLimit = ini_get('memory_limit');
+            // increase memory limit for generating large reports
+            ini_set('memory_limit', self::MEMORY_LIMIT);
+
+            $this->report->generate();
+        } finally {
+            // restore default memory limit
+            ini_set('memory_limit', $memoryLimit);
+        }
+
         $this->report->user->notify(new ReportReady($this->report));
-
-        // restore default memory limit
-        ini_set('memory_limit', $memoryLimit);
     }
 }

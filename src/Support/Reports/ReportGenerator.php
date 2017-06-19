@@ -70,12 +70,14 @@ class ReportGenerator
      */
     public static function get($source, ReportType $type, $options = [])
     {
-        $reflect = new ReflectionClass($source);
-        $sourceClass = str_plural($reflect->getShortName());
-        $className = __NAMESPACE__.'\\'.$sourceClass.'\\'.$type->name.'ReportGenerator';
+        if ($source) {
+            $reflect = new ReflectionClass($source);
+            $sourceClass = str_plural($reflect->getShortName());
+            $fullClass = __NAMESPACE__.'\\'.$sourceClass.'\\'.$type->name.'ReportGenerator';
 
-        if (class_exists($className)) {
-            return new $className($source, $options);
+            if (class_exists($fullClass)) {
+                return new $fullClass($source, $options);
+            }
         }
 
         return null;
@@ -101,6 +103,11 @@ class ReportGenerator
      */
     public function generate($path)
     {
+        $directory = File::dirname($path);
+        if (!File::isDirectory($directory)) {
+            File::makeDirectory($directory, 0755, true);
+        }
+
         try {
             $this->generateReport($path);
         } catch (Exception $e) {

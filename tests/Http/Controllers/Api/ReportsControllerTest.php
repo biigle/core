@@ -21,7 +21,7 @@ class ReportsControllerTest extends ApiTestCase
         $this->be($report->user);
         Response::shouldReceive('download')
             ->once()
-            ->with($report->getPath(), $report->getFilename());
+            ->with($report->getPath(), $report->filename);
 
         Response::shouldReceive('json')->passthru();
 
