@@ -456,7 +456,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             toggleMagicWand: function () {
                 if (this.isMagicWanding) {
                     this.resetInteractionMode();
-                } else {
+                } else if (magicWandInteraction) {
                     this.interactionMode = 'magicWand';
                 }
             },
@@ -476,7 +476,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 modifyInteraction.setActive(false);
                 translateInteraction.setActive(false);
                 attachLabelInteraction.setActive(false);
-                magicWandInteraction.setActive(false);
+                if (magicWandInteraction) {
+                    magicWandInteraction.setActive(false);
+                }
 
                 if (this.isDrawing) {
                     if (this.hasNoSelectedLabel) {
@@ -499,7 +501,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 } else if (this.isMagicWanding) {
                     if (this.hasNoSelectedLabel) {
                         this.requireSelectedLabel();
-                    } else {
+                    } else if (magicWandInteraction) {
                         magicWandInteraction.setActive(true);
                     }
                 } else {
