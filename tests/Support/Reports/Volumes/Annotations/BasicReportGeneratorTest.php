@@ -18,10 +18,10 @@ class BasicReportGeneratorTest extends TestCase
 {
     public function testProperties()
     {
-        $report = new BasicReportGenerator(VolumeTest::make());
-        $this->assertEquals('basic annotation report', $report->getName());
-        $this->assertEquals('basic_annotation_report', $report->getFilename());
-        $this->assertStringEndsWith('.pdf', $report->getFullFilename());
+        $generator = new BasicReportGenerator;
+        $this->assertEquals('basic annotation report', $generator->getName());
+        $this->assertEquals('basic_annotation_report', $generator->getFilename());
+        $this->assertStringEndsWith('.pdf', $generator->getFullFilename());
     }
 
     public function testGenerateReport()
@@ -59,7 +59,8 @@ class BasicReportGeneratorTest extends TestCase
             return $mock;
         });
 
-        $generator = new BasicReportGenerator($volume);
+        $generator = new BasicReportGenerator;
+        $generator->setSource($volume);
         $mock = Mockery::mock();
         $mock->shouldReceive('run')->once();
         $generator->setPythonScriptRunner($mock);
@@ -118,9 +119,10 @@ class BasicReportGeneratorTest extends TestCase
             return $mock;
         });
 
-        $generator = new BasicReportGenerator($image->volume, [
+        $generator = new BasicReportGenerator([
             'separateLabelTrees' => true,
         ]);
+        $generator->setSource($image->volume);
         $mock = Mockery::mock();
         $mock->shouldReceive('run')->once();
         $generator->setPythonScriptRunner($mock);

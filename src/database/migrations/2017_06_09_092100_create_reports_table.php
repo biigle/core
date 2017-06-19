@@ -49,11 +49,9 @@ class CreateReportsTable extends Migration
             // Columns for the polymorphic relationship to either volumes or projects.
             $table->morphs('source');
 
-            // Store these attributes that depend on the source so they can still be
-            // displayed even if the source has been deleted.
+            // Store the source name so can still be displayed even if the source has
+            // been deleted.
             $table->string('source_name');
-            $table->string('name');
-            $table->string('filename');
 
             $table->json('options')->nullable();
 

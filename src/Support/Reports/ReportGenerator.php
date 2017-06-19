@@ -18,7 +18,7 @@ class ReportGenerator
     public $options;
 
     /**
-     * The source this report belongs to.
+     * Source this report belongs to (e.g. a volume)
      *
      * @var mixed
      */
@@ -62,21 +62,21 @@ class ReportGenerator
     /**
      * Get the report generator for the given type.
      *
-     * @param mixed $source
-     * @param ReportType $type
+     * @param string $sourceClass Class name of the source model
+     * @param ReportType $type Type of the report to generate
      * @param array $options Options for the report generator
      *
      * @return ReportGenerator
      */
-    public static function get($source, ReportType $type, $options = [])
+    public static function get($sourceClass, ReportType $type, $options = [])
     {
-        if ($source) {
-            $reflect = new ReflectionClass($source);
+        if (class_exists($sourceClass)) {
+            $reflect = new ReflectionClass($sourceClass);
             $sourceClass = str_plural($reflect->getShortName());
             $fullClass = __NAMESPACE__.'\\'.$sourceClass.'\\'.$type->name.'ReportGenerator';
 
             if (class_exists($fullClass)) {
-                return new $fullClass($source, $options);
+                return new $fullClass($options);
             }
         }
 
@@ -86,12 +86,10 @@ class ReportGenerator
     /**
      * Create a report generator instance.
      *
-     * @param mixed $source Source this report belongs to (e.g. a volume)
      * @param array $options Options for the report
      */
-    public function __construct($source, $options = [])
+    public function __construct($options = [])
     {
-        $this->source = $source;
         $this->options = collect($options);
         $this->tmpFiles = [];
     }
@@ -99,10 +97,17 @@ class ReportGenerator
     /**
      * Generate the report.
      *
+     * @param mixed $source Source to generate the report for (e.g. a volume)
      * @param string $path Path to write the report file to.
      */
-    public function generate($path)
+    public function generate($source, $path)
     {
+        $this->setSource($source);
+
+        if (is_null($this->source)) {
+            throw new Exception('Cannot generate report because the source does not exist.');
+        }
+
         $directory = File::dirname($path);
         if (!File::isDirectory($directory)) {
             File::makeDirectory($directory, 0755, true);
@@ -135,6 +140,16 @@ class ReportGenerator
     }
 
     /**
+     * Set the source.
+     *
+     * @param mixed $source
+     */
+    public function setSource($source)
+    {
+        $this->source = $source;
+    }
+
+    /**
      * Get the report name.
      *
      * @return string
@@ -162,16 +177,6 @@ class ReportGenerator
     public function getFullFilename()
     {
         return "{$this->getFilename()}.{$this->extension}";
-    }
-
-    /**
-     * Description of the subject of this report (e.g. `project xyz`).
-     *
-     * @return string
-     */
-    public function getSubject()
-    {
-        return  '';
     }
 
     /**

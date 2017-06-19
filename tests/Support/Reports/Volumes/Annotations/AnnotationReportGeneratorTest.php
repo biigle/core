@@ -65,9 +65,10 @@ class AnnotationReportGeneratorTest extends TestCase
         $inside = [$annotations[0]->id, $annotations[1]->id, $annotations[4]->id];
         $outside = [$annotations[2]->id, $annotations[3]->id, $annotations[5]->id];
 
-        $report = new AnnotationReportGenerator($volume);
+        $generator = new AnnotationReportGenerator;
+        $generator->setSource($volume);
 
-        $ids = Annotation::when(true, [$report, 'restrictToExportAreaQuery'])->pluck('id')->toArray();
+        $ids = Annotation::when(true, [$generator, 'restrictToExportAreaQuery'])->pluck('id')->toArray();
         $ids = array_map('intval', $ids);
 
         sort($inside);
@@ -84,31 +85,42 @@ class AnnotationReportGeneratorTest extends TestCase
     {
         $session = AnnotationSessionTest::create();
 
-        $report = new AnnotationReportGenerator($session->volume, [
+        $generator = new AnnotationReportGenerator([
             'exportArea' => true,
         ]);
 
-        $this->assertContains('restricted to export area', $report->getName());
-        $this->assertContains('restricted_to_export_area', $report->getFilename());
+        $this->assertContains('restricted to export area', $generator->getName());
+        $this->assertContains('restricted_to_export_area', $generator->getFilename());
 
-        $report = new AnnotationReportGenerator($session->volume, [
+        $generator = new AnnotationReportGenerator([
             'annotationSession' => $session->id,
         ]);
 
-        $this->assertContains('restricted to annotation session', $report->getName());
-        $this->assertContains($session->name, $report->getName());
-        $this->assertContains('restricted_to_annotation_session', $report->getFilename());
+        $this->assertContains('restricted to annotation session', $generator->getName());
+        $this->assertContains($session->name, $generator->getName());
+        $this->assertContains('restricted_to_annotation_session', $generator->getFilename());
 
-        $report = new AnnotationReportGenerator($session->volume, [
+        $generator = new AnnotationReportGenerator([
             'exportArea' => true,
             'annotationSession' => $session->id,
         ]);
 
-        $this->assertContains('export area', $report->getName());
-        $this->assertContains('export_area', $report->getFilename());
-        $this->assertContains('annotation session', $report->getName());
-        $this->assertContains($session->name, $report->getName());
-        $this->assertContains('annotation_session', $report->getFilename());
+        $this->assertContains('export area', $generator->getName());
+        $this->assertContains('export_area', $generator->getFilename());
+        $this->assertContains('annotation session', $generator->getName());
+        $this->assertContains($session->name, $generator->getName());
+        $this->assertContains('annotation_session', $generator->getFilename());
+
+        $session->delete();
+
+        $generator = new AnnotationReportGenerator([
+            'annotationSession' => $session->id,
+        ]);
+
+        $this->assertContains('annotation session', $generator->getName());
+        $this->assertNotContains($session->name, $generator->getName());
+        $this->assertContains("{$session->id}", $generator->getName());
+        $this->assertContains('annotation_session', $generator->getFilename());
     }
 
     public function testRestrictToAnnotationSessionQuery()
@@ -142,10 +154,11 @@ class AnnotationReportGeneratorTest extends TestCase
             'annotation_id' => $a->id,
         ]);
 
-        $report = new AnnotationReportGenerator($session->volume, [
+        $generator = new AnnotationReportGenerator([
             'annotationSession' => $session->id,
         ]);
-        $results = AnnotationLabel::when(true, [$report, 'restrictToAnnotationSessionQuery'])->get();
+        $generator->setSource($session->volume);
+        $results = AnnotationLabel::when(true, [$generator, 'restrictToAnnotationSessionQuery'])->get();
 
         $this->assertEquals(1, count($results));
         $this->assertEquals($al2->id, $results[0]->id);

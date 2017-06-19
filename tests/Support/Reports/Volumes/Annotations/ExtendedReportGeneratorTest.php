@@ -20,10 +20,10 @@ class ExtendedReportGeneratorTest extends TestCase
 
     public function testProperties()
     {
-        $report = new ExtendedReportGenerator(VolumeTest::make());
-        $this->assertEquals('extended annotation report', $report->getName());
-        $this->assertEquals('extended_annotation_report', $report->getFilename());
-        $this->assertStringEndsWith('.xlsx', $report->getFullFilename());
+        $generator = new ExtendedReportGenerator;
+        $this->assertEquals('extended annotation report', $generator->getName());
+        $this->assertEquals('extended_annotation_report', $generator->getFilename());
+        $this->assertStringEndsWith('.xlsx', $generator->getFullFilename());
     }
 
     public function testGenerateReport()
@@ -74,7 +74,8 @@ class ExtendedReportGeneratorTest extends TestCase
             return $mock;
         });
 
-        $generator = new ExtendedReportGenerator($volume);
+        $generator = new ExtendedReportGenerator;
+        $generator->setSource($volume);
         $mock = Mockery::mock();
         $mock->shouldReceive('run')->once();
         $generator->setPythonScriptRunner($mock);
@@ -130,9 +131,10 @@ class ExtendedReportGeneratorTest extends TestCase
             return $mock;
         });
 
-        $generator = new ExtendedReportGenerator($image->volume, [
+        $generator = new ExtendedReportGenerator([
             'separateLabelTrees' => true,
         ]);
+        $generator->setSource($image->volume);
         $mock = Mockery::mock();
         $mock->shouldReceive('run')->once();
         $generator->setPythonScriptRunner($mock);

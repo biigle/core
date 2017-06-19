@@ -4,6 +4,7 @@ namespace Biigle\Modules\Export\Support\Reports\Volumes\Annotations;
 
 use DB;
 use Illuminate\Support\Str;
+use Biigle\AnnotationSession;
 use Biigle\Modules\Export\Volume;
 use Biigle\Modules\Export\Support\Reports\Volumes\VolumeReportGenerator;
 
@@ -24,14 +25,14 @@ class AnnotationReportGenerator extends VolumeReportGenerator
     public function getName()
     {
         if ($this->isRestrictedToExportArea() && $this->isRestrictedToAnnotationSession()) {
-            $name = $this->getAnnotationSession()->name;
+            $name = $this->getAnnotationSessionName();
 
             return "{$this->name} (restricted to export area and annotation session {$name})";
         } elseif ($this->isRestrictedToExportArea()) {
 
             return "{$this->name} (restricted to export area)";
         } elseif ($this->isRestrictedToAnnotationSession()) {
-            $name = $this->getAnnotationSession()->name;
+            $name = $this->getAnnotationSessionName();
 
             return "{$this->name} (restricted to annotation session {$name})";
         }
@@ -54,7 +55,7 @@ class AnnotationReportGenerator extends VolumeReportGenerator
             }
 
             if ($this->isRestrictedToAnnotationSession()) {
-                $name = Str::slug($this->getAnnotationSession()->name);
+                $name = Str::slug($this->getAnnotationSessionName());
                 $suffix .= "_annotation_session_{$name}";
             }
 
@@ -96,6 +97,18 @@ class AnnotationReportGenerator extends VolumeReportGenerator
                         ->where('annotation_session_id', $session->id);
                 });
         });
+    }
+
+    /**
+     * Get the name of the annotation session if it exists.
+     *
+     * @return string
+     */
+    protected function getAnnotationSessionName()
+    {
+        $session = $this->getAnnotationSession();
+
+        return $session ? $session->name : $this->options->get('annotationSession', '');
     }
 
     /**
@@ -213,14 +226,12 @@ class AnnotationReportGenerator extends VolumeReportGenerator
     /**
      * Returns the annotation session this report should be restricted to.
      *
-     * @return Biigle\AnnotationSession|null
+     * @return AnnotationSession|null
      */
     protected function getAnnotationSession()
     {
         if (!$this->annotationSession) {
-            $this->annotationSession = $this->source
-                ->annotationSessions()
-                ->find($this->options->get('annotationSession', null));
+            $this->annotationSession = AnnotationSession::find($this->options->get('annotationSession', null));
         }
 
         return $this->annotationSession;

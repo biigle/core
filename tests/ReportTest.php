@@ -26,8 +26,6 @@ class ReportTest extends ModelTestCase
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
         $this->assertNotNull($this->model->source_name);
-        $this->assertNotNull($this->model->name);
-        $this->assertNotNull($this->model->filename);
     }
 
     public function testCastsOptions()
@@ -43,7 +41,7 @@ class ReportTest extends ModelTestCase
         $path = config('export.reports_storage');
 
         $mock = Mockery::mock(ReportGenerator::class);
-        $mock->shouldReceive('generate')->once()->with("{$path}/{$id}");
+        $mock->shouldReceive('generate')->once()->with($this->model->source, "{$path}/{$id}");
 
         $this->model->setReportGenerator($mock);
         $this->model->generate();
@@ -54,12 +52,6 @@ class ReportTest extends ModelTestCase
         $this->model->source()->delete();
         $this->setExpectedException(\Exception::class);
         $this->model->fresh()->generate();
-    }
-
-    public function testGetReportGeneratorSourceDeleted()
-    {
-        $this->model->source()->delete();
-        $this->assertNull($this->model->fresh()->getReportGenerator());
     }
 
     public function testSourceName()
@@ -87,6 +79,22 @@ class ReportTest extends ModelTestCase
         $subject = $this->model->subject;
         $this->model->source()->delete();
         $this->assertEquals($subject, $this->model->fresh()->subject);
+    }
+
+    public function testGetNameAttribute()
+    {
+        $mock = Mockery::mock(ReportGenerator::class);
+        $mock->shouldReceive('getName')->once()->andReturn('123');
+        $this->model->setReportGenerator($mock);
+        $this->assertEquals('123', $this->model->name);
+    }
+
+    public function testGetFilenameAttribute()
+    {
+        $mock = Mockery::mock(ReportGenerator::class);
+        $mock->shouldReceive('getFilename')->once()->andReturn('abc');
+        $this->model->setReportGenerator($mock);
+        $this->assertEquals($this->model->id.'_abc', $this->model->filename);
     }
 
     public function testGetUrl()

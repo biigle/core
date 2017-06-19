@@ -37,10 +37,10 @@ class CsvReportGeneratorTest extends TestCase
 
     public function testProperties()
     {
-        $report = new CsvReportGenerator(VolumeTest::make());
-        $this->assertEquals('CSV annotation report', $report->getName());
-        $this->assertEquals('csv_annotation_report', $report->getFilename());
-        $this->assertStringEndsWith('.zip', $report->getFullFilename());
+        $generator = new CsvReportGenerator;
+        $this->assertEquals('CSV annotation report', $generator->getName());
+        $this->assertEquals('csv_annotation_report', $generator->getFilename());
+        $this->assertStringEndsWith('.zip', $generator->getFullFilename());
     }
 
     public function testGenerateReport()
@@ -115,7 +115,9 @@ class CsvReportGeneratorTest extends TestCase
             return $mock;
         });
 
-        with(new CsvReportGenerator($volume))->generateReport('my/path');
+        $generator = new CsvReportGenerator;
+        $generator->setSource($volume);
+        $generator->generateReport('my/path');
     }
 
     public function testGenerateReportSeparateLabelTrees()
@@ -217,9 +219,10 @@ class CsvReportGeneratorTest extends TestCase
             return $mock;
         });
 
-        $report = new CsvReportGenerator($image->volume, [
+        $generator = new CsvReportGenerator([
             'separateLabelTrees' => true,
         ]);
-        $report->generateReport('my/path');
+        $generator->setSource($image->volume);
+        $generator->generateReport('my/path');
     }
 }

@@ -15,9 +15,6 @@ class ReportObserver
     public function creating($report)
     {
         $report->source_name = $report->source->name;
-        $generator = $report->getReportGenerator();
-        $report->name = $generator->getName();
-        $report->filename = $generator->getFilename();
     }
 
     /**

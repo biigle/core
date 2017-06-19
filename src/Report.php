@@ -91,7 +91,7 @@ class Report extends Model
     public function getReportGenerator()
     {
         if (!$this->reportGenerator) {
-            $this->reportGenerator = ReportGenerator::get($this->source, $this->type, $this->options);
+            $this->reportGenerator = ReportGenerator::get($this->source_type, $this->type, $this->options);
         }
 
         return $this->reportGenerator;
@@ -102,11 +102,7 @@ class Report extends Model
      */
     public function generate()
     {
-        if (is_null($this->source)) {
-            throw new Exception('Cannot generate report because source was deleted.');
-        }
-
-        $this->getReportGenerator()->generate($this->getPath());
+        $this->getReportGenerator()->generate($this->source, $this->getPath());
     }
 
     /**
@@ -132,13 +128,23 @@ class Report extends Model
     }
 
     /**
+     * Get the name for this report.
+     *
+     * @return string
+     */
+    public function getNameAttribute()
+    {
+        return $this->getReportGenerator()->getName();
+    }
+
+    /**
      * Get the filename for this report.
      *
      * @return string
      */
     public function getFilenameAttribute()
     {
-        return $this->source_id.'_'.$this->attributes['filename'];
+        return $this->source_id.'_'.$this->getReportGenerator()->getFilename();
     }
 
     /**

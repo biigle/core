@@ -6,6 +6,7 @@ use File;
 use Mockery;
 use TestCase;
 use Exception;
+use Biigle\Volume;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
@@ -18,7 +19,7 @@ class ReportGeneratorTest extends TestCase
     public function testGetNotExists()
     {
         $type = factory(ReportType::class)->make();
-        $this->assertNull(ReportGenerator::get(VolumeTest::make(), $type));
+        $this->assertNull(ReportGenerator::get(Volume::class, $type));
     }
 
     public function testGet()
@@ -26,15 +27,14 @@ class ReportGeneratorTest extends TestCase
         $type = ReportType::whereName('Annotations\Basic')->first();
         $this->assertInstanceOf(
             BasicReportGenerator::class,
-            ReportGenerator::get(VolumeTest::make(), $type)
+            ReportGenerator::get(Volume::class, $type)
         );
     }
 
     public function testGetAllExist()
     {
-        $source = VolumeTest::make();
         foreach (ReportType::get() as $type) {
-            $this->assertNotNull(ReportGenerator::get($source, $type));
+            $this->assertNotNull(ReportGenerator::get(Volume::class, $type));
         }
     }
 
@@ -46,7 +46,13 @@ class ReportGeneratorTest extends TestCase
         File::shouldReceive('delete')->with('somepath')->once();
 
         $this->setExpectedException(Exception::class);
-        with(new GeneratorStub(VolumeTest::make(), ['throw' => true]))->generate('somepath');
+        with(new GeneratorStub(['throw' => true]))->generate(VolumeTest::make(), 'somepath');
+    }
+
+    public function testHandleSourceEmpty()
+    {
+        $this->setExpectedException(Exception::class);
+        with(new GeneratorStub)->generate(null, 'somepath');
     }
 
     public function testHandleRegular()
@@ -64,7 +70,7 @@ class ReportGeneratorTest extends TestCase
             ->once()
             ->with('some', 0755, true);
 
-        with(new GeneratorStub(VolumeTest::make()))->generate('some/path');
+        with(new GeneratorStub)->generate(VolumeTest::make(), 'some/path');
     }
 
     public function testExpandLabelName()
@@ -75,8 +81,7 @@ class ReportGeneratorTest extends TestCase
             'label_tree_id' => $root->label_tree_id,
         ]);
 
-        $generator = new ReportGenerator(VolumeTest::make());
-
+        $generator = new ReportGenerator;
         $this->assertEquals("{$root->name} > {$child->name}", $generator->expandLabelName($child->id));
     }
 }
