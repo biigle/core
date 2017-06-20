@@ -1,13 +1,13 @@
 <?php
 
-namespace Biigle\Modules\Largo\Http\Controllers\Api;
+namespace Biigle\Modules\Largo\Http\Controllers\Api\Projects;
 
 use Biigle\Project;
 use Biigle\Annotation;
 use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
 
-class ProjectsAnnotationsController extends Controller
+class FilterAnnotationsByLabelController extends Controller
 {
     /**
      * Show all annotations of the project that have a specific label attached.
@@ -26,7 +26,7 @@ class ProjectsAnnotationsController extends Controller
      * @param int $lid Label ID
      * @return \Illuminate\Http\Response
      */
-    public function filter(Request $request, $pid, $lid)
+    public function index(Request $request, $pid, $lid)
     {
         $project = Project::findOrFail($pid);
         $this->authorize('access', $project);

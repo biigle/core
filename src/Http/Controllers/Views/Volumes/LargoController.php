@@ -1,9 +1,8 @@
 <?php
 
-namespace Biigle\Modules\Largo\Http\Controllers\Views;
+namespace Biigle\Modules\Largo\Http\Controllers\Views\Volumes;
 
 use Biigle\Role;
-use Biigle\Project;
 use Biigle\Volume;
 use Biigle\LabelTree;
 use Illuminate\Contracts\Auth\Guard;
@@ -18,7 +17,7 @@ class LargoController extends Controller
      * @param int $id Volume ID
      * @return \Illuminate\Http\Response
      */
-    public function indexVolume(Guard $auth, $id)
+    public function index(Guard $auth, $id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('edit-in', $volume);
@@ -55,31 +54,6 @@ class LargoController extends Controller
             'user' => $user,
             'volume' => $volume,
             'projects' => $projects,
-            'labelTrees' => $labelTrees,
-        ]);
-    }
-
-    /**
-     * Show the Largo view for a project.
-     *
-     * @param Guard $auth
-     * @param int $id Project ID
-     * @return \Illuminate\Http\Response
-     */
-    public function indexProject(Guard $auth, $id)
-    {
-        $project = Project::findOrFail($id);
-        $this->authorize('edit-in', $project);
-        $user = $auth->user();
-
-        $labelTrees = $project->labelTrees()
-            ->with('labels')
-            ->select('id', 'name')
-            ->get();
-
-        return view('largo::project', [
-            'user' => $user,
-            'project' => $project,
             'labelTrees' => $labelTrees,
         ]);
     }
