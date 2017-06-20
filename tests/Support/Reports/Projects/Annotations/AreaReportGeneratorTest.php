@@ -10,8 +10,8 @@ class AreaReportGeneratorTest extends TestCase
 {
     public function testProperties()
     {
-        $report = new AreaReportGenerator(ProjectTest::make());
-        $this->assertEquals('annotation area report', $report->getName());
-        $this->assertEquals('annotation_area_report', $report->getFilename());
+        $generator = new AreaReportGenerator;
+        $this->assertEquals('annotation area report', $generator->getName());
+        $this->assertEquals('annotation_area_report', $generator->getFilename());
     }
 }

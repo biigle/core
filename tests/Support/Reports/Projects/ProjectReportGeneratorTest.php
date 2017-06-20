@@ -15,13 +15,6 @@ use Biigle\Modules\Export\Support\Reports\Volumes\Annotations\BasicReport as Vol
 
 class ProjectReportGeneratorTest extends TestCase
 {
-    public function testGetSubject()
-    {
-        $project = ProjectTest::make();
-        $report = new ProjectReportGenerator($project);
-        $this->assertContains($project->name, $report->getSubject());
-    }
-
     public function testExpandLabelNameOwnTree()
     {
         $project = ProjectTest::create();
@@ -32,15 +25,16 @@ class ProjectReportGeneratorTest extends TestCase
         ]);
         $project->labelTrees()->attach($root->tree);
 
-        $report = new ProjectReportGenerator($project);
+        $generator = new ProjectReportGenerator;
+        $generator->setSource($project);
 
-        $this->assertEquals("{$root->name} > {$child->name}", $report->expandLabelName($child->id));
+        $this->assertEquals("{$root->name} > {$child->name}", $generator->expandLabelName($child->id));
     }
 
     public function testProperties()
     {
-        $report = new ProjectReportStub(ProjectTest::make());
-        $this->assertStringEndsWith('.zip', $report->getFullFilename());
+        $generator = new ProjectReportStub;
+        $this->assertStringEndsWith('.zip', $generator->getFullFilename());
     }
 
     public function testGenerate()
@@ -75,8 +69,8 @@ class ProjectReportGeneratorTest extends TestCase
         $volume = VolumeTest::create(['id' => 123]);
         $project->addVolumeId($volume->id);
 
-        $report = new ProjectReportStub($project);
-        $report->generate('my/path');
+        $generator = new ProjectReportStub;
+        $generator->generate($project, 'my/path');
     }
 }
 

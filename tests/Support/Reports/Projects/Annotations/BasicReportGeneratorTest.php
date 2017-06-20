@@ -10,8 +10,8 @@ class BasicReportGeneratorTest extends TestCase
 {
     public function testProperties()
     {
-        $report = new BasicReportGenerator(ProjectTest::make());
-        $this->assertEquals('basic annotation report', $report->getName());
-        $this->assertEquals('basic_annotation_report', $report->getFilename());
+        $generator = new BasicReportGenerator;
+        $this->assertEquals('basic annotation report', $generator->getName());
+        $this->assertEquals('basic_annotation_report', $generator->getFilename());
     }
 }

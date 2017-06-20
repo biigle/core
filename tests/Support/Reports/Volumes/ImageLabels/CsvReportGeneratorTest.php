@@ -14,7 +14,7 @@ use Biigle\Tests\ImageLabelTest;
 use Biigle\Modules\Export\Support\CsvFile;
 use Biigle\Modules\Export\Support\Reports\Volumes\ImageLabels\CsvReportGenerator;
 
-class CsvReportTestGenerator extends TestCase
+class CsvReportGeneratorTest extends TestCase
 {
     private $columns = [
         'image_label_id',
@@ -32,10 +32,10 @@ class CsvReportTestGenerator extends TestCase
 
     public function testProperties()
     {
-        $report = new CsvReportGenerator(VolumeTest::make());
-        $this->assertEquals('CSV image label report', $report->getName());
-        $this->assertEquals('csv_image_label_report', $report->getFilename());
-        $this->assertStringEndsWith('.zip', $report->getFullFilename());
+        $generator = new CsvReportGenerator;
+        $this->assertEquals('CSV image label report', $generator->getName());
+        $this->assertEquals('csv_image_label_report', $generator->getFilename());
+        $this->assertStringEndsWith('.zip', $generator->getFullFilename());
     }
 
     public function testGenerateReport()
@@ -102,7 +102,9 @@ class CsvReportTestGenerator extends TestCase
             return $mock;
         });
 
-        with(new CsvReportGenerator($volume))->generateReport('my/path');
+        $generator = new CsvReportGenerator;
+        $generator->setSource($volume);
+        $generator->generateReport('my/path');
     }
 
     public function testGenerateReportSeparateLabelTrees()
@@ -192,9 +194,10 @@ class CsvReportTestGenerator extends TestCase
             return $mock;
         });
 
-        $report = new CsvReportGenerator($image->volume, [
+        $generator = new CsvReportGenerator([
             'separateLabelTrees' => true,
         ]);
-        $report->generateReport('my/path');
+        $generator->setSource($image->volume);
+        $generator->generateReport('my/path');
     }
 }

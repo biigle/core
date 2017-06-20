@@ -57,7 +57,7 @@ class ReportReady extends Notification
     {
         return (new MailMessage)
             ->subject('Your BIIGLE report is ready')
-            ->line("Your {$this->report->getName()} for {$this->report->getSubject()} is ready for download!")
+            ->line("Your {$this->report->name} for {$this->report->subject} is ready for download!")
             ->action('Download report', $this->report->getUrl());
     }
 
@@ -71,7 +71,7 @@ class ReportReady extends Notification
     {
         return [
             'title' => 'Your BIIGLE report is ready',
-            'message' => "Your {$this->report->getName()} for {$this->report->getSubject()} is ready for download!",
+            'message' => "Your {$this->report->name} for {$this->report->subject} is ready for download!",
             'action' => 'Download report',
             'actionLink' => $this->report->getUrl(),
         ];

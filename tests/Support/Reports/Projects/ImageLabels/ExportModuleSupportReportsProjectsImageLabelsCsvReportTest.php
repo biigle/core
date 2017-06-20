@@ -10,8 +10,8 @@ class CsvReportGeneratorTest extends TestCase
 {
     public function testProperties()
     {
-        $report = new CsvReportGenerator(ProjectTest::make());
-        $this->assertEquals('CSV image label report', $report->getName());
-        $this->assertEquals('csv_image_label_report', $report->getFilename());
+        $generator = new CsvReportGenerator;
+        $this->assertEquals('CSV image label report', $generator->getName());
+        $this->assertEquals('csv_image_label_report', $generator->getFilename());
     }
 }

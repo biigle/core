@@ -34,6 +34,6 @@ class ReportsController extends Controller
         $this->authorize('access', $report);
         $report->touch();
 
-        return Response::download($report->getPath(), $report->getFilename());
+        return Response::download($report->getPath(), $report->filename);
     }
 }

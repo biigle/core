@@ -25,6 +25,7 @@ class ReportTest extends ModelTestCase
         $this->assertNotNull($this->model->source_type);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
+        $this->assertNotNull($this->model->source_name);
     }
 
     public function testCastsOptions()
@@ -39,52 +40,61 @@ class ReportTest extends ModelTestCase
         $id = $this->model->id;
         $path = config('export.reports_storage');
 
-        File::shouldReceive('dirname')
-            ->once()
-            ->andReturn($path);
-
-        File::shouldReceive('isDirectory')
-            ->once()
-            ->with($path)
-            ->andReturn(false);
-
-        File::shouldReceive('makeDirectory')
-            ->once()
-            ->with($path, 0755, true);
-
         $mock = Mockery::mock(ReportGenerator::class);
-        $mock->shouldReceive('generate')->once()->with("{$path}/{$id}");
+        $mock->shouldReceive('generate')->once()->with($this->model->source, "{$path}/{$id}");
 
         $this->model->setReportGenerator($mock);
         $this->model->generate();
     }
 
-    public function testGetSubject()
+    public function testGenerateSourceDeleted()
     {
-        $mock = Mockery::mock(ReportGenerator::class);
-        $mock->shouldReceive('getSubject')->once()->andReturn('abcdef');
-
-        $this->model->setReportGenerator($mock);
-        $this->assertEquals('abcdef', $this->model->getSubject());
+        $this->model->source()->delete();
+        $this->setExpectedException(\Exception::class);
+        $this->model->fresh()->generate();
     }
 
-    public function testGetName()
+    public function testSourceName()
     {
-        $mock = Mockery::mock(ReportGenerator::class);
-        $mock->shouldReceive('getName')->once()->andReturn('12345');
-
-        $this->model->setReportGenerator($mock);
-        $this->assertEquals('12345', $this->model->getName());
+        $source = VolumeTest::create();
+        $this->model->source()->associate($source);
+        $this->assertEquals($source->name, $this->model->source_name);
+        $source->delete();
+        $this->assertEquals($source->name, $this->model->source_name);
     }
 
-    public function testGetFilename()
+    public function testGetSubjectAttribute()
+    {
+        $volume = VolumeTest::create();
+        $this->model->source()->associate($volume);
+        $this->assertEquals('volume '.$volume->name, $this->model->subject);
+
+        $project = ProjectTest::create();
+        $this->model->source()->associate($project);
+        $this->assertEquals('project '.$project->name, $this->model->subject);
+    }
+
+    public function testGetSubjectAttributeSourceDeleted()
+    {
+        $subject = $this->model->subject;
+        $this->model->source()->delete();
+        $this->assertEquals($subject, $this->model->fresh()->subject);
+    }
+
+    public function testGetNameAttribute()
     {
         $mock = Mockery::mock(ReportGenerator::class);
-        $mock->shouldReceive('getFullFilename')->once()->andReturn('report.pdf');
-
+        $mock->shouldReceive('getName')->once()->andReturn('123');
         $this->model->setReportGenerator($mock);
-        $this->model->source_id = 123;
-        $this->assertEquals('123_report.pdf', $this->model->getFilename());
+        $this->assertEquals('123', $this->model->name);
+    }
+
+    public function testGetFilenameAttribute()
+    {
+        $mock = Mockery::mock(ReportGenerator::class);
+        $mock->shouldReceive('getFullfilename')->once()->andReturn('abc.pdf');
+        $this->model->setReportGenerator($mock);
+        $this->assertEquals($this->model->id.'_abc.pdf', $this->model->filename);
     }
 
     public function testGetUrl()
@@ -105,7 +115,7 @@ class ReportTest extends ModelTestCase
         $this->assertNull($this->model->fresh());
     }
 
-    public function testObserveProjects()
+    public function testDontObserveProjects()
     {
         $project = ProjectTest::create();
         $this->model->source()->associate($project);
@@ -114,8 +124,9 @@ class ReportTest extends ModelTestCase
         $this->assertNotNull($this->model->fresh()->source);
         $project->delete();
         $this->assertNull($this->model->fresh()->source);
-        $this->assertNull($this->model->fresh()->source_id);
-        $this->assertNull($this->model->fresh()->source_type);
+        $this->assertNotNull($this->model->fresh()->source_id);
+        $this->assertNotNull($this->model->fresh()->source_type);
+        $this->assertEquals($project->name, $this->model->fresh()->source_name);
     }
 
     public function testObserveVolumes()
@@ -127,7 +138,8 @@ class ReportTest extends ModelTestCase
         $this->assertNotNull($this->model->fresh()->source);
         $volume->delete();
         $this->assertNull($this->model->fresh()->source);
-        $this->assertNull($this->model->fresh()->source_id);
-        $this->assertNull($this->model->fresh()->source_type);
+        $this->assertNotNull($this->model->fresh()->source_id);
+        $this->assertNotNull($this->model->fresh()->source_type);
+        $this->assertEquals($volume->name, $this->model->fresh()->source_name);
     }
 }

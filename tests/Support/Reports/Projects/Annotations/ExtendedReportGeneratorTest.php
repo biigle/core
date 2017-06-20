@@ -10,8 +10,8 @@ class ExtendedReportGeneratorTest extends TestCase
 {
     public function testProperties()
     {
-        $report = new ExtendedReportGenerator(ProjectTest::make());
-        $this->assertEquals('extended annotation report', $report->getName());
-        $this->assertEquals('extended_annotation_report', $report->getFilename());
+        $generator = new ExtendedReportGenerator;
+        $this->assertEquals('extended annotation report', $generator->getName());
+        $this->assertEquals('extended_annotation_report', $generator->getFilename());
     }
 }

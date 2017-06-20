@@ -47,7 +47,11 @@ class CreateReportsTable extends Migration
                   ->onDelete('restrict');
 
             // Columns for the polymorphic relationship to either volumes or projects.
-            $table->nullableMorphs('source');
+            $table->morphs('source');
+
+            // Store the source name so can still be displayed even if the source has
+            // been deleted.
+            $table->string('source_name');
 
             $table->json('options')->nullable();
 

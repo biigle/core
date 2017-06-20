@@ -10,8 +10,8 @@ class FullReportGeneratorTest extends TestCase
 {
     public function testProperties()
     {
-        $report = new FullReportGenerator(ProjectTest::make());
-        $this->assertEquals('full annotation report', $report->getName());
-        $this->assertEquals('full_annotation_report', $report->getFilename());
+        $generator = new FullReportGenerator;
+        $this->assertEquals('full annotation report', $generator->getName());
+        $this->assertEquals('full_annotation_report', $generator->getFilename());
     }
 }

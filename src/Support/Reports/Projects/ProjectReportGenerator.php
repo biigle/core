@@ -28,24 +28,6 @@ class ProjectReportGenerator extends ReportGenerator
     protected $extension = 'zip';
 
     /**
-     * {@inheritdoc}
-     */
-    public function __construct(Project $source, $options = [])
-    {
-        parent::__construct($source, $options);
-    }
-
-    /**
-     * Description of the subject of this report (e.g. `project xyz`).
-     *
-     * @return string
-     */
-    public function getSubject()
-    {
-        return  "project {$this->source->name}";
-    }
-
-    /**
      * Generate the report.
      *
      * @param string $path Path to the report file that should be generated

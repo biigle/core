@@ -34,10 +34,10 @@ class AreaReportGeneratorTest extends TestCase
 
     public function testProperties()
     {
-        $report = new AreaReportGenerator(VolumeTest::make());
-        $this->assertEquals('annotation area report', $report->getName());
-        $this->assertEquals('annotation_area_report', $report->getFilename());
-        $this->assertStringEndsWith('.xlsx', $report->getFullFilename());
+        $generator = new AreaReportGenerator;
+        $this->assertEquals('annotation area report', $generator->getName());
+        $this->assertEquals('annotation_area_report', $generator->getFilename());
+        $this->assertStringEndsWith('.xlsx', $generator->getFullFilename());
     }
 
     public function testGenerateReportShapes()
@@ -145,7 +145,8 @@ class AreaReportGeneratorTest extends TestCase
             return $mock;
         });
 
-        $generator = new AreaReportGenerator($volume);
+        $generator = new AreaReportGenerator;
+        $generator->setSource($volume);
         $mock = Mockery::mock();
         $mock->shouldReceive('run')->once();
         $generator->setPythonScriptRunner($mock);
@@ -200,7 +201,8 @@ class AreaReportGeneratorTest extends TestCase
             return $mock;
         });
 
-        $generator = new AreaReportGenerator($volume);
+        $generator = new AreaReportGenerator;
+        $generator->setSource($volume);
         $mock = Mockery::mock();
         $mock->shouldReceive('run')->once();
         $generator->setPythonScriptRunner($mock);
@@ -271,9 +273,10 @@ class AreaReportGeneratorTest extends TestCase
             return $mock;
         });
 
-        $generator = new AreaReportGenerator($image->volume, [
+        $generator = new AreaReportGenerator([
             'separateLabelTrees' => true,
         ]);
+        $generator->setSource($image->volume);
         $mock = Mockery::mock();
         $mock->shouldReceive('run')->once();
         $generator->setPythonScriptRunner($mock);

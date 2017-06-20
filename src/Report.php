@@ -3,6 +3,8 @@
 namespace Biigle\Modules\Export;
 
 use File;
+use Exception;
+use ReflectionClass;
 use Illuminate\Database\Eloquent\Model;
 use Biigle\Modules\Export\Support\Reports\ReportGenerator;
 
@@ -58,6 +60,20 @@ class Report extends Model
     }
 
     /**
+     * Get the source name dynamically if the source still exists.
+     *
+     * @return string
+     */
+    public function getSourceNameAttribute()
+    {
+        if (is_null($this->source)) {
+            return $this->attributes['source_name'];
+        }
+
+        return $this->source->name;
+    }
+
+    /**
      * Set the report generator for this model.
      *
      * @param ReportGenerator $generator
@@ -75,7 +91,7 @@ class Report extends Model
     public function getReportGenerator()
     {
         if (!$this->reportGenerator) {
-            $this->reportGenerator = ReportGenerator::get($this->source, $this->type, $this->options);
+            $this->reportGenerator = ReportGenerator::get($this->source_type, $this->type, $this->options);
         }
 
         return $this->reportGenerator;
@@ -86,14 +102,7 @@ class Report extends Model
      */
     public function generate()
     {
-        $path = $this->getPath();
-        $directory = File::dirname($path);
-
-        if (!File::isDirectory($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
-
-        $this->getReportGenerator()->generate($path);
+        $this->getReportGenerator()->generate($this->source, $this->getPath());
     }
 
     /**
@@ -111,19 +120,11 @@ class Report extends Model
      *
      * @return string
      */
-    public function getSubject()
+    public function getSubjectAttribute()
     {
-        return $this->getReportGenerator()->getSubject();
-    }
+        $reflect = new ReflectionClass($this->source_type);
 
-    /**
-     * Get the filename for this report.
-     *
-     * @return string
-     */
-    public function getFilename()
-    {
-        return $this->source_id.'_'.$this->getReportGenerator()->getFullFilename();
+        return strtolower($reflect->getShortName()).' '.$this->source_name;
     }
 
     /**
@@ -131,9 +132,19 @@ class Report extends Model
      *
      * @return string
      */
-    public function getName()
+    public function getNameAttribute()
     {
         return $this->getReportGenerator()->getName();
+    }
+
+    /**
+     * Get the filename for this report.
+     *
+     * @return string
+     */
+    public function getFilenameAttribute()
+    {
+        return $this->source_id.'_'.$this->getReportGenerator()->getFullfilename();
     }
 
     /**

@@ -22,20 +22,10 @@ class VolumeReportGenerator extends ReportGenerator
     /**
      * {@inheritdoc}
      */
-    public function __construct(Volume $source, $options = [])
+    public function __construct($options = [])
     {
-        parent::__construct($source, $options);
+        parent::__construct($options);
         $this->pythonScriptRunner = new PythonScriptRunner;
-    }
-
-    /**
-     * Description of the subject of this report (e.g. `project xyz`).
-     *
-     * @return string
-     */
-    public function getSubject()
-    {
-        return  "volume {$this->source->name}";
     }
 
     /**

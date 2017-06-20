@@ -14,13 +14,6 @@ use Biigle\Modules\Export\Support\Reports\Volumes\VolumeReportGenerator;
 
 class VolumeReportGeneratorTest extends TestCase
 {
-    public function testGetSubject()
-    {
-        $volume = VolumeTest::make();
-        $report = new VolumeReportGenerator($volume);
-        $this->assertContains($volume->name, $report->getSubject());
-    }
-
     public function testExpandLabelNameOwnTree()
     {
         $project = ProjectTest::create();
@@ -33,8 +26,9 @@ class VolumeReportGeneratorTest extends TestCase
         $volume = VolumeTest::create();
         $project->addVolumeId($volume->id);
 
-        $report = new VolumeReportGenerator($volume);
+        $generator = new VolumeReportGenerator;
+        $generator->setSource($volume);
 
-        $this->assertEquals("{$root->name} > {$child->name}", $report->expandLabelName($child->id));
+        $this->assertEquals("{$root->name} > {$child->name}", $generator->expandLabelName($child->id));
     }
 }
