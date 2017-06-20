@@ -61,7 +61,7 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
         $this->seeJsonEquals($expect3);
     }
 
-    public function testFilterAnnotationSession()
+    public function testIndexAnnotationSession()
     {
         $id = $this->volume()->id;
         $image = ImageTest::create(['volume_id' => $id]);

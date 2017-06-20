@@ -32,6 +32,10 @@ $router->group([
         'uses' => 'Volumes\FilterAnnotationsByLabelController@index',
     ]);
 
+    $router->get('volumes/{id}/annotations/examples/{id2}', [
+        'uses' => 'Volumes\AnnotationExamplesController@index',
+    ]);
+
     $router->post('projects/{id}/largo', [
         'uses' => 'Projects\LargoController@save',
     ]);
