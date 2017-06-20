@@ -92,7 +92,7 @@ class ReportTest extends ModelTestCase
     public function testGetFilenameAttribute()
     {
         $mock = Mockery::mock(ReportGenerator::class);
-        $mock->shouldReceive('getFullfilename')->once()->andReturn('abc.pdf');
+        $mock->shouldReceive('getFullFilename')->once()->andReturn('abc.pdf');
         $this->model->setReportGenerator($mock);
         $this->assertEquals($this->model->id.'_abc.pdf', $this->model->filename);
     }
