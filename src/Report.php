@@ -144,7 +144,7 @@ class Report extends Model
      */
     public function getFilenameAttribute()
     {
-        return $this->source_id.'_'.$this->getReportGenerator()->getFilename();
+        return $this->source_id.'_'.$this->getReportGenerator()->getFullfilename();
     }
 
     /**

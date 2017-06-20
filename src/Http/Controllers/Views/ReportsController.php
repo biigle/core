@@ -21,7 +21,7 @@ class ReportsController extends Controller
     {
         $reports = Report::where('user_id', '=', $auth->user()->id)
             ->orderBy('id', 'desc')
-            ->paginate(7);
+            ->paginate(10);
 
         return view('export::reports.index', [
             'reports' => $reports,
