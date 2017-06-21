@@ -47,8 +47,9 @@
 
     .label-tree-label__name {
         position: relative;
-        padding: $padding-small-vertical $padding-small-horizontal $padding-small-vertical 22px;
+        padding: $padding-small-vertical 22px;
         border-radius: $border-radius-small;
+        word-wrap: break-word;
 
         &:hover {
             color: white;
