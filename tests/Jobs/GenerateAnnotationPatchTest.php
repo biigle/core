@@ -20,6 +20,12 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
     {
         parent::setUp();
         $this->image = Mockery::mock(Image::class);
+
+        $this->image->shouldReceive('resize')
+            ->with(config('thumbnails.width'), config('thumbnails.height'))
+            ->once()
+            ->andReturn($this->image);
+        $this->image->shouldReceive('destroy')->once();
     }
 
     public function testCacheRemoteImage()
@@ -45,7 +51,6 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
 
         $this->image->shouldReceive('crop')->once()->andReturn($this->image);
         $this->image->shouldReceive('save')->once()->andReturn($this->image);
-        $this->image->shouldReceive('destroy')->once();
 
         $job->handle();
     }
@@ -64,7 +69,6 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
 
         $this->image->shouldReceive('crop')->once()->andReturn($this->image);
         $this->image->shouldReceive('save')->once()->andReturn($this->image);
-        $this->image->shouldReceive('destroy')->once();
 
         $job->handle();
     }
@@ -91,9 +95,6 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
             ->with(config('largo.patch_storage').'/'.$annotation->image->volume_id.'/'.$annotation->id.'.jpg')
             ->once()
             ->andReturn($this->image);
-
-        $this->image->shouldReceive('destroy')
-            ->once();
 
         File::shouldReceive('exists')
             ->once()
@@ -125,9 +126,6 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
             ->once()
             ->andReturn($this->image);
 
-        $this->image->shouldReceive('destroy')
-            ->once();
-
         File::shouldReceive('exists')
             ->once()
             ->andReturn(true);
@@ -157,9 +155,6 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
         $this->image->shouldReceive('save')
             ->once()
             ->andReturn($this->image);
-
-        $this->image->shouldReceive('destroy')
-            ->once();
 
         File::shouldReceive('exists')
             ->once()

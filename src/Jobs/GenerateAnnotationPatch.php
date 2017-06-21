@@ -119,7 +119,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
             $width = $newWidth;
         }
 
-        // crop() only accepts integer arguments
+        // InterventionImage::crop() only accepts integer arguments
         $width = intval(round($width));
         $height = intval(round($height));
         $xmin = intval(round($xmin));
@@ -142,6 +142,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
             }
 
             $interventionImage->crop($width, $height, $xmin, $ymin)
+                ->resize($thumbWidth, $thumbHeight)
                 // This will automatically encode the image to $format.
                 ->save("{$prefix}/{$annotation->id}.{$format}")
                 ->destroy();
