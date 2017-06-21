@@ -45,9 +45,13 @@ biigle.$viewModel('notifications-list', function (element) {
             },
             markReadAndOpenLink: function () {
                 var link = this.item.data.actionLink;
-                this.markRead().finally(function () {
+                if (this.item.read_at) {
                     window.location = link;
-                });
+                } else {
+                    this.markRead().finally(function () {
+                        window.location = link;
+                    });
+                }
             },
         }
     };
