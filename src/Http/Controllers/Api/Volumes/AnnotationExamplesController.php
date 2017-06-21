@@ -44,10 +44,11 @@ class AnnotationExamplesController extends Controller
         $query = Label::join('annotation_labels', 'annotation_labels.label_id', '=', 'labels.id')
             ->join('annotations', 'annotations.id', '=', 'annotation_labels.annotation_id')
             ->join('images', 'images.id', '=', 'annotations.image_id')
-            ->where('images.volume_id', '=', $vid)
+            ->where('images.volume_id', $vid)
+            ->where('labels.label_tree_id', $label->label_tree_id)
             ->where(function ($query) use ($label) {
-                return $query->where('labels.parent_id', '=', $label->parent_id)
-                    ->orWhere('labels.id', '=', $label->parent_id);
+                return $query->where('labels.parent_id', $label->parent_id)
+                    ->orWhere('labels.id', $label->parent_id);
             })
             ->select('labels.color', 'labels.id', 'labels.name', 'labels.parent_id', 'labels.label_tree_id');
 

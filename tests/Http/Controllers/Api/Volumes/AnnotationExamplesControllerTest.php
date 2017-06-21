@@ -204,4 +204,24 @@ class AnnotationExamplesControllerTest extends ApiTestCase
         $this->assertResponseOk();
         $this->seeJson(['annotations' => $expect]);
     }
+
+    public function testIndexOtherTree()
+    {
+        $label = LabelTest::create();
+        $otherLabel = LabelTest::create();
+
+        $id = $this->volume()->id;
+        $image = ImageTest::create(['volume_id' => $id]);
+        $annotation = AnnotationTest::create(['image_id' => $image->id]);
+
+        $al = AnnotationLabelTest::create([
+            'label_id' => $otherLabel->id,
+            'annotation_id' => $annotation->id,
+        ]);
+
+        $this->beGuest();
+        $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
+        $this->assertResponseOk();
+        $this->seeJsonEquals([]);
+    }
 }
