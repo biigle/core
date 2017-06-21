@@ -6,7 +6,7 @@ $router->group([
 ], function ($router) {
     $router->get('volumes/{id}/largo', [
         'as'   => 'largo',
-        'uses' => 'Projects\LargoController@index',
+        'uses' => 'Volumes\LargoController@index',
     ]);
 
     $router->get('projects/{id}/largo', [
