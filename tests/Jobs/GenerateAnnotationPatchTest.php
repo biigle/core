@@ -8,6 +8,7 @@ use Mockery;
 use TestCase;
 use Biigle\Shape;
 use Intervention\Image\Image;
+use InterventionImage as IImage;
 use Biigle\Tests\AnnotationTest;
 use Intervention\Image\ImageCache;
 use Intervention\Image\ImageManager;
@@ -19,17 +20,53 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
     {
         parent::setUp();
         $this->image = Mockery::mock(Image::class);
-        // default encoding of cached image
-        $this->image->shouldReceive('encode')
-            ->with()
+    }
+
+    public function testCacheRemoteImage()
+    {
+        $annotation = AnnotationTest::create();
+        $annotation->image->volume->url = 'http://example.com';
+        $annotation->image->volume->save();
+        $job = new GenerateAnnotationPatch($annotation);
+
+        $manager = Mockery::mock(ImageManager::class);
+        App::bind(ImageCache::class, function () use ($manager) {
+            return new ImageCache($manager);
+        });
+
+        $manager->shouldReceive('make')
+            ->with($annotation->image->url)
             ->once()
             ->andReturn($this->image);
 
-        $this->manager = Mockery::mock(ImageManager::class);
+        $this->image->shouldReceive('encode')
+            ->once()
+            ->andReturn($this->image);
 
-        App::bind(ImageCache::class, function () {
-            return new ImageCache($this->manager);
-        });
+        $this->image->shouldReceive('crop')->once()->andReturn($this->image);
+        $this->image->shouldReceive('save')->once()->andReturn($this->image);
+        $this->image->shouldReceive('destroy')->once();
+
+        $job->handle();
+    }
+
+    public function testDontCacheLocalImage()
+    {
+        $annotation = AnnotationTest::create();
+        $annotation->image->volume->url = '/vol/images';
+        $annotation->image->volume->save();
+        $job = new GenerateAnnotationPatch($annotation);
+
+        IImage::shouldReceive('make')
+            ->with($annotation->image->url)
+            ->once()
+            ->andReturn($this->image);
+
+        $this->image->shouldReceive('crop')->once()->andReturn($this->image);
+        $this->image->shouldReceive('save')->once()->andReturn($this->image);
+        $this->image->shouldReceive('destroy')->once();
+
+        $job->handle();
     }
 
     public function testHandlePoint()
@@ -40,18 +77,13 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
         ]);
         $job = new GenerateAnnotationPatch($annotation);
 
-        $this->manager->shouldReceive('make')
+        IImage::shouldReceive('make')
             ->with($annotation->image->url)
             ->once()
             ->andReturn($this->image);
 
         $this->image->shouldReceive('crop')
             ->with(197, 148, 1, 26)
-            ->once()
-            ->andReturn($this->image);
-
-        $this->image->shouldReceive('encode')
-            ->with('jpg')
             ->once()
             ->andReturn($this->image);
 
@@ -79,17 +111,13 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
         ]);
         $job = new GenerateAnnotationPatch($annotation);
 
-        $this->manager->shouldReceive('make')
+        IImage::shouldReceive('make')
             ->with($annotation->image->url)
             ->once()
             ->andReturn($this->image);
 
         $this->image->shouldReceive('crop')
             ->with(80, 60, 60, 70)
-            ->once()
-            ->andReturn($this->image);
-
-        $this->image->shouldReceive('encode')
             ->once()
             ->andReturn($this->image);
 
@@ -116,17 +144,13 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
         ]);
         $job = new GenerateAnnotationPatch($annotation);
 
-        $this->manager->shouldReceive('make')
+        IImage::shouldReceive('make')
             ->with($annotation->image->url)
             ->once()
             ->andReturn($this->image);
 
         $this->image->shouldReceive('crop')
             ->with(160, 120, 70, 90)
-            ->once()
-            ->andReturn($this->image);
-
-        $this->image->shouldReceive('encode')
             ->once()
             ->andReturn($this->image);
 

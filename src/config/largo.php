@@ -36,10 +36,10 @@ return [
     'memory_limit' => '512M',
 
     /*
-    | When Largo patches are generated, the source image is cached. This saves the encoding
-    | process when the next patch of the same image is be generated and most importantly | it saves costly HTTP requests if the image comes from a remote source.
+    | When Largo patches are generated, remote source images are cached. This saves
+    | costly HTTP requests.
     |
-    | This is the time in minutes that an image should be cached. Default is 5 minutes.
+    | This is the time in minutes that an image should be cached. Default is 10 minutes.
     */
-    'imagecache_lifetime' => 5,
+    'imagecache_lifetime' => 10,
 ];

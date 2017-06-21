@@ -7,6 +7,7 @@ use File;
 use Biigle\Shape;
 use Biigle\Jobs\Job;
 use Biigle\Annotation;
+use InterventionImage as IImage;
 use Intervention\Image\ImageCache;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -43,7 +44,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $annotation = Annotation::with('image')->find($this->annotationId);
+        $annotation = Annotation::with('image.volume')->find($this->annotationId);
         // annotation may have been deleted in the meantime
         if ($annotation === null) {
             return;
@@ -130,15 +131,18 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         ini_set('memory_limit', config('largo.memory_limit'));
 
         try {
-            // Like InterventionImage::cache() from the documentation but this has better
-            // testability.
-            $cachedImage = App::make(ImageCache::class)
-                ->make($image->url)
-                // Cache the encoding so we don't have to do do it the next time.
-                ->encode($format)
-                ->get(config('largo.imagecache_lifetime'), true);
+            if ($image->volume->isRemote()) {
+                // Like InterventionImage::cache() from the documentation but this has
+                // better testability.
+                $interventionImage = App::make(ImageCache::class)
+                    ->make($image->url)
+                    ->get(config('largo.imagecache_lifetime'), true);
+            } else {
+                $interventionImage = IImage::make($image->url);
+            }
 
-            $cachedImage->crop($width, $height, $xmin, $ymin)
+            $interventionImage->crop($width, $height, $xmin, $ymin)
+                // This will automatically encode the image to $format.
                 ->save("{$prefix}/{$annotation->id}.{$format}")
                 ->destroy();
         } finally {
