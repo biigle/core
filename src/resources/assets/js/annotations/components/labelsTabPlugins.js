@@ -24,6 +24,7 @@ biigle.$require('annotations.components.labelsTabPlugins').exampleAnnotations = 
     },
     data: function () {
         return {
+            exampleLabel: null,
             exampleAnnotations: [],
             cache: {},
             shown: true,
@@ -33,8 +34,8 @@ biigle.$require('annotations.components.labelsTabPlugins').exampleAnnotations = 
         isShown: function () {
             return this.shown && this.label !== null;
         },
-        hasAnnotations: function () {
-            return this.exampleAnnotations.length > 0;
+        hasExamples: function () {
+            return this.exampleLabel && this.exampleAnnotations && this.exampleAnnotations.length > 0;
         },
         volumesApi: function () {
             return  biigle.$require('largo.api.volumes');
@@ -47,7 +48,13 @@ biigle.$require('annotations.components.labelsTabPlugins').exampleAnnotations = 
         setExampleAnnotations: function (args) {
             // Delete the cached item if there is less than the desired number of example
             // annotations. Maybe there are more the next time we fetch them again.
-            if (args[0].length < this.count) {
+            if (!args[0].hasOwnProperty('annotations') || args[0].annotations.length < this.count) {
+                delete this.cache[args[1]];
+            }
+
+            // Also delete the cached item if there are only examples with a similar
+            // label. Maybe there are examples from the requested label the next time.
+            if (!args[0].hasOwnProperty('label') || args[0].label.id !== args[1]) {
                 delete this.cache[args[1]];
             }
 
@@ -55,7 +62,8 @@ biigle.$require('annotations.components.labelsTabPlugins').exampleAnnotations = 
             // currently selected label. The user might have selected another label in
             // the meantime.
             if (this.label && this.label.id === args[1]) {
-                this.exampleAnnotations = args[0];
+                this.exampleAnnotations = args[0].annotations;
+                this.exampleLabel = args[0].label;
             }
         },
         updateShown: function (shown) {
@@ -69,7 +77,7 @@ biigle.$require('annotations.components.labelsTabPlugins').exampleAnnotations = 
                 this.startLoading();
 
                 if (!this.cache.hasOwnProperty(this.label.id)) {
-                    this.cache[this.label.id] = this.volumesApi.queryAnnotations({
+                    this.cache[this.label.id] = this.volumesApi.queryExampleAnnotations({
                             id: this.volumeId,
                             label_id: this.label.id,
                             take: this.count,

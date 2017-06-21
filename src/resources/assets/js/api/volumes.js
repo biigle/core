@@ -9,11 +9,19 @@
  * Save the results of a Largo session:
  * resource.save({id: 1}, {dismissed: {1: [...]}, changed: {12: 1, ...}}).then(...);
  *
+ * Get example annotations for a specific label (other than queryAnnotations this may
+ * return examples from other labels as well):
+ * resource.queryExampleAnnotations({id: 1, label_id: 124}).then(...);
+ *
  * @type {Vue.resource}
  */
 biigle.$declare('largo.api.volumes', Vue.resource('api/v1/volumes{/id}/largo', {}, {
     queryAnnotations: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/annotations/filter/label{/label_id}',
+    },
+    queryExampleAnnotations: {
+        method: 'GET',
+        url: 'api/v1/volumes{/id}/annotations/examples{/label_id}',
     },
 }));
