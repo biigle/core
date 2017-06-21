@@ -5,8 +5,8 @@
  */
 biigle.$component('core.components.sidebarButton', {
     template: '<a :href="href" :disabled="disabled" class="sidebar__button btn btn-default btn-lg" :class="classObject" @click="toggle" :title="tab.title">' +
-        '<span v-if="open" class="glyphicon" :class="chevronClass" aria-hidden="true"></span>' +
-        '<span v-else class="glyphicon" :class="iconClass" aria-hidden="true"></span>' +
+        '<span v-if="open" :class="chevronClass" aria-hidden="true"></span>' +
+        '<span v-else :class="iconClass" aria-hidden="true"></span>' +
     '</a>',
     props: {
         tab: {
@@ -23,10 +23,14 @@ biigle.$component('core.components.sidebarButton', {
     },
     computed: {
         iconClass: function () {
-            return 'glyphicon-' + this.tab.icon;
+            if (this.tab.icon.startsWith('fa-')) {
+                return 'fa ' + this.tab.icon;
+            }
+
+            return 'glyphicon glyphicon-' + this.tab.icon;
         },
         chevronClass: function () {
-            return 'glyphicon-chevron-' + this.direction;
+            return 'fa fa-chevron-' + this.direction;
         },
         classObject: function () {
             return {
