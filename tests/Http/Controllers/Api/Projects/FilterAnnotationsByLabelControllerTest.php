@@ -1,15 +1,15 @@
 <?php
 
-namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 
-class ProjectsAnnotationsControllerTest extends ApiTestCase
+class FilterAnnotationsByLabelControllerTest extends ApiTestCase
 {
-    public function testFilter()
+    public function testIndex()
     {
         $id = $this->project()->id;
 

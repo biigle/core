@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
 use Carbon\Carbon;
@@ -9,9 +9,9 @@ use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
 
-class VolumesAnnotationsControllerTest extends ApiTestCase
+class FilterAnnotationsByLabelControllerTest extends ApiTestCase
 {
-    public function testFilter()
+    public function testIndex()
     {
         $id = $this->volume()->id;
 
@@ -61,7 +61,7 @@ class VolumesAnnotationsControllerTest extends ApiTestCase
         $this->seeJsonEquals($expect3);
     }
 
-    public function testFilterAnnotationSession()
+    public function testIndexAnnotationSession()
     {
         $id = $this->volume()->id;
         $image = ImageTest::create(['volume_id' => $id]);
