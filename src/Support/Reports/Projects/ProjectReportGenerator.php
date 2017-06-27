@@ -42,7 +42,7 @@ class ProjectReportGenerator extends ReportGenerator
                 'options' => $this->options,
             ]);
             $file = File::makeTmp();
-            $report->generate($file->getPath());
+            $report->generate($volume, $file->getPath());
             // The individual volume reports should be deleted again after
             // the ZIP of this report was created.
             $this->tmpFiles[] = $file;

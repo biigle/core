@@ -6,6 +6,7 @@ use App;
 use Mockery;
 use TestCase;
 use ZipArchive;
+use Biigle\Volume;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
@@ -39,8 +40,16 @@ class ProjectReportGeneratorTest extends TestCase
 
     public function testGenerate()
     {
+        $project = ProjectTest::create();
+        $volume = VolumeTest::create(['id' => 123]);
+        $project->addVolumeId($volume->id);
+
         $mock = Mockery::mock();
-        $mock->shouldReceive('generate')->with('my_tmp_file_path')->once();
+        $mock->shouldReceive('generate')
+            ->with(Mockery::on(function ($v) use ($volume) {
+                return $v instanceof Volume && $volume->id === $v->id;
+            }), 'my_tmp_file_path')
+            ->once();
         $mock->shouldReceive('getFullFilename')->once()
             ->andReturn('my_download_filename.pdf');
 
@@ -64,10 +73,6 @@ class ProjectReportGeneratorTest extends TestCase
         App::bind(ZipArchive::class, function () use ($mock) {
             return $mock;
         });
-
-        $project = ProjectTest::create();
-        $volume = VolumeTest::create(['id' => 123]);
-        $project->addVolumeId($volume->id);
 
         $generator = new ProjectReportStub;
         $generator->generate($project, 'my/path');
