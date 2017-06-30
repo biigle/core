@@ -19,7 +19,7 @@ class SessionOnly
     public function handle($request, Closure $next)
     {
         // authentication by api key is not allowed
-        if (AuthenticateAPI::isApiKeyRequest($request)) {
+        if ($request->getUser()) {
             return response('Unauthorized.', 401);
         }
 

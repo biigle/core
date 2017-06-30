@@ -42,7 +42,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->mapWebRoutes();
 
-        // $this->mapApiRoutes();
+        $this->mapApiRoutes();
 
         //
     }
@@ -74,9 +74,11 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapApiRoutes()
     {
         Route::group([
-            'middleware' => ['api', 'auth:api'],
-            'namespace' => $this->namespace,
-            'prefix' => 'api',
+            // We *don't* use the 'api' middleware group because we handle ordinary
+            // requests (without token) with API endpoints, too.
+            'middleware' => ['web', 'auth:web,api'],
+            'namespace' => $this->namespace.'\Api',
+            'prefix' => 'api/v1',
         ], function ($router) {
             require base_path('routes/api.php');
         });

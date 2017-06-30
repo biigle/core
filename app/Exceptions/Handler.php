@@ -61,7 +61,7 @@ class Handler extends ExceptionHandler
 
         // use JsonResponse if this was an automated request
         if (Controller::isAutomatedRequest($request)) {
-            return $this->renderJsonResponse($exception);
+            return $this->renderJsonResponse($request, $exception);
         } elseif ($exception instanceof ErrorException && view()->exists('errors.500')) {
             return $this->renderCustomErrorPage($exception);
         } else {
@@ -127,10 +127,12 @@ class Handler extends ExceptionHandler
         );
     }
 
-    private function renderJsonResponse(Exception $e)
+    private function renderJsonResponse($request, Exception $e)
     {
         if ($e instanceof HttpResponseException) {
             return $e->getResponse();
+        } elseif ($e instanceof AuthenticationException) {
+            return $this->unauthenticated($request, $e);
         } elseif ($e instanceof ModelNotFoundException) {
             $e = new HttpException(404, $e->getMessage());
         } elseif ($e instanceof AuthorizationException) {
