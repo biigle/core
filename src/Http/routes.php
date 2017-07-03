@@ -31,7 +31,7 @@ $router->group([
     });
 
 $router->group([
-        'middleware' => 'auth.api',
+        'middleware' => 'auth:web,api',
         'prefix' => 'api/v1',
         'namespace' => 'Api',
     ], function ($router) {
