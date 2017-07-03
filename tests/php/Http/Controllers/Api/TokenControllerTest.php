@@ -31,10 +31,8 @@ class ApiTokenControllerTest extends ApiTestCase
             ->seeJsonEquals([$expect]);
     }
 
-    public function testStore()
+    public function testStoreWithToken()
     {
-        $this->doTestApiRoute('POST', '/api/v1/api-tokens');
-
         $token = ApiTokenTest::create([
             // 'test_token'
             'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
@@ -43,8 +41,18 @@ class ApiTokenControllerTest extends ApiTestCase
             'PHP_AUTH_USER' => $token->owner->email,
             'PHP_AUTH_PW' => 'test_token',
         ]);
-        // rout allows only session cookie authentication
+        // route allows only session cookie authentication
         $this->assertResponseStatus(401);
+    }
+
+    public function testStore()
+    {
+        $this->doTestApiRoute('POST', '/api/v1/api-tokens');
+
+        $token = ApiTokenTest::create([
+            // 'test_token'
+            'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
+        ]);
 
         $this->be($token->owner);
         $this->json('POST', '/api/v1/api-tokens');

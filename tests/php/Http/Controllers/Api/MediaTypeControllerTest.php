@@ -10,7 +10,6 @@ class MediaTypeControllerTest extends ApiTestCase
     public function testIndex()
     {
         $this->doTestApiRoute('GET', '/api/v1/media-types');
-        $this->assertResponseStatus(401);
 
         $this->beUser();
         $this->get('/api/v1/media-types');

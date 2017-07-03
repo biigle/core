@@ -72,13 +72,16 @@ class UserControllerTest extends ApiTestCase
         $this->assertStringEndsWith('}', $content);
     }
 
-    public function testUpdate()
+    public function testUpdateWithToken()
     {
-        $this->doTestApiRoute('PUT', '/api/v1/users/'.$this->guest()->id);
-
         // api key authentication **is** allowed for this route
         $this->callToken('PUT', '/api/v1/users/'.$this->guest()->id, $this->globalAdmin());
         $this->assertResponseStatus(200);
+    }
+
+    public function testUpdate()
+    {
+        $this->doTestApiRoute('PUT', '/api/v1/users/'.$this->guest()->id);
 
         $this->beGuest();
         $this->put('/api/v1/users/'.$this->guest()->id);
@@ -227,6 +230,13 @@ class UserControllerTest extends ApiTestCase
         $this->assertEquals('test2@test.com', $this->guest()->fresh()->email);
     }
 
+    public function testUpdateOwnWithToken()
+    {
+        // api key authentication is not allowed for this route
+        $this->callToken('PUT', '/api/v1/users/my', $this->guest());
+        $this->assertResponseStatus(401);
+    }
+
     public function testUpdateOwn()
     {
         // 'guest-password'
@@ -234,10 +244,6 @@ class UserControllerTest extends ApiTestCase
         $this->guest()->save();
 
         $this->doTestApiRoute('PUT', '/api/v1/users/my');
-
-        // api key authentication is not allowed for this route
-        $this->callToken('PUT', '/api/v1/users/my', $this->guest());
-        $this->assertResponseStatus(401);
 
         $this->beGuest();
         $this->json('PUT', '/api/v1/users/my', [
@@ -312,13 +318,16 @@ class UserControllerTest extends ApiTestCase
         $this->assertEquals('test2@test.com', $this->guest()->fresh()->email);
     }
 
-    public function testStore()
+    public function testStoreWithToken()
     {
-        $this->doTestApiRoute('POST', '/api/v1/users');
-
         // api key authentication **is** allowed for this route
         $this->callToken('POST', '/api/v1/users', $this->globalAdmin());
         $this->assertResponseStatus(422);
+    }
+
+    public function testStore()
+    {
+        $this->doTestApiRoute('POST', '/api/v1/users');
 
         $this->beAdmin();
         $this->post('/api/v1/users', [
@@ -413,6 +422,13 @@ class UserControllerTest extends ApiTestCase
         $this->assertTrue(User::where('email', 'test2@test.com')->exists());
     }
 
+    public function testDestroyWithToken()
+    {
+        // api key authentication **is** allowed for this route
+        $this->callToken('DELETE', '/api/v1/users/'.$this->guest()->id, $this->globalAdmin());
+        $this->assertResponseStatus(422);
+    }
+
     public function testDestroy()
     {
         // 'globalAdmin-password'
@@ -421,10 +437,6 @@ class UserControllerTest extends ApiTestCase
 
         $id = $this->guest()->id;
         $this->doTestApiRoute('DELETE', '/api/v1/users/'.$id);
-
-        // api key authentication **is** allowed for this route
-        $this->callToken('DELETE', '/api/v1/users/'.$id, $this->globalAdmin());
-        $this->assertResponseStatus(422);
 
         $this->beAdmin();
         $this->delete('/api/v1/users/'.$id, [
@@ -474,6 +486,13 @@ class UserControllerTest extends ApiTestCase
         $this->assertResponseStatus(422);
     }
 
+    public function testDestroyOwnWithToken()
+    {
+        // api key authentication is not allowed for this route
+        $this->callToken('DELETE', '/api/v1/users/my', $this->guest());
+        $this->assertResponseStatus(401);
+    }
+
     public function testDestroyOwn()
     {
         // 'guest-password'
@@ -484,10 +503,6 @@ class UserControllerTest extends ApiTestCase
         $this->guest()->save();
 
         $this->doTestApiRoute('DELETE', '/api/v1/users/my');
-
-        // api key authentication is not allowed for this route
-        $this->callToken('DELETE', '/api/v1/users/my', $this->guest());
-        $this->assertResponseStatus(401);
 
         $this->beGuest();
         // ajax call to get the correct response status
@@ -517,7 +532,7 @@ class UserControllerTest extends ApiTestCase
         $this->assertRedirectedTo('auth/login');
         $this->assertNull(Auth::user());
 
-        $this->delete('/api/v1/users/my');
+        $this->json('DELETE', '/api/v1/users/my');
         // deleted user doesn't have permission any more
         $this->assertResponseStatus(401);
 
