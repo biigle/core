@@ -173,7 +173,19 @@ biigle.$component('labelTrees.components.labelTree', {
             });
         },
         collapse: function () {
-            this.collapsed = !this.collapsed;
+            if (this.collapsed) {
+                this.collapsed = false;
+            } else {
+                var hadExpandedLabels = false;
+                // Collapse all labels if there are any expanded.
+                this.labels.forEach(function (label) {
+                    hadExpandedLabels |= label.open;
+                    label.open = false;
+                });
+
+                // If there were no expanded labels, collapse the whole tree.
+                this.collapsed = !hadExpandedLabels;
+            }
         },
         emitAddFavourite: function (label) {
             this.$emit('add-favourite', label);
