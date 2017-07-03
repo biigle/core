@@ -17,7 +17,7 @@ $router->group(['middleware' => 'auth'], function ($router) {
     ]);
 });
 
-$router->group(['middleware' => 'auth.api', 'namespace' => 'Api', 'prefix' => 'api/v1'],
+$router->group(['middleware' => 'auth:web,api', 'namespace' => 'Api', 'prefix' => 'api/v1'],
     function ($router) {
         $router->get('projects/{id}/attachable-volumes', 'AttachableVolumesController@index');
 
