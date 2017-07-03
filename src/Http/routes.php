@@ -14,7 +14,7 @@ $router->get('annotations/{id}', [
 ]);
 
 $router->group([
-    'middleware' => 'auth.api',
+    'middleware' => 'auth:web,api',
     'namespace' => 'Api',
     'prefix' => 'api/v1',
     ], function ($router) {
