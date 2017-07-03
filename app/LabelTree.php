@@ -24,7 +24,7 @@ class LabelTree extends Model
     public static $createRules = [
         'name' => 'required|max:256',
         'visibility_id' => 'required|integer|exists:visibilities,id',
-        'project_id' => 'filled|integer|exists:projects,id'
+        'project_id' => 'filled|integer|exists:projects,id',
     ];
 
     /**

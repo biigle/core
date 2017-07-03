@@ -8,7 +8,7 @@ use Biigle\Http\Controllers\Controller;
 class LogsController extends Controller
 {
     /**
-     * Shows the available logfiles
+     * Shows the available logfiles.
      *
      * @return \Illuminate\Http\Response
      */
@@ -27,7 +27,7 @@ class LogsController extends Controller
     }
 
     /**
-     * Shows a specific logfile
+     * Shows a specific logfile.
      *
      * @return \Illuminate\Http\Response
      */

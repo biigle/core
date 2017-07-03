@@ -468,7 +468,7 @@ class UserController extends Controller
     }
 
     /**
-     * Transform the input email to lowercase
+     * Transform the input email to lowercase.
      *
      * @param Request $request
      *

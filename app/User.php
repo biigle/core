@@ -198,7 +198,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Get settings of a specific key
+     * Get settings of a specific key.
      *
      * @param string $key
      * @param mixed $default Default value if the settings key was not set

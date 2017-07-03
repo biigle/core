@@ -484,7 +484,7 @@ class Volume extends Model
     }
 
     /**
-     * Get a dynamic attribute from the JSON attrs column
+     * Get a dynamic attribute from the JSON attrs column.
      *
      * @param string $name Name of the attribute
      *
@@ -493,11 +493,12 @@ class Volume extends Model
     protected function getJsonAttr($name)
     {
         $attrs = $this->attrs ?: [];
+
         return array_key_exists($name, $attrs) ? $attrs[$name] : null;
     }
 
     /**
-     * Set a dynamic attribute to the JSON attrs column
+     * Set a dynamic attribute to the JSON attrs column.
      *
      * @param string $name Name of the attribute
      * @param mixed $value

@@ -394,7 +394,6 @@ class UserControllerTest extends ApiTestCase
 
     public function testStoreEmailCaseInsensitive()
     {
-
         $this->beGlobalAdmin();
 
         $this->editor()->email = 'test@test.com';

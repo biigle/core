@@ -18,7 +18,7 @@ class ApiGuard extends TokenGuard
         // If we've already retrieved the user for the current request we can just
         // return it back immediately. We do not want to fetch the user data on
         // every call to this method because that would be tremendously slow.
-        if (! is_null($this->user)) {
+        if (!is_null($this->user)) {
             return $this->user;
         }
 
@@ -26,13 +26,13 @@ class ApiGuard extends TokenGuard
 
         $token = $this->getTokenForRequest();
 
-        if (! empty($token)) {
+        if (!empty($token)) {
             $user = $this->provider->retrieveByCredentials(
                 ['email' => strtolower($this->request->getUser())]
             );
         }
 
-        if (! empty($user)) {
+        if (!empty($user)) {
             $candidates = ApiToken::where('owner_id', $user->id)
                 ->select('id', 'hash')
                 ->get();
@@ -44,8 +44,6 @@ class ApiGuard extends TokenGuard
                 }
             }
         }
-
-        return null;
     }
 
     /**
