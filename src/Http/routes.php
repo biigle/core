@@ -3,7 +3,7 @@
 $router->group([
     'namespace' => 'Api',
     'prefix' => 'api/v1',
-    'middleware' => 'auth.api',
+    'middleware' => 'auth:web,api',
 ], function ($router) {
     $router->group([
         'namespace' => 'Volumes',
@@ -26,14 +26,9 @@ $router->group([
         ]);
     });
 
-    $router->group([
-        'namespace' => 'Projects',
-        'prefix' => 'projects',
-    ], function ($router) {
-        $router->post('{id}/reports', [
-            'uses' => 'ProjectReportController@store',
-        ]);
-    });
+    $router->post('projects/{id}/reports', [
+        'uses' => 'Projects\ProjectReportController@store',
+    ]);
 
     $router->get('reports/{id}', [
         'uses' => 'ReportsController@show',

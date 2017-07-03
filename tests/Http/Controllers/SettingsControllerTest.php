@@ -8,7 +8,7 @@ class SettingsControllerTest extends ApiTestCase
 {
     public function testStore()
     {
-        $this->post('api/v1/users/my/settings/export')
+        $this->json('POST', 'api/v1/users/my/settings/export')
             ->assertResponseStatus(401);
 
         $this->beUser();
