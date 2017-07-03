@@ -49,12 +49,34 @@ biigle.$component('labelTrees.components.labelTrees', {
         },
     },
     computed: {
-        // All labels of all label trees in a flat list.
+        localeCompareSupportsLocales: function () {
+            try {
+              'foo'.localeCompare('bar', 'i');
+            } catch (e) {
+                return e.name === 'RangeError';
+            }
+
+            return false;
+        },
+        // All labels of all label trees in a flat, sorted list.
         labels: function () {
             var labels = [];
             this.trees.forEach(function (tree) {
                 Array.prototype.push.apply(labels, tree.labels);
             });
+
+            if (this.localeCompareSupportsLocales) {
+                // Use this to sort label names "natuarally". This is only supported in
+                // modern browsers, though.
+                var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+                labels.sort(function (a, b) {
+                    return collator.compare(a.name, b.name);
+                });
+            } else {
+                labels.sort(function (a, b) {
+                    return a.name < b.name ? -1 : 1;
+                });
+            }
 
             return labels;
         },

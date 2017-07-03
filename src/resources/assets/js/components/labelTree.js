@@ -151,7 +151,7 @@ biigle.$component('labelTrees.components.labelTree', {
 
             // The selected label does not nessecarily belong to this label tree since
             // the tree may be displayed in a label-trees component with other trees.
-            if (this.hasLabel(label.id)) {
+            if (label && this.hasLabel(label.id)) {
                 label.selected = true;
                 this.collapsed = false;
                 if (!this.flat) {
