@@ -25,9 +25,9 @@ class VerifyCsrfToken extends BaseVerifier
      */
     public function handle($request, Closure $next)
     {
-        // don't verify the CRSF token if this is an "external" request with API
+        // Don't verify the CRSF token if this is an "external" request with API
         // key in the header!
-        if (AuthenticateAPI::isApiKeyRequest($request)) {
+        if ($request->getUser()) {
             return $next($request);
         }
 

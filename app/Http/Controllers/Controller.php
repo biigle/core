@@ -23,7 +23,7 @@ class Controller extends BaseController
      */
     public static function isAutomatedRequest(Request $request)
     {
-        return $request->ajax() || $request->wantsJson() || AuthenticateAPI::isApiKeyRequest($request);
+        return $request->ajax() || $request->wantsJson() || $request->getUser();
     }
 
     /**
