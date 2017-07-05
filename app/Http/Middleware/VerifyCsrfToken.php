@@ -17,20 +17,13 @@ class VerifyCsrfToken extends BaseVerifier
     ];
 
     /**
-     * Handle an incoming request.
+     * Determine if the request has a URI that should pass through CSRF verification.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  Closure  $next
-     * @return mixed
+     * @return bool
      */
-    public function handle($request, Closure $next)
+    protected function shouldPassThrough($request)
     {
-        // Don't verify the CRSF token if this is an "external" request with API
-        // key in the header!
-        if ($request->getUser()) {
-            return $next($request);
-        }
-
-        return parent::handle($request, $next);
+        return $request->getUser() || parent::shouldPassThrough($request);
     }
 }
