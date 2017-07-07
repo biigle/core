@@ -17,7 +17,7 @@ class GenerateMissing extends Command
      *
      * @var string
      */
-    protected $signature = 'largo:generate-missing {--dry-run}';
+    protected $signature = 'largo:generate-missing {--dry-run} {--volume=}';
 
     /**
      * The console command description.
@@ -66,8 +66,13 @@ class GenerateMissing extends Command
     public function handle()
     {
         $pushToQueue = !$this->option('dry-run');
+
         $annotations = Annotation::join('images', 'images.id', '=', 'annotations.image_id')
             ->select('annotations.id', 'images.volume_id');
+
+        if ($this->option('volume')) {
+            $annotations->where('images.volume_id', $this->option('volume'));
+        }
 
         $total = $annotations->count();
         $progress = $this->output->createProgressBar($total);
