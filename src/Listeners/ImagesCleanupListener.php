@@ -27,20 +27,18 @@ class ImagesCleanupListener
             return;
         }
 
-        $image = Image::where('uuid', $uuids[0])->first();
+        $images = Image::whereIn('uuid', $uuids)->select('id', 'volume_id')->get();
 
-        if (!$image) {
+        if ($images->isEmpty()) {
             return;
         }
 
-        $ids = Image::where('volume_id', $image->volume_id)->pluck('id')->toArray();
-
-        $annotationIds = Annotation::whereIn('image_id', $ids)
+        $annotationIds = Annotation::whereIn('image_id', $images->pluck('id'))
             ->pluck('id')
             ->toArray();
 
         $this->dispatch(new RemoveAnnotationPatches(
-            $image->volume_id,
+            $images->first()->volume_id,
             $annotationIds
         ));
     }

@@ -3,13 +3,14 @@
 namespace Biigle\Tests\Modules\Largo\Listeners;
 
 use TestCase;
-use Biigle\Tests\ImageTest;
 use Faker\Factory as Faker;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\AnnotationTest;
 use Illuminate\Database\QueryException;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
 
-class LargoModuleListenersImagesCleanupListenerTest extends TestCase
+class ImagesCleanupListenerTest extends TestCase
 {
     public function testHandleEmpty()
     {
@@ -36,7 +37,32 @@ class LargoModuleListenersImagesCleanupListenerTest extends TestCase
     public function testHandle()
     {
         $image = ImageTest::create();
+        $a = AnnotationTest::create(['image_id' => $image->id]);
+        $image2 = ImageTest::create(['volume_id' => $image->volume_id, 'filename' => 'a']);
+        $a2 = AnnotationTest::create(['image_id' => $image2->id]);
+
+        $this->expectsJobs(RemoveAnnotationPatches::class);
+        with(new ImagesCleanupListener)->handle([$image->uuid, $image2->uuid]);
+
+        $job = end($this->dispatchedJobs);
+
+        $this->assertEquals($image->volume_id, $job->volumeId);
+        $this->assertEquals([$a->id, $a2->id], $job->annotationIds);
+    }
+
+    public function testPartial()
+    {
+        $image = ImageTest::create();
+        $a = AnnotationTest::create(['image_id' => $image->id]);
+        $image2 = ImageTest::create(['volume_id' => $image->volume_id, 'filename' => 'a']);
+        $a2 = AnnotationTest::create(['image_id' => $image2->id]);
+
         $this->expectsJobs(RemoveAnnotationPatches::class);
         with(new ImagesCleanupListener)->handle([$image->uuid]);
+
+        $job = end($this->dispatchedJobs);
+
+        $this->assertEquals($image->volume_id, $job->volumeId);
+        $this->assertEquals([$a->id], $job->annotationIds);
     }
 }

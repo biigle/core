@@ -19,14 +19,14 @@ class RemoveAnnotationPatches extends Job implements ShouldQueue
      *
      * @var int
      */
-    private $volumeId;
+    public $volumeId;
 
     /**
      * The annotation IDs whose patches should be removed.
      *
      * @var array
      */
-    private $annotationIds;
+    public $annotationIds;
 
     /**
      * Create a new job instance.
