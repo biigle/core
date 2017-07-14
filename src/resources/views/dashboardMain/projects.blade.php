@@ -1,7 +1,7 @@
 @forelse($project->volumes()->orderBy('created_at', 'desc')->take(3)->get() as $volume)
     <div class="col-xs-12 col-sm-6 col-md-3 dashboard__project-volume">
         <a href="{{route('volume', $volume->id)}}" title="Show volume {{$volume->name}}">
-            <volume-thumbnail class="volume-thumbnail" v-bind:tid="{{$volume->id}}" uri="{{asset(config('thumbnails.uri'))}}" format="{{config('thumbnails.format')}}">
+            <volume-thumbnail v-bind:tid="{{$volume->id}}" uri="{{asset(config('thumbnails.uri'))}}" format="{{config('thumbnails.format')}}">
                 @if ($volume->thumbnail)
                     <img src="{{ asset(config('thumbnails.uri').'/'.$volume->thumbnail->uuid.'.'.config('thumbnails.format')) }}"  onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                 @else
