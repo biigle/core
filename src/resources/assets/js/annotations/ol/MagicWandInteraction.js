@@ -7,6 +7,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
             handleUpEvent: this.handleUpEvent,
             handleDownEvent: this.handleDownEvent,
             handleMoveEvent: this.handleMoveEvent,
+            handleDragEvent: this.handleDragEvent,
         });
 
         this.on('change:active', this.toggleActive);
@@ -35,8 +36,6 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
         // Coordinates of the initial mousedown event.
         this.downPoint = [0, 0];
         this.map = options.map;
-
-        this.isSketching = false;
 
         // Canvas element to draw the snapshot of the current view of the image layer to.
         this.snapshotCanvas = document.createElement('canvas');
@@ -188,93 +187,90 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
      * Finish drawing of a sketch.
      */
     MagicWandInteraction.prototype.handleUpEvent = function (e) {
-        if (this.isSketching) {
-            this.currentThreshold = this.colorThreshold;
+        this.currentThreshold = this.colorThreshold;
 
-            if (this.isShowingCross) {
-                this.sketchSource.removeFeature(this.sketchFeature);
-            } else {
-                this.dispatchEvent({type: 'drawend', feature: this.sketchFeature});
-            }
-
-            this.sketchFeature = null;
-
-            this.indicatorSource.clear();
-            this.isShowingPoint = false;
-            this.isShowingCross = false;
-            this.isSketching = false;
-
-            return false;
+        if (this.isShowingCross) {
+            this.sketchSource.removeFeature(this.sketchFeature);
+        } else {
+            this.dispatchEvent({type: 'drawend', feature: this.sketchFeature});
         }
+
+        this.sketchFeature = null;
+
+        this.indicatorSource.clear();
+        this.isShowingPoint = false;
+        this.isShowingCross = false;
+
+        return false;
     };
 
     /**
      * Start drawing of a sketch.
      */
     MagicWandInteraction.prototype.handleDownEvent = function (e) {
-        if (!this.isSketching) {
-            this.isSketching = true;
-            this.downPoint[0] = Math.round(e.coordinate[0]);
-            this.downPoint[1] = Math.round(e.coordinate[1]);
-            this.drawSketch();
-            this.indicatorPoint.getGeometry().setCoordinates(this.downPoint);
-            this.indicatorCross.getGeometry().setCoordinates(this.downPoint);
-            this.indicatorSource.clear();
-            this.indicatorSource.addFeature(this.indicatorCross);
-            this.isShowingCross = true;
-            this.isShowingPoint = false;
+        this.downPoint[0] = Math.round(e.coordinate[0]);
+        this.downPoint[1] = Math.round(e.coordinate[1]);
+        this.drawSketch();
+        this.indicatorPoint.getGeometry().setCoordinates(this.downPoint);
+        this.indicatorCross.getGeometry().setCoordinates(this.downPoint);
+        this.indicatorSource.clear();
+        this.indicatorSource.addFeature(this.indicatorCross);
+        this.isShowingCross = true;
+        this.isShowingPoint = false;
 
-            return true;
-        }
+        return true;
     };
 
     /**
      * Update the currently drawn sketch.
      */
-    MagicWandInteraction.prototype.handleMoveEvent = function (e) {
-        if (this.isSketching) {
-            var coordinate = this.toSnapshotCoordinates([e.coordinate]).shift();
-            var x = Math.round(coordinate[0]);
-            var y = Math.round(coordinate[1]);
-            var point = this.toSnapshotCoordinates([this.downPoint]).shift();
-            var px = point[0];
-            var py = point[1];
+    MagicWandInteraction.prototype.handleDragEvent = function (e) {
+        var coordinate = this.toSnapshotCoordinates([e.coordinate]).shift();
+        var x = Math.round(coordinate[0]);
+        var y = Math.round(coordinate[1]);
+        var point = this.toSnapshotCoordinates([this.downPoint]).shift();
+        var px = point[0];
+        var py = point[1];
 
-            // Color threshold calculation. Inspired by the MagicWand example:
-            // http://jsfiddle.net/Tamersoul/dr7Dw/
-            if (x !== px || y !== py) {
-                var dx = x - px;
-                var dy = y - py;
-                var len = Math.sqrt(dx * dx + dy * dy);
-                if (len <= this.discardRadius) {
-                    if (!this.isShowingCross) {
-                        this.indicatorSource.clear();
-                        this.indicatorSource.addFeature(this.indicatorCross);
-                        this.isShowingCross = true;
-                        this.isShowingPoint = false;
-                    }
-                } else if (!this.isShowingPoint) {
+        // Color threshold calculation. Inspired by the MagicWand example:
+        // http://jsfiddle.net/Tamersoul/dr7Dw/
+        if (x !== px || y !== py) {
+            var dx = x - px;
+            var dy = y - py;
+            var len = Math.sqrt(dx * dx + dy * dy);
+            if (len <= this.discardRadius) {
+                if (!this.isShowingCross) {
                     this.indicatorSource.clear();
-                    this.indicatorSource.addFeature(this.indicatorPoint);
-                    this.isShowingCross = false;
-                    this.isShowingPoint = true;
+                    this.indicatorSource.addFeature(this.indicatorCross);
+                    this.isShowingCross = true;
+                    this.isShowingPoint = false;
                 }
-
-                var thres = Math.min(Math.max(this.colorThreshold + Math.round(len / 2 - this.colorThreshold), 1), 255);
-                if (thres != this.currentThreshold) {
-                    this.currentThreshold = thres;
-                    this.drawSketch();
-                }
-            }
-        } else {
-            if (!this.isShowingPoint) {
+            } else if (!this.isShowingPoint) {
                 this.indicatorSource.clear();
                 this.indicatorSource.addFeature(this.indicatorPoint);
-                this.isShowingPoint = true;
                 this.isShowingCross = false;
+                this.isShowingPoint = true;
             }
-            this.indicatorPoint.getGeometry().setCoordinates(e.coordinate);
+
+            var thres = Math.min(Math.max(this.colorThreshold + Math.round(len / 2 - this.colorThreshold), 1), 255);
+            if (thres != this.currentThreshold) {
+                this.currentThreshold = thres;
+                this.drawSketch();
+            }
         }
+    };
+
+    /**
+     * Update the target point.
+     */
+    MagicWandInteraction.prototype.handleMoveEvent = function (e) {
+        if (!this.isShowingPoint) {
+            this.indicatorSource.clear();
+            this.indicatorSource.addFeature(this.indicatorPoint);
+            this.isShowingPoint = true;
+            this.isShowingCross = false;
+        }
+        this.indicatorPoint.getGeometry().setCoordinates(e.coordinate);
     };
 
     /**
@@ -289,7 +285,6 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
             this.indicatorSource.clear();
             this.isShowingPoint = false;
             this.isShowingCross = false;
-            this.isSketching = false;
             if (this.sketchFeature) {
                 this.sketchSource.removeFeature(this.sketchFeature);
                 this.sketchFeature = null;
