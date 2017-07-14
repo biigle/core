@@ -322,18 +322,12 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             focusAnnotation: function (annotation, fast) {
                 var feature = annotationSource.getFeatureById(annotation.id);
                 if (feature) {
-                    var view = map.getView();
-                    if (!fast) {
-                        // animate fit
-                        var pan = ol.animation.pan({
-                            source: view.getCenter()
-                        });
-                        var zoom = ol.animation.zoom({
-                            resolution: view.getResolution()
-                        });
-                        map.beforeRender(pan, zoom);
+                    if (fast) {
+                        delete this.viewFitOptions.duration;
+                    } else {
+                        this.viewFitOptions.duration = 250;
                     }
-                    view.fit(feature.getGeometry(), map.getSize(), this.viewFitOptions);
+                    map.getView().fit(feature.getGeometry(), this.viewFitOptions);
                 }
             },
             fitImage: function () {

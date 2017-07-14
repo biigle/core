@@ -40,14 +40,14 @@ biigle.$declare('annotations.ol.ZoomToNativeControl', function () {
         var currentResolution = view.getResolution();
         if (currentResolution) {
             if (this.duration_ > 0) {
-                map.beforeRender(ol.animation.zoom({
-                    resolution: currentResolution,
+                view.animate({
+                    resolution: view.constrainResolution(1),
                     duration: this.duration_,
-                    easing: ol.easing.easeOut
-                }));
+                });
+            } else {
+                view.setResolution(view.constrainResolution(1));
             }
 
-            view.setResolution(view.constrainResolution(1));
         }
     };
 
