@@ -6,7 +6,7 @@ use Biigle\Image;
 use ApiTestCase;
 use Biigle\Volume;
 use Biigle\Tests\ImageTest;
-use Biigle\Services\Thumbnails\InterventionImage;
+use Biigle\Jobs\ProcessThumbnailChunkJob;
 
 class ImageControllerTest extends ApiTestCase
 {
@@ -46,9 +46,7 @@ class ImageControllerTest extends ApiTestCase
     public function testShowThumb()
     {
         // generate thumbnail manually
-        InterventionImage::$width = 10;
-        InterventionImage::$height = 10;
-        InterventionImage::makeThumbnail($this->image);
+        with(new ProcessThumbnailChunkJob(collect([$this->image])))->handle();
         $id = $this->image->id;
 
         $this->doTestApiRoute('GET', "/api/v1/images/{$id}/thumb");

@@ -2,6 +2,7 @@
 
 namespace Biigle\Jobs;
 
+use App;
 use Biigle\Volume;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -47,7 +48,7 @@ class GenerateThumbnails extends Job implements ShouldQueue
      */
     public function handle()
     {
-        app()->make('Biigle\Contracts\ThumbnailService')
+        App::make('Biigle\Contracts\ThumbnailService')
             ->generateThumbnails($this->volume, $this->only);
     }
 }
