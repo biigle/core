@@ -24,6 +24,7 @@ class VerifyCsrfToken extends BaseVerifier
      */
     protected function shouldPassThrough($request)
     {
+        // Requests with an API token should pass through, too.
         return $request->getUser() || parent::shouldPassThrough($request);
     }
 }
