@@ -6,3 +6,11 @@
         <p class="h1 text-center">{{ Biigle\Volume::count() }}</p>
     </div>
 </div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Images</h3>
+    </div>
+    <div class="panel-body">
+        <p class="h1 text-center">{{ number_format(Biigle\Image::count()) }}</p>
+    </div>
+</div>
