@@ -305,4 +305,12 @@ class AnnotationTest extends ModelTestCase
         $this->assertEmpty(Annotation::visibleFor($otherUser)->pluck('annotations.id'));
         $this->assertEquals($a->id, Annotation::visibleFor($user)->first()->id);
     }
+
+    public function testScopeWithLabel()
+    {
+        $al1 = AnnotationLabelTest::create();
+        $al2 = AnnotationLabelTest::create();
+
+        $this->assertEquals($al1->annotation->id, Annotation::withLabel($al1->label)->first()->id);
+    }
 }

@@ -62,6 +62,21 @@ class Annotation extends Model
     }
 
     /**
+     * Scope a query to only include annotations that have a certain label attached.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param Label $label
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWithLabel($query, Label $label)
+    {
+        return $query->join('annotation_labels', 'annotation_labels.annotation_id', '=', 'annotations.id')
+            ->where('annotation_labels.label_id', $label->id)
+            ->select('annotations.*');
+    }
+
+    /**
      * Scope a query to only include annotations allowed by the session for the user.
      *
      * @param Illuminate\Database\Query\Builder $query
