@@ -24,7 +24,7 @@
             </h4>
 
             <p>
-                The BIIGLE Tutorial playlist.
+                The whole playlist of BIIGLE video tutorials.
             </p>
 
             <h4>
@@ -40,7 +40,7 @@
             </h4>
 
             <p>
-                Everything about the notification center.
+                View and manage BIIGLE notifications in the notification center.
             </p>
 
             @foreach ($modules->getMixins('manualTutorial') as $module => $nestedMixins)

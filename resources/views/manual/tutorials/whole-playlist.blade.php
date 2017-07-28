@@ -5,7 +5,7 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            Learn how to use BIIGLE.
+            The whole playlist of BIIGLE video tutorials.
         </p>
 
         <div class="embed-responsive embed-responsive-16by9">
