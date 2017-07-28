@@ -51,6 +51,10 @@ class Annotation extends Model
      */
     public function scopeVisibleFor($query, User $user)
     {
+        if ($user->isAdmin) {
+            return $query;
+        }
+
         return $query->join('images', 'images.id', '=', 'annotations.image_id')
             ->join('project_volume', 'project_volume.volume_id', '=', 'images.volume_id')
             ->whereIn('project_volume.project_id', function ($query) use ($user) {

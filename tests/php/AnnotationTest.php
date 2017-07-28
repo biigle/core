@@ -293,6 +293,7 @@ class AnnotationTest extends ModelTestCase
     {
         $image = ImageTest::create();
         $user = UserTest::create();
+        $admin = UserTest::create(['role_id' => Role::$admin->id]);
         $otherUser = UserTest::create();
         $project = ProjectTest::create();
         $project->addUserId($user->id, Role::$editor->id);
@@ -303,7 +304,8 @@ class AnnotationTest extends ModelTestCase
         ]);
 
         $this->assertEmpty(Annotation::visibleFor($otherUser)->pluck('annotations.id'));
-        $this->assertEquals($a->id, Annotation::visibleFor($user)->first()->id);
+        $this->assertTrue(Annotation::visibleFor($user)->where('annotations.id', $a->id)->exists());
+        $this->assertTrue(Annotation::visibleFor($admin)->where('annotations.id', $a->id)->exists());
     }
 
     public function testScopeWithLabel()
