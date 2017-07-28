@@ -12,11 +12,7 @@ gulp.task('sass-main', function () {
    h.sass('main.scss', 'main.css');
 });
 
-gulp.task('sass-annotations', function () {
-   h.sass('annotations.scss', 'annotations.css');
-});
-
-gulp.task('sass', ['sass-main', 'sass-annotations']);
+gulp.task('sass', ['sass-main']);
 
 gulp.task('js-main', function (cb) {
    h.js('**/*.js', 'main.js', cb);
@@ -26,7 +22,6 @@ gulp.task('js', ['js-main']);
 
 gulp.task('watch', function () {
     gulp.watch(h.paths.sass + '**/*.scss', ['sass-main']);
-    gulp.watch(h.paths.sass + 'annotations.scss', ['sass-annotations']);
     gulp.watch(h.paths.js + '**/*.js', ['js-main']);
     gulp.watch(h.paths.public + '**/*', publish);
 });

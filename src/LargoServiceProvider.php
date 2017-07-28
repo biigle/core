@@ -50,6 +50,7 @@ class LargoServiceProvider extends ServiceProvider
         $modules->addMixin('largo', 'annotationsManualSidebarLabelTrees');
         $modules->addMixin('largo', 'labelTreeShow');
         $modules->addMixin('largo', 'labelTreeShowScripts');
+        $modules->addMixin('largo', 'labelTreeShowStyles');
     }
 
     /**

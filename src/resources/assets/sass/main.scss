@@ -137,3 +137,24 @@
         vertical-align: middle;
     }
 }
+
+.largo-example-annotations {
+    .largo-example-annotations__images {
+        overflow-x: auto;
+        white-space: nowrap;
+        margin-right: -1em;
+    }
+
+    .largo-example-annotation {
+        height: 125px;
+        width: auto;
+
+        &:not(:last-child) {
+            margin-right: .5em;
+        }
+    }
+
+    .alert {
+        margin-bottom: 0;
+    }
+}
