@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests;
 
+use Biigle\Role;
 use Biigle\Shape;
 use ModelTestCase;
 use Biigle\Annotation;
@@ -286,5 +287,22 @@ class AnnotationTest extends ModelTestCase
 
         $ids = Annotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
         $this->assertEquals([$a3->id], $ids);
+    }
+
+    public function testScopeVisibleFor()
+    {
+        $image = ImageTest::create();
+        $user = UserTest::create();
+        $otherUser = UserTest::create();
+        $project = ProjectTest::create();
+        $project->addUserId($user->id, Role::$editor->id);
+        $project->addVolumeId($image->volume_id);
+
+        $a = static::create([
+            'image_id' => $image->id,
+        ]);
+
+        $this->assertEmpty(Annotation::visibleFor($otherUser)->pluck('annotations.id'));
+        $this->assertEquals($a->id, Annotation::visibleFor($user)->first()->id);
     }
 }

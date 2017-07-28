@@ -42,6 +42,26 @@ class Annotation extends Model
     ];
 
     /**
+     * Scope a query to only include annotations that are visible for a certain user.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param User $user The user to whom the restrictions should apply ('own' user)
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVisibleFor($query, User $user)
+    {
+        return $query->join('images', 'images.id', '=', 'annotations.image_id')
+            ->join('project_volume', 'project_volume.volume_id', '=', 'images.volume_id')
+            ->whereIn('project_volume.project_id', function ($query) use ($user) {
+                $query->select('project_id')
+                    ->from('project_user')
+                    ->where('user_id', $user->id);
+            })
+            ->select('annotations.*');
+    }
+
+    /**
      * Scope a query to only include annotations allowed by the session for the user.
      *
      * @param Illuminate\Database\Query\Builder $query
