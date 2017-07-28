@@ -1,11 +1,11 @@
 @extends('manual.base')
 
-@section('manual-title')  Add a private Label Tree to a Project @stop
+@section('manual-title')  Attach a private Label Tree to a Project @stop
 
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            See how to add a private label tree to a project.
+            Private label trees can only be used by members of authorized projects.
         </p>
 
         <div class="embed-responsive embed-responsive-16by9">

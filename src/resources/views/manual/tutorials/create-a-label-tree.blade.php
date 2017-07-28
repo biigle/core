@@ -5,7 +5,7 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            See how to create a label tree.
+            Label trees are label catalouges or taxonomies that can be used in multiple projects.
         </p>
 
         <div class="embed-responsive embed-responsive-16by9">

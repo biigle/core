@@ -1,11 +1,11 @@
 @extends('manual.base')
 
-@section('manual-title')  Add a publice Label Tree to a Project @stop
+@section('manual-title')  Attach a public Label Tree to a Project @stop
 
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            See how to add a public label tree to a project.
+            Public label trees can be used by all users.
         </p>
 
         <div class="embed-responsive embed-responsive-16by9">
