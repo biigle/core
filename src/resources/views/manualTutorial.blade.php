@@ -1,18 +1,19 @@
 <h3>Volumes</h3>
-<h4>
-    <a href="{{route('manual-tutorials', ['volumes', 'annotation-sessions'])}}">Annotation sessions</a>
-</h4>
-
-<p>
-    Everything you need to know to get started with annotation sessions.
-</p>
 
 <h4>
     <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">Remote volumes</a>
 </h4>
 
 <p>
-    Learn what remote volumes are and when to use them.
+    With remote volumes you can use images from your own data source in BIIGLE.
+</p>
+
+<h4>
+    <a href="{{route('manual-tutorials', ['volumes', 'annotation-sessions'])}}">Annotation sessions</a>
+</h4>
+
+<p>
+    Annotation sessions can be used to conduct scientific studies.
 </p>
 
 <h4>
@@ -20,7 +21,7 @@
 </h4>
 
 <p>
-    Learn how to upload image metadata.
+    Upload image metadata to add information that can't be extracted from the images.
 </p>
 
 <h4>
@@ -28,5 +29,5 @@
 </h4>
 
 <p>
-    See how to set a label for an whole image.
+    With image labels you can attach a label to a whole image.
 </p>

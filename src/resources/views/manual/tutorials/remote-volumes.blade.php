@@ -5,7 +5,7 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            Learn what remote volumes are and when to use them.
+            With remote volumes you can use images from your own data source in BIIGLE.
         </p>
         <p>
             Typically the image files of volumes are loaded through a network filesystem or even stored on the same machine that runs the BIIGLE application. If you request an image (e.g. in the annotation tool), the application receives the request, loads the image from the filesystem and returns the image file in the response.

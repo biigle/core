@@ -5,7 +5,7 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            See how to set a label for an whole image.
+            With image labels you can attach a label to a whole image.
         </p>
 
         <div class="embed-responsive embed-responsive-16by9">

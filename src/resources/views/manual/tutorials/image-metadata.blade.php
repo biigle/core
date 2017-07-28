@@ -5,7 +5,7 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            Learn how to upload image metadata.
+            Upload image metadata to add information that can't be extracted from the images.
         </p>
         <p>
             BIIGLE supports image metadata like the date and time of creation or the geo coordinates of an image. Every time a new volume is created BIIGLE attempts to automatically read the metadata from the EXIF information of JPG files. This doesn't work if the images have another format than JPG, come from a <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote location</a> or simply don't have the metadata stored in their EXIF information.

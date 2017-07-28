@@ -5,7 +5,7 @@
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            Everything you need to know to get started with annotation sessions.
+            Annotation sessions can be used to conduct scientific studies.
         </p>
         <p>
             Annotation sessions are a way to organize annotations of a volume. An annotation session has a start date, an end date and a set of members that belong to it. Once an annotation session was created, all annotations of the volume that are created after the start date (inclusive) and before the end date (exclusive) by one of the members will belong to the annotation session. Annotation sessions can be created by all users who have admin access to the volume. Each volume can have multiple annotation sessions.
