@@ -6,6 +6,7 @@ biigle.$viewModel('label-trees-labels', function (element) {
     var messages = biigle.$require('messages.store');
     var randomColor = biigle.$require('labelTrees.randomColor');
     var labelTree = biigle.$require('labelTrees.labelTree');
+    var events = biigle.$require('events');
 
     new Vue({
         el: element,
@@ -57,16 +58,21 @@ biigle.$viewModel('label-trees-labels', function (element) {
             },
             selectLabel: function (label) {
                 this.selectedLabel = label;
+                // Emit these events in the global event bus, too, so they can be caught
+                // by components in view mixins on this page.
                 if (!label) {
                     this.$emit('clear');
+                    events.$emit('selectLabel', null);
                 } else {
                     this.selectedColor = '#' + label.color;
                     this.$emit('select', label);
+                    events.$emit('selectLabel', label);
                 }
             },
             deselectLabel: function (label) {
                 this.selectedLabel = null;
                 this.$emit('deselect', label);
+                events.$emit('selectLabel', null);
             },
             selectColor: function (color) {
                 this.selectedColor = color;
