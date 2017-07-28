@@ -43,4 +43,8 @@ $router->group([
     $router->get('projects/{id}/annotations/filter/label/{id2}', [
         'uses' => 'Projects\FilterAnnotationsByLabelController@index',
     ]);
+
+    $router->get('labels/{id}/annotations', [
+        'uses' => 'Labels\AnnotationsController@index',
+    ]);
 });

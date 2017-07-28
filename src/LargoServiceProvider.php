@@ -2,10 +2,10 @@
 
 namespace Biigle\Modules\Largo;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Routing\Router;
-use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
 use Biigle\Services\Modules;
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
+use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
 
 class LargoServiceProvider extends ServiceProvider
 {
@@ -48,6 +48,8 @@ class LargoServiceProvider extends ServiceProvider
         $modules->addMixin('largo', 'projectsShowToolbar');
         $modules->addMixin('largo', 'annotationsManualSidebarSettings');
         $modules->addMixin('largo', 'annotationsManualSidebarLabelTrees');
+        $modules->addMixin('largo', 'labelTreeShow');
+        $modules->addMixin('largo', 'labelTreeShowScripts');
     }
 
     /**

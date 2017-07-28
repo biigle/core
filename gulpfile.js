@@ -19,20 +19,15 @@ gulp.task('sass-annotations', function () {
 gulp.task('sass', ['sass-main', 'sass-annotations']);
 
 gulp.task('js-main', function (cb) {
-   h.js('vue/**/*.js', 'main.js', cb);
+   h.js('**/*.js', 'main.js', cb);
 });
 
-gulp.task('js-annotations', function (cb) {
-   h.js('annotations/**/*.js', 'annotations.js', cb);
-});
-
-gulp.task('js', ['js-main', 'js-annotations']);
+gulp.task('js', ['js-main']);
 
 gulp.task('watch', function () {
     gulp.watch(h.paths.sass + '**/*.scss', ['sass-main']);
     gulp.watch(h.paths.sass + 'annotations.scss', ['sass-annotations']);
-    gulp.watch(h.paths.js + 'vue/**/*.js', ['js-main']);
-    gulp.watch(h.paths.js + 'annotations/**/*.js', ['js-annotations']);
+    gulp.watch(h.paths.js + '**/*.js', ['js-main']);
     gulp.watch(h.paths.public + '**/*', publish);
 });
 
