@@ -238,7 +238,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'InterventionImage' => Intervention\Image\Facades\Image::class,
-
+        'Modules' => Biigle\Facades\Modules::class,
     ],
 
 ];

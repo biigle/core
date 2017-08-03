@@ -36,6 +36,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(\Biigle\Services\Modules::class);
+        $this->app->bind('modules', function () {
+            return new \Biigle\Services\Modules;
+        });
     }
 }
