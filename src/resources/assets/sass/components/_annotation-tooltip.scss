@@ -1,0 +1,32 @@
+.annotation-tooltip {
+    position: absolute;
+    // Position relative to the cursor.
+    top: 0;
+    left: 15px;
+    z-index: 1;
+    display: none;
+
+    &.annotation-tooltip--shown {
+        display: block;
+    }
+}
+
+.annotation-tooltip__annotations, .annotation-tooltip__labels {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.annotation-tooltip__annotations {
+    > li {
+        @extend %info-box;
+        position: relative;
+
+        &:not(:first-child) {
+            margin-top: .25em;
+        }
+    }
+}
+
+.annotation-tooltip__labels {
+}

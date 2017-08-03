@@ -12,6 +12,7 @@ biigle.$component('annotations.components.settingsTab', {
             annotationOpacity: 1.0,
             cycleMode: 'default',
             mousePosition: false,
+            annotationTooltip: false,
         };
     },
     computed: {
@@ -50,6 +51,12 @@ biigle.$component('annotations.components.settingsTab', {
         hideMousePosition: function () {
             this.mousePosition = false;
         },
+        showAnnotationTooltip: function () {
+            this.annotationTooltip = true;
+        },
+        hideAnnotationTooltip: function () {
+            this.annotationTooltip = false;
+        },
     },
     watch: {
         annotationOpacity: function (opacity) {
@@ -78,17 +85,29 @@ biigle.$component('annotations.components.settingsTab', {
                 this.keyboard.off(13, this.emitAttachLabel);
             }
         },
-        mousePosition: function (position) {
-            if (position) {
+        mousePosition: function (show) {
+            if (show) {
                 this.settings.set('mousePosition', true);
             } else {
                 this.settings.delete('mousePosition');
             }
-            this.$emit('change', 'mousePosition', position);
+            this.$emit('change', 'mousePosition', show);
+        },
+        annotationTooltip: function (show) {
+            if (show) {
+                this.settings.set('annotationTooltip', true);
+            } else {
+                this.settings.delete('annotationTooltip');
+            }
+            this.$emit('change', 'annotationTooltip', show);
         },
     },
     created: function () {
-        var storedProperties = ['annotationOpacity', 'mousePosition'];
+        var storedProperties = [
+            'annotationOpacity',
+            'mousePosition',
+            'annotationTooltip',
+        ];
         storedProperties.forEach(function (property) {
             if (this.settings.has(property)) {
                 this[property] = this.settings.get(property);

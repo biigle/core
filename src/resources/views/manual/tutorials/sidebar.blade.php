@@ -103,6 +103,10 @@
             The mouse position switch controls the display of an additional map overlay that shows the current position of the cursor on the image in pixels.
         </p>
 
+        <p>
+            The annotation tooltip switch controls the display of a tooltip that appears when you hover your cursor over annotations. The tooltip shows the names of the labels that are attached to these annotations.
+        </p>
+
         @foreach ($modules->getMixins('annotationsManualSidebarSettings') as $module => $nestedMixins)
             @include($module.'::annotationsManualSidebarSettings')
         @endforeach

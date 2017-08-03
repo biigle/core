@@ -47,6 +47,7 @@ biigle.$viewModel('annotator-container', function (element) {
             // first (0) one.
             focussedImageSectionIndex: null,
             showMousePosition: false,
+            showAnnotationTooltip: false,
             openTab: null,
         },
         computed: {
@@ -376,6 +377,9 @@ biigle.$viewModel('annotator-container', function (element) {
                         break;
                     case 'mousePosition':
                         this.showMousePosition = value;
+                        break;
+                    case 'annotationTooltip':
+                        this.showAnnotationTooltip = value;
                 }
             },
             handleOpenedTab: function (name) {

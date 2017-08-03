@@ -37,6 +37,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             labelIndicator: biigle.$require('annotations.components.labelIndicator'),
             mousePositionIndicator: biigle.$require('annotations.components.mousePositionIndicator'),
             controlButton: biigle.$require('annotations.components.controlButton'),
+            annotationTooltip: biigle.$require('annotations.components.annotationTooltip'),
         },
         props: {
             editable: {
@@ -85,6 +86,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 type: Boolean,
                 default: false,
             },
+            showAnnotationTooltip: {
+                type: Boolean,
+                default: false,
+            },
             // Specifies whether the displayed image is cross origin.
             crossOrigin: {
                 type: Boolean,
@@ -112,7 +117,13 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 imageSection: [0, 0],
                 // Actual center point of the current image section.
                 imageSectionCenter: [0, 0],
+                // Mouse position in image coordinates.
                 mousePosition: [0, 0],
+                // Mouse position in DOM element coordinates.
+                mouseDomPosition: [0, 0],
+                // Used to efficiently determine when to update hoveredAnnotations.
+                hoveredAnnotationHash: '',
+                hoveredAnnotations: [],
             };
         },
         computed: {
@@ -187,6 +198,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             selectedFeatures: function () {
                 return selectInteraction ? selectInteraction.getFeatures() : [];
+            },
+            isDefaultInteractionMode: function () {
+                return this.interactionMode === 'default';
             },
             isDrawing: function () {
                 return this.interactionMode.startsWith('draw');
@@ -509,6 +523,17 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                             modifyInteraction.setActive(true);
                     }
                 }
+
+                if (this.showAnnotationTooltip) {
+                    if (this.isDefaultInteractionMode) {
+                        map.on('pointermove', this.updateHoveredAnnotations);
+                        map.on('pointermove', this.updateMouseDomPosition);
+                    } else {
+                        map.un('pointermove', this.updateHoveredAnnotations);
+                        map.un('pointermove', this.updateMouseDomPosition);
+                        this.resetHoveredAnnotations();
+                    }
+                }
             },
             render: function () {
                 if (map) {
@@ -565,6 +590,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     return this.showImageSection([0, this.imageSection[1] + 1]);
                 }
             },
+            updateMouseDomPosition: function (e) {
+                this.mouseDomPosition = e.pixel;
+            },
             updateMousePosition: function (e) {
                 var self = this;
                 biigle.$require('annotations.stores.utils').throttle(function () {
@@ -573,6 +601,27 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         Math.round(self.extent[3] - e.coordinate[1]),
                     ];
                 }, 100, 'annotations.canvas.mouse-position');
+            },
+            updateHoveredAnnotations: function (e) {
+                var annotations = [];
+                map.forEachFeatureAtPixel(e.pixel, function (feature) {
+                    annotations.push(feature.get('annotation'));
+                }, {
+                    layerFilter: function (layer) {
+                        return layer === annotationLayer;
+                    }
+                });
+
+                var hash = annotations.map(function (a) {return a.id;}).sort().join('');
+
+                if (this.hoveredAnnotationHash !== hash) {
+                    this.hoveredAnnotationHash = hash;
+                    this.hoveredAnnotations = annotations;
+                }
+            },
+            resetHoveredAnnotations: function () {
+                this.hoveredAnnotationHash = '';
+                this.hoveredAnnotations = [];
             },
         },
         watch: {
@@ -632,6 +681,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 }
 
                 annotationSource.addFeatures(annotations.map(this.createFeature));
+                this.resetHoveredAnnotations();
             },
             selectedAnnotations: function (annotations) {
                 var source = annotationSource;
@@ -712,6 +762,16 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     map.on('pointermove', this.updateMousePosition);
                 } else {
                     map.un('pointermove', this.updateMousePosition);
+                }
+            },
+            showAnnotationTooltip: function (show) {
+                if (show) {
+                    map.on('pointermove', this.updateMouseDomPosition);
+                    map.on('pointermove', this.updateHoveredAnnotations);
+                } else {
+                    map.un('pointermove', this.updateMouseDomPosition);
+                    map.un('pointermove', this.updateHoveredAnnotations);
+                    this.resetHoveredAnnotations();
                 }
             },
         },

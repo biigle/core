@@ -8,6 +8,17 @@
     <label-indicator v-if="selectedLabel" :label="selectedLabel" inline-template>
         <div class="label-indicator" title="Currently selected label" v-text="label.name"></div>
     </label-indicator>
+    <annotation-tooltip :annotations="hoveredAnnotations" :position="mouseDomPosition" inline-template>
+        <div class="annotation-tooltip" :style="styleObject" :class="classObject">
+            <ul class="annotation-tooltip__annotations">
+                <li v-for="annotation in annotations">
+                    <ul class="annotation-tooltip__labels">
+                        <li v-for="label in annotation.labels" v-text="label.label.name"></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </annotation-tooltip>
     <div class="annotation-canvas__toolbar">
         <div class="btn-group">
             <control-button icon="fa-step-backward" :title="previousButtonTitle + ' 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'" v-on:click="handlePrevious"></control-button>

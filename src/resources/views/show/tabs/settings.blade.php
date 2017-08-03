@@ -43,6 +43,14 @@
                 </div>
             </div>
 
+            <div class="settings-tab__section">
+                <label>Annotation Tooltip</label>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" :class="{active: annotationTooltip}" v-on:click="showAnnotationTooltip" title="Show annotation tooltip">show</button>
+                    <button type="button" class="btn btn-default" :class="{active: !annotationTooltip}" v-on:click="hideAnnotationTooltip" title="Hide annotation tooltip">hide</button>
+                </div>
+            </div>
+
             @foreach ($modules->getMixins('annotationsSettingsTab') as $module => $nestedMixins)
                 @include($module.'::annotationsSettingsTab', ['mixins' => $nestedMixins])
             @endforeach

@@ -63,6 +63,7 @@
             :annotation-opacity="annotationOpacity"
             :cycle-mode="cycleMode"
             :show-mouse-position="showMousePosition"
+            :show-annotation-tooltip="showAnnotationTooltip"
             :cross-origin="@if($volume->isRemote()) true @else false @endif"
             v-on:moveend="handleMapMoveend"
             v-on:previous="handlePrevious"
