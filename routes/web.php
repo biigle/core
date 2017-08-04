@@ -51,6 +51,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         ]);
     });
 
+    $router->get('search', [
+        'as' => 'search',
+        'uses' => 'SearchController@index',
+    ]);
+
     $router->group(['namespace' => 'SystemMessages', 'prefix' => 'system-messages'], function ($router) {
         $router->get('/', [
             'as' => 'system-messages',

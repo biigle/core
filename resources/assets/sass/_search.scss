@@ -1,0 +1,28 @@
+.search-form {
+    display: flex;
+    padding-bottom: 1em;
+
+    .input-group {
+        flex: 1;
+        margin-right: .5em;
+    }
+}
+
+.search-results {
+    list-style: none;
+    padding: 0;
+
+    > li {
+        padding: 1.5em 0;
+        border-bottom: 1px solid $nav-tabs-border-color;
+
+        &:first-child {
+            border-top: 1px solid $nav-tabs-border-color;
+        }
+    }
+}
+
+.search-results__name {
+    font-size: $font-size-large;
+    font-weight: bold;
+}

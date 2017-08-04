@@ -11,6 +11,9 @@
         @endif
         <div class="navbar-right">
             <ul class="nav navbar-nav">
+                <li>
+                    <a href="{{route('search')}}" title="Search BIIGLE"><i class="fa fa-search"></i></a>
+                </li>
                 <li id="notifications-navbar-indicator" unread="{{$user->unreadNotifications()->exists() ? 'true' : 'false'}}">
                     <a href="{{route('notifications')}}" class="notifications-icon" v-bind:class="{'notifications-icon--unread': unread}" v-bind:title="'You have ' + (unread ? '' : 'no ') + 'unread notifications'"><i class="glyphicon glyphicon-bell"></i></a>
                 </li>

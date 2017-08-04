@@ -3,8 +3,8 @@
 namespace Biigle\Http\Controllers\Views\SystemMessages;
 
 use Biigle\SystemMessage;
-use Biigle\SystemMessageType;
 use Illuminate\Http\Request;
+use Biigle\SystemMessageType;
 use Biigle\Http\Controllers\Controller;
 
 class SystemMessagesController extends Controller
