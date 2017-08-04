@@ -17,7 +17,6 @@ class UsersControllerMixin
     public function show(User $user)
     {
         $count = Project::where('creator_id', $user->id)->count();
-
         $percent = $count > 0 ? round($count / Project::count() * 100, 2) : 0;
 
         return [

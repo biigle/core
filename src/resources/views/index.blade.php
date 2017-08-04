@@ -7,12 +7,12 @@
     <div class="col-md-offset-3 col-md-6">
         <div class="row">
             <div class="col-sm-6">
-                <form class="form" action="{{route('projects-index')}}" method="GET">
+                <form class="form" action="{{route('search')}}" method="GET">
                     <div class="form-group">
                         <div class="input-group">
-                            <input type="text" name="query" class="form-control" placeholder="Find project" value="{{old('query')}}">
+                            <input type="text" name="q" class="form-control" placeholder="Find project" value="{{old('query')}}">
+                            <input type="hidden" name="t" value="projects">
                             <span class="input-group-btn">
-                                <a class="btn btn-default" href="{{route('projects-index')}}" title="Clear"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
                                 <button class="btn btn-default" type="submit" title="Find"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
                             </span>
                         </div>
@@ -51,11 +51,7 @@
                 </a>
             @empty
                 <p class="list-group-item list-group-item-info">
-                    @if (old('query'))
-                        There are no projects matching your query <strong>{{old('query')}}</strong>.
-                    @else
-                        There are no projects.
-                    @endif
+                    There are no projects for you.
                 </p>
             @endforelse
         </div>
@@ -63,13 +59,13 @@
             <nav>
                 <ul class="pager">
                     @if ($projects->currentPage() > 1)
-                        <li><a href="{{$projects->previousPageUrl()}}@if(old('query'))&query={{old('query')}}@endif">Previous</a></li>
+                        <li><a href="{{$projects->previousPageUrl()}}">Previous</a></li>
                     @else
                         <li class="disabled"><a href="#" disabled>Previous</a></li>
                     @endif
 
                     @if ($projects->hasMorePages())
-                        <li><a href="{{$projects->nextPageUrl()}}@if(old('query'))&query={{old('query')}}@endif">Next</a></li>
+                        <li><a href="{{$projects->nextPageUrl()}}">Next</a></li>
                     @else
                         <li class="disabled"><a href="#" disabled>Next</a></li>
                     @endif

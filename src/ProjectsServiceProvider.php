@@ -5,6 +5,7 @@ namespace Biigle\Modules\Projects;
 use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
+use Biigle\Modules\Projects\Http\Controllers\Mixins\Views\SearchControllerMixin;
 use Biigle\Modules\Projects\Http\Controllers\Mixins\Views\Admin\UsersControllerMixin;
 
 class ProjectsServiceProvider extends ServiceProvider
@@ -43,9 +44,12 @@ class ProjectsServiceProvider extends ServiceProvider
                 'navbarMenuItem',
                 'manualTutorial',
                 'adminShowUser',
+                'searchTab',
+                'searchTabContent',
             ],
             'controllerMixins' => [
                 'adminShowUser' => UsersControllerMixin::class.'@show',
+                'search' => SearchControllerMixin::class.'@index',
             ],
         ]);
     }
