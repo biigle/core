@@ -85,7 +85,7 @@ class UsersController extends Controller
             $roleClass = 'default';
         }
 
-        $values = Modules::callControllerMixins('adminShowUser', [$user]);
+        $values = Modules::callControllerMixins('adminShowUser', ['user' => $user]);
 
         return view('admin.users.show', array_merge([
             'shownUser' => $user,
