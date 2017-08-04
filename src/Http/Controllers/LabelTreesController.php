@@ -7,7 +7,6 @@ use Biigle\Project;
 use Biigle\LabelTree;
 use Biigle\Visibility;
 use Biigle\LabelSource;
-use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Views\Controller;
 
@@ -88,29 +87,13 @@ class LabelTreesController extends Controller
     /**
      * Show the label tree list.
      *
-     * @param Request $request
      * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, Guard $auth)
+    public function index(Guard $auth)
     {
         $query = LabelTree::query();
         $user = $auth->user();
-
-        // search for trees with similar name to the query string
-        if ($request->has('query')) {
-            if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
-                $operator = 'ilike';
-            } else {
-                $operator = 'like';
-            }
-
-            $pattern = $request->input('query');
-            $query = $query->where('name', $operator, "%{$pattern}%");
-            $request->flash();
-        } else {
-            $request->flush();
-        }
 
         // non admins can only see public trees and private ones they are member of
         if (!$user->isAdmin) {
