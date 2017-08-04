@@ -5,6 +5,7 @@ namespace Biigle\Modules\Volumes;
 use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
+use Biigle\Modules\Volumes\Http\Controllers\Mixins\Views\SearchControllerMixin;
 
 class VolumesServiceProvider extends ServiceProvider
 {
@@ -31,14 +32,24 @@ class VolumesServiceProvider extends ServiceProvider
             require __DIR__.'/Http/routes.php';
         });
 
-        $modules->addMixin('volumes', 'adminMenu');
-        $modules->addMixin('volumes', 'adminIndex');
-        $modules->addMixin('volumes', 'manualTutorial');
-        $modules->addMixin('volumes', 'dashboardStyles');
-        $modules->addMixin('volumes', 'dashboardScripts');
-        $modules->addMixin('volumes', 'dashboardHotBoxRight');
-        $modules->addMixin('volumes', 'dashboardMain.projects');
-        $modules->addMixin('volumes', 'adminShowUser');
+        $modules->register('volumes', [
+            'viewMixins' => [
+                'adminMenu',
+                'adminIndex',
+                'manualTutorial',
+                'dashboardStyles',
+                'dashboardScripts',
+                'dashboardHotBoxRight',
+                'dashboardMain.projects',
+                'adminShowUser',
+                'searchTab',
+                'searchTabContent',
+            ],
+            'controllerMixins' => [
+                'search' => SearchControllerMixin::class.'@index',
+            ],
+        ]);
+
     }
 
     /**
