@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
+use Modules;
 use Biigle\User;
 use Biigle\Role;
 use Biigle\Http\Controllers\Controller;
@@ -84,9 +85,11 @@ class UsersController extends Controller
             $roleClass = 'default';
         }
 
-        return view('admin.users.show', [
+        $values = Modules::callControllerMixins('adminShowUser', [$user]);
+
+        return view('admin.users.show', array_merge([
             'shownUser' => $user,
             'roleClass' => $roleClass,
-        ]);
+        ], $values));
     }
 }
