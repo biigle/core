@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Route;
 use Biigle\Project;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
@@ -147,8 +148,10 @@ class ProjectController extends Controller
             return $project;
         }
 
-        if (static::isAutomatedRequest($request)) {
-            return $project;
+        if (Route::has('project')) {
+            return redirect()->route('project', $project->id)
+                ->with('message', 'Project created.')
+                ->with('messageType', 'success');
         }
 
         if ($request->has('_redirect')) {
