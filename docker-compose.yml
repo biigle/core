@@ -1,0 +1,53 @@
+version: '2'
+
+services:
+  # The application
+  app:
+    build:
+      context: ./
+      dockerfile: .docker/app.dockerfile
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    environment:
+      - "DB_PORT=5432"
+      - "DB_HOST=database"
+
+  worker:
+    build:
+      context: ./
+      dockerfile: .docker/worker.dockerfile
+    working_dir: /var/www
+    volumes_from:
+      - app
+    environment:
+      - "DB_PORT=5432"
+      - "DB_HOST=database"
+
+  # The web server
+  web:
+    build:
+      context: ./
+      dockerfile: .docker/web.dockerfile
+    working_dir: /var/www
+    volumes_from:
+      - app
+    ports:
+      - 8000:80
+
+  # The database
+  database:
+    image: postgres:9.4
+    volumes:
+      - dbdata:/var/lib/postgresql
+      - ./:/data
+    environment:
+      - "POSTGRES_DB=homestead"
+      - "POSTGRES_USER=homestead"
+      - "POSTGRES_PASSWORD=secret"
+    ports:
+      - "54320:5432"
+
+volumes:
+  dbdata:
+
