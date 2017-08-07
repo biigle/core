@@ -1,5 +1,5 @@
 @if($type === 'label-trees')
-<h2 class="lead">{{$labelTreeResultCount}} label tree results</h2>
+<h2 class="lead">{{number_format($labelTreeResultCount)}} label tree results</h2>
 <ul class="search-results">
     @foreach ($results as $tree)
         <li>
