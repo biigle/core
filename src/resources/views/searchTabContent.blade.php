@@ -1,5 +1,5 @@
 @if(!$type || $type === 'projects')
-<h2 class="lead">{{$projectResultCount}} project results</h2>
+<h2 class="lead">{{number_format($projectResultCount)}} project results</h2>
 <ul class="search-results">
     @foreach ($results as $project)
         <li>
