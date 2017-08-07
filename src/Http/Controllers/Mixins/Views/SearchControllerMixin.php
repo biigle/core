@@ -18,28 +18,33 @@ class SearchControllerMixin
      */
     public function index(User $user, $query, $type)
     {
-        if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
-            $operator = 'ilike';
-        } else {
-            $operator = 'like';
-        }
-
         if ($user->isAdmin) {
             $queryBuilder = Volume::query();
         } else {
             $queryBuilder = Volume::join('project_volume', 'volumes.id', '=', 'project_volume.volume_id')
                 ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
                 ->where('project_user.user_id', $user->id)
-                ->select('volumes.*');
+                // Use distinct as volumes may be attached to more than one project.
+                ->distinct()
+                ->select('volumes.id', 'volumes.updated_at', 'volumes.name');
         }
 
-        $queryBuilder = $queryBuilder->where('volumes.name', $operator, "%{$query}%");
 
-        $values = ['volumeResultCount' => $queryBuilder->count()];
+        if ($query) {
+            if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
+                $operator = 'ilike';
+            } else {
+                $operator = 'like';
+            }
+
+            $queryBuilder = $queryBuilder->where('volumes.name', $operator, "%{$query}%");
+        }
+
+        $values = ['volumeResultCount' => $queryBuilder->count('volumes.id')];
 
         if ($type === 'volumes') {
             $values['results'] = $queryBuilder->orderBy('volumes.updated_at', 'desc')
-                ->paginate(10);
+                ->paginate(12);
         }
 
         return $values;

@@ -1,1 +1,1 @@
-<script src="{{ cachebust_asset('vendor/volumes/scripts/vue.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>

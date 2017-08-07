@@ -1,10 +1,18 @@
 @if($type === 'volumes')
 <h2 class="lead">{{$volumeResultCount}} volume results</h2>
-<ul class="search-results">
-    @foreach ($results as $result)
-        <li>
-            <small class="pull-right text-muted">Updated on {{$result->updated_at->toFormattedDateString()}}</small>
-            <a class="search-results__name" href="{{route('volume', $result->id)}}">{{$result->name}}</a>
+<ul id="search-results" class="row volume-search-results">
+    @foreach ($results as $volume)
+        <li class="col-xs-4">
+            <a href="{{route('volume', $volume->id)}}" title="Show volume {{$volume->name}}">
+                <volume-thumbnail class="volume-thumbnail" v-bind:tid="{{$volume->id}}" uri="{{asset(config('thumbnails.uri'))}}" format="{{config('thumbnails.format')}}">
+                    @if ($volume->thumbnail)
+                        <img src="{{ asset(config('thumbnails.uri').'/'.$volume->thumbnail->uuid.'.'.config('thumbnails.format')) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
+                    @else
+                        <img src="{{ asset(config('thumbnails.empty_url')) }}">
+                    @endif
+                    <figcaption slot="caption">{{$volume->name}}</figcaption>
+                </volume-thumbnail>
+            </a>
         </li>
     @endforeach
 
@@ -19,4 +27,15 @@
         </p>
     @endif
 </ul>
+
+@push('scripts')
+<script src="{{ cachebust_asset('vendor/projects/scripts/main.js') }}"></script>
+<script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
+@endpush
+
+@push('styles')
+<link href="{{ cachebust_asset('vendor/projects/styles/main.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
+@endpush
+
 @endif
