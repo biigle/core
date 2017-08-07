@@ -21,10 +21,19 @@ class SearchController extends Controller
         // Type (e.g. projects, volumes)
         $type = $request->input('t', '');
         $user = $auth->user();
-        $results = collect([]);
 
-        $args = compact('user', 'query', 'type', 'results');
+        $args = compact('user', 'query', 'type');
         $values = Modules::callControllerMixins('search', $args);
+
+        if (array_key_exists('results', $values)) {
+            if ($query) {
+                $values['results']->appends('q', $query);
+            }
+
+            if ($type) {
+                $values['results']->appends('t', $type);
+            }
+        }
 
         return view('search.index', array_merge($args, $values));
     }
