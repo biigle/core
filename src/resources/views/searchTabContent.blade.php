@@ -20,7 +20,7 @@
             @if ($query)
                 matching '{{$query}}'.
             @else
-                for you.
+                for you. Why don't you <a href="{{route('label-trees-create')}}" title="Create a new label tree">create</a> one?
             @endif
         </p>
     @endif
