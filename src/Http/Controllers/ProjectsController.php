@@ -62,33 +62,16 @@ class ProjectsController extends Controller
     }
 
     /**
-     * Show the project list.
+     * Shows the project index page.
      *
-     * @param Guard $auth
+     * @deprecated This is a legacy route and got replaced by the global search.
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth)
+    public function index()
     {
-        $query = Project::query();
-        $user = $auth->user();
-
-        // non admins can only see public trees and private ones they are member of
-        if (!$user->isAdmin) {
-            $query = $query->whereIn('id', function ($query) use ($user) {
-                $query->select('project_id')
-                    ->from('project_user')
-                    ->where('user_id', $user->id);
-            });
-        }
-
-        $query = $query->orderBy('updated_at', 'desc');
-
-        return view('projects::index', [
-            'projects' => $query->paginate(10),
-            // the create new project page redirects here with the newly created project
-            'newProject' => session('newProject'),
-        ]);
+        return redirect()->route('search', ['t' => 'projects']);
     }
+
     /**
      * Show a tutorials article.
      *

@@ -1,11 +1,24 @@
 @if(!$type || $type === 'projects')
 <h2 class="lead">{{$projectResultCount}} project results</h2>
 <ul class="search-results">
-    @foreach ($results as $result)
+    @foreach ($results as $project)
         <li>
-            <small class="pull-right text-muted">Updated on {{$result->updated_at->toFormattedDateString()}}</small>
-            <a class="search-results__name" href="{{route('project', $result->id)}}">{{$result->name}}</a><br>
-            {{$result->description}}
+            <div class="row">
+                <div class="col-xs-2 project-thumbnail">
+                    <a href="{{route('project', $project->id)}}">
+                        @if ($project->thumbnail)
+                            <img src="{{ asset(config('thumbnails.uri').'/'.$project->thumbnail->uuid.'.'.config('thumbnails.format')) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
+                        @else
+                            <img src="{{ asset(config('thumbnails.empty_url')) }}">
+                        @endif
+                    </a>
+                </div>
+                <div class="col-xs-10">
+                    <small class="pull-right text-muted">Updated on {{$project->updated_at->toFormattedDateString()}}</small>
+                    <a class="search-results__name" href="{{route('project', $project->id)}}">{{$project->name}}</a><br>
+                    {{$project->description}}
+                </div>
+            </div>
         </li>
     @endforeach
 
@@ -20,4 +33,8 @@
         </p>
     @endif
 </ul>
+
+@push('styles')
+<link href="{{ cachebust_asset('vendor/projects/styles/main.css') }}" rel="stylesheet">
+@endpush
 @endif
