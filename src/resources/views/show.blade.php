@@ -17,7 +17,7 @@
     biigle.$declare('labelTrees.labels', {!! $labels !!});
     biigle.$declare('labelTrees.privateVisibilityId', {!! \Biigle\Visibility::$private->id !!});
     biigle.$declare('labelTrees.userId', {!! $user->id !!});
-    biigle.$declare('labelTrees.redirectUrl', '{{route('label-trees-index')}}');
+    biigle.$declare('labelTrees.redirectUrl', '{{route('home')}}');
     biigle.$declare('labelTrees.wormsLabelSource', {!! $wormsLabelSource !!});
 
     biigle.$declare('labelTrees.userId', {!! $user->id !!});

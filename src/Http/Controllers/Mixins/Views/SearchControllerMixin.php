@@ -19,12 +19,6 @@ class SearchControllerMixin
      */
     public function index(User $user, $query, $type)
     {
-        if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
-            $operator = 'ilike';
-        } else {
-            $operator = 'like';
-        }
-
         if ($user->isAdmin) {
             $queryBuilder = LabelTree::query();
         } else {
@@ -44,6 +38,12 @@ class SearchControllerMixin
         }
 
         if ($query) {
+            if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
+                $operator = 'ilike';
+            } else {
+                $operator = 'like';
+            }
+
             $queryBuilder = $queryBuilder->where(function ($q) use ($query, $operator) {
                 $q->where('label_trees.name', $operator, "%{$query}%")
                     ->orWhere('label_trees.description', $operator, "%{$query}%");

@@ -47,27 +47,9 @@ class LabelTreeControllerTest extends TestCase
     public function testIndex()
     {
         $user = UserTest::create();
-        $tree = LabelTreeTest::create(['name' => 'random name']);
-        $tree2 = LabelTreeTest::create(['name' => 'another tree']);
-        $tree3 = LabelTreeTest::create([
-            'name' => 'private one',
-            'visibility_id' => Visibility::$private->id,
-        ]);
-        $tree->addMember($user, Role::$editor);
-
         $this->visit('label-trees')->seePageIs('login');
-
         $this->be($user);
-        $this->get('label-trees')->assertResponseOk();
-        $this->see('random name');
-        $this->see('another tree');
-        $this->dontSee('private one');
-
-        $this->call('GET', 'label-trees', ['query' => 'name']);
-        $this->assertResponseOk();
-        $this->see('random name');
-        $this->dontSee('another tree');
-        $this->dontSee('private one');
+        $this->visit('label-trees')->seePageIs('search?t=label-trees');
     }
 
     public function testCreate()
