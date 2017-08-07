@@ -22,7 +22,6 @@
         "symfony/css-selector": "3.1.*",
         "symfony/dom-crawler": "3.1.*",
         "doctrine/dbal": "^2.5",
-        "laravel/homestead": "^3.0",
         "ramsey/uuid-doctrine": "^1.2"
     },
     "autoload": {
