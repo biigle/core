@@ -4,7 +4,7 @@
     @foreach ($results as $project)
         <li>
             <div class="row">
-                <div class="col-xs-2 project-thumbnail">
+                <div class="col-xs-2 search-thumbnail">
                     <a href="{{route('project', $project->id)}}">
                         @if ($project->thumbnail)
                             <img src="{{ asset(config('thumbnails.uri').'/'.$project->thumbnail->uuid.'.'.config('thumbnails.format')) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
@@ -28,13 +28,10 @@
             @if ($query)
                 matching '{{$query}}'.
             @else
-                for you.
+                for you. Why don't you <a href="{{route('projects-create')}}" title="Create a new project">create</a> one?
             @endif
         </p>
     @endif
 </ul>
 
-@push('styles')
-<link href="{{ cachebust_asset('vendor/projects/styles/main.css') }}" rel="stylesheet">
-@endpush
 @endif

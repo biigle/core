@@ -18,11 +18,6 @@ class SearchControllerMixin
      */
     public function index(User $user, $query, $type)
     {
-        if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
-            $operator = 'ilike';
-        } else {
-            $operator = 'like';
-        }
 
         if ($user->isAdmin) {
             $queryBuilder = Project::query();
@@ -30,8 +25,13 @@ class SearchControllerMixin
             $queryBuilder = $user->projects();
         }
 
-
         if ($query) {
+            if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
+                $operator = 'ilike';
+            } else {
+                $operator = 'like';
+            }
+
             $queryBuilder = $queryBuilder->where(function ($q) use ($query, $operator) {
                 $q->where('projects.name', $operator, "%{$query}%")
                     ->orWhere('projects.description', $operator, "%{$query}%");

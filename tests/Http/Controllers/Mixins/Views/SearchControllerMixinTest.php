@@ -2,13 +2,12 @@
 
 namespace Biigle\Tests\Modules\Projects\Http\Controllers\Mixins\Views;
 
-use Cache;
 use TestCase;
 use Biigle\Role;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\ProjectTest;
 
-class SearchControllerTest extends TestCase
+class SearchControllerMixinTest extends TestCase
 {
     public function testIndex()
     {
