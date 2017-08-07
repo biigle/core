@@ -2,9 +2,10 @@
 
 namespace Biigle\Modules\Annotations;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Routing\Router;
 use Biigle\Services\Modules;
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
+use Biigle\Modules\Annotations\Http\Controllers\Mixins\Views\SearchControllerMixin;
 
 class AnnotationsServiceProvider extends ServiceProvider
 {
@@ -30,6 +31,21 @@ class AnnotationsServiceProvider extends ServiceProvider
         ], function ($router) {
             require __DIR__.'/Http/routes.php';
         });
+
+        $modules->register('annotations', [
+            'viewMixins' => [
+                'dashboardHotBoxLeft',
+                'volumesScripts',
+                'adminIndex',
+                'manualTutorial',
+                'adminShowUser',
+                'searchTab',
+                'searchTabContent',
+            ],
+            'controllerMixins' => [
+                'search' => SearchControllerMixin::class.'@index',
+            ],
+        ]);
 
         $modules->addMixin('annotations', 'dashboardHotBoxLeft');
         $modules->addMixin('annotations', 'volumesScripts');
