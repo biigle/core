@@ -148,15 +148,15 @@ class ProjectController extends Controller
             return $project;
         }
 
-        if (Route::has('project')) {
-            return redirect()->route('project', $project->id)
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
+                ->with('newProject', $project)
                 ->with('message', 'Project created.')
                 ->with('messageType', 'success');
         }
 
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('newProject', $project)
+        if (Route::has('project')) {
+            return redirect()->route('project', $project->id)
                 ->with('message', 'Project created.')
                 ->with('messageType', 'success');
         }

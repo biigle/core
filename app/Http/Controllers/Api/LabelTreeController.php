@@ -212,15 +212,16 @@ class LabelTreeController extends Controller
             return $tree;
         }
 
-        if (Route::has('label-trees')) {
-            return redirect()->route('label-trees', $tree->id)
-                ->with('message', 'Label tree created.')
-                ->with('messageType', 'success');
-        }
 
         if ($request->has('_redirect')) {
             return redirect($request->input('_redirect'))
                 ->with('newTree', $tree)
+                ->with('message', 'Label tree created.')
+                ->with('messageType', 'success');
+        }
+
+        if (Route::has('label-trees')) {
+            return redirect()->route('label-trees', $tree->id)
                 ->with('message', 'Label tree created.')
                 ->with('messageType', 'success');
         }
