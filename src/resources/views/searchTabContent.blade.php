@@ -1,5 +1,6 @@
 @if($type === 'volumes')
-<h2 class="lead">{{$volumeResultCount}} volume results</h2>
+
+<h2 class="lead">{{number_format($volumeResultCount)}} volume results</h2>
 <ul id="search-results" class="row volume-search-results">
     @foreach ($results as $volume)
         <li class="col-xs-4">
