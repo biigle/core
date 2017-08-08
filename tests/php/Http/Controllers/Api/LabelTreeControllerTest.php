@@ -282,8 +282,6 @@ class LabelTreeControllerTest extends ApiTestCase
             'description' => 'my description',
         ]);
         $this->assertEquals(1, LabelTree::count());
-        $this->assertRedirectedTo('/');
-        $this->assertSessionHas('newTree');
 
         $this->post('/api/v1/label-trees', [
             'name' => 'abc',
