@@ -6,6 +6,7 @@ use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Biigle\Modules\Export\Http\Controllers\Mixins\Views\SearchControllerMixin;
 
 class ExportServiceProvider extends ServiceProvider
 {
@@ -46,16 +47,25 @@ class ExportServiceProvider extends ServiceProvider
             __DIR__.'/config/export.php' => config_path('export.php'),
         ], 'config');
 
-        $modules->addMixin('export', 'projectsShowToolbar');
-        $modules->addMixin('export', 'annotationsSettingsTab');
-        $modules->addMixin('export', 'annotationsScripts');
-        $modules->addMixin('export', 'manualTutorial');
-        $modules->addMixin('export', 'volumesSidebar');
-        $modules->addMixin('export', 'annotationsManualSidebarSettings');
-        $modules->addMixin('export', 'notificationTabs');
+        $modules->register('export', [
+            'viewMixins' => [
+                'projectsShowToolbar',
+                'annotationsSettingsTab',
+                'annotationsScripts',
+                'manualTutorial',
+                'volumesSidebar',
+                'annotationsManualSidebarSettings',
+                'notificationTabs',
+                'searchTab',
+                'searchTabContent',
+            ],
+            'controllerMixins' => [
+                'search' => SearchControllerMixin::class.'@index',
+            ],
+        ]);
 
         if (config('export.notifications.allow_user_settings')) {
-            $modules->addMixin('export', 'settings.notifications');
+            $modules->registerViewMixin('export', 'settings.notifications');
         }
 
         $this->registerPolicies();
