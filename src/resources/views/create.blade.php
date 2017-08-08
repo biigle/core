@@ -22,7 +22,6 @@
 					<span class="help-block">{{ $errors->first('description') }}</span>
 				@endif
 			</div>
-            <input type="hidden" name="_redirect" value="{{ route('projects-index') }}">
 			<input type="hidden" name="_token" value="{{ csrf_token() }}">
 			<a href="{{ URL::previous() }}" class="btn btn-link">Cancel</a>
 			<input type="submit" class="btn btn-success pull-right" value="Create">
