@@ -50,11 +50,15 @@ class SearchControllerMixin
             });
         }
 
-        $values = ['labelTreeResultCount' => $queryBuilder->count()];
+        $values = [];
 
         if ($type === 'label-trees') {
             $values['results'] = $queryBuilder->orderBy('label_trees.updated_at', 'desc')
                 ->paginate(10);
+
+            $values['labelTreeResultCount'] = $values['results']->total();
+        } else {
+            $values = ['labelTreeResultCount' => $queryBuilder->count()];
         }
 
         return $values;
