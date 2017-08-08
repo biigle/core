@@ -50,12 +50,16 @@ class SearchControllerMixin
                 });
         }
 
-        $values = ['reportResultCount' => $queryBuilder->count()];
+        $values = [];
 
         if ($type === 'reports') {
             $values['results'] = $queryBuilder->orderBy('reports.created_at', 'desc')
                 ->with('source')
                 ->paginate(10);
+
+            $values['reportResultCount'] = $values['results']->total();
+        } else {
+            $values = ['reportResultCount' => $queryBuilder->count()];
         }
 
         return $values;
