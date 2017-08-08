@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Controllers\Views;
 
-use Modules;
+use Biigle\Services\Modules;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 
@@ -12,10 +12,11 @@ class SearchController extends Controller
      * Shows the search page
      *
      * @param Guard $auth
-     * @param  Request $request
+     * @param Request $request
+     * @param Modules $modules
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth, Request $request)
+    public function index(Guard $auth, Request $request, Modules $modules)
     {
         $query = $request->input('q', '');
         // Type (e.g. projects, volumes)
@@ -23,7 +24,7 @@ class SearchController extends Controller
         $user = $auth->user();
 
         $args = compact('user', 'query', 'type');
-        $values = Modules::callControllerMixins('search', $args);
+        $values = $modules->callControllerMixins('search', $args);
 
         if (array_key_exists('results', $values)) {
             if ($query) {

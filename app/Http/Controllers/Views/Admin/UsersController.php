@@ -2,9 +2,9 @@
 
 namespace Biigle\Http\Controllers\Views\Admin;
 
-use Modules;
 use Biigle\User;
 use Biigle\Role;
+use Biigle\Services\Modules;
 use Biigle\Http\Controllers\Controller;
 
 class UsersController extends Controller
@@ -72,9 +72,11 @@ class UsersController extends Controller
     /**
      * Shows the user information page.
      *
+     * @param Modules $modules
+     * @param int $id User ID
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Modules $modules, $id)
     {
         $user = User::findOrFail($id);
         if ($user->role_id === Role::$admin->id) {
@@ -85,7 +87,7 @@ class UsersController extends Controller
             $roleClass = 'default';
         }
 
-        $values = Modules::callControllerMixins('adminShowUser', ['user' => $user]);
+        $values = $modules->callControllerMixins('adminShowUser', ['user' => $user]);
 
         return view('admin.users.show', array_merge([
             'shownUser' => $user,
