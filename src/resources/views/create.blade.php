@@ -49,7 +49,6 @@
                     @endif
                 </div>
             @endif
-            <input type="hidden" name="_redirect" value="{{route('label-trees-index')}}">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <input type="submit" class="btn btn-success pull-right" value="Create">
             <a href="{{ URL::previous() }}" class="btn btn-link">Cancel</a>
