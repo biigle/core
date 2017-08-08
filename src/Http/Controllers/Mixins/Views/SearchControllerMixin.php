@@ -38,11 +38,15 @@ class SearchControllerMixin
             });
         }
 
-        $values = ['projectResultCount' => $queryBuilder->count()];
+        $values = [];
 
         if (!$type || $type === 'projects') {
             $values['results'] = $queryBuilder->orderBy('updated_at', 'desc')
                 ->paginate(10);
+
+            $values['projectResultCount'] = $values['results']->total();
+        } else {
+            $values = ['projectResultCount' => $queryBuilder->count()];
         }
 
         return $values;
