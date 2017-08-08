@@ -2,9 +2,11 @@
 
 namespace Biigle\Modules\Projects;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Routing\Router;
 use Biigle\Services\Modules;
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
+use Biigle\Modules\Projects\Http\Controllers\Mixins\Views\SearchControllerMixin;
+use Biigle\Modules\Projects\Http\Controllers\Mixins\Views\Admin\UsersControllerMixin;
 
 class ProjectsServiceProvider extends ServiceProvider
 {
@@ -32,14 +34,24 @@ class ProjectsServiceProvider extends ServiceProvider
             require __DIR__.'/Http/routes.php';
         });
 
-        $modules->addMixin('projects', 'dashboardMain');
-        $modules->addMixin('projects', 'dashboardButtons');
-        $modules->addMixin('projects', 'dashboardStyles');
-        $modules->addMixin('projects', 'dashboardScripts');
-        $modules->addMixin('projects', 'adminIndex');
-        $modules->addMixin('projects', 'navbarMenuItem');
-        $modules->addMixin('projects', 'manualTutorial');
-        $modules->addMixin('projects', 'adminShowUser');
+        $modules->register('projects', [
+            'viewMixins' => [
+                'dashboardMain',
+                'dashboardButtons',
+                'dashboardStyles',
+                'dashboardScripts',
+                'adminIndex',
+                'navbarMenuItem',
+                'manualTutorial',
+                'adminShowUser',
+                'searchTab',
+                'searchTabContent',
+            ],
+            'controllerMixins' => [
+                'adminShowUser' => UsersControllerMixin::class.'@show',
+                'search' => SearchControllerMixin::class.'@index',
+            ],
+        ]);
     }
 
     /**
@@ -50,7 +62,7 @@ class ProjectsServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('command.projects.publish', function ($app) {
-            return new \Biigle\Modules\Projects\Console\Commands\Publish();
+            return new Console\Commands\Publish();
         });
         $this->commands('command.projects.publish');
     }
@@ -62,8 +74,6 @@ class ProjectsServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return [
-            'command.projects.publish',
-        ];
+        return ['command.projects.publish'];
     }
 }

@@ -10,7 +10,7 @@ use Biigle\Tests\ProjectTest;
 
 class ProjectsControllerTest extends TestCase
 {
-    public function testEdit()
+    public function testShow()
     {
         $project = ProjectTest::create();
         $user = UserTest::create();
@@ -51,24 +51,8 @@ class ProjectsControllerTest extends TestCase
     public function testIndex()
     {
         $user = UserTest::create();
-        $project = ProjectTest::create(['name' => 'random name']);
-        $project2 = ProjectTest::create(['name' => 'another project']);
-        $project3 = ProjectTest::create(['name' => 'and again']);
-        $project->addUserId($user->id, Role::$guest->id);
-        $project2->addUserId($user->id, Role::$admin->id);
-
         $this->visit('projects')->seePageIs('login');
-
         $this->be($user);
-        $this->get('projects')->assertResponseOk();
-        $this->see('random name');
-        $this->see('another project');
-        $this->dontSee('and again');
-
-        $this->call('GET', 'projects', ['query' => 'name']);
-        $this->assertResponseOk();
-        $this->see('random name');
-        $this->dontSee('another project');
-        $this->dontSee('and again');
+        $this->visit('projects')->seePageIs('search?t=projects');
     }
 }

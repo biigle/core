@@ -16,7 +16,7 @@
     biigle.$declare('projects.roles', {!! $roles !!});
     biigle.$declare('projects.defaultRoleId', {!! Biigle\Role::$guest->id !!});
     biigle.$declare('projects.userId', {!! $user->id !!});
-    biigle.$declare('projects.redirectUrl', '{{route('projects-index')}}');
+    biigle.$declare('projects.redirectUrl', '{{route('home')}}');
     biigle.$declare('projects.labelTrees', {!! $labelTrees !!});
 </script>
 @foreach ($modules->getMixins('projectsShowScripts') as $module => $nestedMixins)

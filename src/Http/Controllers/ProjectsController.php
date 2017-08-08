@@ -4,7 +4,6 @@ namespace Biigle\Modules\Projects\Http\Controllers;
 
 use Biigle\Role;
 use Biigle\Project;
-use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Views\Controller;
 
@@ -63,49 +62,16 @@ class ProjectsController extends Controller
     }
 
     /**
-     * Show the project list.
+     * Shows the project index page.
      *
-     * @param Request $request
-     * @param Guard $auth
+     * @deprecated This is a legacy route and got replaced by the global search.
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, Guard $auth)
+    public function index()
     {
-        $query = Project::query();
-        $user = $auth->user();
-
-        // search for trees with similar name to the query string
-        if ($request->has('query')) {
-            if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
-                $operator = 'ilike';
-            } else {
-                $operator = 'like';
-            }
-
-            $pattern = $request->input('query');
-            $query = $query->where('name', $operator, "%{$pattern}%");
-            $request->flash();
-        } else {
-            $request->flush();
-        }
-
-        // non admins can only see public trees and private ones they are member of
-        if (!$user->isAdmin) {
-            $query = $query->whereIn('id', function ($query) use ($user) {
-                $query->select('project_id')
-                    ->from('project_user')
-                    ->where('user_id', $user->id);
-            });
-        }
-
-        $query = $query->orderBy('updated_at', 'desc');
-
-        return view('projects::index', [
-            'projects' => $query->paginate(10),
-            // the create new project page redirects here with the newly created project
-            'newProject' => session('newProject'),
-        ]);
+        return redirect()->route('search', ['t' => 'projects']);
     }
+
     /**
      * Show a tutorials article.
      *

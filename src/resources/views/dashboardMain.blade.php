@@ -19,7 +19,7 @@
     @endforelse
     <div class="row">
         <div class="col-xs-12 dashboard__all-projects">
-            <a href="{{route('projects-index')}}" class="btn btn-default btn-lg" title="Show all projects">Show all projects</a>
+            <a href="{{route('search', ['t' => 'projects'])}}" class="btn btn-default btn-lg" title="Show all projects">Show all projects</a>
         </div>
     </div>
 </div>
