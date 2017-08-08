@@ -2,9 +2,10 @@
 
 namespace Biigle\Modules\LabelTrees;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Routing\Router;
 use Biigle\Services\Modules;
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
+use Biigle\Modules\LabelTrees\Http\Controllers\Mixins\Views\SearchControllerMixin;
 
 class LabelTreesServiceProvider extends ServiceProvider
 {
@@ -31,10 +32,19 @@ class LabelTreesServiceProvider extends ServiceProvider
             require __DIR__.'/Http/routes.php';
         });
 
-        $modules->addMixin('label-trees', 'dashboardButtons');
-        $modules->addMixin('label-trees', 'adminMenu');
-        $modules->addMixin('label-trees', 'navbarMenuItem');
-        $modules->addMixin('label-trees', 'manualTutorial');
+        $modules->register('label-trees', [
+            'viewMixins' => [
+                'dashboardButtons',
+                'adminMenu',
+                'navbarMenuItem',
+                'manualTutorial',
+                'searchTab',
+                'searchTabContent',
+            ],
+            'controllerMixins' => [
+                'search' => SearchControllerMixin::class.'@index',
+            ],
+        ]);
     }
 
     /**
