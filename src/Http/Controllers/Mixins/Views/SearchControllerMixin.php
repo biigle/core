@@ -19,9 +19,9 @@ class SearchControllerMixin
     public function index(User $user, $query, $type)
     {
         if ($user->isAdmin) {
-            $volumeQuery = Volume::query();
+            $queryBuilder = Volume::query();
         } else {
-            $volumeQuery = Volume::join('project_volume', 'volumes.id', '=', 'project_volume.volume_id')
+            $queryBuilder = Volume::join('project_volume', 'volumes.id', '=', 'project_volume.volume_id')
                 ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
                 ->where('project_user.user_id', $user->id)
                 // Use distinct as volumes may be attached to more than one project.
@@ -37,16 +37,18 @@ class SearchControllerMixin
                 $operator = 'like';
             }
 
-            $volumeQuery = $volumeQuery->where('volumes.name', $operator, "%{$query}%");
+            $queryBuilder = $queryBuilder->where('volumes.name', $operator, "%{$query}%");
         }
 
-        $values = [
-            'volumeResultCount' => $volumeQuery->count('volumes.id'),
-        ];
+        $values = [];
 
         if ($type === 'volumes') {
-            $values['results'] = $volumeQuery->orderBy('volumes.updated_at', 'desc')
+            $values['results'] = $queryBuilder->orderBy('volumes.updated_at', 'desc')
                 ->paginate(12);
+
+            $values['volumeResultCount'] = $values['results']->total();
+        } else {
+            $values = ['volumeResultCount' => $queryBuilder->count()];
         }
 
         return $values;
