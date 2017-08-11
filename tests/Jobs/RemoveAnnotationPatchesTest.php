@@ -2,7 +2,6 @@
 
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
-use App;
 use File;
 use Mockery;
 use TestCase;
@@ -27,19 +26,14 @@ class RemoveAnnotationPatchesTest extends TestCase
             ->once()
             ->andReturn(true);
 
-        $mock = Mockery::mock();
-        $mock->shouldReceive('valid')->once()->andReturn(false);
-        App::bind(FilesystemIterator::class, function ($app, $args) use ($path, $mock) {
-            $this->assertEquals([$path, null], $args);
-
-            return $mock;
-        });
-
         File::shouldReceive('deleteDirectory')
             ->with($path)
             ->once();
 
-        with(new RemoveAnnotationPatches($volumeId, [$annotationId]))->handle();
+        $job = new RemoveAnnotationPatchesStub($volumeId, [$annotationId]);
+        $job->returnValue = true;
+        $job->handle();
+        $this->assertEquals($path, $job->path);
     }
 
     public function testHandleNotEmpty()
@@ -58,16 +52,13 @@ class RemoveAnnotationPatchesTest extends TestCase
             ->once()
             ->andReturn(true);
 
-        $mock = Mockery::mock();
-        $mock->shouldReceive('valid')->once()->andReturn(true);
-        App::bind(FilesystemIterator::class, function () use ($mock) {
-            return $mock;
-        });
-
         File::shouldReceive('deleteDirectory')
             ->never();
 
-        with(new RemoveAnnotationPatches($volumeId, [$annotationId]))->handle();
+        $job = new RemoveAnnotationPatchesStub($volumeId, [$annotationId]);
+        $job->returnValue = false;
+        $job->handle();
+        $this->assertNotEmpty($job->path);
     }
 
     public function testHandleThrowsException()
@@ -86,13 +77,20 @@ class RemoveAnnotationPatchesTest extends TestCase
             ->once()
             ->andReturn(false);
 
-        $mock = Mockery::mock();
-        $mock->shouldReceive('valid')->never();
-        App::bind(FilesystemIterator::class, function () use ($mock) {
-            return $mock;
-        });
+        $job = new RemoveAnnotationPatchesStub($volumeId, [$annotationId]);
+        $job->handle();
+        $this->assertEmpty($job->path);
+    }
+}
 
-        // no exception should be thrown
-        with(new RemoveAnnotationPatches($volumeId, [$annotationId]))->handle();
+class RemoveAnnotationPatchesStub extends RemoveAnnotationPatches
+{
+    public $returnValue = false;
+    public $path = '';
+
+    protected function dirIsEmpty($path)
+    {
+        $this->path = $path;
+        return $this->returnValue;
     }
 }

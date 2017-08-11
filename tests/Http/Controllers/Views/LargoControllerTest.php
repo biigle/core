@@ -10,31 +10,31 @@ class LargoControllerTest extends ApiTestCase
     {
         $id = $this->volume()->id;
 
-        $this->get("volumes/{$id}/largo")
-            ->assertResponseStatus(302);
+        $response = $this->get("volumes/{$id}/largo")
+            ->assertStatus(302);
 
         $this->beGuest();
-        $this->get("volumes/{$id}/largo")
-            ->assertResponseStatus(403);
+        $response = $this->get("volumes/{$id}/largo")
+            ->assertStatus(403);
 
         $this->beEditor();
-        $this->get("volumes/{$id}/largo")
-            ->assertResponseOk();
+        $response = $this->get("volumes/{$id}/largo")
+            ->assertStatus(200);
     }
 
     public function testIndexProject()
     {
         $id = $this->project()->id;
 
-        $this->get("projects/{$id}/largo")
-            ->assertResponseStatus(302);
+        $response = $this->get("projects/{$id}/largo")
+            ->assertStatus(302);
 
         $this->beGuest();
-        $this->get("projects/{$id}/largo")
-            ->assertResponseStatus(403);
+        $response = $this->get("projects/{$id}/largo")
+            ->assertStatus(403);
 
         $this->beEditor();
-        $this->get("projects/{$id}/largo")
-            ->assertResponseOk();
+        $response = $this->get("projects/{$id}/largo")
+            ->assertStatus(200);
     }
 }

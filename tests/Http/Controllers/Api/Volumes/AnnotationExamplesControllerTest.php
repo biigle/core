@@ -68,16 +68,16 @@ class AnnotationExamplesControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}", ['take' => 'abc']);
+        $response = $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}", ['take' => 'abc']);
         // take must be integer
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
-        $this->assertResponseOk();
+        $response = $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
+        $response->assertStatus(200);
 
         if ($this->isSqlite()) {
             $expect = [(string) $annotation->id];
@@ -85,15 +85,15 @@ class AnnotationExamplesControllerTest extends ApiTestCase
             $expect = [$annotation->id];
         }
 
-        $this->seeJsonEquals([
+        $response->assertExactJson([
             'label' => $label->toArray(),
             'annotations' => $expect,
         ]);
 
         $al0->delete();
 
-        $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
-        $this->assertResponseOk();
+        $response = $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
+        $response->assertStatus(200);
 
         if ($this->isSqlite()) {
             $expect = [(string) $annotation->id];
@@ -101,7 +101,7 @@ class AnnotationExamplesControllerTest extends ApiTestCase
             $expect = [$annotation->id];
         }
 
-        $this->seeJsonEquals([
+        $response->assertExactJson([
             'label' => $parentLabel->toArray(),
             'annotations' => $expect,
         ]);
@@ -162,9 +162,9 @@ class AnnotationExamplesControllerTest extends ApiTestCase
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
-        $this->assertResponseOk();
-        $this->seeJson(['annotations' => $expect]);
+        $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['annotations' => $expect]);
 
         // test hide other
         $session->hide_own_annotations = false;
@@ -176,9 +176,9 @@ class AnnotationExamplesControllerTest extends ApiTestCase
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
-        $this->assertResponseOk();
-        $this->seeJson(['annotations' => $expect]);
+        $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['annotations' => $expect]);
 
         // test hide both
         $session->hide_own_annotations = true;
@@ -189,9 +189,9 @@ class AnnotationExamplesControllerTest extends ApiTestCase
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
-        $this->assertResponseOk();
-        $this->seeJson(['annotations' => $expect]);
+        $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['annotations' => $expect]);
 
         $session->users()->detach($this->editor());
 
@@ -200,9 +200,9 @@ class AnnotationExamplesControllerTest extends ApiTestCase
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
-        $this->assertResponseOk();
-        $this->seeJson(['annotations' => $expect]);
+        $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['annotations' => $expect]);
     }
 
     public function testIndexOtherTree()
@@ -220,8 +220,8 @@ class AnnotationExamplesControllerTest extends ApiTestCase
         ]);
 
         $this->beGuest();
-        $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
-        $this->assertResponseOk();
-        $this->seeJsonEquals([]);
+        $response = $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
+        $response->assertStatus(200);
+        $response->assertExactJson([]);
     }
 }

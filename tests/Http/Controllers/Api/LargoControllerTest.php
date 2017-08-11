@@ -27,7 +27,7 @@ class LargoControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $this->post("/api/v1/volumes/{$id}/largo", [
+        $response = $this->post("/api/v1/volumes/{$id}/largo", [
             'dismissed' => [
                 $l1->label_id => [$a1->id],
             ],
@@ -35,7 +35,7 @@ class LargoControllerTest extends ApiTestCase
                 $a1->id => $l2->label_id, // but this already exists from the same user!
             ],
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $this->assertEquals(1, $a1->labels()->count());
         $this->assertEquals($l2->id, $a1->labels()->first()->id);
@@ -74,8 +74,8 @@ class LargoControllerTest extends ApiTestCase
         $a2->delete();
 
         $this->beEditor();
-        $this->post("/api/v1/volumes/{$id}/largo", $request);
-        $this->assertResponseOk();
+        $response = $this->post("/api/v1/volumes/{$id}/largo", $request);
+        $response->assertStatus(200);
         $this->assertEquals($this->labelChild()->id, $a1->labels()->first()->label_id);
     }
 }
