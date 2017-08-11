@@ -10,11 +10,11 @@ class AdminControllerTest extends TestCase
 {
     public function testIndex()
     {
-        $this->visit('admin/volumes')->seePageIs('login');
+        $this->get('admin/volumes')->assertRedirect('login');
         $user = UserTest::create();
         $this->be($user);
-        $this->get('admin/volumes')->assertResponseStatus(403);
+        $response = $this->get('admin/volumes')->assertStatus(403);
         $user->role()->associate(Role::$admin);
-        $this->visit('admin/volumes')->assertResponseOk();
+        $this->get('admin/volumes')->assertStatus(200);
     }
 }

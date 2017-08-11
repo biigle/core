@@ -30,12 +30,12 @@ class VolumeImageLabelControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$tid}/image-labels/");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$tid}/image-labels/");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$tid}/image-labels/");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$tid}/image-labels/")
-            ->seeJsonEquals([
+        $response = $this->get("/api/v1/volumes/{$tid}/image-labels/")
+            ->assertExactJson([
                 [
                     'id' => $label1->id,
                     'name' => $label1->name,
@@ -49,6 +49,6 @@ class VolumeImageLabelControllerTest extends ApiTestCase
                     'parent_id' => $label2->parent_id,
                 ],
             ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
     }
 }
