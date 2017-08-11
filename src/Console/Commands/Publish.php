@@ -28,7 +28,7 @@ class Publish extends Command
      */
     public function handle()
     {
-        $this->call('vendor:publish', [
+        $response = $this->call('vendor:publish', [
             '--provider' => ServiceProvider::class,
             '--tag' => ['public'],
             '--force' => true,
