@@ -34,10 +34,17 @@ class WormsAdapter implements LabelSourceAdapterContract
      */
     public function __construct()
     {
-        $this->client = app()->make(SoapClient::class, [
-            'http://www.marinespecies.org/aphia.php?p=soap&wsdl=1',
-            config('label-trees.soap_options'),
-        ]);
+        $this->client = new SoapClient('http://www.marinespecies.org/aphia.php?p=soap&wsdl=1', config('label-trees.soap_options'));
+    }
+
+    /**
+     * Set the SOAP client instance to use for requests.
+     *
+     * @param SoapClient $client
+     */
+    public function setSoapClient(SoapClient $client)
+    {
+        $this->client = $client;
     }
 
     /**

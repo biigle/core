@@ -21,7 +21,7 @@ class WormsAdapterTest extends TestCase
 
     public function testFind()
     {
-        $mock = Mockery::mock();
+        $mock = Mockery::mock(SoapClient::class);
         $mock->shouldReceive('getAphiaRecords')
             ->once()
             ->with('%Kolga%', null, null, true, 1)
@@ -61,11 +61,9 @@ class WormsAdapterTest extends TestCase
             ->with('%%', null, null, true, 1)
             ->andReturn(null);
 
-        app()->singleton(SoapClient::class, function () use ($mock) {
-            return $mock;
-        });
-
-        $results = with(new WormsAdapter)->find('Kolga');
+        $adapter = new WormsAdapter;
+        $adapter->setSoapClient($mock);
+        $results = $adapter->find('Kolga');
 
         $expect = [[
             'aphia_id' => 124731,
@@ -83,7 +81,7 @@ class WormsAdapterTest extends TestCase
 
         $this->assertEquals($expect, $results);
 
-        $results = with(new WormsAdapter)->find('');
+        $results = $adapter->find('');
         $this->assertEquals([], $results);
     }
 
@@ -93,7 +91,7 @@ class WormsAdapterTest extends TestCase
         $label = LabelTest::create(['label_tree_id' => $tree->id]);
 
         // checks if the aphia id exists
-        $mock = Mockery::mock();
+        $mock = Mockery::mock(SoapClient::class);
         $mock->shouldReceive('getAphiaNameByID')
             ->once()
             ->with(124731000)
@@ -104,9 +102,8 @@ class WormsAdapterTest extends TestCase
             ->with(124731)
             ->andReturn('Kolga hyalina');
 
-        app()->singleton(SoapClient::class, function () use ($mock) {
-            return $mock;
-        });
+        $adapter = new WormsAdapter;
+        $adapter->setSoapClient($mock);
 
         $request = new Request;
         $request->merge([
@@ -118,7 +115,7 @@ class WormsAdapterTest extends TestCase
         ]);
 
         try {
-            $labels = with(new WormsAdapter)->create($tree->id, $request);
+            $labels = $adapter->create($tree->id, $request);
             $this->assertTrue(false);
         } catch (ValidationException $e) {
             $this->assertEquals(['source_id' => ['The AphiaID does not exist.']], $e->response);
@@ -128,7 +125,7 @@ class WormsAdapterTest extends TestCase
             'source_id' => 124731,
         ]);
 
-        $labels = with(new WormsAdapter)->create($tree->id, $request);
+        $labels = $adapter->create($tree->id, $request);
         $this->assertTrue($tree->labels()->where('id', $labels[0]->id)->exists());
         $this->assertEquals('My Kolga', $labels[0]->name);
         $this->assertEquals('bada55', $labels[0]->color);
@@ -140,15 +137,14 @@ class WormsAdapterTest extends TestCase
 
     public function testCreateParentRecursiveError()
     {
-        $mock = Mockery::mock();
+        $mock = Mockery::mock(SoapClient::class);
         $mock->shouldReceive('getAphiaNameByID')
             ->once()
             ->with(124731)
             ->andReturn('Kolga hyalina');
 
-        app()->singleton(SoapClient::class, function () use ($mock) {
-            return $mock;
-        });
+        $adapter = new WormsAdapter;
+        $adapter->setSoapClient($mock);
 
         $request = new Request;
         $request->merge([
@@ -158,7 +154,7 @@ class WormsAdapterTest extends TestCase
         ]);
 
         try {
-            $labels = with(new WormsAdapter)->create(1, $request);
+            $labels = $adapter->create(1, $request);
             $this->assertTrue(false);
         } catch (ValidationException $e) {
             $this->assertEquals(['parent_id' => ['The label must not have a parent if it should be created recursively.']], $e->response);
@@ -175,7 +171,7 @@ class WormsAdapterTest extends TestCase
             'label_source_id' => 1,
         ]);
 
-        $mock = Mockery::mock();
+        $mock = Mockery::mock(SoapClient::class);
         $mock->shouldReceive('getAphiaNameByID')
             ->once()
             ->with(124731)
@@ -207,9 +203,8 @@ class WormsAdapterTest extends TestCase
             ->with(124731)
             ->andReturn($parents);
 
-        app()->singleton(SoapClient::class, function () use ($mock) {
-            return $mock;
-        });
+        $adapter = new WormsAdapter;
+        $adapter->setSoapClient($mock);
 
         $request = new Request;
         $request->merge([
@@ -220,7 +215,7 @@ class WormsAdapterTest extends TestCase
             'recursive' => 'true',
         ]);
 
-        $labels = with(new WormsAdapter)->create($tree->id, $request);
+        $labels = $adapter->create($tree->id, $request);
         $this->assertCount(2, $labels);
         $this->assertEquals(3, $tree->labels()->count());
 

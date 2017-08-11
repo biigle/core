@@ -19,55 +19,55 @@ class LabelTreeControllerTest extends TestCase
         $privateTree = LabelTreeTest::create(['visibility_id' => Visibility::$private->id]);
 
         // not logged in
-        $this->get("label-trees/{$tree->id}");
-        $this->assertRedirectedTo('login');
+        $response = $this->get("label-trees/{$tree->id}");
+        $response->assertRedirect('login');
 
         $this->be($user);
-        $this->get("label-trees/{$tree->id}");
-        $this->assertResponseOk();
+        $response = $this->get("label-trees/{$tree->id}");
+        $response->assertStatus(200);
 
-        $this->get("label-trees/{$privateTree->id}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("label-trees/{$privateTree->id}");
+        $response->assertStatus(403);
 
         // doesn't exist
-        $this->get('label-trees/-1');
-        $this->assertResponseStatus(404);
+        $response = $this->get('label-trees/-1');
+        $response->assertStatus(404);
     }
 
     public function testAdmin()
     {
-        $this->visit('admin/label-trees')->seePageIs('login');
+        $this->get('admin/label-trees')->assertRedirect('login');
         $user = UserTest::create();
         $this->be($user);
-        $this->get('admin/label-trees')->assertResponseStatus(403);
+        $response = $this->get('admin/label-trees')->assertStatus(403);
         $user->role()->associate(Role::$admin);
-        $this->visit('admin/label-trees')->assertResponseOk();
+        $this->get('admin/label-trees')->assertStatus(200);
     }
 
     public function testIndex()
     {
         $user = UserTest::create();
-        $this->visit('label-trees')->seePageIs('login');
+        $this->get('label-trees')->assertRedirect('login');
         $this->be($user);
-        $this->visit('label-trees')->seePageIs('search?t=label-trees');
+        $this->get('label-trees')->assertRedirect('search?t=label-trees');
     }
 
     public function testCreate()
     {
-        $this->visit('label-trees/create')->seePageIs('login');
+        $this->get('label-trees/create')->assertRedirect('login');
         $user = UserTest::create();
         $this->be($user);
-        $this->visit('label-trees/create')->assertResponseOk();
+        $this->get('label-trees/create')->assertStatus(200);
 
         $project = ProjectTest::create();
-        $this->get('label-trees/create?project='.$project->id);
-        $this->assertResponseStatus(403);
+        $response = $this->get('label-trees/create?project='.$project->id);
+        $response->assertStatus(403);
 
         $this->be($project->creator);
-        $this->get('label-trees/create?project='.$project->id);
-        $this->assertResponseOk();
+        $response = $this->get('label-trees/create?project='.$project->id);
+        $response->assertStatus(200);
 
-        $this->get('label-trees/create?project=999');
-        $this->assertResponseStatus(404);
+        $response = $this->get('label-trees/create?project=999');
+        $response->assertStatus(404);
     }
 }
