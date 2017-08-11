@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title') Notifications @stop
+@section('title', 'Notifications')
 
 @push('scripts')
     <script type="text/javascript">

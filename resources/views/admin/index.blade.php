@@ -1,7 +1,7 @@
 @extends('admin.base')
 @inject('modules', 'Biigle\Services\Modules')
 
-@section('title')Admin area @stop
+@section('title', 'Admin area')
 
 @section('admin-content')
     <div class="col-sm-6">

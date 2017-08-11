@@ -1,6 +1,6 @@
 @extends('errors.base')
 
-@section('title') Not Found @endsection
+@section('title', 'Not Found')
 
 @section('error-content')
 <h2 class="col-sm-offset-3 col-sm-6">

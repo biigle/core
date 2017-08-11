@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title') Using custom assets in packages @stop
+@section('title', 'Using custom assets in packages')
 
 @section('content')
 <div class="container">

@@ -1,6 +1,6 @@
 @extends('errors.base')
 
-@section('title') Service Unavailable @endsection
+@section('title', 'Service Unavailable')
 
 @section('error-content')
 <h2 class="col-sm-offset-3 col-sm-6">

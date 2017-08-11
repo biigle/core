@@ -1,6 +1,6 @@
 @extends('admin.base')
 
-@section('title')Avaliable logfiles @stop
+@section('title', 'Avaliable logfiles')
 
 @section('admin-content')
     <table class="table table-hover">

@@ -1,6 +1,6 @@
 @extends('errors.base')
 
-@section('title') Internal Server Error @endsection
+@section('title', 'Internal Server Error')
 
 @section('error-content')
 <h2 class="col-sm-offset-3 col-sm-6">

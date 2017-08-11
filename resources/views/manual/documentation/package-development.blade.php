@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title') Package development @stop
+@section('title', 'Package development')
 
 @section('content')
 <div class="container">

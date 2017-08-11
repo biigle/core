@@ -1,7 +1,7 @@
 @extends('admin.base')
 @inject('modules', 'Biigle\Services\Modules')
 
-@section('title')Users admin area - {{$shownUser->firstname}} {{$shownUser->lastname}} @stop
+@section('title', "Users admin area - {$shownUser->firstname}, {$shownUser->lastname}")
 
 @section('admin-content')
 <h2 class="col-xs-12 no-margin">
