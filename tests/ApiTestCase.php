@@ -191,9 +191,7 @@ class ApiTestCase extends TestCase
      */
     protected function doTestApiRoute($method, $uri)
     {
-        $this->json($method, $uri);
-        $this->assertResponseStatus(401);
-        $this->call($method, $uri);
-        $this->assertResponseStatus(302);
+        $this->json($method, $uri)->assertStatus(401);
+        $this->call($method, $uri)->assertStatus(302);
     }
 }

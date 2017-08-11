@@ -9,15 +9,15 @@ class ProjectControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
-        $this->get('/api/v1/projects');
-        $this->assertResponseStatus(405);
+        $response = $this->get('/api/v1/projects');
+        $response->assertStatus(405);
 
         $this->doTestApiRoute('GET', '/api/v1/projects/my');
 
         $this->beAdmin();
-        $this->get('/api/v1/projects/my');
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/projects/my');
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('[', $content);
         $this->assertStringEndsWith(']', $content);
         $this->assertContains('"description":"', $content);
@@ -31,16 +31,16 @@ class ProjectControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/projects/{$id}");
 
         $this->beUser();
-        $this->get("/api/v1/projects/{$id}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/projects/{$id}");
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->get('/api/v1/projects/999');
-        $this->assertResponseStatus(404);
+        $response = $this->get('/api/v1/projects/999');
+        $response->assertStatus(404);
 
-        $this->get("/api/v1/projects/{$id}");
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get("/api/v1/projects/{$id}");
+        $content = $response->getContent();
+        $response->assertStatus(200);
 
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
@@ -54,31 +54,31 @@ class ProjectControllerTest extends ApiTestCase
 
         // non-admins are not allowed to update
         $this->beEditor();
-        $this->put('/api/v1/projects/1');
-        $this->assertResponseStatus(403);
+        $response = $this->put('/api/v1/projects/1');
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->put('/api/v1/projects/999');
-        $this->assertResponseStatus(404);
+        $response = $this->put('/api/v1/projects/999');
+        $response->assertStatus(404);
 
-        $this->json('PUT', '/api/v1/projects/1', [
+        $response = $this->json('PUT', '/api/v1/projects/1', [
             'name' => '',
         ]);
         // name must not be empty if it is present
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/projects/1', [
+        $response = $this->json('PUT', '/api/v1/projects/1', [
             'description' => '',
         ]);
         // description must not be empty if it is present
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/projects/1', [
+        $response = $this->json('PUT', '/api/v1/projects/1', [
             'name' => 'my test',
             'description' => 'this is my test',
             'creator_id' => 5,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $project = $this->project()->fresh();
         $this->assertEquals('my test', $project->name);
@@ -92,18 +92,18 @@ class ProjectControllerTest extends ApiTestCase
 
         // creating an empty project is an error
         $this->beAdmin();
-        $this->json('POST', '/api/v1/projects');
-        $this->assertResponseStatus(422);
+        $response = $this->json('POST', '/api/v1/projects');
+        $response->assertStatus(422);
 
         $this->assertNull(Project::find(2));
 
-        $this->json('POST', '/api/v1/projects', [
+        $response = $this->json('POST', '/api/v1/projects', [
             'name' => 'test project',
             'description' => 'my test project',
         ]);
 
-        $this->assertResponseOk();
-        $content = $this->response->getContent();
+        $response->assertStatus(200);
+        $content = $response->getContent();
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
         $this->assertContains('"name":"test project"', $content);
@@ -120,22 +120,22 @@ class ProjectControllerTest extends ApiTestCase
 
         // non-admins are not allowed to delete the project
         $this->beEditor();
-        $this->json('DELETE', "/api/v1/projects/{$id}");
-        $this->assertResponseStatus(403);
+        $response = $this->json('DELETE', "/api/v1/projects/{$id}");
+        $response->assertStatus(403);
 
         // project still has a volume belonging only to this project
         $this->beAdmin();
         $this->assertNotNull($this->project()->fresh());
-        $this->json('DELETE', "/api/v1/projects/{$id}");
-        $this->assertResponseStatus(400);
+        $response = $this->json('DELETE', "/api/v1/projects/{$id}");
+        $response->assertStatus(400);
 
         $this->assertNotNull($this->project()->fresh());
-        $this->json('DELETE', "/api/v1/projects/{$id}", ['force' => 'true']);
-        $this->assertResponseOk();
+        $response = $this->json('DELETE', "/api/v1/projects/{$id}", ['force' => 'true']);
+        $response->assertStatus(200);
         $this->assertNull($this->project()->fresh());
 
         // already deleted projects can't be re-deleted
-        $this->delete("/api/v1/projects/{$id}");
-        $this->assertResponseStatus(404);
+        $response = $this->delete("/api/v1/projects/{$id}");
+        $response->assertStatus(404);
     }
 }

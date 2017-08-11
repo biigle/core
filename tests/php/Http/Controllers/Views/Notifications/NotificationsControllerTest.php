@@ -9,12 +9,12 @@ class NotificationsControllerTest extends TestCase
 {
     public function testIndexWhenNotLoggedIn()
     {
-        $this->visit('notifications')->seePageIs('login');
+        $this->get('notifications')->assertRedirect('login');
     }
 
     public function testIndexWhenLoggedIn()
     {
         $user = UserTest::create();
-        $this->actingAs($user)->visit('notifications')->seePageIs('notifications');
+        $this->actingAs($user)->get('notifications')->assertViewIs('notifications.index');
     }
 }

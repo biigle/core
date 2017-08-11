@@ -3,77 +3,71 @@
 namespace Biigle\Tests\Http\Controllers\Auth;
 
 use DB;
-use Mail;
 use Hash;
-use Session;
 use TestCase;
 use Faker\Factory;
 use Biigle\Tests\UserTest;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Auth\Notifications\ResetPassword;
 
 class PasswordControllerTest extends TestCase
 {
     public function testGetEmail()
     {
         // route is public
-        $this->visit('password/reset')->assertResponseOk();
+        $this->get('password/reset')->assertStatus(200);
     }
 
     public function testPostEmail()
     {
-        $this->visit('password/reset');
+        Notification::fake();
+        $this->get('password/reset');
 
-        Mail::shouldReceive('send')->once();
-
-        $this->post('password/email', [
-            '_token' => Session::token(),
-            'email' => Factory::create()->email,
-        ]);
-
+        $response = $this->post('password/email', ['email' => Factory::create()->email]);
         $user = UserTest::create();
-
+        Notification::assertNotSentTo($user, ResetPassword::class);
         $this->assertNull(DB::table('password_resets')->where('email', $user->email)->first());
 
-        $this->post('password/email', ['_token' => Session::token(), 'email' => $user->email]);
-
+        $response = $this->post('password/email', ['email' => $user->email]);
+        Notification::assertSentTo($user, ResetPassword::class);
         $this->assertNotNull(DB::table('password_resets')->where('email', $user->email)->first());
     }
 
     public function testPostEmailCaseInsensitive()
     {
-        Mail::shouldReceive('send')->once();
-
+        Notification::fake();
         $user = UserTest::create(['email' => 'test@test.com']);
 
-        $this->post('password/email', [
-            '_token' => Session::token(),
-            'email' => 'Test@Test.com',
-        ]);
-
+        $response = $this->post('password/email', ['email' => 'Test@Test.com']);
+        Notification::assertSentTo($user, ResetPassword::class);
         $this->assertNotNull(DB::table('password_resets')->where('email', $user->email)->first());
     }
 
     public function testGetReset()
     {
         // token must be provided
-        $this->get('password/reset/'.str_random(40))->assertViewHas('token');
+        $response = $this->get('password/reset/'.str_random(40))->assertViewHas('token');
     }
 
     public function testPostReset()
     {
-        $this->visit('password/reset');
+        Notification::fake();
+        $this->get('password/reset');
         $user = UserTest::create();
 
-        Mail::shouldReceive('send')->once();
-        $this->post('password/email', ['_token' => Session::token(), 'email' => $user->email]);
+        $response = $this->post('password/email', ['email' => $user->email]);
 
-        $token = DB::table('password_resets')->where('email', $user->email)->first()->token;
+        $token = '';
+        Notification::assertSentTo($user, ResetPassword::class, function ($m) use (&$token) {
+            $token = $m->token;
+            return true;
+        });
 
-        $this->visit("password/reset/$token");
+        $this->get("password/reset/$token");
 
         $this->assertFalse(Hash::check('new-password', $user->fresh()->password));
 
-        $this->post('password/reset', [
-            '_token' => Session::token(),
+        $response = $this->post('password/reset', [
             'token' => $token,
             'email' => $user->email,
             'password' => 'new-password',
@@ -85,14 +79,17 @@ class PasswordControllerTest extends TestCase
 
     public function testPostResetCaseInsensitive()
     {
+        Notification::fake();
         $user = UserTest::create(['email' => 'test@test.com']);
-        Mail::shouldReceive('send')->once();
-        $this->post('password/email', ['_token' => Session::token(), 'email' => $user->email]);
-        $token = DB::table('password_resets')->where('email', $user->email)->first()->token;
+        $response = $this->post('password/email', ['email' => $user->email]);
+        $token = '';
+        Notification::assertSentTo($user, ResetPassword::class, function ($m) use (&$token) {
+            $token = $m->token;
+            return true;
+        });
         $this->assertFalse(Hash::check('new-password', $user->fresh()->password));
 
-        $this->post('password/reset', [
-            '_token' => Session::token(),
+        $response = $this->post('password/reset', [
             'token' => $token,
             'email' => 'Test@Test.com',
             'password' => 'new-password',

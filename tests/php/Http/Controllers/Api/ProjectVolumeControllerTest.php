@@ -30,13 +30,13 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/projects/1/volumes');
 
         $this->beUser();
-        $this->get('/api/v1/projects/1/volumes');
-        $this->assertResponseStatus(403);
+        $response = $this->get('/api/v1/projects/1/volumes');
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get('/api/v1/projects/1/volumes');
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/projects/1/volumes');
+        $content = $response->getContent();
+        $response->assertStatus(200);
         // response should not be an empty array
         $this->assertStringStartsWith('[{', $content);
         $this->assertStringEndsWith('}]', $content);
@@ -49,88 +49,88 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', '/api/v1/projects/'.$id.'/volumes');
 
         $this->beEditor();
-        $this->post('/api/v1/projects/'.$id.'/volumes');
-        $this->assertResponseStatus(403);
+        $response = $this->post('/api/v1/projects/'.$id.'/volumes');
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->json('POST', '/api/v1/projects/'.$id.'/volumes');
+        $response = $this->json('POST', '/api/v1/projects/'.$id.'/volumes');
         // mssing arguments
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
+        $response = $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => 99999,
             'images' => '1.jpg, 2.jpg',
         ]);
         // media type does not exist
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
+        $response = $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
             'images' => '',
         ]);
         // images array is empty
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         $count = $this->project()->volumes()->count();
         $imageCount = Image::all()->count();
 
-        $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
+        $response = $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
             'images' => '1.jpg, , 1.jpg',
         ]);
         // error because of duplicate image
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
+        $response = $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
             'images' => '1.bmp',
         ]);
         // error because of unsupported image format
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         File::shouldReceive('exists')->times(3)->andReturn(false, true, true);
         File::shouldReceive('isReadable')->twice()->andReturn(false, true);
 
-        $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
+        $response = $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
             'images' => '1.jpg',
         ]);
         // volume url does not exist
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
+        $response = $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
             'images' => '1.jpg',
         ]);
         // volume url is not readable
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         $this->assertEquals($count, $this->project()->volumes()->count());
         $this->assertEquals($imageCount, Image::all()->count());
 
         $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
 
-        $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
+        $response = $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
             // empty parts should be discarded
             'images' => '1.jpg, , 2.jpg, , ,',
         ]);
-        $this->assertResponseOk();
-        $content = $this->response->getContent();
+        $response->assertStatus(200);
+        $content = $response->getContent();
         $this->assertEquals($count + 1, $this->project()->volumes()->count());
         $this->assertEquals($imageCount + 2, Image::all()->count());
         $this->assertStringStartsWith('{', $content);
@@ -150,7 +150,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $id = $this->project()->id;
         $this->beAdmin();
         $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
-        $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
+        $response = $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
@@ -162,7 +162,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->assertEquals('http://example.com', $volume->video_link);
         $this->assertEquals('http://my.example.com', $volume->gis_link);
 
-        $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
+        $response = $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
@@ -186,15 +186,15 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', '/api/v1/projects/'.$pid.'/volumes/'.$tid);
 
         $this->beAdmin();
-        $this->post('/api/v1/projects/'.$pid.'/volumes/'.$tid);
-        $this->assertResponseStatus(403);
+        $response = $this->post('/api/v1/projects/'.$pid.'/volumes/'.$tid);
+        $response->assertStatus(403);
 
         $secondProject->addUserId($this->admin()->id, Role::$admin->id);
         Cache::flush();
 
         $this->assertEmpty($secondProject->fresh()->volumes);
-        $this->post('/api/v1/projects/'.$pid.'/volumes/'.$tid);
-        $this->assertResponseOk();
+        $response = $this->post('/api/v1/projects/'.$pid.'/volumes/'.$tid);
+        $response->assertStatus(200);
         $this->assertNotEmpty($secondProject->fresh()->volumes);
     }
 
@@ -204,8 +204,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $pid = $this->project()->id;
 
         $this->beAdmin();
-        $this->json('POST', '/api/v1/projects/'.$pid.'/volumes/'.$tid);
-        $this->assertResponseStatus(422);
+        $response = $this->json('POST', '/api/v1/projects/'.$pid.'/volumes/'.$tid);
+        $response->assertStatus(422);
     }
 
     public function testDestroy()
@@ -216,38 +216,38 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->doTestApiRoute('DELETE', '/api/v1/projects/1/volumes/'.$id);
 
         $this->beUser();
-        $this->delete('/api/v1/projects/1/volumes/'.$id);
-        $this->assertResponseStatus(403);
+        $response = $this->delete('/api/v1/projects/1/volumes/'.$id);
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->delete('/api/v1/projects/1/volumes/'.$id);
-        $this->assertResponseStatus(403);
+        $response = $this->delete('/api/v1/projects/1/volumes/'.$id);
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->delete('/api/v1/projects/1/volumes/'.$id);
-        $this->assertResponseStatus(403);
+        $response = $this->delete('/api/v1/projects/1/volumes/'.$id);
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->delete('/api/v1/projects/1/volumes/'.$id);
+        $response = $this->delete('/api/v1/projects/1/volumes/'.$id);
         // trying to delete without force
-        $this->assertResponseStatus(400);
+        $response->assertStatus(400);
 
         $otherVolume = VolumeTest::create();
-        $this->delete('/api/v1/projects/1/volumes/'.$otherVolume->id);
+        $response = $this->delete('/api/v1/projects/1/volumes/'.$otherVolume->id);
         // does not belong to the project
-        $this->assertResponseStatus(404);
+        $response->assertStatus(404);
 
         Event::shouldReceive('fire')
             ->once()
             ->with('images.cleanup', [[$image->uuid]]);
 
-        Event::shouldReceive('fire'); // catch other events
+        Event::shouldReceive('dispatch'); // catch other events
 
-        $this->delete('/api/v1/projects/1/volumes/'.$id, [
+        $response = $this->delete('/api/v1/projects/1/volumes/'.$id, [
             'force' => 'abc',
         ]);
         // deleting with force succeeds
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertNull($this->volume->fresh());
     }
 }

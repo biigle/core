@@ -10,13 +10,13 @@ class LogsControllerTest extends TestCase
 {
     public function testIndexWhenNotLoggedIn()
     {
-        $this->visit('admin/logs')->seePageIs('login');
+        $this->get('admin/logs')->assertRedirect('login');
     }
 
     public function testIndexWhenNotAdmin()
     {
         $this->be(UserTest::create());
-        $this->get('admin/logs')->assertResponseStatus(403);
+        $response = $this->get('admin/logs')->assertStatus(403);
     }
 
     public function testIndexWhenLoggedIn()
@@ -24,7 +24,7 @@ class LogsControllerTest extends TestCase
         // redirect to profile settings
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
-        $this->actingAs($admin)->visit('admin/logs')->seePageIs('admin/logs');
+        $this->actingAs($admin)->get('admin/logs')->assertViewIs('admin.logs.index');
     }
 
     public function testIndexWhenDisabled()
@@ -33,24 +33,24 @@ class LogsControllerTest extends TestCase
         // redirect to profile settings
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
-        $this->actingAs($admin)->get('admin/logs')->assertResponseStatus(404);
+        $this->actingAs($admin)->get('admin/logs')->assertStatus(404);
     }
 
     public function testShowWhenNotLoggedIn()
     {
-        $this->visit('admin/logs/log')->seePageIs('login');
+        $this->get('admin/logs/log')->assertRedirect('login');
     }
 
     public function testShowWhenNotAdmin()
     {
         $this->be(UserTest::create());
-        $this->get('admin/logs/log')->assertResponseStatus(403);
+        $response = $this->get('admin/logs/log')->assertStatus(403);
     }
 
     public function testShowWhenLoggedIn()
     {
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
-        $this->actingAs($admin)->get('admin/logs/log')->assertResponseStatus(404);
+        $this->actingAs($admin)->get('admin/logs/log')->assertStatus(404);
     }
 }

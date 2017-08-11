@@ -28,7 +28,7 @@ class ApiTokenControllerTest extends ApiTestCase
 
         $this->be($token->owner);
         $this->get('/api/v1/api-tokens')
-            ->seeJsonEquals([$expect]);
+            ->assertExactJson([$expect]);
     }
 
     public function testStoreWithToken()
@@ -37,12 +37,12 @@ class ApiTokenControllerTest extends ApiTestCase
             // 'test_token'
             'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
         ]);
-        $this->call('POST', '/api/v1/api-tokens', [], [], [], [
+        $response = $this->call('POST', '/api/v1/api-tokens', [], [], [], [
             'PHP_AUTH_USER' => $token->owner->email,
             'PHP_AUTH_PW' => 'test_token',
         ]);
         // route allows only session cookie authentication
-        $this->assertResponseStatus(401);
+        $response->assertStatus(401);
     }
 
     public function testStore()
@@ -55,20 +55,20 @@ class ApiTokenControllerTest extends ApiTestCase
         ]);
 
         $this->be($token->owner);
-        $this->json('POST', '/api/v1/api-tokens');
+        $response = $this->json('POST', '/api/v1/api-tokens');
         // missing purpose
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         $this->assertEquals(1, $token->owner->apiTokens()->count());
 
-        $this->json('POST', '/api/v1/api-tokens', ['purpose' => 'abc'])
-            ->seeJson(['purpose' => 'abc']);
+        $response = $this->json('POST', '/api/v1/api-tokens', ['purpose' => 'abc'])
+            ->assertJsonFragment(['purpose' => 'abc']);
 
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals(2, $token->owner->apiTokens()->count());
-        $this->assertContains('"token":"', $this->response->getContent());
+        $this->assertContains('"token":"', $response->getContent());
 
-        $this->post('/api/v1/api-tokens', ['purpose' => 'def'])
+        $response = $this->post('/api/v1/api-tokens', ['purpose' => 'def'])
             ->assertSessionHas('token');
     }
 
@@ -84,19 +84,19 @@ class ApiTokenControllerTest extends ApiTestCase
 
         $this->be($token->owner);
 
-        $this->delete('/api/v1/api-tokens/999');
-        $this->assertResponseStatus(404);
+        $response = $this->delete('/api/v1/api-tokens/999');
+        $response->assertStatus(404);
 
-        $this->json('DELETE', "/api/v1/api-tokens/{$id}");
-        $this->assertResponseOk();
+        $response = $this->json('DELETE', "/api/v1/api-tokens/{$id}");
+        $response->assertStatus(200);
         $this->assertNull($token->fresh());
 
-        $this->delete("/api/v1/api-tokens/{$id2}");
-        $this->assertResponseStatus(404);
+        $response = $this->delete("/api/v1/api-tokens/{$id2}");
+        $response->assertStatus(404);
         $this->assertNotNull($token2->fresh());
 
         $this->be($token2->owner);
-        $this->delete("/api/v1/api-tokens/{$id2}")
+        $response = $this->delete("/api/v1/api-tokens/{$id2}")
             ->assertSessionHas('deleted', true);
     }
 }

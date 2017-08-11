@@ -23,50 +23,50 @@ class LabelTreeLabelControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', "/api/v1/label-trees/{$tree->id}/labels");
 
         $this->beUser();
-        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels");
-        $this->assertResponseStatus(403);
+        $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels");
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels");
+        $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels");
         // missing arguments
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+        $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
             'name' => 'new label',
         ]);
         // missing color
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+        $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
             'color' => 'bada55',
         ]);
         // missing name
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+        $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
             'name' => 'new label',
             'color' => 'bada55',
             'parent_id' => $otherLabel->id,
         ]);
         // parent is not from same tree
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         $this->assertEquals(1, $tree->labels()->count());
         $this->assertFalse($parent->children()->exists());
-        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+        $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
             'name' => 'new label',
             'color' => 'bada55',
             'parent_id' => $parent->id,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals(2, $tree->labels()->count());
         $this->assertTrue($parent->children()->exists());
 
-        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+        $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
             'name' => 'new label 2',
             'color' => 'bada55',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals(3, $tree->labels()->count());
 
         $expect = [
@@ -77,7 +77,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
             'label_tree_id' => $tree->id,
         ];
 
-        $this->seeJsonEquals([$expect]);
+        $response->assertExactJson([$expect]);
     }
 
     public function testStoreFormRequest()
@@ -85,23 +85,23 @@ class LabelTreeLabelControllerTest extends ApiTestCase
         $tree = LabelTreeTest::create();
         $tree->addMember($this->editor(), Role::$editor);
         $this->beEditor();
-        $this->visit('/');
-        $this->post("/api/v1/label-trees/{$tree->id}/labels", [
+        $this->get('/');
+        $response = $this->post("/api/v1/label-trees/{$tree->id}/labels", [
             'name' => 'new label',
             'color' => 'bada55',
         ]);
         $this->assertEquals(1, $tree->labels()->count());
-        $this->assertRedirectedTo('/');
-        $this->assertSessionHas('saved', true);
+        $response->assertRedirect('/');
+        $response->assertSessionHas('saved', true);
 
-        $this->post("/api/v1/label-trees/{$tree->id}/labels", [
+        $response = $this->post("/api/v1/label-trees/{$tree->id}/labels", [
             'name' => 'new label',
             'color' => 'bada55',
             '_redirect' => 'settings',
         ]);
         $this->assertEquals(2, $tree->labels()->count());
-        $this->assertRedirectedTo('/settings');
-        $this->assertSessionHas('saved', true);
+        $response->assertRedirect('/settings');
+        $response->assertSessionHas('saved', true);
     }
 
     public function testStoreLabelSource()
@@ -110,23 +110,23 @@ class LabelTreeLabelControllerTest extends ApiTestCase
         $tree->addMember($this->editor(), Role::$editor);
 
         $this->beEditor();
-        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+        $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
             'name' => 'new label',
             'color' => 'bada55',
             'label_source_id' => 1,
         ]);
         // label source does not exist
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         $source = LabelSourceTest::create(['name' => 'my_source']);
 
-        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+        $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
             'name' => 'new label',
             'color' => 'bada55',
             'label_source_id' => $source->id,
         ]);
         // source_id not given
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         $mock = Mockery::mock();
 
@@ -140,14 +140,14 @@ class LabelTreeLabelControllerTest extends ApiTestCase
             return $mock;
         });
 
-        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+        $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
             'name' => 'new label',
             'color' => 'bada55',
             'label_source_id' => $source->id,
             'source_id' => 'affbbaa00123',
         ]);
-        $this->assertResponseOk();
-        $this->seeJsonEquals($labels);
+        $response->assertStatus(200);
+        $response->assertExactJson($labels);
     }
 
     public function testStoreLabelSourceError()
@@ -168,13 +168,13 @@ class LabelTreeLabelControllerTest extends ApiTestCase
         });
 
         $this->beEditor();
-        $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+        $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
             'name' => 'new label',
             'color' => 'bada55',
             'label_source_id' => $source->id,
             'source_id' => 'affbbaa00123',
         ]);
-        $this->assertResponseStatus(422);
-        $this->seeJsonEquals(['my_field' => ['Invalid.']]);
+        $response->assertStatus(422);
+        $response->assertExactJson(['my_field' => ['Invalid.']]);
     }
 }

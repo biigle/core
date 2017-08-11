@@ -9,19 +9,21 @@ class SettingsControllerTest extends TestCase
 {
     public function testIndexWhenNotLoggedIn()
     {
-        $this->visit('settings')->seePageIs('login');
+        $this->get('settings')->assertRedirect('login');
     }
 
     public function testIndexWhenLoggedIn()
     {
         // redirect to profile settings
-        $this->actingAs(UserTest::create())->visit('settings')->seePageIs('settings/profile');
+        $this->actingAs(UserTest::create())
+            ->get('settings')
+            ->assertRedirect('settings/profile');
     }
 
     public function testPagesWhenNotLoggedIn()
     {
         foreach (['profile', 'account', 'tokens'] as $page) {
-            $this->visit("settings/$page")->seePageIs('login');
+            $this->get("settings/$page")->assertRedirect('login');
         }
     }
 
@@ -30,7 +32,7 @@ class SettingsControllerTest extends TestCase
         $this->be(UserTest::create());
 
         foreach (['profile', 'account', 'tokens'] as $page) {
-            $this->visit("settings/$page")->assertResponseOk();
+            $this->get("settings/$page")->assertStatus(200);
         }
     }
 }

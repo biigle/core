@@ -12,9 +12,9 @@ class ShapeControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/shapes');
 
         $this->beUser();
-        $this->get('/api/v1/shapes');
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/shapes');
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('[', $content);
         $this->assertStringEndsWith(']', $content);
     }
@@ -24,9 +24,9 @@ class ShapeControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/shapes/'.Shape::$circleId);
 
         $this->beUser();
-        $this->get('/api/v1/shapes/'.Shape::$circleId);
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/shapes/'.Shape::$circleId);
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
         $this->assertContains('Circle', $content);

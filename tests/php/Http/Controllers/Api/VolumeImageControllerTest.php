@@ -16,13 +16,13 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/images");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$id}/images");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$id}/images");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$id}/images");
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get("/api/v1/volumes/{$id}/images");
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('[', $content);
         $this->assertStringEndsWith(']', $content);
     }
@@ -35,48 +35,48 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/images");
 
         $this->beUser();
-        $this->post("/api/v1/volumes/{$id}/images");
-        $this->assertResponseStatus(403);
+        $response = $this->post("/api/v1/volumes/{$id}/images");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->post("/api/v1/volumes/{$id}/images");
-        $this->assertResponseStatus(403);
+        $response = $this->post("/api/v1/volumes/{$id}/images");
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->post("/api/v1/volumes/{$id}/images");
-        $this->assertResponseStatus(403);
+        $response = $this->post("/api/v1/volumes/{$id}/images");
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->json('POST', "/api/v1/volumes/{$id}/images");
-        $this->assertResponseStatus(422);
+        $response = $this->json('POST', "/api/v1/volumes/{$id}/images");
+        $response->assertStatus(422);
 
         $this->assertEquals(1, $this->volume()->images()->count());
         $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
         $this->expectsEvents('images.created');
 
-        $this->json('POST', "/api/v1/volumes/{$id}/images", [
+        $response = $this->json('POST', "/api/v1/volumes/{$id}/images", [
             'images' => '1.jpg, 1.jpg',
         ]);
         // error because of duplicate image
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', "/api/v1/volumes/{$id}/images", [
+        $response = $this->json('POST', "/api/v1/volumes/{$id}/images", [
             'images' => '1.bmp',
         ]);
         // error because of unsupported image format
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', "/api/v1/volumes/{$id}/images", [
+        $response = $this->json('POST', "/api/v1/volumes/{$id}/images", [
             'images' => '1.jpg, 2.jpg',
         ]);
 
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $images = $this->volume()->images()
             ->where('filename', '!=', 'no.jpg')
             ->select('id', 'filename')->get();
 
-        $this->seeJsonEquals($images->toArray());
+        $response->assertExactJson($images->toArray());
 
         $this->assertEquals(1, $images->where('filename', '1.jpg')->count());
         $this->assertEquals(1, $images->where('filename', '2.jpg')->count());

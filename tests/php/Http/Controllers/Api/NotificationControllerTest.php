@@ -17,17 +17,17 @@ class NotificationControllerTest extends ApiTestCase
         $this->assertEquals(1, $user->unreadNotifications()->count());
 
         $this->be(UserTest::create());
-        $this->put('/api/v1/notifications/'.$notification->id)
-            ->assertResponseStatus(404);
+        $response = $this->put('/api/v1/notifications/'.$notification->id)
+            ->assertStatus(404);
 
         $this->be($user);
-        $this->put('/api/v1/notifications/'.$notification->id)
-            ->assertResponseOk();
+        $response = $this->put('/api/v1/notifications/'.$notification->id)
+            ->assertStatus(200);
         $this->assertEquals(0, $user->unreadNotifications()->count());
 
         // only unread notifications can be marked as read
-        $this->put('/api/v1/notifications/'.$notification->id)
-            ->assertResponseStatus(404);
+        $response = $this->put('/api/v1/notifications/'.$notification->id)
+            ->assertStatus(404);
     }
 
     public function testDestroy()
@@ -39,12 +39,12 @@ class NotificationControllerTest extends ApiTestCase
         $this->assertEquals(1, $user->notifications()->count());
 
         $this->be(UserTest::create());
-        $this->delete('/api/v1/notifications/'.$notification->id)
-            ->assertResponseStatus(404);
+        $response = $this->delete('/api/v1/notifications/'.$notification->id)
+            ->assertStatus(404);
 
         $this->be($user);
-        $this->delete('/api/v1/notifications/'.$notification->id)
-            ->assertResponseOk();
+        $response = $this->delete('/api/v1/notifications/'.$notification->id)
+            ->assertStatus(200);
         $this->assertEquals(0, $user->notifications()->count());
     }
 }

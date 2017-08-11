@@ -14,13 +14,13 @@ class VolumeControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/volumes/'.$id);
 
         $this->beUser();
-        $this->get('/api/v1/volumes/'.$id);
-        $this->assertResponseStatus(403);
+        $response = $this->get('/api/v1/volumes/'.$id);
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get('/api/v1/volumes/'.$id);
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/volumes/'.$id);
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
     }
@@ -35,20 +35,20 @@ class VolumeControllerTest extends ApiTestCase
         $this->doTestApiRoute('PUT', '/api/v1/volumes/'.$id);
 
         $this->beGuest();
-        $this->put('/api/v1/volumes/'.$id);
-        $this->assertResponseStatus(403);
+        $response = $this->put('/api/v1/volumes/'.$id);
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->put('/api/v1/volumes/'.$id);
-        $this->assertResponseStatus(403);
+        $response = $this->put('/api/v1/volumes/'.$id);
+        $response->assertStatus(403);
 
         $this->beAdmin();
         $this->assertNotEquals('the new volume', $this->volume()->fresh()->name);
-        $this->json('PUT', '/api/v1/volumes/'.$id, [
+        $response = $this->json('PUT', '/api/v1/volumes/'.$id, [
             'name' => 'the new volume',
             'media_type_id' => MediaType::$locationSeriesId,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals('the new volume', $this->volume()->fresh()->name);
         $this->assertEquals(MediaType::$locationSeriesId, $this->volume()->fresh()->media_type_id);
     }
@@ -62,19 +62,19 @@ class VolumeControllerTest extends ApiTestCase
         $this->beAdmin();
         $this->assertNull($volume->fresh()->video_link);
         $this->assertNull($volume->fresh()->gis_link);
-        $this->json('PUT', "/api/v1/volumes/{$id}", [
+        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
             'video_link' => 'http://example.com',
             'gis_link' => 'http://my.example.com',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals('http://example.com', $this->volume()->fresh()->video_link);
         $this->assertEquals('http://my.example.com', $this->volume()->fresh()->gis_link);
 
-        $this->json('PUT', "/api/v1/volumes/{$id}", [
+        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
             'video_link' => '',
             'gis_link' => '',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertNull($this->volume()->fresh()->video_link);
         $this->assertNull($this->volume()->fresh()->gis_link);
     }
@@ -87,10 +87,10 @@ class VolumeControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
-        $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
+        $response = $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
             'url' => '/new/url',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals('/new/url', $this->volume()->fresh()->url);
     }
 
@@ -99,45 +99,45 @@ class VolumeControllerTest extends ApiTestCase
         $id = $this->volume()->id;
 
         $this->beAdmin();
-        $this->json('PUT', "/api/v1/volumes/{$id}", [
+        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
             'name' => '',
         ]);
         // name must not be empty if present
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "/api/v1/volumes/{$id}", [
+        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
             'media_type_id' => '',
         ]);
         // media type id must not be empty if present
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "/api/v1/volumes/{$id}", [
+        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
             'media_type_id' => 999,
         ]);
         // media type id does not exist
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "/api/v1/volumes/{$id}", [
+        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
             'url' => '',
         ]);
         // url must not be empty if present
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
     }
 
     public function testUpdateRedirect()
     {
         $this->beAdmin();
-        $this->put('/api/v1/volumes/'.$this->volume()->id, [
+        $response = $this->put('/api/v1/volumes/'.$this->volume()->id, [
             '_redirect' => 'settings/profile',
         ]);
-        $this->assertRedirectedTo('settings/profile');
-        $this->assertSessionHas('saved', false);
+        $response->assertRedirect('settings/profile');
+        $response->assertSessionHas('saved', false);
 
-        $this->visit('/');
-        $this->put('/api/v1/volumes/'.$this->volume()->id, [
+        $this->get('/');
+        $response = $this->put('/api/v1/volumes/'.$this->volume()->id, [
             'name' => 'abc',
         ]);
-        $this->assertRedirectedTo('/');
-        $this->assertSessionHas('saved', true);
+        $response->assertRedirect('/');
+        $response->assertSessionHas('saved', true);
     }
 }

@@ -10,7 +10,7 @@ class SystemMessageControllerTest extends TestCase
 {
     public function testIndexWhenNotLoggedIn()
     {
-        $this->visit('system-messages')->seePageIs('login');
+        $this->get('system-messages')->assertRedirect('login');
     }
 
     public function testIndexWhenLoggedIn()
@@ -19,16 +19,16 @@ class SystemMessageControllerTest extends TestCase
         $message = SystemMessageTest::create();
         $message->publish();
         $message2 = SystemMessageTest::create();
-        $this->actingAs($user)->visit('system-messages')
-            ->see($message->title)
-            ->dontSee($message2->title)
-            ->seePageIs('system-messages');
+        $this->actingAs($user)->get('system-messages')
+            ->assertSeeText($message->title)
+            ->assertDontSeeText($message2->title)
+            ->assertViewIs('system-messages.index');
     }
 
     public function testShowWhenNotLoggedIn()
     {
         $message = SystemMessageTest::create();
-        $this->visit('system-messages/'.$message->id)->seePageIs('login');
+        $this->get('system-messages/'.$message->id)->assertRedirect('login');
     }
 
     public function testShowWhenLoggedIn()
@@ -36,10 +36,10 @@ class SystemMessageControllerTest extends TestCase
         $user = UserTest::create();
         $message = SystemMessageTest::create();
         $message->publish();
-        $this->actingAs($user)->visit('system-messages/'.$message->id)
-            ->see($message->title)
-            ->see($message->body)
-            ->seePageIs('system-messages/'.$message->id);
+        $this->actingAs($user)->get('system-messages/'.$message->id)
+            ->assertSeeText($message->title)
+            ->assertSeeText($message->body)
+            ->assertViewIs('system-messages.show');
     }
 
     public function testShowUnpublished()
@@ -47,6 +47,6 @@ class SystemMessageControllerTest extends TestCase
         $user = UserTest::create();
         $message = SystemMessageTest::create();
         $this->actingAs($user)->get('system-messages/'.$message->id)
-            ->assertResponseStatus(404);
+            ->assertStatus(404);
     }
 }

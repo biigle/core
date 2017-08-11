@@ -19,18 +19,18 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/projects/{$p->id}/label-trees");
 
         $this->beUser();
-        $this->get("/api/v1/projects/{$p->id}/label-trees");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/projects/{$p->id}/label-trees");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/projects/{$p->id}/label-trees");
-        $this->assertResponseOk();
-        $this->seeJson([
+        $response = $this->get("/api/v1/projects/{$p->id}/label-trees");
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
             'id' => $t->id,
             'name' => $t->name,
             'description' => $t->description,
         ]);
-        $this->seeJson([
+        $response->assertJsonFragment([
             'id' => $label->id,
             'name' => $label->name,
             'color' => $label->color,
@@ -49,23 +49,23 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/projects/{$p->id}/label-trees/available");
 
         $this->beUser();
-        $this->get("/api/v1/projects/{$p->id}/label-trees/available");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/projects/{$p->id}/label-trees/available");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/projects/{$p->id}/label-trees/available");
-        $this->assertResponseOk();
-        $this->seeJson([
+        $response = $this->get("/api/v1/projects/{$p->id}/label-trees/available");
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
             'id' => $authorized->id,
             'name' => $authorized->name,
             'description' => $authorized->description,
         ]);
-        $this->seeJson([
+        $response->assertJsonFragment([
             'id' => $public->id,
             'name' => $public->name,
             'description' => $public->description,
         ]);
-        $this->dontSeeJson([
+        $response->assertJsonMissing([
             'id' => $private->id,
             'name' => $private->name,
             'description' => $private->description,
@@ -83,48 +83,48 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', "/api/v1/projects/{$p->id}/label-trees");
 
         $this->beGuest();
-        $this->json('POST', "/api/v1/projects/{$p->id}/label-trees");
-        $this->assertResponseStatus(403);
+        $response = $this->json('POST', "/api/v1/projects/{$p->id}/label-trees");
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->json('POST', "/api/v1/projects/{$p->id}/label-trees");
-        $this->assertResponseStatus(403);
+        $response = $this->json('POST', "/api/v1/projects/{$p->id}/label-trees");
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->json('POST', "/api/v1/projects/{$p->id}/label-trees");
+        $response = $this->json('POST', "/api/v1/projects/{$p->id}/label-trees");
         // label tree id required
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
+        $response = $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
             'id' => 999,
         ]);
         // label tree id does not exist
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
+        $response = $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
             'id' => $private->id,
         ]);
         // project is not authorized
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $count = $p->labelTrees()->count();
-        $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
+        $response = $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
             'id' => $authorized->id,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals($count + 1, $p->labelTrees()->count());
 
-        $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
+        $response = $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
             'id' => $public->id,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals($count + 2, $p->labelTrees()->count());
 
         // if the tree is already attached, ignore and respond with success
-        $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
+        $response = $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [
             'id' => $public->id,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals($count + 2, $p->labelTrees()->count());
     }
 
@@ -134,19 +134,19 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
         $public = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
 
         $this->beAdmin();
-        $this->visit('/');
-        $this->post("/api/v1/projects/{$p->id}/label-trees", [
+        $this->get('/');
+        $response = $this->post("/api/v1/projects/{$p->id}/label-trees", [
             'id' => $public->id,
         ]);
-        $this->assertRedirectedTo('/');
-        $this->assertSessionHas('saved', true);
+        $response->assertRedirect('/');
+        $response->assertSessionHas('saved', true);
 
-        $this->post("/api/v1/projects/{$p->id}/label-trees", [
+        $response = $this->post("/api/v1/projects/{$p->id}/label-trees", [
             'id' => $public->id,
             '_redirect' => 'settings',
         ]);
-        $this->assertRedirectedTo('/settings');
-        $this->assertSessionHas('saved', true);
+        $response->assertRedirect('/settings');
+        $response->assertSessionHas('saved', true);
     }
 
     public function testDestroy()
@@ -158,25 +158,25 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
         $this->doTestApiRoute('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
 
         $this->beUser();
-        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
-        $this->assertResponseStatus(403);
+        $response = $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
-        $this->assertResponseStatus(403);
+        $response = $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
-        $this->assertResponseStatus(403);
+        $response = $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/999");
+        $response = $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/999");
         // trying to detach anything that is not attached is ok
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $this->assertTrue($p->labelTrees()->where('id', $t->id)->exists());
-        $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
-        $this->assertResponseOk();
+        $response = $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
+        $response->assertStatus(200);
         $this->assertFalse($p->labelTrees()->where('id', $t->id)->exists());
     }
 
@@ -187,16 +187,16 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
         $t->projects()->attach($p);
 
         $this->beAdmin();
-        $this->visit('/');
-        $this->delete("/api/v1/projects/{$p->id}/label-trees/{$t->id}");
-        $this->assertRedirectedTo('/');
-        $this->assertSessionHas('deleted', true);
+        $this->get('/');
+        $response = $this->delete("/api/v1/projects/{$p->id}/label-trees/{$t->id}");
+        $response->assertRedirect('/');
+        $response->assertSessionHas('deleted', true);
 
-        $this->delete("/api/v1/projects/{$p->id}/label-trees/{$t->id}", [
+        $response = $this->delete("/api/v1/projects/{$p->id}/label-trees/{$t->id}", [
             '_redirect' => 'settings',
         ]);
-        $this->assertRedirectedTo('/settings');
+        $response->assertRedirect('/settings');
         // should be false because nothing was deleted
-        $this->assertSessionHas('deleted', false);
+        $response->assertSessionHas('deleted', false);
     }
 }
