@@ -3,7 +3,7 @@
 @push('styles')
     @if ($debug)
         <style type="text/css">
-            {!!$css!!}
+            {!! str_replace('body {', '.debug-printout {', $css) !!}
         </style>
     @endif
 @endpush
@@ -15,7 +15,9 @@
     </div>
     @if ($debug)
         <div class="row">
-            {!!$content!!}
+            <div class="debug-printout">
+                {!!$content!!}
+            </div>
         </div>
     @endif
 </div>
