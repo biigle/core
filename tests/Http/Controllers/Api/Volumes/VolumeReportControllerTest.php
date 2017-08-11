@@ -16,18 +16,18 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', "api/v1/volumes/{$volumeId}/reports");
 
         $this->beUser();
-        $this->json('POST', "api/v1/volumes/{$volumeId}/reports")
-            ->assertResponseStatus(403);
+        $response = $this->json('POST', "api/v1/volumes/{$volumeId}/reports")
+            ->assertStatus(403);
 
         $this->beGuest();
-        $this->json('POST', "api/v1/volumes/{$volumeId}/reports")
-            ->assertResponseStatus(422);
+        $response = $this->json('POST', "api/v1/volumes/{$volumeId}/reports")
+            ->assertStatus(422);
 
         $this->expectsJobs(GenerateReportJob::class);
-        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+        $response = $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
             ])
-            ->assertResponseOk();
+            ->assertStatus(200);
 
         $job = end($this->dispatchedJobs);
         $report = $job->report;
@@ -35,11 +35,11 @@ class VolumeReportControllerTest extends ApiTestCase
         $this->assertEquals($volumeId, $report->source_id);
         $this->assertEquals(false, $report->options['exportArea']);
 
-        $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
+        $response = $this->json('POST', "api/v1/volumes/{$volumeId}/reports", [
                 'type_id' => $typeId,
                 'export_area' => true,
             ])
-            ->assertResponseOk();
+            ->assertStatus(200);
 
         $job = end($this->dispatchedJobs);
         $report = $job->report;

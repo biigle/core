@@ -8,19 +8,19 @@ class SettingsControllerTest extends ApiTestCase
 {
     public function testStore()
     {
-        $this->json('POST', 'api/v1/users/my/settings/export')
-            ->assertResponseStatus(401);
+        $response = $this->json('POST', 'api/v1/users/my/settings/export')
+            ->assertStatus(401);
 
         $this->beUser();
-        $this->post('api/v1/users/my/settings/export')
-            ->assertResponseOk();
+        $response = $this->post('api/v1/users/my/settings/export')
+            ->assertStatus(200);
 
         $this->assertNull($this->user()->fresh()->settings);
 
-        $this->post('api/v1/users/my/settings/export', [
+        $response = $this->post('api/v1/users/my/settings/export', [
                 'unknown_key' => 'somevalue',
             ])
-            ->assertResponseOk();
+            ->assertStatus(200);
 
         $this->assertNull($this->user()->fresh()->settings);
     }
@@ -32,33 +32,33 @@ class SettingsControllerTest extends ApiTestCase
 
         $this->assertNull($this->user()->fresh()->getSettings('report_notifications'));
 
-        $this->json('POST', 'api/v1/users/my/settings/export', [
+        $response = $this->json('POST', 'api/v1/users/my/settings/export', [
                 'report_notifications' => 'unknown value',
             ])
-            ->assertResponseStatus(422);
+            ->assertStatus(422);
 
         $this->assertNull($this->user()->fresh()->getSettings('report_notifications'));
 
-        $this->json('POST', 'api/v1/users/my/settings/export', [
+        $response = $this->json('POST', 'api/v1/users/my/settings/export', [
                 'report_notifications' => 'email',
             ])
-            ->assertResponseOk();
+            ->assertStatus(200);
 
         $this->assertEquals('email', $this->user()->fresh()->getSettings('report_notifications'));
 
-        $this->json('POST', 'api/v1/users/my/settings/export', [
+        $response = $this->json('POST', 'api/v1/users/my/settings/export', [
                 'report_notifications' => 'web',
             ])
-            ->assertResponseOk();
+            ->assertStatus(200);
 
         $this->assertEquals('web', $this->user()->fresh()->getSettings('report_notifications'));
 
         config(['export.notifications.allow_user_settings' => false]);
 
-        $this->json('POST', 'api/v1/users/my/settings/export', [
+        $response = $this->json('POST', 'api/v1/users/my/settings/export', [
                 'report_notifications' => 'email',
             ])
-            ->assertResponseOk();
+            ->assertStatus(200);
 
         $this->assertEquals('web', $this->user()->fresh()->getSettings('report_notifications'));
     }

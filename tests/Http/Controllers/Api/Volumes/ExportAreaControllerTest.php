@@ -16,13 +16,13 @@ class ExportAreaControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$volume->id}/export-area");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$volume->id}/export-area");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$volume->id}/export-area");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$volume->id}/export-area");
-        $this->assertResponseOk();
-        $this->seeJsonEquals([10, 20, 30, 40]);
+        $response = $this->get("/api/v1/volumes/{$volume->id}/export-area");
+        $response->assertStatus(200);
+        $response->assertExactJson([10, 20, 30, 40]);
     }
 
     public function testStore()
@@ -32,26 +32,26 @@ class ExportAreaControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$volume->id}/export-area");
 
         $this->beEditor();
-        $this->post("/api/v1/volumes/{$volume->id}/export-area", [
+        $response = $this->post("/api/v1/volumes/{$volume->id}/export-area", [
             'coordinates' => [10, 20, 30, 40],
         ]);
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->json('POST', "/api/v1/volumes/{$volume->id}/export-area", [
+        $response = $this->json('POST', "/api/v1/volumes/{$volume->id}/export-area", [
             'coordinates' => [10, 20],
         ]);
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', "/api/v1/volumes/{$volume->id}/export-area", [
+        $response = $this->json('POST', "/api/v1/volumes/{$volume->id}/export-area", [
             'coordinates' => [10, 20, 30, '40'],
         ]);
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->post("/api/v1/volumes/{$volume->id}/export-area", [
+        $response = $this->post("/api/v1/volumes/{$volume->id}/export-area", [
             'coordinates' => [10, 20, 30, 40],
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals([10, 20, 30, 40], $volume->fresh()->exportArea);
     }
 
@@ -64,13 +64,13 @@ class ExportAreaControllerTest extends ApiTestCase
         $this->doTestApiRoute('DELETE', "/api/v1/volumes/{$volume->id}/export-area");
 
         $this->beEditor();
-        $this->delete("/api/v1/volumes/{$volume->id}/export-area");
-        $this->assertResponseStatus(403);
+        $response = $this->delete("/api/v1/volumes/{$volume->id}/export-area");
+        $response->assertStatus(403);
 
         $this->beAdmin();
         $this->assertNotNull($volume->fresh()->exportArea);
-        $this->delete("/api/v1/volumes/{$volume->id}/export-area");
-        $this->assertResponseOk();
+        $response = $this->delete("/api/v1/volumes/{$volume->id}/export-area");
+        $response->assertStatus(200);
         $this->assertNull($volume->fresh()->exportArea);
     }
 }

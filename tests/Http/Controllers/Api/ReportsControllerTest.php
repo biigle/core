@@ -15,8 +15,8 @@ class ReportsControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "api/v1/reports/{$report->id}");
 
         $this->beAdmin();
-        $this->json('GET', "api/v1/reports/{$report->id}")
-            ->assertResponseStatus(403);
+        $response = $this->json('GET', "api/v1/reports/{$report->id}")
+            ->assertStatus(403);
 
         $this->be($report->user);
         Response::shouldReceive('download')
@@ -25,7 +25,7 @@ class ReportsControllerTest extends ApiTestCase
 
         Response::shouldReceive('json')->passthru();
 
-        $this->json('GET', "api/v1/reports/{$report->id}")
-            ->assertResponseOk();
+        $response = $this->json('GET', "api/v1/reports/{$report->id}")
+            ->assertStatus(200);
     }
 }
