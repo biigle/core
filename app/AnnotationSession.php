@@ -58,8 +58,8 @@ class AnnotationSession extends Model
      * @var array
      */
     protected $casts = [
-        'starts_at' => 'date',
-        'ends_at' => 'date',
+        'starts_at' => 'datetime',
+        'ends_at' => 'datetime',
         'hide_other_users_annotations' => 'boolean',
         'hide_own_annotations' => 'boolean',
         'volume_id' => 'int',
