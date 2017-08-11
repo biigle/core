@@ -28,14 +28,14 @@ class AttachableVolumesControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/projects/{$id}/attachable-volumes");
 
         $this->beEditor();
-        $this->get("/api/v1/projects/{$id}/attachable-volumes");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/projects/{$id}/attachable-volumes");
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->get("/api/v1/projects/{$id}/attachable-volumes");
-        $this->assertResponseOk();
+        $response = $this->get("/api/v1/projects/{$id}/attachable-volumes");
+        $response->assertStatus(200);
 
-        $this->seeJsonEquals([[
+        $response->assertExactJson([[
             'id' => $validVolume->id,
             'name' => $validVolume->name,
             'thumbnail' => null,

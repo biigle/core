@@ -35,20 +35,20 @@ class VolumeSampleControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/sample/3");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$id}/sample");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$id}/sample");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$id}/sample");
-        $this->assertResponseOk();
-        $this->seeJsonEquals(['uuid1', 'uuid2', 'uuid3', 'uuid4']);
+        $response = $this->get("/api/v1/volumes/{$id}/sample");
+        $response->assertStatus(200);
+        $response->assertExactJson(['uuid1', 'uuid2', 'uuid3', 'uuid4']);
 
-        $this->get("/api/v1/volumes/{$id}/sample/1");
-        $this->assertResponseOk();
-        $this->seeJsonEquals(['uuid1']);
+        $response = $this->get("/api/v1/volumes/{$id}/sample/1");
+        $response->assertStatus(200);
+        $response->assertExactJson(['uuid1']);
 
-        $this->get("/api/v1/volumes/{$id}/sample/2");
-        $this->assertResponseOk();
-        $this->seeJsonEquals(['uuid1', 'uuid3']);
+        $response = $this->get("/api/v1/volumes/{$id}/sample/2");
+        $response->assertStatus(200);
+        $response->assertExactJson(['uuid1', 'uuid3']);
     }
 }
