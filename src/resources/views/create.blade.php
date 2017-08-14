@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title') Create new volume @stop
+@section('title', 'Create new volume')
 
 @section('content')
 <div class="container">

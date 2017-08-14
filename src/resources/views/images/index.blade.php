@@ -1,7 +1,7 @@
 @extends('app')
 @inject('modules', 'Biigle\Services\Modules')
 
-@section('title'){{ $image->filename }}@stop
+@section('title', $image->filename)
 
 @push('styles')
     <link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">

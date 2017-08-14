@@ -1,6 +1,6 @@
 @extends('admin.base')
 
-@section('title')Volumes admin area @stop
+@section('title', 'Volumes admin area')
 
 @section('admin-content')
 <table class="table">
