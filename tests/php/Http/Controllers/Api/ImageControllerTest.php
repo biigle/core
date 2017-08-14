@@ -46,9 +46,8 @@ class ImageControllerTest extends ApiTestCase
 
     public function testShowThumb()
     {
-        // generate thumbnail manually
-        with(new ProcessThumbnailChunkJob(collect([$this->image])))->handle();
         $id = $this->image->id;
+        copy($this->image->url, $this->image->thumbPath);
 
         $this->doTestApiRoute('GET', "/api/v1/images/{$id}/thumb");
 
@@ -63,6 +62,7 @@ class ImageControllerTest extends ApiTestCase
         $response = $this->get("/api/v1/images/{$id}/thumb");
         $response->assertStatus(200);
         $this->assertEquals('image/jpeg', $response->headers->get('content-type'));
+        unlink($this->image->thumbPath);
     }
 
     public function testShowFile()

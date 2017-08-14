@@ -15,7 +15,7 @@ class GenerateThumbnailsTest extends TestCase
         parent::setUp();
          // mock this, so no actual thumbnail is generated
         App::singleton('Biigle\Contracts\ThumbnailService', function () {
-            return Mockery::mock('Biigle\Services\Thumbnails\InterventionImage');
+            return Mockery::mock('Biigle\Services\Thumbnails\DefaultThumbnailService');
         });
     }
 

@@ -1,10 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
 {
+    use MockeryPHPUnitIntegration;
+
     protected static $pdo;
 
     protected $baseUrl = 'http://localhost';

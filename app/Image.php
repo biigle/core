@@ -212,11 +212,8 @@ class Image extends Model
         }
 
         try {
-            // TODO download() doesn't work for external resources
-            // InterventionImage::make() does but is very memory expensive
             return Response::download($this->url);
         } catch (FileNotFoundException $e) {
-            // source file not readable; nothing we can do about it
             abort(404, $e->getMessage());
         }
     }

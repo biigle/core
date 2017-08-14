@@ -4,12 +4,12 @@ namespace Biigle\Jobs;
 
 use Log;
 use File;
+use VipsImage;
 use Biigle\Image;
-use InterventionImage as IImage;
+use Jcupitt\Vips\Exception;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Intervention\Image\Exception\NotReadableException;
 
 class ProcessThumbnailChunkJob extends Job implements ShouldQueue
 {
@@ -66,18 +66,10 @@ class ProcessThumbnailChunkJob extends Job implements ShouldQueue
     {
         $this->width = config('thumbnails.width');
         $this->height = config('thumbnails.height');
-        $this->format = config('thumbnails.format');
-
-        $memoryLimit = ini_get('memory_limit');
-        // increase memory limit for resizing large images
-        ini_set('memory_limit', config('thumbnails.memory_limit'));
 
         foreach ($this->images as $image) {
             $this->makeThumbnail($image);
         }
-
-        // restore default memory limit
-        ini_set('memory_limit', $memoryLimit);
     }
 
     /**
@@ -93,16 +85,9 @@ class ProcessThumbnailChunkJob extends Job implements ShouldQueue
         }
 
         try {
-            IImage::make($image->url)
-                ->resize($this->width, $this->height, function ($constraint) {
-                    // resize images proportionally
-                    $constraint->aspectRatio();
-                })
-                ->encode($this->format)
-                ->save($image->thumbPath)
-                // free memory; very important for scaling 1000s of images!!
-                ->destroy();
-        } catch (NotReadableException $e) {
+            VipsImage::thumbnail($image->url, $this->width, ['height' => $this->height])
+                ->writeToFile($image->thumbPath);
+        } catch (Exception $e) {
             Log::error('Could not generate thumbnail for image '.$image->id.': '.$e->getMessage());
         }
     }
