@@ -1,6 +1,6 @@
 @extends('admin.base')
 
-@section('title')Global label trees @stop
+@section('title', 'Global label trees')
 
 @section('admin-content')
 <h2 class="clearfix">

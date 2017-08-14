@@ -1,7 +1,7 @@
 @extends('app')
 @inject('modules', 'Biigle\Services\Modules')
 
-@section('title'){{ $tree->name }}@stop
+@section('title', $tree->name)
 
 @push('styles')
 <link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">

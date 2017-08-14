@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title') Create new label tree @stop
+@section('title', 'Create new label tree')
 
 @section('content')
 <div class="container">
