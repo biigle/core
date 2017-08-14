@@ -8,10 +8,10 @@ use Biigle\Jobs\ProcessThumbnailChunkJob;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
- * The default thumbnails service using the InterventionImage package
- * (http://image.intervention.io/).
+ * The default thumbnails service using the vips library
+ * (https://github.com/jcupitt/php-vips).
  */
-class InterventionImage implements ThumbnailService
+class DefaultThumbnailService implements ThumbnailService
 {
     use DispatchesJobs;
 

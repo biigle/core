@@ -6,9 +6,9 @@ use TestCase;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Jobs\ProcessThumbnailChunkJob;
-use Biigle\Services\Thumbnails\InterventionImage;
+use Biigle\Services\Thumbnails\DefaultThumbnailService;
 
-class InterventionImageTest extends TestCase
+class DefaultThumbnailServiceTest extends TestCase
 {
     public function testGenerateThumbnails()
     {
@@ -17,7 +17,7 @@ class InterventionImageTest extends TestCase
         $image = ImageTest::create(['volume_id' => $volume->id]);
         $image2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => '2']);
 
-        with(new InterventionImage)->generateThumbnails($volume, []);
+        with(new DefaultThumbnailService)->generateThumbnails($volume, []);
 
         $this->assertEquals([$image->id, $image2->id], end($this->dispatchedJobs)->images->pluck('id')->toArray());
     }
@@ -29,7 +29,7 @@ class InterventionImageTest extends TestCase
         $image = ImageTest::create(['volume_id' => $volume->id]);
         $image2 = ImageTest::create(['volume_id' => $volume->id, 'filename' => '2']);
 
-        with(new InterventionImage)->generateThumbnails($volume, [$image->id]);
+        with(new DefaultThumbnailService)->generateThumbnails($volume, [$image->id]);
 
         $this->assertEquals([$image->id], end($this->dispatchedJobs)->images->pluck('id')->toArray());
     }

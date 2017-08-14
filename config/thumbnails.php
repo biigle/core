@@ -4,9 +4,10 @@ return [
 
     /*
     | The service for generating thumbnails, this application should use.
-    | Default 'Biigle\Services\Thumbnails\InterventionImage' is provided by the core application.
+    | Default 'Biigle\Services\Thumbnails\DefaultThumbnailService' is provided by the
+    | core application.
     */
-    'service' => Biigle\Services\Thumbnails\InterventionImage::class,
+    'service' => Biigle\Services\Thumbnails\DefaultThumbnailService::class,
 
     /*
     | URI where the image thumbnails are available from.
