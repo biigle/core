@@ -33,9 +33,9 @@ class UserControllerTest extends ApiTestCase
 
         // everybody can do this
         $this->beGuest();
-        $this->get('/api/v1/users');
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/users');
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('[', $content);
         $this->assertStringEndsWith(']', $content);
     }
@@ -45,13 +45,13 @@ class UserControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/users/'.$this->guest()->id);
 
         $this->beGuest();
-        $this->get('/api/v1/users/'.$this->guest()->id);
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/users/'.$this->guest()->id);
+        $response->assertStatus(200);
 
         $this->beGlobalAdmin();
-        $this->get('/api/v1/users/'.$this->guest()->id);
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/users/'.$this->guest()->id);
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
     }
@@ -61,13 +61,13 @@ class UserControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/users/my');
 
         $this->beGuest();
-        $this->get('/api/v1/users/my');
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/users/my');
+        $response->assertStatus(200);
 
         $this->beGlobalAdmin();
-        $this->get('/api/v1/users/my');
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/users/my');
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
     }
@@ -75,8 +75,8 @@ class UserControllerTest extends ApiTestCase
     public function testUpdateWithToken()
     {
         // api key authentication **is** allowed for this route
-        $this->callToken('PUT', '/api/v1/users/'.$this->guest()->id, $this->globalAdmin());
-        $this->assertResponseStatus(200);
+        $response = $this->callToken('PUT', '/api/v1/users/'.$this->guest()->id, $this->globalAdmin());
+        $response->assertStatus(200);
     }
 
     public function testUpdate()
@@ -84,123 +84,123 @@ class UserControllerTest extends ApiTestCase
         $this->doTestApiRoute('PUT', '/api/v1/users/'.$this->guest()->id);
 
         $this->beGuest();
-        $this->put('/api/v1/users/'.$this->guest()->id);
-        $this->assertResponseStatus(403);
+        $response = $this->put('/api/v1/users/'.$this->guest()->id);
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->put('/api/v1/users/'.$this->guest()->id);
-        $this->assertResponseStatus(403);
+        $response = $this->put('/api/v1/users/'.$this->guest()->id);
+        $response->assertStatus(403);
 
         // 'adminpassword'
         $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
         $this->globalAdmin()->save();
         $this->beGlobalAdmin();
 
-        $this->put('/api/v1/users/'.$this->globalAdmin()->id);
+        $response = $this->put('/api/v1/users/'.$this->globalAdmin()->id);
         // the own user cannot be updated via this route
-        $this->assertResponseStatus(400);
+        $response->assertStatus(400);
 
         // ajax call to get the correct response status
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'password' => 'hacked!!',
         ]);
         // no password confirmation
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
         ]);
         // changing the email requires the admin password
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
             'auth_password' => 'wrongpassword',
         ]);
         // wrong password
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         $this->assertFalse(Hash::check('newpassword', $this->guest()->fresh()->password));
 
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
             'auth_password' => 'adminpassword',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertTrue(Hash::check('newpassword', $this->guest()->fresh()->password));
 
         // ajax call to get the correct response status
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'email' => 'no-mail',
         ]);
         // invalid email format
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'email' => '',
         ]);
         // email must not be empty if it is present
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'email' => 'new@email.me',
         ]);
         // changing the email requires the admin password
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'email' => 'new@email.me',
             'auth_password' => 'wrongpassword',
         ]);
         // wrong password
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'email' => 'new@email.me',
             'auth_password' => 'adminpassword',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals('new@email.me', $this->guest()->fresh()->email);
 
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'role_id' => 999,
             'auth_password' => 'adminpassword',
         ]);
         // role does not exist
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'role_id' => Role::$admin->id,
         ]);
         // changing the role requires the admin password
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'role_id' => Role::$admin->id,
             'auth_password' => 'wrongpassword',
         ]);
         // wrong password
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         $this->assertEquals(Role::$editor->id, $this->guest()->fresh()->role_id);
 
-        $this->put('/api/v1/users/'.$this->guest()->id, [
+        $response = $this->put('/api/v1/users/'.$this->guest()->id, [
             'role_id' => Role::$admin->id,
             'auth_password' => 'adminpassword',
             '_redirect' => 'settings/profile',
         ]);
-        $this->assertRedirectedTo('settings/profile');
+        $response->assertRedirect('settings/profile');
         $this->assertEquals(Role::$admin->id, $this->guest()->fresh()->role_id);
 
-        $this->visit('/');
-        $this->put('/api/v1/users/'.$this->guest()->id, [
+        $this->get('/');
+        $response = $this->put('/api/v1/users/'.$this->guest()->id, [
             'firstname' => 'jack',
             'lastname' => 'jackson',
         ]);
-        $this->assertRedirectedTo('/');
+        $response->assertRedirect('/');
 
         $this->assertEquals('jack', $this->guest()->fresh()->firstname);
         $this->assertEquals('jackson', $this->guest()->fresh()->lastname);
@@ -216,25 +216,25 @@ class UserControllerTest extends ApiTestCase
         $this->editor()->email = 'test@test.com';
         $this->editor()->save();
 
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'email' => 'Test@Test.com',
             'auth_password' => 'adminpassword',
         ]);
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
+        $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'email' => 'Test2@Test.com',
             'auth_password' => 'adminpassword',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals('test2@test.com', $this->guest()->fresh()->email);
     }
 
     public function testUpdateOwnWithToken()
     {
         // api key authentication is not allowed for this route
-        $this->callToken('PUT', '/api/v1/users/my', $this->guest());
-        $this->assertResponseStatus(401);
+        $response = $this->callToken('PUT', '/api/v1/users/my', $this->guest());
+        $response->assertStatus(401);
     }
 
     public function testUpdateOwn()
@@ -246,36 +246,36 @@ class UserControllerTest extends ApiTestCase
         $this->doTestApiRoute('PUT', '/api/v1/users/my');
 
         $this->beGuest();
-        $this->json('PUT', '/api/v1/users/my', [
+        $response = $this->json('PUT', '/api/v1/users/my', [
             'password' => 'hacked!!',
             '_origin' => 'password',
         ]);
         // no password confirmation
-        $this->assertResponseStatus(422);
-        $this->assertSessionHas('origin', 'password');
+        $response->assertStatus(422);
+        $response->assertSessionHas('origin', 'password');
 
         // ajax call to get the correct response status
-        $this->json('PUT', '/api/v1/users/my', [
+        $response = $this->json('PUT', '/api/v1/users/my', [
             'email' => 'no-mail',
         ]);
         // invalid email format
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/users/my', [
+        $response = $this->json('PUT', '/api/v1/users/my', [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
         ]);
         // no auth password provided
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/users/my', [
+        $response = $this->json('PUT', '/api/v1/users/my', [
             'email' => 'new@email.me',
         ]);
         // no auth password provided either
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         // ajax call to get the correct response status
-        $this->json('PUT', '/api/v1/users/my', [
+        $response = $this->json('PUT', '/api/v1/users/my', [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
             'auth_password' => 'guest-password',
@@ -284,8 +284,8 @@ class UserControllerTest extends ApiTestCase
             'email' => 'new@email.me',
             '_origin' => 'email',
         ]);
-        $this->assertResponseOk();
-        $this->assertSessionHas('origin', 'email');
+        $response->assertStatus(200);
+        $response->assertSessionHas('origin', 'email');
 
         $user = $this->guest()->fresh();
         $this->assertTrue(Hash::check('newpassword', $user->password));
@@ -304,25 +304,25 @@ class UserControllerTest extends ApiTestCase
         $this->editor()->email = 'test@test.com';
         $this->editor()->save();
 
-        $this->json('PUT', '/api/v1/users/my', [
+        $response = $this->json('PUT', '/api/v1/users/my', [
             'email' => 'Test@Test.com',
             'auth_password' => 'guest-password',
         ]);
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', '/api/v1/users/my', [
+        $response = $this->json('PUT', '/api/v1/users/my', [
             'email' => 'Test2@Test.com',
             'auth_password' => 'guest-password',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals('test2@test.com', $this->guest()->fresh()->email);
     }
 
     public function testStoreWithToken()
     {
         // api key authentication **is** allowed for this route
-        $this->callToken('POST', '/api/v1/users', $this->globalAdmin());
-        $this->assertResponseStatus(422);
+        $response = $this->callToken('POST', '/api/v1/users', $this->globalAdmin());
+        $response->assertStatus(422);
     }
 
     public function testStore()
@@ -330,30 +330,30 @@ class UserControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', '/api/v1/users');
 
         $this->beAdmin();
-        $this->post('/api/v1/users', [
+        $response = $this->post('/api/v1/users', [
             '_token' => Session::token(),
         ]);
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $this->beGlobalAdmin();
         // ajax call to get the correct response status
-        $this->json('POST', '/api/v1/users', [
+        $response = $this->json('POST', '/api/v1/users', [
             'password' => 'newpassword',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new@email.me',
         ]);
         // no password confirmation
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', '/api/v1/users', [
+        $response = $this->json('POST', '/api/v1/users', [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new@email.me',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $newUser = User::find(User::max('id'));
         $this->assertEquals('jack', $newUser->firstname);
@@ -361,7 +361,7 @@ class UserControllerTest extends ApiTestCase
         $this->assertEquals('new@email.me', $newUser->email);
         $this->assertEquals(Role::$editor->id, $newUser->role_id);
 
-        $this->json('POST', '/api/v1/users', [
+        $response = $this->json('POST', '/api/v1/users', [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
@@ -369,9 +369,9 @@ class UserControllerTest extends ApiTestCase
             'email' => 'new@email.me',
         ]);
         // email has already been taken
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->post('/api/v1/users', [
+        $response = $this->post('/api/v1/users', [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
@@ -379,17 +379,17 @@ class UserControllerTest extends ApiTestCase
             'email' => 'new2@email.me',
             '_redirect' => 'settings/profile',
         ]);
-        $this->assertRedirectedTo('settings/profile');
+        $response->assertRedirect('settings/profile');
 
-        $this->visit('/');
-        $this->post('/api/v1/users', [
+        $this->get('/');
+        $response = $this->post('/api/v1/users', [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new3@email.me',
         ]);
-        $this->assertRedirectedTo('/');
+        $response->assertRedirect('/');
     }
 
     public function testStoreEmailCaseInsensitive()
@@ -399,33 +399,33 @@ class UserControllerTest extends ApiTestCase
         $this->editor()->email = 'test@test.com';
         $this->editor()->save();
 
-        $this->json('POST', '/api/v1/users', [
+        $response = $this->json('POST', '/api/v1/users', [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'Test@Test.com',
         ]);
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         $this->assertFalse(User::where('email', 'test2@test.com')->exists());
 
-        $this->json('POST', '/api/v1/users', [
+        $response = $this->json('POST', '/api/v1/users', [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'Test2@Test.com',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertTrue(User::where('email', 'test2@test.com')->exists());
     }
 
     public function testDestroyWithToken()
     {
         // api key authentication **is** allowed for this route
-        $this->callToken('DELETE', '/api/v1/users/'.$this->guest()->id, $this->globalAdmin());
-        $this->assertResponseStatus(422);
+        $response = $this->callToken('DELETE', '/api/v1/users/'.$this->guest()->id, $this->globalAdmin());
+        $response->assertStatus(422);
     }
 
     public function testDestroy()
@@ -438,58 +438,58 @@ class UserControllerTest extends ApiTestCase
         $this->doTestApiRoute('DELETE', '/api/v1/users/'.$id);
 
         $this->beAdmin();
-        $this->delete('/api/v1/users/'.$id, [
+        $response = $this->delete('/api/v1/users/'.$id, [
             '_token' => Session::token(),
         ]);
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $this->beGlobalAdmin();
 
-        $this->delete('/api/v1/users/'.$this->globalAdmin()->id, [
+        $response = $this->delete('/api/v1/users/'.$this->globalAdmin()->id, [
             '_token' => Session::token(),
         ]);
         // the own user cannot be deleted via this route
-        $this->assertResponseStatus(400);
+        $response->assertStatus(400);
 
-        $this->json('DELETE', '/api/v1/users/'.$id);
+        $response = $this->json('DELETE', '/api/v1/users/'.$id);
         // admin password is required
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('DELETE', '/api/v1/users/'.$id, [
+        $response = $this->json('DELETE', '/api/v1/users/'.$id, [
             'password' => 'wrong-password',
         ]);
         // admin password is wrong
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         $this->assertNotNull($this->guest()->fresh());
-        $this->json('DELETE', '/api/v1/users/'.$id, [
+        $response = $this->json('DELETE', '/api/v1/users/'.$id, [
             'password' => 'globalAdmin-password',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertNull($this->guest()->fresh());
 
-        $this->delete('/api/v1/users/'.$this->editor()->id, [
+        $response = $this->delete('/api/v1/users/'.$this->editor()->id, [
             'password' => 'globalAdmin-password',
             '_redirect' => 'settings/profile',
         ]);
-        $this->assertRedirectedTo('settings/profile');
-        $this->assertSessionHas('deleted', true);
+        $response->assertRedirect('settings/profile');
+        $response->assertSessionHas('deleted', true);
         $this->assertNull($this->editor()->fresh());
 
         // remove creator, so admin is the last remaining admin of the project
         $this->project()->removeUserId($this->project()->creator->id);
-        $this->json('DELETE', '/api/v1/users/'.$this->admin()->id, [
+        $response = $this->json('DELETE', '/api/v1/users/'.$this->admin()->id, [
             'password' => 'globalAdmin-password',
         ]);
         // last remaining admin of a project mustn't be deleted
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
     }
 
     public function testDestroyOwnWithToken()
     {
         // api key authentication is not allowed for this route
-        $this->callToken('DELETE', '/api/v1/users/my', $this->guest());
-        $this->assertResponseStatus(401);
+        $response = $this->callToken('DELETE', '/api/v1/users/my', $this->guest());
+        $response->assertStatus(401);
     }
 
     public function testDestroyOwn()
@@ -505,47 +505,47 @@ class UserControllerTest extends ApiTestCase
 
         $this->beGuest();
         // ajax call to get the correct response status
-        $this->json('DELETE', '/api/v1/users/my');
+        $response = $this->json('DELETE', '/api/v1/users/my');
         // no password provided
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         // ajax call to get the correct response status
-        $this->json('DELETE', '/api/v1/users/my', [
+        $response = $this->json('DELETE', '/api/v1/users/my', [
             'password' => 'wrong-password',
         ]);
         // wrong password provided
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         $this->assertNotNull($this->guest()->fresh());
         // ajax call to get the correct response status
-        $this->json('DELETE', '/api/v1/users/my', [
+        $response = $this->json('DELETE', '/api/v1/users/my', [
             'password' => 'guest-password',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertNull($this->guest()->fresh());
 
         $this->beEditor();
-        $this->delete('/api/v1/users/my', [
+        $response = $this->delete('/api/v1/users/my', [
             'password' => 'editor-password',
         ]);
-        $this->assertRedirectedTo('auth/login');
+        $response->assertRedirect('auth/login');
         $this->assertNull(Auth::user());
 
-        $this->json('DELETE', '/api/v1/users/my');
+        $response = $this->json('DELETE', '/api/v1/users/my');
         // deleted user doesn't have permission any more
-        $this->assertResponseStatus(401);
+        $response->assertStatus(401);
 
         $this->beAdmin();
         // make admin the only admin
         $this->project()->creator->delete();
-        $this->visit('settings/profile');
-        $this->delete('/api/v1/users/my', [
+        $this->get('settings/profile');
+        $response = $this->delete('/api/v1/users/my', [
             '_token' => Session::token(),
         ]);
         // couldn't be deleted, returns with error message
-        $this->assertRedirectedTo('settings/profile');
+        $response->assertRedirect('settings/profile');
         $this->assertNotNull(Auth::user());
-        $this->assertSessionHas('errors');
+        $response->assertSessionHas('errors');
     }
 
     public function testFind()
@@ -556,17 +556,17 @@ class UserControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/users/find/a');
 
         $this->beGuest();
-        $this->get('/api/v1/users/find/a');
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/users/find/a');
+        $content = $response->getContent();
+        $response->assertStatus(200);
 
         $this->assertContains('"firstname":"abc"', $content);
         $this->assertContains('"lastname":"def"', $content);
         $this->assertContains('"lastname":"ghi"', $content);
 
-        $this->get('/api/v1/users/find/d');
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/users/find/d');
+        $content = $response->getContent();
+        $response->assertStatus(200);
 
         $this->assertContains('"firstname":"abc"', $content);
         $this->assertContains('"lastname":"def"', $content);

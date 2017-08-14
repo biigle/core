@@ -1,6 +1,6 @@
 @extends('admin.base')
 
-@section('title')Users admin area - New user @stop
+@section('title', 'Users admin area - New user')
 
 @section('admin-content')
 <h4>Create a new user</h4>

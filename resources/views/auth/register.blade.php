@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title'){{ trans('biigle.titles.register') }}@stop
+@section('title', trans('biigle.titles.register'))
 
 @section('content')
 <div class="container">

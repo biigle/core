@@ -32,14 +32,14 @@ class AnnotationLabelControllerTest extends ApiTestCase
 
         // api key authentication
         $this->beUser();
-        $this->get('/api/v1/annotations/1/labels');
-        $this->assertResponseStatus(403);
+        $response = $this->get('/api/v1/annotations/1/labels');
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get('/api/v1/annotations/1/labels');
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/annotations/1/labels');
+        $response->assertStatus(200);
 
-        $content = $this->response->getContent();
+        $content = $response->getContent();
         $this->assertStringStartsWith('[{', $content);
         $this->assertStringEndsWith('}]', $content);
     }
@@ -58,14 +58,14 @@ class AnnotationLabelControllerTest extends ApiTestCase
         ]);
 
         $this->beAdmin();
-        $this->get("api/v1/annotations/{$this->annotation->id}/labels");
-        $this->assertResponseOk();
+        $response = $this->get("api/v1/annotations/{$this->annotation->id}/labels");
+        $response->assertStatus(200);
 
         $session->users()->attach($this->admin());
         Cache::flush();
 
-        $this->get("api/v1/annotations/{$this->annotation->id}/labels");
-        $this->assertResponseStatus(403);
+        $response = $this->get("api/v1/annotations/{$this->annotation->id}/labels");
+        $response->assertStatus(403);
     }
 
     public function testStore()
@@ -75,60 +75,60 @@ class AnnotationLabelControllerTest extends ApiTestCase
 
         // missing arguments
         $this->beEditor();
-        $this->json('POST', "/api/v1/annotations/{$id}/labels");
-        $this->assertResponseStatus(422);
+        $response = $this->json('POST', "/api/v1/annotations/{$id}/labels");
+        $response->assertStatus(422);
 
         $this->assertEquals(0, $this->annotation->labels()->count());
 
         $this->beUser();
-        $this->post("/api/v1/annotations/{$id}/labels", [
+        $response = $this->post("/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1,
         ]);
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->post("/api/v1/annotations/{$id}/labels", [
+        $response = $this->post("/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1,
         ]);
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->post("/api/v1/annotations/{$id}/labels", [
+        $response = $this->post("/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1,
         ]);
-        $this->assertResponseStatus(201);
+        $response->assertStatus(201);
         $this->assertEquals(1, $this->annotation->labels()->count());
 
         $this->beAdmin();
-        $this->json('POST', "/api/v1/annotations/{$id}/labels", [
+        $response = $this->json('POST', "/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1,
         ]);
-        $this->assertResponseStatus(201);
+        $response->assertStatus(201);
         $this->assertEquals(2, $this->annotation->labels()->count());
-        $this->seeJson([
+        $response->assertJsonFragment([
             'id' => $this->labelRoot()->id,
             'name' => $this->labelRoot()->name,
             'parent_id' => $this->labelRoot()->parent_id,
             'color' => $this->labelRoot()->color,
         ]);
-        $this->seeJson([
+        $response->assertJsonFragment([
             'id' => $this->admin()->id,
             'firstname' => $this->admin()->firstname,
             'lastname' => $this->admin()->lastname,
             'role_id' => $this->admin()->role_id,
         ]);
-        $this->seeJson(['confidence' => 0.1]);
+        $response->assertJsonFragment(['confidence' => 0.1]);
 
-        $this->post("/api/v1/annotations/{$id}/labels", [
+        $response = $this->post("/api/v1/annotations/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.1,
         ]);
         // the same user cannot attach the same label twice
-        $this->assertResponseStatus(400);
+        $response->assertStatus(400);
         $this->assertEquals(2, $this->annotation->labels()->count());
     }
 
@@ -145,28 +145,28 @@ class AnnotationLabelControllerTest extends ApiTestCase
         $this->doTestApiRoute('PUT', '/api/v1/annotation-labels/'.$id);
 
         $this->beUser();
-        $this->put('/api/v1/annotation-labels/'.$id);
-        $this->assertResponseStatus(403);
+        $response = $this->put('/api/v1/annotation-labels/'.$id);
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->put('/api/v1/annotation-labels/'.$id);
-        $this->assertResponseStatus(403);
+        $response = $this->put('/api/v1/annotation-labels/'.$id);
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->put('/api/v1/annotation-labels/'.$id);
-        $this->assertResponseOk();
+        $response = $this->put('/api/v1/annotation-labels/'.$id);
+        $response->assertStatus(200);
 
         $this->beAdmin();
-        $this->put('/api/v1/annotation-labels/'.$id);
-        $this->assertResponseOk();
+        $response = $this->put('/api/v1/annotation-labels/'.$id);
+        $response->assertStatus(200);
 
         $this->assertEquals(0.5, $annotationLabel->fresh()->confidence);
         $this->beEditor();
-        $this->put('/api/v1/annotation-labels/'.$id, [
+        $response = $this->put('/api/v1/annotation-labels/'.$id, [
             '_token' => Session::token(),
             'confidence' => 0.1,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals(0.1, $annotationLabel->fresh()->confidence);
     }
 
@@ -187,22 +187,22 @@ class AnnotationLabelControllerTest extends ApiTestCase
         $this->doTestApiRoute('DELETE', '/api/v1/annotation-labels/'.$id);
 
         $this->beUser();
-        $this->delete('/api/v1/annotation-labels/'.$id);
-        $this->assertResponseStatus(403);
+        $response = $this->delete('/api/v1/annotation-labels/'.$id);
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->delete('/api/v1/annotation-labels/'.$id);
-        $this->assertResponseStatus(403);
+        $response = $this->delete('/api/v1/annotation-labels/'.$id);
+        $response->assertStatus(403);
 
         $this->assertTrue($this->annotation->labels()->where('id', $id)->exists());
         $this->beEditor();
-        $this->delete('/api/v1/annotation-labels/'.$id);
-        $this->assertResponseOk();
+        $response = $this->delete('/api/v1/annotation-labels/'.$id);
+        $response->assertStatus(200);
         $this->assertFalse($this->annotation->labels()->where('id', $id)->exists());
 
-        $this->delete('/api/v1/annotation-labels/'.$id2);
+        $response = $this->delete('/api/v1/annotation-labels/'.$id2);
         // not the own label
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $this->assertTrue($this->annotation->labels()->where('id', $id2)->exists());
 
@@ -214,12 +214,12 @@ class AnnotationLabelControllerTest extends ApiTestCase
         $this->assertTrue($this->annotation->labels()->where('id', $id)->exists());
 
         $this->beAdmin();
-        $this->delete('/api/v1/annotation-labels/'.$id);
-        $this->assertResponseOk();
+        $response = $this->delete('/api/v1/annotation-labels/'.$id);
+        $response->assertStatus(200);
         $this->assertFalse($this->annotation->labels()->where('id', $id)->exists());
 
-        $this->delete('/api/v1/annotation-labels/'.$id2);
-        $this->assertResponseOk();
+        $response = $this->delete('/api/v1/annotation-labels/'.$id2);
+        $response->assertStatus(200);
         $this->assertFalse($this->annotation->labels()->exists());
     }
 
@@ -238,13 +238,13 @@ class AnnotationLabelControllerTest extends ApiTestCase
         ])->id;
 
         $this->beEditor();
-        $this->delete("/api/v1/annotation-labels/{$id}");
-        $this->assertResponseOk();
+        $response = $this->delete("/api/v1/annotation-labels/{$id}");
+        $response->assertStatus(200);
 
         $this->assertNotNull($this->annotation->fresh());
 
-        $this->delete("/api/v1/annotation-labels/{$id2}");
-        $this->assertResponseOk();
+        $response = $this->delete("/api/v1/annotation-labels/{$id2}");
+        $response->assertStatus(200);
         $this->assertNull($this->annotation->fresh());
     }
 }

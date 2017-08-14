@@ -35,7 +35,7 @@ class UserTest extends ModelTestCase
     {
         $this->be($this->model);
         // make sure the login_at attribute is populated
-        $this->get('/');
+        $response = $this->get('/');
         $this->assertTrue($this->model->login_at instanceof \Carbon\Carbon);
     }
 

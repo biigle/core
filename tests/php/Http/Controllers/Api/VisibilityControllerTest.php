@@ -12,9 +12,9 @@ class VisibilityControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/visibilities');
 
         $this->beUser();
-        $this->get('/api/v1/visibilities');
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/visibilities');
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('[', $content);
         $this->assertStringEndsWith(']', $content);
     }
@@ -24,9 +24,9 @@ class VisibilityControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/visibilities/'.Visibility::$public->id);
 
         $this->beUser();
-        $this->get('/api/v1/visibilities/'.Visibility::$public->id);
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/visibilities/'.Visibility::$public->id);
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
         $this->assertContains('public', $content);

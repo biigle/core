@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title') Mastering view mixins @stop
+@section('title', 'Mastering view mixins')
 
 @section('content')
 <div class="container">

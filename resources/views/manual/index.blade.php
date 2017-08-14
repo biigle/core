@@ -1,7 +1,7 @@
 @extends('app')
 @inject('modules', 'Biigle\Services\Modules')
 
-@section('title') Manual @stop
+@section('title', 'Manual')
 
 @section('content')
 <div class="container">

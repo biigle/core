@@ -12,9 +12,9 @@ class RoleControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/roles');
 
         $this->beUser();
-        $this->get('/api/v1/roles');
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/roles');
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('[', $content);
         $this->assertStringEndsWith(']', $content);
     }
@@ -24,9 +24,9 @@ class RoleControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/roles/'.Role::$admin->id);
 
         $this->beUser();
-        $this->get('/api/v1/roles/'.Role::$admin->id);
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/roles/'.Role::$admin->id);
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
         $this->assertContains('admin', $content);

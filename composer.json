@@ -10,15 +10,16 @@
         "ext-pgsql": "*",
         "ext-gd": "*",
         "ext-exif": "*",
-        "laravel/framework": "5.3.*",
+        "laravel/framework": "5.4.*",
         "intervention/image": "~2.1",
         "ramsey/uuid": "^3.5",
-        "guzzlehttp/guzzle": "~6.0"
+        "guzzlehttp/guzzle": "~6.0",
+        "laravel/tinker": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~5.0",
+        "phpunit/phpunit": "~5.7",
         "symfony/css-selector": "3.1.*",
         "symfony/dom-crawler": "3.1.*",
         "doctrine/dbal": "^2.5",
@@ -81,7 +82,9 @@
         ]
     },
     "config": {
-        "preferred-install": "dist"
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true
     },
     "minimum-stability": "dev",
     "prefer-stable": true

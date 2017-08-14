@@ -1,7 +1,7 @@
 @extends('settings.base')
 @inject('modules', 'Biigle\Services\Modules')
 
-@section('title')Access tokens @stop
+@section('title', 'Access tokens')
 
 @section('settings-content')
 <div class="panel panel-default">

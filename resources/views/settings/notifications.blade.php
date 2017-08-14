@@ -1,7 +1,7 @@
 @extends('settings.base')
 @inject('modules', 'Biigle\Services\Modules')
 
-@section('title')Notification settings @stop
+@section('title', 'Notification settings')
 
 @section('settings-content')
 <h2>Notifications</h2>

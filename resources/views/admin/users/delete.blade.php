@@ -1,6 +1,6 @@
 @extends('admin.base')
 
-@section('title')Users admin area - Delete user @stop
+@section('title', 'Users admin area - Delete user')
 
 @section('admin-content')
 <h4>Delete {{$affectedUser->firstname}} {{$affectedUser->lastname}}</h4>

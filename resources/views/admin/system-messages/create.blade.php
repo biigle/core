@@ -1,6 +1,6 @@
 @extends('admin.base')
 
-@section('title')System messages admin area - New system message @stop
+@section('title', 'System messages admin area - New system message')
 
 @section('admin-content')
 <h4>Create a new system message</h4>

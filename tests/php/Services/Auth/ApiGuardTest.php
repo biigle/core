@@ -11,14 +11,14 @@ class ApiGuardTest extends TestCase
 {
     public function testNoCredentials()
     {
-        $this->get('/api/v1/users');
-        $this->assertRedirectedTo('login');
+        $response = $this->get('/api/v1/users');
+        $response->assertRedirect('login');
     }
 
     public function testNoCredentialsJson()
     {
-        $this->json('GET', '/api/v1/users');
-        $this->assertResponseStatus(401);
+        $response = $this->json('GET', '/api/v1/users');
+        $response->assertStatus(401);
     }
 
     public function testWrongCredentials()
@@ -27,27 +27,27 @@ class ApiGuardTest extends TestCase
             // 'test_token'
             'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
         ]);
-        $this->json('GET', '/api/v1/users', [], [], [], [
+        $response = $this->json('GET', '/api/v1/users', [], [], [], [
             'PHP_AUTH_USER' => $token->owner->email,
             'PHP_AUTH_PW' => 'test_tokens',
         ]);
-        $this->assertResponseStatus(401);
+        $response->assertStatus(401);
 
-        $this->json('GET', '/api/v1/users', [], [], [], [
+        $response = $this->json('GET', '/api/v1/users', [], [], [], [
             'PHP_AUTH_USER' => $token->owner->email.'s',
             'PHP_AUTH_PW' => 'test_token',
         ]);
-        $this->assertResponseStatus(401);
+        $response->assertStatus(401);
     }
 
     public function testNoToken()
     {
         $user = UserTest::create();
-        $this->json('GET', '/api/v1/users', [], [], [], [
+        $response = $this->json('GET', '/api/v1/users', [], [], [], [
             'PHP_AUTH_USER' => $user->email,
             'PHP_AUTH_PW' => 'test_token',
         ]);
-        $this->assertResponseStatus(401);
+        $response->assertStatus(401);
     }
 
     public function testSuccess()
@@ -56,11 +56,11 @@ class ApiGuardTest extends TestCase
             // 'test_token'
             'hash' => '$2y$10$.rR7YrU9K2ZR4xgPbKs1x.AGUUKIA733CT72eC6I2piTiPY59V7.O',
         ]);
-        $this->call('GET', '/api/v1/users', [], [], [], [
+        $response = $this->call('GET', '/api/v1/users', [], [], [], [
             'PHP_AUTH_USER' => $token->owner->email,
             'PHP_AUTH_PW' => 'test_token',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $token2 = ApiTokenTest::create([
             'owner_id' => $token->owner->id,
@@ -68,11 +68,11 @@ class ApiGuardTest extends TestCase
             'hash' => '$2y$10$bqKeHzuH0hf9gIOUBnzd0ezQkVkUU12faCOu2twnBguONfx8.XhlO',
         ]);
 
-        $this->json('GET', '/api/v1/users', [], [], [], [
+        $response = $this->json('GET', '/api/v1/users', [], [], [], [
             'PHP_AUTH_USER' => $token2->owner->email,
             'PHP_AUTH_PW' => 'test_token2',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
     }
 
     public function testEmailCaseInsensitive()
@@ -85,11 +85,11 @@ class ApiGuardTest extends TestCase
         $token->owner->email = 'test@test.com';
         $token->owner->save();
 
-        $this->call('GET', '/api/v1/users', [], [], [], [
+        $response = $this->call('GET', '/api/v1/users', [], [], [], [
             'PHP_AUTH_USER' => 'Test@Test.com',
             'PHP_AUTH_PW' => 'test_token',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
     }
 
     public function testTouchToken()
@@ -103,11 +103,11 @@ class ApiGuardTest extends TestCase
 
         $this->assertEquals($token->updated_at, $token->fresh()->updated_at);
 
-        $this->call('GET', '/api/v1/users', [], [], [], [
+        $response = $this->call('GET', '/api/v1/users', [], [], [], [
             'PHP_AUTH_USER' => $token->owner->email,
             'PHP_AUTH_PW' => 'test_token',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $this->assertNotEquals($token->updated_at, $token->fresh()->updated_at);
     }
