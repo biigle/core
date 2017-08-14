@@ -1,7 +1,7 @@
 @extends('app')
 @inject('modules', 'Biigle\Services\Modules')
 
-@section('title'){{ $project->name }}@stop
+@section('title', $project->name)
 
 @push('styles')
 <link href="{{ cachebust_asset('vendor/projects/styles/main.css') }}" rel="stylesheet">

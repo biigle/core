@@ -19,20 +19,20 @@ class SearchControllerMixinTest extends TestCase
         $project2->addUserId($user->id, Role::$admin->id);
 
         $this->be($user);
-        $this->get('search')->assertResponseOk();
-        $this->see('random name');
-        $this->see('another project');
-        $this->dontSee('and again');
+        $response = $this->get('search')->assertStatus(200);
+        $response->assertSeeText('random name');
+        $response->assertSeeText('another project');
+        $response->assertDontSeeText('and again');
 
-        $this->get('search?t=projects')->assertResponseOk();
-        $this->see('random name');
-        $this->see('another project');
-        $this->dontSee('and again');
+        $response = $this->get('search?t=projects')->assertStatus(200);
+        $response->assertSeeText('random name');
+        $response->assertSeeText('another project');
+        $response->assertDontSeeText('and again');
 
-        $this->get('search?q=name')->assertResponseOk();
-        $this->assertResponseOk();
-        $this->see('random name');
-        $this->dontSee('another project');
-        $this->dontSee('and again');
+        $response = $this->get('search?q=name')->assertStatus(200);
+        $response->assertStatus(200);
+        $response->assertSeeText('random name');
+        $response->assertDontSeeText('another project');
+        $response->assertDontSeeText('and again');
     }
 }

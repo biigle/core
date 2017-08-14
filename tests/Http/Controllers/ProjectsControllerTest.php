@@ -16,23 +16,23 @@ class ProjectsControllerTest extends TestCase
         $user = UserTest::create();
 
       // not logged in
-      $this->get('projects/1');
-        $this->assertResponseStatus(302);
+      $response = $this->get('projects/1');
+        $response->assertStatus(302);
 
       // doesn't belong to project
       $this->be($user);
-        $this->get('projects/1');
-        $this->assertResponseStatus(403);
+        $response = $this->get('projects/1');
+        $response->assertStatus(403);
 
       // can't admin the project
       $project->addUserId($user->id, Role::$editor->id);
         Cache::flush();
-        $this->get('projects/1');
-        $this->assertResponseOk();
+        $response = $this->get('projects/1');
+        $response->assertStatus(200);
 
       // diesn't exist
-      $this->get('projects/-1');
-        $this->assertResponseStatus(404);
+      $response = $this->get('projects/-1');
+        $response->assertStatus(404);
     }
 
     public function testCreate()
@@ -40,19 +40,19 @@ class ProjectsControllerTest extends TestCase
         $user = UserTest::create();
 
       // not logged in
-      $this->get('projects/create');
-        $this->assertResponseStatus(302);
+      $response = $this->get('projects/create');
+        $response->assertStatus(302);
 
         $this->be($user);
-        $r = $this->get('projects/create');
-        $this->assertResponseOk();
+        $r = $response = $this->get('projects/create');
+        $response->assertStatus(200);
     }
 
     public function testIndex()
     {
         $user = UserTest::create();
-        $this->visit('projects')->seePageIs('login');
+        $this->get('projects')->assertRedirect('login');
         $this->be($user);
-        $this->visit('projects')->seePageIs('search?t=projects');
+        $this->get('projects')->assertRedirect('search?t=projects');
     }
 }
