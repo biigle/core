@@ -50,4 +50,6 @@ RUN apt-get remove --purge -y automake gtk-doc-tools build-essential
 RUN apt-get autoremove -y
 RUN apt-get clean
 
+RUN echo 'memory_limit=512M' > /usr/local/etc/php/conf.d/memory_limit.ini
+
 ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisor/supervisord.conf"]
