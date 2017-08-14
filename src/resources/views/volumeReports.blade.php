@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title')Reports for {{ $volume->name }}@stop
+@section('title', "Reports for {$volume->name}")
 
 @push('scripts')
     <script src="{{ cachebust_asset('vendor/export/scripts/main.js') }}"></script>
