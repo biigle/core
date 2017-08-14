@@ -36,10 +36,10 @@ class User extends Authenticatable
      * @var array
      */
     public static $createRules = [
-        'email' => 'required|email|unique:users|max:255',
-        'password' => 'required|min:8|confirmed',
-        'firstname' => 'required|max:127',
-        'lastname' => 'required|max:127',
+        'email' => 'required|string|email|unique:users|max:255',
+        'password' => 'required|string|min:8|confirmed',
+        'firstname' => 'required|string|max:127',
+        'lastname' => 'required|string|max:127',
         'role_id' => 'exists:roles,id',
     ];
 

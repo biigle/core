@@ -10,13 +10,13 @@ class UsersControllerTest extends TestCase
 {
     public function testGetWhenNotLoggedIn()
     {
-        $this->visit('admin/users')->seePageIs('login');
+        $this->get('admin/users')->assertRedirect('login');
     }
 
     public function testGetWhenNotAdmin()
     {
         $this->be(UserTest::create());
-        $this->get('admin/users')->assertResponseStatus(403);
+        $response = $this->get('admin/users')->assertStatus(403);
     }
 
     public function testGetWhenLoggedIn()
@@ -24,18 +24,18 @@ class UsersControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
         $this->be($admin);
-        $this->visit('admin/users')->assertResponseOk();
+        $this->get('admin/users')->assertStatus(200);
     }
 
     public function testNewWhenNotLoggedIn()
     {
-        $this->visit('admin/users/new')->seePageIs('login');
+        $this->get('admin/users/new')->assertRedirect('login');
     }
 
     public function testNewWhenNotAdmin()
     {
         $this->be(UserTest::create());
-        $this->get('admin/users/new')->assertResponseStatus(403);
+        $response = $this->get('admin/users/new')->assertStatus(403);
     }
 
     public function testNewWhenLoggedIn()
@@ -43,20 +43,20 @@ class UsersControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
         $this->be($admin);
-        $this->visit('admin/users/new')->assertResponseOk();
+        $this->get('admin/users/new')->assertStatus(200);
     }
 
     public function testEditWhenNotLoggedIn()
     {
         $id = UserTest::create()->id;
-        $this->visit("admin/users/edit/{$id}")->seePageIs('login');
+        $this->get("admin/users/edit/{$id}")->assertRedirect('login');
     }
 
     public function testEditWhenNotAdmin()
     {
         $user = UserTest::create();
         $this->be($user);
-        $this->get("admin/users/edit/{$user->id}")->assertResponseStatus(403);
+        $response = $this->get("admin/users/edit/{$user->id}")->assertStatus(403);
     }
 
     public function testEditDoesntExist()
@@ -64,7 +64,7 @@ class UsersControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
         $this->be($admin);
-        $this->get('admin/users/edit/999')->assertResponseStatus(404);
+        $response = $this->get('admin/users/edit/999')->assertStatus(404);
     }
 
     public function testEditWhenLoggedIn()
@@ -73,20 +73,20 @@ class UsersControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
         $this->be($admin);
-        $this->visit("admin/users/edit/{$id}")->assertResponseOk();
+        $this->get("admin/users/edit/{$id}")->assertStatus(200);
     }
 
     public function testDeleteWhenNotLoggedIn()
     {
         $id = UserTest::create()->id;
-        $this->visit("admin/users/delete/{$id}")->seePageIs('login');
+        $this->get("admin/users/delete/{$id}")->assertRedirect('login');
     }
 
     public function testDeleteWhenNotAdmin()
     {
         $user = UserTest::create();
         $this->be($user);
-        $this->get("admin/users/delete/{$user->id}")->assertResponseStatus(403);
+        $response = $this->get("admin/users/delete/{$user->id}")->assertStatus(403);
     }
 
     public function testDeleteDoesntExist()
@@ -94,7 +94,7 @@ class UsersControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
         $this->be($admin);
-        $this->get('admin/users/delete/999')->assertResponseStatus(404);
+        $response = $this->get('admin/users/delete/999')->assertStatus(404);
     }
 
     public function testDeleteWhenLoggedIn()
@@ -103,20 +103,20 @@ class UsersControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
         $this->be($admin);
-        $this->visit("admin/users/delete/{$id}")->assertResponseOk();
+        $this->get("admin/users/delete/{$id}")->assertStatus(200);
     }
 
     public function testShowWhenNotLoggedIn()
     {
         $id = UserTest::create()->id;
-        $this->visit("admin/users/{$id}")->seePageIs('login');
+        $this->get("admin/users/{$id}")->assertRedirect('login');
     }
 
     public function testShowWhenNotAdmin()
     {
         $user = UserTest::create();
         $this->be($user);
-        $this->get("admin/users/{$user->id}")->assertResponseStatus(403);
+        $response = $this->get("admin/users/{$user->id}")->assertStatus(403);
     }
 
     public function testShowDoesntExist()
@@ -124,7 +124,7 @@ class UsersControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
         $this->be($admin);
-        $this->get('admin/users/999')->assertResponseStatus(404);
+        $response = $this->get('admin/users/999')->assertStatus(404);
     }
 
     public function testShowWhenLoggedIn()
@@ -133,6 +133,6 @@ class UsersControllerTest extends TestCase
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
         $this->be($admin);
-        $this->visit("admin/users/{$id}")->assertResponseOk();
+        $this->get("admin/users/{$id}")->assertStatus(200);
     }
 }

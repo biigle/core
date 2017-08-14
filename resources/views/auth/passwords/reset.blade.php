@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title'){{ trans('biigle.titles.resetpw') }}@stop
+@section('title', trans('biigle.titles.resetpw'))
 
 @section('content')
 <div class="container">

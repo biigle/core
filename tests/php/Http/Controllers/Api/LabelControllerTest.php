@@ -27,34 +27,34 @@ class LabelControllerTest extends ApiTestCase
 
         // only label tree members can edit a label
         $this->beUser();
-        $this->json('PUT', "/api/v1/labels/{$label->id}");
-        $this->assertResponseStatus(403);
+        $response = $this->json('PUT', "/api/v1/labels/{$label->id}");
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->json('PUT', "/api/v1/labels/{$label->id}", [
+        $response = $this->json('PUT', "/api/v1/labels/{$label->id}", [
             'name' => '',
         ]);
         // name must be filled
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "/api/v1/labels/{$label->id}", [
+        $response = $this->json('PUT', "/api/v1/labels/{$label->id}", [
             'color' => '',
         ]);
         // color must be filled
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "/api/v1/labels/{$label->id}", [
+        $response = $this->json('PUT', "/api/v1/labels/{$label->id}", [
             'parent_id' => $otherLabel->id,
         ]);
         // parent is not from same tree
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "/api/v1/labels/{$label->id}", [
+        $response = $this->json('PUT', "/api/v1/labels/{$label->id}", [
             'name' => 'new label name',
             'color' => 'bada55',
             'parent_id' => $sibling->id,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $label = $label->fresh();
         $this->assertEquals('new label name', $label->name);
@@ -71,31 +71,31 @@ class LabelControllerTest extends ApiTestCase
 
         // only label tree members can remove a label
         $this->beUser();
-        $this->json('DELETE', "/api/v1/labels/{$label->id}");
-        $this->assertResponseStatus(403);
+        $response = $this->json('DELETE', "/api/v1/labels/{$label->id}");
+        $response->assertStatus(403);
 
         // make sure the label is used somewhere
         $a = AnnotationLabelTest::create(['label_id' => $label->id]);
 
         $this->beEditor();
-        $this->json('DELETE', "/api/v1/labels/{$label->id}");
+        $response = $this->json('DELETE', "/api/v1/labels/{$label->id}");
         // can't be deleted if a label is still in use
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $a->delete();
 
         $child = LabelTest::create(['parent_id' => $label->id]);
 
         $this->beEditor();
-        $this->json('DELETE', "/api/v1/labels/{$label->id}");
+        $response = $this->json('DELETE', "/api/v1/labels/{$label->id}");
         // can't be deleted if label has children
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $child->delete();
 
         $this->assertNotNull($label->fresh());
-        $this->json('DELETE', "/api/v1/labels/{$label->id}");
-        $this->assertResponseOk();
+        $response = $this->json('DELETE', "/api/v1/labels/{$label->id}");
+        $response->assertStatus(200);
         $this->assertNull($label->fresh());
     }
 
@@ -105,20 +105,20 @@ class LabelControllerTest extends ApiTestCase
         $label->tree->addMember($this->editor(), Role::$editor);
 
         $this->beEditor();
-        $this->visit('/');
-        $this->delete("/api/v1/labels/{$label->id}");
+        $this->get('/');
+        $response = $this->delete("/api/v1/labels/{$label->id}");
         $this->assertNull($label->fresh());
-        $this->assertRedirectedTo('/');
-        $this->assertSessionHas('deleted', true);
+        $response->assertRedirect('/');
+        $response->assertSessionHas('deleted', true);
 
         $label = LabelTest::create();
         $label->tree->addMember($this->editor(), Role::$editor);
 
-        $this->delete("/api/v1/labels/{$label->id}", [
+        $response = $this->delete("/api/v1/labels/{$label->id}", [
             '_redirect' => 'settings',
         ]);
         $this->assertNull($label->fresh());
-        $this->assertRedirectedTo('/settings');
-        $this->assertSessionHas('deleted', true);
+        $response->assertRedirect('/settings');
+        $response->assertSessionHas('deleted', true);
     }
 }

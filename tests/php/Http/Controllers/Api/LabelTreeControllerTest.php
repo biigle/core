@@ -19,7 +19,7 @@ class LabelTreeControllerTest extends ApiTestCase
 
         $this->beUser();
         $tree = $this->labelTree();
-        $this->get('/api/v1/label-trees')->seeJson([
+        $response = $this->get('/api/v1/label-trees')->assertJsonFragment([
             'id' => $tree->id,
             'name' => $tree->name,
             'description' => $tree->description,
@@ -45,25 +45,25 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/label-trees/{$tree->id}");
 
         $this->beUser();
-        $this->get("/api/v1/label-trees/{$tree->id}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/label-trees/{$tree->id}");
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->get("/api/v1/label-trees/{$tree->id}")
-        ->seeJson([
+        $response = $this->get("/api/v1/label-trees/{$tree->id}")
+        ->assertJsonFragment([
             'id' => $tree->id,
             'name' => $tree->name,
             'description' => $tree->description,
             'created_at' => (string) $tree->created_at,
             'updated_at' => (string) $tree->updated_at,
         ])
-        ->seeJson([
+        ->assertJsonFragment([
             'id' => $label->id,
             'name' => $label->name,
             'parent_id' => $label->parent_id,
             'label_tree_id' => $tree->id,
         ])
-        ->seeJson([
+        ->assertJsonFragment([
             'id' => $this->editor()->id,
             'firstname' => $this->editor()->firstname,
             'lastname' => $this->editor()->lastname,
@@ -86,43 +86,43 @@ class LabelTreeControllerTest extends ApiTestCase
 
         // non-admins are not allowed to update
         $this->beEditor();
-        $this->put('/api/v1/label-trees/1');
-        $this->assertResponseStatus(403);
+        $response = $this->put('/api/v1/label-trees/1');
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->put('/api/v1/label-trees/999');
-        $this->assertResponseStatus(404);
+        $response = $this->put('/api/v1/label-trees/999');
+        $response->assertStatus(404);
 
-        $this->json('PUT', "/api/v1/label-trees/{$id}", [
+        $response = $this->json('PUT', "/api/v1/label-trees/{$id}", [
             'name' => '',
         ]);
         // name must not be empty if it is present
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "/api/v1/label-trees/{$id}", [
+        $response = $this->json('PUT', "/api/v1/label-trees/{$id}", [
             'visibility_id' => 999,
         ]);
         // visibility must exist
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "/api/v1/label-trees/{$id}", [
+        $response = $this->json('PUT', "/api/v1/label-trees/{$id}", [
             'name' => 'my test',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $this->assertEquals('my test', $tree->fresh()->name);
 
-        $this->json('PUT', "/api/v1/label-trees/{$id}", [
+        $response = $this->json('PUT', "/api/v1/label-trees/{$id}", [
             'description' => 'this is my test',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $this->assertEquals('this is my test', $tree->fresh()->description);
 
-        $this->json('PUT', "/api/v1/label-trees/{$id}", [
+        $response = $this->json('PUT', "/api/v1/label-trees/{$id}", [
             'visibility_id' => Visibility::$public->id,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $this->assertEquals(Visibility::$public->id, $tree->fresh()->visibility_id);
     }
@@ -137,21 +137,21 @@ class LabelTreeControllerTest extends ApiTestCase
         $id = $tree->id;
         $tree->addMember($this->user(), Role::$admin);
         $this->beUser();
-        $this->visit('/');
-        $this->put("/api/v1/label-trees/{$id}", [
+        $this->get('/');
+        $response = $this->put("/api/v1/label-trees/{$id}", [
             'name' => 'abc',
         ]);
         $this->assertEquals('abc', $tree->fresh()->name);
-        $this->assertRedirectedTo('/');
-        $this->assertSessionHas('saved', true);
+        $response->assertRedirect('/');
+        $response->assertSessionHas('saved', true);
 
-        $this->put("/api/v1/label-trees/{$id}", [
+        $response = $this->put("/api/v1/label-trees/{$id}", [
             'description' => 'abc',
             '_redirect' => 'settings',
         ]);
         $this->assertEquals('abc', $tree->fresh()->description);
-        $this->assertRedirectedTo('/settings');
-        $this->assertSessionHas('saved', true);
+        $response->assertRedirect('/settings');
+        $response->assertSessionHas('saved', true);
     }
 
     public function testUpdateVisibility()
@@ -169,7 +169,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $tree->projects()->attach([$authorized->id, $unauthorized->id]);
 
         $this->beAdmin();
-        $this->json('PUT', "/api/v1/label-trees/{$id}", [
+        $response = $this->json('PUT', "/api/v1/label-trees/{$id}", [
             'visibility_id' => Visibility::$private->id,
         ]);
 
@@ -182,47 +182,47 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', '/api/v1/label-trees');
 
         $this->beUser();
-        $this->json('POST', '/api/v1/label-trees');
+        $response = $this->json('POST', '/api/v1/label-trees');
         // creating an empty project is an error
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', '/api/v1/label-trees', [
+        $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
         ]);
         // visibility is required
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', '/api/v1/label-trees', [
+        $response = $this->json('POST', '/api/v1/label-trees', [
             'visibility_id' => Visibility::$public->id,
         ]);
         // name is required
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', '/api/v1/label-trees', [
+        $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
             'visibility_id' => 9999,
         ]);
         // visibility must exist
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         $this->assertEquals(0, LabelTree::count());
 
-        $this->json('POST', '/api/v1/label-trees', [
+        $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
             'visibility_id' => Visibility::$public->id,
         ]);
         // description is optional
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $this->assertEquals(1, LabelTree::count());
 
-        $this->json('POST', '/api/v1/label-trees', [
+        $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
             // make ID a string so seeJsonEquals works
             'visibility_id' => ''.Visibility::$public->id,
             'description' => 'my description',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $this->assertEquals(2, LabelTree::count());
 
@@ -230,7 +230,7 @@ class LabelTreeControllerTest extends ApiTestCase
         if ($this->isSqlite()) {
             $tree->visibility_id = (int) $tree->visibility_id;
         }
-        $this->seeJsonEquals($tree->toArray());
+        $response->assertExactJson($tree->toArray());
 
         // creator gets first label tree admin
         $member = $tree->members()->find($this->user()->id);
@@ -241,7 +241,7 @@ class LabelTreeControllerTest extends ApiTestCase
     public function testStoreTargetProject()
     {
         $this->beEditor();
-        $this->json('POST', '/api/v1/label-trees', [
+        $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
             'visibility_id' => Visibility::$public->id,
             'description' => 'my description',
@@ -249,24 +249,24 @@ class LabelTreeControllerTest extends ApiTestCase
         ]);
         // User has no permission to create a tree for that project. Thus the project_id
         // is 'invalid'.
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         $this->beAdmin();
-        $this->json('POST', '/api/v1/label-trees', [
+        $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
             'visibility_id' => Visibility::$public->id,
             'description' => 'my description',
             'project_id' => 999,
         ]);
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('POST', '/api/v1/label-trees', [
+        $response = $this->json('POST', '/api/v1/label-trees', [
             'name' => 'abc',
             'visibility_id' => Visibility::$public->id,
             'description' => 'my description',
             'project_id' => $this->project()->id,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $tree = LabelTree::first();
         $this->assertEquals($this->project()->id, $tree->projects()->first()->id);
         $this->assertEquals($this->project()->id, $tree->authorizedProjects()->first()->id);
@@ -275,25 +275,23 @@ class LabelTreeControllerTest extends ApiTestCase
     public function testStoreFormRequest()
     {
         $this->beUser();
-        $this->visit('/');
-        $this->post('/api/v1/label-trees', [
+        $this->get('/');
+        $response = $this->post('/api/v1/label-trees', [
             'name' => 'abc',
             'visibility_id' => Visibility::$public->id,
             'description' => 'my description',
         ]);
         $this->assertEquals(1, LabelTree::count());
-        $this->assertRedirectedTo('/');
-        $this->assertSessionHas('newTree');
 
-        $this->post('/api/v1/label-trees', [
+        $response = $this->post('/api/v1/label-trees', [
             'name' => 'abc',
             'visibility_id' => Visibility::$public->id,
             'description' => 'my description',
             '_redirect' => 'settings',
         ]);
         $this->assertEquals(2, LabelTree::count());
-        $this->assertRedirectedTo('/settings');
-        $this->assertSessionHas('newTree');
+        $response->assertRedirect('/settings');
+        $response->assertSessionHas('newTree');
     }
 
     public function testDestroy()
@@ -307,22 +305,22 @@ class LabelTreeControllerTest extends ApiTestCase
 
         // non-admins are not allowed to update
         $this->beEditor();
-        $this->json('DELETE', "/api/v1/label-trees/{$id}");
-        $this->assertResponseStatus(403);
+        $response = $this->json('DELETE', "/api/v1/label-trees/{$id}");
+        $response->assertStatus(403);
 
         // make sure the tree has a label that is used somewhere
         $a = AnnotationLabelTest::create(['label_id' => $this->labelRoot()->id]);
 
         $this->beAdmin();
-        $this->json('DELETE', "/api/v1/label-trees/{$id}");
+        $response = $this->json('DELETE', "/api/v1/label-trees/{$id}");
         // can't be deleted if a label is still in use
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $a->delete();
 
         $this->assertNotNull($tree->fresh());
-        $this->json('DELETE', "/api/v1/label-trees/{$id}");
-        $this->assertResponseOk();
+        $response = $this->json('DELETE', "/api/v1/label-trees/{$id}");
+        $response->assertStatus(200);
         $this->assertNull($tree->fresh());
     }
 
@@ -333,21 +331,21 @@ class LabelTreeControllerTest extends ApiTestCase
         $tree->addMember($this->admin(), Role::$admin);
 
         $this->beAdmin();
-        $this->visit('/');
-        $this->delete("/api/v1/label-trees/{$id}");
+        $this->get('/');
+        $response = $this->delete("/api/v1/label-trees/{$id}");
         $this->assertNull($tree->fresh());
-        $this->assertRedirectedTo('/');
-        $this->assertSessionHas('deleted', true);
+        $response->assertRedirect('/');
+        $response->assertSessionHas('deleted', true);
 
         $tree = LabelTreeTest::create();
         $id = $tree->id;
         $tree->addMember($this->admin(), Role::$admin);
 
-        $this->delete("/api/v1/label-trees/{$id}", [
+        $response = $this->delete("/api/v1/label-trees/{$id}", [
             '_redirect' => 'settings',
         ]);
         $this->assertNull($tree->fresh());
-        $this->assertRedirectedTo('/settings');
-        $this->assertSessionHas('deleted', true);
+        $response->assertRedirect('/settings');
+        $response->assertSessionHas('deleted', true);
     }
 }

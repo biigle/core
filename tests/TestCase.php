@@ -1,6 +1,9 @@
 <?php
 
-class TestCase extends Illuminate\Foundation\Testing\TestCase
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+
+class TestCase extends BaseTestCase
 {
     protected static $pdo;
 
@@ -26,8 +29,8 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
         $this->artisan('migrate:refresh');
 
-        // $this->withoutEvents();
-        $this->withoutJobs();
+        // Don't execute queued jobs
+        Queue::fake();
     }
 
     /**

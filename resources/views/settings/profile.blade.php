@@ -1,6 +1,6 @@
 @extends('settings.base')
 
-@section('title')Your Profile @stop
+@section('title', 'Your Profile')
 
 @section('settings-content')
 <div class="panel panel-default">

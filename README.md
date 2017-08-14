@@ -4,7 +4,7 @@ BioImage Indexing, Graphical Labeling and Exploration
 
 ## Requirements
 
-See [here](https://laravel.com/docs/5.3#installation) for the server requirements of Laravel 5.3.
+See [here](https://laravel.com/docs/5.4#installation) for the server requirements of Laravel 5.4.
 
 Additionally:
 
@@ -74,7 +74,7 @@ stdout_logfile=/path/to/biigle/application/storage/logs/worker.log
 
 Substitute `/path/to/biigle/application` with the absolute path to the biigle application directory and `webserver-user` with the name of the webserver user. If usage and load of your BIIGLE instance increases, you may increase `numprocs` to run multiple worker processes.
 
-Read more about workers in the [Laravel docs](https://laravel.com/docs/5.3/queues#supervisor-configuration).
+Read more about workers in the [Laravel docs](https://laravel.com/docs/5.4/queues#supervisor-configuration).
 
 Congratulations, your personal BIIGLE instance is ready to run. You may use the `php artisan user:new` command to create the first user. Now you probably want to continue by installing some BIIGLE modules.
 

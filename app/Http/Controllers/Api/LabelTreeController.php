@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Route;
 use Biigle\Role;
 use Biigle\Project;
 use Biigle\LabelTree;
@@ -211,9 +212,16 @@ class LabelTreeController extends Controller
             return $tree;
         }
 
+
         if ($request->has('_redirect')) {
             return redirect($request->input('_redirect'))
                 ->with('newTree', $tree)
+                ->with('message', 'Label tree created.')
+                ->with('messageType', 'success');
+        }
+
+        if (Route::has('label-trees')) {
+            return redirect()->route('label-trees', $tree->id)
                 ->with('message', 'Label tree created.')
                 ->with('messageType', 'success');
         }

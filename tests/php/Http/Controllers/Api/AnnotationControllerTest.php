@@ -28,26 +28,26 @@ class AnnotationControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "api/v1/annotations/{$id}");
 
         $this->beEditor();
-        $this->get("api/v1/annotations/{$id}");
-        $this->assertResponseOk();
+        $response = $this->get("api/v1/annotations/{$id}");
+        $response->assertStatus(200);
 
         $this->beGuest();
-        $this->get("api/v1/annotations/{$id}");
-        $this->assertResponseOk();
+        $response = $this->get("api/v1/annotations/{$id}");
+        $response->assertStatus(200);
 
         $this->beUser();
-        $this->get("api/v1/annotations/{$id}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("api/v1/annotations/{$id}");
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->get("api/v1/annotations/{$id}")
-            ->seeJson(['points' => [10, 10, 20, 20]]);
+        $response = $this->get("api/v1/annotations/{$id}")
+            ->assertJsonFragment(['points' => [10, 10, 20, 20]]);
         // the labels should be fetched separately
-        $this->assertNotContains('labels', $this->response->getContent());
+        $this->assertNotContains('labels', $response->getContent());
         // image and volume objects from projectIds() call shouldn't be
         // included in the output
-        $this->assertNotContains('"image"', $this->response->getContent());
-        $this->assertNotContains('volume', $this->response->getContent());
+        $this->assertNotContains('"image"', $response->getContent());
+        $this->assertNotContains('volume', $response->getContent());
     }
 
     public function testShowAnnotationSession()
@@ -64,14 +64,14 @@ class AnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beAdmin();
-        $this->get("api/v1/annotations/{$this->annotation->id}");
-        $this->assertResponseOk();
+        $response = $this->get("api/v1/annotations/{$this->annotation->id}");
+        $response->assertStatus(200);
 
         $session->users()->attach($this->admin());
         Cache::flush();
 
-        $this->get("api/v1/annotations/{$this->annotation->id}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("api/v1/annotations/{$this->annotation->id}");
+        $response->assertStatus(403);
     }
 
     public function testUpdate()
@@ -81,23 +81,23 @@ class AnnotationControllerTest extends ApiTestCase
         $this->doTestApiRoute('PUT', "api/v1/annotations/{$id}");
 
         $this->beUser();
-        $this->put("api/v1/annotations/{$id}");
-        $this->assertResponseStatus(403);
+        $response = $this->put("api/v1/annotations/{$id}");
+        $response->assertStatus(403);
 
         $this->annotation->points = [10, 10];
         $this->annotation->save();
 
         $this->beAdmin();
-        $this->put("api/v1/annotations/{$id}", ['points' => '[10, 15, 100, 200]']);
-        $this->assertResponseOk();
+        $response = $this->put("api/v1/annotations/{$id}", ['points' => '[10, 15, 100, 200]']);
+        $response->assertStatus(200);
 
         $this->annotation = $this->annotation->fresh();
 
         $this->assertEquals(4, sizeof($this->annotation->points));
         $this->assertEquals(15, $this->annotation->points[1]);
 
-        $this->json('PUT', "api/v1/annotations/{$id}", ['points' => [20, 25]]);
-        $this->assertResponseOk();
+        $response = $this->json('PUT', "api/v1/annotations/{$id}", ['points' => [20, 25]]);
+        $response->assertStatus(200);
 
         $this->annotation = $this->annotation->fresh();
 
@@ -112,9 +112,9 @@ class AnnotationControllerTest extends ApiTestCase
         $this->annotation->save();
 
         $this->beAdmin();
-        $this->json('PUT', "api/v1/annotations/{$id}", ['points' => [10, 15, 100, 200]]);
+        $response = $this->json('PUT', "api/v1/annotations/{$id}", ['points' => [10, 15, 100, 200]]);
         // invalid number of points
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
     }
 
     public function testDestroy()
@@ -124,14 +124,14 @@ class AnnotationControllerTest extends ApiTestCase
         $this->doTestApiRoute('DELETE', "api/v1/annotations/{$id}");
 
         $this->beUser();
-        $this->delete("api/v1/annotations/{$id}");
-        $this->assertResponseStatus(403);
+        $response = $this->delete("api/v1/annotations/{$id}");
+        $response->assertStatus(403);
 
         $this->assertNotNull($this->annotation->fresh());
 
         $this->beAdmin();
-        $this->delete("api/v1/annotations/{$id}");
-        $this->assertResponseOk();
+        $response = $this->delete("api/v1/annotations/{$id}");
+        $response->assertStatus(200);
 
         $this->assertNull($this->annotation->fresh());
 
@@ -140,20 +140,20 @@ class AnnotationControllerTest extends ApiTestCase
         $id = $this->annotation->id;
 
         $this->beUser();
-        $this->delete("api/v1/annotations/{$id}");
-        $this->assertResponseStatus(403);
+        $response = $this->delete("api/v1/annotations/{$id}");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->delete("api/v1/annotations/{$id}");
-        $this->assertResponseStatus(403);
+        $response = $this->delete("api/v1/annotations/{$id}");
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->delete("api/v1/annotations/{$id}");
-        $this->assertResponseOk();
+        $response = $this->delete("api/v1/annotations/{$id}");
+        $response->assertStatus(200);
 
         // admin could delete but the annotation was already deleted
         $this->beAdmin();
-        $this->delete("api/v1/annotations/{$id}");
-        $this->assertResponseStatus(404);
+        $response = $this->delete("api/v1/annotations/{$id}");
+        $response->assertStatus(404);
     }
 }

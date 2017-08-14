@@ -29,60 +29,60 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $this->doTestApiRoute('PUT', "api/v1/annotation-sessions/{$session->id}");
 
         $this->beEditor();
-        $this->put("api/v1/annotation-sessions/{$session->id}");
-        $this->assertResponseStatus(403);
+        $response = $this->put("api/v1/annotation-sessions/{$session->id}");
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
             'hide_other_users_annotations' => 'abcd',
         ]);
         // must be bool
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
             'starts_at' => 'abcd',
         ]);
         // must be a date
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-05',
         ]);
         // end must be after start
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
             'starts_at' => '2016-09-04',
             'ends_at' => '2016-09-06',
         ]);
         // conflict with existing session
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
             'users' => [999],
         ]);
         // user does not exist
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
             'users' => [],
         ]);
         // users must not be empty
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->json('PUT', "api/v1/annotation-sessions/{$session->id}", [
             'users' => [$this->user()->id],
         ]);
         // user does not belong to volume
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->put("api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->put("api/v1/annotation-sessions/{$session->id}", [
             'name' => 'my cool name',
             'ends_at' => '2016-09-07',
             'users' => [$this->admin()->id],
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $session = $session->fresh();
 
@@ -100,10 +100,10 @@ class AnnotationSessionControllerTest extends ApiTestCase
         ]);
 
         $this->beAdmin();
-        $this->put("api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->put("api/v1/annotation-sessions/{$session->id}", [
             'ends_at' => '2016-09-07T00:00:00.000+02:00',
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         $session = $session->fresh();
 
@@ -135,17 +135,17 @@ class AnnotationSessionControllerTest extends ApiTestCase
         ]);
 
         $this->beAdmin();
-        $this->put("api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->put("api/v1/annotation-sessions/{$session->id}", [
             'starts_at' => '2016-09-06',
         ]);
         // the annotation would no longer belong to the session
-        $this->assertResponseStatus(400);
+        $response->assertStatus(400);
 
-        $this->put("api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->put("api/v1/annotation-sessions/{$session->id}", [
             'starts_at' => '2016-09-06',
             'force' => true,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
     }
 
     public function testUpdateForceEndDate()
@@ -173,17 +173,17 @@ class AnnotationSessionControllerTest extends ApiTestCase
         ]);
 
         $this->beAdmin();
-        $this->put("api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->put("api/v1/annotation-sessions/{$session->id}", [
             'ends_at' => '2016-09-06',
         ]);
         // the annotation would no longer belong to the session
-        $this->assertResponseStatus(400);
+        $response->assertStatus(400);
 
-        $this->put("api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->put("api/v1/annotation-sessions/{$session->id}", [
             'ends_at' => '2016-09-06',
             'force' => true,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
     }
 
     public function testUpdateForceUsers()
@@ -211,17 +211,17 @@ class AnnotationSessionControllerTest extends ApiTestCase
         ]);
 
         $this->beAdmin();
-        $this->put("api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->put("api/v1/annotation-sessions/{$session->id}", [
             'users' => [$this->admin()->id],
         ]);
         // the annotation would no longer belong to the session
-        $this->assertResponseStatus(400);
+        $response->assertStatus(400);
 
-        $this->put("api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->put("api/v1/annotation-sessions/{$session->id}", [
             'users' => [$this->admin()->id],
             'force' => true,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
     }
 
     public function testDestroy()
@@ -233,12 +233,12 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $this->doTestApiRoute('DELETE', "api/v1/annotation-sessions/{$session->id}");
 
         $this->beEditor();
-        $this->delete("api/v1/annotation-sessions/{$session->id}");
-        $this->assertResponseStatus(403);
+        $response = $this->delete("api/v1/annotation-sessions/{$session->id}");
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->delete("api/v1/annotation-sessions/{$session->id}");
-        $this->assertResponseOk();
+        $response = $this->delete("api/v1/annotation-sessions/{$session->id}");
+        $response->assertStatus(200);
 
         $this->assertNull($session->fresh());
     }
@@ -268,13 +268,13 @@ class AnnotationSessionControllerTest extends ApiTestCase
         ]);
 
         $this->beAdmin();
-        $this->delete("api/v1/annotation-sessions/{$session->id}");
+        $response = $this->delete("api/v1/annotation-sessions/{$session->id}");
         // there are annotations belonging to this session
-        $this->assertResponseStatus(400);
+        $response->assertStatus(400);
 
-        $this->delete("api/v1/annotation-sessions/{$session->id}", [
+        $response = $this->delete("api/v1/annotation-sessions/{$session->id}", [
             'force' => true,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
     }
 }

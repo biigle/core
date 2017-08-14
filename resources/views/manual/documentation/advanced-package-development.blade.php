@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title') Advanced package development @stop
+@section('title', 'Advanced package development')
 
 @section('content')
 <div class="container">
@@ -282,7 +282,7 @@ public function index()
 			</p>
 <pre>
 &#64;extends('app')
-&#64;section('title') Inspiring quotes &#64;stop
+&#64;section('title', 'Inspiring quotes')
 &#64;section('content')
 &lt;div class="container"&gt;
    &lt;div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3"&gt;

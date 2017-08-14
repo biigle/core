@@ -10,13 +10,13 @@ class IndexControllerTest extends TestCase
 {
     public function testIndexWhenNotLoggedIn()
     {
-        $this->visit('admin')->seePageIs('login');
+        $this->get('admin')->assertRedirect('login');
     }
 
     public function testIndexWhenNotAdmin()
     {
         $this->be(UserTest::create());
-        $this->get('admin')->assertResponseStatus(403);
+        $response = $this->get('admin')->assertStatus(403);
     }
 
     public function testIndexWhenLoggedIn()
@@ -24,6 +24,6 @@ class IndexControllerTest extends TestCase
         // redirect to profile settings
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
-        $this->actingAs($admin)->visit('admin')->seePageIs('admin');
+        $this->actingAs($admin)->get('admin')->assertViewIs('admin.index');
     }
 }

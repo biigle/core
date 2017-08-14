@@ -12,9 +12,9 @@ class MediaTypeControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/media-types');
 
         $this->beUser();
-        $this->get('/api/v1/media-types');
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/media-types');
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('[', $content);
         $this->assertStringEndsWith(']', $content);
     }
@@ -24,9 +24,9 @@ class MediaTypeControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/media-types/'.MediaType::$timeSeriesId);
 
         $this->beUser();
-        $this->get('/api/v1/media-types/'.MediaType::$timeSeriesId);
-        $content = $this->response->getContent();
-        $this->assertResponseOk();
+        $response = $this->get('/api/v1/media-types/'.MediaType::$timeSeriesId);
+        $content = $response->getContent();
+        $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
         $this->assertContains('time-series', $content);

@@ -24,20 +24,20 @@ class ImageLabelControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/images/{$id}/labels");
 
         $this->beUser();
-        $this->get("/api/v1/images/{$id}/labels");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/images/{$id}/labels");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/images/{$id}/labels");
-        $this->assertResponseOk();
-        $this->seeJson([
+        $response = $this->get("/api/v1/images/{$id}/labels");
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
             'id' => $il->label->id,
             'name' => $il->label->name,
             'parent_id' => $il->label->parent_id,
             'color' => $il->label->color,
         ]);
 
-        $this->seeJson([
+        $response->assertJsonFragment([
             'id' => $il->user->id,
             'firstname' => $il->user->firstname,
             'lastname' => $il->user->lastname,
@@ -51,49 +51,49 @@ class ImageLabelControllerTest extends ApiTestCase
 
         // missing arguments
         $this->beEditor();
-        $this->json('POST', "/api/v1/images/{$id}/labels");
-        $this->assertResponseStatus(422);
+        $response = $this->json('POST', "/api/v1/images/{$id}/labels");
+        $response->assertStatus(422);
 
         $this->assertEquals(0, $this->image->labels()->count());
 
         $this->beUser();
-        $this->post("/api/v1/images/{$id}/labels", [
+        $response = $this->post("/api/v1/images/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
         ]);
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->post("/api/v1/images/{$id}/labels", [
+        $response = $this->post("/api/v1/images/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
         ]);
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->post("/api/v1/images/{$id}/labels", [
+        $response = $this->post("/api/v1/images/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals(1, $this->image->labels()->count());
 
         $this->beAdmin();
         // the same label cannot be attached twice
-        $this->post("/api/v1/images/{$id}/labels", [
+        $response = $this->post("/api/v1/images/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
         ]);
-        $this->assertResponseStatus(400);
+        $response->assertStatus(400);
         $this->assertEquals(1, $this->image->labels()->count());
 
-        $this->json('POST', "/api/v1/images/{$id}/labels", [
+        $response = $this->json('POST', "/api/v1/images/{$id}/labels", [
             'label_id' => $this->labelChild()->id,
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
         $this->assertEquals(2, $this->image->labels()->count());
-        $this->seeJson([
+        $response->assertJsonFragment([
             'id' => $this->labelChild()->id,
             'name' => $this->labelChild()->name,
             'color' => $this->labelChild()->color,
         ]);
-        $this->seeJson([
+        $response->assertJsonFragment([
             'id' => $this->admin()->id,
             'firstname' => $this->admin()->firstname,
             'lastname' => $this->admin()->lastname,
@@ -118,22 +118,22 @@ class ImageLabelControllerTest extends ApiTestCase
         $this->doTestApiRoute('DELETE', '/api/v1/image-labels/'.$id);
 
         $this->beUser();
-        $this->delete('/api/v1/image-labels/'.$id);
-        $this->assertResponseStatus(403);
+        $response = $this->delete('/api/v1/image-labels/'.$id);
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->delete('/api/v1/image-labels/'.$id);
-        $this->assertResponseStatus(403);
+        $response = $this->delete('/api/v1/image-labels/'.$id);
+        $response->assertStatus(403);
 
         $this->assertTrue($this->image->labels()->where('id', $id)->exists());
         $this->beEditor();
-        $this->delete('/api/v1/image-labels/'.$id);
-        $this->assertResponseOk();
+        $response = $this->delete('/api/v1/image-labels/'.$id);
+        $response->assertStatus(200);
         $this->assertFalse($this->image->labels()->where('id', $id)->exists());
 
-        $this->delete('/api/v1/image-labels/'.$id2);
+        $response = $this->delete('/api/v1/image-labels/'.$id2);
         // not the own label
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $this->assertTrue($this->image->labels()->where('id', $id2)->exists());
 
@@ -145,12 +145,12 @@ class ImageLabelControllerTest extends ApiTestCase
         $this->assertTrue($this->image->labels()->where('id', $id)->exists());
 
         $this->beAdmin();
-        $this->delete('/api/v1/image-labels/'.$id);
-        $this->assertResponseOk();
+        $response = $this->delete('/api/v1/image-labels/'.$id);
+        $response->assertStatus(200);
         $this->assertFalse($this->image->labels()->where('id', $id)->exists());
 
-        $this->delete('/api/v1/image-labels/'.$id2);
-        $this->assertResponseOk();
+        $response = $this->delete('/api/v1/image-labels/'.$id2);
+        $response->assertStatus(200);
         $this->assertFalse($this->image->labels()->exists());
     }
 }

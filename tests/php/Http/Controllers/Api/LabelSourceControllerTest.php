@@ -27,14 +27,14 @@ class LabelSourceControllerTest extends ApiTestCase
 
         $this->beGuest();
 
-        $this->json('GET', "/api/v1/label-sources/{$source->id}/find");
+        $response = $this->json('GET', "/api/v1/label-sources/{$source->id}/find");
         // no query parameter
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
-        $this->json('GET', "/api/v1/label-sources/{$source->id}/find", [
+        $response = $this->json('GET', "/api/v1/label-sources/{$source->id}/find", [
             'query' => 'my query',
         ]);
-        $this->assertResponseOk();
-        $this->seeJsonEquals([['name' => 'My Query Label']]);
+        $response->assertStatus(200);
+        $response->assertExactJson([['name' => 'My Query Label']]);
     }
 }

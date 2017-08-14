@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Auth;
 
+use Biigle\User;
 use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
@@ -47,5 +48,15 @@ class ResetPasswordController extends Controller
         $request->merge(['email' => strtolower($request->input('email'))]);
 
         return $this->baseCredentials($request);
+    }
+
+    /**
+     * Get the password reset validation rules.
+     *
+     * @return array
+     */
+    protected function rules()
+    {
+        return User::$resetRules;
     }
 }

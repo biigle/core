@@ -1,6 +1,6 @@
 @extends('admin.base')
 
-@section('title')Users admin area - Edit user @stop
+@section('title', 'Users admin area - Edit user')
 
 @section('admin-content')
 <h4>Edit {{$affectedUser->firstname}} {{$affectedUser->lastname}}</h4>

@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title') System messages - {{$message->title}} @stop
+@section('title', "System messages - {$message->title}")
 
 @section('content')
 <div class="container">

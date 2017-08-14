@@ -1,6 +1,6 @@
 @extends('admin.base')
 
-@section('title')Users admin area @stop
+@section('title', 'Users admin area')
 
 @section('admin-content')
 @if (session('deleted'))

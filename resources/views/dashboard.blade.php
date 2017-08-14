@@ -1,7 +1,7 @@
 @extends('app')
 @inject('modules', 'Biigle\Services\Modules')
 
-@section('title'){{ trans('biigle.titles.dashboard') }}@stop
+@section('title', trans('biigle.titles.dashboard'))
 
 @push('styles')
     @foreach ($modules->getMixins('dashboardStyles') as $module => $nestedMixins)

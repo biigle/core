@@ -1,6 +1,7 @@
 /vendor
 /public/vendor
 /node_modules
+/public/hot
 /public/storage
 /.idea
 /tmp
@@ -8,6 +9,8 @@
 
 Homestead.yaml
 Homestead.json
+npm-debug.log
+yarn-error.log
 .env
 *.sublime-*
 *.phar

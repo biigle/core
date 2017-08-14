@@ -1,6 +1,6 @@
 @extends('settings.base')
 
-@section('title')Account settings @stop
+@section('title', 'Account settings')
 
 @section('settings-content')
 <?php $origin = session('origin'); ?>
