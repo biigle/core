@@ -6,16 +6,16 @@
     "type": "project",
     "require": {
         "php": ">=5.6.4",
+        "ext-exif": "*",
+        "ext-vips": "*",
         "ext-json": "*",
         "ext-pgsql": "*",
-        "ext-gd": "*",
-        "ext-exif": "*",
-        "laravel/framework": "5.4.*",
-        "intervention/image": "~2.1",
-        "ramsey/uuid": "^3.5",
+        "doctrine/annotations": "1.4.0",
         "guzzlehttp/guzzle": "~6.0",
+        "jcupitt/vips": "^1.0",
+        "laravel/framework": "5.4.*",
         "laravel/tinker": "^1.0",
-        "doctrine/annotations": "1.4.0"
+        "ramsey/uuid": "^3.5"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

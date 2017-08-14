@@ -39,5 +39,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind('modules', function () {
             return new \Biigle\Services\Modules;
         });
+
+        $this->app->bind('vips-image', function () {
+            return new \Jcupitt\Vips\Image(null);
+        });
     }
 }

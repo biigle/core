@@ -12,7 +12,7 @@ Additionally:
 - PHP PGSQL extension
 - PHP Fileinfo extension
 - PHP EXIF extension
-- PHP GD Library (>=2.0)
+- PHP vips extension
 - PostgreSQL
 - Git
 
