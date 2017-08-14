@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title'){{ $volume->name }} @stop
+@section('title', $volume->name)
 
 @push('scripts')
     <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>

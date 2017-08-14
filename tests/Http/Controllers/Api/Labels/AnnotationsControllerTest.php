@@ -26,17 +26,17 @@ class AnnotationsControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/labels/{$label->id}/annotations");
 
         $this->beUser();
-        $this->get("/api/v1/labels/{$label->id}/annotations")
-            ->seeJsonEquals([]);
-        $this->assertResponseOk();
+        $response = $this->get("/api/v1/labels/{$label->id}/annotations")
+            ->assertExactJson([]);
+        $response->assertStatus(200);
 
         $this->beGuest();
-        $this->get("/api/v1/labels/{$label->id}/annotations")
-            ->seeJsonEquals([$a1->id, $a2->id]);
-        $this->assertResponseOk();
+        $response = $this->get("/api/v1/labels/{$label->id}/annotations")
+            ->assertExactJson([$a1->id, $a2->id]);
+        $response->assertStatus(200);
 
-        $this->get("/api/v1/labels/{$label->id}/annotations?take=1")
-            ->seeJsonEquals([$a1->id]);
-        $this->assertResponseOk();
+        $response = $this->get("/api/v1/labels/{$label->id}/annotations?take=1")
+            ->assertExactJson([$a1->id]);
+        $response->assertStatus(200);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
-use App;
 use File;
 use Biigle\Jobs\Job;
 use FilesystemIterator;
@@ -58,11 +57,23 @@ class RemoveAnnotationPatches extends Job implements ShouldQueue
             File::delete("{$prefix}/{$id}.{$format}");
         }
 
+        if (File::exists($prefix) && $this->dirIsEmpty($prefix)) {
+            File::deleteDirectory($prefix);
+        }
+    }
+
+    /**
+     * Chack if a directory containing Largo patches is empty.
+     *
+     * @param string $path
+     *
+     * @return bool
+     */
+    protected function dirIsEmpty($path)
+    {
         // If the iterator is not valid, there are no files in the directory any more.
         // Use the iterator because there may be *lots* of files in the directory
         // and most other methods fetch/count them all.
-        if (File::exists($prefix) && App::make(FilesystemIterator::class, [$prefix, null])->valid() === false) {
-            File::deleteDirectory($prefix);
-        }
+        return with(new FilesystemIterator($path))->valid() === false;
     }
 }

@@ -39,7 +39,7 @@ class LargoControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', "/api/v1/projects/{$id}/largo");
 
         $this->beUser();
-        $this->post("/api/v1/projects/{$id}/largo", [
+        $response = $this->post("/api/v1/projects/{$id}/largo", [
             'dismissed' => [
                 $l1->label_id => [$a1->id, $a2->id],
                 $l3->label_id => [$a3->id],
@@ -49,10 +49,10 @@ class LargoControllerTest extends ApiTestCase
                 $a3->id => $this->labelRoot()->id,
             ],
         ]);
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->post("/api/v1/projects/{$id}/largo", [
+        $response = $this->post("/api/v1/projects/{$id}/largo", [
             'dismissed' => [
                 $l1->label_id => [$a1->id, $a2->id],
                 $l3->label_id => [$a3->id],
@@ -62,10 +62,10 @@ class LargoControllerTest extends ApiTestCase
                 $a3->id => $this->labelRoot()->id,
             ],
         ]);
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->post("/api/v1/projects/{$id}/largo", [
+        $response = $this->post("/api/v1/projects/{$id}/largo", [
             'dismissed' => [
                 $l1->label_id => [$a1->id, $a2->id],
                 $l3->label_id => [$a3->id],
@@ -77,10 +77,10 @@ class LargoControllerTest extends ApiTestCase
             ],
         ]);
         // a4 does not belong to the same project
-        $this->assertResponseStatus(400);
+        $response->assertStatus(400);
 
         $this->beEditor();
-        $this->post("/api/v1/projects/{$id}/largo", [
+        $response = $this->post("/api/v1/projects/{$id}/largo", [
             'dismissed' => [
                 $l1->label_id => [$a1->id, $a2->id],
                 $l3->label_id => [$a3->id],
@@ -91,11 +91,11 @@ class LargoControllerTest extends ApiTestCase
             ],
         ]);
         // a label in 'changed' does not belong to a label tree available for the project
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $this->expectsJobs(RemoveAnnotationPatches::class);
         $this->beEditor();
-        $this->post("/api/v1/projects/{$id}/largo", [
+        $response = $this->post("/api/v1/projects/{$id}/largo", [
             'dismissed' => [
                 $l1->label_id => [$a1->id, $a2->id],
                 $l3->label_id => [$a3->id],
@@ -105,7 +105,7 @@ class LargoControllerTest extends ApiTestCase
                 $a3->id => $this->labelRoot()->id,
             ],
         ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
 
         // a1 was dismissed and then changed, should have a new annotation label
         $this->assertNull($l1->fresh());

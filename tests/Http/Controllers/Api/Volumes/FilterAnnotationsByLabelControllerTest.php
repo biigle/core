@@ -30,13 +30,13 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->json('GET', "/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}", ['take' => 'abc']);
+        $response = $this->json('GET', "/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}", ['take' => 'abc']);
         // take must be integer
-        $this->assertResponseStatus(422);
+        $response->assertStatus(422);
 
         if ($this->isSqlite()) {
             $expect1 = ["{$a1->id}", "{$a2->id}"];
@@ -48,17 +48,17 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
             $expect3 = [$a1->id];
         }
 
-        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
-        $this->assertResponseOk();
-        $this->seeJsonEquals($expect1);
+        $response = $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
+        $response->assertStatus(200);
+        $response->assertExactJson($expect1);
 
-        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l3->label_id}");
-        $this->assertResponseOk();
-        $this->seeJsonEquals($expect2);
+        $response = $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l3->label_id}");
+        $response->assertStatus(200);
+        $response->assertExactJson($expect2);
 
-        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}?take=1");
-        $this->assertResponseOk();
-        $this->seeJsonEquals($expect3);
+        $response = $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}?take=1");
+        $response->assertStatus(200);
+        $response->assertExactJson($expect3);
     }
 
     public function testIndexAnnotationSession()
@@ -116,9 +116,9 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
-        $this->assertResponseOk();
-        $this->seeJsonEquals($expect);
+        $response = $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
+        $response->assertStatus(200);
+        $response->assertExactJson($expect);
 
         // test hide other
         $session->hide_own_annotations = false;
@@ -130,9 +130,9 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
-        $this->assertResponseOk();
-        $this->seeJsonEquals($expect);
+        $response = $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
+        $response->assertStatus(200);
+        $response->assertExactJson($expect);
 
         // test hide both
         $session->hide_own_annotations = true;
@@ -143,9 +143,9 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
-        $this->assertResponseOk();
-        $this->seeJsonEquals($expect);
+        $response = $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
+        $response->assertStatus(200);
+        $response->assertExactJson($expect);
 
         $session->users()->detach($this->editor());
 
@@ -154,8 +154,8 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
-        $this->assertResponseOk();
-        $this->seeJsonEquals($expect);
+        $response = $this->get("/api/v1/volumes/{$id}/annotations/filter/label/{$l1->label_id}");
+        $response->assertStatus(200);
+        $response->assertExactJson($expect);
     }
 }
