@@ -28,7 +28,7 @@ class Config extends Command
      */
     public function handle()
     {
-        $response = $this->call('vendor:publish', [
+        $this->call('vendor:publish', [
             '--provider' => ServiceProvider::class,
             '--tag' => ['config'],
             '--force' => true,
