@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title') Create new project @stop
+@section('title', 'Create new project')
 
 @section('content')
 <div class="container">
