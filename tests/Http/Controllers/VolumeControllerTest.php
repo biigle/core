@@ -11,25 +11,25 @@ class VolumeControllerTest extends ApiTestCase
         $id = $this->volume()->id;
 
         // not logged in
-        $this->get("volumes/{$id}");
-        $this->assertResponseStatus(302);
+        $response = $this->get("volumes/{$id}");
+        $response->assertStatus(302);
 
         // doesn't belong to project
         $this->beUser();
-        $this->get("volumes/{$id}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("volumes/{$id}");
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->get("volumes/{$id}");
-        $this->assertResponseOk();
+        $response = $this->get("volumes/{$id}");
+        $response->assertStatus(200);
 
         $this->beAdmin();
-        $this->get("volumes/{$id}");
-        $this->assertResponseOk();
+        $response = $this->get("volumes/{$id}");
+        $response->assertStatus(200);
 
         // doesn't exist
-        $this->get('projects/-1');
-        $this->assertResponseStatus(404);
+        $response = $this->get('projects/-1');
+        $response->assertStatus(404);
     }
 
     public function testCreate()
@@ -37,21 +37,21 @@ class VolumeControllerTest extends ApiTestCase
         $id = $this->project()->id;
 
         // not logged in
-        $this->get('volumes/create');
-        $this->assertResponseStatus(302);
+        $response = $this->get('volumes/create');
+        $response->assertStatus(302);
 
         $this->beEditor();
         // user is not allowed to edit the project
-        $this->get('volumes/create?project='.$id);
-        $this->assertResponseStatus(403);
+        $response = $this->get('volumes/create?project='.$id);
+        $response->assertStatus(403);
 
         $this->beAdmin();
         // project doesn't exist
-        $this->get('volumes/create?project=-1');
-        $this->assertResponseStatus(404);
+        $response = $this->get('volumes/create?project=-1');
+        $response->assertStatus(404);
 
-        $this->get('volumes/create?project='.$id);
-        $this->assertResponseOk();
+        $response = $this->get('volumes/create?project='.$id);
+        $response->assertStatus(200);
     }
 
     public function testEdit()
@@ -59,27 +59,27 @@ class VolumeControllerTest extends ApiTestCase
         $id = $this->volume()->id;
 
         $this->beUser();
-        $this->get("volumes/edit/{$id}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("volumes/edit/{$id}");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get("volumes/edit/{$id}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("volumes/edit/{$id}");
+        $response->assertStatus(403);
 
         $this->beEditor();
-        $this->get("volumes/edit/{$id}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("volumes/edit/{$id}");
+        $response->assertStatus(403);
 
         // even the volume creator is not allowed if they are no project admin
         $this->be($this->volume()->creator);
-        $this->get("volumes/edit/{$id}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("volumes/edit/{$id}");
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->get("volumes/edit/{$id}");
-        $this->assertResponseOk();
+        $response = $this->get("volumes/edit/{$id}");
+        $response->assertStatus(200);
 
-        $this->get('volumes/edit/999');
-        $this->assertResponseStatus(404);
+        $response = $this->get('volumes/edit/999');
+        $response->assertStatus(404);
     }
 }

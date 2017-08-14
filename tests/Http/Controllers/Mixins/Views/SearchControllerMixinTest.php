@@ -23,14 +23,14 @@ class SearchControllerMixinTest extends TestCase
         $volume3 = VolumeTest::create(['name' => 'third volume']);
 
         $this->be($user);
-        $this->get('search?t=volumes')->assertResponseOk();
-        $this->see('my volume');
-        $this->see('other volume');
-        $this->dontSee('third volume');
+        $response = $this->get('search?t=volumes')->assertStatus(200);
+        $response->assertSeeText('my volume');
+        $response->assertSeeText('other volume');
+        $response->assertDontSeeText('third volume');
 
-        $this->get('search?t=volumes&q=my')->assertResponseOk();
-        $this->see('my volume');
-        $this->dontSee('other volume');
-        $this->dontSee('third volume');
+        $response = $this->get('search?t=volumes&q=my')->assertStatus(200);
+        $response->assertSeeText('my volume');
+        $response->assertDontSeeText('other volume');
+        $response->assertDontSeeText('third volume');
     }
 }

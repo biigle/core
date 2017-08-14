@@ -18,14 +18,14 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/images/order-by/filename");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$id}/images/order-by/filename");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$id}/images/order-by/filename");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$id}/images/order-by/filename")
-            ->assertResponseOk();
+        $response = $this->get("/api/v1/volumes/{$id}/images/order-by/filename")
+            ->assertStatus(200);
         // ordering is crucial, so we can't simply use seeJsonEquals!
-        $this->assertEquals("[{$image2->id},{$image1->id}]", $this->response->getContent());
+        $this->assertEquals("[{$image2->id},{$image1->id}]", $response->getContent());
     }
 
     public function testHasAnnotation()
@@ -40,15 +40,15 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/images/filter/labels");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$id}/images/filter/labels");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$id}/images/filter/labels");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$id}/images/filter/labels");
-        $this->assertResponseOk();
+        $response = $this->get("/api/v1/volumes/{$id}/images/filter/labels");
+        $response->assertStatus(200);
 
-        $this->get("/api/v1/volumes/{$id}/images/filter/labels")
-            ->seeJsonEquals([$image->id]);
+        $response = $this->get("/api/v1/volumes/{$id}/images/filter/labels")
+            ->assertExactJson([$image->id]);
     }
 
     public function testHasImageLabelUser()
@@ -72,12 +72,12 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}");
-        $this->assertResponseOk();
+        $response = $this->get("/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}");
+        $response->assertStatus(200);
 
         if ($this->isSqlite()) {
             $expect = ["{$image->id}"];
@@ -85,8 +85,8 @@ class VolumeImageControllerTest extends ApiTestCase
             $expect = [$image->id];
         }
 
-        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}")
-            ->seeJsonEquals($expect);
+        $response = $this->get("/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}")
+            ->assertExactJson($expect);
     }
 
     public function testHasImageLabel()
@@ -111,12 +111,12 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}");
-        $this->assertResponseOk();
+        $response = $this->get("/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}");
+        $response->assertStatus(200);
 
         if ($this->isSqlite()) {
             $expect = ["{$image->id}"];
@@ -124,7 +124,7 @@ class VolumeImageControllerTest extends ApiTestCase
             $expect = [$image->id];
         }
 
-        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}")
-            ->seeJsonEquals($expect);
+        $response = $this->get("/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}")
+            ->assertExactJson($expect);
     }
 }

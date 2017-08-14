@@ -1,7 +1,7 @@
 @extends('app')
 @inject('modules', 'Biigle\Services\Modules')
 
-@section('title'){{ $volume->name }} @stop
+@section('title', $volume->name)
 
 @push('scripts')
     <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>

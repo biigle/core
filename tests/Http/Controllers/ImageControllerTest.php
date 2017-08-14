@@ -17,20 +17,20 @@ class ImageControllerTest extends TestCase
         $project->addVolumeId($image->volume->id);
 
       // not logged in
-      $this->get('images/'.$image->id);
-        $this->assertResponseStatus(302);
+      $response = $this->get('images/'.$image->id);
+        $response->assertStatus(302);
 
       // doesn't belong to project
       $this->be($user);
-        $this->get('images/'.$image->id);
-        $this->assertResponseStatus(403);
+        $response = $this->get('images/'.$image->id);
+        $response->assertStatus(403);
 
         $this->be($project->creator);
-        $this->get('images/'.$image->id);
-        $this->assertResponseOk();
+        $response = $this->get('images/'.$image->id);
+        $response->assertStatus(200);
 
       // doesn't exist
-      $this->get('images/-1');
-        $this->assertResponseStatus(404);
+      $response = $this->get('images/-1');
+        $response->assertStatus(404);
     }
 }

@@ -23,44 +23,44 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
 
         $csv = $this->getCsv('image-metadata.csv');
         $this->beEditor();
-        $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
+        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         // no permissions
-        $this->assertResponseStatus(403);
+        $response->assertStatus(403);
 
         $this->beAdmin();
-        $this->call('POST', "/api/v1/volumes/{$id}/images/metadata");
+        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata");
         // file required
-        $this->assertResponseStatus(302);
+        $response->assertStatus(302);
 
         $csv = $this->getCsv('image-metadata-nocols.csv');
-        $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
+        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         // columns required
-        $this->assertResponseStatus(302);
+        $response->assertStatus(302);
 
         $csv = $this->getCsv('image-metadata-wrongcols.csv');
-        $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
+        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         // columns content invalid
-        $this->assertResponseStatus(302);
+        $response->assertStatus(302);
 
         $csv = $this->getCsv('image-metadata-nolat.csv');
-        $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
+        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         // lng requires lat, too
-        $this->assertResponseStatus(302);
+        $response->assertStatus(302);
 
         $csv = $this->getCsv('image-metadata-nolng.csv');
-        $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
+        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         // lat requires lng, too
-        $this->assertResponseStatus(302);
+        $response->assertStatus(302);
 
         $csv = $this->getCsv('image-metadata-colcount.csv');
-        $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
+        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         // columns don't match file
-        $this->assertResponseStatus(302);
+        $response->assertStatus(302);
 
         $csv = $this->getCsv('image-metadata.csv');
-        $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
+        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         // image does not exist
-        $this->assertResponseStatus(302);
+        $response->assertStatus(302);
 
         $png = ImageTest::create([
             'filename' => 'abc.png',
@@ -72,13 +72,13 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
         ]);
 
         $csv = $this->getCsv('image-metadata-colordering.csv');
-        $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
+        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         // date is no valid longitude
-        $this->assertResponseStatus(302);
+        $response->assertStatus(302);
 
         $csv = $this->getCsv('image-metadata.csv');
-        $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
-        $this->assertResponseOk();
+        $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
+        $response->assertStatus(200);
 
         $png = $png->fresh();
         $jpg = $jpg->fresh();

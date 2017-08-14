@@ -1,7 +1,7 @@
 @extends('app')
 @inject('modules', 'Biigle\Services\Modules')
 
-@section('title')Edit volume {{ $volume->name }} @stop
+@section('title', 'Edit volume {$volume->name }')
 
 @push('scripts')
     <script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>

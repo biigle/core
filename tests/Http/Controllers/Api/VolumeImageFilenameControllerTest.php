@@ -27,32 +27,32 @@ class VolumeImageFilenameControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$vid}/images/filter/filename/a*");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$vid}/images/filter/filename/a*");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$vid}/images/filter/filename/a*");
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->json('GET', "/api/v1/volumes/{$vid}/images/filter/filename/xyz.jpg")
-            ->seeJsonEquals([]);
-        $this->assertResponseOk();
+        $response = $this->json('GET', "/api/v1/volumes/{$vid}/images/filter/filename/xyz.jpg")
+            ->assertExactJson([]);
+        $response->assertStatus(200);
 
-        $this->json('GET', "/api/v1/volumes/{$vid}/images/filter/filename/abcde.jpg")
-            ->seeJsonEquals([$image->id]);
-        $this->assertResponseOk();
+        $response = $this->json('GET', "/api/v1/volumes/{$vid}/images/filter/filename/abcde.jpg")
+            ->assertExactJson([$image->id]);
+        $response->assertStatus(200);
 
-        $this->json('GET', "/api/v1/volumes/{$vid}/images/filter/filename/a*")
-            ->seeJsonEquals([$image->id]);
-        $this->assertResponseOk();
+        $response = $this->json('GET', "/api/v1/volumes/{$vid}/images/filter/filename/a*")
+            ->assertExactJson([$image->id]);
+        $response->assertStatus(200);
 
-        $this->json('GET', "/api/v1/volumes/{$vid}/images/filter/filename/*cde*")
-            ->seeJsonEquals([$image->id, $image2->id]);
-        $this->assertResponseOk();
+        $response = $this->json('GET', "/api/v1/volumes/{$vid}/images/filter/filename/*cde*")
+            ->assertExactJson([$image->id, $image2->id]);
+        $response->assertStatus(200);
 
-        $this->json('GET', "/api/v1/volumes/{$vid}/images/filter/filename/*.jpg")
-            ->seeJsonEquals([$image->id, $image2->id, $image3->id]);
-        $this->assertResponseOk();
+        $response = $this->json('GET', "/api/v1/volumes/{$vid}/images/filter/filename/*.jpg")
+            ->assertExactJson([$image->id, $image2->id, $image3->id]);
+        $response->assertStatus(200);
 
-        $this->json('GET', "/api/v1/volumes/{$vid}/images/filter/filename/***.jpg")
-            ->seeJsonEquals([$image->id, $image2->id, $image3->id]);
-        $this->assertResponseOk();
+        $response = $this->json('GET', "/api/v1/volumes/{$vid}/images/filter/filename/***.jpg")
+            ->assertExactJson([$image->id, $image2->id, $image3->id]);
+        $response->assertStatus(200);
     }
 }
