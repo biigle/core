@@ -14,7 +14,8 @@
         "intervention/image": "~2.1",
         "ramsey/uuid": "^3.5",
         "guzzlehttp/guzzle": "~6.0",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "doctrine/annotations": "1.4.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
