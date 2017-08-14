@@ -1,7 +1,7 @@
 @extends('app')
 @inject('modules', 'Biigle\Services\Modules')
 
-@section('title') Annotate {{$image->filename}} @stop
+@section('title', "Annotate {$image->filename}")
 
 @push('scripts')
 <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>

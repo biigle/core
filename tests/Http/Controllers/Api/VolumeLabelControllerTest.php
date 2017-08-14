@@ -32,13 +32,13 @@ class VolumeLabelControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$tid}/annotation-labels");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$tid}/annotation-labels");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$tid}/annotation-labels");
+        $response->assertStatus(403);
 
         $this->beGuest();
 
-        $this->get("/api/v1/volumes/{$tid}/annotation-labels/")
-            ->seeJsonEquals([
+        $response = $this->get("/api/v1/volumes/{$tid}/annotation-labels/")
+            ->assertExactJson([
                 [
                     'id' => $label1->id,
                     'name' => $label1->name,
@@ -52,6 +52,6 @@ class VolumeLabelControllerTest extends ApiTestCase
                     'parent_id' => $label2->parent_id,
                 ],
             ]);
-        $this->assertResponseOk();
+        $response->assertStatus(200);
     }
 }

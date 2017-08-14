@@ -23,8 +23,8 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/images/filter/annotations");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$id}/images/filter/annotations");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$id}/images/filter/annotations");
+        $response->assertStatus(403);
 
         $expect = [$image->id];
         if ($this->isSqlite()) {
@@ -32,9 +32,9 @@ class VolumeImageControllerTest extends ApiTestCase
         }
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
-            ->seeJsonEquals($expect);
-        $this->assertResponseOk();
+        $response = $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
+            ->assertExactJson($expect);
+        $response->assertStatus(200);
     }
 
     public function testHasAnnotationAnnotationSession()
@@ -60,12 +60,12 @@ class VolumeImageControllerTest extends ApiTestCase
         ]);
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
-            ->dontSeeJson([]);
+        $response = $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
+            ->assertJsonMissing([]);
 
         $session->users()->attach($this->guest());
-        $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
-            ->seeJsonEquals([]);
+        $response = $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
+            ->assertExactJson([]);
 
         $a = AnnotationTest::create([
             'image_id' => $image->id,
@@ -81,8 +81,8 @@ class VolumeImageControllerTest extends ApiTestCase
             $expect = array_map('strval', $expect);
         }
 
-        $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
-            ->seeJsonEquals($expect);
+        $response = $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
+            ->assertExactJson($expect);
     }
 
     public function testHasAnnotationUser()
@@ -113,8 +113,8 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}");
 
         $this->beUser();
-        $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}");
+        $response->assertStatus(403);
 
         $expect = [$image->id];
         if ($this->isSqlite()) {
@@ -122,9 +122,9 @@ class VolumeImageControllerTest extends ApiTestCase
         }
 
         $this->beGuest();
-        $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}")
-            ->seeJsonEquals($expect);
-        $this->assertResponseOk();
+        $response = $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}")
+            ->assertExactJson($expect);
+        $response->assertStatus(200);
     }
 
     public function testHasAnnotationUserAnnotationSession()
@@ -157,11 +157,11 @@ class VolumeImageControllerTest extends ApiTestCase
         }
 
         $this->beEditor();
-        $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}")
-            ->seeJsonEquals($expect);
+        $response = $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}")
+            ->assertExactJson($expect);
 
         $session->users()->attach($this->editor());
-        $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}")
-            ->seeJsonEquals([]);
+        $response = $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}")
+            ->assertExactJson([]);
     }
 }

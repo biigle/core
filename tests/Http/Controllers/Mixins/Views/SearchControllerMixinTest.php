@@ -23,14 +23,14 @@ class SearchControllerMixinTest extends TestCase
         $image3 = ImageTest::create(['filename' => 'third image']);
 
         $this->be($user);
-        $this->get('search?t=images')->assertResponseOk();
-        $this->see('my image');
-        $this->see('other image');
-        $this->dontSee('third image');
+        $response = $this->get('search?t=images')->assertStatus(200);
+        $response->assertSeeText('my image');
+        $response->assertSeeText('other image');
+        $response->assertDontSeeText('third image');
 
-        $this->get('search?t=images&q=my')->assertResponseOk();
-        $this->see('my image');
-        $this->dontSee('other image');
-        $this->dontSee('third image');
+        $response = $this->get('search?t=images&q=my')->assertStatus(200);
+        $response->assertSeeText('my image');
+        $response->assertDontSeeText('other image');
+        $response->assertDontSeeText('third image');
     }
 }

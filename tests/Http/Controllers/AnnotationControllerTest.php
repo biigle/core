@@ -20,23 +20,23 @@ class AnnotationControllerTest extends ApiTestCase
         $image = ImageTest::create(['volume_id' => $volume->id]);
         $project->addVolumeId($volume->id);
         // not logged in
-        $this->get('annotate/'.$image->id);
-        $this->assertResponseStatus(302);
+        $response = $this->get('annotate/'.$image->id);
+        $response->assertStatus(302);
 
         // doesn't belong to project
         $this->be(UserTest::create());
-        $this->get('annotate/'.$image->id);
-        $this->assertResponseStatus(403);
+        $response = $this->get('annotate/'.$image->id);
+        $response->assertStatus(403);
 
         $this->be($project->creator);
-        $this->get('annotate/'.$image->id);
-        $this->assertResponseOk();
-        $this->assertViewHas('user');
-        $this->assertViewHas('image');
+        $response = $this->get('annotate/'.$image->id);
+        $response->assertStatus(200);
+        $response->assertViewHas('user');
+        $response->assertViewHas('image');
 
         // doesn't exist
-        $this->get('annotate/-1');
-        $this->assertResponseStatus(404);
+        $response = $this->get('annotate/-1');
+        $response->assertStatus(404);
     }
 
     public function testShow()
@@ -45,12 +45,12 @@ class AnnotationControllerTest extends ApiTestCase
         $this->project()->addVolumeId($annotation->image->volume_id);
 
         $this->beUser();
-        $this->json('GET', 'annotations/'.$annotation->id);
-        $this->assertResponseStatus(403);
+        $response = $this->json('GET', 'annotations/'.$annotation->id);
+        $response->assertStatus(403);
 
         $this->beGuest();
-        $this->get('annotations/'.$annotation->id);
-        $this->assertRedirectedTo('annotate/'.$annotation->image_id.'?annotation='.$annotation->id);
+        $response = $this->get('annotations/'.$annotation->id);
+        $response->assertRedirect('annotate/'.$annotation->image_id.'?annotation='.$annotation->id);
     }
 
     public function testShowAnnotationSession()
@@ -71,7 +71,7 @@ class AnnotationControllerTest extends ApiTestCase
         $session->users()->attach($this->admin());
 
         $this->beAdmin();
-        $this->get("annotations/{$annotation->id}");
-        $this->assertResponseStatus(403);
+        $response = $this->get("annotations/{$annotation->id}");
+        $response->assertStatus(403);
     }
 }
