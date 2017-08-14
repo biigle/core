@@ -10,15 +10,15 @@ class ProjectsReportControllerTest extends ApiTestCase
     {
         $id = $this->project()->id;
 
-        $this->get("projects/{$id}/reports")
-            ->assertResponseStatus(302);
+        $response = $this->get("projects/{$id}/reports")
+            ->assertStatus(302);
 
         $this->beUser();
-        $this->get("projects/{$id}/reports")
-            ->assertResponseStatus(403);
+        $response = $this->get("projects/{$id}/reports")
+            ->assertStatus(403);
 
         $this->beGuest();
-        $this->get("projects/{$id}/reports")
-            ->assertResponseOk();
+        $response = $this->get("projects/{$id}/reports")
+            ->assertStatus(200);
     }
 }

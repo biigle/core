@@ -10,8 +10,8 @@ class ReportsControllerTest extends TestCase
     public function testIndex()
     {
         $user = UserTest::create();
-        $this->visit('reports')->seePageIs('login');
+        $this->get('reports')->assertRedirect('login');
         $this->be($user);
-        $this->visit('reports')->seePageIs('search?t=reports');
+        $this->get('reports')->assertRedirect('search?t=reports');
     }
 }

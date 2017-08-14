@@ -25,15 +25,15 @@ class SearchControllerMixinTest extends TestCase
         $r3 = ReportTest::create();
 
         $this->be($r1->user);
-        $this->get('search?t=reports')->assertResponseOk();
-        $this->see('my volume');
-        $this->see('my project');
-        $this->dontSee($r3->source->name);
+        $response = $this->get('search?t=reports')->assertStatus(200);
+        $response->assertSeeText('my volume');
+        $response->assertSeeText('my project');
+        $response->assertDontSeeText($r3->source->name);
 
-        $this->get('search?t=reports&q=volume')->assertResponseOk();
-        $this->see('my volume');
-        $this->dontSee('my project');
-        $this->dontSee($r3->source->name);
+        $response = $this->get('search?t=reports&q=volume')->assertStatus(200);
+        $response->assertSeeText('my volume');
+        $response->assertDontSeeText('my project');
+        $response->assertDontSeeText($r3->source->name);
     }
 
     public function testIndexDeleted()
@@ -43,6 +43,6 @@ class SearchControllerMixinTest extends TestCase
         $r1->source()->delete();
 
         $this->be($r1->user);
-        $this->visit('search?t=reports')->see($name);
+        $this->get('search?t=reports')->assertSeeText($name);
     }
 }

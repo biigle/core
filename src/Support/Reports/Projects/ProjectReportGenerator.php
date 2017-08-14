@@ -4,6 +4,7 @@ namespace Biigle\Modules\Export\Support\Reports\Projects;
 
 use App;
 use Exception;
+use Biigle\Volume;
 use Biigle\Project;
 use Biigle\Modules\Export\Support\File;
 use Biigle\Modules\Export\Support\Reports\ReportGenerator;
@@ -37,10 +38,7 @@ class ProjectReportGenerator extends ReportGenerator
         $filesForZip = [];
 
         foreach ($this->source->volumes as $volume) {
-            $report = App::make($this->volumeReportClass, [
-                'source' => $volume,
-                'options' => $this->options,
-            ]);
+            $report = $this->getReportGenerator($volume);
             $file = File::makeTmp();
             $report->generate($volume, $file->getPath());
             // The individual volume reports should be deleted again after
@@ -50,5 +48,17 @@ class ProjectReportGenerator extends ReportGenerator
         }
 
         $this->makeZip($filesForZip, $path);
+    }
+
+    /**
+     * Get the report generator for a volume.
+     *
+     * @param Volume $volume
+     *
+     * @return \Biigle\Modules\Export\Support\Reports\ReportGenerator
+     */
+    protected function getReportGenerator(Volume $volume)
+    {
+        return new $this->volumeReportClass($volume, $this->options);
     }
 }

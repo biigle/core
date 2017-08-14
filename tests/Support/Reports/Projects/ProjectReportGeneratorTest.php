@@ -12,7 +12,6 @@ use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Modules\Export\Support\File;
 use Biigle\Modules\Export\Support\Reports\Projects\ProjectReportGenerator;
-use Biigle\Modules\Export\Support\Reports\Volumes\Annotations\BasicReport as VolumeReport;
 
 class ProjectReportGeneratorTest extends TestCase
 {
@@ -43,6 +42,7 @@ class ProjectReportGeneratorTest extends TestCase
         $project = ProjectTest::create();
         $volume = VolumeTest::create(['id' => 123]);
         $project->addVolumeId($volume->id);
+        $generator = new ProjectReportStub;
 
         $mock = Mockery::mock();
         $mock->shouldReceive('generate')
@@ -53,9 +53,7 @@ class ProjectReportGeneratorTest extends TestCase
         $mock->shouldReceive('getFullFilename')->once()
             ->andReturn('my_download_filename.pdf');
 
-        App::bind(VolumeReport::class, function () use ($mock) {
-            return $mock;
-        });
+        $generator->mock = $mock;
 
         $mock = Mockery::mock();
         $mock->shouldReceive('getPath')->andReturn('my_tmp_file_path');
@@ -74,12 +72,15 @@ class ProjectReportGeneratorTest extends TestCase
             return $mock;
         });
 
-        $generator = new ProjectReportStub;
         $generator->generate($project, 'my/path');
     }
 }
 
 class ProjectReportStub extends ProjectReportGenerator
 {
-    protected $volumeReportClass = VolumeReport::class;
+    public $mock;
+    protected function getReportGenerator(Volume $volume)
+    {
+        return $this->mock;
+    }
 }
