@@ -16,6 +16,7 @@ services:
 
   worker:
     image: biigle/worker-dev
+    restart: unless-stopped
     build:
       context: ./
       dockerfile: .docker/worker.dockerfile
