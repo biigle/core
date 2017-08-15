@@ -6,6 +6,7 @@ use Log;
 use File;
 use VipsImage;
 use Biigle\Image;
+use ErrorException;
 use Jcupitt\Vips\Exception;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -85,10 +86,26 @@ class ProcessThumbnailChunkJob extends Job implements ShouldQueue
         }
 
         try {
-            VipsImage::thumbnail($image->url, $this->width, ['height' => $this->height])
+            // Use thumbnail_buffer instead of thumbnail because the image may have to
+            // be loaded from a remote location.
+            $buffer = file_get_contents($image->url);
+            VipsImage::thumbnail_buffer($buffer, $this->width, ['height' => $this->height])
                 ->writeToFile($image->thumbPath);
         } catch (Exception $e) {
-            Log::error('Could not generate thumbnail for image '.$image->id.': '.$e->getMessage());
+            $this->handleThumbnailError($image, $e);
+        } catch (ErrorException $e) {
+            $this->handleThumbnailError($image, $e);
         }
+    }
+
+    /**
+     * Handle an error during thumbnail generation
+     *
+     * @param Image $image
+     * @param \Exception $exception
+     */
+    protected function handleThumbnailError(Image $image, $exception)
+    {
+        Log::error('Could not generate thumbnail for image '.$image->id.': '.$exception->getMessage());
     }
 }
