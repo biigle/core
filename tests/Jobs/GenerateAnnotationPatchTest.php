@@ -2,75 +2,27 @@
 
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
-use App;
 use File;
 use Mockery;
 use TestCase;
+use VipsImage;
 use Biigle\Shape;
-use Intervention\Image\Image;
-use InterventionImage as IImage;
+use Jcupitt\Vips\Image;
 use Biigle\Tests\AnnotationTest;
-use Intervention\Image\ImageCache;
-use Intervention\Image\ImageManager;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
-class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
+class GenerateAnnotationPatchTest extends TestCase
 {
     public function setUp()
     {
         parent::setUp();
+
+        // alias: is required because we want to test the public static method
+        // newFromFile.
         $this->image = Mockery::mock(Image::class);
-
         $this->image->shouldReceive('resize')
-            ->with(config('thumbnails.width'), config('thumbnails.height'))
             ->once()
             ->andReturn($this->image);
-        $this->image->shouldReceive('destroy')->once();
-    }
-
-    public function testCacheRemoteImage()
-    {
-        $annotation = AnnotationTest::create();
-        $annotation->image->volume->url = 'http://example.com';
-        $annotation->image->volume->save();
-        $job = new GenerateAnnotationPatch($annotation);
-
-        $manager = Mockery::mock(ImageManager::class);
-        App::bind(ImageCache::class, function () use ($manager) {
-            return new ImageCache($manager);
-        });
-
-        $manager->shouldReceive('make')
-            ->with($annotation->image->url)
-            ->once()
-            ->andReturn($this->image);
-
-        $this->image->shouldReceive('encode')
-            ->once()
-            ->andReturn($this->image);
-
-        $this->image->shouldReceive('crop')->once()->andReturn($this->image);
-        $this->image->shouldReceive('save')->once()->andReturn($this->image);
-
-        $job->handle();
-    }
-
-    public function testDontCacheLocalImage()
-    {
-        $annotation = AnnotationTest::create();
-        $annotation->image->volume->url = '/vol/images';
-        $annotation->image->volume->save();
-        $job = new GenerateAnnotationPatch($annotation);
-
-        IImage::shouldReceive('make')
-            ->with($annotation->image->url)
-            ->once()
-            ->andReturn($this->image);
-
-        $this->image->shouldReceive('crop')->once()->andReturn($this->image);
-        $this->image->shouldReceive('save')->once()->andReturn($this->image);
-
-        $job->handle();
     }
 
     public function testHandlePoint()
@@ -79,19 +31,15 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
             'points' => [100, 100],
             'shape_id' => Shape::$pointId,
         ]);
-        $job = new GenerateAnnotationPatch($annotation);
-
-        IImage::shouldReceive('make')
-            ->with($annotation->image->url)
-            ->once()
-            ->andReturn($this->image);
+        $job = new GenerateAnnotationPatchStub($annotation);
+        $job->mock = $this->image;
 
         $this->image->shouldReceive('crop')
-            ->with(197, 148, 1, 26)
+            ->with(1, 26, 197, 148)
             ->once()
             ->andReturn($this->image);
 
-        $this->image->shouldReceive('save')
+        $this->image->shouldReceive('writeToFile')
             ->with(config('largo.patch_storage').'/'.$annotation->image->volume_id.'/'.$annotation->id.'.jpg')
             ->once()
             ->andReturn($this->image);
@@ -110,19 +58,15 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
             'points' => [100.4, 100.4, 20],
             'shape_id' => Shape::$circleId,
         ]);
-        $job = new GenerateAnnotationPatch($annotation);
-
-        IImage::shouldReceive('make')
-            ->with($annotation->image->url)
-            ->once()
-            ->andReturn($this->image);
+        $job = new GenerateAnnotationPatchStub($annotation);
+        $job->mock = $this->image;
 
         $this->image->shouldReceive('crop')
-            ->with(80, 60, 60, 70)
+            ->with(60, 70, 80, 60)
             ->once()
             ->andReturn($this->image);
 
-        $this->image->shouldReceive('save')
+        $this->image->shouldReceive('writeToFile')
             ->once()
             ->andReturn($this->image);
 
@@ -140,19 +84,15 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
             'points' => [100, 100, 100, 200, 200, 200, 200, 100],
             'shape_id' => Shape::$rectangleId,
         ]);
-        $job = new GenerateAnnotationPatch($annotation);
-
-        IImage::shouldReceive('make')
-            ->with($annotation->image->url)
-            ->once()
-            ->andReturn($this->image);
+        $job = new GenerateAnnotationPatchStub($annotation);
+        $job->mock = $this->image;
 
         $this->image->shouldReceive('crop')
-            ->with(160, 120, 70, 90)
+            ->with(70, 90, 160, 120)
             ->once()
             ->andReturn($this->image);
 
-        $this->image->shouldReceive('save')
+        $this->image->shouldReceive('writeToFile')
             ->once()
             ->andReturn($this->image);
 
@@ -161,5 +101,14 @@ class LargoModuleJobsGenerateAnnotationPatchTest extends TestCase
             ->andReturn(true);
 
         $job->handle();
+    }
+}
+
+
+class GenerateAnnotationPatchStub extends GenerateAnnotationPatch
+{
+    function getVipsImage(\Biigle\Image $image)
+    {
+        return $this->mock;
     }
 }
