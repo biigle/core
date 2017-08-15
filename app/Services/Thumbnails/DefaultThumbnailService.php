@@ -21,6 +21,7 @@ class DefaultThumbnailService implements ThumbnailService
     public function generateThumbnails(Volume $volume, array $only)
     {
         $volume->images()
+            // Include this since ProcessThumbnailChunkJob calls isRemote on the volumes.
             ->with('volume')
             ->when($only, function ($query) use ($only) {
                 return $query->whereIn('id', $only);
