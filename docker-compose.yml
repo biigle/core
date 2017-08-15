@@ -3,6 +3,7 @@ version: '2'
 services:
   # The application
   app:
+    image: biigle/app-dev
     build:
       context: ./
       dockerfile: .docker/app.dockerfile
@@ -14,6 +15,7 @@ services:
       - "DB_HOST=database"
 
   worker:
+    image: biigle/worker-dev
     build:
       context: ./
       dockerfile: .docker/worker.dockerfile
@@ -26,6 +28,7 @@ services:
 
   # The web server
   web:
+    image: biigle/web
     build:
       context: ./
       dockerfile: .docker/web.dockerfile
