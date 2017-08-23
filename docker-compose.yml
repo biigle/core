@@ -26,6 +26,21 @@ services:
     environment:
       - "DB_PORT=5432"
       - "DB_HOST=database"
+    command: "php artisan queue:work --sleep=5 --tries=3 --timeout=0"
+
+  # scheduler:
+  #   image: biigle/worker-dev
+  #   restart: unless-stopped
+  #   build:
+  #     context: ./
+  #     dockerfile: .docker/worker.dockerfile
+  #   working_dir: /var/www
+  #   volumes_from:
+  #     - app
+  #   environment:
+  #     - "DB_PORT=5432"
+  #     - "DB_HOST=database"
+  #   command: "while sleep 60; do php artisan schedule:run >> /dev/null 2>&1; done"
 
   # The web server
   web:
