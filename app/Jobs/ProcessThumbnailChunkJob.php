@@ -3,6 +3,7 @@
 namespace Biigle\Jobs;
 
 use Log;
+use File;
 use Exception;
 use VipsImage;
 use ImageCache;
