@@ -2,6 +2,7 @@
 
 namespace Biigle\Console;
 
+use ImageCache;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -14,7 +15,6 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\NewUser::class,
-        Commands\GarbageCollectCache::class,
     ];
 
     /**
@@ -25,9 +25,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // Run at 1:35 because the cronjob of the original BIIGLE instance at the CeBiTec
+        // Run at 35 because the cronjob of the original BIIGLE instance at the CeBiTec
         // runs only at 5,20,35,50 and not every minute.
-        $schedule->command('cache:gc')->dailyAt('1:35');
+        $schedule->call(function () {
+            ImageCache::clean();
+        })->hourlyAt(35);
     }
 
     /**
