@@ -65,7 +65,7 @@
             <textarea class="form-control" name="images" id="images" placeholder="1.jpg, 2.jpg, 3.jpg" required>{{ old('images') }}</textarea>
             <p class="help-block">
                The filenames of the volume images in the directory of the volume URL formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>.<br>
-                    The supported image file formats are: JPG, PNG and GIF.
+                    The supported image file formats are: JPEG, PNG and TIFF.
             </p>
             @if($errors->has('images'))
                <span class="help-block">{{ $errors->first('images') }}</span>
