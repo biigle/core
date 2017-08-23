@@ -4,6 +4,7 @@ services:
   # The application
   app:
     image: biigle/app-dev
+    user: 1000:1000
     build:
       context: ./
       dockerfile: .docker/app.dockerfile
@@ -16,6 +17,7 @@ services:
 
   worker:
     image: biigle/worker-dev
+    user: 1000:1000
     restart: unless-stopped
     build:
       context: ./
@@ -26,10 +28,11 @@ services:
     environment:
       - "DB_PORT=5432"
       - "DB_HOST=database"
-    command: "php artisan queue:work --sleep=5 --tries=3 --timeout=0"
+    command: "php -d memory_limit=1G artisan queue:work --sleep=5 --tries=3 --timeout=0"
 
   # scheduler:
   #   image: biigle/worker-dev
+  #   user: 1000:1000
   #   restart: unless-stopped
   #   build:
   #     context: ./

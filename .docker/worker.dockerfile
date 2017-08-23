@@ -49,8 +49,4 @@ RUN apt-get remove --purge -y automake gtk-doc-tools build-essential \
     && apt-get autoremove -y \
     && apt-get clean -y
 
-RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
-
-RUN echo 'memory_limit=1G' > /usr/local/etc/php/conf.d/memory_limit.ini
-
 CMD ["php", "artisan", "queue:work", "--sleep=5", "--tries=3", "--timeout=0"]

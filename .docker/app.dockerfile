@@ -5,5 +5,3 @@ RUN apt-get update \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql json fileinfo exif mbstring soap \
     && apt-get clean -y
-
-RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
