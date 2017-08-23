@@ -238,8 +238,8 @@ class Volume extends Model
         }
 
         foreach ($filenames as $filename) {
-            if (preg_match('/\.(jpe?g|png|gif)$/i', $filename) !== 1) {
-                throw new Exception('Only JPG, PNG or GIF image formats are supported.');
+            if (preg_match('/\.(jpe?g|png|tif?f)$/i', $filename) !== 1) {
+                throw new Exception('Only JPG, PNG or TIFF image formats are supported.');
             }
         }
 

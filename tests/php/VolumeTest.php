@@ -202,7 +202,7 @@ class VolumeTest extends ModelTestCase
     {
         $this->assertTrue($this->model->validateImages(['1.jpg', '2.jpeg', '1.JPG', '2.JPEG']));
         $this->assertTrue($this->model->validateImages(['1.png', '2.PNG']));
-        $this->assertTrue($this->model->validateImages(['1.gif', '2.GIF']));
+        $this->assertTrue($this->model->validateImages(['1.tif', '2.tiff', '2.TIF', '3.TIFF']));
     }
 
     public function testValidateImagesFormatNotOk()
