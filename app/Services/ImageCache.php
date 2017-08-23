@@ -109,11 +109,6 @@ class ImageCache
      */
     protected function getRemoteImage(Image $image)
     {
-        $size = $this->getRemoteImageSize($image);
-        if ($size > config('image.cache.max_image_size')) {
-            throw new Exception("File too large with {$size} bytes.");
-        }
-
         $cachePath = $this->getCachePath($image);
 
         if (File::exists($cachePath)) {
@@ -121,7 +116,14 @@ class ImageCache
             // used recently.
             touch($cachePath);
         } else {
+
+            $size = $this->getRemoteImageSize($image);
+            if ($size > config('image.cache.max_image_size')) {
+                throw new Exception("File too large with {$size} bytes.");
+            }
+
             $this->ensurePathExists();
+
             // Use copy so the file is not stored to PHP memory. This way much larger
             // files can be processed.
             $success = @File::copy($image->url, $cachePath);
@@ -168,7 +170,8 @@ class ImageCache
     {
         $client = new Client;
         $response = $client->head($image->url);
+        $size = (int) $response->getHeaderLine('Content-Length');
 
-        return $response->getHeader('Content-Length');
+        return ($size > 0) ? $size : INF;
     }
 }
