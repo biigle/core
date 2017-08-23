@@ -87,13 +87,17 @@ class ProcessThumbnailChunkJob extends Job implements ShouldQueue
 
         try {
             if ($image->volume->isRemote()) {
-                $buffer = file_get_contents($image->url);
-                $thumb = VipsImage::thumbnail_buffer($buffer, $this->width, ['height' => $this->height]);
+                // Don't cache remote images here because it would blow up the cache
+                // if a whole large volume would be stored in there when it is created.
+                $path = tempnam(sys_get_temp_dir(), 'biigle_image_'.$image->id);
+                copy($image->url, $path);
             } else {
-                $thumb = VipsImage::thumbnail($image->url, $this->width, ['height' => $this->height]);
+                $path = $image->url;
             }
 
-            $thumb->writeToFile($image->thumbPath);
+            VipsImage::thumbnail($path, $this->width, ['height' => $this->height])
+                ->writeToFile($image->thumbPath);
+
         } catch (Exception $e) {
             $this->handleThumbnailError($image, $e);
         } catch (ErrorException $e) {
