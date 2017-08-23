@@ -2,15 +2,15 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
+use Log;
 use File;
-use Cache;
+use Exception;
 use VipsImage;
+use ImageCache;
 use Biigle\Image;
 use Biigle\Shape;
-use ErrorException;
 use Biigle\Jobs\Job;
 use Biigle\Annotation;
-use Jcupitt\Vips\Exception;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -70,9 +70,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
                 ->resize(floatval($thumbWidth) / $rect['width'])
                 ->writeToFile("{$prefix}/{$annotation->id}.{$format}");
         } catch (Exception $e) {
-            $this->handlePatchError($annotation, $e);
-        } catch (ErrorException $e) {
-            $this->handlePatchError($annotation, $e);
+            Log::error('Could not generate annotation patch for annotation '.$annotation->id.': '.$e->getMessage());
         }
     }
 
@@ -85,26 +83,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
      */
     protected function getVipsImage(Image $image)
     {
-        if ($image->volume->isRemote()) {
-            $buffer = Cache::remember("remote-image-buffer-{$image->id}", config('largo.imagecache_lifetime'), function () use ($image) {
-               return @file_get_contents($image->url);
-            });
-
-            return VipsImage::newFromBuffer($buffer);
-        }
-
-        return VipsImage::newFromFile($image->url);
-    }
-
-    /**
-     * Handle an error during patch generation
-     *
-     * @param annotation $a
-     * @param \Exception $exception
-     */
-    protected function handlePatchError(Annotation $a, $exception)
-    {
-        Log::error('Could not generate annotation patch for annotation '.$a->id.': '.$exception->getMessage());
+        return VipsImage::newFromFile(ImageCache::get($image));
     }
 
     /**
