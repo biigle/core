@@ -49,4 +49,8 @@ RUN apt-get remove --purge -y automake gtk-doc-tools build-essential \
     && apt-get autoremove -y \
     && apt-get clean -y
 
+# Create a user that can be used for debugging. Some commands like artisan tinker
+# require a home directory.
+RUN useradd -mU --uid 1000 biigle
+
 CMD ["php", "artisan", "queue:work", "--sleep=5", "--tries=3", "--timeout=0"]
