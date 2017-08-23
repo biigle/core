@@ -1,4 +1,4 @@
-FROM php:7.0-cli
+FROM php:7.1-cli
 
 RUN apt-get update
 
@@ -21,7 +21,7 @@ RUN apt-get install -y libpq-dev postgresql-client-9.4 --no-install-recommends \
 RUN apt-get install -y libxml2-dev --no-install-recommends \
     && docker-php-ext-install soap
 
-RUN docker-php-ext-install json fileinfo exif zip mbstring
+RUN docker-php-ext-install json fileinfo exif zip mbstring pcntl
 
 # Build libvips from source since the vips PHP extension requires vips >=8.2 which is
 # not available in Debian Jessie
