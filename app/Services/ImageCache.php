@@ -29,7 +29,7 @@ class ImageCache
     }
 
     /**
-     * Cache an image if it is not cached and get the path to the cached file.
+     * Cache a remote image if it is not cached and get the path to the cached file.
      * If the image is not remote, nothing will be done and the path to the original
      * image will be returned.
      *

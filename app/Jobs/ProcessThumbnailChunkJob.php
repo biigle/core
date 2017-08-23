@@ -3,11 +3,10 @@
 namespace Biigle\Jobs;
 
 use Log;
-use File;
+use Exception;
 use VipsImage;
+use ImageCache;
 use Biigle\Image;
-use ErrorException;
-use Jcupitt\Vips\Exception;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -86,42 +85,17 @@ class ProcessThumbnailChunkJob extends Job implements ShouldQueue
         }
 
         try {
-            if ($image->volume->isRemote()) {
-                // Don't cache remote images here because it would blow up the cache
-                // if a whole large volume would be stored in there when it is created.
-                $path = sys_get_temp_dir()."/biigle_image_{$image->id}";
-                // Use copy so the file is not stored to PHP memory. This way much larger
-                // files can be handled here. We have to clean up afterwards, though.
-                copy($image->url, $path);
-            }
+            $path = ImageCache::get($image);
 
-            // Use this instead of "else $path = $image->url" so original images are
-            // deleted under no circumstances! We use File::delete($path) later.
-            $url = isset($path) ? $path : $image->url;
-
-            VipsImage::thumbnail($url, $this->width, ['height' => $this->height])
+            VipsImage::thumbnail($path, $this->width, ['height' => $this->height])
                 ->writeToFile($image->thumbPath);
 
-        } catch (Exception $e) {
-            $this->handleThumbnailError($image, $e);
-        } catch (ErrorException $e) {
-            $this->handleThumbnailError($image, $e);
-        } finally {
-            // Clean up temporary file of remote image.
-            if (isset($path) && File::exists($path)) {
-                File::delete($path);
-            }
-        }
-    }
+            // Don't actually cache remote images here because it would blow up the cache
+            // if a whole large volume would be stored in there when it is created.
+            ImageCache::forget($image);
 
-    /**
-     * Handle an error during thumbnail generation
-     *
-     * @param Image $image
-     * @param \Exception $exception
-     */
-    protected function handleThumbnailError(Image $image, $exception)
-    {
-        Log::error('Could not generate thumbnail for image '.$image->id.': '.$exception->getMessage());
+        } catch (Exception $e) {
+            Log::error('Could not generate thumbnail for image '.$image->id.': '.$e->getMessage());
+        }
     }
 }
