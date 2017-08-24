@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Jobs;
 
+use File;
 use Queue;
 use TestCase;
 use VipsImage;
@@ -46,6 +47,31 @@ class GenerateImageTilesTest extends TestCase
         Queue::assertPushed(TileSingleImage::class, function($job) use ($image) {
             return $job->image->id === $image->id;
         });
+    }
+
+    public function testHandleLargeSkip()
+    {
+        config(['image.tiles.threshold' => 300]);
+
+        $volume = VolumeTest::create();
+        $image = ImageTest::create(['volume_id' => $volume->id, 'tiled' => true]);
+
+        File::shouldReceive('exists')
+            ->once()
+            ->with($image->url)
+            ->andReturn(true);
+
+        File::shouldReceive('isDirectory')
+            ->once()
+            ->with($image->tilePath)
+            ->andReturn(true);
+
+        VipsImage::shouldReceive('newFromFile')->never();
+
+        Queue::fake();
+        with(new GenerateImageTiles($volume))->handle();
+
+        Queue::assertNotPushed(TileSingleImage::class);
     }
 
     public function testHandleRemote()

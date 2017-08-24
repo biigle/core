@@ -58,7 +58,8 @@ class GenerateImageTiles extends Job implements ShouldQueue
         }
 
         $images = $this->volume->images()
-            ->select('id', 'filename')
+            // 'tiled' and 'uuid' are required for the shouldBeTiled check.
+            ->select('id', 'filename', 'tiled', 'uuid')
             ->when($this->only, function ($query) {
                 return $query->whereIn('id', $this->only);
             })
