@@ -226,6 +226,15 @@ class Image extends Model
             return Response::redirectTo($this->url);
         }
 
+        if ($this->tiled === true) {
+            $response = $this->getTileProperties();
+            $response['id'] = $this->id;
+            $response['uuid'] = $this->uuid;
+            $response['tiled'] = true;
+
+            return $response;
+        }
+
         try {
             return Response::download($this->url);
         } catch (FileNotFoundException $e) {

@@ -82,6 +82,24 @@ class ImageControllerTest extends ApiTestCase
         $this->assertEquals('image/jpeg', $response->headers->get('content-type'));
     }
 
+    public function testShowFileTiled()
+    {
+        $this->image->tiled = true;
+        $this->image->setTileProperties(['width' => 123, 'height' => 456]);
+        $this->image->save();
+
+        $this->beGuest();
+        $this->get('/api/v1/images/1/file')
+            ->assertStatus(200)
+            ->assertExactJson([
+                'id' => $this->image->id,
+                'uuid' => $this->image->uuid,
+                'width' => 123,
+                'height' => 456,
+                'tiled' => true,
+            ]);
+    }
+
     public function testDestroy()
     {
         $id = $this->image->id;
