@@ -83,7 +83,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
      */
     protected function getVipsImage(Image $image)
     {
-        return VipsImage::newFromFile(ImageCache::get($image));
+        return VipsImage::newFromFile(ImageCache::get($image), ['access' => 'sequential']);
     }
 
     /**
