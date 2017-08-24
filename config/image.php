@@ -23,4 +23,26 @@ return [
         'path' => storage_path('framework/cache/images'),
     ],
 
+    'tiles' => [
+        /*
+        | Create tiles for local images where the longest edge is larger than this value
+        | in pixels. For these images the tiles will be displayed in the annotation tool
+        | instead of the original images because they is too large to be displayed in a
+        | browser.
+        |
+        | Set to INF to disable tiling.
+        */
+        'threshold' => 5000,
+
+        /*
+        | URI where the image tiles are available from.
+        | If you have 'tiles', the URL will look like 'example.com/tiles/...'.
+        |
+        | The URI must exist as directory in the public path.
+        | For 'tiles' there must be a 'public/tiles' directory (or link).
+        */
+        'uri' => 'tiles',
+    ],
+
+
 ];

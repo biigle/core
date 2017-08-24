@@ -227,6 +227,7 @@ class VolumeTest extends ModelTestCase
     {
         $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
         $this->expectsJobs(\Biigle\Jobs\CollectImageMetaInfo::class);
+        $this->expectsJobs(\Biigle\Jobs\GenerateImageTiles::class);
         $this->model->HandleNewImages();
     }
 

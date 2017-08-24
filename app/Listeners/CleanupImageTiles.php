@@ -5,7 +5,7 @@ namespace Biigle\Listeners;
 use File;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class CleanupThumbnails implements ShouldQueue
+class CleanupImageTiles implements ShouldQueue
 {
     /**
      * Handle the event.
@@ -15,12 +15,11 @@ class CleanupThumbnails implements ShouldQueue
      */
     public function handle(array $uuids)
     {
-        $prefix = public_path(config('thumbnails.uri'));
-        $format = config('thumbnails.format');
+        $prefix = public_path(config('image.tiles.uri'));
 
         foreach ($uuids as $uuid) {
-            if (File::exists("{$prefix}/{$uuid}.{$format}")) {
-                File::delete("{$prefix}/{$uuid}.{$format}");
+            if (File::exists("{$prefix}/{$uuid}")) {
+                File::deleteDirectory("{$prefix}/{$uuid}");
             }
         }
     }

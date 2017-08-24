@@ -10,6 +10,7 @@ use Exception;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use GuzzleHttp\Client;
+use Biigle\Jobs\GenerateImageTiles;
 use Biigle\Jobs\GenerateThumbnails;
 use Biigle\Jobs\CollectImageMetaInfo;
 use Illuminate\Database\Eloquent\Model;
@@ -282,6 +283,7 @@ class Volume extends Model
     {
         $this->generateThumbnails($only);
         $this->collectMetaInfo($only);
+        $this->generateImageTiles($only);
     }
 
     /**
@@ -481,6 +483,17 @@ class Volume extends Model
     protected function collectMetaInfo($only = [])
     {
         $this->dispatch(new CollectImageMetaInfo($this, $only));
+    }
+
+    /**
+     * (Re-) generates the image tiles for all images belonging to this volume.
+     *
+     * @param array $only (optional) Array of image IDs to restrict the (re-)generation
+     * of image tiles to.
+     */
+    protected function generateImageTiles($only = [])
+    {
+        $this->dispatch(new GenerateImageTiles($this, $only));
     }
 
     /**
