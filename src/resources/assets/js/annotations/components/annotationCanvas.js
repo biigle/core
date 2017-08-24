@@ -20,6 +20,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
     var featureRevisionMap = {};
 
     var imageLayer = new ol.layer.Image();
+    var tiledImageLayer = new ol.layer.Tile();
+
     var annotationFeatures = new ol.Collection();
     var annotationSource = new ol.source.Vector({
         features: annotationFeatures
@@ -129,6 +131,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         computed: {
             extent: function () {
                 if (this.image) {
+                    if (this.image.tiled === true) {
+                        return [0, -this.image.height, this.image.width, 0];
+                    }
+
                     return [0, 0, this.image.width, this.image.height];
                 }
 
@@ -598,7 +604,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 biigle.$require('annotations.stores.utils').throttle(function () {
                     self.mousePosition = [
                         Math.round(e.coordinate[0]),
-                        Math.round(self.extent[3] - e.coordinate[1]),
+                        Math.round(self.image.height - e.coordinate[1]),
                     ];
                 }, 100, 'annotations.canvas.mouse-position');
             },
@@ -623,9 +629,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 this.hoveredAnnotationHash = '';
                 this.hoveredAnnotations = [];
             },
-        },
-        watch: {
-            image: function (image, oldImage) {
+            handleRegularImage: function (image, oldImage) {
                 if (!image) {
                     imageLayer.setSource(null);
                 } else {
@@ -644,11 +648,40 @@ biigle.$component('annotations.components.annotationCanvas', function () {
 
                     // The same performance optimizations mentioned above make the magic
                     // wand interaction unable to detect any change if the image is
-                    // swotched. So if the interaction is currently active we have to
-                    // update it manually here.
+                    // switched. So if the interaction is currently active we have to
+                    // update it anually here.
                     if (this.isMagicWanding) {
                         magicWandInteraction.updateSnapshot();
                     }
+                }
+            },
+            handleTiledImage: function (image, oldImage) {
+                if (!image) {
+                    tiledImageLayer.setSource(null);
+                } else {
+                    tiledImageLayer.setSource(new ol.source.Zoomify({
+                        url: image.url,
+                        size: [image.width, image.height],
+                    }));
+                }
+            },
+        },
+        watch: {
+            image: function (image, oldImage) {
+                if (image.tiled === true) {
+                    if (!oldImage || oldImage.tiled !== true) {
+                        map.removeLayer(imageLayer);
+                        map.addLayer(tiledImageLayer);
+                    }
+
+                    this.handleTiledImage(image, oldImage);
+                } else {
+                    if (!oldImage || oldImage.tiled === true) {
+                        map.removeLayer(tiledImageLayer);
+                        map.addLayer(imageLayer);
+                    }
+
+                    this.handleRegularImage(image, oldImage);
                 }
             },
             annotations: function (annotations) {
@@ -706,10 +739,17 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     this.initialized = true;
                 }
 
+                var resolutions;
+
+                if (tiledImageLayer.getSource()) {
+                    resolutions = tiledImageLayer.getSource().getTileGrid().getResolutions();
+                }
+
                 map.setView(new ol.View({
                     projection: this.projection,
                     center: center,
                     resolution: this.resolution,
+                    resolutions: resolutions,
                     zoomFactor: 1.5,
                     // allow a maximum of 4x magnification
                     minResolution: 0.25,
@@ -718,7 +758,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 }));
 
                 if (this.resolution === undefined) {
-                    map.getView().fit(extent, map.getSize());
+                    map.getView().fit(extent);
                 }
             },
             selectedLabel: function (label) {
@@ -779,8 +819,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             var self = this;
             styles = biigle.$require('annotations.stores.styles');
             map = biigle.$require('annotations.stores.map');
-
-            map.addLayer(imageLayer);
 
             annotationLayer.setStyle(styles.features);
             map.addLayer(annotationLayer);

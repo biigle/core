@@ -47,6 +47,9 @@ biigle.$declare('annotations.stores.images', function () {
             imageFileUri: function () {
                 return biigle.$require('annotations.imageFileUri');
             },
+            tilesUri: function () {
+                return biigle.$require('annotations.tilesUri');
+            },
             supportedTextureSize: function () {
                 if (fxCanvas) {
                     return fxCanvas._.gl.getParameter(fxCanvas._.gl.MAX_TEXTURE_SIZE);
@@ -68,6 +71,9 @@ biigle.$declare('annotations.stores.images', function () {
             },
         },
         methods: {
+            isTiledImage: function (image) {
+                return image.tiled === true;
+            },
             isAdjustmentActive: function (type) {
                 return this.colorAdjustment[type].reduce(function (acc, value) {
                     return acc + value;
@@ -76,6 +82,11 @@ biigle.$declare('annotations.stores.images', function () {
             checkSupportsColorAdjustment: function (image) {
                 if (!fxCanvas || this.isRemoteVolume) {
                     return false;
+                }
+
+                if (this.isTiledImage(image)) {
+                    this.supportsColorAdjustment = false;
+                    return;
                 }
 
                 // If we already have a drawn image we only need to check the support
@@ -105,31 +116,42 @@ biigle.$declare('annotations.stores.images', function () {
                 this.supportsColorAdjustment = true;
             },
             createImage: function (id) {
-                var img = document.createElement('img');
-                var promise = new Vue.Promise(function (resolve, reject) {
-                    img.onload = function () {
+                var self = this;
+                return Vue.http.get(this.imageFileUri.replace('{id}', id))
+                    .catch(function () {
+                        return Vue.Promise.reject('Failed to load image ' + id + '!');
+                    })
+                    .then(function (response) {
+                        if (response.bodyBlob.type === 'application/json') {
+                            response.body.url = self.tilesUri.replace('{uuid}', response.body.uuid);
+
+                            return response.body;
+                        }
+
+                        var urlCreator = window.URL || window.webkitURL;
+                        var img = document.createElement('img');
+
                         // We want to use the same canvas element for drawing and to
                         // apply the color adjustments for better performance. But we
                         // also want Vue to detect switched images which would not work
                         // if we simply passed on the canvas element as a prop to a
                         // component. We therefore create this new object for each image.
                         // And pass it as a prop instead.
-                        resolve({
-                            source: this,
-                            width: this.width,
-                            height: this.height,
-                            canvas: canvas,
+                        var p = new Vue.Promise(function (resolve) {
+                            img.onload = function () {
+                                resolve({
+                                    source: img,
+                                    width: img.width,
+                                    height: img.height,
+                                    canvas: canvas,
+                                });
+                            };
                         });
-                    };
 
-                    img.onerror = function () {
-                        reject('Failed to load image ' + id + '!');
-                    };
-                });
+                        img.src = urlCreator.createObjectURL(response.bodyBlob);
 
-                img.src = this.imageFileUri.replace('{id}', id);
-
-                return promise;
+                        return p;
+                    });
             },
             drawSimpleImage: function (image) {
                 image.canvas.width = image.width;
@@ -169,6 +191,8 @@ biigle.$declare('annotations.stores.images', function () {
 
                 if (this.supportsColorAdjustment && this.hasColorAdjustment) {
                     return this.drawColorAdjustedImage(image);
+                } else if (this.isTiledImage(image)) {
+                    return image;
                 }
 
                 return this.drawSimpleImage(image);
@@ -178,6 +202,7 @@ biigle.$declare('annotations.stores.images', function () {
                     events.$emit('images.fetching', id);
                     this.cache[id] = this.createImage(id);
                     this.cachedIds.push(id);
+
                 }
 
                 return this.cache[id];

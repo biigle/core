@@ -293,7 +293,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
     };
 
     /**
-     * Update the snapshot if the image layer.
+     * Update the snapshot of the image layer.
      */
     MagicWandInteraction.prototype.updateSnapshot = function () {
         if (!this.updatingSnapshot) {

@@ -52,6 +52,8 @@ biigle.$component('annotations.components.minimap', function () {
             mapSize = map.getSize();
             mapView = map.getView();
 
+            // Todo maybe listen to change:layerGroup? Image layer is not present
+            // from the start any more.
             minimap.addLayer(map.getLayers().item(0));
             minimap.addLayer(new ol.layer.Vector({
                 source: viewportSource,

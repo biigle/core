@@ -20,6 +20,7 @@
     biigle.$declare('annotations.imagesIds', {!! $images->keys() !!});
     biigle.$declare('annotations.imagesFilenames', {!! $images->values() !!});
     biigle.$declare('annotations.imageFileUri', '{!! url('api/v1/images/{id}/file') !!}');
+    biigle.$declare('annotations.tilesUri', '{{ asset(config('image.tiles.uri')) }}/{uuid}/');
     biigle.$declare('annotations.sessions', {!!$annotationSessions!!});
     biigle.$declare('annotations.volumeIsRemote', @if($volume->isRemote()) true @else false @endif);
     biigle.$declare('annotations.isEditor', @can('add-annotation', $image) true @else false @endcan);
