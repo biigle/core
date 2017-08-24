@@ -2,12 +2,13 @@
 
 namespace Biigle;
 
+use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, HasJsonAttributes;
 
     /**
      * Validation rules for logging in.
@@ -183,17 +184,10 @@ class User extends Authenticatable
      */
     public function setSettings(array $settings)
     {
-        $ownSettings = $this->settings ?: [];
-
         foreach ($settings as $key => $value) {
-            if (is_null($value)) {
-                unset($ownSettings[$key]);
-            } else {
-                $ownSettings[$key] = $value;
-            }
+            $this->setJsonAttr($key, $value, 'settings');
         }
 
-        $this->settings = empty($ownSettings) ? null : $ownSettings;
         $this->save();
     }
 
@@ -207,10 +201,6 @@ class User extends Authenticatable
      */
     public function getSettings($key, $default = null)
     {
-        if (is_array($this->settings) && array_key_exists($key, $this->settings)) {
-            return $this->settings[$key];
-        }
-
-        return $default;
+        return $this->getJsonAttr($key, $default, 'settings');
     }
 }

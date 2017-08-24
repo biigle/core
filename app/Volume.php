@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use GuzzleHttp\Client;
 use Biigle\Jobs\GenerateThumbnails;
+use Biigle\Traits\HasJsonAttributes;
 use Biigle\Jobs\CollectImageMetaInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -25,7 +26,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
  */
 class Volume extends Model
 {
-    use DispatchesJobs;
+    use DispatchesJobs, HasJsonAttributes;
 
     /**
      * Validation rules for creating a new volume.
@@ -469,7 +470,10 @@ class Volume extends Model
      */
     public function setDoiAttribute($value)
     {
-        $value = preg_replace('/^https?\:\/\/doi\.org\//', '', $value);
+        if (is_string($value)) {
+            $value = preg_replace('/^https?\:\/\/doi\.org\//', '', $value);
+        }
+
         return $this->setJsonAttr('doi', $value);
     }
 
@@ -502,39 +506,5 @@ class Volume extends Model
     protected function collectMetaInfo($only = [])
     {
         $this->dispatch(new CollectImageMetaInfo($this, $only));
-    }
-
-    /**
-     * Get a dynamic attribute from the JSON attrs column.
-     *
-     * @param string $name Name of the attribute
-     *
-     * @return mixed
-     */
-    protected function getJsonAttr($name)
-    {
-        $attrs = $this->attrs ?: [];
-
-        return array_key_exists($name, $attrs) ? $attrs[$name] : null;
-    }
-
-    /**
-     * Set a dynamic attribute to the JSON attrs column.
-     *
-     * @param string $name Name of the attribute
-     * @param mixed $value
-     *
-     * @return mixed
-     */
-    protected function setJsonAttr($name, $value)
-    {
-        $attrs = $this->attrs ?: [];
-        if ($value) {
-            $attrs[$name] = $value;
-        } else {
-            unset($attrs[$name]);
-        }
-
-        $this->attrs = empty($attrs) ? null : $attrs;
     }
 }
