@@ -27,6 +27,11 @@ class TileSingleImageTest extends TestCase
             ->once()
             ->with($image->tilePath);
 
+        File::shouldReceive('get')
+            ->once()
+            ->with("{$image->tilePath}/ImageProperties.xml")
+            ->andReturn('<IMAGE_PROPERTIES WIDTH="2352" HEIGHT="18060" NUMTILES="973" NUMIMAGES="1" VERSION="1.8" TILESIZE="256"/>');
+
         $mock = Mockery::mock(Image::class);
         $mock->shouldReceive('dzsave')
             ->once()
@@ -35,9 +40,11 @@ class TileSingleImageTest extends TestCase
         $job = new TileSingleImageStub($image);
         $job->mock = $mock;
 
-        $this->assertFalse($image->fresh()->tiled);
+        $this->assertFalse($image->tiled);
         $job->handle();
-        $this->assertTrue($image->fresh()->tiled);
+        $image->refresh();
+        $this->assertTrue($image->tiled);
+        $this->assertEquals(['width' => 2352, 'height' => 18060], $image->getTileProperties());
     }
 }
 

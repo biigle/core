@@ -211,4 +211,19 @@ class ImageTest extends ModelTestCase
         $i->save();
         $this->assertFalse($i->fresh()->tiled);
     }
+
+    public function testSetGetTileProperties()
+    {
+        $this->model->setTileProperties([
+            'width' => 2352,
+            'height' => 18060,
+            'junk' => 973,
+        ]);
+        $this->model->save();
+
+        $this->assertEquals([
+            'width' => 2352,
+            'height' => 18060,
+        ], $this->model->fresh()->getTileProperties());
+    }
 }

@@ -4,6 +4,7 @@ namespace Biigle;
 
 use Response;
 use ErrorException;
+use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
@@ -12,6 +13,8 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
  */
 class Image extends Model
 {
+    use HasJsonAttributes;
+
     /**
      * Validation rules for attaching a label to an image.
      *
@@ -228,5 +231,28 @@ class Image extends Model
         } catch (FileNotFoundException $e) {
             abort(404, $e->getMessage());
         }
+    }
+
+    /**
+     * Set properties of a tiled image as dynamic JSON attributes.
+     *
+     * @param array $properties
+     */
+    public function setTileProperties(array $properties)
+    {
+        $properties = array_only($properties, ['width', 'height']);
+        if (!empty($properties)) {
+            $this->setJsonAttr('tileProperties', $properties);
+        }
+    }
+
+    /**
+     * Get properties of a tiled image from dynamic JSON attributes.
+     *
+     * @return [type]
+     */
+    public function getTileProperties()
+    {
+        return $this->getJsonAttr('tileProperties');
     }
 }
