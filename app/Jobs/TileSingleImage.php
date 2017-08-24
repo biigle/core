@@ -46,7 +46,8 @@ class TileSingleImage extends Job implements ShouldQueue
 
         $this->getVipsImage()->dzsave($this->image->tilePath, ['layout' => 'zoomify']);
         $xml = simplexml_load_string(strtolower(File::get("{$this->image->tilePath}/ImageProperties.xml")));
-        $this->image->setTileProperties(((array) $xml)['@attributes']);
+        $xml = ((array) $xml)['@attributes'];
+        $this->image->setTileProperties(array_map('intval', $xml));
         $this->image->tiled = true;
         $this->image->save();
     }

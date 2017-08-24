@@ -44,7 +44,7 @@ class TileSingleImageTest extends TestCase
         $job->handle();
         $image->refresh();
         $this->assertTrue($image->tiled);
-        $this->assertEquals(['width' => 2352, 'height' => 18060], $image->getTileProperties());
+        $this->assertSame(['width' => 2352, 'height' => 18060], $image->getTileProperties());
     }
 }
 
