@@ -47,8 +47,8 @@ class VolumeSampleController extends Controller
             $step = round($total / $number);
 
             /*
-             * This is how the images should be chosen (x):
-             * Maxbe $number must be event fr this to work??
+             * This is how I would like to pick the images (x):
+             * Maxbe $number must be even for this to work??
              *
              *             image
              *          1 2 3 4 5 6 7
@@ -59,12 +59,13 @@ class VolumeSampleController extends Controller
              *        5 x x o x o x x
              *        6 ? ? ? ? ? ? ?
              *        7 x x x x x x x
+             *
+             *  I didn't get this to work so I implemented a simple preliminary version
+             *  that chunks the volume into $number parts and takes the first image of
+             *  each chunk. The method described above would produce a better overview
+             *  of the volume, though, and should be implemented sometime.
              */
 
-            // This is a preliminary (easy) version that simply chunks the volume into
-            // $number parts and takes the first image of each chunk. The method described
-            // above would produce a better overview of the volume, though, and should
-            // be implemented sometime.
             if ($step <= 1) {
                 return $query->pluck('uuid');
             }
