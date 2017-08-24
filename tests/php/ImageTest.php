@@ -22,6 +22,7 @@ class ImageTest extends ModelTestCase
         $this->assertNotNull($this->model->thumbPath);
         $this->assertNotNull($this->model->url);
         $this->assertNotNull($this->model->uuid);
+        $this->assertFalse($this->model->tiled);
         $this->assertNull($this->model->created_at);
         $this->assertNull($this->model->updated_at);
     }
@@ -195,5 +196,13 @@ class ImageTest extends ModelTestCase
         $this->model = $this->model->fresh();
         $this->assertEquals(55.5, $this->model->lat);
         $this->assertEquals(44.4, $this->model->lng);
+    }
+
+    public function testTiledDefaultFalse()
+    {
+        $i = static::make();
+        unset($i->tiled);
+        $i->save();
+        $this->assertFalse($i->fresh()->tiled);
     }
 }

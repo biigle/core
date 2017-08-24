@@ -86,6 +86,7 @@ class Image extends Model
         'attrs' => 'array',
         'lat' => 'float',
         'lng' => 'float',
+        'tiled' => 'bool',
     ];
 
     /**

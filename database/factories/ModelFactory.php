@@ -64,6 +64,7 @@ $factory->define(Biigle\Image::class, function ($faker) {
         'volume_id' => function () {
             return factory(Biigle\Volume::class)->create()->id;
         },
+        'tiled' => false,
     ];
 });
 
