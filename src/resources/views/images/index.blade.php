@@ -22,8 +22,8 @@
     </div>
     <div class="row">
         <div class="col-sm-6 col-lg-4">
-            <div class="panel panel-default">
-                <img class="img-responsive" src="{{ url('api/v1/images/'.$image->id.'/file') }}">
+            <div class="panel panel-default panel-image">
+                <img src="{{asset(config('thumbnails.uri'))}}/{{$image->uuid}}.{{config('thumbnails.format')}}">
             </div>
             @include('volumes::images.index.meta')
         </div>
