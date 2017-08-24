@@ -39,11 +39,11 @@ class TileSingleImage extends Job implements ShouldQueue
      */
     public function handle()
     {
-        if (!File::isDirectory($image->tilePath)) {
-            File::makeDirectory($image->tilePath);
+        if (!File::isDirectory($this->image->tilePath)) {
+            File::makeDirectory($this->image->tilePath);
         }
 
-        VipsImage::newFromFile($image->url)->dzsave($image->tilePath, ['layout' => 'zoomify']);
+        VipsImage::newFromFile($this->image->url)->dzsave($this->image->tilePath, ['layout' => 'zoomify']);
         $this->image->update(['tiled' => true]);
     }
 }
