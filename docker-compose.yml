@@ -7,7 +7,7 @@ services:
     user: 1000:1000
     build:
       context: ./
-      dockerfile: .docker/app.dockerfile
+      dockerfile: .docker/app-dev.dockerfile
     working_dir: /var/www
     volumes:
       - ./:/var/www
@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
     build:
       context: ./
-      dockerfile: .docker/worker.dockerfile
+      dockerfile: .docker/worker-dev.dockerfile
     working_dir: /var/www
     volumes_from:
       - app
@@ -36,7 +36,7 @@ services:
   #   restart: unless-stopped
   #   build:
   #     context: ./
-  #     dockerfile: .docker/worker.dockerfile
+  #     dockerfile: .docker/worker-dev.dockerfile
   #   working_dir: /var/www
   #   volumes_from:
   #     - app
@@ -47,7 +47,7 @@ services:
 
   # The web server
   web:
-    image: biigle/web
+    image: biigle/web-dev
     build:
       context: ./
       dockerfile: .docker/web.dockerfile
@@ -59,7 +59,7 @@ services:
 
   # The database
   database:
-    image: postgres:9.4
+    image: postgres:9.4-alpine
     volumes:
       - dbdata:/var/lib/postgresql
       - ./:/data
