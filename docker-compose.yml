@@ -50,7 +50,7 @@ services:
     image: biigle/web-dev
     build:
       context: ./
-      dockerfile: .docker/web.dockerfile
+      dockerfile: .docker/web-dev.dockerfile
     working_dir: /var/www
     volumes_from:
       - app
