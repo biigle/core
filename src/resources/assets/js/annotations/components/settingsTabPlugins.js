@@ -144,12 +144,15 @@ biigle.$require('annotations.components.settingsTabPlugins').exportArea = {
         maybeDrawArea: function () {
             this.clearSource();
             if (this.exportArea && this.height > 0) {
+                // Handle coordinates for tiled and regular images differently.
+                var height = this.currentImage.tiled ? 0 : this.height;
+
                 var geometry = new ol.geom.Rectangle([[
                     // Swap y coordinates for OpenLayers.
-                    [this.exportArea[0], this.height - this.exportArea[1]],
-                    [this.exportArea[0], this.height - this.exportArea[3]],
-                    [this.exportArea[2], this.height - this.exportArea[3]],
-                    [this.exportArea[2], this.height - this.exportArea[1]],
+                    [this.exportArea[0], height - this.exportArea[1]],
+                    [this.exportArea[0], height - this.exportArea[3]],
+                    [this.exportArea[2], height - this.exportArea[3]],
+                    [this.exportArea[2], height - this.exportArea[1]],
                 ]]);
                 this.layer.getSource().addFeature(new ol.Feature({geometry: geometry}));
             }
@@ -175,9 +178,11 @@ biigle.$require('annotations.components.settingsTabPlugins').exportArea = {
         updateExportArea: function (feature) {
             var self = this;
             var coordinates = feature.getGeometry().getCoordinates()[0];
+            // Handle coordinates for tiled and regular images differently.
+            var height = this.currentImage.tiled ? 0 : this.height;
             coordinates = [
-                coordinates[0][0], this.height - coordinates[0][1],
-                coordinates[2][0], this.height - coordinates[2][1],
+                coordinates[0][0], height - coordinates[0][1],
+                coordinates[2][0], height - coordinates[2][1],
             ].map(Math.round);
 
             var promise = this.exportAreaApi.save({id: this.volumeId}, {coordinates: coordinates})
