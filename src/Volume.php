@@ -49,7 +49,7 @@ class Volume extends BaseVolume
      */
     public function getExportAreaAttribute()
     {
-        return array_get($this->attrs, self::EXPORT_AREA_ATTRIBUTE);
+        return $this->getJsonAttr(self::EXPORT_AREA_ATTRIBUTE);
     }
 
     /**
@@ -63,11 +63,7 @@ class Volume extends BaseVolume
             throw new Exception('Export area coordinates must be an array!');
         }
 
-        $attrs = $this->attrs;
-
-        if ($value === null) {
-            unset($attrs[self::EXPORT_AREA_ATTRIBUTE]);
-        } else {
+        if ($value !== null) {
             if (sizeof($value) !== 4) {
                 throw new Exception('Malformed export area coordinates!');
             }
@@ -77,10 +73,8 @@ class Volume extends BaseVolume
                     throw new Exception('Malformed export area coordinates!');
                 }
             }
-
-            $attrs[self::EXPORT_AREA_ATTRIBUTE] = $value;
         }
 
-        $this->attrs = $attrs;
+        $this->setJsonAttr(self::EXPORT_AREA_ATTRIBUTE, $value);
     }
 }
