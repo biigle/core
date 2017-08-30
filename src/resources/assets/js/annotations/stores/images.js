@@ -137,7 +137,7 @@ biigle.$declare('annotations.stores.images', function () {
                         // if we simply passed on the canvas element as a prop to a
                         // component. We therefore create this new object for each image.
                         // And pass it as a prop instead.
-                        var p = new Vue.Promise(function (resolve) {
+                        var promise = new Vue.Promise(function (resolve) {
                             img.onload = function () {
                                 resolve({
                                     source: img,
@@ -150,7 +150,7 @@ biigle.$declare('annotations.stores.images', function () {
 
                         img.src = urlCreator.createObjectURL(response.bodyBlob);
 
-                        return p;
+                        return promise;
                     });
             },
             drawSimpleImage: function (image) {

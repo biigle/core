@@ -272,32 +272,61 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             updateMapSize: function () {
                 this.mapSize = map.getSize();
             },
-            // Determines the OpenLayers geometry object for an annotation.
-            getGeometry: function (annotation) {
-                var points = annotation.points;
+            invertPointsYAxis: function (points) {
+                // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
+                // the points based on the type of the image that is currently displayed
+                // (single or tiled). CAUTION: Modifies the array in place!
+                //
+                // If the image is tiled the y axis should be negated because the
+                // coordinates of the OL Zoomify source are computed in a weird way.
+                //
+                // If it is a single image the y axis should be switched from "top to
+                // bottom" to "bottom to top" or vice versa. Our database expects ttb,
+                // OpenLayers expects btt.
+
+                var height = this.image.tiled ? 0 : this.image.height;
+                for (var i = 1; i < points.length; i += 2) {
+                    points[i] = height - points[i];
+                }
+
+                return points;
+            },
+            convertPointsFromOlToDb: function (points) {
+                // Merge the individual point arrays to a single array first.
+                // [[x1, y1], [x2, y2]] -> [x1, y1, x2, y2]
+                return this.invertPointsYAxis(Array.prototype.concat.apply([], points));
+            },
+            convertPointsFromDbToOl: function (points) {
+                // Duplicate the points array because we don't want to modify the
+                // original array.
+                points = this.invertPointsYAxis(points.slice());
                 var newPoints = [];
-                var height = this.image.height;
                 for (var i = 0; i < points.length; i += 2) {
                     newPoints.push([
                         points[i],
-                        // Invert the y axis to OpenLayers coordinates.
                         // Circles have no fourth point so we take 0.
-                        height - (points[i + 1] || 0)
+                        (points[i + 1] || 0)
                     ]);
                 }
 
+                return newPoints;
+            },
+            // Determines the OpenLayers geometry object for an annotation.
+            getGeometry: function (annotation) {
+                var points = this.convertPointsFromDbToOl(annotation.points);
+
                 switch (annotation.shape) {
                     case 'Point':
-                        return new ol.geom.Point(newPoints[0]);
+                        return new ol.geom.Point(points[0]);
                     case 'Rectangle':
-                        return new ol.geom.Rectangle([newPoints]);
+                        return new ol.geom.Rectangle([points]);
                     case 'Polygon':
-                        return new ol.geom.Polygon([newPoints]);
+                        return new ol.geom.Polygon([points]);
                     case 'LineString':
-                        return new ol.geom.LineString(newPoints);
+                        return new ol.geom.LineString(points);
                     case 'Circle':
                         // radius is the x value of the second point of the circle
-                        return new ol.geom.Circle(newPoints[0], newPoints[1][0]);
+                        return new ol.geom.Circle(points[0], points[1][0]);
                     // unsupported shapes are ignored
                     default:
                         console.error('Unknown annotation shape: ' + annotation.shape);
@@ -412,16 +441,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         points = geometry.getCoordinates();
                 }
 
-                // Merge the individual point arrays to a single array.
-                points = Array.prototype.concat.apply([], points);
-
-                // Invert y coordinates back to the format that is stored in the DB.
-                var height = this.image.height;
-                for (var i = 1; i < points.length; i += 2) {
-                    points[i] = height - points[i];
-                }
-
-                return points;
+                return this.convertPointsFromOlToDb(points);
             },
             handleNewFeature: function (e) {
                 if (this.hasNoSelectedLabel) {
@@ -602,10 +622,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             updateMousePosition: function (e) {
                 var self = this;
                 biigle.$require('annotations.stores.utils').throttle(function () {
-                    self.mousePosition = [
-                        Math.round(e.coordinate[0]),
-                        Math.round(self.image.height - e.coordinate[1]),
-                    ];
+                    self.mousePosition = self.invertPointsYAxis(e.coordinate).map(Math.round);
                 }, 100, 'annotations.canvas.mouse-position');
             },
             updateHoveredAnnotations: function (e) {
@@ -649,7 +666,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     // The same performance optimizations mentioned above make the magic
                     // wand interaction unable to detect any change if the image is
                     // switched. So if the interaction is currently active we have to
-                    // update it anually here.
+                    // update it manually here.
                     if (this.isMagicWanding) {
                         magicWandInteraction.updateSnapshot();
                     }
@@ -739,9 +756,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     this.initialized = true;
                 }
 
+                // Leave this undefined if the current image is not tiled.
                 var resolutions;
 
-                if (tiledImageLayer.getSource()) {
+                if (this.image.tiled === true) {
                     resolutions = tiledImageLayer.getSource().getTileGrid().getResolutions();
                 }
 
