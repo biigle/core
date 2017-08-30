@@ -72,7 +72,7 @@ class ProjectReportGeneratorTest extends TestCase
             return $mock;
         });
 
-        $generator->generate($project, 'my/path');
+        $generator->generate($project, 'dir');
     }
 }
 
