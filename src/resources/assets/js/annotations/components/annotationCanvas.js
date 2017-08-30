@@ -151,8 +151,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             // Number of available image sections in x and y direction.
             imageSectionSteps: function () {
                 return [
-                    Math.ceil(this.extent[2] / (this.viewExtent[2] - this.viewExtent[0])),
-                    Math.ceil(this.extent[3] / (this.viewExtent[3] - this.viewExtent[1])),
+                    Math.ceil(this.image.width / (this.viewExtent[2] - this.viewExtent[0])),
+                    Math.ceil(this.image.height / (this.viewExtent[3] - this.viewExtent[1])),
                 ];
             },
             // Distance to travel between image sections in x and y direction.
@@ -163,18 +163,19 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 ];
                 var overlap;
                 if (this.imageSectionSteps[0] > 1) {
-                    overlap = (stepSize[0] * this.imageSectionSteps[0]) - this.extent[2];
+                    overlap = (stepSize[0] * this.imageSectionSteps[0]) - this.image.width;
                     stepSize[0] -= overlap / (this.imageSectionSteps[0] - 1);
                 } else {
                     stepSize[0] = this.viewExtent[2];
                 }
 
                 if (this.imageSectionSteps[1] > 1) {
-                    overlap = (stepSize[1] * this.imageSectionSteps[1]) - this.extent[3];
+                    overlap = (stepSize[1] * this.imageSectionSteps[1]) - this.image.height;
                     stepSize[1] -= overlap / (this.imageSectionSteps[1] - 1);
                 } else {
                     stepSize[1] = this.viewExtent[3];
                 }
+
 
                 return stepSize;
             },
@@ -190,7 +191,17 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 }
 
                 if (this.imageSectionSteps[1] <= 1) {
-                    startCenter[1] = this.extent[3] / 2;
+                    // If extent[3] is 0 we have a tiled image and the (negative) height
+                    // is stored in extent[2]
+                    startCenter[1] = (this.extent[3] || this.extent[1]) / 2;
+                } else {
+                    // This is the same as:
+                    // if (image.tiled === true) {
+                    //    startCenter[1] -= this.image.height;
+                    // }
+                    // because this.extent[1] is 0 if the image is not tiled and else the
+                    // negative height.
+                    startCenter[1] += this.extent[1];
                 }
 
                 return startCenter;
@@ -284,7 +295,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 // bottom" to "bottom to top" or vice versa. Our database expects ttb,
                 // OpenLayers expects btt.
 
-                var height = this.image.tiled ? 0 : this.image.height;
+                // extent[3] is 0 for a tiled image so this does exactly what we want.
+                var height = this.extent[3];
                 for (var i = 1; i < points.length; i += 2) {
                     points[i] = height - points[i];
                 }
@@ -743,7 +755,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             extent: function (extent, oldExtent) {
                 // The extent only truly changes if the width and height changed.
-                if (extent[2] === oldExtent[2] && extent[3] === oldExtent[3]) {
+                // extent[0] is always 0, the others vary depending on the image type
+                // (regular or tiled).
+                if (extent[1] === oldExtent[1] && extent[2] === oldExtent[2] && extent[3] === oldExtent[3]) {
                     return;
                 }
 
@@ -769,9 +783,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     resolution: this.resolution,
                     resolutions: resolutions,
                     zoomFactor: 1.5,
-                    // allow a maximum of 4x magnification
+                    // Allow a maximum of 4x magnification for non-tiled images.
                     minResolution: 0.25,
-                    // restrict movement
+                    // Restrict movement.
                     extent: extent
                 }));
 
