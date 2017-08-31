@@ -27,7 +27,7 @@ return [
         /*
         | Create tiles for local images where the longest edge is larger than this value
         | in pixels. For these images the tiles will be displayed in the annotation tool
-        | instead of the original images because they is too large to be displayed in a
+        | instead of the original images because they are too large to be displayed in a
         | browser.
         |
         | Set to INF to disable tiling.
