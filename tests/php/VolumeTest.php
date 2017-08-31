@@ -484,4 +484,14 @@ class VolumeTest extends ModelTestCase
             $this->assertNull($this->model->fresh()->$attr);
         }
     }
+
+    public function testHasTiledImages()
+    {
+        ImageTest::create(['tiled' => false, 'volume_id' => $this->model->id]);
+        $this->assertFalse($this->model->hasTiledImages());
+        ImageTest::create(['tiled' => true, 'volume_id' => $this->model->id, 'filename' => 'abc']);
+        $this->assertFalse($this->model->hasTiledImages());
+        Cache::flush();
+        $this->assertTrue($this->model->hasTiledImages());
+    }
 }

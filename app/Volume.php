@@ -496,4 +496,17 @@ class Volume extends Model
     {
         $this->dispatch(new GenerateImageTiles($this, $only));
     }
+
+    /**
+     * Check if the there are tiled images in this volume.
+     *
+     * @return bool
+     */
+    public function hasTiledImages()
+    {
+        // Cache this for a single request because it may be called lots of times.
+        return Cache::store('array')->remember("volume-{$this->id}-has-tiled", 1, function () {
+            return $this->images()->where('tiled', true)->exists();
+        });
+    }
 }
