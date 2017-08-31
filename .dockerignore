@@ -5,3 +5,7 @@ vendor
 storage/framework/cache/**
 storage/framework/sessions/**
 storage/framework/views/**
+storage/framework/thumbs/**
+storage/framework/tiles/**
+public/thumbs/**
+public/tiles/**

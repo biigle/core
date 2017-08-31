@@ -1,0 +1,57 @@
+version: '2'
+
+services:
+
+  app:
+    image: biigle/app
+    build:
+      context: ./
+      dockerfile: .docker/app.dockerfile
+    volumes:
+      - storage:/var/www/storage
+    # env_file:
+    #   .env.prod
+    environment:
+      - "DB_HOST=database"
+      - "REDIS_HOST=cache"
+
+  web:
+    image: biigle/web
+    build:
+      context: ./
+      dockerfile: .docker/web.dockerfile
+    volumes_from:
+      - app
+    ports:
+      - 80:80
+      - 443:443
+
+  worker:
+    image: biigle/worker
+    build:
+      context: ./
+      dockerfile: .docker/worker.dockerfile
+    volumes_from:
+      - app
+    # env_file:
+    #   .env.prod
+    environment:
+      - "DB_HOST=database"
+      - "REDIS_HOST=cache"
+    command: "php -d memory_limit=1G artisan queue:work --sleep=5 --tries=3 --timeout=0"
+
+  database:
+    image: postgres:9.4-alpine
+    volumes:
+      - dbdata:/var/lib/postgresql
+    environment:
+      - "POSTGRES_DB=homestead"
+      - "POSTGRES_USER=homestead"
+      - "POSTGRES_PASSWORD=secret"
+
+  cache:
+    image: redis:3.0-alpine
+
+volumes:
+  dbdata:
+  storage:
