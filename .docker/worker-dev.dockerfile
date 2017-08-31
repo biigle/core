@@ -2,18 +2,6 @@ FROM php:7.1-cli
 
 RUN apt-get update
 
-RUN apt-get install -y python python-dev python-pip libfreetype6-dev libblas-dev liblapack-dev gfortran --no-install-recommends
-RUN pip install -U pip
-# Run as separate commands so previous packages don't have to be build anew if one failed
-RUN pip install --no-cache-dir numpy==1.8.2
-RUN pip install --no-cache-dir scikit-learn==0.14.1
-RUN pip install --no-cache-dir scipy==0.13.3
-RUN pip install --no-cache-dir PyExcelerate==0.6.7
-RUN pip install --no-cache-dir matplotlib==1.3.1
-RUN apt-get remove -y --purge python-dev gfortran \
-    && apt-get autoremove -y \
-    && apt-get clean -y
-
 RUN apt-get install -y libpq-dev postgresql-client-9.4 --no-install-recommends \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql
@@ -46,6 +34,21 @@ RUN pecl install vips \
     && docker-php-ext-enable vips
 
 RUN apt-get remove --purge -y automake gtk-doc-tools build-essential \
+    && apt-get autoremove -y \
+    && apt-get clean -y
+
+# Install Python with modules after vips because it also depends on the various image
+# processing libraries (libjpeg etc.)
+RUN apt-get install -y python python-dev python-pip libfreetype6-dev libblas-dev liblapack-dev gfortran --no-install-recommends
+RUN pip install -U pip
+# Run as separate commands so previous packages don't have to be build anew if one failed
+RUN pip install --no-cache-dir numpy==1.8.2
+RUN pip install --no-cache-dir scikit-learn==0.14.1
+RUN pip install --no-cache-dir Pillow==2.6.0
+RUN pip install --no-cache-dir scipy==0.13.3
+RUN pip install --no-cache-dir PyExcelerate==0.6.7
+RUN pip install --no-cache-dir matplotlib==1.3.1
+RUN apt-get remove -y --purge python-dev gfortran \
     && apt-get autoremove -y \
     && apt-get clean -y
 
