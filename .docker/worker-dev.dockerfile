@@ -1,56 +1,91 @@
 FROM php:7.1-cli
 
-RUN apt-get update
-
-RUN apt-get install -y libpq-dev postgresql-client-9.4 --no-install-recommends \
+# Install Postgres client
+RUN apt-get update \
+    && apt-get install -y libpq-dev postgresql-client-9.4 --no-install-recommends \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install pdo pdo_pgsql pgsql
+    && docker-php-ext-install pdo pdo_pgsql pgsql \
+    && apt-get remove --purge -y libpq-dev \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get install -y libxml2-dev --no-install-recommends \
-    && docker-php-ext-install soap
+# Instal PHP SOAP extension
+RUN apt-get update \
+    && apt-get install -y libxml2-dev --no-install-recommends \
+    && docker-php-ext-install soap \
+    && apt-get remove --purge -y libxml2-dev \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-install json fileinfo exif zip mbstring pcntl
+# Install other required extensions
+RUN apt-get update \
+    && apt-get install -y zlib1g-dev zlib1g --no-install-recommends \
+    && docker-php-ext-install json fileinfo exif zip mbstring pcntl \
+    && apt-get remove --purge -y zlib1g-dev \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Build libvips from source since the vips PHP extension requires vips >=8.2 which is
 # not available in Debian Jessie
-RUN apt-get -y install \
-    # required to build vips
-    automake gtk-doc-tools build-essential pkg-config glib2.0-dev libexpat1-dev \
+RUN apt-get update \
     # required for TIFF, JPG, dzi and PNG support of vips
-    libtiff5-dev libjpeg62-turbo-dev libgsf-1-dev libpng-dev \
-    --no-install-recommends
+    && apt-get -y install libtiff5 libjpeg62-turbo libgsf-1-114 libpng12-0 libexpat1 \
+        --no-install-recommends \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN cd /tmp \
-    && curl -L https://github.com/jcupitt/libvips/releases/download/v8.5.7/vips-8.5.7.tar.gz > vips-8.5.7.tar.gz \
-    && tar -xzf vips-8.5.7.tar.gz \
-    && rm vips-8.5.7.tar.gz
-RUN cd /tmp/vips-8.5.7 \
-    && ./configure --with-jpeg-includes=/usr/include --with-jpeg-libraries=/usr/lib \
-    && make \
-    && make install \
+ARG LIBVIPS_VERSION=8.5.7
+RUN apt-get update \
+    && apt-get -y install \
+        # required to build vips
+        automake gtk-doc-tools build-essential pkg-config glib2.0-dev libexpat1-dev \
+        libtiff5-dev libjpeg62-turbo-dev libgsf-1-dev libpng-dev \
+        --no-install-recommends \
     && cd /tmp \
-    && rm -r vips-8.5.7
-RUN pecl install vips \
-    && docker-php-ext-enable vips
-
-RUN apt-get remove --purge -y automake gtk-doc-tools build-essential \
+    && curl -L https://github.com/jcupitt/libvips/releases/download/v${LIBVIPS_VERSION}/vips-${LIBVIPS_VERSION}.tar.gz > vips-${LIBVIPS_VERSION}.tar.gz \
+    && tar -xzf vips-${LIBVIPS_VERSION}.tar.gz \
+    && rm vips-${LIBVIPS_VERSION}.tar.gz \
+    && cd /tmp/vips-${LIBVIPS_VERSION} \
+    && ./configure \
+        --without-python \
+        --enable-debug=no \
+        --disable-dependency-tracking \
+        --disable-static \
+        --with-jpeg-includes=/usr/include \
+        --with-jpeg-libraries=/usr/lib \
+    && make \
+    && make -s install-strip \
+    && cd /tmp \
+    && rm -r vips-${LIBVIPS_VERSION} \
+    # Do this here because all the *-dev stuff is still needed to build php-vips-ext
+    && pecl install vips \
+    && docker-php-ext-enable vips \
+    && apt-get remove --purge -y automake gtk-doc-tools build-essential glib2.0-dev \
+        libexpat1-dev libtiff5-dev libjpeg62-turbo-dev libgsf-1-dev libpng-dev \
     && apt-get autoremove -y \
-    && apt-get clean -y
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Python with modules after vips because it also depends on the various image
 # processing libraries (libjpeg etc.)
-RUN apt-get install -y python python-dev python-pip libfreetype6-dev libblas-dev liblapack-dev gfortran --no-install-recommends
-RUN pip install -U pip
-# Run as separate commands so previous packages don't have to be build anew if one failed
-RUN pip install --no-cache-dir numpy==1.8.2
-RUN pip install --no-cache-dir scikit-learn==0.14.1
-RUN pip install --no-cache-dir Pillow==2.6.0
-RUN pip install --no-cache-dir scipy==0.13.3
-RUN pip install --no-cache-dir PyExcelerate==0.6.7
-RUN pip install --no-cache-dir matplotlib==1.3.1
-RUN apt-get remove -y --purge python-dev gfortran \
-    && apt-get autoremove -y \
-    && apt-get clean -y
+RUN apt-get update \
+    && apt-get install -y python libfreetype6 libblas3 liblapack3 --no-install-recommends \
+    && apt-get install -y python-dev libfreetype6-dev libblas-dev liblapack-dev gfortran --no-install-recommends \
+    && curl -L https://bootstrap.pypa.io/get-pip.py > /tmp/get-pip.py \
+    && python /tmp/get-pip.py \
+    && pip install --no-cache-dir numpy==1.8.2 \
+    && pip install --no-cache-dir scikit-learn==0.14.1 \
+    && pip install --no-cache-dir Pillow==2.6.0 \
+    && pip install --no-cache-dir scipy==0.13.3 \
+    && pip install --no-cache-dir PyExcelerate==0.6.7 \
+    && pip install --no-cache-dir matplotlib==1.3.1 \
+    && apt-get remove -y --purge python-dev libfreetype6-dev libblas-dev liblapack-dev gfortran \
+    && apt-get clean \
+    && rm -r /tmp/* \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create a user that can be used for debugging. Some commands like artisan tinker
 # require a home directory.
