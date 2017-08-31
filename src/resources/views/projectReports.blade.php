@@ -80,7 +80,7 @@
                     </div>
                 </div>
                 <div class="alert alert-success" v-if="success" v-cloak>
-                    The requested report will be prepared. You will get notified by email when it is ready. Now you can request a new report or <a href="{{route('project', $project->id)}}" title="Back to {{$project->name}}" class="alert-link">go back</a> to the project.
+                    The requested report will be prepared. You will get notified when it is ready. Now you can request a new report or <a href="{{route('project', $project->id)}}" title="Back to {{$project->name}}" class="alert-link">go back</a> to the project.
                 </div>
                 <div class="form-group">
                     <a href="{{route('project', $project->id)}}" title="Back to {{$project->name}}" class="btn btn-default">back</a>

@@ -98,7 +98,7 @@
                     </div>
                 </div>
                 <div class="alert alert-success" v-if="success" v-cloak>
-                    The requested report will be prepared. You will get notified by email when it is ready. Now you can request a new report or <a href="{{route('volume', $volume->id)}}" title="Back to {{$volume->name}}" class="alert-link">go back</a> to the volume.
+                    The requested report will be prepared. You will get notified when it is ready. Now you can request a new report or <a href="{{route('volume', $volume->id)}}" title="Back to {{$volume->name}}" class="alert-link">go back</a> to the volume.
                 </div>
                 <div class="form-group">
                     <a href="{{route('volume', $volume->id)}}" title="Back to {{$volume->name}}" class="btn btn-default">back</a>
