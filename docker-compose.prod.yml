@@ -10,7 +10,7 @@ services:
       dockerfile: .docker/app.dockerfile
       context: ./
       args:
-        - GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
+        GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
     volumes:
       - ./storage:/var/www/storage
     env_file:
@@ -39,7 +39,7 @@ services:
       dockerfile: .docker/worker.dockerfile
       context: ./
       args:
-        - GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
+        GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
     volumes_from:
       - app
     env_file:
