@@ -1,11 +1,15 @@
 FROM php:7.1-alpine
+MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
+
+# Use edge branch for repositories.
+COPY .docker/repositories /etc/apk/repositories
 
 RUN apk add --no-cache openssl postgresql-dev libxml2-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql json fileinfo exif mbstring soap zip pcntl
 
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
-# Install vips from source because there is no up to date package available.
+# Install vips from source because the edge package does not have libgsf support
 ARG LIBVIPS_VERSION=8.5.7
 RUN apk add --no-cache --virtual .build-deps \
         autoconf automake build-base glib-dev expat-dev \
@@ -31,34 +35,41 @@ RUN apk add --no-cache --virtual .build-deps \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 
-# I STOPPED HERE BECAUSE INSTALLING THE PYTHON DEPS WAS TOO CUMBERSOME. EVERYTHING ABOVE
-# WORKS, THOUGH.
-
 # Install Python dependencies
-# RUN apk --no-cache --virtual .build-deps python-dev freetype-dev.....
+RUN apk add --no-cache --virtual .build-deps \
+        build-base python-dev freetype-dev lapack-dev gfortran \
+    && apk add --no-cache freetype lapack \
+    && curl -L https://bootstrap.pypa.io/get-pip.py > /tmp/get-pip.py \
+    && python /tmp/get-pip.py \
+    && pip install --no-cache-dir numpy==1.8.2 \
+    && pip install --no-cache-dir scikit-learn==0.14.1 \
+    && pip install --no-cache-dir Pillow==2.6.0 \
+    && pip install --no-cache-dir scipy==0.13.3 \
+    && pip install --no-cache-dir PyExcelerate==0.6.7 \
+    && pip install --no-cache-dir matplotlib==1.3.1 \
+    && apk del --purge .build-deps \
+    && rm -rf /var/cache/apk/*
 
-# COPY composer.lock composer.json /var/www/
+COPY composer.lock composer.json /var/www/
 
-# COPY database /var/www/database
+COPY database /var/www/database
 
-# WORKDIR /var/www
+WORKDIR /var/www
 
-# RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-#     && php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
-#     && php composer-setup.php \
-#     && rm composer-setup.php \
-#     # Ignore platform reqs because the app image is stripped down to the essentials
-#     # and doens't meet some of the requirements. We do this for the worker, though.
-#     && php composer.phar install --no-dev --no-scripts --ignore-platform-reqs \
-#     && rm composer.phar
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+    && php composer-setup.php \
+    && rm composer-setup.php \
+    && php composer.phar install --no-dev --no-scripts \
+    && rm composer.phar
 
-# COPY . /var/www
+COPY . /var/www
 
-# RUN chown -R www-data:www-data \
-#         /var/www/storage \
-#         /var/www/bootstrap/cache
+# Make this writable for whatever user the app is running as.
+RUN chmod o+w /var/www/bootstrap/cache
 
-# RUN php /var/www/artisan route:cache
-# RUN php /var/www/artisan config:cache
-# RUN php /var/www/artisan optimize
+# Don't cache the config because this will ignore the environment variables of the
+# production container.
+RUN php /var/www/artisan route:cache
+RUN php /var/www/artisan optimize
 

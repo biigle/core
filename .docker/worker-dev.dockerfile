@@ -1,4 +1,5 @@
 FROM php:7.1-cli
+MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
 # Install Postgres client
 RUN apt-get update \

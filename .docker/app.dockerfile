@@ -1,4 +1,5 @@
 FROM php:7.1-fpm-alpine
+MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
 RUN apk add --no-cache openssl postgresql-dev libxml2-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
@@ -21,10 +22,10 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 
 COPY . /var/www
 
-RUN chown -R www-data:www-data \
-        /var/www/storage \
-        /var/www/bootstrap/cache
+# Make this writable for whatever user the app is running as.
+RUN chmod o+w /var/www/bootstrap/cache
 
+# Don't cache the config because this will ignore the environment variables of the
+# production container.
 RUN php /var/www/artisan route:cache
-RUN php /var/www/artisan config:cache
 RUN php /var/www/artisan optimize

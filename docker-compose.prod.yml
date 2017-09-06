@@ -4,22 +4,25 @@ services:
 
   app:
     image: biigle/app
+    user: ${USER_ID}:${GROUP_ID}
+    restart: on-failure
     build:
-      context: ./
       dockerfile: .docker/app.dockerfile
+      context: ./
     volumes:
-      - storage:/var/www/storage
-    # env_file:
-    #   .env.prod
+      - ./storage:/var/www/storage
+    env_file:
+      - .env
     environment:
       - "DB_HOST=database"
       - "REDIS_HOST=cache"
 
   web:
     image: biigle/web
+    restart: on-failure
     build:
-      context: ./
       dockerfile: .docker/web.dockerfile
+      context: ./
     volumes_from:
       - app
     ports:
@@ -28,20 +31,36 @@ services:
 
   worker:
     image: biigle/worker
+    user: ${USER_ID}:${GROUP_ID}
+    restart: on-failure
     build:
-      context: ./
       dockerfile: .docker/worker.dockerfile
+      context: ./
     volumes_from:
       - app
-    # env_file:
-    #   .env.prod
+    env_file:
+      - .env
     environment:
       - "DB_HOST=database"
       - "REDIS_HOST=cache"
     command: "php -d memory_limit=1G artisan queue:work --sleep=5 --tries=3 --timeout=0"
 
+  scheduler:
+    image: biigle/worker
+    user: ${USER_ID}:${GROUP_ID}
+    restart: on-failure
+    volumes_from:
+      - app
+    env_file:
+      - .env
+    environment:
+      - "DB_HOST=database"
+      - "REDIS_HOST=cache"
+    command: "/bin/sh -c 'while sleep 60; do php artisan schedule:run >> /dev/null 2>&1; done'"
+
   database:
     image: postgres:9.4-alpine
+    restart: on-failure
     volumes:
       - dbdata:/var/lib/postgresql
     environment:
@@ -51,7 +70,7 @@ services:
 
   cache:
     image: redis:3.0-alpine
+    restart: on-failure
 
 volumes:
   dbdata:
-  storage:

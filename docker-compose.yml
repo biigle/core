@@ -30,21 +30,6 @@ services:
       - "DB_HOST=database"
     command: "php -d memory_limit=1G artisan queue:work --sleep=5 --tries=3 --timeout=0"
 
-  # scheduler:
-  #   image: biigle/worker-dev
-  #   user: 1000:1000
-  #   restart: unless-stopped
-  #   build:
-  #     context: ./
-  #     dockerfile: .docker/worker-dev.dockerfile
-  #   working_dir: /var/www
-  #   volumes_from:
-  #     - app
-  #   environment:
-  #     - "DB_PORT=5432"
-  #     - "DB_HOST=database"
-  #   command: "while sleep 60; do php artisan schedule:run >> /dev/null 2>&1; done"
-
   # The web server
   web:
     image: biigle/web-dev
