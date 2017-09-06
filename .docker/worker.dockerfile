@@ -9,12 +9,15 @@ RUN apk add --no-cache openssl postgresql-dev libxml2-dev \
     && docker-php-ext-install pdo pdo_pgsql pgsql json fileinfo exif mbstring soap zip pcntl
 
 ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
-# Install vips from source because the edge package does not have libgsf support
+# Install vips from source because the edge package does not have libgsf support.
+# I've ommitted libexif on purpose because the EXIF orientation of images captured by
+# an AUV is not reliable. Without libexif, vipsthumbnail ignores the EXIF orientation and
+# the thumbnail orientation is correct again.
 ARG LIBVIPS_VERSION=8.5.7
 RUN apk add --no-cache --virtual .build-deps \
         autoconf automake build-base glib-dev expat-dev \
-        libexif-dev tiff-dev libjpeg-turbo-dev libgsf-dev libpng-dev \
-    && apk add --no-cache glib libexif tiff libjpeg-turbo libgsf libpng expat \
+        tiff-dev libjpeg-turbo-dev libgsf-dev libpng-dev \
+    && apk add --no-cache glib tiff libjpeg-turbo libgsf libpng expat \
     && cd /tmp \
     && curl -L https://github.com/jcupitt/libvips/releases/download/v${LIBVIPS_VERSION}/vips-${LIBVIPS_VERSION}.tar.gz > vips-${LIBVIPS_VERSION}.tar.gz \
     && tar -xzf vips-${LIBVIPS_VERSION}.tar.gz \
