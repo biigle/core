@@ -74,7 +74,9 @@ RUN apt-get update \
 # processing libraries (libjpeg etc.)
 RUN apt-get update \
     && apt-get install -y python libfreetype6 libblas3 liblapack3 --no-install-recommends \
-    && apt-get install -y python-dev libfreetype6-dev libblas-dev liblapack-dev gfortran --no-install-recommends \
+    && apt-get install -y python-dev libfreetype6-dev libblas-dev liblapack-dev \
+        gfortran libjpeg62-turbo-dev libpng-dev \
+        --no-install-recommends \
     && curl -L https://bootstrap.pypa.io/get-pip.py > /tmp/get-pip.py \
     && python /tmp/get-pip.py \
     && pip install --no-cache-dir numpy==1.8.2 \
@@ -83,7 +85,8 @@ RUN apt-get update \
     && pip install --no-cache-dir scipy==0.13.3 \
     && pip install --no-cache-dir PyExcelerate==0.6.7 \
     && pip install --no-cache-dir matplotlib==1.3.1 \
-    && apt-get remove -y --purge python-dev libfreetype6-dev libblas-dev liblapack-dev gfortran \
+    && apt-get remove -y --purge python-dev libfreetype6-dev libblas-dev liblapack-dev \
+        gfortran libjpeg62-turbo-dev libpng-dev \
     && apt-get clean \
     && rm -r /tmp/* \
     && rm -rf /var/lib/apt/lists/*
