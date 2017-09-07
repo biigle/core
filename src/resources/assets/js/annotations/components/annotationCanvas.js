@@ -805,6 +805,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             // properly loaded and there is no setStyle() function like for the
             // annotationLayer.
             selectInteraction = new ol.interaction.Select({
+                // Use click instead of default singleclick because the latter is delayed
+                // 250ms to ensure the event is no doubleclick. But we want it to be as
+                // fast as possible.
+                condition: ol.events.condition.click,
                 style: styles.highlight,
                 layers: [annotationLayer],
                 // enable selecting multiple overlapping features at once
