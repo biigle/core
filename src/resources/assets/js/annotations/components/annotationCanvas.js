@@ -136,7 +136,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             viewExtent: function () {
                 // The view can't calculate the extent if the resolution is not set.
-                if (this.resolution && map) {
+                // Also use this.initialized so this property is recomputed when the
+                // map is set (because the map is no reactive object). See:
+                // https://github.com/BiodataMiningGroup/biigle-annotations/issues/69
+                if (this.initialized && this.resolution && map) {
                     return map.getView().calculateExtent(this.mapSize);
                 }
 
