@@ -701,7 +701,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     if (!oldImage || oldImage.tiled !== true) {
                         map.removeLayer(imageLayer);
                         map.addLayer(tiledImageLayer);
-                        magicWandInteraction.setLayer(tiledImageLayer);
+                        if (magicWandInteraction) {
+                            magicWandInteraction.setLayer(tiledImageLayer);
+                        }
                     }
 
                     this.handleTiledImage(image, oldImage);
@@ -709,7 +711,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     if (!oldImage || oldImage.tiled === true) {
                         map.removeLayer(tiledImageLayer);
                         map.addLayer(imageLayer);
-                        magicWandInteraction.setLayer(imageLayer);
+                        if (magicWandInteraction) {
+                            magicWandInteraction.setLayer(imageLayer);
+                        }
                     }
 
                     this.handleRegularImage(image, oldImage);
