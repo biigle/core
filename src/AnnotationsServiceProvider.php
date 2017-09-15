@@ -41,6 +41,7 @@ class AnnotationsServiceProvider extends ServiceProvider
                 'adminShowUser',
                 'searchTab',
                 'searchTabContent',
+                'volumesManualRemoteVolumes',
             ],
             'controllerMixins' => [
                 'search' => SearchControllerMixin::class.'@index',
