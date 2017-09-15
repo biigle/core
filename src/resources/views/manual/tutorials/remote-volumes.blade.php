@@ -1,4 +1,5 @@
 @extends('manual.base')
+@inject('modules', 'Biigle\Services\Modules')
 
 @section('manual-title') Remote volumes @stop
 
@@ -60,7 +61,18 @@
             One drawback of remote volumes obviously is the fact that you have to make the images quasi-publicly accessible. There is always the possibility of a BIIGLE user who has access to a remote volume to take the URL of the remote location and share it with a third party (but they could share their BIIGLE login credentials just the same, for that matter).
         </p>
         <p>
-            A bigger drawback is that some of the features of BIIGLE require the images to be stored locally. This means that a few features are disabled for remote volumes. The core functionality for annotations and reports is always available, though.
+            A bigger drawback is that some of the features of BIIGLE require the images to be stored locally. This means that a few features are disabled for remote volumes. The core functionality for annotations and reports is always available, though. The following features are not available:
         </p>
+        <ul>
+            <li>
+                Image metadata such as geo corrdinates or creation date are not automatically extracted from new images. <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">Upload them as a CSV instead.</a>
+            </li>
+            <li>
+                Image metadata such as camera model, orientation or flash extracted from the image EXIF headers is not displayed on the image information view.
+            </li>
+            @foreach ($modules->getMixins('volumesManualRemoteVolumes') as $module => $nestedMixins)
+                @include($module.'::volumesManualRemoteVolumes')
+            @endforeach
+        </ul>
     </div>
 @endsection
