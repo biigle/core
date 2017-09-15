@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Middleware;
 
+use Auth;
 use Closure;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as BaseVerifier;
 
@@ -22,9 +23,9 @@ class VerifyCsrfToken extends BaseVerifier
      * @param  \Illuminate\Http\Request  $request
      * @return bool
      */
-    protected function shouldPassThrough($request)
+    protected function tokensMatch($request)
     {
-        // Requests with an API token should pass through, too.
-        return $request->getUser() || parent::shouldPassThrough($request);
+        // Requests of users authenticated via API token should pass through, too.
+        return parent::tokensMatch($request) || Auth::guard('api')->check();
     }
 }
