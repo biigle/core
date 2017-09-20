@@ -3,8 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use Cache;
-use Biigle\Shape;
 use ApiTestCase;
+use Biigle\Shape;
 use Carbon\Carbon;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationSessionTest;
