@@ -90,6 +90,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 Shape::$circleId,
                 Shape::$rectangleId,
                 Shape::$polygonId,
+                Shape::$ellipseId,
             ])
             ->orderBy('annotation_labels.id');
 
@@ -211,11 +212,12 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 // A --- B
                 // |     |
                 // D --- C
-                //
-                // dim1 is the distance from A to B, dim2 from B to C
 
+                // Distance between A and B.
                 $dim1 = sqrt(pow($points[0] - $points[2], 2) + pow($points[1] - $points[3], 2));
+                // Distance between B and C.
                 $dim2 = sqrt(pow($points[2] - $points[4], 2) + pow($points[3] - $points[5], 2));
+
                 $annotation->width_px = max($dim1, $dim2);
                 $annotation->height_px = min($dim1, $dim2);
                 $annotation->area_sqpx = $dim1 * $dim2;
@@ -248,6 +250,30 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 $annotation->width_px = $max[0] - $min[0];
                 $annotation->height_px = $max[1] - $min[1];
                 $annotation->area_sqpx = abs($area / 2);
+                break;
+
+            case Shape::$ellipseId:
+                // $a and $b are *double* the lengths of the semi-major axis and the
+                // semi-minor axis, respectively.
+                // See: https://www.math.hmc.edu/funfacts/ffiles/10006.3.shtml
+                //    ___D___
+                //   /   |   \
+                //  /    b    \
+                // |     |     |
+                // A--a--•-----B
+                // |     |     |
+                //  \    |    /
+                //   \___C___/
+
+                // Distance between A and B.
+                $a = sqrt(pow($points[0] - $points[2], 2) + pow($points[1] - $points[3], 2));
+                // Distance between C and D.
+                $b = sqrt(pow($points[4] - $points[6], 2) + pow($points[5] - $points[7], 2));
+
+                $annotation->width_px = max($a, $b);
+                $annotation->height_px = min($a, $b);
+                // Divide by 4 because $a and $b each are double the lengths.
+                $annotation->area_sqpx = M_PI * $a * $b / 4;
                 break;
 
             default:

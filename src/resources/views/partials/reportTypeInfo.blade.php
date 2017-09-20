@@ -11,7 +11,7 @@
     The CSV annotation report is intended for subsequent processing and lists the annotation labels at the highest possible resolution (as CSV files in a ZIP archive). See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['export', 'reports-schema'])}}#annotation-csv-report">report schema</a>.
 </div>
 <div class="help-block" v-cloak v-if="wantsCombination('Annotations', 'Area')">
-    The annotation area report lists all rectangle, circle or polygon annotations with their dimensions and area in pixels (as XLSX). If a laserpoint detection was performed, the dimensions in m and area in m² is included, too. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['export', 'reports-schema'])}}#annotation-area-report">report schema</a>.
+    The annotation area report lists all rectangle, circle, ellipse or polygon annotations with their dimensions and area in pixels (as XLSX). If a laser point detection was performed, the dimensions in m and area in m² is included, too. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['export', 'reports-schema'])}}#annotation-area-report">report schema</a>.
 </div>
 <div class="help-block" v-cloak v-if="wantsCombination('ImageLabels', 'Basic')">
     The basic image label report lists the image labels of all images (as XLSX). See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['export', 'reports-schema'])}}#image-label-basic-report">report schema</a>.
