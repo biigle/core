@@ -117,41 +117,55 @@ biigle.$declare('annotations.stores.images', function () {
             },
             createImage: function (id) {
                 var self = this;
-                return Vue.http.get(this.imageFileUri.replace('{id}', id))
-                    .catch(function () {
-                        return Vue.Promise.reject('Failed to load image ' + id + '!');
-                    })
-                    .then(function (response) {
-                        if (response.bodyBlob.type === 'application/json') {
-                            response.body.url = self.tilesUri.replace('{uuid}', response.body.uuid);
-
-                            return response.body;
-                        }
-
-                        var urlCreator = window.URL || window.webkitURL;
-                        var img = document.createElement('img');
-
-                        // We want to use the same canvas element for drawing and to
-                        // apply the color adjustments for better performance. But we
-                        // also want Vue to detect switched images which would not work
-                        // if we simply passed on the canvas element as a prop to a
-                        // component. We therefore create this new object for each image.
-                        // And pass it as a prop instead.
-                        var promise = new Vue.Promise(function (resolve) {
-                            img.onload = function () {
-                                resolve({
-                                    source: img,
-                                    width: img.width,
-                                    height: img.height,
-                                    canvas: canvas,
-                                });
-                            };
+                var img = document.createElement('img');
+                // We want to use the same canvas element for drawing and to
+                // apply the color adjustments for better performance. But we
+                // also want Vue to detect switched images which would not work
+                // if we simply passed on the canvas element as a prop to a
+                // component. We therefore create this new object for each image.
+                // And pass it as a prop instead.
+                var promise = new Vue.Promise(function (resolve, reject) {
+                    img.onload = function () {
+                        resolve({
+                            source: img,
+                            width: img.width,
+                            height: img.height,
+                            canvas: canvas,
                         });
+                    };
 
-                        img.src = urlCreator.createObjectURL(response.bodyBlob);
+                    img.onerror = function () {
+                        reject('Failed to load image ' + id + '!');
+                    };
+                });
 
-                        return promise;
-                    });
+                if (this.isRemoteVolume) {
+                    // Images of remote volumes *must* be loaded as src of an image
+                    // element because of cross origin restrictions!
+                    img.src = this.imageFileUri.replace('{id}', id);
+
+                    return promise;
+
+                } else {
+                    // If the volume is not remote the image may be tiled. So we request
+                    // the data from the endpoint and check if it's an image or a JSON.
+                    return Vue.http.get(this.imageFileUri.replace('{id}', id))
+                        .catch(function () {
+                            return Vue.Promise.reject('Failed to load image ' + id + '!');
+                        })
+                        .then(function (response) {
+                            if (response.bodyBlob.type === 'application/json') {
+                                response.body.url = self.tilesUri.replace('{uuid}', response.body.uuid);
+
+                                return response.body;
+                            }
+
+                            var urlCreator = window.URL || window.webkitURL;
+                            img.src = urlCreator.createObjectURL(response.bodyBlob);
+
+                            return promise;
+                        });
+                }
             },
             drawSimpleImage: function (image) {
                 image.canvas.width = image.width;
