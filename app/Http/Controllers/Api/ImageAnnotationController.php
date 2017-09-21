@@ -94,7 +94,7 @@ class ImageAnnotationController extends Controller
      * **Polygon:** Like rectangle with one or more vertices.
      * **LineString:** Like rectangle with one or more vertices.
      * **Circle:** The first point is the center of the circle. The third value of the points array is the radius of the circle. A valid points array of a circle might look like this: `[10, 10, 5]`.
-     * **Ellipse:** The first two points are the intersection points of the first principal axis of the ellipse with the ellipse border. The third and fourth points are the intersection points of the second principal axis (orthogonal to the first) of the ellipse with the ellipse border.
+     * **Ellipse:** The four points specify the end points of the semi-major and semi-minor axes of the ellipse in (counter-)clockwise ordering (depending on how the ellipse was drawn). So the first point is the end point of axis 1, the second is the end point of axis 2, the third is the other end point of axis 1 and the fourth is the other end point of axis 2.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
