@@ -37,6 +37,7 @@
                         <control-button icon="fa-magic" title="The magic wand tool is not available for remote volumes" :disabled="true"></control-button>
                     @endunless
                 </control-button>
+                <control-button icon="icon-ellipse" title="Draw an ellipse 𝗛" :active="isDrawingEllipse" v-on:click="drawEllipse"></control-button>
             </div>
             <div class="btn-group edit-controls">
                 <control-button icon="fa-tag" title="Attach the currently selected label to existing annotations 𝗟" :active="isAttaching" v-on:click="toggleAttaching"></control-button>

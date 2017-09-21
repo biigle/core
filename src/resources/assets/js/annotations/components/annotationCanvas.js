@@ -223,6 +223,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             isDrawingPolygon: function () {
                 return this.interactionMode === 'drawPolygon';
             },
+            isDrawingEllipse: function () {
+                return this.interactionMode === 'drawEllipse';
+            },
             isTranslating: function () {
                 return this.interactionMode === 'translate';
             },
@@ -295,8 +298,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     case 'Circle':
                         // radius is the x value of the second point of the circle
                         return new ol.geom.Circle(newPoints[0], newPoints[1][0]);
-                    // unsupported shapes are ignored
+                    case 'Ellipse':
+                        return new ol.geom.Ellipse([newPoints]);
                     default:
+                        // unsupported shapes are ignored
                         console.error('Unknown annotation shape: ' + annotation.shape);
                         return;
                 }
@@ -390,6 +395,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             drawPolygon: function () {
                 this.draw('Polygon');
             },
+            drawEllipse: function () {
+                this.draw('Ellipse');
+            },
             // Assembles the points array depending on the OpenLayers geometry type.
             getPoints: function (geometry) {
                 var points;
@@ -400,6 +408,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         break;
                     case 'Polygon':
                     case 'Rectangle':
+                    case 'Ellipse':
                         points = geometry.getCoordinates()[0];
                         break;
                     case 'Point':
@@ -890,6 +899,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 keyboard.on('d', this.drawCircle);
                 keyboard.on('f', this.drawLineString);
                 keyboard.on('g', this.drawPolygon);
+                keyboard.on('h', this.drawEllipse);
                 keyboard.on('m', this.toggleTranslating);
                 keyboard.on('l', this.toggleAttaching);
 

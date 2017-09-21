@@ -161,5 +161,17 @@
         <p>
             The magic wand tool uses your current view of the image for reference and not the original image itself. This means that you can draw more detailed polygons when your view is zoomed in and less detailed polygons when your view is zoomed out. Also, the detected region can never get larger than your current viewport.
         </p>
+
+        <h3><a name="ellipse"></a><i class="icon icon-ellipse"></i> Ellipse</h3>
+        <p>
+            A circle consists of a center point and two radii and covers a specific area on the image. Ellipses are drawn similar to rectangles. The first two clicks define the first axis and the third click defines the second axis of the ellipse.
+        </p>
+        {{--TODO
+        <p class="text-center">
+            <a href="{{asset('vendor/annotations/images/manual/creating_annotations_circle_1.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_circle_1.jpg')}}" width="25%"></a>
+            <a href="{{asset('vendor/annotations/images/manual/creating_annotations_circle_2.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_circle_2.jpg')}}" width="25%"></a>
+            <a href="{{asset('vendor/annotations/images/manual/creating_annotations_circle_3.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_circle_3.jpg')}}" width="25%"></a>
+        </p>
+        --}}
     </div>
 @endsection
