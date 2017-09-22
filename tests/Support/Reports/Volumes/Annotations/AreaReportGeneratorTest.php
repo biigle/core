@@ -40,7 +40,7 @@ class AreaReportGeneratorTest extends TestCase
         $this->assertStringEndsWith('.xlsx', $generator->getFullFilename());
     }
 
-    public function testGenerateReportShapes()
+    public function testGenerateReportPoint()
     {
         $volume = VolumeTest::create([
             'name' => 'My Cool Volume',
@@ -50,49 +50,62 @@ class AreaReportGeneratorTest extends TestCase
             'volume_id' => $volume->id,
         ]);
 
-        $a1 = AnnotationTest::create([
-            'shape_id' => Shape::$circleId,
-            'image_id' => $image->id,
-            'points' => [100, 100, 100],
-        ]);
-
-        $al11 = AnnotationLabelTest::create([
-            'annotation_id' => $a1->id,
-        ]);
-        $al12 = AnnotationLabelTest::create([
-            'annotation_id' => $a1->id,
-        ]);
-
-        $a2 = AnnotationTest::create([
-            'shape_id' => Shape::$rectangleId,
-            'image_id' => $image->id,
-            'points' => [100, 100, 100, 300, 200, 300, 200, 100],
-        ]);
-
-        $al2 = AnnotationLabelTest::create([
-            'annotation_id' => $a2->id,
-        ]);
-
-        // It's a simple parallelogram so the area can be easily calculated manually.
-        $a3 = AnnotationTest::create([
-            'shape_id' => Shape::$polygonId,
-            'image_id' => $image->id,
-            'points' => [100, 100, 100, 200, 200, 100, 200, 0],
-        ]);
-
-        $al3 = AnnotationLabelTest::create([
-            'annotation_id' => $a3->id,
-        ]);
-
         // Should not be included.
-        $a4 = AnnotationTest::create([
+        $a = AnnotationTest::create([
             'shape_id' => Shape::$pointId,
             'image_id' => $image->id,
             'points' => [100, 100],
         ]);
 
-        $al4 = AnnotationLabelTest::create([
-            'annotation_id' => $a4->id,
+        $al = AnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$volume->name]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($this->columns);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new AreaReportGenerator;
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportCirlce()
+    {
+        $volume = VolumeTest::create([
+            'name' => 'My Cool Volume',
+        ]);
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+        ]);
+
+        $a = AnnotationTest::create([
+            'shape_id' => Shape::$circleId,
+            'image_id' => $image->id,
+            'points' => [100, 100, 100],
+        ]);
+
+        $al1 = AnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+        ]);
+        $al2 = AnnotationLabelTest::create([
+            'annotation_id' => $a->id,
         ]);
 
         $mock = Mockery::mock();
@@ -107,35 +120,180 @@ class AreaReportGeneratorTest extends TestCase
         $mock->shouldReceive('put')
             ->once()
             ->with([
-                $a1->id,
+                $a->id,
                 Shape::$circleId, 'Circle',
-                "{$al11->label_id}, {$al12->label_id}",
-                "{$al11->label->name}, {$al12->label->name}",
+                "{$al1->label_id}, {$al2->label_id}",
+                "{$al1->label->name}, {$al2->label->name}",
                 $image->id, $image->filename,
                 '', '', '',
                 200, 200, 10000 * M_PI,
             ]);
 
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new AreaReportGenerator;
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportRectangle()
+    {
+        $volume = VolumeTest::create([
+            'name' => 'My Cool Volume',
+        ]);
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+        ]);
+
+        $a = AnnotationTest::create([
+            'shape_id' => Shape::$rectangleId,
+            'image_id' => $image->id,
+            'points' => [100, 100, 100, 300, 200, 300, 200, 100],
+        ]);
+
+        $al = AnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$volume->name]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($this->columns);
+
         $mock->shouldReceive('put')
             ->once()
             ->with([
-                $a2->id,
+                $a->id,
                 Shape::$rectangleId, 'Rectangle',
-                $al2->id, $al2->label->name,
+                $al->id, $al->label->name,
                 $image->id, $image->filename,
                 '', '', '',
                 200, 100, 20000,
             ]);
 
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new AreaReportGenerator;
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportPolygon()
+    {
+        $volume = VolumeTest::create([
+            'name' => 'My Cool Volume',
+        ]);
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+        ]);
+
+        // It's a simple parallelogram so the area can be easily calculated manually.
+        $a = AnnotationTest::create([
+            'shape_id' => Shape::$polygonId,
+            'image_id' => $image->id,
+            'points' => [100, 100, 100, 200, 200, 100, 200, 0],
+        ]);
+
+        $al = AnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$volume->name]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($this->columns);
+
         $mock->shouldReceive('put')
             ->once()
             ->with([
-                $a3->id,
+                $a->id,
                 Shape::$polygonId, 'Polygon',
-                $al3->id, $al3->label->name,
+                $al->id, $al->label->name,
                 $image->id, $image->filename,
                 '', '', '',
                 100, 200, 10000,
+            ]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, function () use ($mock) {
+            return $mock;
+        });
+
+        $generator = new AreaReportGenerator;
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportEllipse()
+    {
+        $volume = VolumeTest::create([
+            'name' => 'My Cool Volume',
+        ]);
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+        ]);
+
+        // It's a simple parallelogram so the area can be easily calculated manually.
+        $a = AnnotationTest::create([
+            'shape_id' => Shape::$ellipseId,
+            'image_id' => $image->id,
+            'points' => [0, 100, 100, 100, 50, 200, 50, 0],
+        ]);
+
+        $al = AnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([$volume->name]);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($this->columns);
+
+        $mock->shouldReceive('put')
+            ->once()
+            ->with([
+                $a->id,
+                Shape::$ellipseId, 'Ellipse',
+                $al->id, $al->label->name,
+                $image->id, $image->filename,
+                '', '', '',
+                200, 100, 5000 * M_PI,
             ]);
 
         $mock->shouldReceive('close')

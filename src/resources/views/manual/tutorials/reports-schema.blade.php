@@ -61,7 +61,7 @@ Animalia
         <h4><a name="annotation-area-report"></a>Area</h4>
 
         <p>
-            The annotation area report is an XLSX spreadsheet of all area annotations (rectangle, circle and polygon) with their width and height in pixels (px) and their area in px². If a laserpoint detection was performed, the width and height in m and the area in m² is included as well.
+            The annotation area report is an XLSX spreadsheet of all area annotations (rectangle, circle, ellipse and polygon) with their width and height in pixels (px) and their area in px². If a laser point detection was performed, the width and height in m and the area in m² is included as well.
         </p>
         <div class="panel panel-danger">
             <div class="panel-body text-danger">
@@ -86,8 +86,8 @@ Animalia
             <li><strong>Label names</strong> comma separated list of names of all labels that are attached to the annotation</li>
             <li><strong>Image ID</strong></li>
             <li><strong>Image filename</strong></li>
-            <li><strong>Annotation width (m)</strong> Rectangle: the longer edge. Circle: the diameter. Polygon: width of the minimum (non-rotated) bounding rectangle.</li>
-            <li><strong>Annotation height (m)</strong> Rectangle: the shorter edge. Circle: the diameter. Polygon: height of the minimum (non-rotated) bounding rectangle.</li>
+            <li><strong>Annotation width (m)</strong> Rectangle: the longer edge. Circle: the diameter. Ellipse: Length of the major axis. Polygon: width of the minimum (non-rotated) bounding rectangle.</li>
+            <li><strong>Annotation height (m)</strong> Rectangle: the shorter edge. Circle: the diameter. Ellipse: Length of the minor axis. Polygon: height of the minimum (non-rotated) bounding rectangle.</li>
             <li><strong>Annotation area (m²)</strong></li>
             <li><strong>Annotation width (px)</strong> See the width in m for the interpretation of this value for different shapes.</li>
             <li><strong>Annotation height (px)</strong> See the height in m for the interpretation of this value for different shapes.</li>
@@ -123,6 +123,9 @@ Animalia
             </li>
             <li>
                 <strong>Circle:</strong> The first line contains the x and y coordinates of the center of the circle. The x value of the second line is the radius of the circle.
+            </li>
+            <li>
+                <strong>Ellipse:</strong> Similar to the rectangle. The first two vertices are the end points of the major axis. The next two vertices are the end points of the minor axis.
             </li>
             <li>
                 <strong>Line string:</strong> Each line contains the x and y coordinates of one of the vertices describing the line string.
@@ -162,7 +165,7 @@ Animalia
             <li>
                 <strong>Additional attributes of the image</strong>
                 <p>
-                    The additional attributes of the image are encoded as a JSON object. The content may vary depending on the BIIGLE modules that are installed and the operations performed on the image (e.g. a laserpoint detection to calculate the area of an image).
+                    The additional attributes of the image are encoded as a JSON object. The content may vary depending on the BIIGLE modules that are installed and the operations performed on the image (e.g. a laser point detection to calculate the area of an image).
                 </p>
             </li>
         </ol>

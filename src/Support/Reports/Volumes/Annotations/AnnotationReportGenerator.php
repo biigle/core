@@ -151,7 +151,7 @@ class AnnotationReportGenerator extends VolumeReportGenerator
                         $points[$y] >= $exportArea[1] &&
                         $points[$y] <= $exportArea[3]) {
                         // As long as one point of the annotation is inside the
-                            // area, don't skip it.
+                        // area, don't skip it.
                             continue 2;
                     }
                 }
