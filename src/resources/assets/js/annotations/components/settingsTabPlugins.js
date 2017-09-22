@@ -84,7 +84,6 @@ biigle.$require('annotations.components.settingsTabPlugins').exportArea = {
                 minPoints: 2,
                 maxPoints: 2,
                 geometryFunction: function (coordinates, opt_geometry) {
-                    coordinates = coordinates[0];
                     if (coordinates.length > 1) {
                         coordinates = [
                             coordinates[0],
