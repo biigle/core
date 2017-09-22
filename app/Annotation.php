@@ -155,6 +155,7 @@ class Annotation extends Model
             case Shape::$circleId:
                 $valid = $size === 3;
                 break;
+            case Shape::$ellipseId:
             case Shape::$rectangleId:
                 $valid = $size === 8;
                 break;

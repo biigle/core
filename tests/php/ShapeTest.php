@@ -50,4 +50,9 @@ class ShapeTest extends ModelTestCase
     {
         $this->assertNotNull(Shape::$rectangleId);
     }
+
+    public function testEllipseId()
+    {
+        $this->assertNotNull(Shape::$ellipseId);
+    }
 }
