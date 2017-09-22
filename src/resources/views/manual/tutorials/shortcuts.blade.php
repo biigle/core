@@ -53,6 +53,10 @@
                     <td>Select the polygon annotation tool</td>
                 </tr>
                 <tr>
+                    <td><code>H</code></td>
+                    <td>Select the ellipse annotation tool</td>
+                </tr>
+                <tr>
                     <td><code>M</code></td>
                     <td>Select the tool to move selected annotations</td>
                 </tr>
