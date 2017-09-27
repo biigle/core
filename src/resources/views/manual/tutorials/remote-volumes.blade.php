@@ -65,7 +65,7 @@
         </p>
         <ul>
             <li>
-                Image metadata such as geo corrdinates or creation date are not automatically extracted from new images. <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">Upload them as a CSV instead.</a>
+                Image metadata such as geo coordinates or creation date are not automatically extracted from new images. <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">Upload them as a CSV instead.</a>
             </li>
             <li>
                 Image metadata such as camera model, orientation or flash extracted from the image EXIF headers is not displayed on the image information view.
