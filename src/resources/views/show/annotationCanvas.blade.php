@@ -28,16 +28,17 @@
             <div class="btn-group drawing-controls">
                 <control-button icon="icon-point" title="Set a point 𝗔" :active="isDrawingPoint" v-on:click="drawPoint"></control-button>
                 <control-button icon="icon-rectangle" title="Draw a rectangle 𝗦" :active="isDrawingRectangle" v-on:click="drawRectangle"></control-button>
-                <control-button icon="icon-circle" title="Draw a circle 𝗗" :active="isDrawingCircle" v-on:click="drawCircle"></control-button>
+                <control-button icon="icon-circle" title="Draw a circle 𝗗" :active="isDrawingCircle" v-on:click="drawCircle">
+                    <control-button icon="icon-ellipse" title="Draw an ellipse  𝗦𝗵𝗶𝗳𝘁+𝗗" :active="isDrawingEllipse" v-on:click="drawEllipse"></control-button>
+                </control-button>
                 <control-button icon="icon-linestring" title="Draw a line string 𝗙, hold 𝗦𝗵𝗶𝗳𝘁 for freehand" :active="isDrawingLineString" v-on:click="drawLineString"></control-button>
                 <control-button icon="icon-polygon" title="Draw a polygon 𝗚, hold 𝗦𝗵𝗶𝗳𝘁 for freehand" :active="isDrawingPolygon" v-on:click="drawPolygon">
                     @unless($volume->isRemote())
-                        <control-button icon="fa-magic" title="Draw a polygon using the magic wand tool" :active="isMagicWanding" v-on:click="toggleMagicWand"></control-button>
+                        <control-button icon="fa-magic" title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚" :active="isMagicWanding" v-on:click="toggleMagicWand"></control-button>
                     @else
                         <control-button icon="fa-magic" title="The magic wand tool is not available for remote volumes" :disabled="true"></control-button>
                     @endunless
                 </control-button>
-                <control-button icon="icon-ellipse" title="Draw an ellipse 𝗛" :active="isDrawingEllipse" v-on:click="drawEllipse"></control-button>
             </div>
             <div class="btn-group edit-controls">
                 <control-button icon="fa-tag" title="Attach the currently selected label to existing annotations 𝗟" :active="isAttaching" v-on:click="toggleAttaching"></control-button>

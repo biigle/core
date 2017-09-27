@@ -873,7 +873,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 attachLabelInteraction.on('attach', this.handleAttachLabel);
                 map.addInteraction(attachLabelInteraction);
 
-                if (!this.crossOrigin) {
+                if (this.crossOrigin) {
+                    keyboard.on('g', this.drawPolygon);
+                } else {
+                    // Magic wand interaction is not available for remote images.
                     var MagicWandInteraction = biigle.$require('annotations.ol.MagicWandInteraction');
                     magicWandInteraction = new MagicWandInteraction({
                         map: map,
@@ -887,6 +890,14 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     magicWandInteraction.on('drawend', this.handleNewFeature);
                     magicWandInteraction.setActive(false);
                     map.addInteraction(magicWandInteraction);
+
+                    keyboard.on('g', function (e) {
+                        if (e.shiftKey) {
+                            self.toggleMagicWand();
+                        } else {
+                            self.drawPolygon();
+                        }
+                    });
                 }
 
                 // Del key.
@@ -896,10 +907,14 @@ biigle.$component('annotations.components.annotationCanvas', function () {
 
                 keyboard.on('a', this.drawPoint);
                 keyboard.on('s', this.drawRectangle);
-                keyboard.on('d', this.drawCircle);
+                keyboard.on('d', function (e) {
+                    if (e.shiftKey) {
+                        self.drawEllipse();
+                    } else {
+                        self.drawCircle();
+                    }
+                });
                 keyboard.on('f', this.drawLineString);
-                keyboard.on('g', this.drawPolygon);
-                keyboard.on('h', this.drawEllipse);
                 keyboard.on('m', this.toggleTranslating);
                 keyboard.on('l', this.toggleAttaching);
 
