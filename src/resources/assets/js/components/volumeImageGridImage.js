@@ -9,7 +9,7 @@ biigle.$component('volumes.components.volumeImageGridImage', {
         biigle.$require('core.mixins.loader'),
     ],
     template: '<figure class="image-grid__image image-grid__image--volume" :class="classObject" :title="title">' +
-        '<a v-if="!labelMode && image.annotateUrl" :href="image.annotateUrl" title="Annotate this image">' +
+        '<a v-if="!labelMode && image.annotateUrl" :href="image.annotateUrl" title="Annotate this image" class="image-link">' +
             '<img :src="url || emptyUrl" @error="showEmptyImage">' +
         '</a>' +
         '<img v-else @click="handleClick" :src="url || emptyUrl" @error="showEmptyImage">' +
