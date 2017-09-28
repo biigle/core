@@ -36,6 +36,14 @@
             </div>
 
             <div class="settings-tab__section">
+                <label>Minimap</label>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" :class="{active: minimap}" v-on:click="showMinimap" title="Show minimap">show</button>
+                    <button type="button" class="btn btn-default" :class="{active: !minimap}" v-on:click="hideMinimap" title="Hide minimap">hide</button>
+                </div>
+            </div>
+
+            <div class="settings-tab__section">
                 <label>Mouse Position</label>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" :class="{active: mousePosition}" v-on:click="showMousePosition" title="Show mouse position">show</button>

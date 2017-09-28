@@ -90,6 +90,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 type: Boolean,
                 default: false,
             },
+            showMinimap: {
+                type: Boolean,
+                default: true,
+            },
             // Specifies whether the displayed image is cross origin.
             crossOrigin: {
                 type: Boolean,

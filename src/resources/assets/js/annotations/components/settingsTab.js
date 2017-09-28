@@ -13,6 +13,7 @@ biigle.$component('annotations.components.settingsTab', {
             cycleMode: 'default',
             mousePosition: false,
             annotationTooltip: false,
+            minimap: true,
         };
     },
     computed: {
@@ -56,6 +57,12 @@ biigle.$component('annotations.components.settingsTab', {
         },
         hideAnnotationTooltip: function () {
             this.annotationTooltip = false;
+        },
+        showMinimap: function () {
+            this.minimap = true;
+        },
+        hideMinimap: function () {
+            this.minimap = false;
         },
     },
     watch: {
@@ -101,12 +108,21 @@ biigle.$component('annotations.components.settingsTab', {
             }
             this.$emit('change', 'annotationTooltip', show);
         },
+        minimap: function (show) {
+            if (show) {
+                this.settings.delete('minimap');
+            } else {
+                this.settings.set('minimap', false);
+            }
+            this.$emit('change', 'minimap', show);
+        },
     },
     created: function () {
         var storedProperties = [
             'annotationOpacity',
             'mousePosition',
             'annotationTooltip',
+            'minimap',
         ];
         storedProperties.forEach(function (property) {
             if (this.settings.has(property)) {

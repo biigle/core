@@ -48,6 +48,7 @@ biigle.$viewModel('annotator-container', function (element) {
             focussedImageSectionIndex: null,
             showMousePosition: false,
             showAnnotationTooltip: false,
+            showMinimap: true,
             openTab: null,
         },
         computed: {
@@ -380,6 +381,10 @@ biigle.$viewModel('annotator-container', function (element) {
                         break;
                     case 'annotationTooltip':
                         this.showAnnotationTooltip = value;
+                        break;
+                    case 'minimap':
+                        this.showMinimap = value;
+                        break;
                 }
             },
             handleOpenedTab: function (name) {

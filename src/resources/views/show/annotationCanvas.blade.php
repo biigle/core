@@ -1,5 +1,5 @@
 <div class="annotation-canvas">
-    <minimap :extent="extent" :projection="projection" inline-template>
+    <minimap v-if="showMinimap" :extent="extent" :projection="projection" inline-template>
         <div class="annotation-canvas__minimap"></div>
     </minimap>
     <mouse-position-indicator v-if="showMousePosition" :position="mousePosition" inline-template>
