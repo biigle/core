@@ -40,17 +40,22 @@ class LargoServiceProvider extends ServiceProvider
 
         \Event::listen('images.cleanup', ImagesCleanupListener::class);
 
-        $modules->addMixin('largo', 'volumesSidebar');
-        $modules->addMixin('largo', 'annotationsScripts');
-        $modules->addMixin('largo', 'annotationsStyles');
-        $modules->addMixin('largo', 'annotationsSettingsTab');
-        $modules->addMixin('largo', 'annotationsLabelsTab');
-        $modules->addMixin('largo', 'projectsShowToolbar');
-        $modules->addMixin('largo', 'annotationsManualSidebarSettings');
-        $modules->addMixin('largo', 'annotationsManualSidebarLabelTrees');
-        $modules->addMixin('largo', 'labelTreeShow');
-        $modules->addMixin('largo', 'labelTreeShowScripts');
-        $modules->addMixin('largo', 'labelTreeShowStyles');
+        $modules->register('largo', [
+            'viewMixins' => [
+                'volumesSidebar',
+                'annotationsScripts',
+                'annotationsStyles',
+                'annotationsSettingsTab',
+                'annotationsLabelsTab',
+                'projectsShowToolbar',
+                'annotationsManualSidebarSettings',
+                'annotationsManualSidebarLabelTrees',
+                'labelTreeShow',
+                'labelTreeShowScripts',
+                'labelTreeShowStyles',
+                'manualTutorial',
+            ],
+        ]);
     }
 
     /**
