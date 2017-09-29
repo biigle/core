@@ -27,13 +27,13 @@
 			<h3><a name="testing"></a>Testing</h3>
 
 			<p>
-				Testing our <code>quotes</code> package on its own doesn't work for us, since we need Laravel for the routes, views and controllers we intend to implement. The core application has its testing environment already set up with all functional/unit tests residing in <code>tests/unit</code>. All you have to do is run <code>phpunit</code> in the root directory of the BIIGLE installation and the tests run. It would be best if we were able to test our package just like it would belong to the core application and fortunately there is a very easy way to do so.
+				Testing our <code>quotes</code> package on its own doesn't work for us, since we need Laravel for the routes, views and controllers we intend to implement. The core application has its testing environment already set up with all functional/unit tests residing in <code>tests/php</code>. All you have to do is run <code>phpunit</code> in the root directory of the BIIGLE installation and the tests run. It would be best if we were able to test our package just like it would belong to the core application and fortunately there is a very easy way to do so.
 			</p>
 			<p>
-				As already mentioned in the previous tutorial, we are now able to develop the package right out of the cloned repository in <code>vendor/biigle/quotes</code>. This is where we now create a new <code>tests</code> directory besides the existing <code>src</code>. Now all we have to do is to create a simple symlink from the <code>tests/unit</code> directory of the core application to the new <code>tests</code> directory of our package:
+				As already mentioned in the previous tutorial, we are now able to develop the package right out of the cloned repository in <code>vendor/biigle/quotes</code>. This is where we now create a new <code>tests</code> directory besides the existing <code>src</code>. Now all we have to do is to create a simple symlink from the <code>tests/php</code> directory of the core application to the new <code>tests</code> directory of our package:
 			</p>
 <pre>
-cd tests/unit
+cd tests/php
 ln -s ../../vendor/biigle/quotes/tests/ quotes-module
 </pre>
 			<p>
