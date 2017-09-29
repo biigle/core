@@ -53,7 +53,7 @@ class QuotesServiceProviderTest extends TestCase {
 }
 </pre>
 			<p>
-				You see, the test class looks just like all the other test classes of the core application. You'll find lots of examples on testing there, too. For more information, see the <a href="http://laravel.com/docs/5.0/testing">Laravel</a> and <a href="https://phpunit.de/manual/current/en/appendixes.assertions.html">PHPUnit</a> documentations. But does our test even pass? Check it by running PHPUnit in the root directory of the core application:
+				You see, the test class looks just like all the other test classes of the core application. You'll find lots of examples on testing there, too. For more information, see the <a href="http://laravel.com/docs/5.4/testing">Laravel</a> and <a href="https://phpunit.de/manual/current/en/appendixes.assertions.html">PHPUnit</a> documentations. But does our test even pass? Check it by running PHPUnit in the root directory of the core application:
 			</p>
 <pre>
 > phpunit --filter QuotesServiceProviderTest
@@ -230,7 +230,7 @@ Failed asserting that 200 matches expected 302.
 			<h4><a name="middleware"></a>Middleware</h4>
 
 			<p>
-				Restricting the route to authenticated users is really simple since BIIGLE has everything already implemented. User authentication in Laravel is done using <a href="http://laravel.com/docs/5.0/middleware">middleware</a>, methods that are run before or after each request and are able to intercept it when needed.
+				Restricting the route to authenticated users is really simple since BIIGLE has everything already implemented. User authentication in Laravel is done using <a href="http://laravel.com/docs/5.4/middleware">middleware</a>, methods that are run before or after each request and are able to intercept it when needed.
 			</p>
 			<p>
 				In BIIGLE, user authentication is checked by the <code>auth</code> middleware. To add the <code>auth</code> middleware to our route, we extend the route definition:
@@ -253,7 +253,7 @@ Route::get('quotes', array(
 			</p>
 <pre>
 &lt;blockquote&gt;
-   @{{ Inspiring::quote() }}
+   @{{ Illuminate\Foundation\Inspiring::quote() }}
 &lt;/blockquote&gt;
 </pre>
 		<p>
@@ -287,7 +287,7 @@ public function index()
 &lt;div class="container"&gt;
    &lt;div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3"&gt;
       &lt;blockquote&gt;
-         @{{ Inspiring::quote() }}
+         @{{ Illuminate\Foundation\Inspiring::quote() }}
       &lt;/blockquote&gt;
    &lt;/div&gt;
 &lt;/div&gt;

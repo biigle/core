@@ -24,10 +24,10 @@
             <h4>Handling the mixins in the view</h4>
 
             <p>
-                View mixins are basically no more than a dynamic usage of the <code>&#64;include</code> control structure of the <a href="http://laravel.com/docs/5.0/templates">Blade templating engine</a>. With <code>&#64;include</code> you can take a view and insert it into another view making view modularization and separation of concerns possible. Adding a view mixin to a view is nothing else than <code>&#64;include</code>-ing it, except the name of the view to load is dynamically fetched from the <code>Biigle\Services\Modules</code> service.
+                View mixins are basically no more than a dynamic usage of the <code>&#64;include</code> control structure of the <a href="http://laravel.com/docs/5.4/blade">Blade templating engine</a>. With <code>&#64;include</code> you can take a view and insert it into another view making view modularization and separation of concerns possible. Adding a view mixin to a view is nothing else than <code>&#64;include</code>-ing it, except the name of the view to load is dynamically fetched from the <code>Biigle\Services\Modules</code> service.
             </p>
             <p>
-                But first we need to <a href="http://laravel.com/docs/5.1/blade#service-injection">inject</a> the <code>Modules</code> service into the view like this:
+                But first we need to <a href="http://laravel.com/docs/5.4/blade#service-injection">inject</a> the <code>Modules</code> service into the view like this:
             </p>
 <pre>
 &#64;inject('modules', 'Biigle\Services\Modules')
@@ -89,7 +89,7 @@ $modules->getMixins('dashboardMain')
             <h4>Registering nested mixins</h4>
 
             <p>
-                If your Laravel application has lots of views you should <a href="http://laravel.com/docs/5.0/views">order them in different directories</a>. Views ordered like that can be accessed using the dot notation, e.g. the view <code>public/views/admin/profile.php</code> can be accessed with <code>view('admin.profile')</code>. Nested mixins make use of this method of accessing views; let's see how.
+                If your Laravel application has lots of views you should <a href="http://laravel.com/docs/5.4/views">order them in different directories</a>. Views ordered like that can be accessed using the dot notation, e.g. the view <code>public/views/admin/profile.php</code> can be accessed with <code>view('admin.profile')</code>. Nested mixins make use of this method of accessing views; let's see how.
             </p>
             <p>
                 The view mixin for the project boxes of the dashboard is registered as usual:
