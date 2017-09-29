@@ -47,12 +47,6 @@ class AnnotationsServiceProvider extends ServiceProvider
                 'search' => SearchControllerMixin::class.'@index',
             ],
         ]);
-
-        $modules->addMixin('annotations', 'dashboardHotBoxLeft');
-        $modules->addMixin('annotations', 'volumesScripts');
-        $modules->addMixin('annotations', 'adminIndex');
-        $modules->addMixin('annotations', 'manualTutorial');
-        $modules->addMixin('annotations', 'adminShowUser');
     }
 
     /**
