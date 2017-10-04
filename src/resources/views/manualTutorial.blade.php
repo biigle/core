@@ -1,5 +1,12 @@
 <h3>Projects</h3>
 <h4>
+    <a href="{{route('manual-tutorials', ['projects', 'about'])}}">About projects</a>
+</h4>
+<p>
+    Learn what projects are and how to create them.
+</p>
+
+<h4>
     <a href="{{route('manual-tutorials', ['projects', 'create-a-project'])}}">Create a Project</a>
 </h4>
 
