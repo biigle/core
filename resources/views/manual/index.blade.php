@@ -28,7 +28,7 @@
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', 'login-and-account-settings')}}">Login and account settings</a>
+                <a href="{{route('manual-tutorials', 'login-and-account-settings')}}">Account settings</a>
             </h4>
 
             <p>
