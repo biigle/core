@@ -1,14 +1,14 @@
 @extends('manual.base')
-@section('manual-title', 'About projects')
+@section('manual-title', 'Projects')
 
 @section('manual-content')
     <div class="row">
         <p class="lead">
-            Learn what projects are and how to create them.
+            Learn what projects are and how to manage them.
         </p>
 
         <p>
-            In BIIGLE projects are used to associate a group of users with a group of image collections (called <em>volumes</em>) and label collections (called label trees). What a project represents is entirely up to you. This may be all members and images of a certain expedition or cruise, the members and data of a certain research group or something entirely different.
+            Projects are used to associate a group of users with a group of image collections (called <em>volumes</em>) and label collections (called <em>label trees</em>). What a project represents is entirely up to you. This may be all members and images of a certain expedition or cruise, the members and data of a certain research group or something entirely different.
         </p>
 
         <p>
@@ -19,7 +19,7 @@
         <h3><a name="members"></a>Members</h3>
 
         <p>
-            Each project is only visible to project members. Each member has one of three roles: admin, editor or guest. To modify project members you must be admin in the project. Click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the members panel to modify members. Enter a username and chosse a role to add a new member. Choose a new user role for existing members to modify them. Click the <strong>&times;</strong> button to remove a member.
+            Each project is only visible to project members. Each member has one of three roles: admin, editor or guest. To modify project members you must be admin in the project. Click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the members panel to modify members. Enter a username and choose a role to add a new member. Choose a new user role for existing members to modify them. Click the <strong>&times;</strong> button to remove a member.
         </p>
         <p>
             A <strong>guest</strong> is only able to <em>read</em> from the project. They can see all volumes, label trees and users that belong to the project. But they cannot modify anything related to the project and particularly cannot create or modify annotations in the volumes that belong to the project. Although users with this role can see all label trees that are attached to the project, they cannot access these unless the label trees are public or the users are members of the label trees.
@@ -55,10 +55,20 @@
             A volume is a collection of images that belong together (like a directory in a file system). Each project can have one or more volumes attached to it. Unlike label trees, volumes always belong to at least one project. If a volume belongs to no project any more, it will be deleted.
         </p>
         <p>
-            Project admins can create or delete volumes. To create a volume, click the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-plus"></i></button> button of the volumes panel. A new volume will be automatically attached to the project it was created for. But volumes can be shared between projects, too. You can attach existing volumes of any project where you are also admin. To do this, click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the volumes panel, enter the name of the volume you want to attach and hit enter. Click the <strong>&times;</strong> button to detach or delete a volume. A volume is deleted only if this is the last project that it is attached to (there will be an additional request for confirmation in this case). Be careful when doing this since deleting a volume deletes all annotations which cannot be undone!
+            Project admins can create or delete volumes. To create a volume, click the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-plus"></i></button> button of the volumes panel. A new volume will be automatically attached to the project it was created for. But volumes can be shared between projects, too. You can attach existing volumes of any project where you are also admin. To do this, click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the volumes panel, enter the name of the volume you want to attach and hit enter. Click the <strong>&times;</strong> button to detach or delete a volume. A volume is deleted only if this is the last project that it is attached to (there will be an additional request for confirmation in this case). Be careful when doing this since deleting a volume deletes all annotations and cannot be undone!
         </p>
 
         <h3><a name="modify-a-project"></a>Modify a project</h3>
+
+        <p>
+            Projects have a name and short description text so users can identify them. Project admins can edit these fields in the project overview. Click <button class="btn btn-default btn-xs">Edit</button> to make the name and description editable. Click <button class="btn btn-success btn-xs">Save</button> once you are finished or <button class="btn btn-default btn-xs">Cancel</button> to reset your changes.
+        </p>
+        <p>
+            As a project admin you cannot modify yourself as a project member in the members panel. If you want to have another role in the project, ask another admin to change it. If you want to leave the project, click the <button class="btn btn-default btn-xs">Leave</button> button. Note that you can only leave a project if it has at least one other admin to manage it.
+        </p>
+        <p>
+            Finally, project admins can delete a project with a click on the <button class="btn btn-default btn-xs">Delete</button> button. This will detach all label trees and volumes from the project. All volumes that are not attached to another project will be deleted. Be very careful when you want to delete a project since you can destroy lots of annotations with a single action!
+        </p>
 
     </div>
 @endsection
