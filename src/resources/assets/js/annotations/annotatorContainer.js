@@ -59,11 +59,15 @@ biigle.$viewModel('annotator-container', function (element) {
                 return typeof this.annotationFilter === 'function';
             },
             filteredAnnotations: function () {
+                var annotations = this.annotations.filter(function (a) {
+                    return !a.markedForDeletion;
+                });
+
                 if (this.hasAnnotationFilter) {
-                    return this.annotations.filter(this.annotationFilter);
+                    return annotations.filter(this.annotationFilter);
                 }
 
-                return this.annotations;
+                return annotations;
             },
             selectedAnnotations: function () {
                 return this.filteredAnnotations.filter(function (annotation) {
@@ -273,13 +277,20 @@ biigle.$viewModel('annotator-container', function (element) {
                 }
             },
             handleDeleteAnnotation: function (annotation) {
-                if (this.isEditor) {
-                    if (this.lastCreatedAnnotation && this.lastCreatedAnnotation.id === annotation.id) {
-                        this.lastCreatedAnnotation = null;
-                    }
-                    annotationsStore.delete(annotation)
-                        .catch(messages.handleErrorResponse);
+                if (!this.isEditor) return;
+
+                if (this.lastCreatedAnnotation && this.lastCreatedAnnotation.id === annotation.id) {
+                    this.lastCreatedAnnotation = null;
                 }
+
+                // Mark for deletion so the annotation is immediately removed from
+                // the canvas. See https://github.com/BiodataMiningGroup/biigle-annotations/issues/70
+                Vue.set(annotation, 'markedForDeletion', true);
+                annotationsStore.delete(annotation)
+                    .catch(function (response) {
+                        annotation.markedForDeletion = false;
+                        messages.handleErrorResponse(response);
+                    });
             },
             handleDeleteAnnotations: function (annotations) {
                 annotations.forEach(this.handleDeleteAnnotation);
