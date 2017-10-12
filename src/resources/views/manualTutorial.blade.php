@@ -25,9 +25,9 @@
 </p>
 
 <h4>
-    <a href="{{route('manual-tutorials', ['volumes', 'setting-image-labels'])}}">Setting Image Labels</a>
+    <a href="{{route('manual-tutorials', ['volumes', 'image-labels'])}}">Image Labels</a>
 </h4>
 
 <p>
-    With image labels you can attach a label to a whole image.
+    Image labels are labels that are attached to whole images.
 </p>
