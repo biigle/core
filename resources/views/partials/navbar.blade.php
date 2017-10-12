@@ -1,6 +1,10 @@
 @inject('modules', 'Biigle\Services\Modules')
 <nav class="navbar navbar-default navbar-static-top">
+@hasSection('full-navbar')
+    <div class="container-fluid">
+@else
     <div class="container">
+@endif
         <div class="navbar-header">
             <a class="navbar-brand logo" href="{{ route('home') }}"><span class="logo__biigle">BIIGLE</span></a>
         </div>
