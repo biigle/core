@@ -63,6 +63,9 @@
         <p>
             Finally, label tree admins can delete a label tree with a click on the <button class="btn btn-default btn-xs">Delete</button> button. This will detach all projects from the label tree and attempt to delete all labels. If a label is still attached to an annotation or an image, it (and therefore its label tree) cannot be deleted.
         </p>
+        <p>
+            To learn more on how to create, modify or delete labels of a label tree, continue <a href="{{route('manual-tutorials', ['label-trees', 'manage-labels'])}}">here</a>.
+        </p>
 
     </div>
 @endsection
