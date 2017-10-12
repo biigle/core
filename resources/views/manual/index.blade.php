@@ -20,14 +20,6 @@
             </p>
 
             <h4>
-                <a href="{{route('manual-tutorials', 'whole-playlist')}}">BIIGLE Tutorial Playlist</a>
-            </h4>
-
-            <p>
-                The whole playlist of BIIGLE video tutorials.
-            </p>
-
-            <h4>
                 <a href="{{route('manual-tutorials', 'login-and-account-settings')}}">Account settings</a>
             </h4>
 
