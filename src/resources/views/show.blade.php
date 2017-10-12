@@ -1,4 +1,6 @@
 @extends('app')
+@section('full-navbar', true)
+
 @inject('modules', 'Biigle\Services\Modules')
 
 @section('title', "Annotate {$image->filename}")
