@@ -69,15 +69,6 @@ class Image extends Model
     public $timestamps = false;
 
     /**
-     * The attributes hidden in the model's JSON form.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'labels',
-    ];
-
-    /**
      * The attributes that should be casted to native types.
      *
      * @var array
