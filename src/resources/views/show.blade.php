@@ -1,5 +1,5 @@
 @extends('app')
-
+@section('full-navbar', true)
 @section('title', $volume->name)
 
 @push('scripts')

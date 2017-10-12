@@ -1,5 +1,5 @@
 @extends('app')
-
+@section('full-navbar', true)
 @section('title', $project->name)
 
 @push('scripts')
