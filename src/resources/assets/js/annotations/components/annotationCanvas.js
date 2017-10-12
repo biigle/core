@@ -620,13 +620,18 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             updateHoveredAnnotations: function (e) {
                 var annotations = [];
-                map.forEachFeatureAtPixel(e.pixel, function (feature) {
-                    annotations.push(feature.get('annotation'));
-                }, {
-                    layerFilter: function (layer) {
-                        return layer === annotationLayer;
+                map.forEachFeatureAtPixel(e.pixel,
+                    function (feature) {
+                        if (feature.get('annotation')) {
+                            annotations.push(feature.get('annotation'));
+                        }
+                    },
+                    {
+                        layerFilter: function (layer) {
+                            return layer === annotationLayer;
+                        }
                     }
-                });
+                );
 
                 var hash = annotations.map(function (a) {return a.id;}).sort().join('');
 
