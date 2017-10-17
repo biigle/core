@@ -147,11 +147,11 @@ public function testQuoteProvider()
 
    $this->call('GET', 'quotes/new');
    // redirect to login page
-   $this->assertResponseStatus(302);
+   $this->assertStatus(302);
 
    $this->be($user);
    $this->call('GET', 'quotes/new');
-   $this->assertResponseOk();
+   $this->assertStatus(200);
 }
 </pre>
             <p>

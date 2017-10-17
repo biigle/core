@@ -105,7 +105,7 @@ class QuotesControllerTest extends TestCase {
    public function testRoute()
    {
       $this->call('GET', 'quotes');
-      $this->assertResponseOk();
+      $this->assertStatus(200);
    }
 }
 </pre>
@@ -211,11 +211,11 @@ $user->save();
 
 $this->call('GET', 'quotes');
 // redirect to login page
-$this->assertResponseStatus(302);
+$this->assertStatus(302);
 
 $this->be($user);
 $this->call('GET', 'quotes');
-$this->assertResponseOk();
+$this->assertStatus(200);
 </pre>
 			<p>
 				We first create a new test user (the <code>UserTest</code> class takes care of this), save them to the testing database and check if the route is only available if the user is authenticated. Now the test should fail again because the route is public:
