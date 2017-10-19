@@ -16,12 +16,14 @@ biigle.$component('volumes.components.imageLabelList', {
             type: Array,
             required: true,
         },
-    },
-    data: function () {
-        return {
-            userId: biigle.$require('volumes.userId'),
-            isAdmin: biigle.$require('volumes.isAdmin'),
-        };
+        userId: {
+            type: Number,
+            required: true,
+        },
+        isAdmin: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         hasImageLabels: function () {

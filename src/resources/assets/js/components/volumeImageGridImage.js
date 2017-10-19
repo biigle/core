@@ -23,7 +23,7 @@ biigle.$component('volumes.components.volumeImageGridImage', {
             '</button>' +
         '</div>' +
         '<div v-if="imageLabelsLoaded && showImageLabels" class="image-labels" @wheel.stop>' +
-            '<image-label-list :image-labels="imageLabels" @deleted="removeImageLabel"></image-label-list>' +
+            '<image-label-list :image-labels="imageLabels" :user-id="userId" :is-admin="isAdmin" @deleted="removeImageLabel"></image-label-list>' +
         '</div>' +
     '</figure>',
     components: {
@@ -50,6 +50,12 @@ biigle.$component('volumes.components.volumeImageGridImage', {
         },
     },
     computed: {
+        userId: function () {
+            return biigle.$require('volumes.userId');
+        },
+        isAdmin: function () {
+            return biigle.$require('volumes.isAdmin');
+        },
         alreadyHasSelectedLabel: function () {
             for (var i = this.imageLabels.length - 1; i >= 0; i--) {
                 if (this.imageLabels[i].label.id === this.selectedLabel.id) {
