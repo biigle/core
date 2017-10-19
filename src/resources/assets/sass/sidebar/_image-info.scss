@@ -1,0 +1,26 @@
+.image-info-tab {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    overflow: hidden;
+
+    .proposed-label {
+        position: relative;
+
+        .fa {
+            padding: 0 4px;
+        }
+    }
+}
+
+
+
+.image-info-tab__labels {
+    word-wrap: break-word;
+}
+
+.image-info-tab__exif {
+    word-wrap: break-word;
+    margin-top: 1em;
+}
+

@@ -18,10 +18,11 @@ biigle.$viewModel('annotator-container', function (element) {
         components: {
             sidebar: biigle.$require('annotations.components.sidebar'),
             sidebarTab: biigle.$require('core.components.sidebarTab'),
+            annotationsTab: biigle.$require('annotations.components.annotationsTab'),
             labelsTab: biigle.$require('annotations.components.labelsTab'),
             colorAdjustmentTab: biigle.$require('annotations.components.colorAdjustmentTab'),
+            imageInfoTab: biigle.$require('annotations.components.imageInfoTab'),
             settingsTab: biigle.$require('annotations.components.settingsTab'),
-            annotationsTab: biigle.$require('annotations.components.annotationsTab'),
             annotationCanvas: biigle.$require('annotations.components.annotationCanvas'),
         },
         data: {
