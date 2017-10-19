@@ -28,7 +28,7 @@ biigle.$declare('annotations.ol.ExtendedTranslateInteraction', function () {
 
         this.keyboard = biigle.$require('keyboard');
         this.utils = biigle.$require('annotations.stores.utils');
-        this.map = options.map;
+        this.setMap(options.map);
         this.translating = false;
     }
     ol.inherits(ExtendedTranslateInteraction, ol.interaction.Translate);
@@ -41,7 +41,7 @@ biigle.$declare('annotations.ol.ExtendedTranslateInteraction', function () {
             this.keyboard.off(40, this.translateDown);
             // The default translate interaction does not reset the cursor when
             // deactivated.
-            var element = this.map.getTargetElement();
+            var element = this.getMap().getTargetElement();
             if (element) {
                 element.style.cursor = '';
             }
