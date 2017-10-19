@@ -92,6 +92,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 type: Boolean,
                 default: false,
             },
+            showMinimap: {
+                type: Boolean,
+                default: true,
+            },
             // Specifies whether the displayed image is cross origin.
             crossOrigin: {
                 type: Boolean,
@@ -142,7 +146,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             viewExtent: function () {
                 // The view can't calculate the extent if the resolution is not set.
-                if (this.resolution && map) {
+                // Also use this.initialized so this property is recomputed when the
+                // map is set (because the map is no reactive object). See:
+                // https://github.com/BiodataMiningGroup/biigle-annotations/issues/69
+                if (this.initialized && this.resolution && map) {
                     return map.getView().calculateExtent(this.mapSize);
                 }
 
@@ -236,6 +243,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             isDrawingPolygon: function () {
                 return this.interactionMode === 'drawPolygon';
+            },
+            isDrawingEllipse: function () {
+                return this.interactionMode === 'drawEllipse';
             },
             isTranslating: function () {
                 return this.interactionMode === 'translate';
@@ -339,8 +349,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     case 'Circle':
                         // radius is the x value of the second point of the circle
                         return new ol.geom.Circle(points[0], points[1][0]);
-                    // unsupported shapes are ignored
+                    case 'Ellipse':
+                        return new ol.geom.Ellipse([points]);
                     default:
+                        // unsupported shapes are ignored
                         console.error('Unknown annotation shape: ' + annotation.shape);
                         return;
                 }
@@ -434,6 +446,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             drawPolygon: function () {
                 this.draw('Polygon');
             },
+            drawEllipse: function () {
+                this.draw('Ellipse');
+            },
             // Assembles the points array depending on the OpenLayers geometry type.
             getPoints: function (geometry) {
                 var points;
@@ -444,6 +459,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         break;
                     case 'Polygon':
                     case 'Rectangle':
+                    case 'Ellipse':
                         points = geometry.getCoordinates()[0];
                         break;
                     case 'Point':
@@ -639,13 +655,18 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             updateHoveredAnnotations: function (e) {
                 var annotations = [];
-                map.forEachFeatureAtPixel(e.pixel, function (feature) {
-                    annotations.push(feature.get('annotation'));
-                }, {
-                    layerFilter: function (layer) {
-                        return layer === annotationLayer;
+                map.forEachFeatureAtPixel(e.pixel,
+                    function (feature) {
+                        if (feature.get('annotation')) {
+                            annotations.push(feature.get('annotation'));
+                        }
+                    },
+                    {
+                        layerFilter: function (layer) {
+                            return layer === annotationLayer;
+                        }
                     }
-                });
+                );
 
                 var hash = annotations.map(function (a) {return a.id;}).sort().join('');
 
@@ -691,6 +712,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     tiledImageLayer.setSource(new ol.source.Zoomify({
                         url: image.url,
                         size: [image.width, image.height],
+                        transition: 100,
                     }));
                 }
             },
@@ -881,6 +903,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             // properly loaded and there is no setStyle() function like for the
             // annotationLayer.
             selectInteraction = new ol.interaction.Select({
+                // Use click instead of default singleclick because the latter is delayed
+                // 250ms to ensure the event is no doubleclick. But we want it to be as
+                // fast as possible.
+                condition: ol.events.condition.click,
                 style: styles.highlight,
                 layers: [annotationLayer],
                 // enable selecting multiple overlapping features at once
@@ -933,7 +959,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 attachLabelInteraction.on('attach', this.handleAttachLabel);
                 map.addInteraction(attachLabelInteraction);
 
-                if (!this.crossOrigin) {
+                if (this.crossOrigin) {
+                    keyboard.on('g', this.drawPolygon);
+                } else {
+                    // Magic wand interaction is not available for remote images.
                     var MagicWandInteraction = biigle.$require('annotations.ol.MagicWandInteraction');
                     magicWandInteraction = new MagicWandInteraction({
                         map: map,
@@ -946,6 +975,14 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     magicWandInteraction.on('drawend', this.handleNewFeature);
                     magicWandInteraction.setActive(false);
                     map.addInteraction(magicWandInteraction);
+
+                    keyboard.on('g', function (e) {
+                        if (e.shiftKey) {
+                            self.toggleMagicWand();
+                        } else {
+                            self.drawPolygon();
+                        }
+                    });
                 }
 
                 // Del key.
@@ -955,9 +992,14 @@ biigle.$component('annotations.components.annotationCanvas', function () {
 
                 keyboard.on('a', this.drawPoint);
                 keyboard.on('s', this.drawRectangle);
-                keyboard.on('d', this.drawCircle);
+                keyboard.on('d', function (e) {
+                    if (e.shiftKey) {
+                        self.drawEllipse();
+                    } else {
+                        self.drawCircle();
+                    }
+                });
                 keyboard.on('f', this.drawLineString);
-                keyboard.on('g', this.drawPolygon);
                 keyboard.on('m', this.toggleTranslating);
                 keyboard.on('l', this.toggleAttaching);
 

@@ -4,6 +4,7 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.minimap', function () {
+    var initialized = false;
     var minimap = new ol.Map({
         // remove controls
         controls: [],
@@ -40,11 +41,41 @@ biigle.$component('annotations.components.minimap', function () {
         },
         methods: {
             // Move the viewport rectangle on the minimap.
-            refreshViewport: function () {
+            updateViewport: function () {
                 viewport.setGeometry(ol.geom.Polygon.fromExtent(mapView.calculateExtent(mapSize)));
             },
             dragViewport: function (e) {
                 mapView.setCenter(e.coordinate);
+            },
+            updateMapSize: function (e) {
+                mapSize = e.target.getSize();
+            },
+            updateMapView: function (e) {
+                mapView = e.target.getView();
+            },
+            updateElementSize: function () {
+                var imageWidth = this.extent[2];
+                // If extent[3] is 0 then a tiled image is displayed. For this the image
+                // height is -extent[1]. This is due to the differences between a Zoomify
+                // and an Image source.
+                var imageHeight = this.extent[3] || -this.extent[1];
+
+                // Calculate resolution that fits the image into the minimap element.
+                var resolution = Math.max(
+                    imageWidth / this.intendedWidth,
+                    imageHeight / this.intendedHeight
+                );
+                minimap.setView(new ol.View({
+                    projection: this.projection,
+                    center: ol.extent.getCenter(this.extent),
+                    resolution: resolution,
+                }));
+
+                // Update the minimap element size so it has the same dimensions than the
+                // image displayed by OpenLayers.
+                this.$el.style.width = Math.round(imageWidth / resolution) + 'px';
+                this.$el.style.height = Math.round(imageHeight / resolution) + 'px';
+                minimap.updateSize();
             },
             refreshImageLayer: function (e) {
                 // Set or refresh the layer that displays the image. This is done after
@@ -60,58 +91,37 @@ biigle.$component('annotations.components.minimap', function () {
             },
         },
         created: function () {
-            var map = biigle.$require('annotations.stores.map');
-            mapSize = map.getSize();
-            mapView = map.getView();
-
-            // Add the viewport layer now. Add the image layer later when it was added
-            // to the map.
-            minimap.addLayer(new ol.layer.Vector({
-                source: viewportSource,
-                style: biigle.$require('annotations.stores.styles').viewport
-            }));
-            map.getLayers().on('add', this.refreshImageLayer);
-
-            map.on('postcompose', this.refreshViewport);
-            map.on('change:size', function () {
+            // Dot this only once and retain the minimap object even if the component
+            // is hidden/destroyed.
+            if (!initialized) {
+                initialized = true;
+                var map = biigle.$require('annotations.stores.map');
                 mapSize = map.getSize();
-            });
-            map.on('change:view', function () {
                 mapView = map.getView();
-            });
+                map.on('postcompose', this.updateViewport);
+                map.on('change:size', this.updateMapSize);
+                map.on('change:view', this.updateMapView);
 
-            minimap.on('pointerdrag', this.dragViewport);
-            minimap.on('click', this.dragViewport);
+                // Add the viewport layer now. Add the image layer later when it was
+                // added to the map.
+                minimap.addLayer(new ol.layer.Vector({
+                    source: viewportSource,
+                    style: biigle.$require('annotations.stores.styles').viewport
+                }));
+                map.getLayers().on('add', this.refreshImageLayer);
+                minimap.on('pointerdrag', this.dragViewport);
+                minimap.on('click', this.dragViewport);
+            }
         },
         watch: {
             // Refresh the view if the extent (i.e. image size) changed.
-            extent: function (extent) {
-                var imageWidth = extent[2];
-                // If extent[3] is 0 then a tiled image is displayed. For this the image
-                // height is -extent[1]. This is due to the differences between a Zoomify
-                // and an Image source.
-                var imageHeight = extent[3] || -extent[1];
-
-                // Calculate resolution that fits the image into the minimap element.
-                var resolution = Math.max(
-                    imageWidth / this.intendedWidth,
-                    imageHeight / this.intendedHeight
-                );
-                minimap.setView(new ol.View({
-                    projection: this.projection,
-                    center: ol.extent.getCenter(extent),
-                    resolution: resolution,
-                }));
-
-                // Update the minimap element size so it has the same dimensions than the
-                // image displayed by OpenLayers.
-                this.$el.style.width = Math.round(imageWidth / resolution) + 'px';
-                this.$el.style.height = Math.round(imageHeight / resolution) + 'px';
-                minimap.updateSize();
+            extent: function () {
+                this.updateElementSize();
             },
         },
         mounted: function () {
             minimap.setTarget(this.$el);
+            this.updateElementSize();
         },
     };
 });

@@ -26,12 +26,6 @@
             <a href="{{asset('vendor/annotations/images/manual/editing_annotations_modify_3.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/editing_annotations_modify_3.jpg')}}" width="32%"></a>
         </p>
 
-        <div class="panel panel-warning">
-            <div class="panel-body text-warning">
-                Circle annotations cannot be modified. But you can still move them as a whole.
-            </div>
-        </div>
-
         <h3><a name="move-annotations"></a><i class="fa fa-arrows"></i> Move Annotations</h3>
 
         <p>

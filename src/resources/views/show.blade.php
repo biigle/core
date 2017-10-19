@@ -1,4 +1,6 @@
 @extends('app')
+@section('full-navbar', true)
+
 @inject('modules', 'Biigle\Services\Modules')
 
 @section('title', "Annotate {$image->filename}")
@@ -6,7 +8,11 @@
 @push('scripts')
 <script src="{{ cachebust_asset('vendor/label-trees/scripts/main.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
-<script src="{{ cachebust_asset('vendor/annotations/scripts/ol.js') }}"></script>
+@if (app()->environment('local'))
+    <script src="{{ cachebust_asset('vendor/annotations/scripts/ol-debug.js') }}"></script>
+@else
+    <script src="{{ cachebust_asset('vendor/annotations/scripts/ol.js') }}"></script>
+@endif
 <script src="{{ cachebust_asset('vendor/annotations/scripts/glfx.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/annotations/scripts/magic-wand-min.js') }}"></script>
 <script src="{{ cachebust_asset('vendor/annotations/scripts/main.js') }}"></script>
@@ -65,6 +71,7 @@
             :cycle-mode="cycleMode"
             :show-mouse-position="showMousePosition"
             :show-annotation-tooltip="showAnnotationTooltip"
+            :show-minimap="showMinimap"
             :cross-origin="@if($volume->isRemote()) true @else false @endif"
             v-on:moveend="handleMapMoveend"
             v-on:previous="handlePrevious"

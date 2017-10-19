@@ -100,6 +100,10 @@
         </p>
 
         <p>
+            The minimap switch enables you to show or hide the minimap. A hidden minimap can be particularly useful in Lawnmower Mode where you need to see all of the displayed viewport.
+        </p>
+
+        <p>
             The mouse position switch controls the display of an additional map overlay that shows the current position of the cursor on the image in pixels.
         </p>
 

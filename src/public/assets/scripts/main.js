@@ -1,2 +1,3980 @@
-biigle.$viewModel("annotations-navbar",function(t){new Vue({el:t,mixins:[biigle.$require("annotations.mixins.imageFilenameTracker")],data:{defaultFilename:t.innerHTML,imageIdsToSee:biigle.$require("annotations.imagesIds").slice()},watch:{currentImageId:function(t){for(var e=this.imageIdsToSee,n=e.length-1;n>=0;n--)if(e[n]===t){e.splice(n,1);break}},imageIdsToSee:function(t){0===t.length&&biigle.$require("messages.store").info("You have now seen all images of this batch.")},currentImageFilename:function(t){document.title="Annotate "+t}},created:function(){var t=this;biigle.$require("events").$on("images.sequence",function(e){t.imageIdsToSee=e.slice()})}})}),biigle.$viewModel("annotator-container",function(t){var e=biigle.$require("events"),n=biigle.$require("annotations.volumeId"),i=biigle.$require("annotations.imagesIds"),o=biigle.$require("annotations.stores.images"),s=biigle.$require("annotations.stores.annotations"),a=biigle.$require("volumes.urlParams"),r=biigle.$require("messages.store"),l=biigle.$require("annotations.stores.utils"),c=biigle.$require("annotations.stores.settings");new Vue({el:t,mixins:[biigle.$require("core.mixins.loader")],components:{sidebar:biigle.$require("annotations.components.sidebar"),sidebarTab:biigle.$require("core.components.sidebarTab"),labelsTab:biigle.$require("annotations.components.labelsTab"),colorAdjustmentTab:biigle.$require("annotations.components.colorAdjustmentTab"),settingsTab:biigle.$require("annotations.components.settingsTab"),annotationsTab:biigle.$require("annotations.components.annotationsTab"),annotationCanvas:biigle.$require("annotations.components.annotationCanvas")},data:{isEditor:biigle.$require("annotations.isEditor"),imageIndex:null,image:null,annotations:[],annotationFilter:null,lastCreatedAnnotation:null,lastCreatedAnnotationTimeout:null,annotationOpacity:1,mapCenter:void 0,mapResolution:void 0,selectedLabel:null,cycleMode:"default",focussedAnnotationIndex:null,focussedImageSectionIndex:null,showMousePosition:!1,showAnnotationTooltip:!1,openTab:null},computed:{imageId:function(){return this.imagesIds[this.imageIndex]},hasAnnotationFilter:function(){return"function"==typeof this.annotationFilter},filteredAnnotations:function(){return this.hasAnnotationFilter?this.annotations.filter(this.annotationFilter):this.annotations},selectedAnnotations:function(){return this.filteredAnnotations.filter(function(t){return t.selected})},supportsColorAdjustment:function(){return o.supportsColorAdjustment},focussedAnnotation:function(){return this.filteredAnnotations[this.focussedAnnotationIndex]},isDefaultCycleMode:function(){return"default"===this.cycleMode},isVolareCycleMode:function(){return"volare"===this.cycleMode},isLawnmowerCycleMode:function(){return"lawnmower"===this.cycleMode},imagesIds:function(){var t=window.localStorage.getItem("biigle.volumes."+n+".images");if(t){var e={};return i.forEach(function(t){e[t]=null}),JSON.parse(t).filter(function(t){return e.hasOwnProperty(t)})}return i}},methods:{getImageAndAnnotationsPromises:function(t){return[o.fetchAndDrawImage(t),s.fetchAnnotations(t)]},setCurrentImageAndAnnotations:function(t){t?(this.image=t[0],this.annotations=t[1]):(this.image=null,this.annotations=[])},updateUrlSlug:function(){a.setSlug(this.imageId)},getNextIndex:function(t){return(t+1)%this.imagesIds.length},getPreviousIndex:function(t){return(t+this.imagesIds.length-1)%this.imagesIds.length},handleNext:function(){if(!this.loading){if(this.isVolareCycleMode){if(this.focussedAnnotationIndex<this.filteredAnnotations.length-1)return void this.focussedAnnotationIndex++;this.focussedAnnotationIndex=-1/0}else if(this.isLawnmowerCycleMode){if(this.$refs.canvas.showNextImageSection())return;this.focussedImageSectionIndex=0}this.imageIndex=this.getNextIndex(this.imageIndex)}},handlePrevious:function(){if(!this.loading){if(this.isVolareCycleMode){if(this.focussedAnnotationIndex>0)return void this.focussedAnnotationIndex--;this.focussedAnnotationIndex=1/0}else if(this.isLawnmowerCycleMode){if(this.$refs.canvas.showPreviousImageSection())return;this.focussedImageSectionIndex=1/0}this.imageIndex=this.getPreviousIndex(this.imageIndex)}},maybeUpdateFocussedAnnotation:function(){this.isVolareCycleMode?this.filteredAnnotations.length>0?this.focussedAnnotationIndex===1/0?this.focussedAnnotationIndex=this.filteredAnnotations.length-1:this.focussedAnnotationIndex=0:(this.focussedAnnotationIndex=null,this.$refs.canvas.fitImage()):this.focussedAnnotationIndex=null},maybeUpdateShownImageSection:function(){this.isLawnmowerCycleMode&&(this.focussedImageSectionIndex===1/0?this.$refs.canvas.showLastImageSection():this.$refs.canvas.showFirstImageSection())},handleMapMoveend:function(t){this.mapCenter=t.center,this.mapResolution=t.resolution,a.set({r:Math.round(100*t.resolution),x:Math.round(t.center[0]),y:Math.round(t.center[1])})},handleSelectAnnotation:function(t,e){if(e&&e.shiftKey)return void(t.selected=!0);this.annotations.forEach(function(e){e.selected=t.id===e.id})},handleSelectAnnotations:function(t,e){t.forEach(function(t){t.selected=!0}),e.forEach(function(t){t.selected=!1}),this.$refs.annotationsTab.scrollIntoView(this.selectedAnnotations)},handleDeselectAnnotation:function(t,e){if(e&&e.shiftKey)return void(t.selected=!1);this.annotations.forEach(function(t){t.selected=!1})},focusAnnotation:function(t,e){this.$refs.canvas.focusAnnotation(t,e)},handleDetachAnnotationLabel:function(t,e){this.isEditor&&s.detachLabel(t,e).catch(r.handleErrorResponse)},handleDeleteAnnotation:function(t){this.isEditor&&(this.lastCreatedAnnotation&&this.lastCreatedAnnotation.id===t.id&&(this.lastCreatedAnnotation=null),s.delete(t).catch(r.handleErrorResponse))},handleDeleteAnnotations:function(t){t.forEach(this.handleDeleteAnnotation)},handleUpdateAnnotations:function(t){this.isEditor&&Vue.Promise.all(t.map(s.update)).catch(r.handleErrorResponse)},selectAndFocusAnnotation:function(t){this.selectedAnnotations.forEach(function(t){t.selected=!1}),t.selected=!0,this.focusAnnotation(t,!0)},handleFilter:function(t){this.annotationFilter=t},handleSelectedLabel:function(t){this.selectedLabel=t},handleNewAnnotation:function(t,e){this.isEditor&&(t.label_id=this.selectedLabel.id,t.confidence=1,s.create(this.imageId,t).then(this.setLastCreatedAnnotation).catch(function(t){e(),r.handleErrorResponse(t)}))},handleAttachLabel:function(t,e){if(e=e||this.selectedLabel,this.isEditor&&e){var n={label_id:e.id,confidence:1};s.attachLabel(t,n).catch(r.handleErrorResponse)}},handleAttachAllSelected:function(){this.selectedAnnotations.forEach(this.handleAttachLabel)},emitImageChanged:function(){e.$emit("images.change",this.imageId,this.image)},cachePreviousAndNext:function(){var t=this.imagesIds[this.getPreviousIndex(this.imageIndex)],e=this.imagesIds[this.getNextIndex(this.imageIndex)];Vue.Promise.all([s.fetchAnnotations(e),o.fetchImage(e),s.fetchAnnotations(t),o.fetchImage(t)]).catch(function(){})},setLastCreatedAnnotation:function(t){this.lastCreatedAnnotationTimeout&&window.clearTimeout(this.lastCreatedAnnotationTimeout);var e=this;this.lastCreatedAnnotation=t,this.lastCreatedAnnotationTimeout=window.setTimeout(function(){e.lastCreatedAnnotation=null},1e4)},updateColorAdjustment:function(t){var e=this.$refs.canvas;l.debounce(function(){o.updateColorAdjustment(t),e.render()},100,"annotations.color-adjustment.update")},handleSettingsChange:function(t,e){switch(t){case"annotationOpacity":this.annotationOpacity=e;break;case"cycleMode":this.cycleMode=e,this.maybeUpdateFocussedAnnotation(),this.maybeUpdateShownImageSection();break;case"mousePosition":this.showMousePosition=e;break;case"annotationTooltip":this.showAnnotationTooltip=e}},handleOpenedTab:function(t){c.set("openTab",t)},handleClosedTab:function(t){c.delete("openTab")},handleLoadingError:function(t){r.danger(t)}},watch:{imageId:function(t){t&&(this.startLoading(),Vue.Promise.all(this.getImageAndAnnotationsPromises(t)).catch(this.handleLoadingError).then(this.setCurrentImageAndAnnotations).then(this.updateUrlSlug).then(this.maybeUpdateFocussedAnnotation).then(this.maybeUpdateShownImageSection).then(this.emitImageChanged).then(this.cachePreviousAndNext).finally(this.finishLoading))},focussedAnnotation:function(t){t&&this.selectAndFocusAnnotation(t)},annotationFilter:function(){this.maybeUpdateFocussedAnnotation()}},created:function(){if(this.startLoading(),0===this.imagesIds.length)return void r.info("Your current volume filtering contains no images.");var t=this.imagesIds.indexOf(biigle.$require("annotations.imageId"));if(-1===t&&(t=0,r.info("The requested image does not exist in your current volume filtering. Switching to the first image.")),this.imageIndex=t,e.$emit("images.sequence",this.imagesIds),void 0!==a.get("r")&&(this.mapResolution=parseInt(a.get("r"),10)/100),void 0!==a.get("x")&&void 0!==a.get("y")&&(this.mapCenter=[parseInt(a.get("x"),10),parseInt(a.get("y"),10)]),e.$on("annotations.select",this.handleSelectAnnotation),e.$on("annotations.deselect",this.handleDeselectAnnotation),e.$on("annotations.focus",this.focusAnnotation),e.$on("annotations.detachLabel",this.handleDetachAnnotationLabel),e.$on("annotations.delete",this.handleDeleteAnnotation),a.get("annotation")){var n=parseInt(a.get("annotation")),i=this;e.$once("images.change",function(){for(var t=i.annotations,e=t.length-1;e>=0;e--)if(t[e].id===n)return void i.selectAndFocusAnnotation(t[e])})}c.has("openTab")&&(this.openTab=c.get("openTab"))}})}),biigle.$component("annotations.components.annotationCanvas",function(){var t,e,n,i,o,s,a,r,l={},c=new ol.layer.Image,h=new ol.layer.Tile,u=new ol.Collection,d=new ol.source.Vector({features:u}),g=new ol.layer.Vector({source:d,zIndex:100,updateWhileAnimating:!0,updateWhileInteracting:!0});return{components:{minimap:biigle.$require("annotations.components.minimap"),labelIndicator:biigle.$require("annotations.components.labelIndicator"),mousePositionIndicator:biigle.$require("annotations.components.mousePositionIndicator"),controlButton:biigle.$require("annotations.components.controlButton"),annotationTooltip:biigle.$require("annotations.components.annotationTooltip")},props:{editable:{type:Boolean,default:!1},image:{type:Object,default:null},annotations:{type:Array,default:function(){return[]}},selectedAnnotations:{type:Array,default:function(){return[]}},center:{type:Array,default:void 0},resolution:{type:Number,default:void 0},selectedLabel:{default:null},lastCreatedAnnotation:{default:null},annotationOpacity:{type:Number,default:1},cycleMode:{type:String,default:"default"},showMousePosition:{type:Boolean,default:!1},showAnnotationTooltip:{type:Boolean,default:!1},crossOrigin:{type:Boolean,default:!1}},data:function(){biigle.$require("annotations.stores.styles");return{initialized:!1,viewFitOptions:{padding:[50,50,50,50],minResolution:1},interactionMode:"default",mapSize:[0,0],imageSection:[0,0],imageSectionCenter:[0,0],mousePosition:[0,0],mouseDomPosition:[0,0],hoveredAnnotationHash:"",hoveredAnnotations:[]}},computed:{extent:function(){return this.image?!0===this.image.tiled?[0,-this.image.height,this.image.width,0]:[0,0,this.image.width,this.image.height]:[0,0,0,0]},viewExtent:function(){return this.resolution&&t?t.getView().calculateExtent(this.mapSize):[0,0,0,0]},imageSectionSteps:function(){return[Math.ceil(this.image.width/(this.viewExtent[2]-this.viewExtent[0])),Math.ceil(this.image.height/(this.viewExtent[3]-this.viewExtent[1]))]},imageSectionStepSize:function(){var t,e=[this.viewExtent[2]-this.viewExtent[0],this.viewExtent[3]-this.viewExtent[1]];return this.imageSectionSteps[0]>1?(t=e[0]*this.imageSectionSteps[0]-this.image.width,e[0]-=t/(this.imageSectionSteps[0]-1)):e[0]=this.viewExtent[2],this.imageSectionSteps[1]>1?(t=e[1]*this.imageSectionSteps[1]-this.image.height,e[1]-=t/(this.imageSectionSteps[1]-1)):e[1]=this.viewExtent[3],e},imageSectionStartCenter:function(){var t=[(this.viewExtent[2]-this.viewExtent[0])/2,(this.viewExtent[3]-this.viewExtent[1])/2];return this.imageSectionSteps[0]<=1&&(t[0]=this.extent[2]/2),this.imageSectionSteps[1]<=1?t[1]=(this.extent[3]||this.extent[1])/2:t[1]+=this.extent[1],t},projection:function(){return new ol.proj.Projection({code:"biigle-image",units:"pixels",extent:this.extent})},selectedFeatures:function(){return n?n.getFeatures():[]},isDefaultInteractionMode:function(){return"default"===this.interactionMode},isDrawing:function(){return this.interactionMode.startsWith("draw")},isDrawingPoint:function(){return"drawPoint"===this.interactionMode},isDrawingRectangle:function(){return"drawRectangle"===this.interactionMode},isDrawingCircle:function(){return"drawCircle"===this.interactionMode},isDrawingLineString:function(){return"drawLineString"===this.interactionMode},isDrawingPolygon:function(){return"drawPolygon"===this.interactionMode},isTranslating:function(){return"translate"===this.interactionMode},isMagicWanding:function(){return"magicWand"===this.interactionMode},isAttaching:function(){return"attach"===this.interactionMode},hasNoSelectedLabel:function(){return!this.selectedLabel},hasSelectedAnnotations:function(){return this.selectedAnnotations.length>0},hasLastCreatedAnnotation:function(){return null!==this.lastCreatedAnnotation},previousButtonTitle:function(){switch(this.cycleMode){case"volare":return"Previous annotation";case"lawnmower":return"Previous image section";default:return"Previous image"}},nextButtonTitle:function(){switch(this.cycleMode){case"volare":return"Next annotation";case"lawnmower":return"Next image section";default:return"Next image"}},isLawnmowerCycleMode:function(){return"lawnmower"===this.cycleMode}},methods:{updateMapSize:function(){this.mapSize=t.getSize()},invertPointsYAxis:function(t){for(var e=this.extent[3],n=1;n<t.length;n+=2)t[n]=e-t[n];return t},convertPointsFromOlToDb:function(t){return this.invertPointsYAxis(Array.prototype.concat.apply([],t))},convertPointsFromDbToOl:function(t){t=this.invertPointsYAxis(t.slice());for(var e=[],n=0;n<t.length;n+=2)e.push([t[n],t[n+1]||0]);return e},getGeometry:function(t){var e=this.convertPointsFromDbToOl(t.points);switch(t.shape){case"Point":return new ol.geom.Point(e[0]);case"Rectangle":return new ol.geom.Rectangle([e]);case"Polygon":return new ol.geom.Polygon([e]);case"LineString":return new ol.geom.LineString(e);case"Circle":return new ol.geom.Circle(e[0],e[1][0]);default:return void console.error("Unknown annotation shape: "+t.shape)}},createFeature:function(t){var e=new ol.Feature(this.getGeometry(t));return e.setId(t.id),e.set("annotation",t),t.labels&&t.labels.length>0&&e.set("color",t.labels[0].label.color),e},handleFeatureModifyStart:function(t){t.features.forEach(function(t){l[t.getId()]=t.getRevision()})},handleFeatureModifyEnd:function(t){var e=this,n=t.features.getArray().filter(function(t){return l[t.getId()]!==t.getRevision()}).map(function(t){return{id:t.getId(),image_id:t.get("annotation").image_id,points:e.getPoints(t.getGeometry())}});n.length>0&&this.$emit("update",n)},focusAnnotation:function(e,n){var i=d.getFeatureById(e.id);i&&(n?delete this.viewFitOptions.duration:this.viewFitOptions.duration=250,t.getView().fit(i.getGeometry(),this.viewFitOptions))},fitImage:function(){t.getView().fit(this.extent,t.getSize())},extractAnnotationFromFeature:function(t){return t.get("annotation")},handleFeatureSelect:function(t){this.$emit("select",t.selected.map(this.extractAnnotationFromFeature),t.deselected.map(this.extractAnnotationFromFeature))},handlePrevious:function(){this.$emit("previous")},handleNext:function(){this.$emit("next")},resetInteractionMode:function(){this.interactionMode="default"},draw:function(t){this["isDrawing"+t]?this.resetInteractionMode():this.interactionMode="draw"+t},drawPoint:function(){this.draw("Point")},drawRectangle:function(){this.draw("Rectangle")},drawCircle:function(){this.draw("Circle")},drawLineString:function(){this.draw("LineString")},drawPolygon:function(){this.draw("Polygon")},getPoints:function(t){var e;switch(t.getType()){case"Circle":e=[t.getCenter(),[t.getRadius()]];break;case"Polygon":case"Rectangle":e=t.getCoordinates()[0];break;case"Point":e=[t.getCoordinates()];break;default:e=t.getCoordinates()}return this.convertPointsFromOlToDb(e)},handleNewFeature:function(t){if(this.hasNoSelectedLabel)d.removeFeature(t.feature);else{var e=t.feature.getGeometry();t.feature.set("color",this.selectedLabel.color);var n=function(){d.removeFeature(t.feature)};this.$emit("new",{shape:e.getType(),points:this.getPoints(e)},n)}},deleteSelectedAnnotations:function(){this.hasSelectedAnnotations&&confirm("Are you sure you want to delete all selected annotations?")&&this.$emit("delete",this.selectedAnnotations)},deleteLastCreatedAnnotation:function(){this.hasLastCreatedAnnotation&&this.$emit("delete",[this.lastCreatedAnnotation])},toggleTranslating:function(){this.isTranslating?this.resetInteractionMode():this.interactionMode="translate"},toggleAttaching:function(){this.isAttaching?this.resetInteractionMode():this.interactionMode="attach"},toggleMagicWand:function(){this.isMagicWanding?this.resetInteractionMode():r&&(this.interactionMode="magicWand")},handleAttachLabel:function(t){this.$emit("attach",t.feature.get("annotation"),this.selectedLabel)},requireSelectedLabel:function(){biigle.$require("events").$emit("sidebar.open","labels"),biigle.$require("messages.store").info("Please select a label first."),this.resetInteractionMode()},handleNewInteractionMode:function(l){if(i&&t.removeInteraction(i),n.setActive(!1),o.setActive(!1),s.setActive(!1),a.setActive(!1),r&&r.setActive(!1),this.isDrawing)this.hasNoSelectedLabel?this.requireSelectedLabel():(i=new ol.interaction.Draw({source:d,type:l.slice(4),style:e.editing}),i.on("drawend",this.handleNewFeature),t.addInteraction(i));else if(this.isAttaching)this.hasNoSelectedLabel?this.requireSelectedLabel():a.setActive(!0);else if(this.isMagicWanding)this.hasNoSelectedLabel?this.requireSelectedLabel():r&&r.setActive(!0);else switch(l){case"translate":n.setActive(!0),s.setActive(!0);break;default:n.setActive(!0),o.setActive(!0)}this.showAnnotationTooltip&&(this.isDefaultInteractionMode?(t.on("pointermove",this.updateHoveredAnnotations),t.on("pointermove",this.updateMouseDomPosition)):(t.un("pointermove",this.updateHoveredAnnotations),t.un("pointermove",this.updateMouseDomPosition),this.resetHoveredAnnotations()))},render:function(){t&&t.render()},getImageSectionCenter:function(t){return[t[0]*this.imageSectionStepSize[0]+this.imageSectionStartCenter[0],t[1]*this.imageSectionStepSize[1]+this.imageSectionStartCenter[1]]},showImageSection:function(e){return e[0]<this.imageSectionSteps[0]&&e[1]<this.imageSectionSteps[1]&&e[0]>=0&&e[1]>=0&&(this.imageSection=e,this.imageSectionCenter=this.getImageSectionCenter(e),t.getView().setCenter(this.imageSectionCenter),!0)},showLastImageSection:function(){this.showImageSection([this.imageSectionSteps[0]-1,this.imageSectionSteps[1]-1])},showFirstImageSection:function(){this.showImageSection([0,0])},showPreviousImageSection:function(){var t=this.imageSection[0]-1;return t>=0?this.showImageSection([t,this.imageSection[1]]):this.showImageSection([this.imageSectionSteps[0]-1,this.imageSection[1]-1])},showNextImageSection:function(){var t=this.imageSection[0]+1;return t<this.imageSectionSteps[0]?this.showImageSection([t,this.imageSection[1]]):this.showImageSection([0,this.imageSection[1]+1])},updateMouseDomPosition:function(t){this.mouseDomPosition=t.pixel},updateMousePosition:function(t){var e=this;biigle.$require("annotations.stores.utils").throttle(function(){e.mousePosition=e.invertPointsYAxis(t.coordinate).map(Math.round)},100,"annotations.canvas.mouse-position")},updateHoveredAnnotations:function(e){var n=[];t.forEachFeatureAtPixel(e.pixel,function(t){n.push(t.get("annotation"))},{layerFilter:function(t){return t===g}});var i=n.map(function(t){return t.id}).sort().join("");this.hoveredAnnotationHash!==i&&(this.hoveredAnnotationHash=i,this.hoveredAnnotations=n)},resetHoveredAnnotations:function(){this.hoveredAnnotationHash="",this.hoveredAnnotations=[]},handleRegularImage:function(t,e){t?(e&&e.width===t.width&&e.height===t.height||c.setSource(new ol.source.Canvas({canvas:t.canvas,projection:this.projection,canvasExtent:this.extent,canvasSize:[t.width,t.height]})),this.isMagicWanding&&r.updateSnapshot()):c.setSource(null)},handleTiledImage:function(t,e){t?h.setSource(new ol.source.Zoomify({url:t.url,size:[t.width,t.height]})):h.setSource(null)}},watch:{image:function(e,n){!0===e.tiled?(n&&!0===n.tiled||(t.removeLayer(c),t.addLayer(h),r&&r.setLayer(h)),this.handleTiledImage(e,n)):(n&&!0!==n.tiled||(t.removeLayer(h),t.addLayer(c),r&&r.setLayer(c)),this.handleRegularImage(e,n))},annotations:function(t){var e={};t.forEach(function(t){e[t.id]=null});var n={},i=d.getFeatures(),o=i.filter(function(t){return n[t.getId()]=null,!e.hasOwnProperty(t.getId())});o.length===i.length?d.clear(!0):(o.forEach(function(t){d.removeFeature(t)}),t=t.filter(function(t){return!n.hasOwnProperty(t.id)})),d.addFeatures(t.map(this.createFeature)),this.resetHoveredAnnotations()},selectedAnnotations:function(t){var e=d,n=this.selectedFeatures;n.clear(),t.forEach(function(t){n.push(e.getFeatureById(t.id))})},extent:function(e,n){if(e[1]!==n[1]||e[2]!==n[2]||e[3]!==n[3]){var i=ol.extent.getCenter(e);this.initialized||(i=this.center||i,this.initialized=!0);var o;!0===this.image.tiled&&(o=h.getSource().getTileGrid().getResolutions()),t.setView(new ol.View({projection:this.projection,center:i,resolution:this.resolution,resolutions:o,zoomFactor:1.5,minResolution:.25,extent:e})),void 0===this.resolution&&t.getView().fit(e)}},selectedLabel:function(t){t||(this.isDrawing||this.isAttaching)&&this.resetInteractionMode()},annotationOpacity:function(t){g.setOpacity(t)},viewExtent:function(){if(this.isLawnmowerCycleMode&&Number.isInteger(this.imageSectionSteps[0])&&Number.isInteger(this.imageSectionSteps[1])){for(var t=1/0,e=0,n=[0,0],i=0;i<this.imageSectionSteps[1];i++)for(var o=0;o<this.imageSectionSteps[0];o++)(e=function(t,e){return Math.sqrt(Math.pow(t[0]-e[0],2)+Math.pow(t[1]-e[1],2))}(this.imageSectionCenter,this.getImageSectionCenter([o,i])))<t&&(n[0]=o,n[1]=i,t=e);this.showImageSection(n)}},showMousePosition:function(e){e?t.on("pointermove",this.updateMousePosition):t.un("pointermove",this.updateMousePosition)},showAnnotationTooltip:function(e){e?(t.on("pointermove",this.updateMouseDomPosition),t.on("pointermove",this.updateHoveredAnnotations)):(t.un("pointermove",this.updateMouseDomPosition),t.un("pointermove",this.updateHoveredAnnotations),this.resetHoveredAnnotations())}},created:function(){var i=this;e=biigle.$require("annotations.stores.styles"),t=biigle.$require("annotations.stores.map"),g.setStyle(e.features),t.addLayer(g),biigle.$require("events").$on("sidebar.toggle",function(){i.$nextTick(function(){t.updateSize()})}),t.on("moveend",function(e){var n=t.getView();i.$emit("moveend",{center:n.getCenter(),resolution:n.getResolution()})}),t.on("change:size",this.updateMapSize),n=new ol.interaction.Select({style:e.highlight,layers:[g],multi:!0}),n.on("select",this.handleFeatureSelect),t.addInteraction(n);var l=biigle.$require("keyboard");if(l.on(32,this.handleNext),l.on(39,this.handleNext),l.on(37,this.handlePrevious),l.on(27,this.resetInteractionMode),this.editable){o=new ol.interaction.Modify({features:n.getFeatures(),deleteCondition:function(t){return ol.events.condition.shiftKeyOnly(t)&&ol.events.condition.singleClick(t)}}),o.on("modifystart",this.handleFeatureModifyStart),o.on("modifyend",this.handleFeatureModifyEnd),t.addInteraction(o);var c=biigle.$require("annotations.ol.ExtendedTranslateInteraction");s=new c({features:n.getFeatures(),map:t}),s.setActive(!1),s.on("translatestart",this.handleFeatureModifyStart),s.on("translateend",this.handleFeatureModifyEnd),t.addInteraction(s);var h=biigle.$require("annotations.ol.AttachLabelInteraction");if(a=new h({features:u,map:t}),a.setActive(!1),a.on("attach",this.handleAttachLabel),t.addInteraction(a),!this.crossOrigin){var f=biigle.$require("annotations.ol.MagicWandInteraction");r=new f({map:t,source:d,style:e.editing,indicatorPointStyle:e.editing,indicatorCrossStyle:e.cross,simplifyTolerant:.1}),r.on("drawend",this.handleNewFeature),r.setActive(!1),t.addInteraction(r)}l.on(46,this.deleteSelectedAnnotations),l.on(8,this.deleteLastCreatedAnnotation),l.on("a",this.drawPoint),l.on("s",this.drawRectangle),l.on("d",this.drawCircle),l.on("f",this.drawLineString),l.on("g",this.drawPolygon),l.on("m",this.toggleTranslating),l.on("l",this.toggleAttaching),this.$watch("interactionMode",this.handleNewInteractionMode)}},mounted:function(){t.setTarget(this.$el)}}}),biigle.$component("annotations.components.annotationTooltip",{props:{annotations:{required:!0,type:Array},position:{required:!0,type:Array}},data:function(){return{delayPast:!1}},computed:{shown:function(){return this.annotations.length>0},styleObject:function(){return"transform: translate("+this.position[0]+"px,"+this.position[1]+"px);"},classObject:function(){return{"annotation-tooltip--shown":this.shown}}}}),biigle.$component("annotations.components.annotationsFilter",{components:{typeahead:biigle.$require("core.components.typeahead")},props:{annotations:{type:Array,required:!0}},data:function(){return{availableFilters:["label","user","shape","session"],selectedFilter:null,selectedData:null,active:!1}},computed:{placeholder:function(){return this.selectedFilter?this.selectedFilter+" name":"filter annotations"},labelData:function(){var t={},e=[];this.annotations.forEach(function(e){e.labels.forEach(function(e){t[e.label.id]=e.label})});for(var n in t)t.hasOwnProperty(n)&&e.push(t[n]);return e},userData:function(){var t={},e=[];this.annotations.forEach(function(e){e.labels.forEach(function(e){t[e.user.id]=e.user})});for(var n in t)t.hasOwnProperty(n)&&(t[n].name=t[n].firstname+" "+t[n].lastname,e.push(t[n]));return e},shapeData:function(){var t=biigle.$require("annotations.shapes"),e=[];for(var n in t)t.hasOwnProperty(n)&&e.push({id:parseInt(n,10),name:t[n]});return e},sessionData:function(){return biigle.$require("annotations.sessions").map(function(t){return t.starts_at=new Date(t.starts_at),t.ends_at=new Date(t.ends_at),t})},data:function(){return this.selectedFilter?this[this.selectedFilter+"Data"]||[]:[]},selectedDataName:function(){return this.selectedData?this.selectedData.name:""}},methods:{labelFilterFunction:function(t){return function(e){return e.labels.filter(function(e){return e.label.id===t.id}).length>0}},userFilterFunction:function(t){return function(e){return e.labels.filter(function(e){return e.user.id===t.id}).length>0}},shapeFilterFunction:function(t){return function(e){return e.shape_id===t.id}},sessionFilterFunction:function(t){var e={};return t.users.forEach(function(t){e[t.id]=null}),function(n){for(var i=n.labels.length-1;i>=0;i--)if(e.hasOwnProperty(n.labels[i].user.id)){var o=new Date(n.created_at);return o>=t.starts_at&&o<t.ends_at}return!1}},selectData:function(t){this.selectedData=t,this.activateFilter()},activateFilter:function(){this.selectedFilter&&this.selectedData&&(this.active=!0,this.$emit("filter",this[this.selectedFilter+"FilterFunction"](this.selectedData)))},deactivateFilter:function(){this.active=!1,this.selectedData=null,this.$emit("filter",null)}}}),biigle.$component("annotations.components.annotationsTab",{components:{labelItem:biigle.$require("annotations.components.annotationsTabItem"),annotationsFilter:biigle.$require("annotations.components.annotationsFilter")},props:{annotations:{type:Array,required:!0},filteredAnnotations:{type:Array,required:!0}},computed:{items:function(){var t=[],e={};return this.filteredAnnotations.forEach(function(n){n.labels.forEach(function(i){var o={annotation:n,annotationLabel:i};e.hasOwnProperty(i.label.id)?e[i.label.id].push(o):(e[i.label.id]=[o],t.push(i.label))})}),t.sort(this.sortByName).map(function(t){return{label:t,annotations:e[t.id]}})}},methods:{sortByName:function(t,e){return t.name.toLowerCase()>e.name.toLowerCase()?1:-1},reallyScrollIntoView:function(t){var e,n=this.$refs.scrollList,i=n.scrollTop,o=n.offsetHeight,s=1/0,a=0;t.forEach(function(t){for(var i=n.querySelectorAll('[data-annotation-id="'+t.id+'"]'),o=i.length-1;o>=0;o--)e=i[o],s=Math.min(e.offsetTop,s),a=Math.max(e.offsetTop+e.offsetHeight,a)},this),i>s?n.scrollTop=s:i+o<a&&(n.scrollTop=o>=a-s?a-n.offsetHeight:s)},scrollIntoView:function(t){0!==t.length&&this.$nextTick(function(){this.reallyScrollIntoView(t)})},keepElementPosition:function(t){var e=this.$refs.scrollList,n=t.offsetTop-e.scrollTop;this.$nextTick(function(){this.$nextTick(function(){var i=t.offsetTop-e.scrollTop;e.scrollTop+=i-n})})},bubbleFilter:function(t){this.$emit("filter",t)}}}),biigle.$component("annotations.components.annotationsTabItem",{components:{annotationItem:biigle.$require("annotations.components.annotationsTabSubItem")},props:{item:{type:Object,required:!0}},data:function(){return{isOpen:!1}},computed:{label:function(){return this.item.label},annotationItems:function(){return this.item.annotations},count:function(){return this.annotationItems.length},hasSelectedAnnotation:function(){for(var t=this.annotationItems,e=t.length-1;e>=0;e--)if(!0===t[e].annotation.selected)return!0;return!1},isSelected:function(){return this.isOpen||this.hasSelectedAnnotation},classObject:function(){return{selected:this.isSelected}},colorStyle:function(){return{"background-color":"#"+this.label.color}},title:function(){return"List all annotations with label "+this.label.name},countTitle:function(){return"There are "+this.count+" annotations with this label"}},methods:{toggleOpen:function(){this.isOpen=!this.isOpen},bubbleSelect:function(t){this.$emit("select",t)}}}),biigle.$component("annotations.components.annotationsTabSubItem",{props:{item:{type:Object,required:!0},userId:{type:Number,required:!0}},computed:{annotation:function(){return this.item.annotation},label:function(){return this.item.annotationLabel},isSelected:function(){return this.annotation.selected},classObject:function(){return{selected:this.isSelected}},shapeClass:function(){return"icon-"+this.annotation.shape.toLowerCase()},username:function(){return this.label.user?this.label.user.firstname+" "+this.label.user.lastname:"(user deleted)"},canBeDetached:function(){return this.label.user&&this.label.user.id===this.userId},events:function(){return biigle.$require("events")}},methods:{toggleSelect:function(t){this.$emit("select",this.$el),this.isSelected?this.events.$emit("annotations.deselect",this.annotation,t):this.events.$emit("annotations.select",this.annotation,t)},focus:function(){this.events.$emit("annotations.focus",this.annotation)},detach:function(){this.annotation.labels.length>1?this.events.$emit("annotations.detachLabel",this.annotation,this.label):confirm("Detaching the last label will delete the annotation. Proceed?")&&this.events.$emit("annotations.delete",this.annotation)}}}),biigle.$component("annotations.components.colorAdjustmentTab",{data:function(){return{isBrightnessRgbActive:!1,colorAdjustment:{brightnessContrast:[0,0],brightnessRGB:[0,0,0],hueSaturation:[0,0],vibrance:[0]}}},methods:{resetType:function(t,e){void 0!==e?this.colorAdjustment[t].splice(e,1,0):this.colorAdjustment[t]=this.colorAdjustment[t].map(function(){return 0})},reset:function(){for(var t in this.colorAdjustment)this.colorAdjustment.hasOwnProperty(t)&&this.resetType(t)},toggleBrightnessRgb:function(){this.isBrightnessRgbActive?this.resetType("brightnessRGB"):this.resetType("brightnessContrast",0),this.isBrightnessRgbActive=!this.isBrightnessRgbActive}},watch:{colorAdjustment:{handler:function(){this.$emit("change",this.colorAdjustment)},deep:!0}}}),biigle.$component("annotations.components.controlButton",{
-template:'<span class="control-button btn" :title="title" :class="classObject" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave"><i :class="iconClass" aria-hidden="true"></i><span v-if="hasSubControls" @click.stop class="control-button__sub-controls btn-group"><slot></slot></span></span>',props:{title:{type:String,default:""},icon:{type:String,required:!0},active:{type:Boolean,default:!1}},data:function(){return{mouseOver:!1,timeout:null,activeSubControls:0}},computed:{classObject:function(){return{active:this.active,"control-button--open":this.showSubControls}},iconClass:function(){return this.icon.startsWith("glyphicon-")?"glyphicon "+this.icon:this.icon.startsWith("fa-")?"fa "+this.icon:"icon icon-white "+this.icon},hasSubControls:function(){return this.$slots.hasOwnProperty("default")},showSubControls:function(){return this.mouseOver||this.hasActiveSubControl},hasActiveSubControl:function(){return this.activeSubControls>0}},methods:{handleClick:function(){this.$emit("click")},handleMouseEnter:function(){this.mouseOver=!0,window.clearTimeout(this.timeout)},handleMouseLeave:function(){var t=this;window.clearTimeout(this.timeout),this.timeout=window.setTimeout(function(){t.mouseOver=!1},200)},updateActiveSubControls:function(t){t?this.activeSubControls++:this.activeSubControls--}},watch:{active:function(t){this.$parent.$emit("control-button-active",t)}},created:function(){this.$on("control-button-active",this.updateActiveSubControls)}}),biigle.$component("annotations.components.labelIndicator",{props:{label:{required:!0}}}),biigle.$component("annotations.components.labelsTab",{components:{labelTrees:biigle.$require("labelTrees.components.labelTrees")},data:function(){return{labelTrees:biigle.$require("annotations.labelTrees"),selectedLabel:null}},computed:{plugins:function(){return biigle.$require("annotations.components.labelsTabPlugins")}},methods:{handleSelectedLabel:function(t){this.selectedLabel=t,this.$emit("select",t)},handleDeselectedLabel:function(t){this.selectedLabel=null,this.$emit("select",null)}}}),biigle.$declare("annotations.components.labelsTabPlugins",{}),biigle.$component("annotations.components.minimap",function(){var t=new ol.Map({controls:[],interactions:[]}),e=new ol.source.Vector,n=new ol.Feature;e.addFeature(n);var i,o;return{props:{extent:{type:Array,required:!0},projection:{type:Object,required:!0}},computed:{intendedWidth:function(){return this.$el.clientWidth},intendedHeight:function(){return this.$el.clientHeight}},methods:{refreshViewport:function(){n.setGeometry(ol.geom.Polygon.fromExtent(i.calculateExtent(o)))},dragViewport:function(t){i.setCenter(t.coordinate)},refreshImageLayer:function(e){var n=t.getLayers();n.getLength()>1?n.setAt(0,e.target.item(e.target.getLength()-1)):n.insertAt(0,e.target.item(e.target.getLength()-1))}},created:function(){var n=biigle.$require("annotations.stores.map");o=n.getSize(),i=n.getView(),t.addLayer(new ol.layer.Vector({source:e,style:biigle.$require("annotations.stores.styles").viewport})),n.getLayers().on("add",this.refreshImageLayer),n.on("postcompose",this.refreshViewport),n.on("change:size",function(){o=n.getSize()}),n.on("change:view",function(){i=n.getView()}),t.on("pointerdrag",this.dragViewport),t.on("click",this.dragViewport)},watch:{extent:function(e){var n=e[2],i=e[3]||-e[1],o=Math.max(n/this.intendedWidth,i/this.intendedHeight);t.setView(new ol.View({projection:this.projection,center:ol.extent.getCenter(e),resolution:o})),this.$el.style.width=Math.round(n/o)+"px",this.$el.style.height=Math.round(i/o)+"px",t.updateSize()}},mounted:function(){t.setTarget(this.$el)}}}),biigle.$component("annotations.components.mousePositionIndicator",{props:{position:{required:!0}},computed:{positionText:function(){return this.position[0]+" × "+this.position[1]}}}),biigle.$component("annotations.components.screenshotButton",{mixins:[biigle.$require("annotations.mixins.imageFilenameTracker")],computed:{map:function(){return biigle.$require("annotations.stores.map")},messages:function(){return biigle.$require("messages.store")},screenshotSupported:function(){return!biigle.$require("annotations.volumeIsRemote")},screenshotTitle:function(){return this.screenshotSupported?"Get a screenshot of the visible area":"Screenshots are not available for remote images"},filename:function(){if(this.currentImageFilename){var t=this.currentImageFilename.split(".");return t.length>1&&(t[t.length-1]="png"),"biigle_screenshot_"+(t=t.join(".").toLowerCase())}return"biigle_screenshot.png"}},methods:{trimCanvas:function(t){var e,n,i,o=t.getContext("2d"),s=document.createElement("canvas").getContext("2d"),a=o.getImageData(0,0,t.width,t.height),r=a.data.length,l={top:null,left:null,right:null,bottom:null};for(e=0;e<r;e+=4)0!==a.data[e+3]&&(n=e/4%t.width,i=~~(e/4/t.width),null===l.top&&(l.top=i),null===l.left?l.left=n:n<l.left&&(l.left=n),null===l.right?l.right=n:l.right<n&&(l.right=n),null===l.bottom?l.bottom=i:l.bottom<i&&(l.bottom=i));var c=l.bottom-l.top,h=l.right-l.left,u=o.getImageData(l.left,l.top,h,c);return s.canvas.width=h,s.canvas.height=c,s.putImageData(u,0,0),s.canvas},makeBlob:function(t){try{t=this.trimCanvas(t)}catch(t){return Vue.Promise.reject("Could not create screenshot. Maybe the image is not loaded yet?")}var e="image/png";if(HTMLCanvasElement.prototype.toBlob)return new Vue.Promise(function(n){t.toBlob(n,e)});for(var n=atob(t.toDataURL(e).split(",")[1]),i=n.length,o=new Uint8Array(i),s=0;s<i;s++)o[s]=n.charCodeAt(s);return new Vue.Promise(function(t){t(new Blob([o],{type:e}))})},download:function(t){var e=document.createElement("a");e.style="display: none",e.download=this.filename,e.href=URL.createObjectURL(t),document.body.appendChild(e),e.click(),window.setTimeout(function(){document.body.removeChild(e),URL.revokeObjectURL(e.href)},100)},capture:function(){var t=this;this.map.once("postcompose",function(e){t.makeBlob(e.context.canvas).then(t.download).catch(t.handleError)}),this.map.renderSync()},handleError:function(t){this.messages.danger(t)}}}),biigle.$component("annotations.components.settingsTab",{components:{screenshotButton:biigle.$require("annotations.components.screenshotButton")},data:function(){return{annotationOpacity:1,cycleMode:"default",mousePosition:!1,annotationTooltip:!1}},computed:{settings:function(){return biigle.$require("annotations.stores.settings")},keyboard:function(){return biigle.$require("keyboard")},isVolareActive:function(){return"volare"===this.cycleMode},isLawnmowerActive:function(){return"lawnmower"===this.cycleMode},plugins:function(){return biigle.$require("annotations.components.settingsTabPlugins")}},methods:{startVolare:function(){this.cycleMode="volare"},startLawnmower:function(){this.cycleMode="lawnmower"},resetCycleMode:function(){this.cycleMode="default"},emitAttachLabel:function(){this.$emit("attach-label")},showMousePosition:function(){this.mousePosition=!0},hideMousePosition:function(){this.mousePosition=!1},showAnnotationTooltip:function(){this.annotationTooltip=!0},hideAnnotationTooltip:function(){this.annotationTooltip=!1}},watch:{annotationOpacity:function(t){t=parseFloat(t),1===t?this.settings.delete("annotationOpacity"):this.settings.set("annotationOpacity",t),this.$emit("change","annotationOpacity",t)},cycleMode:function(t){this.$emit("change","cycleMode",t),"default"===t?this.keyboard.off(27,this.resetCycleMode):this.keyboard.on(27,this.resetCycleMode),"volare"===t?this.keyboard.on(13,this.emitAttachLabel):this.keyboard.off(13,this.emitAttachLabel)},mousePosition:function(t){t?this.settings.set("mousePosition",!0):this.settings.delete("mousePosition"),this.$emit("change","mousePosition",t)},annotationTooltip:function(t){t?this.settings.set("annotationTooltip",!0):this.settings.delete("annotationTooltip"),this.$emit("change","annotationTooltip",t)}},created:function(){["annotationOpacity","mousePosition","annotationTooltip"].forEach(function(t){this.settings.has(t)&&(this[t]=this.settings.get(t))},this)}}),biigle.$declare("annotations.components.settingsTabPlugins",{}),biigle.$component("annotations.components.sidebar",{mixins:[biigle.$require("core.components.sidebar")],created:function(){var t=this;biigle.$require("events").$on("sidebar.open",function(e){t.$emit("open",e)})}}),biigle.$component("annotations.mixins.imageFilenameTracker",{data:function(){return{filenameMap:{},currentImageId:null,defaultFilename:""}},computed:{currentImageFilename:function(){return this.filenameMap[this.currentImageId]||this.defaultFilename}},methods:{updateImageId:function(t){this.currentImageId=t}},created:function(){var t=biigle.$require("events"),e=biigle.$require("annotations.imagesIds"),n=biigle.$require("annotations.imagesFilenames"),i=this.filenameMap;e.forEach(function(t,e){i[t]=n[e]}),t.$on("images.change",this.updateImageId)}}),biigle.$declare("annotations.ol.AttachLabelInteraction",function(){function t(t){ol.interaction.Pointer.call(this,{handleUpEvent:this.handleUpEvent,handleDownEvent:this.handleDownEvent,handleMoveEvent:this.handleMoveEvent}),this.on("change:active",this.toggleActive),this.features=void 0!==t.features?t.features:null,this.currentFeature=void 0,this.map=t.map}return ol.inherits(t,ol.interaction.Pointer),t.prototype.toggleActive=function(t){if(t.oldValue){var e=this.map.getTargetElement();e&&(e.style.cursor="")}},t.prototype.handleDownEvent=function(t){return this.currentFeature=this.featuresAtPixel(t.pixel,t.map),!!this.currentFeature},t.prototype.handleUpEvent=function(t){this.currentFeature&&this.currentFeature.get("annotation")&&this.dispatchEvent({type:"attach",feature:this.currentFeature}),this.currentFeature=void 0},t.prototype.handleMoveEvent=function(t){var e=t.map.getTargetElement(),n=this.featuresAtPixel(t.pixel,t.map);e.style.cursor=n?"pointer":""},t.prototype.featuresAtPixel=function(t,e){var n=null,i=e.forEachFeatureAtPixel(t,function(t){return t},this);return this.handlesFeature(i)&&(n=i),n},t.prototype.handlesFeature=function(t){return!!this.features&&-1!==this.features.getArray().indexOf(t)},t}),biigle.$declare("annotations.ol.ExtendedTranslateInteraction",function(){function t(t){ol.interaction.Translate.call(this,t),this.features=void 0!==t.features?t.features:null,this.on("change:active",this.toggleListeners);var e=this;this.translateUp=function(){return e.translate(0,1)},this.translateDown=function(){return e.translate(0,-1)},this.translateLeft=function(){return e.translate(-1,0)},this.translateRight=function(){return e.translate(1,0)},this.keyboard=biigle.$require("keyboard"),this.utils=biigle.$require("annotations.stores.utils"),this.map=t.map,this.translating=!1}return ol.inherits(t,ol.interaction.Translate),t.prototype.toggleListeners=function(t){if(t.oldValue){this.keyboard.off(37,this.translateLeft),this.keyboard.off(38,this.translateUp),this.keyboard.off(39,this.translateRight),this.keyboard.off(40,this.translateDown);var e=this.map.getTargetElement();e&&(e.style.cursor="")}else this.keyboard.on(37,this.translateLeft,10),this.keyboard.on(38,this.translateUp,10),this.keyboard.on(39,this.translateRight,10),this.keyboard.on(40,this.translateDown,10)},t.prototype.translate=function(t,e){if(this.features&&this.features.getLength()>0){this.translating||(this.dispatchEvent({type:"translatestart",features:this.features}),this.translating=!0),this.features.forEach(function(n){var i=n.getGeometry();i.translate(t,e),n.setGeometry(i)});var n=this,i=function(){n.translating=!1,n.dispatchEvent({type:"translateend",features:n.features})};return this.utils.debounce(i,500,"ol.interactions.Translate.translateend"),!1}return!0},t}),biigle.$declare("annotations.ol.MagicWandInteraction",function(){function t(t){ol.interaction.Pointer.call(this,{handleUpEvent:this.handleUpEvent,handleDownEvent:this.handleDownEvent,handleMoveEvent:this.handleMoveEvent,handleDragEvent:this.handleDragEvent}),this.on("change:active",this.toggleActive),this.layer=t.layer,this.colorThreshold=void 0===t.colorThreshold?15:t.colorThreshold,this.currentThreshold=this.colorThreshold,this.blurRadius=void 0===t.blurRadius?5:t.blurRadius,this.simplifyTolerant=void 0===t.simplifyTolerant?0:t.simplifyTolerant,this.simplifyCount=void 0===t.simplifyCount?3:t.simplifyCount,this.downPoint=[0,0],this.map=t.map,this.snapshotCanvas=document.createElement("canvas"),this.snapshotContext=this.snapshotCanvas.getContext("2d"),this.snapshot=null,this.updatingSnapshot=!1,this.discardRadius=void 0===t.discardRadius?20:t.discardRadius,this.sketchFeature=null,this.sketchSource=t.source,void 0===this.sketchSource&&(this.sketchSource=new ol.source.Vector,this.map.addLayer(new ol.layer.Vector({source:this.sketchSource,zIndex:200}))),this.sketchStyle=void 0===t.style?null:t.style,this.isShowingPoint=!1,this.indicatorPoint=new ol.Feature(new ol.geom.Point([20,20])),void 0!==t.indicatorPointStyle&&this.indicatorPoint.setStyle(t.indicatorPointStyle),this.isShowingCross=!1,this.indicatorCross=new ol.Feature(new ol.geom.Point([100,100])),void 0!==t.indicatorCrossStyle?this.indicatorCross.setStyle(t.indicatorCrossStyle):this.indicatorCross.setStyle([new ol.style.Style({image:new ol.style.RegularShape({stroke:new ol.style.Stroke({color:[0,153,255,1],width:3}),points:4,radius1:6,radius2:0,angle:Math.PI/4})}),new ol.style.Style({image:new ol.style.RegularShape({stroke:new ol.style.Stroke({color:[255,255,255,.75],width:1.5}),points:4,radius1:6,radius2:0,angle:Math.PI/4})})]),this.indicatorSource=new ol.source.Vector,this.map.addLayer(new ol.layer.Vector({source:this.indicatorSource,zIndex:200})),this.toggleActive()}return ol.inherits(t,ol.interaction.Pointer),t.prototype.getHighDpiScaling=function(){return this.snapshot.height/this.map.getSize()[1]},t.prototype.toSnapshotCoordinates=function(t){var e=this.map.getView().calculateExtent(this.map.getSize()),n=this.snapshot.height,i=this.getHighDpiScaling()/this.map.getView().getResolution();return t.map(function(t){return[Math.round((t[0]-e[0])*i),n-Math.round((t[1]-e[1])*i)]})},t.prototype.fromSnapshotCoordinates=function(t){var e=this.map.getView().calculateExtent(this.map.getSize()),n=this.snapshot.height,i=this.map.getView().getResolution()/this.getHighDpiScaling();return t.map(function(t){return[Math.round(t[0]*i+e[0]),Math.round((n-t[1])*i+e[1])]})},t.prototype.fromMagicWandCoordinates=function(t){return t.map(function(t){return[t.x,t.y]})},t.prototype.handleUpEvent=function(t){return this.currentThreshold=this.colorThreshold,this.isShowingCross?this.sketchSource.removeFeature(this.sketchFeature):this.dispatchEvent({type:"drawend",feature:this.sketchFeature}),this.sketchFeature=null,this.indicatorSource.clear(),this.isShowingPoint=!1,this.isShowingCross=!1,!1},t.prototype.handleDownEvent=function(t){return this.downPoint[0]=Math.round(t.coordinate[0]),this.downPoint[1]=Math.round(t.coordinate[1]),this.drawSketch(),this.indicatorPoint.getGeometry().setCoordinates(this.downPoint),this.indicatorCross.getGeometry().setCoordinates(this.downPoint),this.indicatorSource.clear(),this.indicatorSource.addFeature(this.indicatorCross),this.isShowingCross=!0,this.isShowingPoint=!1,!0},t.prototype.handleDragEvent=function(t){var e=this.toSnapshotCoordinates([t.coordinate]).shift(),n=Math.round(e[0]),i=Math.round(e[1]),o=this.toSnapshotCoordinates([this.downPoint]).shift(),s=o[0],a=o[1];if(n!==s||i!==a){var r=n-s,l=i-a,c=Math.sqrt(r*r+l*l);c<=this.discardRadius?this.isShowingCross||(this.indicatorSource.clear(),this.indicatorSource.addFeature(this.indicatorCross),this.isShowingCross=!0,this.isShowingPoint=!1):this.isShowingPoint||(this.indicatorSource.clear(),this.indicatorSource.addFeature(this.indicatorPoint),this.isShowingCross=!1,this.isShowingPoint=!0);var h=Math.min(Math.max(this.colorThreshold+Math.round(c/2-this.colorThreshold),1),255);h!=this.currentThreshold&&(this.currentThreshold=h,this.drawSketch())}},t.prototype.handleMoveEvent=function(t){this.isShowingPoint||(this.indicatorSource.clear(),this.indicatorSource.addFeature(this.indicatorPoint),this.isShowingPoint=!0,this.isShowingCross=!1),this.indicatorPoint.getGeometry().setCoordinates(t.coordinate)},t.prototype.toggleActive=function(){this.getActive()?(this.map.on(["moveend","change:size"],this.updateSnapshot,this),this.updateSnapshot()):(this.map.un(["moveend","change:size"],this.updateSnapshot,this),this.indicatorSource.clear(),this.isShowingPoint=!1,this.isShowingCross=!1,this.sketchFeature&&(this.sketchSource.removeFeature(this.sketchFeature),this.sketchFeature=null))},t.prototype.updateSnapshot=function(){!this.updatingSnapshot&&this.layer&&(this.layer.once("postcompose",function(t){this.snapshotCanvas.width=t.context.canvas.width,this.snapshotCanvas.height=t.context.canvas.height,this.snapshotContext.drawImage(t.context.canvas,0,0),this.snapshot=this.snapshotContext.getImageData(0,0,this.snapshotCanvas.width,this.snapshotCanvas.height),this.snapshot.bytes=4},this),this.updatingSnapshot=!0,this.map.renderSync(),this.updatingSnapshot=!1)},t.prototype.setLayer=function(t){this.layer=t},t.prototype.drawSketch=function(){var t=this.toSnapshotCoordinates([this.downPoint]).shift(),e=MagicWand.floodFill(this.snapshot,t[0],t[1],this.currentThreshold);this.blurRadius>0&&(e=MagicWand.gaussBlurOnlyBorder(e,this.blurRadius));for(var n=e.data,i=this.snapshot.data,o=n.length-1;o>=0;o--)0===i[4*o]&&(n[o]=0);var s=MagicWand.traceContours(e).filter(function(t){return!t.innner}).shift();if(s){this.simplifyTolerant>0&&(s=MagicWand.simplifyContours([s],this.simplifyTolerant,this.simplifyCount).shift());var a=this.fromSnapshotCoordinates(this.fromMagicWandCoordinates(s.points));this.sketchFeature?this.sketchFeature.getGeometry().setCoordinates([a]):(this.sketchFeature=new ol.Feature(new ol.geom.Polygon([a])),this.sketchStyle&&this.sketchFeature.setStyle(this.sketchStyle),this.sketchSource.addFeature(this.sketchFeature))}},t}),biigle.$declare("annotations.ol.ZoomToNativeControl",function(){function t(t){var e=t||{},n=e.label?e.label:"1",i=document.createElement("button"),o=this;i.innerHTML=n,i.title="Zoom to original resolution",i.addEventListener("click",function(){o.zoomToNative.call(o)});var s=document.createElement("div");s.className="zoom-to-native ol-unselectable ol-control",s.appendChild(i),ol.control.Control.call(this,{element:s,target:e.target}),this.duration_=void 0!==e.duration?e.duration:250}return ol.inherits(t,ol.control.Control),t.prototype.zoomToNative=function(){var t=this.getMap(),e=t.getView();if(e){e.getResolution()&&(this.duration_>0?e.animate({resolution:e.constrainResolution(1),duration:this.duration_}):e.setResolution(e.constrainResolution(1)))}},t}),biigle.$declare("annotations.stores.annotations",function(){var t=(biigle.$require("events"),biigle.$require("api.images")),e=biigle.$require("api.annotations");return new Vue({data:{cache:{}},computed:{imageFileUri:function(){return biigle.$require("annotations.imageFileUri")},shapeMap:function(){return biigle.$require("annotations.shapes")},inverseShapeMap:function(){var t={};for(var e in this.shapeMap)t[this.shapeMap[e]]=parseInt(e,10);return t}},methods:{parseResponse:function(t){return t.data},resolveShape:function(t){return t.shape=this.shapeMap[t.shape_id],t},resolveAllShapes:function(t){return t.forEach(this.resolveShape,this),t},setDeselected:function(t){return t.selected=!1,t},setAllDeselected:function(t){return t.forEach(this.setDeselected),t},fetchAnnotations:function(e){return this.cache.hasOwnProperty(e)||(this.cache[e]=t.getAnnotations({id:e}).catch(function(){return Vue.Promise.reject("Failed to load annotations for image "+e+"!")}).then(this.parseResponse).then(this.resolveAllShapes)),this.cache[e].then(this.setAllDeselected)},create:function(e,n){n.shape_id=this.inverseShapeMap[n.shape],delete n.shape;var i=this;return t.saveAnnotations({id:e},n).then(this.parseResponse).then(this.resolveShape).then(this.setDeselected).then(function(t){return i.cache[e].then(function(e){e.unshift(t)}),t})},update:function(t){var n=this,i=e.update({id:t.id},{points:t.points});return i.then(function(){n.cache[t.image_id].then(function(e){for(var n=e.length-1;n>=0;n--)if(e[n].id===t.id)return void(e[n].points=t.points)})}),i},attachLabel:function(t,n){var i=e.attachLabel({id:t.id},n);return i.then(function(e){t.labels.unshift(e.data)}),i},detachLabel:function(t,n){var i=e.detachLabel({annotation_label_id:n.id});return i.then(function(){for(var e=t.labels.length-1;e>=0;e--)if(t.labels[e].id===n.id)return void t.labels.splice(e,1)}),i},delete:function(t){var n=e.delete({id:t.id}),i=this.cache[t.image_id];return n.then(function(){i.then(function(e){for(var n=e.length-1;n>=0;n--)if(e[n].id===t.id)return void e.splice(n,1)})}),n}}})}),biigle.$declare("annotations.stores.images",function(){var t,e=biigle.$require("events"),n=document.createElement("canvas");try{t=fx.canvas();var i=null,o=null}catch(t){console.log("WebGL not supported. Color adjustment disabled.")}return window.addEventListener("beforeunload",function(e){i&&(i.destroy(),t.width=1,t.height=1)}),new Vue({data:{cache:{},cachedIds:[],maxCacheSize:10,supportsColorAdjustment:!1,currentlyDrawnImage:null,colorAdjustment:{brightnessContrast:[0,0],brightnessRGB:[0,0,0],hueSaturation:[0,0],vibrance:[0]}},computed:{imageFileUri:function(){return biigle.$require("annotations.imageFileUri")},tilesUri:function(){return biigle.$require("annotations.tilesUri")},supportedTextureSize:function(){return t?t._.gl.getParameter(t._.gl.MAX_TEXTURE_SIZE):0},isRemoteVolume:function(){return biigle.$require("annotations.volumeIsRemote")},hasColorAdjustment:function(){for(var t in this.colorAdjustment)if(this.colorAdjustment.hasOwnProperty(t)&&this.isAdjustmentActive(t))return!0;return!1}},methods:{isTiledImage:function(t){return!0===t.tiled},isAdjustmentActive:function(t){return 0!==this.colorAdjustment[t].reduce(function(t,e){return t+e})},checkSupportsColorAdjustment:function(e){if(!t||this.isRemoteVolume)return!1;if(this.isTiledImage(e))return void(this.supportsColorAdjustment=!1);if(this.currentlyDrawnImage&&this.currentlyDrawnImage.width===e.width&&this.currentlyDrawnImage.height===e.height)return this.supportsColorAdjustment;var n=this.supportedTextureSize;return n<e.width||n<e.height?(console.log("Insufficient WebGL texture size. Required: "+e.width+"x"+e.height+", available: "+n+"x"+n+". Color adjustment disabled."),void(this.supportsColorAdjustment=!1)):(t.width=e.width,t.height=e.height,e.width!==t._.gl.drawingBufferWidth||e.height!==t._.gl.drawingBufferHeight?(console.log("Your browser does not allow a WebGL drawing buffer with the size of the original image. Color adjustment disabled."),void(this.supportsColorAdjustment=!1)):void(this.supportsColorAdjustment=!0))},createImage:function(t){var e=this,i=document.createElement("img"),o=new Vue.Promise(function(e,o){i.onload=function(){e({source:i,width:i.width,height:i.height,canvas:n})},i.onerror=function(){o("Failed to load image "+t+"!")}});return this.isRemoteVolume?(i.src=this.imageFileUri.replace("{id}",t),o):Vue.http.get(this.imageFileUri.replace("{id}",t)).catch(function(){return Vue.Promise.reject("Failed to load image "+t+"!")}).then(function(t){if("application/json"===t.bodyBlob.type)return t.body.url=e.tilesUri.replace("{uuid}",t.body.uuid),t.body;var n=window.URL||window.webkitURL;return i.src=n.createObjectURL(t.bodyBlob),o})},drawSimpleImage:function(t){return t.canvas.width=t.width,t.canvas.height=t.height,t.canvas.getContext("2d").drawImage(t.source,0,0),t},drawColorAdjustedImage:function(e){o!==e.source.src&&(i?i.loadContentsOf(e.source):i=t.texture(e.source),o=e.source.src),t.draw(i);for(var n in this.colorAdjustment)this.colorAdjustment.hasOwnProperty(n)&&this.isAdjustmentActive(n)&&t[n].apply(t,this.colorAdjustment[n]);return t.update(),e.canvas.width=e.width,e.canvas.height=e.height,e.canvas.getContext("2d").drawImage(t,0,0),e},drawImage:function(t){return this.checkSupportsColorAdjustment(t),this.currentlyDrawnImage=t,this.supportsColorAdjustment&&this.hasColorAdjustment?this.drawColorAdjustedImage(t):this.isTiledImage(t)?t:this.drawSimpleImage(t)},fetchImage:function(t){return this.cache.hasOwnProperty(t)||(e.$emit("images.fetching",t),this.cache[t]=this.createImage(t),this.cachedIds.push(t)),this.cache[t]},fetchAndDrawImage:function(t){return this.fetchImage(t).then(this.drawImage)},updateColorAdjustment:function(t){if(this.supportsColorAdjustment){var e,n,i=this.colorAdjustment,o=this.hasColorAdjustment;for(e in t)if(t.hasOwnProperty(e))for(n=t[e].length-1;n>=0;n--)i[e].splice(n,1,t[e][n]);this.hasColorAdjustment?this.drawColorAdjustedImage(this.currentlyDrawnImage):o&&this.drawSimpleImage(this.currentlyDrawnImage)}}},watch:{cachedIds:function(t){if(t.length>this.maxCacheSize){var e=t.shift();this.cache[e];delete this.cache[e]}}}})}),biigle.$declare("annotations.stores.map",function(){var t=new ol.Map({renderer:"canvas",controls:[new ol.control.Zoom,new ol.control.ZoomToExtent({tipLabel:"Zoom to show whole image",label:""})],interactions:ol.interaction.defaults({altShiftDragRotate:!1,doubleClickZoom:!1,keyboard:!1,shiftDragZoom:!1,pinchRotate:!1,pinchZoom:!1})}),e=biigle.$require("annotations.ol.ZoomToNativeControl");return t.addControl(new e({label:""})),t}),biigle.$declare("annotations.stores.settings",new Vue({data:function(){return{settings:{},storageKey:"biigle.annotations.settings"}},computed:{debounce:function(){return biigle.$require("annotations.stores.utils").debounce}},methods:{set:function(t,e){this.settings.hasOwnProperty(t)?this.settings[t]=e:Vue.set(this.settings,t,e)},delete:function(t){Vue.delete(this.settings,t)},get:function(t){return this.settings[t]},has:function(t){return this.settings.hasOwnProperty(t)},storeSettings:function(){for(var t in this.settings)if(this.settings.hasOwnProperty(t))return void window.localStorage.setItem(this.storageKey,JSON.stringify(this.settings));window.localStorage.removeItem(this.storageKey)}},created:function(){var t=JSON.parse(window.localStorage.getItem(this.storageKey));t&&Vue.set(this,"settings",t)},watch:{settings:{handler:function(){this.debounce(this.storeSettings,100,"annotations.settings")},deep:!0}}})),biigle.$declare("annotations.stores.styles",function(){var t={white:[255,255,255,1],blue:[0,153,255,1],orange:"#ff5e00"},e=new ol.style.Stroke({color:t.white,width:5}),n=new ol.style.Stroke({color:t.white,width:6}),i=new ol.style.Stroke({color:t.blue,width:3}),o=new ol.style.Stroke({color:t.orange,width:3}),s=new ol.style.Fill({color:t.blue}),a=new ol.style.Fill({color:t.orange}),r=new ol.style.Stroke({color:t.white,width:2}),l=new ol.style.Stroke({color:t.white,width:3}),c=new ol.style.Stroke({color:t.white,width:2,lineDash:[3]}),h=new ol.style.Stroke({color:t.blue,width:3,lineDash:[5]});new ol.style.Fill({color:t.blue}),new ol.style.Fill({color:t.orange});return{colors:t,features:function(n){var i=n.get("color");return i=i?"#"+i:t.blue,[new ol.style.Style({stroke:e,image:new ol.style.Circle({radius:6,fill:new ol.style.Fill({color:i}),stroke:r})}),new ol.style.Style({stroke:new ol.style.Stroke({color:i,width:3})})]},highlight:[new ol.style.Style({stroke:n,image:new ol.style.Circle({radius:6,fill:a,stroke:l}),zIndex:200}),new ol.style.Style({stroke:o,zIndex:200})],editing:[new ol.style.Style({stroke:e,image:new ol.style.Circle({radius:6,fill:s,stroke:c})}),new ol.style.Style({stroke:h})],viewport:[new ol.style.Style({stroke:i}),new ol.style.Style({stroke:new ol.style.Stroke({color:t.white,width:1})})],cross:[new ol.style.Style({image:new ol.style.RegularShape({stroke:n,points:4,radius1:6,radius2:0,angle:Math.PI/4})}),new ol.style.Style({image:new ol.style.RegularShape({stroke:o,points:4,radius1:6,radius2:0,angle:Math.PI/4})})]}}),biigle.$declare("annotations.stores.utils",function(){var t={},e={},n={};return{debounce:function(e,n,i){t.hasOwnProperty(i)&&window.clearTimeout(t[i]),t[i]=window.setTimeout(e,n)},throttle:function(t,i,o){n[o]=t,e.hasOwnProperty(o)||(e[o]=window.setTimeout(function(){n[o](),delete e[o]},i))}}});
+/**
+ * View model for the annotator navbar
+ */
+biigle.$viewModel('annotations-navbar', function (element) {
+
+    new Vue({
+        el: element,
+        mixins: [biigle.$require('annotations.mixins.imageFilenameTracker')],
+        data: {
+            // Take the pre-filled content of the element when the page is initially
+            // loaded until the image id has been set. Otherwise the filename would
+            // vanish and appear again what we don't want.
+            defaultFilename: element.innerHTML,
+            imageIdsToSee: biigle.$require('annotations.imagesIds').slice(),
+        },
+        watch: {
+            currentImageId: function (id) {
+                var ids = this.imageIdsToSee;
+                for (var i = ids.length - 1; i >= 0; i--) {
+                    if (ids[i] === id) {
+                        ids.splice(i, 1);
+                        break;
+                    }
+                }
+            },
+            imageIdsToSee: function (ids) {
+                if (ids.length === 0) {
+                    biigle.$require('messages.store').info('You have now seen all images of this batch.');
+                }
+            },
+            currentImageFilename: function (filename) {
+                document.title = 'Annotate ' + filename;
+            },
+        },
+        created: function () {
+            var self = this;
+            biigle.$require('events').$on('images.sequence', function (ids) {
+                self.imageIdsToSee = ids.slice();
+            });
+        },
+    });
+});
+
+/**
+ * View model for the annotator container
+ */
+biigle.$viewModel('annotator-container', function (element) {
+    var events = biigle.$require('events');
+    var volumeId = biigle.$require('annotations.volumeId');
+    var imagesIds = biigle.$require('annotations.imagesIds');
+    var imagesStore = biigle.$require('annotations.stores.images');
+    var annotationsStore = biigle.$require('annotations.stores.annotations');
+    var urlParams = biigle.$require('volumes.urlParams');
+    var messages = biigle.$require('messages.store');
+    var utils = biigle.$require('annotations.stores.utils');
+    var settings = biigle.$require('annotations.stores.settings');
+
+    new Vue({
+        el: element,
+        mixins: [biigle.$require('core.mixins.loader')],
+        components: {
+            sidebar: biigle.$require('annotations.components.sidebar'),
+            sidebarTab: biigle.$require('core.components.sidebarTab'),
+            labelsTab: biigle.$require('annotations.components.labelsTab'),
+            colorAdjustmentTab: biigle.$require('annotations.components.colorAdjustmentTab'),
+            settingsTab: biigle.$require('annotations.components.settingsTab'),
+            annotationsTab: biigle.$require('annotations.components.annotationsTab'),
+            annotationCanvas: biigle.$require('annotations.components.annotationCanvas'),
+        },
+        data: {
+            isEditor: biigle.$require('annotations.isEditor'),
+            imageIndex: null,
+            image: null,
+            annotations: [],
+            annotationFilter: null,
+            lastCreatedAnnotation: null,
+            lastCreatedAnnotationTimeout: null,
+            annotationOpacity: 1,
+            // Initial map viewport.
+            mapCenter: undefined,
+            mapResolution: undefined,
+            selectedLabel: null,
+            // Specifies what to cycle on the previous/next buttons or the arrow keys.
+            // Default is the image, others can be annotations (Volare) or image
+            // sections (lawnmower mode).
+            cycleMode: 'default',
+            // Index of the focussed annotation in the 'volare' cycle mode.
+            focussedAnnotationIndex: null,
+            // Determines if the current image section is the last (Infinity) or the
+            // first (0) one.
+            focussedImageSectionIndex: null,
+            showMousePosition: false,
+            showAnnotationTooltip: false,
+            showMinimap: true,
+            openTab: null,
+        },
+        computed: {
+            imageId: function () {
+                return this.imagesIds[this.imageIndex];
+            },
+            hasAnnotationFilter: function () {
+                return typeof this.annotationFilter === 'function';
+            },
+            filteredAnnotations: function () {
+                var annotations = this.annotations.filter(function (a) {
+                    return !a.markedForDeletion;
+                });
+
+                if (this.hasAnnotationFilter) {
+                    return annotations.filter(this.annotationFilter);
+                }
+
+                return annotations;
+            },
+            selectedAnnotations: function () {
+                return this.filteredAnnotations.filter(function (annotation) {
+                    return annotation.selected;
+                });
+            },
+            supportsColorAdjustment: function () {
+                return imagesStore.supportsColorAdjustment;
+            },
+            focussedAnnotation: function () {
+                return this.filteredAnnotations[this.focussedAnnotationIndex];
+            },
+            isDefaultCycleMode: function () {
+                return this.cycleMode === 'default';
+            },
+            isVolareCycleMode: function () {
+                return this.cycleMode === 'volare';
+            },
+            isLawnmowerCycleMode: function () {
+                return this.cycleMode === 'lawnmower';
+            },
+            imagesIds: function () {
+                // Look for a sequence of image IDs in local storage. This sequence is
+                // produced by the volume overview page when the images are sorted or
+                // filtered. We want to reflect the same ordering or filtering here
+                // in the annotator.
+                var storedSequence = window.localStorage.getItem('biigle.volumes.' + volumeId + '.images');
+                if (storedSequence) {
+                    // If there is such a stored sequence, filter out any image IDs that
+                    // do not belong to the volume (any more), since some of them may
+                    // have been deleted in the meantime.
+                    var map = {};
+                    imagesIds.forEach(function (id) {
+                        map[id] = null;
+                    });
+                    return JSON.parse(storedSequence).filter(function (id) {
+                        return map.hasOwnProperty(id);
+                    });
+                }
+
+                return imagesIds;
+            },
+        },
+        methods: {
+            getImageAndAnnotationsPromises: function (id) {
+                return [
+                    imagesStore.fetchAndDrawImage(id),
+                    annotationsStore.fetchAnnotations(id),
+                ];
+            },
+            setCurrentImageAndAnnotations: function (args) {
+                if (args) {
+                    this.image = args[0];
+                    this.annotations = args[1];
+                } else {
+                    // This might happen if there was an error loading the image or the
+                    // annotations.
+                    this.image = null;
+                    this.annotations = [];
+                }
+            },
+            updateUrlSlug: function () {
+                urlParams.setSlug(this.imageId);
+            },
+            getNextIndex: function (index) {
+                return (index + 1) % this.imagesIds.length;
+            },
+            getPreviousIndex: function (index) {
+                return (index + this.imagesIds.length - 1) % this.imagesIds.length;
+            },
+            handleNext: function () {
+                if (this.loading) {
+                    return;
+                }
+
+                if (this.isVolareCycleMode) {
+                    if (this.focussedAnnotationIndex < (this.filteredAnnotations.length - 1)) {
+                        this.focussedAnnotationIndex++;
+                        return;
+                    } else {
+                        // Show the first annotation of the next image in this case, so
+                        // don't return.
+                        this.focussedAnnotationIndex = -Infinity;
+                    }
+                } else if (this.isLawnmowerCycleMode) {
+                    // This returns false if the image section can't be advanced (i.e.
+                    // the last section is shown).
+                    if (this.$refs.canvas.showNextImageSection()) {
+                        return;
+                    } else {
+                        // Show the first image section in the next image in this case,
+                        // so don't return.
+                        this.focussedImageSectionIndex = 0;
+                    }
+                }
+
+                // Show next image.
+                this.imageIndex = this.getNextIndex(this.imageIndex);
+            },
+            handlePrevious: function () {
+                if (this.loading) {
+                    return;
+                }
+
+                if (this.isVolareCycleMode) {
+                    if (this.focussedAnnotationIndex > 0) {
+                        this.focussedAnnotationIndex--;
+                        return;
+                    } else {
+                        // Show the last annotation of the previous image in this case,
+                        // so don't return.
+                        this.focussedAnnotationIndex = Infinity;
+                    }
+                } else if (this.isLawnmowerCycleMode) {
+                    // This returns false if the image section can't be reversed (i.e.
+                    // the first section is shown).
+                    if (this.$refs.canvas.showPreviousImageSection()) {
+                        return;
+                    } else {
+                        // Show the last image section in the previous image in this
+                        // case, so don't return.
+                        this.focussedImageSectionIndex = Infinity;
+                    }
+                }
+
+                // Show previous image.
+                this.imageIndex = this.getPreviousIndex(this.imageIndex);
+            },
+            maybeUpdateFocussedAnnotation: function () {
+                if (this.isVolareCycleMode) {
+                    if (this.filteredAnnotations.length > 0) {
+                        if (this.focussedAnnotationIndex === Infinity) {
+                            // Show the last annotation if the previous image is shown.
+                            this.focussedAnnotationIndex = this.filteredAnnotations.length - 1;
+                        } else {
+                            // Show the first annotation if the next image is shown or
+                            // the annotation filter changed.
+                            this.focussedAnnotationIndex = 0;
+                        }
+                    } else {
+                        // Show the whole image if there are no annotations.
+                        this.focussedAnnotationIndex = null;
+                        this.$refs.canvas.fitImage();
+                    }
+                } else {
+                    this.focussedAnnotationIndex = null;
+                }
+            },
+            maybeUpdateShownImageSection: function () {
+                if (this.isLawnmowerCycleMode) {
+                    if (this.focussedImageSectionIndex === Infinity) {
+                        this.$refs.canvas.showLastImageSection();
+                    } else {
+                        this.$refs.canvas.showFirstImageSection();
+                    }
+                }
+            },
+            handleMapMoveend: function (viewport) {
+                this.mapCenter = viewport.center;
+                this.mapResolution = viewport.resolution;
+                urlParams.set({
+                    r: Math.round(viewport.resolution * 100),
+                    x: Math.round(viewport.center[0]),
+                    y: Math.round(viewport.center[1]),
+                });
+            },
+            // Handler for the select event fired by the global event bus.
+            handleSelectAnnotation: function (annotation, event) {
+                if (event && event.shiftKey) {
+                    annotation.selected = true;
+                    return;
+                }
+
+                this.annotations.forEach(function (a) {
+                    a.selected = annotation.id === a.id;
+                });
+            },
+            // Handler for the select event fired by the annotation-canvas component.
+            handleSelectAnnotations: function (selected, deselected) {
+                selected.forEach(function (annotation) {
+                    annotation.selected = true;
+                });
+
+                deselected.forEach(function (annotation) {
+                    annotation.selected = false;
+                });
+
+                this.$refs.annotationsTab.scrollIntoView(this.selectedAnnotations);
+            },
+            handleDeselectAnnotation: function (annotation, event) {
+                if (event && event.shiftKey) {
+                    annotation.selected = false;
+                    return;
+                }
+
+                this.annotations.forEach(function (a) {
+                    a.selected = false;
+                });
+            },
+            focusAnnotation: function (annotation, fast) {
+                this.$refs.canvas.focusAnnotation(annotation, fast);
+            },
+            handleDetachAnnotationLabel: function (annotation, label) {
+                if (this.isEditor) {
+                    annotationsStore.detachLabel(annotation, label)
+                        .catch(messages.handleErrorResponse);
+                }
+            },
+            handleDeleteAnnotation: function (annotation) {
+                if (!this.isEditor) return;
+
+                if (this.lastCreatedAnnotation && this.lastCreatedAnnotation.id === annotation.id) {
+                    this.lastCreatedAnnotation = null;
+                }
+
+                // Mark for deletion so the annotation is immediately removed from
+                // the canvas. See https://github.com/BiodataMiningGroup/biigle-annotations/issues/70
+                Vue.set(annotation, 'markedForDeletion', true);
+                annotationsStore.delete(annotation)
+                    .catch(function (response) {
+                        annotation.markedForDeletion = false;
+                        messages.handleErrorResponse(response);
+                    });
+            },
+            handleDeleteAnnotations: function (annotations) {
+                annotations.forEach(this.handleDeleteAnnotation);
+            },
+            handleUpdateAnnotations: function (annotations) {
+                if (this.isEditor) {
+                    Vue.Promise.all(annotations.map(annotationsStore.update))
+                        .catch(messages.handleErrorResponse);
+                }
+            },
+            selectAndFocusAnnotation: function (annotation) {
+                this.selectedAnnotations.forEach(function (a) {
+                    a.selected = false;
+                });
+                annotation.selected = true;
+                this.focusAnnotation(annotation, true);
+            },
+            handleFilter: function (filter) {
+                this.annotationFilter = filter;
+            },
+            handleSelectedLabel: function (label) {
+                this.selectedLabel = label;
+            },
+            handleNewAnnotation: function (annotation, removeCallback) {
+                if (this.isEditor) {
+                    annotation.label_id = this.selectedLabel.id;
+                    // TODO: confidence control
+                    annotation.confidence = 1;
+                    annotationsStore.create(this.imageId, annotation)
+                        .then(this.setLastCreatedAnnotation)
+                        .catch(function (response) {
+                            // Remove the temporary annotation if saving failed.
+                            removeCallback();
+                            messages.handleErrorResponse(response);
+                        });
+                }
+            },
+            handleAttachLabel: function (annotation, label) {
+                label = label || this.selectedLabel;
+                if (this.isEditor && label) {
+                    var annotationLabel = {
+                        label_id: label.id,
+                        // TODO: confidence control
+                        confidence: 1,
+                    };
+                    annotationsStore.attachLabel(annotation, annotationLabel)
+                        .catch(messages.handleErrorResponse);
+                }
+            },
+            handleAttachAllSelected: function () {
+                this.selectedAnnotations.forEach(this.handleAttachLabel);
+            },
+            emitImageChanged: function () {
+                events.$emit('images.change', this.imageId, this.image);
+            },
+            cachePreviousAndNext: function () {
+                var previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex)];
+                var nextId = this.imagesIds[this.getNextIndex(this.imageIndex)];
+                Vue.Promise.all([
+                        annotationsStore.fetchAnnotations(nextId),
+                        imagesStore.fetchImage(nextId),
+                        annotationsStore.fetchAnnotations(previousId),
+                        imagesStore.fetchImage(previousId),
+                    ])
+                    // Ignore errors in this case. The application will try to reload
+                    // the data again if the user switches to the respective image and
+                    // display the error message then.
+                    .catch(function () {});
+            },
+            setLastCreatedAnnotation: function (annotation) {
+                if (this.lastCreatedAnnotationTimeout) {
+                    window.clearTimeout(this.lastCreatedAnnotationTimeout);
+                }
+                var self = this;
+                this.lastCreatedAnnotation = annotation;
+                this.lastCreatedAnnotationTimeout = window.setTimeout(function() {
+                    self.lastCreatedAnnotation = null;
+                }, 10000);
+            },
+            updateColorAdjustment: function (params) {
+                var canvas = this.$refs.canvas;
+                utils.debounce(function () {
+                    imagesStore.updateColorAdjustment(params);
+                    canvas.render();
+                }, 100, 'annotations.color-adjustment.update');
+            },
+            handleSettingsChange: function (key, value) {
+                switch (key) {
+                    case 'annotationOpacity':
+                        this.annotationOpacity = value;
+                        break;
+                    case 'cycleMode':
+                        this.cycleMode = value;
+                        this.maybeUpdateFocussedAnnotation();
+                        this.maybeUpdateShownImageSection();
+                        break;
+                    case 'mousePosition':
+                        this.showMousePosition = value;
+                        break;
+                    case 'annotationTooltip':
+                        this.showAnnotationTooltip = value;
+                        break;
+                    case 'minimap':
+                        this.showMinimap = value;
+                        break;
+                }
+            },
+            handleOpenedTab: function (name) {
+                settings.set('openTab', name);
+            },
+            handleClosedTab: function (name) {
+                settings.delete('openTab');
+            },
+            handleLoadingError: function (message) {
+                messages.danger(message);
+            },
+        },
+        watch: {
+            imageId: function (id) {
+                if (id) {
+                    this.startLoading();
+                    Vue.Promise.all(this.getImageAndAnnotationsPromises(id))
+                        .catch(this.handleLoadingError)
+                        .then(this.setCurrentImageAndAnnotations)
+                        .then(this.updateUrlSlug)
+                        .then(this.maybeUpdateFocussedAnnotation)
+                        .then(this.maybeUpdateShownImageSection)
+                        .then(this.emitImageChanged)
+                        // When everything is loaded, pre-fetch the data of the next and
+                        // previous images so they can be switched fast.
+                        .then(this.cachePreviousAndNext)
+                        .finally(this.finishLoading);
+                }
+            },
+            focussedAnnotation: function (annotation) {
+                if (annotation) {
+                    this.selectAndFocusAnnotation(annotation);
+                }
+            },
+            annotationFilter: function () {
+                this.maybeUpdateFocussedAnnotation();
+            },
+        },
+        created: function () {
+            this.startLoading();
+            if (this.imagesIds.length === 0) {
+                messages.info('Your current volume filtering contains no images.');
+                return;
+            }
+
+            var index = this.imagesIds.indexOf(biigle.$require('annotations.imageId'));
+            if (index === -1) {
+                index = 0;
+                messages.info('The requested image does not exist in your current volume filtering. Switching to the first image.');
+            }
+            this.imageIndex = index;
+
+            events.$emit('images.sequence', this.imagesIds);
+
+            if (urlParams.get('r') !== undefined) {
+                this.mapResolution = parseInt(urlParams.get('r'), 10) / 100;
+            }
+
+            if (urlParams.get('x') !== undefined && urlParams.get('y') !== undefined) {
+                this.mapCenter = [
+                    parseInt(urlParams.get('x'), 10),
+                    parseInt(urlParams.get('y'), 10),
+                ];
+            }
+
+            events.$on('annotations.select', this.handleSelectAnnotation);
+            events.$on('annotations.deselect', this.handleDeselectAnnotation);
+            events.$on('annotations.focus', this.focusAnnotation);
+            events.$on('annotations.detachLabel', this.handleDetachAnnotationLabel);
+            events.$on('annotations.delete', this.handleDeleteAnnotation);
+
+            if (urlParams.get('annotation')) {
+                var id = parseInt(urlParams.get('annotation'));
+                var self = this;
+                events.$once('images.change', function () {
+                    var annotations = self.annotations;
+                    for (var i = annotations.length - 1; i >= 0; i--) {
+                        if (annotations[i].id === id) {
+                            self.selectAndFocusAnnotation(annotations[i]);
+                            return;
+                        }
+                    }
+                });
+            }
+
+            if (settings.has('openTab')) {
+                this.openTab = settings.get('openTab');
+            }
+        },
+    });
+});
+
+/**
+ * A mixin that keeps track of the current image filename
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.mixins.imageFilenameTracker', {
+    data: function () {
+        return {
+            filenameMap: {},
+            currentImageId: null,
+            defaultFilename: '',
+        };
+    },
+    computed: {
+        currentImageFilename: function () {
+            return this.filenameMap[this.currentImageId] || this.defaultFilename;
+        },
+    },
+    methods: {
+        updateImageId: function (id) {
+            this.currentImageId = id;
+        },
+    },
+    created: function () {
+        var events = biigle.$require('events');
+        var imagesIds = biigle.$require('annotations.imagesIds');
+        var imagesFilenames = biigle.$require('annotations.imagesFilenames');
+        var map = this.filenameMap;
+
+        imagesIds.forEach(function (id, index) {
+            map[id] = imagesFilenames[index];
+        });
+        events.$on('images.change', this.updateImageId);
+    },
+});
+
+/**
+ * Control for attaching labels to existing annotations
+ */
+biigle.$declare('annotations.ol.AttachLabelInteraction', function () {
+    function AttachLabelInteraction(options) {
+        ol.interaction.Pointer.call(this, {
+            handleUpEvent: this.handleUpEvent,
+            handleDownEvent: this.handleDownEvent,
+            handleMoveEvent: this.handleMoveEvent
+        });
+
+        this.on('change:active', this.toggleActive);
+
+        this.features = options.features !== undefined ? options.features : null;
+
+        this.currentFeature = undefined;
+        this.map = options.map;
+    }
+
+    ol.inherits(AttachLabelInteraction, ol.interaction.Pointer);
+
+    AttachLabelInteraction.prototype.toggleActive = function (e) {
+        if (e.oldValue) {
+            var element = this.map.getTargetElement();
+            if (element) {
+                element.style.cursor = '';
+            }
+        }
+    };
+
+    // the label should be attached on mouseup but the event works only with the
+    // pointer interaction if mousedown returned true before
+    AttachLabelInteraction.prototype.handleDownEvent = function (event) {
+        this.currentFeature = this.featuresAtPixel(event.pixel, event.map);
+        return !!this.currentFeature;
+    };
+
+    AttachLabelInteraction.prototype.handleUpEvent = function (event) {
+        if (this.currentFeature && this.currentFeature.get('annotation')) {
+            this.dispatchEvent({type: 'attach', feature: this.currentFeature});
+        }
+
+        this.currentFeature = undefined;
+    };
+
+    AttachLabelInteraction.prototype.handleMoveEvent = function (event) {
+        var elem = event.map.getTargetElement();
+        var feature = this.featuresAtPixel(event.pixel, event.map);
+
+        if (feature) {
+            elem.style.cursor = 'pointer';
+        } else {
+            elem.style.cursor = '';
+        }
+    };
+
+    AttachLabelInteraction.prototype.featuresAtPixel = function (pixel, map) {
+        var found = null;
+
+        var intersectingFeature = map.forEachFeatureAtPixel(pixel, function(feature) {
+            return feature;
+        }, this);
+
+        if (this.handlesFeature(intersectingFeature)) {
+            found = intersectingFeature;
+        }
+
+        return found;
+    };
+
+    AttachLabelInteraction.prototype.handlesFeature = function (feature) {
+        if (this.features) {
+            return this.features.getArray().indexOf(feature) !== -1;
+        }
+
+        return false;
+    };
+
+    return AttachLabelInteraction;
+});
+
+/**
+ * Control for translating OpenLayers features with extra functions
+ */
+biigle.$declare('annotations.ol.ExtendedTranslateInteraction', function () {
+    function ExtendedTranslateInteraction(options) {
+        ol.interaction.Translate.call(this, options);
+
+        this.features = options.features !== undefined ? options.features : null;
+        this.on('change:active', this.toggleListeners);
+
+        var self = this;
+
+        this.translateUp = function () {
+            return self.translate(0, 1);
+        };
+
+        this.translateDown = function () {
+            return self.translate(0, -1);
+        };
+
+        this.translateLeft = function () {
+            return self.translate(-1, 0);
+        };
+
+        this.translateRight = function () {
+            return self.translate(1, 0);
+        };
+
+        this.keyboard = biigle.$require('keyboard');
+        this.utils = biigle.$require('annotations.stores.utils');
+        this.setMap(options.map);
+        this.translating = false;
+    }
+    ol.inherits(ExtendedTranslateInteraction, ol.interaction.Translate);
+
+    ExtendedTranslateInteraction.prototype.toggleListeners = function (e) {
+        if (e.oldValue) {
+            this.keyboard.off(37, this.translateLeft);
+            this.keyboard.off(38, this.translateUp);
+            this.keyboard.off(39, this.translateRight);
+            this.keyboard.off(40, this.translateDown);
+            // The default translate interaction does not reset the cursor when
+            // deactivated.
+            var element = this.getMap().getTargetElement();
+            if (element) {
+                element.style.cursor = '';
+            }
+        } else {
+            this.keyboard.on(37, this.translateLeft, 10);
+            this.keyboard.on(38, this.translateUp, 10);
+            this.keyboard.on(39, this.translateRight, 10);
+            this.keyboard.on(40, this.translateDown, 10);
+        }
+    };
+
+    ExtendedTranslateInteraction.prototype.translate = function (deltaX, deltaY) {
+        if (this.features && this.features.getLength() > 0) {
+            if (!this.translating) {
+                this.dispatchEvent({type: 'translatestart', features: this.features});
+                this.translating = true;
+            }
+            this.features.forEach(function(feature) {
+                var geom = feature.getGeometry();
+                geom.translate(deltaX, deltaY);
+                feature.setGeometry(geom);
+            });
+            var self = this;
+            var emit = function () {
+                self.translating = false;
+                self.dispatchEvent({type: 'translateend', features: self.features});
+            };
+            this.utils.debounce(emit, 500, 'ol.interactions.Translate.translateend');
+            // Cancel keyboard event handlers with lower priority if features were
+            // moved.
+            return false;
+        }
+        // if there are no features, pass on the event
+        return true;
+    };
+
+    return ExtendedTranslateInteraction;
+});
+
+/**
+ * Control for drawing polygons using fuzzy matching of colors.
+ */
+biigle.$declare('annotations.ol.MagicWandInteraction', function () {
+    function MagicWandInteraction(options) {
+        ol.interaction.Pointer.call(this, {
+            handleUpEvent: this.handleUpEvent,
+            handleDownEvent: this.handleDownEvent,
+            handleMoveEvent: this.handleMoveEvent,
+            handleDragEvent: this.handleDragEvent,
+        });
+
+        this.on('change:active', this.toggleActive);
+
+        // The image layer to use as source for the magic wand tool.
+        this.layer = options.layer;
+
+        // Initial color threshold for all sketches.
+        this.colorThreshold = options.colorThreshold === undefined ? 15 :
+            options.colorThreshold;
+        // Current color threshold that is continuously updated while a sketch is drawn.
+        this.currentThreshold = this.colorThreshold;
+
+        // Blur radius to use for simplifying the computed area of the sketch.
+        this.blurRadius = options.blurRadius === undefined ? 5 :
+            options.blurRadius;
+
+        // Value to adjust simplification of the sketch polygon. Higher values result in
+        // less vertices of the polygon. Set to 0 to disable simplification.
+        this.simplifyTolerant = options.simplifyTolerant === undefined ? 0 :
+            options.simplifyTolerant;
+        // Minimum number of required vertices for the simplified polygon.
+        this.simplifyCount = options.simplifyCount === undefined ? 3 :
+            options.simplifyCount;
+
+        // Coordinates of the initial mousedown event.
+        this.downPoint = [0, 0];
+        this.map = options.map;
+
+        // Canvas element to draw the snapshot of the current view of the image layer to.
+        this.snapshotCanvas = document.createElement('canvas');
+        this.snapshotContext = this.snapshotCanvas.getContext('2d');
+        // MagicWand image object of the snapshot.
+        this.snapshot = null;
+        // Specifies whether the snapshot is currently updated. This is required to avoid
+        // infinite recursion because the moveend event triggers the update but the
+        // update in turn triggers a moveend event.
+        this.updatingSnapshot = false;
+
+        // If the mouse is inside of this radius (in px) around the downPoint while
+        // drawing a sketch and the mouse button is released, the sketch is discarded.
+        // If the button is released outside the radius, the sketch will be emitted as
+        // new feature.
+        this.discardRadius = options.discardRadius === undefined ? 20 :
+            options.discardRadius;
+
+        this.sketchFeature = null;
+        this.sketchSource = options.source;
+
+        if (this.sketchSource === undefined) {
+            this.sketchSource = new ol.source.Vector();
+            this.map.addLayer(new ol.layer.Vector({
+                source: this.sketchSource,
+                zIndex: 200,
+            }));
+        }
+
+        this.sketchStyle = options.style === undefined ? null : options.style;
+
+        // The point that indicates the downPoint where drawing of the sketch started.
+        this.isShowingPoint = false;
+        this.indicatorPoint = new ol.Feature(new ol.geom.Point([20, 20]));
+        if (options.indicatorPointStyle !== undefined) {
+            this.indicatorPoint.setStyle(options.indicatorPointStyle);
+        }
+        // The "x" that indicates that the current sketch will be discarded because the
+        // mouse is near the downPoint.
+        this.isShowingCross = false;
+        this.indicatorCross = new ol.Feature(new ol.geom.Point([100, 100]));
+        if (options.indicatorCrossStyle !== undefined) {
+            this.indicatorCross.setStyle(options.indicatorCrossStyle);
+        } else {
+            this.indicatorCross.setStyle([
+                new ol.style.Style({
+                    image: new ol.style.RegularShape({
+                        stroke: new ol.style.Stroke({
+                            color: [0, 153, 255, 1],
+                            width: 3,
+                        }),
+                        points: 4,
+                        radius1: 6,
+                        radius2: 0,
+                        angle: Math.PI / 4
+                    })
+                }),
+                new ol.style.Style({
+                    image: new ol.style.RegularShape({
+                        stroke: new ol.style.Stroke({
+                            color: [255, 255, 255, 0.75],
+                            width: 1.5,
+                        }),
+                        points: 4,
+                        radius1: 6,
+                        radius2: 0,
+                        angle: Math.PI / 4
+                    })
+                }),
+            ]);
+        }
+        this.indicatorSource = new ol.source.Vector();
+        this.map.addLayer(new ol.layer.Vector({
+            source: this.indicatorSource,
+            zIndex: 200,
+        }));
+
+        // Update the snapshot and set event listeners if the interaction is active.
+        this.toggleActive();
+    }
+
+    ol.inherits(MagicWandInteraction, ol.interaction.Pointer);
+
+    /**
+     * Scaling factor of high DPI displays. The snapshot will be by a factor of
+     * 'scaling' larger than the map so we have to include this factor in the
+     * transformation of the mouse position.
+     *
+     * @return {Float}
+     */
+    MagicWandInteraction.prototype.getHighDpiScaling = function () {
+        return this.snapshot.height / this.map.getSize()[1];
+    };
+
+    /**
+     * Convert OpenLayers coordinates on the image layer to coordinates on the snapshot.
+     *
+     * @param {Array} points
+     *
+     * @return {Array}
+     */
+    MagicWandInteraction.prototype.toSnapshotCoordinates = function (points) {
+        var extent = this.map.getView().calculateExtent(this.map.getSize());
+        var height = this.snapshot.height;
+        var factor = this.getHighDpiScaling() / this.map.getView().getResolution();
+
+        return points.map(function (point) {
+            return [
+                Math.round((point[0] - extent[0]) * factor),
+                height - Math.round((point[1] - extent[1]) * factor),
+            ];
+        });
+    };
+
+    /**
+     * Convert coordinates on the snapshot to OpenLayers coordinates on the image layer.
+     *
+     * @param {Array} points
+     *
+     * @return {Array}
+     */
+    MagicWandInteraction.prototype.fromSnapshotCoordinates = function (points) {
+        var extent = this.map.getView().calculateExtent(this.map.getSize());
+        var height = this.snapshot.height;
+        var factor = this.map.getView().getResolution() / this.getHighDpiScaling();
+
+        return points.map(function (point) {
+            return [
+                Math.round((point[0] * factor) + extent[0]),
+                Math.round(((height - point[1]) * factor) + extent[1]),
+            ];
+        });
+    };
+
+    /**
+     * Convert MagicWand point objects to OpenLayers point arrays.
+     *
+     * @param {Array} points
+     *
+     * @return {Array}
+     */
+    MagicWandInteraction.prototype.fromMagicWandCoordinates = function (points) {
+        return points.map(function (point) {
+            return [point.x, point.y];
+        });
+    };
+
+    /**
+     * Finish drawing of a sketch.
+     */
+    MagicWandInteraction.prototype.handleUpEvent = function (e) {
+        this.currentThreshold = this.colorThreshold;
+
+        if (this.isShowingCross) {
+            this.sketchSource.removeFeature(this.sketchFeature);
+        } else {
+            this.dispatchEvent({type: 'drawend', feature: this.sketchFeature});
+        }
+
+        this.sketchFeature = null;
+
+        this.indicatorSource.clear();
+        this.isShowingPoint = false;
+        this.isShowingCross = false;
+
+        return false;
+    };
+
+    /**
+     * Start drawing of a sketch.
+     */
+    MagicWandInteraction.prototype.handleDownEvent = function (e) {
+        this.downPoint[0] = Math.round(e.coordinate[0]);
+        this.downPoint[1] = Math.round(e.coordinate[1]);
+        this.drawSketch();
+        this.indicatorPoint.getGeometry().setCoordinates(this.downPoint);
+        this.indicatorCross.getGeometry().setCoordinates(this.downPoint);
+        this.indicatorSource.clear();
+        this.indicatorSource.addFeature(this.indicatorCross);
+        this.isShowingCross = true;
+        this.isShowingPoint = false;
+
+        return true;
+    };
+
+    /**
+     * Update the currently drawn sketch.
+     */
+    MagicWandInteraction.prototype.handleDragEvent = function (e) {
+        var coordinate = this.toSnapshotCoordinates([e.coordinate]).shift();
+        var x = Math.round(coordinate[0]);
+        var y = Math.round(coordinate[1]);
+        var point = this.toSnapshotCoordinates([this.downPoint]).shift();
+        var px = point[0];
+        var py = point[1];
+
+        // Color threshold calculation. Inspired by the MagicWand example:
+        // http://jsfiddle.net/Tamersoul/dr7Dw/
+        if (x !== px || y !== py) {
+            var dx = x - px;
+            var dy = y - py;
+            var len = Math.sqrt(dx * dx + dy * dy);
+            if (len <= this.discardRadius) {
+                if (!this.isShowingCross) {
+                    this.indicatorSource.clear();
+                    this.indicatorSource.addFeature(this.indicatorCross);
+                    this.isShowingCross = true;
+                    this.isShowingPoint = false;
+                }
+            } else if (!this.isShowingPoint) {
+                this.indicatorSource.clear();
+                this.indicatorSource.addFeature(this.indicatorPoint);
+                this.isShowingCross = false;
+                this.isShowingPoint = true;
+            }
+
+            var thres = Math.min(Math.max(this.colorThreshold + Math.round(len / 2 - this.colorThreshold), 1), 255);
+            if (thres != this.currentThreshold) {
+                this.currentThreshold = thres;
+                this.drawSketch();
+            }
+        }
+    };
+
+    /**
+     * Update the target point.
+     */
+    MagicWandInteraction.prototype.handleMoveEvent = function (e) {
+        if (!this.isShowingPoint) {
+            this.indicatorSource.clear();
+            this.indicatorSource.addFeature(this.indicatorPoint);
+            this.isShowingPoint = true;
+            this.isShowingCross = false;
+        }
+        this.indicatorPoint.getGeometry().setCoordinates(e.coordinate);
+    };
+
+    /**
+     * Update event listeners depending on the active state of the interaction.
+     */
+    MagicWandInteraction.prototype.toggleActive = function () {
+        if (this.getActive()) {
+            this.map.on(['moveend', 'change:size'], this.updateSnapshot, this);
+            this.updateSnapshot();
+        } else {
+            this.map.un(['moveend', 'change:size'], this.updateSnapshot, this);
+            this.indicatorSource.clear();
+            this.isShowingPoint = false;
+            this.isShowingCross = false;
+            if (this.sketchFeature) {
+                this.sketchSource.removeFeature(this.sketchFeature);
+                this.sketchFeature = null;
+            }
+        }
+    };
+
+    /**
+     * Update the snapshot of the image layer.
+     */
+    MagicWandInteraction.prototype.updateSnapshot = function () {
+        if (!this.updatingSnapshot && this.layer) {
+            this.layer.once('postcompose', function (e) {
+                this.snapshotCanvas.width = e.context.canvas.width;
+                this.snapshotCanvas.height = e.context.canvas.height;
+                this.snapshotContext.drawImage(e.context.canvas, 0, 0);
+                this.snapshot = this.snapshotContext.getImageData(0, 0, this.snapshotCanvas.width, this.snapshotCanvas.height);
+                this.snapshot.bytes = 4;
+            }, this);
+
+            // Set flag to avoid infinite recursion since renderSync will trigger the
+            // moveend event again!
+            this.updatingSnapshot = true;
+            this.map.renderSync();
+            this.updatingSnapshot = false;
+        }
+    };
+
+    /**
+     * Update the layer to get the image information from.
+     */
+    MagicWandInteraction.prototype.setLayer = function (layer) {
+        this.layer = layer;
+    };
+
+    /**
+     * Recompute the currently drawn sketch.
+     */
+    MagicWandInteraction.prototype.drawSketch = function () {
+        var point = this.toSnapshotCoordinates([this.downPoint]).shift();
+        var sketch = MagicWand.floodFill(this.snapshot, point[0], point[1], this.currentThreshold);
+
+        if (this.blurRadius > 0) {
+            sketch = MagicWand.gaussBlurOnlyBorder(sketch, this.blurRadius);
+        }
+
+        // Crop the detected region of the sketch to the actual image extent. Wherever
+        // the snapshot is transparent, there should not be a detected region.
+        var sketchData = sketch.data;
+        var snapshotData = this.snapshot.data;
+        for (var i = sketchData.length - 1; i >= 0; i--) {
+            if (snapshotData[i * 4] === 0) {
+                sketchData[i] = 0;
+            }
+        }
+
+        // Take only the outer contour.
+        var contour = MagicWand.traceContours(sketch)
+            .filter(function (c) {
+                return !c.innner;
+            })
+            .shift();
+
+        if (contour) {
+            if (this.simplifyTolerant > 0) {
+                contour = MagicWand.simplifyContours([contour], this.simplifyTolerant, this.simplifyCount).shift();
+            }
+
+            var points = this.fromSnapshotCoordinates(this.fromMagicWandCoordinates(contour.points));
+
+            if (this.sketchFeature) {
+                this.sketchFeature.getGeometry().setCoordinates([points]);
+            } else {
+                this.sketchFeature = new ol.Feature(new ol.geom.Polygon([points]));
+                if (this.sketchStyle) {
+                    this.sketchFeature.setStyle(this.sketchStyle);
+                }
+                this.sketchSource.addFeature(this.sketchFeature);
+            }
+        }
+    };
+
+    return MagicWandInteraction;
+});
+
+/**
+ * Control for zooming the map image to the original resolution
+ */
+biigle.$declare('annotations.ol.ZoomToNativeControl', function () {
+    function ZoomToNativeControl (opt_options) {
+        var options = opt_options || {};
+        var label = options.label ? options.label : '1';
+        var button = document.createElement('button');
+        var self = this;
+        button.innerHTML = label;
+        button.title = 'Zoom to original resolution';
+
+        button.addEventListener('click', function () {
+            self.zoomToNative.call(self);
+        });
+
+        var element = document.createElement('div');
+        element.className = 'zoom-to-native ol-unselectable ol-control';
+        element.appendChild(button);
+
+        ol.control.Control.call(this, {
+            element: element,
+            target: options.target
+        });
+
+        this.duration_ = options.duration !== undefined ? options.duration : 250;
+    }
+
+    ol.inherits(ZoomToNativeControl, ol.control.Control);
+
+    ZoomToNativeControl.prototype.zoomToNative = function () {
+        var map = this.getMap();
+        var view = map.getView();
+        if (!view) {
+            // the map does not have a view, so we can't act
+            // upon it
+            return;
+        }
+
+        var currentResolution = view.getResolution();
+        if (currentResolution) {
+            if (this.duration_ > 0) {
+                view.animate({
+                    resolution: view.constrainResolution(1),
+                    duration: this.duration_,
+                });
+            } else {
+                view.setResolution(view.constrainResolution(1));
+            }
+
+        }
+    };
+
+    return ZoomToNativeControl;
+});
+
+/**
+ * The annotator canvas
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.annotationCanvas', function () {
+    // Don't create these as reactive Vue properties because they should work as fast as
+    // possible.
+    var map,
+        styles,
+        selectInteraction,
+        drawInteraction,
+        modifyInteraction,
+        translateInteraction,
+        attachLabelInteraction,
+        magicWandInteraction;
+
+    // Map to detect which features were changed between modifystart and modifyend
+    // events of the modify interaction.
+    var featureRevisionMap = {};
+
+    var imageLayer = new ol.layer.Image();
+    var tiledImageLayer = new ol.layer.Tile();
+
+    var annotationFeatures = new ol.Collection();
+    var annotationSource = new ol.source.Vector({
+        features: annotationFeatures
+    });
+    var annotationLayer = new ol.layer.Vector({
+        source: annotationSource,
+        zIndex: 100,
+        updateWhileAnimating: true,
+        updateWhileInteracting: true,
+    });
+
+    return {
+        components: {
+            minimap: biigle.$require('annotations.components.minimap'),
+            labelIndicator: biigle.$require('annotations.components.labelIndicator'),
+            mousePositionIndicator: biigle.$require('annotations.components.mousePositionIndicator'),
+            controlButton: biigle.$require('annotations.components.controlButton'),
+            annotationTooltip: biigle.$require('annotations.components.annotationTooltip'),
+        },
+        props: {
+            editable: {
+                type: Boolean,
+                default: false,
+            },
+            image: {
+                type: Object,
+                default: null,
+            },
+            annotations: {
+                type: Array,
+                default: function () {
+                    return [];
+                },
+            },
+            selectedAnnotations: {
+                type: Array,
+                default: function () {
+                    return [];
+                },
+            },
+            center: {
+                type: Array,
+                default: undefined,
+            },
+            resolution: {
+                type: Number,
+                default: undefined,
+            },
+            selectedLabel: {
+                default: null,
+            },
+            lastCreatedAnnotation: {
+                default: null,
+            },
+            annotationOpacity: {
+                type: Number,
+                default: 1,
+            },
+            cycleMode: {
+                type: String,
+                default: 'default',
+            },
+            showMousePosition: {
+                type: Boolean,
+                default: false,
+            },
+            showAnnotationTooltip: {
+                type: Boolean,
+                default: false,
+            },
+            showMinimap: {
+                type: Boolean,
+                default: true,
+            },
+            // Specifies whether the displayed image is cross origin.
+            crossOrigin: {
+                type: Boolean,
+                default: false,
+            },
+        },
+        data: function () {
+            var styles = biigle.$require('annotations.stores.styles');
+
+            return {
+                initialized: false,
+                // Options to use for the view.fit function.
+                viewFitOptions: {
+                    padding: [50, 50, 50, 50],
+                    minResolution: 1,
+                },
+                // There are several interaction modes like 'drawPoint', 'attach' or
+                // 'translate' etc. For each mode the allowed/active OpenLayers map
+                // interactions are different.
+                interactionMode: 'default',
+                // Size of the OpenLayers map in px.
+                mapSize: [0, 0],
+                // The image section information is needed for the lawnmower cycling mode
+                // Index of the current image section in x and y direction.
+                imageSection: [0, 0],
+                // Actual center point of the current image section.
+                imageSectionCenter: [0, 0],
+                // Mouse position in image coordinates.
+                mousePosition: [0, 0],
+                // Mouse position in DOM element coordinates.
+                mouseDomPosition: [0, 0],
+                // Used to efficiently determine when to update hoveredAnnotations.
+                hoveredAnnotationHash: '',
+                hoveredAnnotations: [],
+            };
+        },
+        computed: {
+            extent: function () {
+                if (this.image) {
+                    if (this.image.tiled === true) {
+                        return [0, -this.image.height, this.image.width, 0];
+                    }
+
+                    return [0, 0, this.image.width, this.image.height];
+                }
+
+                return [0, 0, 0, 0];
+            },
+            viewExtent: function () {
+                // The view can't calculate the extent if the resolution is not set.
+                // Also use this.initialized so this property is recomputed when the
+                // map is set (because the map is no reactive object). See:
+                // https://github.com/BiodataMiningGroup/biigle-annotations/issues/69
+                if (this.initialized && this.resolution && map) {
+                    return map.getView().calculateExtent(this.mapSize);
+                }
+
+                return [0, 0, 0, 0];
+            },
+            // Number of available image sections in x and y direction.
+            imageSectionSteps: function () {
+                return [
+                    Math.ceil(this.image.width / (this.viewExtent[2] - this.viewExtent[0])),
+                    Math.ceil(this.image.height / (this.viewExtent[3] - this.viewExtent[1])),
+                ];
+            },
+            // Distance to travel between image sections in x and y direction.
+            imageSectionStepSize: function () {
+                var stepSize = [
+                    this.viewExtent[2] - this.viewExtent[0],
+                    this.viewExtent[3] - this.viewExtent[1],
+                ];
+                var overlap;
+                if (this.imageSectionSteps[0] > 1) {
+                    overlap = (stepSize[0] * this.imageSectionSteps[0]) - this.image.width;
+                    stepSize[0] -= overlap / (this.imageSectionSteps[0] - 1);
+                } else {
+                    stepSize[0] = this.viewExtent[2];
+                }
+
+                if (this.imageSectionSteps[1] > 1) {
+                    overlap = (stepSize[1] * this.imageSectionSteps[1]) - this.image.height;
+                    stepSize[1] -= overlap / (this.imageSectionSteps[1] - 1);
+                } else {
+                    stepSize[1] = this.viewExtent[3];
+                }
+
+
+                return stepSize;
+            },
+            // Center position of the first image section [0, 0].
+            imageSectionStartCenter: function () {
+                var startCenter = [
+                    (this.viewExtent[2] - this.viewExtent[0]) / 2,
+                    (this.viewExtent[3] - this.viewExtent[1]) / 2,
+                ];
+
+                if (this.imageSectionSteps[0] <= 1) {
+                    startCenter[0] = this.extent[2] / 2;
+                }
+
+                if (this.imageSectionSteps[1] <= 1) {
+                    // If extent[3] is 0 we have a tiled image and the (negative) height
+                    // is stored in extent[2]
+                    startCenter[1] = (this.extent[3] || this.extent[1]) / 2;
+                } else {
+                    // This is the same as:
+                    // if (image.tiled === true) {
+                    //    startCenter[1] -= this.image.height;
+                    // }
+                    // because this.extent[1] is 0 if the image is not tiled and else the
+                    // negative height.
+                    startCenter[1] += this.extent[1];
+                }
+
+                return startCenter;
+            },
+            projection: function () {
+                return new ol.proj.Projection({
+                    code: 'biigle-image',
+                    units: 'pixels',
+                    extent: this.extent
+                });
+            },
+            selectedFeatures: function () {
+                return selectInteraction ? selectInteraction.getFeatures() : [];
+            },
+            isDefaultInteractionMode: function () {
+                return this.interactionMode === 'default';
+            },
+            isDrawing: function () {
+                return this.interactionMode.startsWith('draw');
+            },
+            isDrawingPoint: function () {
+                return this.interactionMode === 'drawPoint';
+            },
+            isDrawingRectangle: function () {
+                return this.interactionMode === 'drawRectangle';
+            },
+            isDrawingCircle: function () {
+                return this.interactionMode === 'drawCircle';
+            },
+            isDrawingLineString: function () {
+                return this.interactionMode === 'drawLineString';
+            },
+            isDrawingPolygon: function () {
+                return this.interactionMode === 'drawPolygon';
+            },
+            isDrawingEllipse: function () {
+                return this.interactionMode === 'drawEllipse';
+            },
+            isTranslating: function () {
+                return this.interactionMode === 'translate';
+            },
+            isMagicWanding: function () {
+                return this.interactionMode === 'magicWand';
+            },
+            isAttaching: function () {
+                return this.interactionMode === 'attach';
+            },
+            hasNoSelectedLabel: function () {
+                return !this.selectedLabel;
+            },
+            hasSelectedAnnotations: function () {
+                return this.selectedAnnotations.length > 0;
+            },
+            hasLastCreatedAnnotation: function () {
+                return this.lastCreatedAnnotation !== null;
+            },
+            previousButtonTitle: function () {
+                switch (this.cycleMode) {
+                    case 'volare':
+                        return 'Previous annotation';
+                    case 'lawnmower':
+                        return 'Previous image section';
+                    default:
+                        return 'Previous image';
+                }
+            },
+            nextButtonTitle: function () {
+                switch (this.cycleMode) {
+                    case 'volare':
+                        return 'Next annotation';
+                    case 'lawnmower':
+                        return 'Next image section';
+                    default:
+                        return 'Next image';
+                }
+            },
+            isLawnmowerCycleMode: function () {
+                return this.cycleMode === 'lawnmower';
+            },
+        },
+        methods: {
+            updateMapSize: function () {
+                this.mapSize = map.getSize();
+            },
+            invertPointsYAxis: function (points) {
+                // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
+                // the points based on the type of the image that is currently displayed
+                // (single or tiled). CAUTION: Modifies the array in place!
+                //
+                // If the image is tiled the y axis should be negated because the
+                // coordinates of the OL Zoomify source are computed in a weird way.
+                //
+                // If it is a single image the y axis should be switched from "top to
+                // bottom" to "bottom to top" or vice versa. Our database expects ttb,
+                // OpenLayers expects btt.
+
+                // extent[3] is 0 for a tiled image so this does exactly what we want.
+                var height = this.extent[3];
+                for (var i = 1; i < points.length; i += 2) {
+                    points[i] = height - points[i];
+                }
+
+                return points;
+            },
+            convertPointsFromOlToDb: function (points) {
+                // Merge the individual point arrays to a single array first.
+                // [[x1, y1], [x2, y2]] -> [x1, y1, x2, y2]
+                return this.invertPointsYAxis(Array.prototype.concat.apply([], points));
+            },
+            convertPointsFromDbToOl: function (points) {
+                // Duplicate the points array because we don't want to modify the
+                // original array.
+                points = this.invertPointsYAxis(points.slice());
+                var newPoints = [];
+                for (var i = 0; i < points.length; i += 2) {
+                    newPoints.push([
+                        points[i],
+                        // Circles have no fourth point so we take 0.
+                        (points[i + 1] || 0)
+                    ]);
+                }
+
+                return newPoints;
+            },
+            // Determines the OpenLayers geometry object for an annotation.
+            getGeometry: function (annotation) {
+                var points = this.convertPointsFromDbToOl(annotation.points);
+
+                switch (annotation.shape) {
+                    case 'Point':
+                        return new ol.geom.Point(points[0]);
+                    case 'Rectangle':
+                        return new ol.geom.Rectangle([points]);
+                    case 'Polygon':
+                        return new ol.geom.Polygon([points]);
+                    case 'LineString':
+                        return new ol.geom.LineString(points);
+                    case 'Circle':
+                        // radius is the x value of the second point of the circle
+                        return new ol.geom.Circle(points[0], points[1][0]);
+                    case 'Ellipse':
+                        return new ol.geom.Ellipse([points]);
+                    default:
+                        // unsupported shapes are ignored
+                        console.error('Unknown annotation shape: ' + annotation.shape);
+                        return;
+                }
+            },
+            // Creates an OpenLayers feature object from an annotation.
+            createFeature: function (annotation) {
+                var feature = new ol.Feature(this.getGeometry(annotation));
+
+                feature.setId(annotation.id);
+                feature.set('annotation', annotation);
+                if (annotation.labels && annotation.labels.length > 0) {
+                    feature.set('color', annotation.labels[0].label.color);
+                }
+
+                return feature;
+            },
+            handleFeatureModifyStart: function (e) {
+                e.features.forEach(function (feature) {
+                    featureRevisionMap[feature.getId()] = feature.getRevision();
+                });
+            },
+            handleFeatureModifyEnd: function (e) {
+                var self = this;
+                var annotations = e.features.getArray()
+                    .filter(function (feature) {
+                        return featureRevisionMap[feature.getId()] !== feature.getRevision();
+                    })
+                    .map(function (feature) {
+                        return {
+                            id: feature.getId(),
+                            image_id: feature.get('annotation').image_id,
+                            points: self.getPoints(feature.getGeometry()),
+                        };
+                    });
+
+                if (annotations.length > 0) {
+                    this.$emit('update', annotations);
+                }
+            },
+            focusAnnotation: function (annotation, fast) {
+                var feature = annotationSource.getFeatureById(annotation.id);
+                if (feature) {
+                    if (fast) {
+                        delete this.viewFitOptions.duration;
+                    } else {
+                        this.viewFitOptions.duration = 250;
+                    }
+                    map.getView().fit(feature.getGeometry(), this.viewFitOptions);
+                }
+            },
+            fitImage: function () {
+                map.getView().fit(this.extent, map.getSize());
+            },
+            extractAnnotationFromFeature: function (feature) {
+                return feature.get('annotation');
+            },
+            handleFeatureSelect: function (event) {
+                this.$emit('select',
+                    event.selected.map(this.extractAnnotationFromFeature),
+                    event.deselected.map(this.extractAnnotationFromFeature)
+                );
+            },
+            handlePrevious: function () {
+                this.$emit('previous');
+            },
+            handleNext: function () {
+                this.$emit('next');
+            },
+            resetInteractionMode: function () {
+                this.interactionMode = 'default';
+            },
+            draw: function (name) {
+                if (this['isDrawing' + name]) {
+                    this.resetInteractionMode();
+                } else {
+                    this.interactionMode = 'draw' + name;
+                }
+            },
+            drawPoint: function () {
+                this.draw('Point');
+            },
+            drawRectangle: function () {
+                this.draw('Rectangle');
+            },
+            drawCircle: function () {
+                this.draw('Circle');
+            },
+            drawLineString: function () {
+                this.draw('LineString');
+            },
+            drawPolygon: function () {
+                this.draw('Polygon');
+            },
+            drawEllipse: function () {
+                this.draw('Ellipse');
+            },
+            // Assembles the points array depending on the OpenLayers geometry type.
+            getPoints: function (geometry) {
+                var points;
+                switch (geometry.getType()) {
+                    case 'Circle':
+                        // radius is the x value of the second point of the circle
+                        points = [geometry.getCenter(), [geometry.getRadius()]];
+                        break;
+                    case 'Polygon':
+                    case 'Rectangle':
+                    case 'Ellipse':
+                        points = geometry.getCoordinates()[0];
+                        break;
+                    case 'Point':
+                        points = [geometry.getCoordinates()];
+                        break;
+                    default:
+                        points = geometry.getCoordinates();
+                }
+
+                return this.convertPointsFromOlToDb(points);
+            },
+            handleNewFeature: function (e) {
+                if (this.hasNoSelectedLabel) {
+                    annotationSource.removeFeature(e.feature);
+                } else {
+                    var geometry = e.feature.getGeometry();
+                    e.feature.set('color', this.selectedLabel.color);
+
+                    // This callback is called in case saving the annotation failed.
+                    // If saving the annotation succeeded, the temporary feature will
+                    // be removed during the reactive update of the annotations property.
+                    var removeCallback = function () {
+                        annotationSource.removeFeature(e.feature);
+                    };
+
+                    this.$emit('new', {
+                        shape: geometry.getType(),
+                        points: this.getPoints(geometry),
+                    }, removeCallback);
+                }
+            },
+            deleteSelectedAnnotations: function () {
+                if (this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
+                    this.$emit('delete', this.selectedAnnotations);
+                }
+            },
+            deleteLastCreatedAnnotation: function () {
+                if (this.hasLastCreatedAnnotation) {
+                    this.$emit('delete', [this.lastCreatedAnnotation]);
+                }
+            },
+            toggleTranslating: function () {
+                if (this.isTranslating) {
+                    this.resetInteractionMode();
+                } else {
+                    this.interactionMode = 'translate';
+                }
+            },
+            toggleAttaching: function () {
+                if (this.isAttaching) {
+                    this.resetInteractionMode();
+                } else {
+                    this.interactionMode = 'attach';
+                }
+            },
+            toggleMagicWand: function () {
+                if (this.isMagicWanding) {
+                    this.resetInteractionMode();
+                } else if (magicWandInteraction) {
+                    this.interactionMode = 'magicWand';
+                }
+            },
+            handleAttachLabel: function (e) {
+                this.$emit('attach', e.feature.get('annotation'), this.selectedLabel);
+            },
+            requireSelectedLabel: function () {
+                biigle.$require('events').$emit('sidebar.open', 'labels');
+                biigle.$require('messages.store').info('Please select a label first.');
+                this.resetInteractionMode();
+            },
+            handleNewInteractionMode: function (mode) {
+                if (drawInteraction) {
+                    map.removeInteraction(drawInteraction);
+                }
+                selectInteraction.setActive(false);
+                modifyInteraction.setActive(false);
+                translateInteraction.setActive(false);
+                attachLabelInteraction.setActive(false);
+                if (magicWandInteraction) {
+                    magicWandInteraction.setActive(false);
+                }
+
+                if (this.isDrawing) {
+                    if (this.hasNoSelectedLabel) {
+                        this.requireSelectedLabel();
+                    } else {
+                        drawInteraction = new ol.interaction.Draw({
+                            source: annotationSource,
+                            type: mode.slice(4), // remove 'draw' prefix
+                            style: styles.editing,
+                        });
+                        drawInteraction.on('drawend', this.handleNewFeature);
+                        map.addInteraction(drawInteraction);
+                    }
+                } else if (this.isAttaching) {
+                    if (this.hasNoSelectedLabel) {
+                        this.requireSelectedLabel();
+                    } else {
+                        attachLabelInteraction.setActive(true);
+                    }
+                } else if (this.isMagicWanding) {
+                    if (this.hasNoSelectedLabel) {
+                        this.requireSelectedLabel();
+                    } else if (magicWandInteraction) {
+                        magicWandInteraction.setActive(true);
+                    }
+                } else {
+                    switch (mode) {
+                        case 'translate':
+                            selectInteraction.setActive(true);
+                            translateInteraction.setActive(true);
+                            break;
+                        default:
+                            selectInteraction.setActive(true);
+                            modifyInteraction.setActive(true);
+                    }
+                }
+
+                if (this.showAnnotationTooltip) {
+                    if (this.isDefaultInteractionMode) {
+                        map.on('pointermove', this.updateHoveredAnnotations);
+                        map.on('pointermove', this.updateMouseDomPosition);
+                    } else {
+                        map.un('pointermove', this.updateHoveredAnnotations);
+                        map.un('pointermove', this.updateMouseDomPosition);
+                        this.resetHoveredAnnotations();
+                    }
+                }
+            },
+            render: function () {
+                if (map) {
+                    map.render();
+                }
+            },
+            // Calculate the center point of an image section based on its index in x and
+            // y direction (e.g. [0, 0] for the first section).
+            getImageSectionCenter: function (section) {
+                return [
+                    section[0] * this.imageSectionStepSize[0] + this.imageSectionStartCenter[0],
+                    section[1] * this.imageSectionStepSize[1] + this.imageSectionStartCenter[1],
+                ];
+            },
+            showImageSection: function (section) {
+                if (section[0] < this.imageSectionSteps[0] && section[1] < this.imageSectionSteps[1] && section[0] >= 0 && section[1] >= 0) {
+                    this.imageSection = section;
+                    // Don't make imageSectionCenter a computed property because it
+                    // would automatically update when the resolution changes. But we
+                    // need the old value to compute the new image section in the
+                    // resolution watcher first!
+                    this.imageSectionCenter = this.getImageSectionCenter(section);
+                    map.getView().setCenter(this.imageSectionCenter);
+                    return true;
+                }
+
+                return false;
+            },
+            showLastImageSection: function () {
+                this.showImageSection([
+                    this.imageSectionSteps[0] - 1,
+                    this.imageSectionSteps[1] - 1,
+                ]);
+            },
+            showFirstImageSection: function () {
+                this.showImageSection([0, 0]);
+            },
+            showPreviousImageSection: function () {
+                var x = this.imageSection[0] - 1;
+                if (x >= 0) {
+                    return this.showImageSection([x, this.imageSection[1]]);
+                } else {
+                    return this.showImageSection([
+                        this.imageSectionSteps[0] - 1,
+                        this.imageSection[1] - 1,
+                    ]);
+                }
+            },
+            showNextImageSection: function () {
+                var x = this.imageSection[0] + 1;
+                if (x < this.imageSectionSteps[0]) {
+                    return this.showImageSection([x, this.imageSection[1]]);
+                } else {
+                    return this.showImageSection([0, this.imageSection[1] + 1]);
+                }
+            },
+            updateMouseDomPosition: function (e) {
+                this.mouseDomPosition = e.pixel;
+            },
+            updateMousePosition: function (e) {
+                var self = this;
+                biigle.$require('annotations.stores.utils').throttle(function () {
+                    self.mousePosition = self.invertPointsYAxis(e.coordinate).map(Math.round);
+                }, 100, 'annotations.canvas.mouse-position');
+            },
+            updateHoveredAnnotations: function (e) {
+                var annotations = [];
+                map.forEachFeatureAtPixel(e.pixel,
+                    function (feature) {
+                        if (feature.get('annotation')) {
+                            annotations.push(feature.get('annotation'));
+                        }
+                    },
+                    {
+                        layerFilter: function (layer) {
+                            return layer === annotationLayer;
+                        }
+                    }
+                );
+
+                var hash = annotations.map(function (a) {return a.id;}).sort().join('');
+
+                if (this.hoveredAnnotationHash !== hash) {
+                    this.hoveredAnnotationHash = hash;
+                    this.hoveredAnnotations = annotations;
+                }
+            },
+            resetHoveredAnnotations: function () {
+                this.hoveredAnnotationHash = '';
+                this.hoveredAnnotations = [];
+            },
+            handleRegularImage: function (image, oldImage) {
+                if (!image) {
+                    imageLayer.setSource(null);
+                } else {
+                    if (!oldImage || oldImage.width !== image.width || oldImage.height !== image.height) {
+                        // image.canvas points to the same object for all images for
+                        // performance reasons. Because of this we only have to update
+                        // the source if the image dimensions have changed. The content
+                        // of the canvas element will be automatically updated.
+                        imageLayer.setSource(new ol.source.Canvas({
+                            canvas: image.canvas,
+                            projection: this.projection,
+                            canvasExtent: this.extent,
+                            canvasSize: [image.width, image.height]
+                        }));
+                    }
+
+                    // The same performance optimizations mentioned above make the magic
+                    // wand interaction unable to detect any change if the image is
+                    // switched. So if the interaction is currently active we have to
+                    // update it manually here.
+                    if (this.isMagicWanding) {
+                        magicWandInteraction.updateSnapshot();
+                    }
+                }
+            },
+            handleTiledImage: function (image, oldImage) {
+                if (!image) {
+                    tiledImageLayer.setSource(null);
+                } else {
+                    tiledImageLayer.setSource(new ol.source.Zoomify({
+                        url: image.url,
+                        size: [image.width, image.height],
+                        transition: 100,
+                    }));
+                }
+            },
+        },
+        watch: {
+            image: function (image, oldImage) {
+                if (image.tiled === true) {
+                    if (!oldImage || oldImage.tiled !== true) {
+                        map.removeLayer(imageLayer);
+                        map.addLayer(tiledImageLayer);
+                        if (magicWandInteraction) {
+                            magicWandInteraction.setLayer(tiledImageLayer);
+                        }
+                    }
+
+                    this.handleTiledImage(image, oldImage);
+                } else {
+                    if (!oldImage || oldImage.tiled === true) {
+                        map.removeLayer(tiledImageLayer);
+                        map.addLayer(imageLayer);
+                        if (magicWandInteraction) {
+                            magicWandInteraction.setLayer(imageLayer);
+                        }
+                    }
+
+                    this.handleRegularImage(image, oldImage);
+                }
+            },
+            annotations: function (annotations) {
+                var annotationsMap = {};
+                annotations.forEach(function (annotation) {
+                    annotationsMap[annotation.id] = null;
+                });
+
+                var oldFeaturesMap = {};
+                var oldFeatures = annotationSource.getFeatures();
+                var removedFeatures = oldFeatures.filter(function (feature) {
+                    oldFeaturesMap[feature.getId()] = null;
+                    return !annotationsMap.hasOwnProperty(feature.getId());
+                });
+
+                if (removedFeatures.length === oldFeatures.length) {
+                    // In case we switched the images, we want to clear and redraw all
+                    // features.
+                    annotationSource.clear(true);
+                } else {
+                    // In case annotations were added/removed, we only want to update the
+                    // changed features.
+                    removedFeatures.forEach(function (feature) {
+                        annotationSource.removeFeature(feature);
+                    });
+
+                    annotations = annotations.filter(function (annotation) {
+                        return !oldFeaturesMap.hasOwnProperty(annotation.id);
+                    });
+                }
+
+                annotationSource.addFeatures(annotations.map(this.createFeature));
+                this.resetHoveredAnnotations();
+            },
+            selectedAnnotations: function (annotations) {
+                var source = annotationSource;
+                var features = this.selectedFeatures;
+                features.clear();
+                annotations.forEach(function (annotation) {
+                    features.push(source.getFeatureById(annotation.id));
+                });
+            },
+            extent: function (extent, oldExtent) {
+                // The extent only truly changes if the width and height changed.
+                // extent[0] is always 0, the others vary depending on the image type
+                // (regular or tiled).
+                if (extent[1] === oldExtent[1] && extent[2] === oldExtent[2] && extent[3] === oldExtent[3]) {
+                    return;
+                }
+
+                var center = ol.extent.getCenter(extent);
+
+                // Only use this.center once on initialization. If the extent changes
+                // afterwards, the center should be reset.
+                if (!this.initialized) {
+                    center = this.center || center;
+                    this.initialized = true;
+                }
+
+                // Leave this undefined if the current image is not tiled.
+                var resolutions;
+
+                if (this.image.tiled === true) {
+                    resolutions = tiledImageLayer.getSource().getTileGrid().getResolutions();
+                }
+
+                map.setView(new ol.View({
+                    projection: this.projection,
+                    center: center,
+                    resolution: this.resolution,
+                    resolutions: resolutions,
+                    zoomFactor: 1.5,
+                    // Allow a maximum of 4x magnification for non-tiled images.
+                    minResolution: 0.25,
+                    // Restrict movement.
+                    extent: extent
+                }));
+
+                if (this.resolution === undefined) {
+                    map.getView().fit(extent);
+                }
+            },
+            selectedLabel: function (label) {
+                if (!label) {
+                    if (this.isDrawing || this.isAttaching) {
+                        this.resetInteractionMode();
+                    }
+                }
+            },
+            annotationOpacity: function (opacity) {
+                annotationLayer.setOpacity(opacity);
+            },
+            // Update the current image section if either the resolution or the map size
+            // changed. viewExtent depends on both so we can use it as watcher.
+            viewExtent: function () {
+                if (!this.isLawnmowerCycleMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
+                    return;
+                }
+                var distance = function (p1, p2) {
+                    return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
+                };
+
+                var nearest = Infinity;
+                var current = 0;
+                var nearestStep = [0, 0];
+                for (var y = 0; y < this.imageSectionSteps[1]; y++) {
+                    for (var x = 0; x < this.imageSectionSteps[0]; x++) {
+                        current = distance(this.imageSectionCenter, this.getImageSectionCenter([x, y]));
+                        if (current < nearest) {
+                            nearestStep[0] = x;
+                            nearestStep[1] = y;
+                            nearest = current;
+                        }
+                    }
+                }
+
+                this.showImageSection(nearestStep);
+            },
+            showMousePosition: function (show) {
+                if (show) {
+                    map.on('pointermove', this.updateMousePosition);
+                } else {
+                    map.un('pointermove', this.updateMousePosition);
+                }
+            },
+            showAnnotationTooltip: function (show) {
+                if (show) {
+                    map.on('pointermove', this.updateMouseDomPosition);
+                    map.on('pointermove', this.updateHoveredAnnotations);
+                } else {
+                    map.un('pointermove', this.updateMouseDomPosition);
+                    map.un('pointermove', this.updateHoveredAnnotations);
+                    this.resetHoveredAnnotations();
+                }
+            },
+        },
+        created: function () {
+            var self = this;
+            styles = biigle.$require('annotations.stores.styles');
+            map = biigle.$require('annotations.stores.map');
+
+            annotationLayer.setStyle(styles.features);
+            map.addLayer(annotationLayer);
+
+            biigle.$require('events').$on('sidebar.toggle', function () {
+                self.$nextTick(function () {
+                    map.updateSize();
+                });
+            });
+
+            map.on('moveend', function (e) {
+                var view = map.getView();
+                self.$emit('moveend', {
+                    center: view.getCenter(),
+                    resolution: view.getResolution(),
+                });
+            });
+
+            map.on('change:size', this.updateMapSize);
+
+            // We initialize this here because we need to make sure the styles are
+            // properly loaded and there is no setStyle() function like for the
+            // annotationLayer.
+            selectInteraction = new ol.interaction.Select({
+                // Use click instead of default singleclick because the latter is delayed
+                // 250ms to ensure the event is no doubleclick. But we want it to be as
+                // fast as possible.
+                condition: ol.events.condition.click,
+                style: styles.highlight,
+                layers: [annotationLayer],
+                // enable selecting multiple overlapping features at once
+                multi: true
+            });
+
+            selectInteraction.on('select', this.handleFeatureSelect);
+            map.addInteraction(selectInteraction);
+
+            var keyboard = biigle.$require('keyboard');
+            // Space bar.
+            keyboard.on(32, this.handleNext);
+            // Arrow right key.
+            keyboard.on(39, this.handleNext);
+            // Arrow left key.
+            keyboard.on(37, this.handlePrevious);
+            // Esc key.
+            keyboard.on(27, this.resetInteractionMode);
+
+            if (this.editable) {
+                modifyInteraction = new ol.interaction.Modify({
+                    features: selectInteraction.getFeatures(),
+                    // She Shift key must be pressed to delete vertices, so that new
+                    // vertices can be drawn at the same position of existing vertices.
+                    deleteCondition: function(event) {
+                        return ol.events.condition.shiftKeyOnly(event) &&
+                            ol.events.condition.singleClick(event);
+                    },
+                });
+                modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
+                modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
+                map.addInteraction(modifyInteraction);
+
+                var ExtendedTranslateInteraction = biigle.$require('annotations.ol.ExtendedTranslateInteraction');
+                translateInteraction = new ExtendedTranslateInteraction({
+                    features: selectInteraction.getFeatures(),
+                    map: map,
+                });
+                translateInteraction.setActive(false);
+                translateInteraction.on('translatestart', this.handleFeatureModifyStart);
+                translateInteraction.on('translateend', this.handleFeatureModifyEnd);
+                map.addInteraction(translateInteraction);
+
+                var AttachLabelInteraction = biigle.$require('annotations.ol.AttachLabelInteraction');
+                attachLabelInteraction = new AttachLabelInteraction({
+                    features: annotationFeatures,
+                    map: map,
+                });
+                attachLabelInteraction.setActive(false);
+                attachLabelInteraction.on('attach', this.handleAttachLabel);
+                map.addInteraction(attachLabelInteraction);
+
+                if (this.crossOrigin) {
+                    keyboard.on('g', this.drawPolygon);
+                } else {
+                    // Magic wand interaction is not available for remote images.
+                    var MagicWandInteraction = biigle.$require('annotations.ol.MagicWandInteraction');
+                    magicWandInteraction = new MagicWandInteraction({
+                        map: map,
+                        source: annotationSource,
+                        style: styles.editing,
+                        indicatorPointStyle: styles.editing,
+                        indicatorCrossStyle: styles.cross,
+                        simplifyTolerant: 0.1,
+                    });
+                    magicWandInteraction.on('drawend', this.handleNewFeature);
+                    magicWandInteraction.setActive(false);
+                    map.addInteraction(magicWandInteraction);
+
+                    keyboard.on('g', function (e) {
+                        if (e.shiftKey) {
+                            self.toggleMagicWand();
+                        } else {
+                            self.drawPolygon();
+                        }
+                    });
+                }
+
+                // Del key.
+                keyboard.on(46, this.deleteSelectedAnnotations);
+                // Backspace key.
+                keyboard.on(8, this.deleteLastCreatedAnnotation);
+
+                keyboard.on('a', this.drawPoint);
+                keyboard.on('s', this.drawRectangle);
+                keyboard.on('d', function (e) {
+                    if (e.shiftKey) {
+                        self.drawEllipse();
+                    } else {
+                        self.drawCircle();
+                    }
+                });
+                keyboard.on('f', this.drawLineString);
+                keyboard.on('m', this.toggleTranslating);
+                keyboard.on('l', this.toggleAttaching);
+
+                this.$watch('interactionMode', this.handleNewInteractionMode);
+            }
+        },
+        mounted: function () {
+            map.setTarget(this.$el);
+        },
+    };
+});
+
+/**
+ * Tooltip showing information on the hovered annotations.
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.annotationTooltip', {
+    props: {
+        annotations: {
+            required: true,
+            type: Array,
+        },
+        position: {
+            required: true,
+            type: Array,
+        },
+    },
+    data: function () {
+        return {
+            delayPast: false,
+        };
+    },
+    computed: {
+        shown: function () {
+            return this.annotations.length > 0;
+        },
+        styleObject: function () {
+            return 'transform: translate(' + this.position[0] + 'px,' + this.position[1] + 'px);';
+        },
+        classObject: function () {
+            return {
+                'annotation-tooltip--shown': this.shown,
+            };
+        },
+    },
+});
+
+/**
+ * The filter component of the annotations tab
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.annotationsFilter', {
+    components: {
+        typeahead: biigle.$require('core.components.typeahead'),
+    },
+    props: {
+        annotations: {
+            type: Array,
+            required: true,
+        },
+    },
+    data: function () {
+        return {
+            availableFilters: ['label', 'user', 'shape', 'session'],
+            selectedFilter: null,
+            selectedData: null,
+            active: false,
+        };
+    },
+    computed: {
+        placeholder: function () {
+            if (this.selectedFilter) {
+                return this.selectedFilter + ' name';
+            }
+
+            return 'filter annotations';
+        },
+        labelData: function () {
+            // Use this map to get unique labels only.
+            var map = {};
+            var data = [];
+            this.annotations.forEach(function (annotation) {
+                annotation.labels.forEach(function (annotationLabel) {
+                    map[annotationLabel.label.id] = annotationLabel.label;
+                });
+            });
+
+            for (var id in map) {
+                if (map.hasOwnProperty(id)) {
+                    data.push(map[id]);
+                }
+            }
+
+            return data;
+        },
+        userData: function () {
+            // Use this map to get unique users only.
+            var map = {};
+            var data = [];
+            this.annotations.forEach(function (annotation) {
+                annotation.labels.forEach(function (annotationLabel) {
+                    map[annotationLabel.user.id] = annotationLabel.user;
+                });
+            });
+
+            for (var id in map) {
+                if (map.hasOwnProperty(id)) {
+                    map[id].name = map[id].firstname + ' ' + map[id].lastname;
+                    data.push(map[id]);
+                }
+            }
+
+            return data;
+        },
+        shapeData: function () {
+            var shapes = biigle.$require('annotations.shapes');
+            var data = [];
+            for (var id in shapes) {
+                if (shapes.hasOwnProperty(id)) {
+                    data.push({id: parseInt(id, 10), name: shapes[id]});
+                }
+            }
+
+            return data;
+        },
+        sessionData: function () {
+            return biigle.$require('annotations.sessions').map(function (session) {
+                session.starts_at = new Date(session.starts_at);
+                session.ends_at = new Date(session.ends_at);
+
+                return session;
+            });
+        },
+        data: function () {
+            if (this.selectedFilter) {
+                return this[this.selectedFilter + 'Data'] || [];
+            }
+
+            return [];
+        },
+        selectedDataName: function () {
+            return this.selectedData ? this.selectedData.name : '';
+        },
+    },
+    methods: {
+        labelFilterFunction: function (label) {
+            return function (annotation) {
+                return annotation.labels.filter(function (annotationLabel) {
+                    return annotationLabel.label.id === label.id;
+                }).length > 0;
+            };
+        },
+        userFilterFunction: function (user) {
+            return function (annotation) {
+                return annotation.labels.filter(function (annotationLabel) {
+                    return annotationLabel.user.id === user.id;
+                }).length > 0;
+            };
+        },
+        shapeFilterFunction: function (shape) {
+            return function (annotation) {
+                return annotation.shape_id === shape.id;
+            };
+        },
+        sessionFilterFunction: function (session) {
+            var userMap = {};
+            session.users.forEach(function (user) {
+                userMap[user.id] = null;
+            });
+
+            return function (annotation) {
+                /*
+                 * Dates without timezone (like these) are interpreted as dates of the
+                 * timezone of the browser. Since the application can run in any
+                 * timezone, these dates may not be interpreted correctly. But since the
+                 * dates of the annotation session are not interpreted correctly, too
+                 * (in the same way), we can still use them for comparison. Just be sure
+                 * not to use the iso_8601 dates of the annotation session for
+                 * comparison with the dates of the annotations.
+                 */
+                for (var i = annotation.labels.length - 1; i >= 0; i--) {
+                    if (userMap.hasOwnProperty(annotation.labels[i].user.id)) {
+                        // If the annotation has a label of a user that belongs to the
+                        // session, it is valid if created_at belongs to the session,
+                        // too.
+                        var created_at = new Date(annotation.created_at);
+
+                        return created_at >= session.starts_at && created_at < session.ends_at;
+                    }
+                }
+
+                return false;
+            };
+        },
+        selectData: function (data) {
+            this.selectedData = data;
+            this.activateFilter();
+        },
+        activateFilter: function () {
+            if (this.selectedFilter && this.selectedData) {
+                this.active = true;
+                this.$emit('filter', this[this.selectedFilter + 'FilterFunction'](this.selectedData));
+            }
+        },
+        deactivateFilter: function () {
+            this.active = false;
+            this.selectedData = null;
+            this.$emit('filter', null);
+        },
+    },
+});
+
+/**
+ * The annotations tab of the annotator
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.annotationsTab', {
+    components: {
+        labelItem: biigle.$require('annotations.components.annotationsTabItem'),
+        annotationsFilter: biigle.$require('annotations.components.annotationsFilter'),
+    },
+    props: {
+        annotations: {
+            type: Array,
+            required: true,
+        },
+        filteredAnnotations: {
+            type: Array,
+            required: true,
+        },
+    },
+    computed: {
+        // Compiles a list of all labels and their associated annotations.
+        items: function () {
+            var labels = [];
+            var annotations = {};
+            this.filteredAnnotations.forEach(function (annotation) {
+                annotation.labels.forEach(function (annotationLabel) {
+                    var item = {
+                        annotation: annotation,
+                        annotationLabel: annotationLabel,
+                    };
+
+                    if (annotations.hasOwnProperty(annotationLabel.label.id)) {
+                        annotations[annotationLabel.label.id].push(item);
+                    } else {
+                        annotations[annotationLabel.label.id] = [item];
+                        labels.push(annotationLabel.label);
+                    }
+                });
+            });
+
+            // Sort labels alphabetically in the sidebar.
+            return labels.sort(this.sortByName)
+                .map(function (label) {
+                    return {
+                        label: label,
+                        annotations: annotations[label.id]
+                    };
+                });
+        },
+    },
+    methods: {
+        sortByName: function (a, b) {
+            return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+        },
+        reallyScrollIntoView: function (annotations) {
+            var scrollElement = this.$refs.scrollList;
+            var scrollTop = scrollElement.scrollTop;
+            var height = scrollElement.offsetHeight;
+            var top = Infinity;
+            var bottom = 0;
+
+            var element;
+            annotations.forEach(function (annotation) {
+                var elements = scrollElement.querySelectorAll(
+                    '[data-annotation-id="' + annotation.id + '"]'
+                );
+                for (var i = elements.length - 1; i >= 0; i--) {
+                    element = elements[i];
+                    top = Math.min(element.offsetTop, top);
+                    bottom = Math.max(element.offsetTop + element.offsetHeight, bottom);
+                }
+            }, this);
+
+            // Scroll scrollElement so all list items of selected annotations are
+            // visible or scroll to the first list item if all items don't fit inside
+            // scrollElement.
+            if (scrollTop > top) {
+                scrollElement.scrollTop = top;
+            } else if ((scrollTop + height) < bottom) {
+                if (height >= (bottom - top)) {
+                    scrollElement.scrollTop = bottom - scrollElement.offsetHeight;
+                } else {
+                    scrollElement.scrollTop = top;
+                }
+            }
+        },
+        // If an annotation is selected on the map the respective annotation labels
+        // should be visible in the annotations tab, too. This function adjusts the
+        // scrollTop of the list so all selected annotation labels are visible (if
+        // possible).
+        scrollIntoView: function (annotations) {
+            if (annotations.length === 0) {
+                return;
+            }
+
+            // Wait for the annotations list to be rendered so the offsetTop of each
+            // item can be determined.
+            this.$nextTick(function () {
+                this.reallyScrollIntoView(annotations);
+            });
+        },
+        // If an annotation label is selected it may be that a preceding annotation item
+        // expands which would push the currently selected annotation label down. This
+        // function adjusts the scrollTop so the selected annotation label stays at the
+        // same position relative to the cursor.
+        keepElementPosition: function (element) {
+            var scrollElement = this.$refs.scrollList;
+            var positionBefore = element.offsetTop - scrollElement.scrollTop;
+            // Wait until everything is rendered.
+            this.$nextTick(function () {
+                this.$nextTick(function () {
+                    var positionAfter = element.offsetTop - scrollElement.scrollTop;
+                    // Scroll so the element has the same relative position than before.
+                    scrollElement.scrollTop += positionAfter - positionBefore;
+                });
+            });
+        },
+        bubbleFilter: function (filter) {
+            this.$emit('filter', filter);
+        },
+    },
+});
+
+/**
+ * One list item of the annotations tab
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.annotationsTabItem', {
+    components: {
+        annotationItem: biigle.$require('annotations.components.annotationsTabSubItem'),
+    },
+    props: {
+        item: {
+            type: Object,
+            required: true,
+        },
+    },
+    data: function () {
+        return {
+            isOpen: false,
+        };
+    },
+    computed: {
+        label: function () {
+            return this.item.label;
+        },
+        annotationItems: function () {
+            return this.item.annotations;
+        },
+        count: function () {
+            return this.annotationItems.length;
+        },
+        hasSelectedAnnotation: function () {
+            var items = this.annotationItems;
+            for (var i = items.length - 1; i >= 0; i--) {
+                if (items[i].annotation.selected === true) {
+                    return true;
+                }
+            }
+
+            return false;
+        },
+        isSelected: function () {
+            return this.isOpen || this.hasSelectedAnnotation;
+        },
+        classObject: function () {
+            return {
+                selected: this.isSelected,
+            };
+        },
+        colorStyle: function () {
+            return {
+                'background-color': '#' + this.label.color,
+            };
+        },
+        title: function () {
+            return 'List all annotations with label ' + this.label.name;
+        },
+        countTitle: function () {
+            return 'There are ' + this.count + ' annotations with this label';
+        },
+    },
+    methods: {
+        toggleOpen: function () {
+            this.isOpen = !this.isOpen;
+        },
+        bubbleSelect: function (element) {
+            this.$emit('select', element);
+        },
+    },
+});
+
+/**
+ * One sub-list item of a list item of the annotations tab
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.annotationsTabSubItem', {
+    props: {
+        item: {
+            type: Object,
+            required: true,
+        },
+        userId: {
+            type: Number,
+            required: true,
+        },
+    },
+    computed: {
+        annotation: function () {
+            return this.item.annotation;
+        },
+        label: function () {
+            return this.item.annotationLabel;
+        },
+        isSelected: function () {
+            return this.annotation.selected;
+        },
+        classObject: function () {
+            return {
+                selected: this.isSelected,
+            };
+        },
+        shapeClass: function () {
+            return 'icon-' + this.annotation.shape.toLowerCase();
+        },
+        username: function () {
+            if (this.label.user) {
+                return this.label.user.firstname + ' ' + this.label.user.lastname;
+            }
+
+            return '(user deleted)';
+        },
+        canBeDetached: function () {
+            return this.label.user && this.label.user.id === this.userId;
+        },
+        events: function () {
+            return biigle.$require('events');
+        },
+    },
+    methods: {
+        toggleSelect: function (e) {
+            this.$emit('select', this.$el);
+
+            if (this.isSelected) {
+                this.events.$emit('annotations.deselect', this.annotation, e);
+            } else {
+                this.events.$emit('annotations.select', this.annotation, e);
+            }
+        },
+        focus: function () {
+            this.events.$emit('annotations.focus', this.annotation);
+        },
+        detach: function () {
+            if (this.annotation.labels.length > 1) {
+                this.events.$emit('annotations.detachLabel', this.annotation, this.label);
+            } else if (confirm('Detaching the last label will delete the annotation. Proceed?')) {
+                this.events.$emit('annotations.delete', this.annotation);
+            }
+        },
+    },
+});
+
+/**
+ * The color adjustment tab of the annotator
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.colorAdjustmentTab', {
+    data: function () {
+        return {
+            isBrightnessRgbActive: false,
+            colorAdjustment: {
+                brightnessContrast: [0, 0],
+                brightnessRGB: [0, 0, 0],
+                hueSaturation: [0, 0],
+                vibrance: [0],
+            },
+        };
+    },
+    methods: {
+        resetType: function (type, index) {
+            if (index !== undefined) {
+                // Use splice so Vue is able to detect the change.
+                this.colorAdjustment[type].splice(index, 1, 0);
+            } else {
+                this.colorAdjustment[type] = this.colorAdjustment[type].map(function () {
+                    return 0;
+                });
+            }
+        },
+        reset: function () {
+            for (var type in this.colorAdjustment) {
+                if (this.colorAdjustment.hasOwnProperty(type)) {
+                    this.resetType(type);
+                }
+            }
+        },
+        toggleBrightnessRgb: function () {
+            if (this.isBrightnessRgbActive) {
+                this.resetType('brightnessRGB');
+            } else {
+                this.resetType('brightnessContrast', 0);
+            }
+            this.isBrightnessRgbActive = !this.isBrightnessRgbActive;
+        },
+    },
+    watch: {
+        colorAdjustment: {
+            handler: function () {
+                this.$emit('change', this.colorAdjustment);
+            },
+            deep: true,
+        },
+    },
+});
+
+/**
+ * A generic control button of the annotation canvas
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.controlButton', {
+    template: '<span class="control-button btn" :title="title" :class="classObject" @click="handleClick" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">' +
+        '<i :class="iconClass" aria-hidden="true"></i>' +
+        '<span v-if="hasSubControls" @click.stop class="control-button__sub-controls btn-group">' +
+            '<slot></slot>' +
+        '</span>' +
+    '</span>',
+    props: {
+        title: {
+            type: String,
+            default: '',
+        },
+        icon: {
+            type: String,
+            required: true,
+        },
+        active: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    data: function () {
+        return {
+            mouseOver: false,
+            timeout: null,
+            activeSubControls: 0,
+        };
+    },
+    computed: {
+        classObject: function () {
+            return {
+                active: this.active,
+                'control-button--open': this.showSubControls,
+            };
+        },
+        iconClass: function () {
+            if (this.icon.startsWith('glyphicon-')) {
+                return 'glyphicon ' + this.icon;
+            } else if (this.icon.startsWith('fa-')) {
+                return 'fa ' + this.icon;
+            }
+
+            return 'icon icon-white ' + this.icon;
+        },
+        hasSubControls: function () {
+            return this.$slots.hasOwnProperty('default');
+        },
+        showSubControls: function () {
+            return this.mouseOver || this.hasActiveSubControl;
+        },
+        hasActiveSubControl: function () {
+            return this.activeSubControls > 0;
+        },
+    },
+    methods: {
+        handleClick: function () {
+            this.$emit('click');
+        },
+        handleMouseEnter: function () {
+            this.mouseOver = true;
+            window.clearTimeout(this.timeout);
+        },
+        handleMouseLeave: function () {
+            var self = this;
+            window.clearTimeout(this.timeout);
+            this.timeout = window.setTimeout(function () {
+                self.mouseOver = false;
+            }, 200);
+        },
+        updateActiveSubControls: function (active) {
+            if (active) {
+                this.activeSubControls++;
+            } else {
+                this.activeSubControls--;
+            }
+        }
+    },
+    watch: {
+        active: function (active) {
+            this.$parent.$emit('control-button-active', active);
+        },
+    },
+    created: function () {
+        this.$on('control-button-active', this.updateActiveSubControls);
+    },
+});
+
+/**
+ * The label indicator of the canvas element
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.labelIndicator', {
+    props: {
+        label: {
+            required: true,
+        },
+    },
+});
+
+/**
+ * The labels tab of the annotator
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.labelsTab', {
+    components: {
+        labelTrees: biigle.$require('labelTrees.components.labelTrees'),
+    },
+    data: function () {
+        return {
+            labelTrees: biigle.$require('annotations.labelTrees'),
+            selectedLabel: null,
+        };
+    },
+    computed: {
+        plugins: function () {
+            return biigle.$require('annotations.components.labelsTabPlugins');
+        },
+    },
+    methods: {
+        handleSelectedLabel: function (label) {
+            this.selectedLabel = label;
+            this.$emit('select', label);
+        },
+        handleDeselectedLabel: function (label) {
+            this.selectedLabel = null;
+            this.$emit('select', null);
+        },
+    }
+});
+
+/**
+ * Additional components that can be dynamically added by other Biigle modules via
+ * view mixins. These components are meant for the "annotationsLabelsTab" view mixin
+ * mount point.
+ *
+ * @type {Object}
+ */
+biigle.$declare('annotations.components.labelsTabPlugins', {});
+
+/**
+ * The minimap of the canvas element
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.minimap', function () {
+    var initialized = false;
+    var minimap = new ol.Map({
+        // remove controls
+        controls: [],
+        // disable interactions
+        interactions: []
+    });
+
+    var viewportSource = new ol.source.Vector();
+    var viewport = new ol.Feature();
+    viewportSource.addFeature(viewport);
+
+    var mapView, mapSize;
+
+    return {
+        props: {
+            extent: {
+                type: Array,
+                required: true,
+            },
+            projection: {
+                type: Object,
+                required: true,
+            },
+        },
+        computed: {
+            // Width and height are only evaluated once on initialization. They will be
+            // used to calculate the actual minimap size based on the image aspect ratio.
+            intendedWidth: function () {
+                return this.$el.clientWidth;
+            },
+            intendedHeight: function () {
+                return this.$el.clientHeight;
+            },
+        },
+        methods: {
+            // Move the viewport rectangle on the minimap.
+            updateViewport: function () {
+                viewport.setGeometry(ol.geom.Polygon.fromExtent(mapView.calculateExtent(mapSize)));
+            },
+            dragViewport: function (e) {
+                mapView.setCenter(e.coordinate);
+            },
+            updateMapSize: function (e) {
+                mapSize = e.target.getSize();
+            },
+            updateMapView: function (e) {
+                mapView = e.target.getView();
+            },
+            updateElementSize: function () {
+                var imageWidth = this.extent[2];
+                // If extent[3] is 0 then a tiled image is displayed. For this the image
+                // height is -extent[1]. This is due to the differences between a Zoomify
+                // and an Image source.
+                var imageHeight = this.extent[3] || -this.extent[1];
+
+                // Calculate resolution that fits the image into the minimap element.
+                var resolution = Math.max(
+                    imageWidth / this.intendedWidth,
+                    imageHeight / this.intendedHeight
+                );
+                minimap.setView(new ol.View({
+                    projection: this.projection,
+                    center: ol.extent.getCenter(this.extent),
+                    resolution: resolution,
+                }));
+
+                // Update the minimap element size so it has the same dimensions than the
+                // image displayed by OpenLayers.
+                this.$el.style.width = Math.round(imageWidth / resolution) + 'px';
+                this.$el.style.height = Math.round(imageHeight / resolution) + 'px';
+                minimap.updateSize();
+            },
+            refreshImageLayer: function (e) {
+                // Set or refresh the layer that displays the image. This is done after
+                // the minimap element was created. The annotationCanvas can display
+                // either a regular image or a tiled image. If the type changes we have
+                // to update the layer here, too.
+                var layers = minimap.getLayers();
+                if (layers.getLength() > 1) {
+                    layers.setAt(0, e.target.item(e.target.getLength() - 1));
+                } else {
+                    layers.insertAt(0, e.target.item(e.target.getLength() - 1));
+                }
+            },
+        },
+        created: function () {
+            // Dot this only once and retain the minimap object even if the component
+            // is hidden/destroyed.
+            if (!initialized) {
+                initialized = true;
+                var map = biigle.$require('annotations.stores.map');
+                mapSize = map.getSize();
+                mapView = map.getView();
+                map.on('postcompose', this.updateViewport);
+                map.on('change:size', this.updateMapSize);
+                map.on('change:view', this.updateMapView);
+
+                // Add the viewport layer now. Add the image layer later when it was
+                // added to the map.
+                minimap.addLayer(new ol.layer.Vector({
+                    source: viewportSource,
+                    style: biigle.$require('annotations.stores.styles').viewport
+                }));
+                map.getLayers().on('add', this.refreshImageLayer);
+                minimap.on('pointerdrag', this.dragViewport);
+                minimap.on('click', this.dragViewport);
+            }
+        },
+        watch: {
+            // Refresh the view if the extent (i.e. image size) changed.
+            extent: function () {
+                this.updateElementSize();
+            },
+        },
+        mounted: function () {
+            minimap.setTarget(this.$el);
+            this.updateElementSize();
+        },
+    };
+});
+
+/**
+ * The mouse position indicator of the canvas element
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.mousePositionIndicator', {
+    props: {
+        position: {
+            required: true,
+        },
+    },
+    computed: {
+        positionText: function () {
+            return this.position[0] + ' × ' + this.position[1];
+        },
+    },
+});
+
+/**
+ * A button that produces a screenshot of the map
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.screenshotButton', {
+    mixins: [biigle.$require('annotations.mixins.imageFilenameTracker')],
+    computed: {
+        map: function () {
+            return biigle.$require('annotations.stores.map');
+        },
+        messages: function () {
+            return biigle.$require('messages.store');
+        },
+        screenshotSupported: function () {
+            return !biigle.$require('annotations.volumeIsRemote');
+        },
+        screenshotTitle: function () {
+            if (this.screenshotSupported) {
+                return 'Get a screenshot of the visible area';
+            }
+
+            return 'Screenshots are not available for remote images';
+        },
+        filename: function () {
+            if (this.currentImageFilename) {
+                var name = this.currentImageFilename.split('.');
+                if (name.length > 1) {
+                    name[name.length - 1] = 'png';
+                }
+                name = name.join('.').toLowerCase();
+                return 'biigle_screenshot_' + name;
+            }
+
+            return 'biigle_screenshot.png';
+        },
+    },
+    methods: {
+        // see: https://gist.github.com/remy/784508
+        trimCanvas: function (canvas) {
+            var ctx = canvas.getContext('2d');
+            var copy = document.createElement('canvas').getContext('2d');
+            var pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var l = pixels.data.length;
+            var i, x, y;
+            var bound = {
+                top: null,
+                left: null,
+                right: null,
+                bottom: null
+            };
+
+            for (i = 0; i < l; i += 4) {
+                if (pixels.data[i + 3] !== 0) {
+                    x = (i / 4) % canvas.width;
+                    y = ~~((i / 4) / canvas.width);
+
+                    if (bound.top === null) {
+                        bound.top = y;
+                    }
+
+                    if (bound.left === null) {
+                        bound.left = x;
+                    } else if (x < bound.left) {
+                        bound.left = x;
+                    }
+
+                    if (bound.right === null) {
+                        bound.right = x;
+                    } else if (bound.right < x) {
+                        bound.right = x;
+                    }
+
+                    if (bound.bottom === null) {
+                        bound.bottom = y;
+                    } else if (bound.bottom < y) {
+                        bound.bottom = y;
+                    }
+                }
+            }
+
+            var trimHeight = bound.bottom - bound.top;
+            var trimWidth = bound.right - bound.left;
+            var trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight);
+
+            copy.canvas.width = trimWidth;
+            copy.canvas.height = trimHeight;
+            copy.putImageData(trimmed, 0, 0);
+
+            return copy.canvas;
+        },
+        makeBlob: function (canvas) {
+            try {
+                canvas = this.trimCanvas(canvas);
+            } catch (error) {
+                return Vue.Promise.reject('Could not create screenshot. Maybe the image is not loaded yet?');
+            }
+
+            var type = 'image/png';
+            if (!HTMLCanvasElement.prototype.toBlob) {
+                // fallback if toBlob is not implemented see 'Polyfill':
+                // https://developer.mozilla.org/de/docs/Web/API/HTMLCanvasElement/toBlob
+                var binStr = atob(canvas.toDataURL(type).split(',')[1]);
+                var len = binStr.length;
+                var arr = new Uint8Array(len);
+                for (var i = 0; i < len; i++ ) {
+                    arr[i] = binStr.charCodeAt(i);
+                }
+
+                return new Vue.Promise(function (resolve) {
+                    resolve(new Blob([arr], {type: type}));
+                });
+            } else {
+                return new Vue.Promise(function (resolve) {
+                    canvas.toBlob(resolve, type);
+                });
+            }
+        },
+        download: function (blob) {
+            var a = document.createElement('a');
+            a.style = 'display: none';
+            a.download = this.filename;
+            a.href = URL.createObjectURL(blob);
+            document.body.appendChild(a);
+            a.click();
+            window.setTimeout(function () {
+                // wait a bit before revoking the blob (else the download might not work)
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+            }, 100);
+        },
+        capture: function () {
+            var self = this;
+            this.map.once('postcompose', function (e) {
+                self.makeBlob(e.context.canvas)
+                    .then(self.download)
+                    .catch(self.handleError);
+            });
+            this.map.renderSync();
+        },
+        handleError: function (message) {
+            this.messages.danger(message);
+        },
+    },
+});
+
+/**
+ * The settings tab of the annotator
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.settingsTab', {
+    components: {
+        screenshotButton: biigle.$require('annotations.components.screenshotButton'),
+    },
+    data: function () {
+        return {
+            annotationOpacity: 1.0,
+            cycleMode: 'default',
+            mousePosition: false,
+            annotationTooltip: false,
+            minimap: true,
+        };
+    },
+    computed: {
+        settings: function () {
+            return biigle.$require('annotations.stores.settings');
+        },
+        keyboard: function () {
+            return biigle.$require('keyboard');
+        },
+        isVolareActive: function () {
+            return this.cycleMode === 'volare';
+        },
+        isLawnmowerActive: function () {
+            return this.cycleMode === 'lawnmower';
+        },
+        plugins: function () {
+            return biigle.$require('annotations.components.settingsTabPlugins');
+        },
+    },
+    methods: {
+        startVolare: function () {
+            this.cycleMode = 'volare';
+        },
+        startLawnmower: function () {
+            this.cycleMode = 'lawnmower';
+        },
+        resetCycleMode: function () {
+            this.cycleMode = 'default';
+        },
+        emitAttachLabel: function () {
+            this.$emit('attach-label');
+        },
+        showMousePosition: function () {
+            this.mousePosition = true;
+        },
+        hideMousePosition: function () {
+            this.mousePosition = false;
+        },
+        showAnnotationTooltip: function () {
+            this.annotationTooltip = true;
+        },
+        hideAnnotationTooltip: function () {
+            this.annotationTooltip = false;
+        },
+        showMinimap: function () {
+            this.minimap = true;
+        },
+        hideMinimap: function () {
+            this.minimap = false;
+        },
+    },
+    watch: {
+        annotationOpacity: function (opacity) {
+            opacity = parseFloat(opacity);
+            if (opacity === 1) {
+                this.settings.delete('annotationOpacity');
+            } else {
+                this.settings.set('annotationOpacity', opacity);
+            }
+            this.$emit('change', 'annotationOpacity', opacity);
+        },
+        cycleMode: function (mode) {
+            this.$emit('change', 'cycleMode', mode);
+
+            if (mode === 'default') {
+                this.keyboard.off(27, this.resetCycleMode);
+            } else {
+                // ESC key.
+                this.keyboard.on(27, this.resetCycleMode);
+            }
+
+            if (mode === 'volare') {
+                // Enter key.
+                this.keyboard.on(13, this.emitAttachLabel);
+            } else {
+                this.keyboard.off(13, this.emitAttachLabel);
+            }
+        },
+        mousePosition: function (show) {
+            if (show) {
+                this.settings.set('mousePosition', true);
+            } else {
+                this.settings.delete('mousePosition');
+            }
+            this.$emit('change', 'mousePosition', show);
+        },
+        annotationTooltip: function (show) {
+            if (show) {
+                this.settings.set('annotationTooltip', true);
+            } else {
+                this.settings.delete('annotationTooltip');
+            }
+            this.$emit('change', 'annotationTooltip', show);
+        },
+        minimap: function (show) {
+            if (show) {
+                this.settings.delete('minimap');
+            } else {
+                this.settings.set('minimap', false);
+            }
+            this.$emit('change', 'minimap', show);
+        },
+    },
+    created: function () {
+        var storedProperties = [
+            'annotationOpacity',
+            'mousePosition',
+            'annotationTooltip',
+            'minimap',
+        ];
+        storedProperties.forEach(function (property) {
+            if (this.settings.has(property)) {
+                this[property] = this.settings.get(property);
+            }
+        }, this);
+    },
+});
+
+/**
+ * Additional components that can be dynamically added by other Biigle modules via
+ * view mixins. These components are meant for the "annotationsSettingsTab" view mixin
+ * mount point.
+ *
+ * @type {Object}
+ */
+biigle.$declare('annotations.components.settingsTabPlugins', {});
+
+/**
+ * An extension of the sidebar component that listens on key events.
+ *
+ * @type {Object}
+ */
+biigle.$component('annotations.components.sidebar', {
+    mixins: [biigle.$require('core.components.sidebar')],
+    created: function () {
+        var self = this;
+        biigle.$require('events').$on('sidebar.open', function (tab) {
+            self.$emit('open', tab);
+        });
+    },
+});
+
+/**
+ * Store for the annotations of the annotation tool
+ */
+biigle.$declare('annotations.stores.annotations', function () {
+    var events = biigle.$require('events');
+    var imagesApi = biigle.$require('api.images');
+    var annotationsApi = biigle.$require('api.annotations');
+
+    return new Vue({
+        data: {
+            cache: {},
+        },
+        computed: {
+            imageFileUri: function () {
+                return biigle.$require('annotations.imageFileUri');
+            },
+            shapeMap: function () {
+                return biigle.$require('annotations.shapes');
+            },
+            inverseShapeMap: function () {
+                var map = {};
+                for (var id in this.shapeMap) {
+                    map[this.shapeMap[id]] = parseInt(id, 10);
+                }
+
+                return map;
+            },
+        },
+        methods: {
+            parseResponse: function (response) {
+                return response.data;
+            },
+            resolveShape: function (annotation) {
+                annotation.shape = this.shapeMap[annotation.shape_id];
+
+                return annotation;
+            },
+            resolveAllShapes: function (annotations) {
+                annotations.forEach(this.resolveShape, this);
+
+                return annotations;
+            },
+            setDeselected: function (annotation) {
+                annotation.selected = false;
+
+                return annotation;
+            },
+            setAllDeselected: function (annotations) {
+                annotations.forEach(this.setDeselected);
+
+                return annotations;
+            },
+            fetchAnnotations: function (id) {
+                if (!this.cache.hasOwnProperty(id)) {
+                    this.cache[id] = imagesApi.getAnnotations({id: id})
+                        .catch(function () {
+                            return Vue.Promise.reject('Failed to load annotations for image ' + id + '!');
+                        })
+                        .then(this.parseResponse)
+                        .then(this.resolveAllShapes);
+                }
+
+                return this.cache[id].then(this.setAllDeselected);
+            },
+            create: function (imageId, annotation) {
+                annotation.shape_id = this.inverseShapeMap[annotation.shape];
+                delete annotation.shape;
+
+                var self = this;
+                return imagesApi.saveAnnotations({id: imageId}, annotation)
+                    .then(this.parseResponse)
+                    .then(this.resolveShape)
+                    .then(this.setDeselected)
+                    .then(function (annotation) {
+                        self.cache[imageId].then(function (annotations) {
+                            annotations.unshift(annotation);
+                        });
+
+                        return annotation;
+                    });
+            },
+            update: function (annotation) {
+                var self = this;
+                var promise = annotationsApi.update({id: annotation.id}, {
+                    points: annotation.points,
+                });
+
+                promise.then(function () {
+                    self.cache[annotation.image_id].then(function (annotations) {
+                        for (var i = annotations.length - 1; i >= 0; i--) {
+                            if (annotations[i].id === annotation.id) {
+                                annotations[i].points = annotation.points;
+                                return;
+                            }
+                        }
+                    });
+                });
+
+                return promise;
+            },
+            attachLabel: function (annotation, label) {
+                var promise = annotationsApi.attachLabel({id: annotation.id}, label);
+                promise.then(function (response) {
+                    annotation.labels.unshift(response.data);
+                });
+
+                return promise;
+            },
+            detachLabel: function (annotation, label) {
+                var promise = annotationsApi.detachLabel({annotation_label_id: label.id});
+                promise.then(function () {
+                    for (var i = annotation.labels.length - 1; i >= 0; i--) {
+                        if (annotation.labels[i].id === label.id) {
+                            annotation.labels.splice(i, 1);
+                            return;
+                        }
+                    }
+                });
+
+                return promise;
+            },
+            delete: function (annotation) {
+                var promise = annotationsApi.delete({id: annotation.id});
+                var annotationsPromise = this.cache[annotation.image_id];
+                promise.then(function () {
+                    annotationsPromise.then(function (annotations) {
+                        for (var i = annotations.length - 1; i >= 0; i--) {
+                            if (annotations[i].id === annotation.id) {
+                                annotations.splice(i, 1);
+                                return;
+                            }
+                        }
+                    });
+                });
+
+                return promise;
+            },
+        },
+    });
+});
+
+/**
+ * Store for the images of the annotation tool
+ */
+biigle.$declare('annotations.stores.images', function () {
+    var events = biigle.$require('events');
+    var canvas = document.createElement('canvas');
+
+    var fxCanvas;
+
+    try {
+        // If fxCanvas is not initialized WebGL is not supported at all.
+        fxCanvas = fx.canvas();
+        var fxTexture = null;
+        var loadedImageTexture = null;
+    } catch (error) {
+        console.log('WebGL not supported. Color adjustment disabled.');
+    }
+
+    window.addEventListener('beforeunload', function (e) {
+        // Make sure the texture is destroyed when the page is left.
+        // The browser may take its time to garbage collect it and it may cause
+        // crashes due to lack of memory if not explicitly destroyed like this.
+        if (fxTexture) {
+            fxTexture.destroy();
+            // tell the browser that we *really* no longer want to use the resources
+            // see: http://stackoverflow.com/a/23606581/1796523
+            fxCanvas.width = 1;
+            fxCanvas.height = 1;
+        }
+    });
+
+    return new Vue({
+        data: {
+            cache: {},
+            cachedIds: [],
+            maxCacheSize: 10,
+            supportsColorAdjustment: false,
+            currentlyDrawnImage: null,
+            colorAdjustment: {
+                brightnessContrast: [0, 0],
+                brightnessRGB: [0, 0, 0],
+                hueSaturation: [0, 0],
+                vibrance: [0],
+            },
+        },
+        computed: {
+            imageFileUri: function () {
+                return biigle.$require('annotations.imageFileUri');
+            },
+            tilesUri: function () {
+                return biigle.$require('annotations.tilesUri');
+            },
+            supportedTextureSize: function () {
+                if (fxCanvas) {
+                    return fxCanvas._.gl.getParameter(fxCanvas._.gl.MAX_TEXTURE_SIZE);
+                }
+
+                return 0;
+            },
+            isRemoteVolume: function () {
+                return biigle.$require('annotations.volumeIsRemote');
+            },
+            hasColorAdjustment: function () {
+                for (var type in this.colorAdjustment) {
+                    if (this.colorAdjustment.hasOwnProperty(type) && this.isAdjustmentActive(type)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
+        },
+        methods: {
+            isTiledImage: function (image) {
+                return image.tiled === true;
+            },
+            isAdjustmentActive: function (type) {
+                return this.colorAdjustment[type].reduce(function (acc, value) {
+                    return acc + value;
+                }) !== 0;
+            },
+            checkSupportsColorAdjustment: function (image) {
+                if (!fxCanvas || this.isRemoteVolume) {
+                    return false;
+                }
+
+                if (this.isTiledImage(image)) {
+                    this.supportsColorAdjustment = false;
+                    return;
+                }
+
+                // If we already have a drawn image we only need to check the support
+                // again if the image dimensions changed.
+                if (this.currentlyDrawnImage && this.currentlyDrawnImage.width === image.width && this.currentlyDrawnImage.height === image.height) {
+                    return this.supportsColorAdjustment;
+                }
+
+                // Check supported texture size.
+                var size = this.supportedTextureSize;
+                if (size < image.width || size < image.height) {
+                    console.log('Insufficient WebGL texture size. Required: ' + image.width + 'x' + image.height + ', available: ' + size + 'x' + size + '. Color adjustment disabled.');
+                    this.supportsColorAdjustment = false;
+                    return;
+                }
+
+                // Check supported drawing buffer size.
+                // see: https://github.com/BiodataMiningGroup/biigle-annotations/issues/44
+                fxCanvas.width = image.width;
+                fxCanvas.height = image.height;
+                if (image.width !== fxCanvas._.gl.drawingBufferWidth || image.height !== fxCanvas._.gl.drawingBufferHeight) {
+                    console.log('Your browser does not allow a WebGL drawing buffer with the size of the original image. Color adjustment disabled.');
+                    this.supportsColorAdjustment = false;
+                    return;
+                }
+
+                this.supportsColorAdjustment = true;
+            },
+            createImage: function (id) {
+                var self = this;
+                var img = document.createElement('img');
+                // We want to use the same canvas element for drawing and to
+                // apply the color adjustments for better performance. But we
+                // also want Vue to detect switched images which would not work
+                // if we simply passed on the canvas element as a prop to a
+                // component. We therefore create this new object for each image.
+                // And pass it as a prop instead.
+                var promise = new Vue.Promise(function (resolve, reject) {
+                    img.onload = function () {
+                        resolve({
+                            source: img,
+                            width: img.width,
+                            height: img.height,
+                            canvas: canvas,
+                        });
+                    };
+
+                    img.onerror = function () {
+                        reject('Failed to load image ' + id + '!');
+                    };
+                });
+
+                if (this.isRemoteVolume) {
+                    // Images of remote volumes *must* be loaded as src of an image
+                    // element because of cross origin restrictions!
+                    img.src = this.imageFileUri.replace('{id}', id);
+
+                    return promise;
+
+                } else {
+                    // If the volume is not remote the image may be tiled. So we request
+                    // the data from the endpoint and check if it's an image or a JSON.
+                    return Vue.http.get(this.imageFileUri.replace('{id}', id))
+                        .catch(function () {
+                            return Vue.Promise.reject('Failed to load image ' + id + '!');
+                        })
+                        .then(function (response) {
+                            if (response.bodyBlob.type === 'application/json') {
+                                response.body.url = self.tilesUri.replace('{uuid}', response.body.uuid);
+
+                                return response.body;
+                            }
+
+                            var urlCreator = window.URL || window.webkitURL;
+                            img.src = urlCreator.createObjectURL(response.bodyBlob);
+
+                            return promise;
+                        });
+                }
+            },
+            drawSimpleImage: function (image) {
+                image.canvas.width = image.width;
+                image.canvas.height = image.height;
+                image.canvas.getContext('2d').drawImage(image.source, 0, 0);
+
+                return image;
+            },
+            drawColorAdjustedImage: function (image) {
+                if (loadedImageTexture !== image.source.src) {
+                    if (fxTexture) {
+                        fxTexture.loadContentsOf(image.source);
+                    } else {
+                        fxTexture = fxCanvas.texture(image.source);
+                    }
+                    loadedImageTexture = image.source.src;
+                }
+
+                fxCanvas.draw(fxTexture);
+
+                for (var type in this.colorAdjustment) {
+                    if (this.colorAdjustment.hasOwnProperty(type) && this.isAdjustmentActive(type)) {
+                        fxCanvas[type].apply(fxCanvas, this.colorAdjustment[type]);
+                    }
+                }
+
+                fxCanvas.update();
+                image.canvas.width = image.width;
+                image.canvas.height = image.height;
+                image.canvas.getContext('2d').drawImage(fxCanvas, 0, 0);
+
+                return image;
+            },
+            drawImage: function (image) {
+                this.checkSupportsColorAdjustment(image);
+                this.currentlyDrawnImage = image;
+
+                if (this.supportsColorAdjustment && this.hasColorAdjustment) {
+                    return this.drawColorAdjustedImage(image);
+                } else if (this.isTiledImage(image)) {
+                    return image;
+                }
+
+                return this.drawSimpleImage(image);
+            },
+            fetchImage: function (id) {
+                if (!this.cache.hasOwnProperty(id)) {
+                    events.$emit('images.fetching', id);
+                    this.cache[id] = this.createImage(id);
+                    this.cachedIds.push(id);
+
+                }
+
+                return this.cache[id];
+            },
+            fetchAndDrawImage: function (id) {
+                return this.fetchImage(id).then(this.drawImage);
+            },
+            updateColorAdjustment: function (params) {
+                if (!this.supportsColorAdjustment) {
+                    return;
+                }
+
+                var type, i;
+                var colorAdjustment = this.colorAdjustment;
+                // Store this *before* the params are applied.
+                var hadColorAdjustment = this.hasColorAdjustment;
+
+                for (type in params) {
+                    if (params.hasOwnProperty(type)) {
+                        for (i = params[type].length - 1; i >= 0; i--) {
+                            colorAdjustment[type].splice(i, 1, params[type][i]);
+                        }
+                    }
+                }
+
+                if (this.hasColorAdjustment) {
+                    this.drawColorAdjustedImage(this.currentlyDrawnImage);
+                } else if (hadColorAdjustment) {
+                    // This is the case where a previously active color adjustment was
+                    // reset and the original image should be rendered again.
+                    this.drawSimpleImage(this.currentlyDrawnImage);
+                }
+            },
+        },
+        watch: {
+            cachedIds: function (cachedIds) {
+                // If there are too many cached images, remove the oldest one to free
+                // resources.
+                if (cachedIds.length > this.maxCacheSize) {
+                    var id = cachedIds.shift();
+                    var image = this.cache[id];
+                    delete this.cache[id];
+                }
+            },
+        },
+    });
+});
+
+/**
+ * Store for the OpenLayers map
+ */
+biigle.$declare('annotations.stores.map', function () {
+    var map = new ol.Map({
+        renderer: 'canvas',
+        controls: [
+            new ol.control.Zoom(),
+            new ol.control.ZoomToExtent({
+                tipLabel: 'Zoom to show whole image',
+                // bootstrap glyphicons resize-small icon
+                label: '\ue097'
+            }),
+        ],
+        interactions: ol.interaction.defaults({
+            altShiftDragRotate: false,
+            doubleClickZoom: false,
+            keyboard: false,
+            shiftDragZoom: false,
+            pinchRotate: false,
+            pinchZoom: false
+        }),
+    });
+
+    var ZoomToNativeControl = biigle.$require('annotations.ol.ZoomToNativeControl');
+    map.addControl(new ZoomToNativeControl({
+        // bootstrap glyphicons resize-full icon
+        label: '\ue096'
+    }));
+
+    return map;
+});
+
+/**
+ * Store for annotator settings
+ */
+biigle.$declare('annotations.stores.settings', new Vue({
+    data: function () {
+        return {
+            settings: {},
+            storageKey: 'biigle.annotations.settings',
+        };
+    },
+    computed: {
+        debounce: function () {
+            return biigle.$require('annotations.stores.utils').debounce;
+        },
+    },
+    methods: {
+        set: function (key, value) {
+            if (this.settings.hasOwnProperty(key)) {
+                this.settings[key] = value;
+            } else {
+                Vue.set(this.settings, key, value);
+            }
+        },
+        delete: function (key) {
+            Vue.delete(this.settings, key);
+        },
+        get: function (key) {
+            return this.settings[key];
+        },
+        has: function (key) {
+            return this.settings.hasOwnProperty(key);
+        },
+        storeSettings: function () {
+            var hasItems = false;
+            for (var key in this.settings) {
+                if (this.settings.hasOwnProperty(key)) {
+                    window.localStorage.setItem(this.storageKey, JSON.stringify(this.settings));
+                    return;
+                }
+            }
+
+            window.localStorage.removeItem(this.storageKey);
+        },
+    },
+    created: function () {
+        var settings = JSON.parse(window.localStorage.getItem(this.storageKey));
+        if (settings) {
+            Vue.set(this, 'settings', settings);
+        }
+    },
+    watch: {
+        settings: {
+            handler: function () {
+                this.debounce(this.storeSettings, 100, 'annotations.settings');
+            },
+            deep: true,
+        },
+    },
+}));
+
+/**
+ * Store for the styles of OpenLayers features (annotations)
+ */
+biigle.$declare('annotations.stores.styles', function () {
+    var colors = {
+        white: [255, 255, 255, 1],
+        blue: [0, 153, 255, 1],
+        orange: '#ff5e00',
+    };
+
+    var defaultCircleRadius = 6;
+    var defaultStrokeWidth = 3;
+
+    var defaultStrokeOutline = new ol.style.Stroke({
+        color: colors.white,
+        width: 5
+    });
+
+    var selectedStrokeOutline = new ol.style.Stroke({
+        color: colors.white,
+        width: 6
+    });
+
+    var defaultStroke = new ol.style.Stroke({
+        color: colors.blue,
+        width: defaultStrokeWidth
+    });
+
+    var selectedStroke = new ol.style.Stroke({
+        color: colors.orange,
+        width: defaultStrokeWidth
+    });
+
+    var defaultCircleFill = new ol.style.Fill({
+        color: colors.blue
+    });
+
+    var selectedCircleFill = new ol.style.Fill({
+        color: colors.orange
+    });
+
+    var defaultCircleStroke = new ol.style.Stroke({
+        color: colors.white,
+        width: 2
+    });
+
+    var selectedCircleStroke = new ol.style.Stroke({
+        color: colors.white,
+        width: defaultStrokeWidth
+    });
+
+    var editingCircleStroke = new ol.style.Stroke({
+        color: colors.white,
+        width: 2,
+        lineDash: [3]
+    });
+
+    var editingStroke = new ol.style.Stroke({
+        color: colors.blue,
+        width: defaultStrokeWidth,
+        lineDash: [5]
+    });
+
+    var defaultFill = new ol.style.Fill({
+        color: colors.blue
+    });
+
+    var selectedFill = new ol.style.Fill({
+        color: colors.orange
+    });
+
+    return {
+        colors: colors,
+        features: function (feature) {
+            var color = feature.get('color');
+            color = color ? ('#' + color) : colors.blue;
+            return [
+                new ol.style.Style({
+                    stroke: defaultStrokeOutline,
+                    image: new ol.style.Circle({
+                        radius: defaultCircleRadius,
+                        fill: new ol.style.Fill({
+                            color: color
+                        }),
+                        stroke: defaultCircleStroke
+                    })
+                }),
+                new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: color,
+                        width: 3
+                    })
+                }),
+            ];
+        },
+        highlight: [
+            new ol.style.Style({
+                stroke: selectedStrokeOutline,
+                image: new ol.style.Circle({
+                    radius: defaultCircleRadius,
+                    fill: selectedCircleFill,
+                    stroke: selectedCircleStroke
+                }),
+                zIndex: 200
+            }),
+            new ol.style.Style({
+                stroke: selectedStroke,
+                zIndex: 200
+            }),
+        ],
+        editing: [
+            new ol.style.Style({
+                stroke: defaultStrokeOutline,
+                image: new ol.style.Circle({
+                    radius: defaultCircleRadius,
+                    fill: defaultCircleFill,
+                    stroke: editingCircleStroke
+                })
+            }),
+            new ol.style.Style({
+                stroke: editingStroke
+            }),
+        ],
+        viewport: [
+            new ol.style.Style({
+                stroke: defaultStroke,
+            }),
+            new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: colors.white,
+                    width: 1
+                })
+            })
+        ],
+        cross: [
+            new ol.style.Style({
+                image: new ol.style.RegularShape({
+                    stroke: selectedStrokeOutline,
+                    points: 4,
+                    radius1: 6,
+                    radius2: 0,
+                    angle: Math.PI / 4
+                })
+            }),
+            new ol.style.Style({
+                image: new ol.style.RegularShape({
+                    stroke: selectedStroke,
+                    points: 4,
+                    radius1: 6,
+                    radius2: 0,
+                    angle: Math.PI / 4
+                })
+            }),
+        ]
+    };
+});
+
+/**
+ * Store for utility functions
+ */
+biigle.$declare('annotations.stores.utils', function () {
+    var debounceTimeouts = {};
+    var throttleTimeouts = {};
+    var throttleFunctions = {};
+    return {
+        // Waits until the debounce wasn't called for 'wait' ms with the id until the
+        // callback is executed. If it is contiuously called, the callback is not
+        // executed.
+        debounce: function (callback, wait, id) {
+            if (debounceTimeouts.hasOwnProperty(id)) {
+                window.clearTimeout(debounceTimeouts[id]);
+            }
+            debounceTimeouts[id] = window.setTimeout(callback, wait);
+        },
+        // Executes the most recent callback every 'wait' ms as long as throttle is
+        // called.
+        throttle: function (callback, wait, id) {
+            throttleFunctions[id] = callback;
+            if (!throttleTimeouts.hasOwnProperty(id)) {
+                throttleTimeouts[id] = window.setTimeout(function () {
+                    throttleFunctions[id]();
+                    delete throttleTimeouts[id];
+                }, wait);
+            }
+        },
+    };
+});

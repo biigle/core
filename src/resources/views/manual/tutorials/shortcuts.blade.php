@@ -42,7 +42,11 @@
                 </tr>
                 <tr>
                     <td><code>D</code></td>
-                    <td>Select the Circle annotation tool</td>
+                    <td>Select the circle annotation tool</td>
+                </tr>
+                <tr>
+                    <td><code>Shift+D</code></td>
+                    <td>Select the ellipse annotation tool</td>
                 </tr>
                 <tr>
                     <td><code>F</code></td>
@@ -51,6 +55,10 @@
                 <tr>
                     <td><code>G</code></td>
                     <td>Select the polygon annotation tool</td>
+                </tr>
+                <tr>
+                    <td><code>Shift+G</code></td>
+                    <td>Select the magic wand annotation tool</td>
                 </tr>
                 <tr>
                     <td><code>M</code></td>
