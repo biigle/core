@@ -3,7 +3,7 @@
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.imageInfoTab', {
+biigle.$component('annotations.components.imageLabelTab', {
     mixins: [biigle.$require('core.mixins.loader')],
     components: {
         imageLabelList: biigle.$require('volumes.components.imageLabelList'),
@@ -23,6 +23,7 @@ biigle.$component('annotations.components.imageInfoTab', {
             cache: {},
             open: false,
             currentInfo: null,
+            saving: false,
         };
     },
     computed: {
@@ -34,16 +35,6 @@ biigle.$component('annotations.components.imageInfoTab', {
         },
         imageApi: function () {
             return biigle.$require('api.images');
-        },
-        hasExif: function () {
-            return this.currentInfo && this.currentInfo.hasOwnProperty('exif');
-        },
-        currentExif: function () {
-            if (this.hasExif) {
-                return this.currentInfo.exif;
-            }
-
-            return null;
         },
         hasLabels: function () {
             return this.currentInfo && this.currentInfo.hasOwnProperty('labels') && this.currentInfo.labels.length > 0;
@@ -72,16 +63,20 @@ biigle.$component('annotations.components.imageInfoTab', {
             return false;
         },
         proposedLabelTitle: function () {
-            return 'Attach ' + this.hasSelectedLabel.name + ' as new image label';
-        },
-        proposedLabelStyle: function () {
-            return 'background-color: #' + this.selectedLabel.color;
+            return 'Attach \'' + this.selectedLabel.name + '\' as new image label';
         },
     },
     methods: {
+        startSaving: function () {
+            this.saving = true;
+        },
+        finishSaving: function () {
+            this.saving = false;
+        },
         showImageInfo: function (id) {
             if (!this.cache.hasOwnProperty(id)) {
                 this.startLoading();
+                this.currentInfo = null;
                 this.cache[id] = this.imageApi.get({id: id});
                 this.cache[id].finally(this.finishLoading);
             }
@@ -100,8 +95,16 @@ biigle.$component('annotations.components.imageInfoTab', {
             }
         },
         attachSelectedLabel: function () {
-            console.log('attach', this.selectedLabel);
-        }
+            this.startSaving();
+            var labels = this.currentInfo.labels;
+
+            biigle.$require('api.imageLabels')
+                .save({image_id: this.imageId}, {label_id: this.selectedLabel.id})
+                .then(function (response) {
+                    labels.push(response.data);
+                }, biigle.$require('messages.store').handleErrorResponse)
+                .finally(this.finishSaving);
+        },
     },
     watch: {
         imageId: function (id) {

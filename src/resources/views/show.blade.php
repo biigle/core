@@ -93,8 +93,8 @@
         @can('add-annotation', $image)
             @include('annotations::show.tabs.labels')
         @endcan
+        @include('annotations::show.tabs.image-labels')
         @include('annotations::show.tabs.colorAdjustment')
-        @include('annotations::show.tabs.image')
         @include('annotations::show.tabs.settings')
     </sidebar>
 </div>

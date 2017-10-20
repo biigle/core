@@ -21,7 +21,7 @@ biigle.$viewModel('annotator-container', function (element) {
             annotationsTab: biigle.$require('annotations.components.annotationsTab'),
             labelsTab: biigle.$require('annotations.components.labelsTab'),
             colorAdjustmentTab: biigle.$require('annotations.components.colorAdjustmentTab'),
-            imageInfoTab: biigle.$require('annotations.components.imageInfoTab'),
+            imageLabelTab: biigle.$require('annotations.components.imageLabelTab'),
             settingsTab: biigle.$require('annotations.components.settingsTab'),
             annotationCanvas: biigle.$require('annotations.components.annotationCanvas'),
         },
