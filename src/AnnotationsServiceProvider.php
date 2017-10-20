@@ -42,6 +42,7 @@ class AnnotationsServiceProvider extends ServiceProvider
                 'searchTab',
                 'searchTabContent',
                 'volumesManualRemoteVolumes',
+                'volumesManualImageLabels',
             ],
             'controllerMixins' => [
                 'search' => SearchControllerMixin::class.'@index',
