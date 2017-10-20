@@ -6,7 +6,6 @@ use ApiTestCase;
 use Biigle\Image;
 use Biigle\Volume;
 use Biigle\Tests\ImageTest;
-use Biigle\Tests\ImageLabelTest;
 use Illuminate\Support\Facades\Event;
 use Biigle\Jobs\ProcessThumbnailChunkJob;
 
@@ -43,15 +42,6 @@ class ImageControllerTest extends ApiTestCase
         $this->assertContains('"exif"', $content);
         $this->assertContains('"width"', $content);
         $this->assertContains('"height"', $content);
-    }
-
-    public function testShowImageLabels()
-    {
-        $label = ImageLabelTest::create(['image_id' => $this->image->id]);
-        $this->beGuest();
-        $this->get('/api/v1/images/1')
-            ->assertJsonFragment($label->label->toArray())
-            ->assertJsonFragment($label->user->toArray());
     }
 
     public function testShowThumb()

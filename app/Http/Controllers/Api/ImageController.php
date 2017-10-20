@@ -11,7 +11,7 @@ class ImageController extends Controller
      *
      * @api {get} images/:id Get image information
      * @apiDescription Image information includes a subset of the image EXIF
-     * data as well as the volume and the image labels.
+     * data as well as the volume, the image belongs to.
      * @apiGroup Images
      * @apiName ShowImages
      * @apiPermission projectMember
@@ -54,32 +54,7 @@ class ImageController extends Controller
      *       "created_at":"2015-05-04 07:34:04",
      *       "updated_at":"2015-05-04 07:34:04",
      *       "url":"\/path\/to\/volume\/1"
-     *    },
-     *    "labels": [
-     *        {
-     *            "created_at":"2017-10-12 13:48:36",
-     *            "id":1,
-     *            "image_id":"1",
-     *            "label":{
-     *                "color":"0099ff",
-     *                "id":1,
-     *                "label_source_id":null,
-     *                "label_tree_id":1,
-     *                "name":"grayson.strosin",
-     *                "parent_id":null
-     *                ,"source_id":null
-     *             },
-     *             "label_id":"1",
-     *             "updated_at":"2017-10-12 13:48:36",
-     *             "user":{
-     *                 "firstname":"Lyla",
-     *                 "id":3,
-     *                 "lastname":"Considine",
-     *                 "role_id":2
-     *             },
-     *             "user_id":"3"
-     *        }
-     *    ]
+     *    }
      * }
      *
      * @param int $id image id
@@ -87,7 +62,7 @@ class ImageController extends Controller
      */
     public function show($id)
     {
-        $image = Image::with('labels')->findOrFail($id);
+        $image = Image::findOrFail($id);
         $this->authorize('access', $image);
 
         $image->setAttribute('exif', $image->getExif());
