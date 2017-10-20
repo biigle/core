@@ -22,7 +22,7 @@ biigle.$component('annotations.components.imageLabelTab', {
         return {
             cache: {},
             open: false,
-            currentInfo: null,
+            currentLabels: [],
             saving: false,
         };
     },
@@ -33,18 +33,11 @@ biigle.$component('annotations.components.imageLabelTab', {
         isAdmin: function () {
             return biigle.$require('annotations.isAdmin');
         },
-        imageApi: function () {
-            return biigle.$require('api.images');
+        imageLabelApi: function () {
+            return biigle.$require('api.imageLabels');
         },
         hasLabels: function () {
-            return this.currentInfo && this.currentInfo.hasOwnProperty('labels') && this.currentInfo.labels.length > 0;
-        },
-        currentLabels: function () {
-            if (this.hasLabels) {
-                return this.currentInfo.labels;
-            }
-
-            return [];
+            return this.currentLabels.length > 0;
         },
         hasSelectedLabel: function () {
             return this.selectedLabel !== null;
@@ -73,18 +66,18 @@ biigle.$component('annotations.components.imageLabelTab', {
         finishSaving: function () {
             this.saving = false;
         },
-        showImageInfo: function (id) {
+        showImageLabels: function (id) {
             if (!this.cache.hasOwnProperty(id)) {
                 this.startLoading();
-                this.currentInfo = null;
-                this.cache[id] = this.imageApi.get({id: id});
+                this.currentLabels = [];
+                this.cache[id] = this.imageLabelApi.query({image_id: id});
                 this.cache[id].finally(this.finishLoading);
             }
 
-            this.cache[id].then(this.updateCurrentInfo, biigle.$require('messages.store').handleErrorResponse);
+            this.cache[id].then(this.updateCurrentLabels, biigle.$require('messages.store').handleErrorResponse);
         },
-        updateCurrentInfo: function (response) {
-            this.currentInfo = response.body;
+        updateCurrentLabels: function (response) {
+            this.currentLabels = response.body;
         },
         handleDeletedLabel: function (label) {
             for (var i = this.currentLabels.length - 1; i >= 0; i--) {
@@ -96,10 +89,9 @@ biigle.$component('annotations.components.imageLabelTab', {
         },
         attachSelectedLabel: function () {
             this.startSaving();
-            var labels = this.currentInfo.labels;
+            var labels = this.currentLabels;
 
-            biigle.$require('api.imageLabels')
-                .save({image_id: this.imageId}, {label_id: this.selectedLabel.id})
+            this.imageLabelApi.save({image_id: this.imageId}, {label_id: this.selectedLabel.id})
                 .then(function (response) {
                     labels.push(response.data);
                 }, biigle.$require('messages.store').handleErrorResponse)
@@ -109,12 +101,12 @@ biigle.$component('annotations.components.imageLabelTab', {
     watch: {
         imageId: function (id) {
             if (this.open) {
-                this.showImageInfo(id);
+                this.showImageLabels(id);
             }
         },
         open: function (open) {
             if (open) {
-                this.showImageInfo(this.imageId);
+                this.showImageLabels(this.imageId);
             }
         },
     },
