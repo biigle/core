@@ -30,6 +30,7 @@ class VolumeReportControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $job = end($this->dispatchedJobs);
+        $this->assertEquals('high', $job->queue);
         $report = $job->report;
         $this->assertEquals($typeId, $report->type_id);
         $this->assertEquals($volumeId, $report->source_id);
@@ -42,6 +43,7 @@ class VolumeReportControllerTest extends ApiTestCase
             ->assertStatus(200);
 
         $job = end($this->dispatchedJobs);
+        $this->assertEquals('high', $job->queue);
         $report = $job->report;
         $this->assertEquals($typeId, $report->type_id);
         $this->assertEquals($volumeId, $report->source_id);
