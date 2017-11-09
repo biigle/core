@@ -68,7 +68,7 @@ class AttachableVolumesController extends Controller
             ->distinct()
             ->get();
 
-        $hidden = ['video_link', 'gis_link'];
+        $hidden = ['video_link', 'gis_link', 'doi'];
         $volumes->each(function ($item) use ($hidden) {
             $item->append('thumbnail')
                 ->makeHidden($hidden);
