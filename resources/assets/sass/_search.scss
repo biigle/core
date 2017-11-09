@@ -1,10 +1,14 @@
 .search-form {
-    display: flex;
     padding-bottom: 1em;
 
     .input-group {
-        flex: 1;
-        margin-right: .5em;
+        margin-right: 65px;
+    }
+
+    .btn {
+        position: absolute;
+        right: 0;
+        top: 0;
     }
 }
 
