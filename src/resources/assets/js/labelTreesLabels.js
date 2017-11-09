@@ -35,6 +35,16 @@ biigle.$viewModel('label-trees-labels', function (element) {
             },
         },
         methods: {
+            saveLabel: function (label, reject) {
+                var self = this;
+                this.startLoading();
+                labels.update({id: label.id}, {name: label.name, color: label.color})
+                    .catch(function (response) {
+                        reject();
+                        messages.handleErrorResponse(response);
+                    })
+                    .finally(this.finishLoading);
+            },
             deleteLabel: function (label) {
                 var self = this;
                 this.startLoading();

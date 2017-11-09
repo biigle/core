@@ -13,7 +13,7 @@ biigle.$component('labelTrees.components.labelTree', {
             '{{name}}' +
         '</h4>' +
         '<ul v-if="!collapsed" class="label-tree__list">' +
-            '<label-tree-label :label="label" :deletable="deletable" :show-favourites="showFavourites" :flat="flat" v-for="label in rootLabels" @select="emitSelect" @deselect="emitDeselect" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>' +
+            '<label-tree-label :key="label.id" :label="label" :editable="editable" :show-favourites="showFavourites" :flat="flat" v-for="label in rootLabels" @select="emitSelect" @deselect="emitDeselect" @save="emitSave" @delete="emitDelete" @add-favourite="emitAddFavourite" @remove-favourite="emitRemoveFavourite"></label-tree-label>' +
             '<li v-if="hasNoLabels" class="text-muted">No labels</li>' +
         '</ul>' +
     '</div>',
@@ -52,8 +52,8 @@ biigle.$component('labelTrees.components.labelTree', {
             type: Boolean,
             default: false,
         },
-        // Indicated whether labels can be deleted.
-        deletable: {
+        // Indicated whether labels can be edited.
+        editable: {
             type: Boolean,
             default: false,
         },
@@ -140,6 +140,9 @@ biigle.$component('labelTrees.components.labelTree', {
         },
         emitDeselect: function (label) {
             this.$emit('deselect', label);
+        },
+        emitSave: function (label, reject) {
+            this.$emit('save', label, reject);
         },
         emitDelete: function (label) {
             this.$emit('delete', label);
