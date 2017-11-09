@@ -56,6 +56,12 @@ biigle.$component('annotations.components.imageLabelTab', {
             return false;
         },
         proposedLabelTitle: function () {
+            if (!this.hasSelectedLabel) {
+                return 'Please select a label first.';
+            } else if (!this.canAttachSelectedLabel) {
+                return 'The selected label is already attached.';
+            }
+
             return 'Attach \'' + this.selectedLabel.name + '\' as new image label';
         },
     },
