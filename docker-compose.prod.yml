@@ -47,7 +47,7 @@ services:
     environment:
       - "DB_HOST=database"
       - "REDIS_HOST=cache"
-    command: "php -d memory_limit=1G artisan queue:work --sleep=5 --tries=3 --timeout=0"
+    command: "php -d memory_limit=1G artisan queue:work --queue=high,default --sleep=5 --tries=3 --timeout=0"
 
   scheduler:
     image: biigle/worker
