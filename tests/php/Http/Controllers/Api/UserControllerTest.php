@@ -528,7 +528,7 @@ class UserControllerTest extends ApiTestCase
         $response = $this->delete('/api/v1/users/my', [
             'password' => 'editor-password',
         ]);
-        $response->assertRedirect('auth/login');
+        $response->assertRedirect('login');
         $this->assertNull(Auth::user());
 
         $response = $this->json('DELETE', '/api/v1/users/my');

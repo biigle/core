@@ -464,7 +464,7 @@ class UserController extends Controller
             return response('Deleted.', 200);
         }
 
-        return redirect('auth/login');
+        return redirect('login');
     }
 
     /**
