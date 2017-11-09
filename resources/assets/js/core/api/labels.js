@@ -10,6 +10,13 @@
  *     color: 'bada55'
  * }).then(...);
  *
+ * Update a label:
+ *
+ * resource.update({id: labelId}, {
+ *     name: "New name",
+ *     color: "c0ffee"
+ * }).then(...)
+ *
  * Delete a label:
  *
  * resource.delete({id: labelId}).then(...);
