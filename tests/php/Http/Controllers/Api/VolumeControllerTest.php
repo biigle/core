@@ -53,7 +53,7 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertEquals(MediaType::$locationSeriesId, $this->volume()->fresh()->media_type_id);
     }
 
-    public function testLinkAttrs()
+    public function testJsonAttrs()
     {
         $volume = $this->volume();
         $id = $volume->id;
@@ -65,18 +65,24 @@ class VolumeControllerTest extends ApiTestCase
         $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
             'video_link' => 'http://example.com',
             'gis_link' => 'http://my.example.com',
+            'doi' => '10.3389/fmars.2017.00083',
         ]);
         $response->assertStatus(200);
-        $this->assertEquals('http://example.com', $this->volume()->fresh()->video_link);
-        $this->assertEquals('http://my.example.com', $this->volume()->fresh()->gis_link);
+        $this->volume()->refresh();
+        $this->assertEquals('http://example.com', $this->volume()->video_link);
+        $this->assertEquals('http://my.example.com', $this->volume()->gis_link);
+        $this->assertEquals('10.3389/fmars.2017.00083', $this->volume()->doi);
 
         $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
             'video_link' => '',
             'gis_link' => '',
+            'doi' => '',
         ]);
         $response->assertStatus(200);
-        $this->assertNull($this->volume()->fresh()->video_link);
-        $this->assertNull($this->volume()->fresh()->gis_link);
+        $this->volume()->refresh();
+        $this->assertNull($this->volume()->video_link);
+        $this->assertNull($this->volume()->gis_link);
+        $this->assertNull($this->volume()->doi);
     }
 
     public function testUpdateUrl()
