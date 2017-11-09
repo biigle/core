@@ -170,7 +170,7 @@ class LabelTreeControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $response = $this->json('PUT', "/api/v1/label-trees/{$id}", [
-            'visibility_id' => Visibility::$private->id,
+            'visibility_id' => strval(Visibility::$private->id),
         ]);
 
         // the IDs may be strings when testing with sqlite

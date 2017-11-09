@@ -127,11 +127,14 @@ class LabelTreeController extends Controller
         $tree->name = $request->input('name', $tree->name);
         $tree->description = $request->input('description', $tree->description);
 
-        if ($request->has('visibility_id') && $request->input('visibility_id') === Visibility::$private->id) {
+        $tree->visibility_id = $request->input('visibility_id', $tree->visibility_id);
+
+        // Compare the ID of the label tree attribute because it is cast to an int.
+        // The request value is a string and can't be used for strict comparison.
+        if ($request->has('visibility_id') && $tree->visibility_id === Visibility::$private->id) {
             $tree->detachUnauthorizedProjects();
         }
 
-        $tree->visibility_id = $request->input('visibility_id', $tree->visibility_id);
         $tree->save();
 
         if (static::isAutomatedRequest($request)) {
