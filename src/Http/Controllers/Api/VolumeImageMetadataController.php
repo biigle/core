@@ -166,5 +166,7 @@ class VolumeImageMetadataController extends Controller
         foreach ($images as $image) {
             $image->save();
         }
+
+        $volume->flushGeoInfoCache();
     }
 }

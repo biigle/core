@@ -76,9 +76,13 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
         // date is no valid longitude
         $response->assertStatus(302);
 
+        $this->assertFalse($this->volume()->hasGeoInfo());
+
         $csv = $this->getCsv('image-metadata.csv');
         $response = $this->call('POST', "/api/v1/volumes/{$id}/images/metadata", [], [], ['file' => $csv]);
         $response->assertStatus(200);
+
+        $this->assertTrue($this->volume()->hasGeoInfo());
 
         $png = $png->fresh();
         $jpg = $jpg->fresh();
