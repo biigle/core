@@ -47,7 +47,7 @@ class VolumeUserController extends Controller
     public function index($id)
     {
         $volume = Volume::findOrFail($id);
-        $this->authorize('update', $volume);
+        $this->authorize('access', $volume);
 
         return $volume->users()
             ->select('id', 'firstname', 'lastname', 'email')
