@@ -27,7 +27,7 @@ gulp.task('js', ['js-main', 'js-volumes']);
 gulp.task('watch', function () {
     gulp.watch(h.paths.sass + '**/*.scss', ['sass']);
     gulp.watch(h.paths.js + 'annotations/**/*.js', ['js-main']);
-    gulp.watch(h.paths.js + 'vue/**/*.js', ['js-vue']);
+    gulp.watch(h.paths.js + 'volumes/**/*.js', ['js-volumes']);
     gulp.watch(h.paths.public + '**/*', publish);
 });
 
