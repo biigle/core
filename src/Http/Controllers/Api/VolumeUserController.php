@@ -13,7 +13,7 @@ class VolumeUserController extends Controller
      * @api {get} volumes/:id/users Get all users
      * @apiGroup Volumes
      * @apiName IndexVolumeUsers
-     * @apiPermission projectAdmin
+     * @apiPermission projectMember
      * @apiDescription Returns a list of all users associated with all projects of the volume
      *
      * @apiParam {Number} id The volume ID.
