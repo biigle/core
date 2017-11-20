@@ -19,6 +19,9 @@ biigle.$component('annotations.components.annotationsTab', {
         },
     },
     computed: {
+        plugins: function () {
+            return biigle.$require('annotations.components.annotationsTabPlugins');
+        },
         // Compiles a list of all labels and their associated annotations.
         items: function () {
             var labels = [];
@@ -121,3 +124,12 @@ biigle.$component('annotations.components.annotationsTab', {
         },
     },
 });
+
+/**
+ * Additional components that can be dynamically added by other Biigle modules via
+ * view mixins. These components are meant for the "annotationsAnnotationsTab" view mixin
+ * mount point.
+ *
+ * @type {Object}
+ */
+biigle.$declare('annotations.components.annotationsTabPlugins', {});
