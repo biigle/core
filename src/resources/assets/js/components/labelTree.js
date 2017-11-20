@@ -6,7 +6,7 @@
 biigle.$component('labelTrees.components.labelTree', {
     template: '<div class="label-tree">' +
         '<h4 class="label-tree__title" v-if="showTitle">' +
-            '<button v-if="collapsible" @click.stop="collapse" class="btn btn-default btn-xs pull-right" :title="collapseTitle">' +
+            '<button v-if="collapsible" @click.stop="collapse" class="btn btn-default btn-xs pull-right" :title="collapseTitle" type="button">' +
                 '<span v-if="collapsed" class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>' +
                 '<span v-else class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>' +
             '</button>' +

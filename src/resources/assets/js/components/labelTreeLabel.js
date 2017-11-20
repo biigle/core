@@ -11,7 +11,7 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
             '<span v-if="showChevronDown" class="label-tree-label__chevron label-tree-label__chevron--down" :style="chevronStyle"></span>' +
             '<span v-if="showChevronUp" class="label-tree-label__chevron label-tree-label__chevron--up" :style="chevronStyle"></span>' +
             '<span v-text="label.name" @click.stop="toggleSelect" @mouseenter="dontHover"></span>' +
-            '<button v-if="showFavourites" class="label-tree-label__favourite" @click.stop="toggleFavourite" :title="favouriteTitle">' +
+            '<button v-if="showFavourites" type="button" class="label-tree-label__favourite" @click.stop="toggleFavourite" :title="favouriteTitle">' +
                 '<span class="glyphicon" :class="favouriteClass" aria-hidden="true" title=""></span>' +
             '</button>' +
             '<button v-if="deletable" type="button" class="close label-tree-label__delete" :title="deleteTitle" @click.stop="deleteThis"><span aria-hidden="true">&times;</span></button>' +
