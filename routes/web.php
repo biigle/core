@@ -44,7 +44,7 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         'uses' => 'DashboardController@index',
     ]);
 
-    $router->post('heartbeat', 'HeartbeatController@show');
+    $router->post('heartbeat', 'HeartbeatController@store');
 
     $router->group(['namespace' => 'Notifications', 'prefix' => 'notifications'], function ($router) {
         $router->get('/', [

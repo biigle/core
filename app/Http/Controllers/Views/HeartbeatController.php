@@ -9,7 +9,7 @@ class HeartbeatController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function store()
     {
         return response('', 204);
     }
