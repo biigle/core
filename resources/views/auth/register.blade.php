@@ -1,6 +1,7 @@
 @extends('app')
 
 @section('title', trans('biigle.titles.register'))
+@section('show-navbar', false)
 
 @section('content')
 <div class="container">

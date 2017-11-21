@@ -12,7 +12,9 @@
     @stack('styles')
 </head>
 <body>
-    @includeWhen($user, 'partials.navbar')
+    @section('show-navbar')
+        @include('partials.navbar')
+    @show
     @include('partials.messages')
     @yield('content')
 
