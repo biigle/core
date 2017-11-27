@@ -9,7 +9,7 @@ class HeartbeatControllerTest extends TestCase
 {
     public function testShowWhenNotLoggedIn()
     {
-        $this->post('heartbeat')->assertRedirect('login');
+        $this->post('heartbeat')->assertStatus(204);
     }
 
     public function testShowWhenLoggedIn()

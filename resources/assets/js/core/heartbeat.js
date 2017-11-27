@@ -3,7 +3,21 @@ window.addEventListener('load', function () {
     // user leaves their browser (tab) idle for a long time and then wants to start
     // working again. Without heartbeat the token would have expired in the meantime and
     // AJAX requests would no longer work.
-    window.setInterval(function () {
-        Vue.http.post('heartbeat');
+    var time;
+    var id = window.setInterval(function () {
+        if ((new Date().getTime() - time) > 7200000) {
+            // Stop the interval if the last request has been more than 120 min ago.
+            // This can happen if the user's machine is suspended for more than 2 h and
+            // then started again.
+            window.clearInterval(id);
+        }
+
+        Vue.http.post('heartbeat')
+            .then(function () {
+                time = new Date().getTime();
+            }, function () {
+                // Stop the interval if the request failed.
+                window.clearInterval(id);
+            });
     }, 3600000);
 });
