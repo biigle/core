@@ -12,13 +12,14 @@ COPY database /var/www/database
 WORKDIR /var/www
 
 ARG GITHUB_OAUTH_TOKEN
+# Ignore platform reqs because the app image is stripped down to the essentials
+# and doens't meet some of the requirements. We do this for the worker, though.
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+    && COMPOSER_SIGNATURE=$(curl -s https://composer.github.io/installer.sig) \
+    && php -r "if (hash_file('SHA384', 'composer-setup.php') === '$COMPOSER_SIGNATURE') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
     && php composer-setup.php \
     && rm composer-setup.php \
     && php composer.phar config github-oauth.github.com ${GITHUB_OAUTH_TOKEN} \
-    # Ignore platform reqs because the app image is stripped down to the essentials
-    # and doens't meet some of the requirements. We do this for the worker, though.
     && php composer.phar install --no-dev --no-scripts --ignore-platform-reqs \
     && rm composer.phar
 

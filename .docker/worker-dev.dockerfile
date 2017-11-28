@@ -31,17 +31,19 @@ RUN apt-get update \
 
 # Build libvips from source since the vips PHP extension requires vips >=8.2 which is
 # not available in Debian Jessie
+
+# These libraries are required for TIFF, JPG, dzi and PNG support of vips
 RUN apt-get update \
-    # required for TIFF, JPG, dzi and PNG support of vips
     && apt-get -y install libtiff5 libjpeg62-turbo libgsf-1-114 libpng12-0 libexpat1 \
         --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Install libvips and the vips PHP extension in one go so the *-dev dependencies are
+# reused.
 ARG LIBVIPS_VERSION=8.5.7
 RUN apt-get update \
     && apt-get -y install \
-        # required to build vips
         automake gtk-doc-tools build-essential pkg-config glib2.0-dev libexpat1-dev \
         libtiff5-dev libjpeg62-turbo-dev libgsf-1-dev libpng-dev \
         --no-install-recommends \
@@ -61,7 +63,6 @@ RUN apt-get update \
     && make -s install-strip \
     && cd /tmp \
     && rm -r vips-${LIBVIPS_VERSION} \
-    # Do this here because all the *-dev stuff is still needed to build php-vips-ext
     && pecl install vips \
     && docker-php-ext-enable vips \
     && apt-get remove --purge -y automake gtk-doc-tools build-essential glib2.0-dev \

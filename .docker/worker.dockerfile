@@ -13,6 +13,8 @@ ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:${PKG_CONFIG_PATH}"
 # I've ommitted libexif on purpose because the EXIF orientation of images captured by
 # an AUV is not reliable. Without libexif, vipsthumbnail ignores the EXIF orientation and
 # the thumbnail orientation is correct again.
+# Install libvips and the vips PHP extension in one go so the *-dev dependencies are
+# reused.
 ARG LIBVIPS_VERSION=8.5.7
 RUN apk add --no-cache --virtual .build-deps \
         autoconf automake build-base glib-dev expat-dev \
@@ -32,7 +34,6 @@ RUN apk add --no-cache --virtual .build-deps \
     && make -s install-strip \
     && cd /tmp \
     && rm -r vips-${LIBVIPS_VERSION} \
-    # Do this here because all the *-dev stuff is still needed to build php-vips-ext
     && echo '' | pecl install vips \
     && docker-php-ext-enable vips \
     && apk del --purge .build-deps \
@@ -63,7 +64,8 @@ WORKDIR /var/www
 
 ARG GITHUB_OAUTH_TOKEN
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php -r "if (hash_file('SHA384', 'composer-setup.php') === '669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+    && COMPOSER_SIGNATURE=$(curl -s https://composer.github.io/installer.sig) \
+    && php -r "if (hash_file('SHA384', 'composer-setup.php') === '$COMPOSER_SIGNATURE') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
     && php composer-setup.php \
     && rm composer-setup.php \
     && php composer.phar config github-oauth.github.com ${GITHUB_OAUTH_TOKEN} \
