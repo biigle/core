@@ -8,6 +8,12 @@ biigle.$declare('annotations.stores.styles', function () {
         orange: '#ff5e00',
     };
 
+    // Cache for the features style (where each feature may have a distinct color).
+    // If these were not cached the style for each feature would be recreated for each
+    // render call, resulting in a huge amount of new memory allocations and very
+    // noticeable garbage collection interrupts.
+    var styleCache = {};
+
     var defaultCircleRadius = 6;
     var defaultStrokeWidth = 3;
 
@@ -74,24 +80,29 @@ biigle.$declare('annotations.stores.styles', function () {
         features: function (feature) {
             var color = feature.get('color');
             color = color ? ('#' + color) : colors.blue;
-            return [
-                new ol.style.Style({
-                    stroke: defaultStrokeOutline,
-                    image: new ol.style.Circle({
-                        radius: defaultCircleRadius,
-                        fill: new ol.style.Fill({
-                            color: color
-                        }),
-                        stroke: defaultCircleStroke
-                    })
-                }),
-                new ol.style.Style({
-                    stroke: new ol.style.Stroke({
-                        color: color,
-                        width: 3
-                    })
-                }),
-            ];
+
+            if (!styleCache.hasOwnProperty(color)) {
+                styleCache[color] = [
+                    new ol.style.Style({
+                        stroke: defaultStrokeOutline,
+                        image: new ol.style.Circle({
+                            radius: defaultCircleRadius,
+                            fill: new ol.style.Fill({
+                                color: color
+                            }),
+                            stroke: defaultCircleStroke
+                        })
+                    }),
+                    new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: color,
+                            width: 3
+                        })
+                    }),
+                ];
+            }
+
+            return styleCache[color];
         },
         highlight: [
             new ol.style.Style({
