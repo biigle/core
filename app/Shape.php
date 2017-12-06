@@ -2,8 +2,8 @@
 
 namespace Biigle;
 
-use Illuminate\Database\Eloquent\Model;
 use Cache;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * A shape, e.g. `point` or `circle`.
@@ -51,6 +51,13 @@ class Shape extends Model
      * @var int
      */
     public static $rectangleId;
+
+    /**
+     * The ellipse shape ID.
+     *
+     * @var int
+     */
+    public static $ellipseId;
 }
 
 Shape::$pointId = Cache::rememberForever('shape-point', function () {
@@ -71,4 +78,8 @@ Shape::$circleId = Cache::rememberForever('shape-circle', function () {
 
 Shape::$rectangleId = Cache::rememberForever('shape-rectangle', function () {
     return Shape::whereName('Rectangle')->first()->id;
+});
+
+Shape::$ellipseId = Cache::rememberForever('shape-ellipse', function () {
+    return Shape::whereName('Ellipse')->first()->id;
 });

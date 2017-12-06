@@ -70,7 +70,7 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
             }
 
             try {
-                $exif = exif_read_data($file);
+                $exif = @exif_read_data($file);
             } catch (ErrorException $e) {
                 $exif = false;
             }

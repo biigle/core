@@ -27,13 +27,13 @@
 			<h3><a name="testing"></a>Testing</h3>
 
 			<p>
-				Testing our <code>quotes</code> package on its own doesn't work for us, since we need Laravel for the routes, views and controllers we intend to implement. The core application has its testing environment already set up with all functional/unit tests residing in <code>tests/unit</code>. All you have to do is run <code>phpunit</code> in the root directory of the BIIGLE installation and the tests run. It would be best if we were able to test our package just like it would belong to the core application and fortunately there is a very easy way to do so.
+				Testing our <code>quotes</code> package on its own doesn't work for us, since we need Laravel for the routes, views and controllers we intend to implement. The core application has its testing environment already set up with all functional/unit tests residing in <code>tests/php</code>. All you have to do is run <code>phpunit</code> in the root directory of the BIIGLE installation and the tests run. It would be best if we were able to test our package just like it would belong to the core application and fortunately there is a very easy way to do so.
 			</p>
 			<p>
-				As already mentioned in the previous tutorial, we are now able to develop the package right out of the cloned repository in <code>vendor/biigle/quotes</code>. This is where we now create a new <code>tests</code> directory besides the existing <code>src</code>. Now all we have to do is to create a simple symlink from the <code>tests/unit</code> directory of the core application to the new <code>tests</code> directory of our package:
+				As already mentioned in the previous tutorial, we are now able to develop the package right out of the cloned repository in <code>vendor/biigle/quotes</code>. This is where we now create a new <code>tests</code> directory besides the existing <code>src</code>. Now all we have to do is to create a simple symlink from the <code>tests/php</code> directory of the core application to the new <code>tests</code> directory of our package:
 			</p>
 <pre>
-cd tests/unit
+cd tests/php
 ln -s ../../vendor/biigle/quotes/tests/ quotes-module
 </pre>
 			<p>
@@ -53,7 +53,7 @@ class QuotesServiceProviderTest extends TestCase {
 }
 </pre>
 			<p>
-				You see, the test class looks just like all the other test classes of the core application. You'll find lots of examples on testing there, too. For more information, see the <a href="http://laravel.com/docs/5.0/testing">Laravel</a> and <a href="https://phpunit.de/manual/current/en/appendixes.assertions.html">PHPUnit</a> documentations. But does our test even pass? Check it by running PHPUnit in the root directory of the core application:
+				You see, the test class looks just like all the other test classes of the core application. You'll find lots of examples on testing there, too. For more information, see the <a href="http://laravel.com/docs/5.4/testing">Laravel</a> and <a href="https://phpunit.de/manual/current/en/appendixes.assertions.html">PHPUnit</a> documentations. But does our test even pass? Check it by running PHPUnit in the root directory of the core application:
 			</p>
 <pre>
 > phpunit --filter QuotesServiceProviderTest
@@ -105,7 +105,7 @@ class QuotesControllerTest extends TestCase {
    public function testRoute()
    {
       $this->call('GET', 'quotes');
-      $this->assertResponseOk();
+      $this->assertStatus(200);
    }
 }
 </pre>
@@ -211,11 +211,11 @@ $user->save();
 
 $this->call('GET', 'quotes');
 // redirect to login page
-$this->assertResponseStatus(302);
+$this->assertStatus(302);
 
 $this->be($user);
 $this->call('GET', 'quotes');
-$this->assertResponseOk();
+$this->assertStatus(200);
 </pre>
 			<p>
 				We first create a new test user (the <code>UserTest</code> class takes care of this), save them to the testing database and check if the route is only available if the user is authenticated. Now the test should fail again because the route is public:
@@ -230,7 +230,7 @@ Failed asserting that 200 matches expected 302.
 			<h4><a name="middleware"></a>Middleware</h4>
 
 			<p>
-				Restricting the route to authenticated users is really simple since BIIGLE has everything already implemented. User authentication in Laravel is done using <a href="http://laravel.com/docs/5.0/middleware">middleware</a>, methods that are run before or after each request and are able to intercept it when needed.
+				Restricting the route to authenticated users is really simple since BIIGLE has everything already implemented. User authentication in Laravel is done using <a href="http://laravel.com/docs/5.4/middleware">middleware</a>, methods that are run before or after each request and are able to intercept it when needed.
 			</p>
 			<p>
 				In BIIGLE, user authentication is checked by the <code>auth</code> middleware. To add the <code>auth</code> middleware to our route, we extend the route definition:
@@ -253,7 +253,7 @@ Route::get('quotes', array(
 			</p>
 <pre>
 &lt;blockquote&gt;
-   @{{ Inspiring::quote() }}
+   @{{ Illuminate\Foundation\Inspiring::quote() }}
 &lt;/blockquote&gt;
 </pre>
 		<p>
@@ -287,7 +287,7 @@ public function index()
 &lt;div class="container"&gt;
    &lt;div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3"&gt;
       &lt;blockquote&gt;
-         @{{ Inspiring::quote() }}
+         @{{ Illuminate\Foundation\Inspiring::quote() }}
       &lt;/blockquote&gt;
    &lt;/div&gt;
 &lt;/div&gt;

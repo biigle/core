@@ -1,10 +1,6 @@
 .sidebar {
     display: flex;
 
-    &.sidebar--open {
-        max-width: 350px;
-    }
-
     &.sidebar--left {
         flex-direction: row-reverse;
 
@@ -51,9 +47,9 @@
         padding: 1em;
         height: 100%;
         overflow: auto;
-        width: 300px;
 
         &.sidebar__tab--open {
+            width: 300px;
             display: block;
         }
 

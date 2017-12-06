@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{app()->getLocale()}}">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,9 +12,9 @@
     @stack('styles')
 </head>
 <body>
-@if($user)
-    @include('partials.navbar')
-@endif
+    @section('show-navbar')
+        @include('partials.navbar')
+    @show
     @include('partials.messages')
     @yield('content')
 
@@ -25,12 +25,10 @@
     @endif
     <script src="{{ cachebust_asset('assets/scripts/vue-resource.min.js') }}"></script>
     <script src="{{ cachebust_asset('assets/scripts/vue-strap.min.js') }}"></script>
-
     <script type="text/javascript">
         Vue.http.options.root = '{{url('/')}}';
         Vue.http.headers.common['X-CSRF-TOKEN'] = '{{csrf_token()}}';
     </script>
-
     <script src="{{ cachebust_asset('assets/scripts/main.js') }}"></script>
     @stack('scripts')
 </body>

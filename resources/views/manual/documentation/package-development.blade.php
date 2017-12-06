@@ -36,7 +36,7 @@
          <h4><a name="package-development"></a>Package development</h4>
 
          <p>
-            The <code>conposer.json</code> is also used for developing new packages (similar to the <code>package.json</code> for Node.js modules). Each package has such a file, containing the dependencies of the package or the package name, for example. Take a look at the <code>composer.json</code> of the BIIGLE annotations package:
+            The <code>composer.json</code> is also used for developing new packages (similar to the <code>package.json</code> for Node.js modules). Each package has such a file, containing the dependencies of the package or the package name, for example. Take a look at the <code>composer.json</code> of the BIIGLE annotations package:
          </p>
 <pre>
 {
@@ -117,7 +117,7 @@ git init biigle-quotes
          <h4><a name="service-provider"></a>Service provider</h4>
 
          <p>
-            Each package for Laravel contains one or more <a href="http://laravel.com/docs/5.0/providers">service provider</a> classes. These classes, among other things, tell Laravel where to find the package configuration, views or translation files. So let's create a file called <code>src/QuotesServiceProvider.php</code> with the following content:
+            Each package for Laravel contains one or more <a href="http://laravel.com/docs/5.4/providers">service provider</a> classes. These classes, among other things, tell Laravel where to find the package configuration, views or translation files. So let's create a file called <code>src/QuotesServiceProvider.php</code> with the following content:
          </p>
 <pre>
 &lt;?php namespace Biigle\Modules\Quotes;
@@ -185,7 +185,7 @@ git commit -m "Initial commit"
 }
 </pre>
          <p>
-            Now you can let Composer install the package with <code>php composer.phar update biigle/quotes</code> (get the <a href="https://getcomposer.org/composer.phar">composer.phar</a> if you don't have it already installed). That was it! You now can find a cloned copy of the package repository in the <code>vendors/biigle/quotes</code> directory (the <code>biigle/quotes</code> part is the package name, so the directory names may be different if your package name is different).
+            Now you can let Composer install the package with <code>php composer.phar update biigle/quotes</code> (get the <a href="https://getcomposer.org/composer.phar">composer.phar</a> if you don't have it already installed). That was it! You now can find a cloned copy of the package repository in the <code>vendor/biigle/quotes</code> directory (the <code>biigle/quotes</code> part is the package name, so the directory names may be different if your package name is different).
          </p>
          <p>
             Since the new directory is just a clone of the original repository, we can use it for development from now on. Like this you can see all the changes you make live in the application before committing or pushing them. Even more important: You can test the package in the complete application environment! But more on that in another tutorial.
@@ -196,7 +196,7 @@ git commit -m "Initial commit"
 <pre>
 'providers' => [
    (...),
-   'Biigle\Modules\Quotes\QuotesServiceProvider',
+   Biigle\Modules\Quotes\QuotesServiceProvider::class,
 ]
 </pre>
 
@@ -230,13 +230,13 @@ git commit -m "Initial commit"
    &lt;/div&gt;
    &lt;div class="panel-body"&gt;
       &lt;blockquote&gt;
-         @{{ Inspiring::quote() }}
+         @{{ Illuminate\Foundation\Inspiring::quote() }}
       &lt;/blockquote&gt;
    &lt;/div&gt;
 &lt;/div&gt;
 </pre>
          <p>
-            You see that we can use the entire pallette of <a href="http://getbootstrap.com/">Bootstrap</a> classes for styling without having to set anything up. The actual quote is echoed using the <code>@{{&nbsp;}}</code> control structure of the Laravel <a href="http://laravel.com/docs/5.0/templates">Blade templating engine</a>.
+            You see that we can use the entire pallette of <a href="http://getbootstrap.com/">Bootstrap</a> classes for styling without having to set anything up. The actual quote is echoed using the <code>@{{&nbsp;}}</code> control structure of the Laravel <a href="https://laravel.com/docs/5.4/blade">Blade templating engine</a>.
          </p>
          <p>
             Calling the new view <code>dashboardMain.blade.php</code> is essential here, since the view has to have the same name as the identifier of registered space for view mixins. Usually views only register one such space so taking the view name as identifier makes sense. For the dashboard, the ID is <code>dashboardMain</code> so our view mixin must be called <code>dashboardMain</code>, too.
@@ -304,7 +304,7 @@ class QuotesServiceProvider extends ServiceProvider {
             In this tutorial you have learned the basics of Laravel package development and how to extend existing BIIGLE views with custom view mixins. In a next tutorial we'll talk about implementing new routes and controllers, and how to properly test them using the BIIGLE testing environment. Further down the road are custom assets like CSS or the JavaScript of a custom client side application.
          </p>
          <p>
-            If you have any questions or are looking for examples, take a look at the <a href="http://laravel.com/docs/5.0/packages">Laravel documentation</a> on package development or the existing BIIGLE modules of your installation.
+            If you have any questions or are looking for examples, take a look at the <a href="http://laravel.com/docs/5.4/packages">Laravel documentation</a> on package development or the existing BIIGLE modules of your installation.
          </p>
          <p>
             <a href="{{ route('manual-documentation') }}" class="btn btn-default" title="Back to the core documentation"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> back</a>

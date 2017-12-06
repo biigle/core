@@ -494,4 +494,19 @@ class VolumeTest extends ModelTestCase
         Cache::flush();
         $this->assertTrue($this->model->hasTiledImages());
     }
+
+    public function testSetAndGetDoiAttribute()
+    {
+        $this->model->doi = '10.3389/fmars.2017.00083';
+        $this->model->save();
+        $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
+
+        $this->model->doi = 'https://doi.org/10.3389/fmars.2017.00083';
+        $this->model->save();
+        $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
+
+        $this->model->doi = 'http://doi.org/10.3389/fmars.2017.00083';
+        $this->model->save();
+        $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
+    }
 }

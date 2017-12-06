@@ -26,9 +26,6 @@ class AnnotationLabelTest extends ModelTestCase
     {
         // API key mustn't show up in the JSON
         $json = json_decode((string) self::create());
-        $this->assertObjectNotHasAttribute('label_id', $json);
-        $this->assertObjectNotHasAttribute('user_id', $json);
-        $this->assertObjectNotHasAttribute('annotation_id', $json);
         $this->assertObjectHasAttribute('confidence', $json);
     }
 

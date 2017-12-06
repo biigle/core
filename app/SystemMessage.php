@@ -44,6 +44,15 @@ class SystemMessage extends Model
     ];
 
     /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'published_at' => 'datetime',
+    ];
+
+    /**
      * All published system messages.
      *
      * @param Illuminate\Database\Query\Builder $query

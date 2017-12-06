@@ -85,7 +85,7 @@ class Volume extends Model
      *
      * @var array
      */
-    protected $appends = ['video_link', 'gis_link'];
+    protected $appends = ['video_link', 'gis_link', 'doi'];
 
     /**
      * Parses a comma separated list of image filenames to an array.
@@ -463,6 +463,30 @@ class Volume extends Model
     public function getGisLinkAttribute()
     {
         return $this->getJsonAttr('gis_link');
+    }
+
+    /**
+     * Set the doi attribute of this volume.
+     *
+     * @param string $value
+     */
+    public function setDoiAttribute($value)
+    {
+        if (is_string($value)) {
+            $value = preg_replace('/^https?\:\/\/doi\.org\//', '', $value);
+        }
+
+        return $this->setJsonAttr('doi', $value);
+    }
+
+    /**
+     * Get the doi attribute of this volume.
+     *
+     * @return string
+     */
+    public function getDoiAttribute()
+    {
+        return $this->getJsonAttr('doi');
     }
 
     /**

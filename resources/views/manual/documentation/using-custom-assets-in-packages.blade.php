@@ -24,7 +24,7 @@
                 The BIIGLE frontend is built upon two frameworks, <a href="http://getbootstrap.com/">Bootstrap</a> for CSS and <a href="https://angularjs.org/">AngularJS</a> (exdended with the <a href="https://docs.angularjs.org/api/ngResource">ngResource</a> module) for JavaScript. Using <a href="https://angular-ui.github.io/bootstrap/">Angular UI Bootstrap</a> you can use the interactive components of Bootstrap, too.
             </p>
             <p>
-                In addition to the basic frameworks, the BIIGLE core application also provides AngularJS modules e.g. for easy interaction with the RESTful API. Check out the <a href="{{url('/doc/client/index.html') }}">client side documentation</a> for which resources are available.
+                In addition to the basic frameworks, the BIIGLE core application also provides AngularJS modules e.g. for easy interaction with the RESTful API.
             </p>
             <p>
                 Each view extending the base <code>app</code> template automatically has all these assets available. While you are able to ignore them and use your own frameworks for package development, you are highly encouraged to stick to the default frameworks, keeping the application lean and consistent.
@@ -69,7 +69,7 @@ angular.module('biigle.quotes').controller('QuotesController', function($scope, 
 });
 </pre>
             <p>
-                We create a new Angular module called <code>biigle.quotes</code> and add the <code><a href="{{ url('doc/client/biigle.ui.messages.html') }}">biigle.ui.messages</a></code> module as a dependency. This enables us to inject the <code><a href="{{ url('doc/client/biigle.ui.messages.msg.html') }}">msg</a></code> service into the controller function of the <code>QuotesController</code> we subsequently define. We then add the <code>refreshQuote</code> function to the scope of the controller that will display an info message when called.
+                We create a new Angular module called <code>biigle.quotes</code> and add the <code>biigle.ui.messages</code> module as a dependency. This enables us to inject the <code>msg</code> service into the controller function of the <code>QuotesController</code> we subsequently define. We then add the <code>refreshQuote</code> function to the scope of the controller that will display an info message when called.
             </p>
             <p>
                 Let's edit the <code>content</code> section of our quotes view to see if everything works:
@@ -147,11 +147,11 @@ public function testQuoteProvider()
 
    $this->call('GET', 'quotes/new');
    // redirect to login page
-   $this->assertResponseStatus(302);
+   $this->assertStatus(302);
 
    $this->be($user);
    $this->call('GET', 'quotes/new');
-   $this->assertResponseOk();
+   $this->assertStatus(200);
 }
 </pre>
             <p>
@@ -192,7 +192,7 @@ angular.module('biigle.quotes').controller('QuotesController', function($scope, 
 });
 </pre>
             <p>
-                We now require the <code><a href="{{ url('doc/client/biigle.api.html') }}">biigle.api</a></code> module so we can use the <code><a href="{{ url('doc/client/biigle.api.URL.html') }}">URL</a></code> constant, containing the base URL of the application. We then use the <code><a href="https://docs.angularjs.org/api/ng/service/$http">$http</a></code> service of the AngularJS core to call the new <code>quotes/new</code> route whenever the button is clicked. The response is written into the <code>quote</code> property of the controller scope. This is done once when the controller is initialized, too, to get an initial quote without having to click the button.
+                We now require the <code>biigle.api</code> module so we can use the <code>URL</code> constant, containing the base URL of the application. We then use the <code><a href="https://docs.angularjs.org/api/ng/service/$http">$http</a></code> service of the AngularJS core to call the new <code>quotes/new</code> route whenever the button is clicked. The response is written into the <code>quote</code> property of the controller scope. This is done once when the controller is initialized, too, to get an initial quote without having to click the button.
             </p>
             <p>
                 Finally, we have to rewire the view a little bit to display the dynamicly loaded quote. To do so, replace the old <code>blockquote</code> element by this one:

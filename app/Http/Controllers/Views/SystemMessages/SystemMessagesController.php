@@ -30,7 +30,9 @@ class SystemMessagesController extends Controller
                 return $query->where('type_id', $type);
             })
             ->orderBy('published_at', 'desc')
-            ->get();
+            ->paginate(10);
+
+        $messages->appends('type', $type);
 
         $typeClasses = [
             SystemMessageType::$important->id => 'warning',

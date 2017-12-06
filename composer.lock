@@ -2967,12 +2967,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mockery/mockery.git",
-                "reference": "b99c29ccf4dbbd41eafce4523d2412d930d393ed"
+                "reference": "f19bfd86dacffb409fa5c105be6edd473c6ca81d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mockery/mockery/zipball/b99c29ccf4dbbd41eafce4523d2412d930d393ed",
-                "reference": "b99c29ccf4dbbd41eafce4523d2412d930d393ed",
+                "url": "https://api.github.com/repos/mockery/mockery/zipball/f19bfd86dacffb409fa5c105be6edd473c6ca81d",
+                "reference": "f19bfd86dacffb409fa5c105be6edd473c6ca81d",
                 "shasum": ""
             },
             "require": {
@@ -3011,7 +3011,7 @@
                 }
             ],
             "description": "Mockery is a simple yet flexible PHP mock object framework for use in unit testing with PHPUnit, PHPSpec or any other testing framework. Its core goal is to offer a test double framework with a succinct API capable of clearly defining all possible object operations and interactions using a human readable Domain Specific Language (DSL). Designed as a drop in alternative to PHPUnit's phpunit-mock-objects library, Mockery is easy to integrate with PHPUnit and can operate alongside phpunit-mock-objects without the World ending.",
-            "homepage": "http://github.com/mockery/mockery",
+            "homepage": "https://github.com/mockery/mockery",
             "keywords": [
                 "BDD",
                 "TDD",
@@ -3024,7 +3024,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2017-08-07 09:49:04"
+            "time": "2017-12-01T18:02:58+00:00"
         },
         {
             "name": "myclabs/deep-copy",

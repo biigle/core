@@ -15,9 +15,6 @@ class AnnotationLabel extends Model
      * @var array
      */
     protected $hidden = [
-        'label_id',
-        'user_id',
-        'annotation_id',
         'created_at',
         'updated_at',
     ];

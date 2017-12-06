@@ -15,20 +15,30 @@
             </ul>
         </div>
         <div class="col-sm-9 col-md-7 col-md-offset-1">
-            @forelse ($messages as $message)
-                <h2><a href="{{route('system-messages-show', $message->id)}}">{{$message->title}}</a></h2>
-                <p class="text-muted">
-                    <span class="label label-{{$typeClasses[$message->type_id]}}">{{$message->type->name}}</span> Published on {{$message->published_at}}
-                </p>
-            @empty
-                <p class="text-muted">
-                    @if ($type !== null)
-                        There are no system messages of this type.
-                    @else
-                        There are no system messages yet.
-                    @endif
-                </p>
-            @endforelse
+            <ul class="list-unstyled">
+                @forelse ($messages as $message)
+                    <li>
+                        <strong><a href="{{route('system-messages-show', $message->id)}}">{{$message->title}}</a></strong>
+                        @unless($type)
+                            <span class="label label-{{$typeClasses[$message->type_id]}}">{{$message->type->name}}</span>
+                        @endunless
+                        <p class="text-muted">
+                            Published <span title="{{$message->published_at}}">{{$message->published_at->diffForHumans()}}</span>
+                        </p>
+                    </li>
+                @empty
+                    <li class="text-muted">
+                        @if ($type !== null)
+                            There are no system messages of this type.
+                        @else
+                            There are no system messages yet.
+                        @endif
+                    </li>
+                @endforelse
+            </ul>
+            <nav class="text-center">
+                {{$messages->links()}}
+            </nav>
         </div>
     </div>
 </div>

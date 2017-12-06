@@ -4,20 +4,10 @@ namespace Biigle\Notifications;
 
 use Biigle\SystemMessage;
 use Biigle\SystemMessageType;
-use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
-class NewSystemMessageNotification extends Notification
+class NewSystemMessageNotification extends InAppNotification
 {
-    use Queueable;
-
-    /**
-     * The system message.
-     *
-     * @var SystemMessage
-     */
-    protected $message;
-
     /**
      * Create a new notification instance.
      *
@@ -25,29 +15,7 @@ class NewSystemMessageNotification extends Notification
      */
     public function __construct(SystemMessage $message)
     {
-        $this->message = $message;
-    }
-
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function via($notifiable)
-    {
-        return ['database'];
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
-    {
-        switch ($this->message->type_id) {
+        switch ($message->type_id) {
             case SystemMessageType::$important->id:
                 $type = InAppNotification::TYPE_WARNING;
                 break;
@@ -58,12 +26,12 @@ class NewSystemMessageNotification extends Notification
                 $type = InAppNotification::TYPE_INFO;
         }
 
-        return [
-            'title' => $this->message->title,
-            'message' => 'A new system message was just published.',
-            'type' => $type,
-            'action' => 'Read it here',
-            'actionLink' => route('system-messages-show', $this->message->id),
-        ];
+        parent::__construct(
+            $message->title,
+            'A new system message was just published.',
+            $type,
+            'Read it here',
+            route('system-messages-show', $message->id)
+        );
     }
 }

@@ -1,6 +1,7 @@
 @extends('app')
 
 @section('title', trans('biigle.titles.resetpw'))
+@section('show-navbar', false)
 
 @section('content')
 <div class="container">

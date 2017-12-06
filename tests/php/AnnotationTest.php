@@ -98,6 +98,14 @@ class AnnotationTest extends ModelTestCase
         $this->model->validatePoints([10, 10]);
     }
 
+    public function testValidatePointsEllipse()
+    {
+        $this->model->shape_id = Shape::$ellipseId;
+        $this->model->validatePoints([10, 10, 10, 20, 20, 20, 20, 10]);
+        $this->setExpectedException('Exception');
+        $this->model->validatePoints([10, 10]);
+    }
+
     public function testValidatePointsLine()
     {
         $this->model->shape_id = Shape::$lineId;

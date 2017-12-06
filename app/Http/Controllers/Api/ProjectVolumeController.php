@@ -61,6 +61,7 @@ class ProjectVolumeController extends Controller
      *
      * @apiParam (Optional attributes) {String} video_link Link to a video that belongs to or was the source of this volume.
      * @apiParam (Optional attributes) {String} gis_link Link to a GIS that belongs to this volume.
+     * @apiParam (Optional attributes) {String} doi The DOI of the dataset that is represented by the new volume.
      *
      * @apiParamExample {String} Request example:
      * name: 'New volume'
@@ -69,6 +70,7 @@ class ProjectVolumeController extends Controller
      * images: '1.jpg,2.jpg,3.jpg'
      * video_link: 'http://example.com'
      * gis_link: 'http://gis.example.com'
+     * doi: '10.3389/fmars.2017.00083'
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -80,7 +82,8 @@ class ProjectVolumeController extends Controller
      *    "updated_at": "2015-02-19 16:10:17",
      *    "url": "/vol/volumes/test-volume",
      *    "video_link": "http://example.com",
-     *    "gis_link": "http://gis.example.com"
+     *    "gis_link": "http://gis.example.com",
+     *    "doi": "10.3389/fmars.2017.00083"
      * }
      *
      * @param Request $request
@@ -100,6 +103,7 @@ class ProjectVolumeController extends Controller
         $volume->setMediaTypeId($request->input('media_type_id'));
         $volume->video_link = $request->input('video_link');
         $volume->gis_link = $request->input('gis_link');
+        $volume->doi = $request->input('doi');
         $volume->creator()->associate($auth->user());
 
         try {

@@ -1,6 +1,7 @@
 @extends('app')
 
 @section('title', trans('biigle.titles.login'))
+@section('show-navbar', false)
 
 @section('content')
 <div class="container">
@@ -32,11 +33,6 @@
                     @if($errors->has('password'))
                         <span class="help-block">{{ $errors->first('password') }}</span>
                     @endif
-                </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" name="remember"> {{ trans('auth.remember_me') }}
-                    </label>
                 </div>
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <input type="submit" class="btn btn-success btn-block" value="{{ trans('form.login') }}">

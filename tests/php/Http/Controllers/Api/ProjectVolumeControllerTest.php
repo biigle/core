@@ -142,7 +142,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->assertTrue($volume->images()->where('filename', '2.jpg')->exists());
     }
 
-    public function testStoreLinkAttrs()
+    public function testJsonAttrs()
     {
         File::shouldReceive('exists')->twice()->andReturn(true);
         File::shouldReceive('isReadable')->twice()->andReturn(true);
@@ -157,10 +157,12 @@ class ProjectVolumeControllerTest extends ApiTestCase
             'images' => '1.jpg',
             'video_link' => 'http://example.com',
             'gis_link' => 'http://my.example.com',
+            'doi' => '10.3389/fmars.2017.00083',
         ]);
         $volume = Volume::orderBy('id', 'desc')->first();
         $this->assertEquals('http://example.com', $volume->video_link);
         $this->assertEquals('http://my.example.com', $volume->gis_link);
+        $this->assertEquals('10.3389/fmars.2017.00083', $volume->doi);
 
         $response = $this->json('POST', '/api/v1/projects/'.$id.'/volumes', [
             'name' => 'my volume no. 1',
@@ -169,10 +171,12 @@ class ProjectVolumeControllerTest extends ApiTestCase
             'images' => '1.jpg',
             'video_link' => '',
             'gis_link' => '',
+            'doi' => '',
         ]);
         $volume = Volume::orderBy('id', 'desc')->first();
         $this->assertNull($volume->video_link);
         $this->assertNull($volume->gis_link);
+        $this->assertNull($volume->doi);
     }
 
     public function testAttach()

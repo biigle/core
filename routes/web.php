@@ -14,6 +14,7 @@
 Auth::routes();
 
 // PUBLIC ROUTES --------------------------------------------------------------
+$router->post('heartbeat', 'Views\HeartbeatController@store');
 
 $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router) {
     // route name must be different from the 'doc' directory name of the static
