@@ -4,8 +4,12 @@
         font-weight: bold;
     }
 
-    &.label-tree-label--expandable > .label-tree-label__name {
+    &.label-tree-label--expandable:not(.label-tree-label--editing) > .label-tree-label__name {
         text-decoration: underline;
+    }
+
+    &.label-tree-label--editing > .label-tree-label__name {
+        padding-left: $padding-small-vertical;
     }
 
     .label-tree-label__color, .label-tree-label__chevron {
@@ -58,15 +62,29 @@
         }
     }
 
-    .label-tree-label__favourite {
-        background: none;
-        padding: 0;
-        border: 0;
+    .form-control.label-tree-label__name-input, .form-control.label-tree-color-input {
+        vertical-align: top;
+        display: inline-block;
+        width: auto;
     }
 
-    .label-tree-label__favourite, .label-tree-label__delete {
+    .form-control.label-tree-color-input {
+        width: 50px;
+    }
+
+    .label-tree-label__buttons {
+        padding-top: $padding-small-vertical 0;
         position: absolute;
-        top: $padding-small-vertical;
         right: 5px;
+
+        > button {
+            background: none;
+            padding: 0;
+            border: 0;
+
+            &:not(:last-child) {
+                margin-right: 1em;
+            }
+        }
     }
 }

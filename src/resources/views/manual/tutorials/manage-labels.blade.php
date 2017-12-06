@@ -61,11 +61,23 @@
 
         <h3><a name="modify"></a>Modify labels</h3>
 
+        <div class="panel panel-warning">
+            <div class="panel-body text-warning">
+                Be very careful when you modify the name of a label since it could make a lot of annotations invalid (e.g. if you change "coral" to "stone")!
+            </div>
+        </div>
+
         <p>
-            To delete a label from the label tree, click the <button class="close" style="float: none;">×</button> button next to it. Only labels that have no child labels and that are not attached to an image or an annotation can be deleted.
+            To modify an existing label, first click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the labels panel. This will make a <i class="glyphicon glyphicon-pencil"></i> symbol appear on the right of each label in the tree. Click this symbol to switch a label into edit mode.
         </p>
+
         <p>
-            The name, color or parent of existing labels currently cannot be modified in the user interface. However, you can use the <a href="/doc/api/index.html#api-Labels-UpdateLabels">endpoint</a> of the REST API.
+            In edit mode, the color and name of the label are editable. Choose a new color or name and click the <i class="glyphicon glyphicon-ok text-success"></i> symbol to save the changes. To revert unsaved changes and exit edit mode, click <i class="glyphicon glyphicon-remove"></i>. To delete a label from the label tree, click the <i class="glyphicon glyphicon-trash text-danger"></i> symbol. Only labels that have no child labels and that are not attached to an image or an annotation can be deleted.
         </p>
+
+        <p>
+            The parent of existing labels cannot be modified in the user interface at this time. However, you can use the <a href="/doc/api/index.html#api-Labels-UpdateLabels">endpoint</a> of the REST API.
+        </p>
+
     </div>
 @endsection
