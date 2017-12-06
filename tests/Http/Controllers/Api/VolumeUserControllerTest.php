@@ -12,11 +12,11 @@ class VolumeUserControllerTest extends ApiTestCase
 
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/users");
 
-        $this->beEditor();
+        $this->beUser();
         $response = $this->get("/api/v1/volumes/{$id}/users");
         $response->assertStatus(403);
 
-        $this->beAdmin();
+        $this->beGuest();
         $response = $this->get("/api/v1/volumes/{$id}/users")
             ->assertStatus(200);
         $response->assertExactJson(

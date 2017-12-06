@@ -136,14 +136,18 @@ biigle.$component('volumes.components.imageGrid', {
         var keyboard = biigle.$require('keyboard');
         // arrow up
         keyboard.on(38, this.reverseRow);
+        keyboard.on('w', this.reverseRow);
         // arrow down
         keyboard.on(40, this.advanceRow);
+        keyboard.on('s', this.advanceRow);
         // arrow left
         keyboard.on(37, this.reversePage);
-        // page up
-        keyboard.on(33, this.reversePage);
+        keyboard.on('a', this.reversePage);
         // arrow right
         keyboard.on(39, this.advancePage);
+        keyboard.on('d', this.advancePage);
+        // page up
+        keyboard.on(33, this.reversePage);
         // page down
         keyboard.on(34, this.advancePage);
         // home

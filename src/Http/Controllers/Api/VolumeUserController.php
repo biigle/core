@@ -13,7 +13,7 @@ class VolumeUserController extends Controller
      * @api {get} volumes/:id/users Get all users
      * @apiGroup Volumes
      * @apiName IndexVolumeUsers
-     * @apiPermission projectAdmin
+     * @apiPermission projectMember
      * @apiDescription Returns a list of all users associated with all projects of the volume
      *
      * @apiParam {Number} id The volume ID.
@@ -47,7 +47,7 @@ class VolumeUserController extends Controller
     public function index($id)
     {
         $volume = Volume::findOrFail($id);
-        $this->authorize('update', $volume);
+        $this->authorize('access', $volume);
 
         return $volume->users()
             ->select('id', 'firstname', 'lastname', 'email')

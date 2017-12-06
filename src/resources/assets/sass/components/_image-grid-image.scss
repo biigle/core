@@ -54,9 +54,9 @@
     }
 }
 
-@supports (object-fit: cover) {
+@supports (object-fit: contain) {
     .image-grid__image img {
         width: 100%;
-        object-fit: cover;
+        object-fit: contain;
     }
 }

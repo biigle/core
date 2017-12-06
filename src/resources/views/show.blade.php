@@ -1,4 +1,5 @@
 @extends('app')
+@section('full-navbar', true)
 @inject('modules', 'Biigle\Services\Modules')
 
 @section('title', $volume->name)
@@ -37,7 +38,7 @@
 
 @section('navbar')
 <div class="navbar-text navbar-volumes-breadcrumbs">
-    @include('volumes::partials.projectsBreadcrumb') / <strong>{{$volume->name}}</strong> <small>(<span id="volume-image-count" v-text="text">{{ $imageIds->count() }}</span>&nbsp;images)</small> @include('volumes::partials.annotationSessionIndicator')
+    @include('volumes::partials.projectsBreadcrumb') / <strong>{{$volume->name}}</strong> <small>(<span id="volume-image-count" v-text="text">{{ $imageIds->count() }}</span>&nbsp;images)</small> @include('volumes::partials.annotationSessionIndicator') @include('volumes::partials.doiIndicator')
 </div>
 @endsection
 
