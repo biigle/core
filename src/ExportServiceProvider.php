@@ -5,8 +5,8 @@ namespace Biigle\Modules\Export;
 use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Biigle\Modules\Export\Http\Controllers\Mixins\Views\SearchControllerMixin;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class ExportServiceProvider extends ServiceProvider
 {
