@@ -7,13 +7,15 @@ biigle.$declare('annotations.stores.images', function () {
 
     var fxCanvas;
 
-    try {
-        // If fxCanvas is not initialized WebGL is not supported at all.
-        fxCanvas = fx.canvas();
-        var fxTexture = null;
-        var loadedImageTexture = null;
-    } catch (error) {
-        console.log('WebGL not supported. Color adjustment disabled.');
+    if (window.hasOwnProperty('fx')) {
+        try {
+            // If fxCanvas is not initialized WebGL is not supported at all.
+            fxCanvas = fx.canvas();
+            var fxTexture = null;
+            var loadedImageTexture = null;
+        } catch (error) {
+            console.log('WebGL not supported. Color adjustment disabled.');
+        }
     }
 
     window.addEventListener('beforeunload', function (e) {

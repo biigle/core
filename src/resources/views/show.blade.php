@@ -30,6 +30,8 @@
     biigle.$declare('annotations.sessions', {!!$annotationSessions!!});
     biigle.$declare('annotations.volumeIsRemote', @if($volume->isRemote()) true @else false @endif);
     biigle.$declare('annotations.isEditor', @can('add-annotation', $image) true @else false @endcan);
+    biigle.$declare('annotations.userId', {!! $user->id !!});
+    biigle.$declare('annotations.isAdmin', @can('update', $volume) true @else false @endcan);
 
 </script>
 @foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
@@ -39,6 +41,7 @@
 
 @push('styles')
 <link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
+<link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
 <link href="{{ cachebust_asset('vendor/annotations/styles/ol.css') }}" rel="stylesheet">
 <link href="{{ cachebust_asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
 
@@ -91,6 +94,7 @@
         @can('add-annotation', $image)
             @include('annotations::show.tabs.labels')
         @endcan
+        @include('annotations::show.tabs.image-labels')
         @include('annotations::show.tabs.colorAdjustment')
         @include('annotations::show.tabs.settings')
     </sidebar>

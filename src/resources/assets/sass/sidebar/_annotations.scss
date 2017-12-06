@@ -26,6 +26,10 @@
     margin: 0;
 }
 
+.annotations-tab__plugins:not(:empty) {
+    padding-top: 1em;
+}
+
 .annotations-tab-item {
     // must not be position:relative because .annotation-list-item calculates the
     // offsetTop property relative to .annotations-tab!

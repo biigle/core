@@ -9,15 +9,17 @@
     padding: .25em .5em;
 }
 
-.navbar-text.navbar-annotations-breadcrumbs {
-    white-space: nowrap;
-    max-width: 850px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-
+.navbar-default .navbar-text {
     &, a {
         color: #ccc;
     }
+}
+
+.navbar-annotations-breadcrumbs {
+    white-space: nowrap;
+    max-width: 850px;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
 
     // make dropdown visible despite overflow:hidden
     .dropdown {
@@ -51,6 +53,7 @@
 @import "sidebar/annotations";
 @import "sidebar/labels";
 @import "sidebar/color-adjustment";
+@import "sidebar/image-labels";
 @import "sidebar/settings";
 @import "components/annotation-canvas";
 @import "components/label-indicator";
