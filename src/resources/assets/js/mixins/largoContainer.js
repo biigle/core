@@ -47,6 +47,11 @@ biigle.$declare('largo.mixins.largoContainer', {
                 return item.dismissed;
             });
         },
+        annotationsWithNewLabel: function () {
+            return this.dismissedAnnotations.filter(function (item) {
+                return !!item.newLabel;
+            });
+        },
         hasDismissedAnnotations: function () {
             return this.dismissedAnnotations.length > 0;
         },
@@ -65,9 +70,7 @@ biigle.$declare('largo.mixins.largoContainer', {
             return dismissed;
         },
         changedToSave: function () {
-            var annotations = this.dismissedAnnotations.filter(function (item) {
-                return !!item.newLabel;
-            });
+            var annotations = this.annotationsWithNewLabel;
             var changed = {};
 
             for (var i = annotations.length - 1; i >= 0; i--) {
@@ -75,6 +78,9 @@ biigle.$declare('largo.mixins.largoContainer', {
             }
 
             return changed;
+        },
+        toDeleteCount: function () {
+            return this.dismissedAnnotations.length - this.annotationsWithNewLabel.length;
         },
         events: function () {
             return biigle.$require('events');
@@ -149,15 +155,16 @@ biigle.$declare('largo.mixins.largoContainer', {
             }
         },
         save: function () {
-            if (this.loading) return;
-            this.loading = true;
+            if (this.loading || (this.toDeleteCount > 0 && !confirm('This will attempt to delete ' + this.toDeleteCount + ' annotations. Continue?'))) {
+                return;
+            }
 
             this.performSave(this.dismissedToSave, this.changedToSave)
                 .then(this.saved, biigle.$require('messages.store').handleErrorResponse)
                 .finally(this.finishLoading);
         },
         saved: function () {
-            biigle.$require('messages.store').success('Saved.  You can now start a new re-evaluation session.');
+            biigle.$require('messages.store').success('Saved. You can now start a new re-evaluation session.');
             this.step = 0;
             for (var key in this.annotationsCache) {
                 if (!this.annotationsCache.hasOwnProperty(key)) continue;
