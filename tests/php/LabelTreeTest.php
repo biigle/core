@@ -178,4 +178,18 @@ class LabelTreeTest extends ModelTestCase
         $this->assertTrue($tree->isRoleValid(Role::$editor));
         $this->assertTrue($tree->isRoleValid(Role::$admin));
     }
+
+    public function testOrderLabelsByName()
+    {
+        LabelTest::create([
+            'label_tree_id' => $this->model->id,
+            'name' => 'z',
+        ]);
+        LabelTest::create([
+            'label_tree_id' => $this->model->id,
+            'name' => 'a',
+        ]);
+
+        $this->assertEquals('a', $this->model->labels()->first()->name);
+    }
 }

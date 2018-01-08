@@ -149,7 +149,7 @@ class LabelTree extends Model
      */
     public function labels()
     {
-        return $this->hasMany(Label::class);
+        return $this->hasMany(Label::class)->orderBy('name');
     }
 
     /**
