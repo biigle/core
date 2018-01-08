@@ -53,7 +53,7 @@ class SearchControllerMixin
         $values = [];
 
         if ($type === 'reports') {
-            $values['results'] = $queryBuilder->orderBy('reports.created_at', 'desc')
+            $values['results'] = $queryBuilder->orderBy('reports.ready_at', 'desc')
                 ->with('source')
                 ->paginate(10);
 

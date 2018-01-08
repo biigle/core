@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Export\Jobs;
 
 use Biigle\User;
+use Carbon\Carbon;
 use Biigle\Jobs\Job;
 use Biigle\Modules\Export\Report;
 use Illuminate\Queue\SerializesModels;
@@ -55,6 +56,8 @@ class GenerateReportJob extends Job implements ShouldQueue
             ini_set('memory_limit', $memoryLimit);
         }
 
+        $this->report->ready_at = new Carbon;
+        $this->report->save();
         $this->report->user->notify(new ReportReady($this->report));
     }
 }
