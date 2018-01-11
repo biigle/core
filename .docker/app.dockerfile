@@ -12,6 +12,9 @@ COPY database /var/www/database
 WORKDIR /var/www
 
 ARG GITHUB_OAUTH_TOKEN
+ENV COMPOSER_NO_INTERACTION 1
+ENV COMPOSER_ALLOW_SUPERUSER 1
+
 # Ignore platform reqs because the app image is stripped down to the essentials
 # and doens't meet some of the requirements. We do this for the worker, though.
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \

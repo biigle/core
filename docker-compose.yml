@@ -40,7 +40,7 @@ services:
     volumes_from:
       - app
     ports:
-      - 8000:80
+      - 8000:443
 
   # The database
   database:
