@@ -53,6 +53,24 @@
                         Latitude where the image was taken in decimal form. If this column is present, <code>lng</code> must be present, too. Example: 28.775
                     </td>
                 </tr>
+                <tr>
+                    <td>
+                        <code>gps_altitude</code>
+                    </td>
+                    <td>
+                        Altitude where the image was taken in meters. Negative for below sea level.
+                        Example: -1500.5
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <code>distance_to_ground</code>
+                    </td>
+                    <td>
+                        Distance to the sea floor in meters.
+                        Example: 30.25
+                    </td>
+                </tr>
             </tbody>
         </table>
         <div class="panel panel-info">
@@ -64,9 +82,9 @@
             Example:
         </p>
 <pre>
-filename,taken_at,lng,lat
-image_1.png,2016-12-19 17:09:00,52.112,28.001
-image_2.png,2016-12-19 17:09:31,52.215,28.501
+filename,taken_at,lng,lat,gps_altitude,distance_to_ground
+image_1.png,2016-12-19 17:09:00,52.112,28.001,-1500.5,30.25
+image_2.png,2016-12-19 17:09:31,52.215,28.501,-1502.5,28.25
 </pre>
         <p>
             The image metadata CSV file can be uploaded by volume admins on the volume edit page that you can reach with the <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button> button of the volume overview.
