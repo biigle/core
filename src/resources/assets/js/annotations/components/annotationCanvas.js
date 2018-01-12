@@ -731,7 +731,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     projection: this.projection,
                     center: center,
                     resolution: this.resolution,
-                    zoomFactor: 1.5,
+                    zoomFactor: 2,
                     // allow a maximum of 4x magnification
                     minResolution: 0.25,
                     // restrict movement
