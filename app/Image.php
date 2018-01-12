@@ -4,6 +4,7 @@ namespace Biigle;
 
 use Response;
 use ErrorException;
+use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
@@ -12,6 +13,8 @@ use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
  */
 class Image extends Model
 {
+    use HasJsonAttributes;
+
     /**
      * Validation rules for attaching a label to an image.
      *
@@ -147,6 +150,26 @@ class Image extends Model
     public function getUrlAttribute()
     {
         return $this->volume->url.'/'.$this->filename;
+    }
+
+    /**
+     * Set the image metadata attribute.
+     *
+     * @param array $value
+     */
+    public function setMetadataAttribute(array $value)
+    {
+        return $this->setJsonAttr('metadata', $value);
+    }
+
+    /**
+     * Get the image metadata attribute.
+     *
+     * @return array
+     */
+    public function getMetadataAttribute()
+    {
+        return $this->getJsonAttr('metadata', []);
     }
 
     /**

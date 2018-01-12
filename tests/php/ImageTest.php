@@ -196,4 +196,12 @@ class ImageTest extends ModelTestCase
         $this->assertEquals(55.5, $this->model->lat);
         $this->assertEquals(44.4, $this->model->lng);
     }
+
+    public function testSetGetMetadataAttribute()
+    {
+        $this->assertEquals([], $this->model->metadata);
+        $this->model->metadata = ['water_depth' => 4000];
+        $this->model->save();
+        $this->assertEquals(['water_depth' => 4000], $this->model->fresh()->metadata);
+    }
 }
