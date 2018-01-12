@@ -55,10 +55,7 @@ biigle.$component('annotations.components.minimap', function () {
             },
             updateElementSize: function () {
                 var imageWidth = this.extent[2];
-                // If extent[3] is 0 then a tiled image is displayed. For this the image
-                // height is -extent[1]. This is due to the differences between a Zoomify
-                // and an Image source.
-                var imageHeight = this.extent[3] || -this.extent[1];
+                var imageHeight = this.extent[3];
 
                 // Calculate resolution that fits the image into the minimap element.
                 var resolution = Math.max(

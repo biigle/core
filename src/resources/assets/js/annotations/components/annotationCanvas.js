@@ -135,10 +135,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         computed: {
             extent: function () {
                 if (this.image) {
-                    if (this.image.tiled === true) {
-                        return [0, -this.image.height, this.image.width, 0];
-                    }
-
                     return [0, 0, this.image.width, this.image.height];
                 }
 
@@ -198,17 +194,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 }
 
                 if (this.imageSectionSteps[1] <= 1) {
-                    // If extent[3] is 0 we have a tiled image and the (negative) height
-                    // is stored in extent[2]
-                    startCenter[1] = (this.extent[3] || this.extent[1]) / 2;
-                } else {
-                    // This is the same as:
-                    // if (image.tiled === true) {
-                    //    startCenter[1] -= this.image.height;
-                    // }
-                    // because this.extent[1] is 0 if the image is not tiled and else the
-                    // negative height.
-                    startCenter[1] += this.extent[1];
+                    startCenter[1] = this.extent[3] / 2;
                 }
 
                 return startCenter;
@@ -295,17 +281,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             invertPointsYAxis: function (points) {
                 // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
-                // the points based on the type of the image that is currently displayed
-                // (single or tiled). CAUTION: Modifies the array in place!
-                //
-                // If the image is tiled the y axis should be negated because the
-                // coordinates of the OL Zoomify source are computed in a weird way.
-                //
-                // If it is a single image the y axis should be switched from "top to
-                // bottom" to "bottom to top" or vice versa. Our database expects ttb,
-                // OpenLayers expects btt.
+                // the points. CAUTION: Modifies the array in place!
+                // The y axis should be switched from "top to bottom" to "bottom to top"
+                // or vice versa. Our database expects ttb, OpenLayers expects btt.
 
-                // extent[3] is 0 for a tiled image so this does exactly what we want.
                 var height = this.extent[3];
                 for (var i = 1; i < points.length; i += 2) {
                     points[i] = height - points[i];
@@ -712,6 +691,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     tiledImageLayer.setSource(new ol.source.Zoomify({
                         url: image.url,
                         size: [image.width, image.height],
+                        // Set the extent like this instead of default so static images
+                        // and tiled images can be treated the same.
+                        extent: [0, 0, image.width, image.height],
                         transition: 100,
                     }));
                 }
@@ -783,9 +765,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             extent: function (extent, oldExtent) {
                 // The extent only truly changes if the width and height changed.
-                // extent[0] is always 0, the others vary depending on the image type
-                // (regular or tiled).
-                if (extent[1] === oldExtent[1] && extent[2] === oldExtent[2] && extent[3] === oldExtent[3]) {
+                // extent[0] and extent[1] are always 0.
+                if (extent[2] === oldExtent[2] && extent[3] === oldExtent[3]) {
                     return;
                 }
 
