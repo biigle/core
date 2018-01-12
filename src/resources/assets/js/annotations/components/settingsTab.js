@@ -12,6 +12,7 @@ biigle.$component('annotations.components.settingsTab', {
             annotationOpacity: 1.0,
             cycleMode: 'default',
             mousePosition: false,
+            zoomLevel: false,
             annotationTooltip: false,
             minimap: true,
         };
@@ -51,6 +52,12 @@ biigle.$component('annotations.components.settingsTab', {
         },
         hideMousePosition: function () {
             this.mousePosition = false;
+        },
+        showZoomLevel: function () {
+            this.zoomLevel = true;
+        },
+        hideZoomLevel: function () {
+            this.zoomLevel = false;
         },
         showAnnotationTooltip: function () {
             this.annotationTooltip = true;
@@ -100,6 +107,14 @@ biigle.$component('annotations.components.settingsTab', {
             }
             this.$emit('change', 'mousePosition', show);
         },
+        zoomLevel: function (show) {
+            if (show) {
+                this.settings.set('zoomLevel', true);
+            } else {
+                this.settings.delete('zoomLevel');
+            }
+            this.$emit('change', 'zoomLevel', show);
+        },
         annotationTooltip: function (show) {
             if (show) {
                 this.settings.set('annotationTooltip', true);
@@ -121,6 +136,7 @@ biigle.$component('annotations.components.settingsTab', {
         var storedProperties = [
             'annotationOpacity',
             'mousePosition',
+            'zoomLevel',
             'annotationTooltip',
             'minimap',
         ];
