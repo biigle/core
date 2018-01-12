@@ -3,7 +3,6 @@
 %info-box {
     z-index: 1;
     border-radius: 4px;
-    position: absolute;
     background-color: fade-out(#222, 0.3);
     border: 1px solid #353535;
     padding: .25em .5em;
@@ -58,6 +57,7 @@
 @import "components/annotation-canvas";
 @import "components/label-indicator";
 @import "components/mouse-position-indicator";
+@import "components/zoom-level-indicator";
 @import "components/minimap";
 @import "components/control-button";
 @import "components/annotation-tooltip";

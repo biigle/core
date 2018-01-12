@@ -52,6 +52,14 @@
             </div>
 
             <div class="settings-tab__section">
+                <label>Zoom Level</label>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" :class="{active: zoomLevel}" v-on:click="showZoomLevel" title="Show zoom level">show</button>
+                    <button type="button" class="btn btn-default" :class="{active: !zoomLevel}" v-on:click="hideZoomLevel" title="Hide zoom level">hide</button>
+                </div>
+            </div>
+
+            <div class="settings-tab__section">
                 <label>Annotation Tooltip</label>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" :class="{active: annotationTooltip}" v-on:click="showAnnotationTooltip" title="Show annotation tooltip">show</button>

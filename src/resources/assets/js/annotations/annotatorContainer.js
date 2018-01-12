@@ -48,6 +48,7 @@ biigle.$viewModel('annotator-container', function (element) {
             // first (0) one.
             focussedImageSectionIndex: null,
             showMousePosition: false,
+            showZoomLevel: false,
             showAnnotationTooltip: false,
             showMinimap: true,
             openTab: null,
@@ -390,6 +391,9 @@ biigle.$viewModel('annotator-container', function (element) {
                         break;
                     case 'mousePosition':
                         this.showMousePosition = value;
+                        break;
+                    case 'zoomLevel':
+                        this.showZoomLevel = value;
                         break;
                     case 'annotationTooltip':
                         this.showAnnotationTooltip = value;

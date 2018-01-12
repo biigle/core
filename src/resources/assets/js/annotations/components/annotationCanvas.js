@@ -38,6 +38,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             minimap: biigle.$require('annotations.components.minimap'),
             labelIndicator: biigle.$require('annotations.components.labelIndicator'),
             mousePositionIndicator: biigle.$require('annotations.components.mousePositionIndicator'),
+            zoomLevelIndicator: biigle.$require('annotations.components.zoomLevelIndicator'),
             controlButton: biigle.$require('annotations.components.controlButton'),
             annotationTooltip: biigle.$require('annotations.components.annotationTooltip'),
         },
@@ -85,6 +86,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 default: 'default',
             },
             showMousePosition: {
+                type: Boolean,
+                default: false,
+            },
+            showZoomLevel: {
                 type: Boolean,
                 default: false,
             },
@@ -278,6 +283,13 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         methods: {
             updateMapSize: function () {
                 this.mapSize = map.getSize();
+            },
+            updateMapView: function (e) {
+                var view = e.target.getView();
+                this.$emit('moveend', {
+                    center: view.getCenter(),
+                    resolution: view.getResolution(),
+                });
             },
             invertPointsYAxis: function (points) {
                 // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
@@ -791,7 +803,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     center: center,
                     resolution: this.resolution,
                     resolutions: resolutions,
-                    zoomFactor: 1.5,
+                    zoomFactor: 2,
                     // Allow a maximum of 4x magnification for non-tiled images.
                     minResolution: 0.25,
                     // Restrict movement.
@@ -870,15 +882,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 });
             });
 
-            map.on('moveend', function (e) {
-                var view = map.getView();
-                self.$emit('moveend', {
-                    center: view.getCenter(),
-                    resolution: view.getResolution(),
-                });
-            });
-
             map.on('change:size', this.updateMapSize);
+            map.on('moveend', this.updateMapView);
 
             // We initialize this here because we need to make sure the styles are
             // properly loaded and there is no setStyle() function like for the

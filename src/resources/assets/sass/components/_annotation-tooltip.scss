@@ -20,7 +20,6 @@
 .annotation-tooltip__annotations {
     > li {
         @extend %info-box;
-        position: relative;
 
         &:not(:first-child) {
             margin-top: .25em;

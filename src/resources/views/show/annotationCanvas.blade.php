@@ -2,12 +2,19 @@
     <minimap v-if="showMinimap" :extent="extent" :projection="projection" inline-template>
         <div class="annotation-canvas__minimap"></div>
     </minimap>
-    <mouse-position-indicator v-if="showMousePosition" :position="mousePosition" inline-template>
-        <div class="mouse-position-indicator" title="Mouse position on the image" v-text="positionText"></div>
-    </mouse-position-indicator>
-    <label-indicator v-if="selectedLabel" :label="selectedLabel" inline-template>
-        <div class="label-indicator" title="Currently selected label" v-text="label.name"></div>
-    </label-indicator>
+    <div class="annotation-canvas__left-indicators">
+        <mouse-position-indicator v-if="showMousePosition" :position="mousePosition" inline-template>
+            <div class="mouse-position-indicator" title="Mouse position on the image" v-text="positionText"></div>
+        </mouse-position-indicator>
+        <zoom-level-indicator v-if="showZoomLevel" :resolution="resolution" inline-template>
+            <div class="zoom-level-indicator" title="Zoom level of the viewport" v-text="zoomLevelText"></div>
+        </zoom-level-indicator>
+    </div>
+    <div class="annotation-canvas__right-indicators">
+        <label-indicator v-if="selectedLabel" :label="selectedLabel" inline-template>
+            <div class="label-indicator" title="Currently selected label" v-text="label.name"></div>
+        </label-indicator>
+    </div>
     <annotation-tooltip :annotations="hoveredAnnotations" :position="mouseDomPosition" inline-template>
         <div class="annotation-tooltip" :style="styleObject" :class="classObject">
             <ul class="annotation-tooltip__annotations">

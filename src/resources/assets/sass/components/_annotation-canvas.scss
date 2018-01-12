@@ -32,3 +32,21 @@ $ol-control-color: rgb(0, 60, 136);
         margin-right: 0.5em;
     }
 }
+
+.annotation-canvas__left-indicators, .annotation-canvas__right-indicators {
+    position: absolute;
+    z-index: 1;
+    bottom: 0.5em;
+
+    > :not(:first-child) {
+        margin-top: .25em;
+    }
+}
+
+.annotation-canvas__left-indicators {
+    left: 0.5em;
+}
+
+.annotation-canvas__right-indicators {
+    right: 0.5em;
+}
