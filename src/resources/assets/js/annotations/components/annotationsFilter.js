@@ -6,6 +6,7 @@
 biigle.$component('annotations.components.annotationsFilter', {
     components: {
         typeahead: biigle.$require('core.components.typeahead'),
+        labelTypeahead: biigle.$require('labelTrees.components.labelTypeahead'),
     },
     props: {
         annotations: {
@@ -22,6 +23,9 @@ biigle.$component('annotations.components.annotationsFilter', {
         };
     },
     computed: {
+        typeaheadComponent: function () {
+            return (this.selectedFilter === 'label') ? 'labelTypeahead' : 'typeahead';
+        },
         placeholder: function () {
             if (this.selectedFilter) {
                 return this.selectedFilter + ' name';
