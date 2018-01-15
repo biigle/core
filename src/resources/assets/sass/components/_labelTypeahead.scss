@@ -1,0 +1,16 @@
+.label-typeahead-item {
+    position: relative;
+    // Negate the default padding of the list item of the typeahead.
+    margin-left: -15px;
+    padding: $padding-small-vertical 22px;
+
+    .label-color {
+        position: absolute;
+        top: 7px;
+        left: .25em;
+        width: 1em;
+        height: 1em;
+        border: 2px solid white;
+        border-radius: 50%;
+    }
+}
