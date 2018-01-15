@@ -12,13 +12,14 @@ biigle.$viewModel('projects-label-trees', function (element) {
             biigle.$require('core.mixins.loader'),
             biigle.$require('core.mixins.editor'),
         ],
-        data: {
-            labelTrees: biigle.$require('projects.labelTrees'),
-            availableLabelTrees: [],
-        },
         components: {
             typeahead: biigle.$require('core.components.typeahead'),
             loader: biigle.$require('core.components.loader'),
+        },
+        data: {
+            labelTrees: biigle.$require('projects.labelTrees'),
+            availableLabelTrees: [],
+            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
         },
         computed: {
             classObject: function () {
