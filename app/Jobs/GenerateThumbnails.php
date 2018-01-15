@@ -48,7 +48,10 @@ class GenerateThumbnails extends Job implements ShouldQueue
      */
     public function handle()
     {
-        App::make('Biigle\Contracts\ThumbnailService')
-            ->generateThumbnails($this->volume, $this->only);
+        // Handle case where volume has been deleted in the meantime.
+        if ($this->volume) {
+            App::make('Biigle\Contracts\ThumbnailService')
+                ->generateThumbnails($this->volume, $this->only);
+        }
     }
 }

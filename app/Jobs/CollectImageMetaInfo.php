@@ -51,8 +51,9 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
      */
     public function handle()
     {
-        // Not supported for remote volumes.
-        if ($this->volume->isRemote()) {
+        // Handle case where volume has been deleted in the meantime.
+        // Also this is not supported for remote volumes.
+        if (!$this->volume || $this->volume->isRemote()) {
             return;
         }
 
