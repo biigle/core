@@ -31,6 +31,9 @@ biigle.$declare('volumes.stores.filters', [
         },
         selectComponent: {
             mixins: [biigle.$require('volumes.components.filterSelectComponent')],
+            components: {
+                typeahead: biigle.$require('labelTrees.components.labelTypeahead'),
+            },
             data: function () {
                 return {
                     placeholder: 'Label name',
