@@ -19,6 +19,7 @@ biigle.$viewModel('label-trees-authorized-projects', function (element) {
             ownProjects: [],
             authorizedProjects: biigle.$require('labelTrees.authorizedProjects'),
             authorizedOwnProjects: biigle.$require('labelTrees.authorizedOwnProjects'),
+            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.description"></small>',
         },
         components: {
             typeahead: biigle.$require('core.components.typeahead'),
@@ -56,13 +57,15 @@ biigle.$viewModel('label-trees-authorized-projects', function (element) {
                 }, messages.handleErrorResponse);
             },
             addAuthorizedProject: function (project) {
-                var self = this;
-                this.startLoading();
-                labelTreeApi.addAuthorizedProject({id: this.labelTree.id}, {id: project.id})
-                    .then(function () {
-                        self.authorizedProjectAdded(project);
-                    }, messages.handleErrorResponse)
-                    .finally(this.finishLoading);
+                if (project) {
+                    var self = this;
+                    this.startLoading();
+                    labelTreeApi.addAuthorizedProject({id: this.labelTree.id}, {id: project.id})
+                        .then(function () {
+                            self.authorizedProjectAdded(project);
+                        }, messages.handleErrorResponse)
+                        .finally(this.finishLoading);
+                }
             },
             authorizedProjectAdded: function (project) {
                 this.authorizedProjects.push(project);
