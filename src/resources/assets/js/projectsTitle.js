@@ -34,7 +34,7 @@ biigle.$viewModel('projects-title', function (element) {
                 this.finishEditing();
             },
             leaveProject: function () {
-                var confirmed = confirm('Do you really want to leave the project ' + this.project.name + '?');
+                var confirmed = confirm('Do you really want to revoke your membership of project "' + this.project.name + '"?');
 
                 if (confirmed) {
                     this.startLoading();
