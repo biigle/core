@@ -7,7 +7,7 @@
             <a href="{{route('volume', $volume->id)}}" title="Show volume {{$volume->name}}">
                 <volume-thumbnail class="volume-thumbnail" v-bind:tid="{{$volume->id}}" uri="{{asset(config('thumbnails.uri'))}}" format="{{config('thumbnails.format')}}">
                     @if ($volume->thumbnail)
-                        <img src="{{ asset(config('thumbnails.uri').'/'.$volume->thumbnail->uuid.'.'.config('thumbnails.format')) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
+                        <img src="{{ thumbnail_url($volume->thumbnail->uuid) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                     @else
                         <img src="{{ asset(config('thumbnails.empty_url')) }}">
                     @endif

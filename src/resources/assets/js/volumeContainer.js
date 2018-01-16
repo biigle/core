@@ -144,6 +144,9 @@ biigle.$viewModel('volume-container', function (element) {
                 this.sortingSequence = sequence;
                 this.sortingActive = active;
             },
+            transformUuid: function (uuid) {
+                return uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid;
+            },
         },
         watch: {
             imageIdsToShow: function (imageIdsToShow) {
@@ -174,12 +177,13 @@ biigle.$viewModel('volume-container', function (element) {
             },
         },
         created: function () {
+            var self = this;
             // Do this here instead of a computed property so the image objects get
             // reactive. Also, this array does never change between page reloads.
             var images = this.imageIds.map(function (id) {
                 return {
                     id: id,
-                    url: thumbUri.replace('{uuid}', imageUuids[id]),
+                    url: thumbUri.replace('{uuid}', self.transformUuid(imageUuids[id])),
                     annotateUrl: annotateUri.replace('{id}', id),
                     imageUrl: imageUri.replace('{id}', id),
                     flagged: false,
