@@ -7,7 +7,6 @@ use ErrorException;
 use Biigle\Http\Controllers\Controller;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Session\TokenMismatchException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Symfony\Component\Debug\Exception\FlattenException;
@@ -16,6 +15,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
+use Illuminate\Session\TokenMismatchException as BaseTokenMismatchException;
 
 class Handler extends ExceptionHandler
 {
@@ -54,9 +54,10 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        // convert the exception here because we want to throw a 403 and not a 500
-        if ($exception instanceof TokenMismatchException) {
-            $exception = new AccessDeniedHttpException();
+        // Convert the exception here because we want to throw a 403 and not a 500.
+        // Also set a helpful error message for the user.
+        if ($exception instanceof BaseTokenMismatchException) {
+            $exception = new TokenMismatchException('Your user session expired. Please refresh the page.');
         }
 
         // use JsonResponse if this was an automated request
@@ -142,8 +143,12 @@ class Handler extends ExceptionHandler
         }
 
         $status = $this->isHttpException($e) ? $e->getStatusCode() : 500;
+        $type = explode('\\', get_class($e));
 
-        $response = ['message' => $e->getMessage()];
+        $response = [
+            'message' => $e->getMessage(),
+            'type' => end($type),
+        ];
 
         if (config('app.debug')) {
             $response['trace'] = $e->getTraceAsString();
