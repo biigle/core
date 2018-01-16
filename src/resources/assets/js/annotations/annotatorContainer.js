@@ -323,11 +323,9 @@ biigle.$viewModel('annotator-container', function (element) {
                     annotation.confidence = 1;
                     annotationsStore.create(this.imageId, annotation)
                         .then(this.setLastCreatedAnnotation)
-                        .catch(function (response) {
-                            // Remove the temporary annotation if saving failed.
-                            removeCallback();
-                            messages.handleErrorResponse(response);
-                        });
+                        .catch(messages.handleErrorResponse)
+                        // Remove the temporary annotation if saving succeeded or failed.
+                        .finally(removeCallback);
                 }
             },
             handleAttachLabel: function (annotation, label) {

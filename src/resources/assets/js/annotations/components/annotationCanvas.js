@@ -754,10 +754,15 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     annotationSource.clear(true);
                 } else {
                     // In case annotations were added/removed, we only want to update the
-                    // changed features.
-                    removedFeatures.forEach(function (feature) {
-                        annotationSource.removeFeature(feature);
-                    });
+                    // changed features. But don't remove the temporary annotations with
+                    // undefined ID here. These will be removed asynchronously through
+                    // their removeCallback when they were saved (or failed to be).
+                    // see: https://github.com/BiodataMiningGroup/biigle-annotations/issues/82
+                    removedFeatures.filter(function (feature) {
+                            return feature.getId() !== undefined;
+                        }).forEach(function (feature) {
+                            annotationSource.removeFeature(feature);
+                        });
 
                     annotations = annotations.filter(function (annotation) {
                         return !oldFeaturesMap.hasOwnProperty(annotation.id);
