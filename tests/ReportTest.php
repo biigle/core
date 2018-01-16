@@ -5,6 +5,7 @@ namespace Biigle\Tests\Modules\Export;
 use File;
 use Mockery;
 use ModelTestCase;
+use Carbon\Carbon;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Modules\Export\Report;
@@ -26,6 +27,7 @@ class ReportTest extends ModelTestCase
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
         $this->assertNotNull($this->model->source_name);
+        $this->assertNull($this->model->ready_at);
     }
 
     public function testCastsOptions()
@@ -141,5 +143,12 @@ class ReportTest extends ModelTestCase
         $this->assertNotNull($this->model->fresh()->source_id);
         $this->assertNotNull($this->model->fresh()->source_type);
         $this->assertEquals($volume->name, $this->model->fresh()->source_name);
+    }
+
+    public function testCastsReadyAt()
+    {
+        $this->model->ready_at = new Carbon;
+        $this->model->save();
+        $this->assertInstanceOf(Carbon::class, $this->model->fresh()->ready_at);
     }
 }

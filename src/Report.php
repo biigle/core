@@ -27,6 +27,7 @@ class Report extends Model
         'type_id' => 'int',
         'source_id' => 'int',
         'options' => 'array',
+        'ready_at' => 'datetime',
     ];
 
     /**
