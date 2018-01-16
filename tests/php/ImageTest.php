@@ -30,6 +30,7 @@ class ImageTest extends ModelTestCase
     {
         $path = $this->model->thumbPath;
         $contains = $this->model->uuid.'.'.config('thumbnails.format');
+        $contains = "{$contains[0]}{$contains[1]}/{$contains[2]}{$contains[3]}/{$contains}";
         $this->assertContains($contains, $path);
     }
 

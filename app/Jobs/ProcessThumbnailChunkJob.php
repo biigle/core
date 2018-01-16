@@ -93,6 +93,8 @@ class ProcessThumbnailChunkJob extends Job implements ShouldQueue
         }
 
         try {
+            File::makeDirectory(File::dirname($image->thumbPath), 0755, true, true);
+
             IImage::make($image->url)
                 ->resize($this->width, $this->height, function ($constraint) {
                     // resize images proportionally

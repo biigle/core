@@ -138,7 +138,10 @@ class Image extends Model
      */
     public function getThumbPathAttribute()
     {
-        return public_path(config('thumbnails.uri').'/'.$this->uuid.'.'.config('thumbnails.format'));
+        $uri = config('thumbnails.uri');
+        $format = config('thumbnails.format');
+
+        return public_path("{$uri}/{$this->uuid[0]}{$this->uuid[1]}/{$this->uuid[2]}{$this->uuid[3]}/{$this->uuid}.{$format}");
     }
 
     /**

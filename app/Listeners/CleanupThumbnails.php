@@ -20,8 +20,9 @@ class CleanupThumbnails implements ShouldQueue
         $format = config('thumbnails.format');
 
         foreach ($uuids as $uuid) {
-            if (File::exists("{$prefix}/{$uuid}.{$format}")) {
-                File::delete("{$prefix}/{$uuid}.{$format}");
+            $path = "{$prefix}/{$uuid[0]}{$uuid[1]}/{$uuid[2]}{$uuid[3]}/{$uuid}.{$format}";
+            if (File::exists($path)) {
+                File::delete($path);
             }
         }
     }
