@@ -6,7 +6,7 @@
         <li class="col-xs-4">
             <figure class="image-thumbnail">
                 <a href="{{ route('annotate', $image->id) }}" title="Annotate image {{$image->filename}}">
-                    <img src="{{ asset(config('thumbnails.uri').'/'.$image->uuid.'.'.config('thumbnails.format')) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
+                    <img src="{{ thumbnail_url($image->uuid) }}" onerror="this.src='{{ asset(config('thumbnails.empty_url')) }}'">
                     <figcaption class="caption">
                         {{ $image->filename }}
                     </figcaption>
