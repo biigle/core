@@ -1,5 +1,6 @@
 .annotation-canvas__minimap {
     @extend %info-box;
+
     position: absolute;
     top: .5em;
     right: .5em;
@@ -8,4 +9,5 @@
     width: 250px;
     padding: 0;
     overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
