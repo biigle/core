@@ -90,7 +90,7 @@ biigle.$component('projects.components.volumeThumbnail', {
             }
         },
         thumbUri: function (uuid) {
-            return this.uri + '/' + uuid + '.' + this.format;
+            return this.uri + '/' + uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid + '.' + this.format;
         },
         thumbShown: function (i) {
             return this.index === i && !this.failed[i];
