@@ -35,7 +35,7 @@ class ProcessThumbnailChunkJobTest extends TestCase
         Log::shouldReceive('error')->once();
         $image = ImageTest::create(['filename' => 'does_not_exist']);
         with(new ProcessThumbnailChunkJob([$image]))->handle();
-        $this->cleanup($image);
+        $this->cleanup($image, false);
     }
 
     public function testSkipExisting()
@@ -56,10 +56,11 @@ class ProcessThumbnailChunkJobTest extends TestCase
         }
     }
 
-    protected function cleanup($image)
+    protected function cleanup($image, $exists = true)
     {
-        File::delete($image->thumbPath);
-        rmdir(dirname($image->thumbPath, 1));
-        rmdir(dirname($image->thumbPath, 2));
+        $this->assertTrue(File::delete($image->thumbPath) === $exists);
+        // These directories may contain other thumbnails from a development instance.
+        @rmdir(dirname($image->thumbPath, 1));
+        @rmdir(dirname($image->thumbPath, 2));
     }
 }
