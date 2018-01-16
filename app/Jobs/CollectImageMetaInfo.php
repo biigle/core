@@ -51,8 +51,9 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
      */
     public function handle()
     {
-        // Not supported for remote volumes.
-        if ($this->volume->isRemote()) {
+        // Handle case where volume has been deleted in the meantime.
+        // Also this is not supported for remote volumes.
+        if (!$this->volume || $this->volume->isRemote()) {
             return;
         }
 
@@ -101,6 +102,15 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
                 }
             }
 
+            if ($this->hasExtendedGpsInfo($exif)) {
+                // GPSAltitudeRef is \x00 for above sea level and \x01 for below sea
+                // level. We use a negative gps_altitude for below sea level.
+                $ref = ($exif['GPSAltitudeRef'] === "\x00") ? 1 : -1;
+                $image->metadata = [
+                    'gps_altitude' => $ref * $this->fracToFloat($exif['GPSAltitude']),
+                ];
+            }
+
             $image->save();
         }
 
@@ -130,6 +140,18 @@ class CollectImageMetaInfo extends Job implements ShouldQueue
             array_key_exists('GPSLatitudeRef', $exif) &&
             array_key_exists('GPSLongitude', $exif) &&
             array_key_exists('GPSLongitudeRef', $exif);
+    }
+
+    /**
+     * Check if an exif array contains even more GPS information.
+     *
+     * @param  array   $exif
+     * @return bool
+     */
+    protected function hasExtendedGpsInfo(array $exif)
+    {
+        return array_key_exists('GPSAltitude', $exif) &&
+            array_key_exists('GPSAltitudeRef', $exif);
     }
 
     /**

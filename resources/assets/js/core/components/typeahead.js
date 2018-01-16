@@ -5,11 +5,6 @@
  */
 biigle.$component('core.components.typeahead', {
     template: '<typeahead ref="typeahead" class="typeahead clearfix" :data="items" :placeholder="placeholder" :on-hit="selectItem" :template="template" :disabled="disabled" match-property="name" @clear="clear"></typeahead>',
-    data: function () {
-        return {
-            template: '{{item.name}}',
-        };
-    },
     components: {
         typeahead: VueStrap.typeahead,
     },
@@ -32,8 +27,11 @@ biigle.$component('core.components.typeahead', {
         },
         clearOnSelect: {
             type: Boolean,
-            defeult: false,
+            default: false,
         },
+        template: {
+            default: '{{item.name}}',
+        }
     },
     methods: {
         selectItem: function (item, typeahead) {

@@ -139,7 +139,10 @@ class Image extends Model
      */
     public function getThumbPathAttribute()
     {
-        return public_path(config('thumbnails.uri').'/'.$this->uuid.'.'.config('thumbnails.format'));
+        $uri = config('thumbnails.uri');
+        $format = config('thumbnails.format');
+
+        return public_path("{$uri}/{$this->uuid[0]}{$this->uuid[1]}/{$this->uuid[2]}{$this->uuid[3]}/{$this->uuid}.{$format}");
     }
 
     /**
@@ -162,6 +165,26 @@ class Image extends Model
     public function getUrlAttribute()
     {
         return $this->volume->url.'/'.$this->filename;
+    }
+
+    /**
+     * Set the image metadata attribute.
+     *
+     * @param array $value
+     */
+    public function setMetadataAttribute(array $value)
+    {
+        return $this->setJsonAttr('metadata', $value);
+    }
+
+    /**
+     * Get the image metadata attribute.
+     *
+     * @return array
+     */
+    public function getMetadataAttribute()
+    {
+        return $this->getJsonAttr('metadata', []);
     }
 
     /**

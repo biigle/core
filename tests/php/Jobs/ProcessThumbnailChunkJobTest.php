@@ -20,7 +20,6 @@ class ProcessThumbnailChunkJobTest extends TestCase
 
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id]);
-        File::delete($image->thumbPath);
 
         with(new ProcessThumbnailChunkJob([$image]))->handle();
 
@@ -32,7 +31,7 @@ class ProcessThumbnailChunkJobTest extends TestCase
         $this->assertTrue($size[1] <= $config[1]);
         $this->assertTrue($size[0] == $config[0] || $size[1] == $config[1]);
 
-        File::delete($image->thumbPath);
+        $this->cleanup($image);
     }
 
     public function testHandleNotReadable()
@@ -44,17 +43,28 @@ class ProcessThumbnailChunkJobTest extends TestCase
         Log::shouldReceive('error')->once();
         $image = ImageTest::create(['filename' => 'does_not_exist']);
         with(new ProcessThumbnailChunkJob([$image]))->handle();
+        $this->cleanup($image, false);
     }
 
     public function testSkipExisting()
     {
         VipsImage::shouldReceive('thumbnail')->never();
         $image = ImageTest::create(['filename' => 'random']);
+        File::makeDirectory(File::dirname($image->thumbPath), 0755, true, true);
         touch($image->thumbPath);
+
         try {
             with(new ProcessThumbnailChunkJob([$image]))->handle();
         } finally {
-            File::delete($image->thumbPath);
+            $this->cleanup($image);
         }
+    }
+
+    protected function cleanup($image, $exists = true)
+    {
+        $this->assertTrue(File::delete($image->thumbPath) === $exists);
+        // These directories may contain other thumbnails from a development instance.
+        @rmdir(dirname($image->thumbPath, 1));
+        @rmdir(dirname($image->thumbPath, 2));
     }
 }

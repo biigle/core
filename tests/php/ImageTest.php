@@ -31,6 +31,7 @@ class ImageTest extends ModelTestCase
     {
         $path = $this->model->thumbPath;
         $contains = $this->model->uuid.'.'.config('thumbnails.format');
+        $contains = "{$contains[0]}{$contains[1]}/{$contains[2]}{$contains[3]}/{$contains}";
         $this->assertContains($contains, $path);
     }
 
@@ -225,5 +226,13 @@ class ImageTest extends ModelTestCase
             'width' => 2352,
             'height' => 18060,
         ], $this->model->fresh()->getTileProperties());
+    }
+
+    public function testSetGetMetadataAttribute()
+    {
+        $this->assertEquals([], $this->model->metadata);
+        $this->model->metadata = ['water_depth' => 4000];
+        $this->model->save();
+        $this->assertEquals(['water_depth' => 4000], $this->model->fresh()->metadata);
     }
 }

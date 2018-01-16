@@ -88,6 +88,7 @@ class ProcessThumbnailChunkJob extends Job implements ShouldQueue
         try {
             $path = ImageCache::get($image);
 
+            File::makeDirectory(File::dirname($image->thumbPath), 0755, true, true);
             VipsImage::thumbnail($path, $this->width, ['height' => $this->height])
                 ->writeToFile($image->thumbPath);
 

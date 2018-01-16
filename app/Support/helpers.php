@@ -44,3 +44,19 @@ if (!function_exists('readable_number')) {
         return round($n / $divisor).$suffix;
     }
 }
+
+if (!function_exists('thumbnail_url')) {
+    /**
+     * Assemble the public URL to an image thumbnail.
+     *
+     * @param  Image UUID  $uuid
+     * @return string
+     */
+    function thumbnail_url($uuid)
+    {
+        $uri = config('thumbnails.uri');
+        $format = config('thumbnails.format');
+
+        return asset("{$uri}/{$uuid[0]}{$uuid[1]}/{$uuid[2]}{$uuid[3]}/{$uuid}.{$format}");
+    }
+}

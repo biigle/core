@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
+use File;
 use ApiTestCase;
 use Biigle\Image;
 use Biigle\Volume;
@@ -47,6 +48,7 @@ class ImageControllerTest extends ApiTestCase
     public function testShowThumb()
     {
         $id = $this->image->id;
+        File::makeDirectory(File::dirname($this->image->thumbPath), 0755, true, true);
         copy($this->image->url, $this->image->thumbPath);
 
         $this->doTestApiRoute('GET', "/api/v1/images/{$id}/thumb");
@@ -63,6 +65,8 @@ class ImageControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertEquals('image/jpeg', $response->headers->get('content-type'));
         unlink($this->image->thumbPath);
+        @rmdir(dirname($this->image->thumbPath, 1));
+        @rmdir(dirname($this->image->thumbPath, 2));
     }
 
     public function testShowFile()
