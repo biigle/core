@@ -12,11 +12,18 @@ use Biigle\Http\Controllers\Api\Controller;
 class VolumeImageMetadataController extends Controller
 {
     /**
-     * Allowed columns for the CSV file of the store route.
+     * Allowed columns for the CSV file to change image attributes.
      *
      * @var array
      */
-    protected $allowedColumns = ['filename', 'taken_at', 'lng', 'lat'];
+    protected $allowedAttributes = ['filename', 'taken_at', 'lng', 'lat'];
+
+    /**
+     * Allowed columns for the CSV file to change image metadata.
+     *
+     * @var array
+     */
+    protected $allowedMetadata = ['gps_altitude', 'distance_to_ground'];
 
     /**
      * Add or update image metadata for a volume.
@@ -35,10 +42,12 @@ class VolumeImageMetadataController extends Controller
      * @apiParam (CSV columns) {String} taken_at The date and time where the image was taken. Example: `2016-12-19 12:49:00`
      * @apiParam (CSV columns) {Number} lng Longitude where the image was taken in decimal form. If this column is present, `lat` must be present, too. Example: `52.3211`
      * @apiParam (CSV columns) {Number} lat Latitude where the image was taken in decimal form. If this column is present, `lng` must be present, too. Example: `28.775`
+     * @apiParam (CSV columns) {Number} gps_altitude GPS Altitude where the image was taken in meters. Negative for below sea level. Example: `-1500.5`
+     * @apiParam (CSV columns) {Number} distance_to_ground Distance to the sea floor in meters. Example: `30.25`
      *
      * @apiParamExample {String} Request example:
-     * file: "filename,taken_at,lng,lat
-     * image_1.png,2016-12-19 12:49:00,52.3211,28.775"
+     * file: "filename,taken_at,lng,lat,gps_altitude,distance_to_ground
+     * image_1.png,2016-12-19 12:49:00,52.3211,28.775,-1500.5,30.25"
      *
      * @param Request $request
      * @param int $id Volume ID
@@ -82,11 +91,12 @@ class VolumeImageMetadataController extends Controller
             ]);
         }
 
-        $diff = array_diff($columns, $this->allowedColumns);
+        $allowedColumns = array_merge($this->allowedAttributes, $this->allowedMetadata);
+        $diff = array_diff($columns, $allowedColumns);
 
         if (count($diff) > 0) {
             return $this->buildFailedValidationResponse($request, [
-                'file' => 'The columns array may contain only values of: '.implode(', ', $this->allowedColumns).'.',
+                'file' => 'The columns array may contain only values of: '.implode(', ', $allowedColumns).'.',
             ]);
         }
 
@@ -108,7 +118,7 @@ class VolumeImageMetadataController extends Controller
         }
 
         $images = $volume->images()
-            ->select('id', 'filename')
+            ->select('id', 'filename', 'attrs')
             ->get()
             ->keyBy('filename');
 
@@ -130,31 +140,13 @@ class VolumeImageMetadataController extends Controller
             }
 
             $image = $images[$filename];
-            $image->fillable($this->allowedColumns);
-
-            if (array_key_exists('lng', $toFill) && !is_numeric($toFill['lng'])) {
-                return $this->buildFailedValidationResponse($request, [
-                    'file' => "'{$toFill['lng']}' is no valid longitude for image {$filename}.",
-                ]);
-            }
-
-            if (array_key_exists('lat', $toFill) && !is_numeric($toFill['lat'])) {
-                return $this->buildFailedValidationResponse($request, [
-                    'file' => "'{$toFill['lat']}' is no valid latitude for image {$filename}.",
-                ]);
-            }
-
-            if (array_key_exists('taken_at', $toFill) && strtotime($toFill['taken_at']) === false) {
-                return $this->buildFailedValidationResponse($request, [
-                    'file' => "'{$toFill['taken_at']}' is no valid date for image {$filename}.",
-                ]);
-            }
 
             try {
-                $image->fill($toFill);
+                $this->fillImageAttributes($image, $toFill);
+                $this->fillImageMetadata($image, $toFill);
             } catch (Exception $e) {
                 return $this->buildFailedValidationResponse($request, [
-                    'file' => "The CSV file content could not be parsed for image {$filename}. ".$e->getMessage(),
+                    'file' => $e->getMessage(),
                 ]);
             }
 
@@ -168,5 +160,61 @@ class VolumeImageMetadataController extends Controller
         }
 
         $volume->flushGeoInfoCache();
+    }
+
+    /**
+     * Fill the attributes of an image.
+     *
+     * @param Image $image
+     * @param array $toFill
+     */
+    protected function fillImageAttributes(Image $image, array $toFill)
+    {
+        $toFill = array_only($toFill, $this->allowedAttributes);
+        $image->fillable($this->allowedAttributes);
+
+        if (array_key_exists('lng', $toFill) && !is_numeric($toFill['lng'])) {
+            throw new Exception("'{$toFill['lng']}' is no valid longitude for image {$image->filename}.");
+        }
+
+        if (array_key_exists('lat', $toFill) && !is_numeric($toFill['lat'])) {
+            throw new Exception("'{$toFill['lat']}' is no valid latitude for image {$image->filename}.");
+        }
+
+        if (array_key_exists('taken_at', $toFill) && strtotime($toFill['taken_at']) === false) {
+            throw new Exception("'{$toFill['taken_at']}' is no valid date for image {$image->filename}.");
+        }
+
+        try {
+            $image->fill($toFill);
+        } catch (Exception $e) {
+            throw new Exception("The CSV file content could not be parsed for image {$image->filename}. ".$e->getMessage());
+        }
+    }
+
+    /**
+     * Fill metadata of an image.
+     *
+     * @param Image $image
+     * @param array $toFill
+     */
+    protected function fillImageMetadata(Image $image, array $toFill)
+    {
+        $toFill = array_only($toFill, $this->allowedMetadata);
+
+        if (array_key_exists('gps_altitude', $toFill) && !is_numeric($toFill['gps_altitude'])) {
+            throw new Exception("'{$toFill['gps_altitude']}' is no valid GPS altitude for image {$image->filename}.");
+        }
+
+        if (array_key_exists('distance_to_ground', $toFill) && !is_numeric($toFill['distance_to_ground'])) {
+            throw new Exception("'{$toFill['distance_to_ground']}' is no valid distance to ground for image {$image->filename}.");
+        }
+
+        try {
+            $metadata = array_merge($image->metadata, $toFill);
+            $image->metadata = $metadata;
+        } catch (Exception $e) {
+            throw new Exception("The CSV file content could not be parsed for image {$image->filename}. ".$e->getMessage());
+        }
     }
 }

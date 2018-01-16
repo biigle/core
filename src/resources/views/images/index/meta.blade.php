@@ -23,13 +23,19 @@
                 </tr>
             @endif
             @if (!$volume->isRemote())
-                @foreach (array_only($image->exif, $exifKeys) as $field => $value)
+                @foreach ($exif as $field => $value)
                     <tr>
                         <th>{{ $field }}</th>
                         <td>{{ $value }}</td>
                     </tr>
                 @endforeach
             @endif
+            @foreach ($metadata as $field => $value)
+                <tr>
+                    <th>{{ $metadataMap[$field] }}</th>
+                    <td>{{ $value }}</td>
+                </tr>
+            @endforeach
         </table>
     </div>
 </div>

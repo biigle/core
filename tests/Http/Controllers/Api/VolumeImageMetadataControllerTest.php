@@ -69,6 +69,10 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
         $jpg = ImageTest::create([
             'filename' => 'abc.jpg',
             'volume_id' => $id,
+            'attrs' => ['metadata' => [
+                'water_depth' => 4000,
+                'distance_to_ground' => 20
+            ]],
         ]);
 
         $csv = $this->getCsv('image-metadata-colordering.csv');
@@ -90,9 +94,14 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
         $this->assertEquals('2016-12-19 12:27:00', $jpg->taken_at);
         $this->assertEquals(52.220, $jpg->lng);
         $this->assertEquals(28.123, $jpg->lat);
+        $this->assertEquals(-1500, $jpg->metadata['gps_altitude']);
+        // Import should update but not destroy existing metadata.
+        $this->assertEquals(10, $jpg->metadata['distance_to_ground']);
+        $this->assertEquals(4000, $jpg->metadata['water_depth']);
 
         $this->assertNull($png->taken_at);
         $this->assertNull($png->lng);
         $this->assertNull($png->lat);
+        $this->assertEmpty($png->metadata);
     }
 }

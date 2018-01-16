@@ -21,17 +21,16 @@ class ImageController extends Controller
         $this->authorize('access', $image);
 
         $exifKeys = [
-            'DateTime',
             'Model',
             'ShutterSpeedValue',
             'ApertureValue',
             'Flash',
-            'GPS Latitude',
-            'GPS Longitude',
-            'GPS Altitude',
         ];
 
-        $image->exif = $image->getExif();
+        $metadataMap = [
+            'gps_altitude' => 'GPS Altitude',
+            'distance_to_ground' => 'Distance to ground',
+        ];
 
         if (File::exists($image->url)) {
             $size = $image->getSize();
@@ -43,7 +42,10 @@ class ImageController extends Controller
         return view('volumes::images.index', [
             'image' => $image,
             'volume' => $image->volume,
+            'exif' => array_only($image->getExif(), $exifKeys),
             'exifKeys' => $exifKeys,
+            'metadata' => array_only($image->metadata, array_keys($metadataMap)),
+            'metadataMap' => $metadataMap,
         ]);
     }
 }

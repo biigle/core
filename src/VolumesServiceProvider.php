@@ -6,6 +6,7 @@ use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Biigle\Modules\Volumes\Http\Controllers\Mixins\Views\SearchControllerMixin;
+use Biigle\Modules\Volumes\Http\Controllers\Mixins\Views\Admin\UsersControllerMixin;
 
 class VolumesServiceProvider extends ServiceProvider
 {
@@ -46,6 +47,7 @@ class VolumesServiceProvider extends ServiceProvider
                 'searchTabContent',
             ],
             'controllerMixins' => [
+                'adminShowUser' => UsersControllerMixin::class.'@show',
                 'search' => SearchControllerMixin::class.'@index',
             ],
         ]);
