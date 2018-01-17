@@ -118,8 +118,8 @@ class LabelTreesController extends Controller
     public function create(Request $request)
     {
         $visibilities = [
-            Visibility::$public,
             Visibility::$private,
+            Visibility::$public,
         ];
 
         if ($request->has('project')) {
@@ -129,10 +129,13 @@ class LabelTreesController extends Controller
             $project = null;
         }
 
-        return view('label-trees::create', [
-            'visibilities' => $visibilities,
-            'project' => $project,
-        ]);
+        $selectedVisibility = (int) old('visibility_id') ?: $visibilities[0]->id;
+
+        return view('label-trees::create', compact(
+            'visibilities',
+            'selectedVisibility',
+            'project'
+        ));
     }
 
     /**

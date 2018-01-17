@@ -23,7 +23,7 @@
                 <label for="visibility_id">Visibility</label>
                 <select class="form-control" name="visibility_id">
                     @foreach($visibilities as $visibility)
-                        <option value="{{$visibility->id}}" @if((int) old('visibility_id') === $visibility->id) selected="" @endif>{{$visibility->name}}</option>
+                        <option value="{{$visibility->id}}" @if($selectedVisibility === $visibility->id) selected @endif>{{$visibility->name}}</option>
                     @endforeach
                 </select>
                 @if($errors->has('visibility_id'))
