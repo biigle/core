@@ -17,9 +17,11 @@
             </div>
         </div>
     @endforelse
-    <div class="row">
-        <div class="col-xs-12 dashboard__all-projects">
-            <a href="{{route('search', ['t' => 'projects'])}}" class="btn btn-default btn-lg" title="Show all projects">Show all projects</a>
+    @if ($projects->isNotEmpty())
+        <div class="row">
+            <div class="col-xs-12 dashboard__all-projects">
+                <a href="{{route('search', ['t' => 'projects'])}}" class="btn btn-default btn-lg" title="Show all projects">Show all projects</a>
+            </div>
         </div>
-    </div>
+    @endif
 </div>

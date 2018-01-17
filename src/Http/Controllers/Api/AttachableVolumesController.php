@@ -3,8 +3,8 @@
 namespace Biigle\Modules\Projects\Http\Controllers\Api;
 
 use Biigle\Role;
-use Biigle\Project;
 use Biigle\Volume;
+use Biigle\Project;
 use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Api\Controller;
 
