@@ -25,6 +25,10 @@ services:
     build:
       dockerfile: .docker/web.dockerfile
       context: ./
+    # We use this for the build only as biigle/web uses biigle/app for a multistage
+    # build.
+    depends_on:
+      - app
     volumes_from:
       - app
     ports:
@@ -38,8 +42,10 @@ services:
     build:
       dockerfile: .docker/worker.dockerfile
       context: ./
-      args:
-        GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
+    # We use this for the build only as biigle/worker uses biigle/app for a multistage
+    # build.
+    depends_on:
+      - app
     volumes_from:
       - app
     env_file:
