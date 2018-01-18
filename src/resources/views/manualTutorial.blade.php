@@ -1,6 +1,14 @@
 <h3>Volumes</h3>
 
 <h4>
+    <a href="{{route('manual-tutorials', ['volumes', 'volume-overview'])}}">Volume overview</a>
+</h4>
+
+<p>
+    The volume overview allows you to explore all images that belong to a volume.
+</p>
+
+<h4>
     <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">Remote volumes</a>
 </h4>
 
