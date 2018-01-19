@@ -22,7 +22,7 @@
         <h3><a name="visibility"></a>Visibility</h3>
 
         <p>
-            A label tree can be either public or private. Public label trees are available to be attached to any project and can be viewed by any user. Private label trees, however, can only be attached to specifically "authorized" projects and can only be viewed by label tree members.
+            A label tree can be either public or private. Public label trees are available to be attached to any project and can be viewed by any user. Private label trees, however, can only be attached to specifically "authorized" projects. If a label tree is private, it is only visible for members of the label tree or for members of any project to which the label tree is attached.
         </p>
         <p>
             The visibility of a label tree can be set when it is created. It can also be changed later by label tree admins. To do this, click on the <button class="btn btn-default btn-xs">Edit</button> button. This will activate a select element where you can choose a new visibility. Finally, click <button class="btn btn-success btn-xs">Save</button> to apply the change.
@@ -31,7 +31,7 @@
         <h3><a name="members"></a>Members</h3>
 
         <p>
-            The labels of a label tree can only be modified by label tree members. If the label tree is private only members can view it, too. Each member has one of two roles: admin or editor. To modify label tree members you must be admin for the label tree. Click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the members panel to modify members. Enter a username and choose a role to add a new member. Choose a new user role for existing members to modify them. Click the <strong>&times;</strong> button to remove a member.
+            The labels of a label tree can only be modified by label tree members. Each member has one of two roles: admin or editor. To modify label tree members you must be admin for the label tree. Click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the members panel to modify members. Enter a username and choose a role to add a new member. Choose a new user role for existing members to modify them. Click the <strong>&times;</strong> button to remove a member.
         </p>
         <p>
             A label tree <strong>editor</strong> can view the label tree even if it is private. Also, they can create and modify labels of the tree.

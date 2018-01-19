@@ -6,6 +6,7 @@ use TestCase;
 use Biigle\Role;
 use Biigle\Visibility;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\ProjectTest;
 use Biigle\Tests\LabelTreeTest;
 
 class SearchControllerMixinTest extends TestCase
@@ -22,15 +23,35 @@ class SearchControllerMixinTest extends TestCase
         $tree->addMember($user, Role::$editor);
 
         $this->be($user);
-        $response = $this->get('search?t=label-trees')->assertStatus(200);
-        $response->assertSeeText('random name');
-        $response->assertSeeText('another tree');
-        $response->assertDontSeeText('private one');
+        $this->get('search?t=label-trees')
+            ->assertStatus(200)
+            ->assertSeeText('random name')
+            ->assertSeeText('another tree')
+            ->assertDontSeeText('private one');
 
-        $response = $this->get('search?t=label-trees&q=name')->assertStatus(200);
-        $response->assertStatus(200);
-        $response->assertSeeText('random name');
-        $response->assertDontSeeText('another tree');
-        $response->assertDontSeeText('private one');
+        $this->get('search?t=label-trees&q=name')
+            ->assertStatus(200)
+            ->assertSeeText('random name')
+            ->assertDontSeeText('another tree')
+            ->assertDontSeeText('private one');
+    }
+
+    public function testIndexAccessViaProject()
+    {
+        $tree = LabelTreeTest::create([
+            'name' => 'private one',
+            'visibility_id' => Visibility::$private->id,
+        ]);
+
+        $project = ProjectTest::create();
+
+        $this->be($project->creator);
+        $this->get('search?t=label-trees')
+            ->assertStatus(200)
+            ->assertDontSeeText('private one');
+
+        $project->labelTrees()->attach($tree);
+
+        $this->get('search?t=label-trees')->assertSeeText('private one');
     }
 }
