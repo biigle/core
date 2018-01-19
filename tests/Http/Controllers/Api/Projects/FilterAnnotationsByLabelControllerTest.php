@@ -36,26 +36,16 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
         // take must be integer
         $response->assertStatus(422);
 
-        if ($this->isSqlite()) {
-            $expect1 = ["{$a1->id}", "{$a2->id}"];
-            $expect2 = ["{$a3->id}"];
-            $expect3 = ["{$a1->id}"];
-        } else {
-            $expect1 = [$a1->id, $a2->id];
-            $expect2 = [$a3->id];
-            $expect3 = [$a1->id];
-        }
-
         $response = $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}");
         $response->assertStatus(200);
-        $response->assertExactJson($expect1);
+        $response->assertExactJson([$a1->id, $a2->id]);
 
         $response = $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l3->label_id}");
         $response->assertStatus(200);
-        $response->assertExactJson($expect2);
+        $response->assertExactJson([$a3->id]);
 
         $response = $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}?take=1");
         $response->assertStatus(200);
-        $response->assertExactJson($expect3);
+        $response->assertExactJson([$a1->id]);
     }
 }

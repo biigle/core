@@ -20,9 +20,6 @@ class ImagesCleanupListenerTest extends TestCase
 
     public function testHandleMalformed()
     {
-        if ($this->isSqlite()) {
-            $this->markTestSkipped('SQLite does not have an explicit UUID datatype.');
-        }
         $this->setExpectedException(QueryException::class);
         with(new ImagesCleanupListener)->handle(['abc']);
     }
