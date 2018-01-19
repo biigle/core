@@ -86,7 +86,7 @@ class LargoControllerTest extends ApiTestCase
                 $l3->label_id => [$a3->id],
             ],
             'changed' => [
-                $a1->id => $l3->id,
+                $a1->id => $l3->label_id,
                 $a3->id => $this->labelRoot()->id,
             ],
         ]);
