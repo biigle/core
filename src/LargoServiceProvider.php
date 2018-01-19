@@ -50,6 +50,7 @@ class LargoServiceProvider extends ServiceProvider
                 'projectsShowToolbar',
                 'annotationsManualSidebarSettings',
                 'annotationsManualSidebarLabelTrees',
+                'labelTreesShowToolbar',
                 'manualTutorial',
             ],
         ]);
