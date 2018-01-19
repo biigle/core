@@ -26,14 +26,9 @@ class VolumeImageControllerTest extends ApiTestCase
         $response = $this->get("/api/v1/volumes/{$id}/images/filter/annotations");
         $response->assertStatus(403);
 
-        $expect = [$image->id];
-        if ($this->isSqlite()) {
-            $expect = array_map('strval', $expect);
-        }
-
         $this->beGuest();
         $response = $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
-            ->assertExactJson($expect);
+            ->assertExactJson([$image->id]);
         $response->assertStatus(200);
     }
 
@@ -76,13 +71,8 @@ class VolumeImageControllerTest extends ApiTestCase
             'user_id' => $this->guest()->id,
         ]);
 
-        $expect = [$image->id];
-        if ($this->isSqlite()) {
-            $expect = array_map('strval', $expect);
-        }
-
         $response = $this->get("/api/v1/volumes/{$id}/images/filter/annotations")
-            ->assertExactJson($expect);
+            ->assertExactJson([$image->id]);
     }
 
     public function testHasAnnotationUser()
@@ -116,14 +106,9 @@ class VolumeImageControllerTest extends ApiTestCase
         $response = $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}");
         $response->assertStatus(403);
 
-        $expect = [$image->id];
-        if ($this->isSqlite()) {
-            $expect = array_map('strval', $expect);
-        }
-
         $this->beGuest();
         $response = $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}")
-            ->assertExactJson($expect);
+            ->assertExactJson([$image->id]);
         $response->assertStatus(200);
     }
 
@@ -151,14 +136,9 @@ class VolumeImageControllerTest extends ApiTestCase
 
         $uid = $this->editor()->id;
 
-        $expect = [$image->id];
-        if ($this->isSqlite()) {
-            $expect = array_map('strval', $expect);
-        }
-
         $this->beEditor();
         $response = $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}")
-            ->assertExactJson($expect);
+            ->assertExactJson([$image->id]);
 
         $session->users()->attach($this->editor());
         $response = $this->get("/api/v1/volumes/{$tid}/images/filter/annotation-user/{$uid}")
