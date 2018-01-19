@@ -70,7 +70,7 @@ class VolumeSampleController extends Controller
                 return $query->pluck('uuid');
             }
 
-            $ids = $volume->images()->pluck('id')->filter(function ($v, $k) use ($step) {
+            $ids = $volume->orderedImages()->pluck('id')->filter(function ($v, $k) use ($step) {
                 return $k % $step === 0;
             });
 

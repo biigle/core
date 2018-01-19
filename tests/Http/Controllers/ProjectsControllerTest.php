@@ -13,21 +13,22 @@ class ProjectsControllerTest extends TestCase
     public function testShow()
     {
         $project = ProjectTest::create();
+        $id = $project->id;
         $user = UserTest::create();
 
       // not logged in
-      $response = $this->get('projects/1');
+      $response = $this->get("projects/{$id}");
         $response->assertStatus(302);
 
       // doesn't belong to project
       $this->be($user);
-        $response = $this->get('projects/1');
+        $response = $this->get("projects/{$id}");
         $response->assertStatus(403);
 
       // can't admin the project
       $project->addUserId($user->id, Role::$editor->id);
         Cache::flush();
-        $response = $this->get('projects/1');
+        $response = $this->get("projects/{$id}");
         $response->assertStatus(200);
 
       // diesn't exist

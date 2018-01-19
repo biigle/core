@@ -10,26 +10,10 @@ class VolumeSampleControllerTest extends ApiTestCase
     public function testIndex()
     {
         $id = $this->volume()->id;
-        $i1 = ImageTest::create([
-            'volume_id' => $id,
-            'filename' => 'file1',
-            'uuid' => 'uuid1',
-        ]);
-        $i2 = ImageTest::create([
-            'volume_id' => $id,
-            'filename' => 'file2',
-            'uuid' => 'uuid2',
-        ]);
-        $i3 = ImageTest::create([
-            'volume_id' => $id,
-            'filename' => 'file3',
-            'uuid' => 'uuid3',
-        ]);
-        $i4 = ImageTest::create([
-            'volume_id' => $id,
-            'filename' => 'file4',
-            'uuid' => 'uuid4',
-        ]);
+        $uuid1 = ImageTest::create(['volume_id' => $id, 'filename' => 'file1'])->uuid;
+        $uuid2 = ImageTest::create(['volume_id' => $id, 'filename' => 'file2'])->uuid;
+        $uuid3 = ImageTest::create(['volume_id' => $id, 'filename' => 'file3'])->uuid;
+        $uuid4 = ImageTest::create(['volume_id' => $id, 'filename' => 'file4'])->uuid;
 
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/sample");
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/sample/3");
@@ -41,14 +25,14 @@ class VolumeSampleControllerTest extends ApiTestCase
         $this->beGuest();
         $response = $this->get("/api/v1/volumes/{$id}/sample");
         $response->assertStatus(200);
-        $response->assertExactJson(['uuid1', 'uuid2', 'uuid3', 'uuid4']);
+        $response->assertExactJson([$uuid1, $uuid2, $uuid3, $uuid4]);
 
         $response = $this->get("/api/v1/volumes/{$id}/sample/1");
         $response->assertStatus(200);
-        $response->assertExactJson(['uuid1']);
+        $response->assertExactJson([$uuid1]);
 
         $response = $this->get("/api/v1/volumes/{$id}/sample/2");
         $response->assertStatus(200);
-        $response->assertExactJson(['uuid1', 'uuid3']);
+        $response->assertExactJson([$uuid1, $uuid3]);
     }
 }
