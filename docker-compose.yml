@@ -19,12 +19,14 @@ services:
     image: biigle/worker-dev
     user: 1000:1000
     restart: unless-stopped
+    depends_on:
+      - database
     build:
       context: ./
       dockerfile: .docker/worker-dev.dockerfile
     working_dir: /var/www
-    volumes_from:
-      - app
+    volumes:
+      - ./:/var/www
     environment:
       - "DB_PORT=5432"
       - "DB_HOST=database"
@@ -37,8 +39,8 @@ services:
       context: ./
       dockerfile: .docker/web-dev.dockerfile
     working_dir: /var/www
-    volumes_from:
-      - app
+    volumes:
+      - ./:/var/www
     ports:
       - 8000:443
 

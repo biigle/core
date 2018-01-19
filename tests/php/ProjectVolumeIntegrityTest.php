@@ -18,9 +18,6 @@ class ProjectVolumeIntegrityTest extends TestCase
 
     public function testProjectOnDeleteRestrict()
     {
-        if ($this->isSqlite()) {
-            $this->markTestSkipped('Can\'t test with SQLite because altering foreign key constraints is not supported.');
-        }
         $project = ProjectTest::create();
         $volume = VolumeTest::make();
         $project->volumes()->save($volume);

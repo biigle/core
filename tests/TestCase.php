@@ -19,21 +19,27 @@ class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        // reuse connection, else too many tests will reach the connection limit
+        // Reuse connection, else too many tests will reach the connection limit.
+        // Also migrate/refresh the database only the first time.
         if (!static::$pdo) {
-            if ($this->isSqlite()) {
-                // activate foreign key integrity checks on SQLite
-                DB::statement('PRAGMA foreign_keys = ON;');
-            }
             static::$pdo = DB::getPdo();
+            $this->artisan('migrate:refresh');
         } else {
             DB::setPdo(static::$pdo);
         }
 
-        $this->artisan('migrate:refresh');
+        $database = $this->app->make('db');
+        $database->connection(null)->beginTransaction();
 
         // Don't execute queued jobs
         Queue::fake();
+    }
+
+    public function tearDown()
+    {
+        $database = $this->app->make('db');
+        $database->connection(null)->rollBack();
+        parent::tearDown();
     }
 
     /**
@@ -48,10 +54,5 @@ class TestCase extends BaseTestCase
         $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
         return $app;
-    }
-
-    public function isSqlite()
-    {
-        return DB::connection() instanceof Illuminate\Database\SQLiteConnection;
     }
 }

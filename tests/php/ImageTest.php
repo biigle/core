@@ -64,9 +64,6 @@ class ImageTest extends ModelTestCase
 
     public function testVolumeOnDeleteCascade()
     {
-        if ($this->isSqlite()) {
-            $this->markTestSkipped('Can\'t test with SQLite because altering foreign key constraints is not supported.');
-        }
         $this->model->volume->delete();
         $this->assertNull($this->model->fresh());
     }

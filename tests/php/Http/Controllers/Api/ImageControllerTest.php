@@ -23,18 +23,19 @@ class ImageControllerTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/images/1');
+        $id = $this->image->id;
+        $this->doTestApiRoute('GET', "/api/v1/images/{$id}");
 
         // api key authentication
         $this->beUser();
-        $response = $this->get('/api/v1/images/1');
+        $response = $this->get("/api/v1/images/{$id}");
         $response->assertStatus(403);
 
         $this->beGuest();
         $response = $this->get('/api/v1/images/-1');
         $response->assertStatus(404);
 
-        $response = $this->get('/api/v1/images/1');
+        $response = $this->get("/api/v1/images/{$id}");
         $response->assertStatus(200);
         $content = $response->getContent();
         $this->assertStringStartsWith('{', $content);
@@ -71,29 +72,31 @@ class ImageControllerTest extends ApiTestCase
 
     public function testShowFile()
     {
-        $this->doTestApiRoute('GET', '/api/v1/images/1/file');
+        $id = $this->image->id;
+        $this->doTestApiRoute('GET', "/api/v1/images/{$id}/file");
 
         $this->beUser();
-        $response = $this->get('/api/v1/images/1/file');
+        $response = $this->get("/api/v1/images/{$id}/file");
         $response->assertStatus(403);
 
         $this->beGuest();
         $response = $this->get('/api/v1/images/-1/file');
         $response->assertStatus(404);
 
-        $response = $this->get('/api/v1/images/1/file');
+        $response = $this->get("/api/v1/images/{$id}/file");
         $response->assertStatus(200);
         $this->assertEquals('image/jpeg', $response->headers->get('content-type'));
     }
 
     public function testShowFileTiled()
     {
+        $id = $this->image->id;
         $this->image->tiled = true;
         $this->image->setTileProperties(['width' => 123, 'height' => 456]);
         $this->image->save();
 
         $this->beGuest();
-        $this->get('/api/v1/images/1/file')
+        $this->get("/api/v1/images/{$id}/file")
             ->assertStatus(200)
             ->assertExactJson([
                 'id' => $this->image->id,

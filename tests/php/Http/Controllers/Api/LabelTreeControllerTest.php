@@ -86,7 +86,7 @@ class LabelTreeControllerTest extends ApiTestCase
 
         // non-admins are not allowed to update
         $this->beEditor();
-        $response = $this->put('/api/v1/label-trees/1');
+        $response = $this->put("/api/v1/label-trees/{$id}");
         $response->assertStatus(403);
 
         $this->beAdmin();
@@ -227,9 +227,6 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->assertEquals(2, LabelTree::count());
 
         $tree = LabelTree::orderBy('id', 'desc')->first();
-        if ($this->isSqlite()) {
-            $tree->visibility_id = (int) $tree->visibility_id;
-        }
         $response->assertExactJson($tree->toArray());
 
         // creator gets first label tree admin

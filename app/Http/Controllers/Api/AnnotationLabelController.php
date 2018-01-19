@@ -7,7 +7,6 @@ use Biigle\Annotation;
 use Biigle\AnnotationLabel;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Database\QueryException;
 
 class AnnotationLabelController extends Controller
 {
@@ -99,15 +98,21 @@ class AnnotationLabelController extends Controller
         $label = Label::findOrFail($request->input('label_id'));
         $this->authorize('attach-label', [$annotation, $label]);
 
-        try {
-            $annotationLabel = new AnnotationLabel;
-            $annotationLabel->confidence = $request->input('confidence');
-            $annotationLabel->user()->associate($auth->user());
-            $annotationLabel->label()->associate($label);
-            $annotationLabel->annotation()->associate($annotation);
-            $annotationLabel->save();
-        } catch (QueryException $e) {
+        $annotationLabel = new AnnotationLabel;
+        $annotationLabel->confidence = $request->input('confidence');
+        $annotationLabel->user()->associate($auth->user());
+        $annotationLabel->label()->associate($label);
+        $annotationLabel->annotation()->associate($annotation);
+
+        $exists = AnnotationLabel::where('user_id', $annotationLabel->user_id)
+            ->where('label_id', $annotationLabel->label_id)
+            ->where('annotation_id', $annotationLabel->annotation_id)
+            ->exists();
+
+        if ($exists) {
             abort(400, 'The user already attached this label to the annotation.');
+        } else {
+            $annotationLabel->save();
         }
 
         // should not be returned
