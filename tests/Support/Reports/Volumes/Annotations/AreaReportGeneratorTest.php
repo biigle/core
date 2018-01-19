@@ -178,7 +178,7 @@ class AreaReportGeneratorTest extends TestCase
             ->with([
                 $a->id,
                 Shape::$rectangleId, 'Rectangle',
-                $al->id, $al->label->name,
+                $al->label_id, $al->label->name,
                 $image->id, $image->filename,
                 '', '', '',
                 200, 100, 20000,
@@ -234,7 +234,7 @@ class AreaReportGeneratorTest extends TestCase
             ->with([
                 $a->id,
                 Shape::$polygonId, 'Polygon',
-                $al->id, $al->label->name,
+                $al->label_id, $al->label->name,
                 $image->id, $image->filename,
                 '', '', '',
                 100, 200, 10000,
@@ -290,7 +290,7 @@ class AreaReportGeneratorTest extends TestCase
             ->with([
                 $a->id,
                 Shape::$ellipseId, 'Ellipse',
-                $al->id, $al->label->name,
+                $al->label_id, $al->label->name,
                 $image->id, $image->filename,
                 '', '', '',
                 200, 100, 5000 * M_PI,
@@ -346,7 +346,7 @@ class AreaReportGeneratorTest extends TestCase
             ->with([
                 $a->id,
                 Shape::$rectangleId, 'Rectangle',
-                $al->id, $al->label->name,
+                $al->label_id, $al->label->name,
                 $image->id, $image->filename,
                 0.2, 0.1, 0.02,
                 200, 100, 20000,
@@ -407,7 +407,7 @@ class AreaReportGeneratorTest extends TestCase
             ->with([
                 $annotation->id,
                 Shape::$rectangleId, 'Rectangle',
-                $al1->id, $al1->label->name,
+                $al1->label_id, $al1->label->name,
                 $image->id, $image->filename,
                 '', '', '',
                 200, 100, 20000,
@@ -418,7 +418,7 @@ class AreaReportGeneratorTest extends TestCase
             ->with([
                 $annotation->id,
                 Shape::$rectangleId, 'Rectangle',
-                $al2->id, $al2->label->name,
+                $al2->label_id, $al2->label->name,
                 $image->id, $image->filename,
                 '', '', '',
                 200, 100, 20000,
