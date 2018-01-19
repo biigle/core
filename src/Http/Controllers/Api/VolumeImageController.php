@@ -63,70 +63,62 @@ class VolumeImageController extends Controller
     /**
      * List the IDs of images having one or more image labels attached by the specified user.
      *
-     * @api {get} volumes/:tid/images/filter/image-label-user/:uid Get all images having image labels attached by a user
+     * @api {get} volumes/:vid/images/filter/image-label-user/:uid Get all images having image labels attached by a user
      * @apiGroup Volumes
      * @apiName VolumeImagesHasLabelUser
      * @apiPermission projectMember
      * @apiDescription Returns IDs of images having one or more image labels attached by the specified user.
      *
-     * @apiParam {Number} tid The volume ID
+     * @apiParam {Number} vid The volume ID
      * @apiParam {Number} uid The user ID
      *
      * @apiSuccessExample {json} Success response:
      * [1, 5, 6]
      *
-     * @param  int  $tid
+     * @param  int  $vid
      * @param  int  $uid
      * @return \Illuminate\Http\Response
      */
-    public function hasImageLabelUser($tid, $uid)
+    public function hasImageLabelUser($vid, $uid)
     {
-        $volume = Volume::findOrFail($tid);
+        $volume = Volume::findOrFail($vid);
         $this->authorize('access', $volume);
 
-        return DB::table('images')
-            ->where('volume_id', $tid)
-            ->whereExists(function ($query) use ($uid) {
-                $query->select(DB::raw(1))
-                      ->from('image_labels')
-                      ->where('image_labels.user_id', $uid)
-                      ->whereRaw('image_labels.image_id = images.id');
-            })
-            ->pluck('id');
+        return $volume->images()
+            ->join('image_labels', 'images.id', '=', 'image_labels.image_id')
+            ->where('image_labels.user_id', $uid)
+            ->distinct()
+            ->pluck('images.id');
     }
 
     /**
      * List the IDs of images having the specified label attached.
      *
-     * @api {get} volumes/:tid/images/filter/image-label/:lid Get all images having a certain label
+     * @api {get} volumes/:vid/images/filter/image-label/:lid Get all images having a certain label
      * @apiGroup Volumes
      * @apiName VolumeImagesHasImageLabel
      * @apiPermission projectMember
      * @apiDescription Returns IDs of images having the specified label attached to them.
      *
-     * @apiParam {Number} tid The volume ID
+     * @apiParam {Number} vid The volume ID
      * @apiParam {Number} lid The label ID
      *
      * @apiSuccessExample {json} Success response:
      * [1, 5, 6]
      *
-     * @param  int  $tid
+     * @param  int  $vid
      * @param  int  $lid
      * @return \Illuminate\Http\Response
      */
-    public function hasImageLabel($tid, $lid)
+    public function hasImageLabel($vid, $lid)
     {
-        $volume = Volume::findOrFail($tid);
+        $volume = Volume::findOrFail($vid);
         $this->authorize('access', $volume);
 
-        return DB::table('images')
-            ->where('volume_id', $tid)
-            ->whereExists(function ($query) use ($lid) {
-                $query->select(DB::raw(1))
-                      ->from('image_labels')
-                      ->where('image_labels.label_id', $lid)
-                      ->whereRaw('image_labels.image_id = images.id');
-            })
-            ->pluck('id');
+        return $volume->images()
+            ->join('image_labels', 'images.id', '=', 'image_labels.image_id')
+            ->where('image_labels.label_id', $lid)
+            ->distinct()
+            ->pluck('images.id');
     }
 }

@@ -44,10 +44,8 @@ class VolumeImageControllerTest extends ApiTestCase
         $response->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->get("/api/v1/volumes/{$id}/images/filter/labels");
-        $response->assertStatus(200);
-
-        $response = $this->get("/api/v1/volumes/{$id}/images/filter/labels")
+        $this->get("/api/v1/volumes/{$id}/images/filter/labels")
+            ->assertStatus(200)
             ->assertExactJson([$image->id]);
     }
 
@@ -76,17 +74,9 @@ class VolumeImageControllerTest extends ApiTestCase
         $response->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->get("/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}");
-        $response->assertStatus(200);
-
-        if ($this->isSqlite()) {
-            $expect = ["{$image->id}"];
-        } else {
-            $expect = [$image->id];
-        }
-
-        $response = $this->get("/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}")
-            ->assertExactJson($expect);
+        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label-user/{$uid}")
+            ->assertStatus(200)
+            ->assertExactJson([$image->id]);
     }
 
     public function testHasImageLabel()
@@ -99,12 +89,12 @@ class VolumeImageControllerTest extends ApiTestCase
             'user_id' => $this->editor()->id,
         ]);
 
-        $lid = $label->id;
+        $lid = $label->label_id;
 
-        // this image shouldn't appear
+        // This image shouldn't appear because it has the wrong label.
         $image2 = ImageTest::create(['volume_id' => $vid, 'filename' => 'b.jpg']);
         $label2 = ImageLabelTest::create([
-            'image_id' => $image->id,
+            'image_id' => $image2->id,
             'user_id' => $this->admin()->id,
         ]);
 
@@ -115,16 +105,8 @@ class VolumeImageControllerTest extends ApiTestCase
         $response->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->get("/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}");
-        $response->assertStatus(200);
-
-        if ($this->isSqlite()) {
-            $expect = ["{$image->id}"];
-        } else {
-            $expect = [$image->id];
-        }
-
-        $response = $this->get("/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}")
-            ->assertExactJson($expect);
+        $this->get("/api/v1/volumes/{$vid}/images/filter/image-label/{$lid}")
+            ->assertStatus(200)
+            ->assertExactJson([$image->id]);
     }
 }
