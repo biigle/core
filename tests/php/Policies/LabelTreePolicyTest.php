@@ -2,10 +2,12 @@
 
 namespace Biigle\Tests\Policies;
 
+use Cache;
 use TestCase;
 use Biigle\Role;
 use Biigle\Visibility;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\ProjectTest;
 use Biigle\Tests\LabelTreeTest;
 
 class LabelTreePolicyTest extends TestCase
@@ -43,6 +45,16 @@ class LabelTreePolicyTest extends TestCase
         $this->assertTrue($this->editor->can('access', $this->tree));
         $this->assertTrue($this->admin->can('access', $this->tree));
         $this->assertTrue($this->globalAdmin->can('access', $this->tree));
+    }
+
+    public function testAccessViaProjectMembership()
+    {
+        $this->tree->visibility_id = Visibility::$private->id;
+        $project = ProjectTest::create();
+        $this->assertFalse($project->creator->can('access', $this->tree));
+        $project->labelTrees()->attach($this->tree);
+        Cache::flush();
+        $this->assertTrue($project->creator->can('access', $this->tree));
     }
 
     public function testCreateLabel()

@@ -43,6 +43,11 @@ class LabelTreePolicy extends CachedPolicy
                 || DB::table(self::TABLE)
                     ->where('label_tree_id', $tree->id)
                     ->where('user_id', $user->id)
+                    ->exists()
+                || DB::table('project_user')
+                    ->join('label_tree_project', 'project_user.project_id', '=', 'label_tree_project.project_id')
+                    ->where('project_user.user_id', $user->id)
+                    ->where('label_tree_project.label_tree_id', $tree->id)
                     ->exists();
         });
     }
