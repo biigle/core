@@ -1,5 +1,4 @@
 @extends('admin.base')
-@inject('modules', 'Biigle\Services\Modules')
 
 @section('title', "Users admin area - {$shownUser->firstname}, {$shownUser->lastname}")
 
@@ -16,7 +15,5 @@
     @endif
 </p>
 
-@foreach ($modules->getMixins('adminShowUser') as $module => $nestedMixins)
-    @include($module.'::adminShowUser')
-@endforeach
+@mixin('adminShowUser')
 @endsection

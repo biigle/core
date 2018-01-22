@@ -1,4 +1,3 @@
-@inject('modules', 'Biigle\Services\Modules')
 <nav class="navbar navbar-default navbar-static-top">
 @hasSection('full-navbar')
     <div class="container-fluid">
@@ -32,9 +31,7 @@
                             <li>
                                 <a href="{{ route('home') }}" title="Dashboard">Dashboard</a>
                             </li>
-                            @foreach ($modules->getMixins('navbarMenuItem') as $module => $nestedMixins)
-                                @include($module.'::navbarMenuItem')
-                            @endforeach
+                            @mixin('navbarMenuItem')
                             @if ($user->isAdmin)
                                 <li>
                                     <a href="{{ route('admin') }}" title="Admin area">Admin area</a>
