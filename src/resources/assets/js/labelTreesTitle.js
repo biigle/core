@@ -40,7 +40,7 @@ biigle.$viewModel('label-trees-title', function (element) {
                 this.visibility_id = this.labelTree.visibility_id;
             },
             leaveTree: function () {
-                var confirmed = confirm('Do you really want to leave the label tree ' + this.labelTree.name + '?');
+                var confirmed = confirm('Do you really want to revoke your membership of label tree "' + this.labelTree.name + '"?');
 
                 if (confirmed) {
                     this.startLoading();
