@@ -1,4 +1,3 @@
-@inject('modules', 'Biigle\Services\Modules')
 <div class="row">
     <div class="col-sm-12 col-md-10 col-md-offset-1">
         <?php $routeName = Route::currentRouteName(); ?>
@@ -9,9 +8,7 @@
             <li role="presentation" @if (starts_with($routeName, 'system-messages')) class="active" @endif>
                 <a href="{{route('system-messages')}}" title="Show system messages"><span class="glyphicon glyphicon-bullhorn" aria-hidden="true"></span> System messages</a>
             </li>
-            @foreach ($modules->getMixins('notificationTabs') as $module => $nestedMixins)
-                @include($module.'::notificationTabs')
-            @endforeach
+            @mixin('notificationTabs')
         </ul>
     </div>
 </div>

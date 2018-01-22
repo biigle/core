@@ -1,5 +1,4 @@
 @extends('settings.base')
-@inject('modules', 'Biigle\Services\Modules')
 
 @section('title', 'Access tokens')
 
@@ -83,8 +82,6 @@
         </form>
     </div>
 </div>
-@foreach ($modules->getMixins('settings.tokens') as $module => $nestedMixins)
-    @include($module.'::settings.tokens')
-@endforeach
+@mixin('settings.tokens')
 
 @endsection

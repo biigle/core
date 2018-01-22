@@ -1,5 +1,4 @@
 @extends('app')
-@inject('modules', 'Biigle\Services\Modules')
 
 @section('title', 'Manual')
 
@@ -35,9 +34,7 @@
                 View and manage BIIGLE notifications in the notification center.
             </p>
 
-            @foreach ($modules->getMixins('manualTutorial') as $module => $nestedMixins)
-                @include($module.'::manualTutorial')
-            @endforeach
+            @mixin('manualTutorial')
         </div>
         <div class="row">
             <h2>Developer Documentation</h2>
@@ -54,9 +51,7 @@
                 The BIIGLE core provides the basic functions and framework for each instance. This documentation also describes how to use the API or develop custom BIIGLE modules.
             </p>
 
-            @foreach ($modules->getMixins('manualDocumentation') as $module => $nestedMixins)
-                @include($module.'::manualDocumentation')
-            @endforeach
+            @mixin('manualDocumentation')
         </div>
     </div>
 </div>

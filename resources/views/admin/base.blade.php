@@ -1,5 +1,4 @@
 @extends('app')
-@inject('modules', 'Biigle\Services\Modules')
 
 @section('content')
 <div class="container">
@@ -12,9 +11,7 @@
                 @if (config('biigle.admin-logs'))
                     <li role="presentation"@if(Route::is('admin-logs-index')) class="active" @endif><a href="{{route('admin-logs-index')}}">Logs</a></li>
                 @endif
-                @foreach ($modules->getMixins('adminMenu') as $module => $nestedMixins)
-                    @include($module.'::adminMenu', array('mixins' => $nestedMixins))
-                @endforeach
+                @mixin('adminMenu')
             </ul>
         </div>
         <div class="col-sm-8 col-md-9 col-lg-10">
