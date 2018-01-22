@@ -13,6 +13,11 @@ $router->group([
         'as'   => 'projectsLargo',
         'uses' => 'Projects\LargoController@index',
     ]);
+
+    $router->get('label-trees/{id}/catalog', [
+        'as'   => 'annotation-catalog',
+        'uses' => 'LabelTrees\AnnotationCatalogController@show',
+    ]);
 });
 
 $router->group([

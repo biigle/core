@@ -1,6 +1,6 @@
 @extends('manual.base')
 
-@section('manual-title') Largo @stop
+@section('manual-title', 'Largo')
 
 @section('manual-content')
     <div class="row">
@@ -27,7 +27,7 @@
         </p>
 
         <p>
-            The initial view of Largo shows a sidebar with all available label trees of the project or volume. When you select one of the labels, all annotations having this label attached to them will be shown in the grid.
+            The initial view of Largo shows a sidebar with all available label trees of the project or volume. When you select one of the labels, all annotations to which this label is attached will be shown in the grid. You can navigate the grid in the same way than the image grid of the <a href="{{route('manual-tutorials', ['volumes', 'volume-overview'])}}">volume overview</a>.
         </p>
 
         <div class="panel panel-info">

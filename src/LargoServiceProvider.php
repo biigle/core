@@ -52,6 +52,7 @@ class LargoServiceProvider extends ServiceProvider
                 'annotationsManualSidebarLabelTrees',
                 'labelTreesShowToolbar',
                 'manualTutorial',
+                'labelTreesManual',
             ],
         ]);
     }
