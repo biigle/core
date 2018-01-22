@@ -1,6 +1,4 @@
 @extends('app')
-@inject('modules', 'Biigle\Services\Modules')
-
 @section('title', $project->name)
 
 @push('styles')
@@ -19,9 +17,7 @@
     biigle.$declare('projects.redirectUrl', '{{route('home')}}');
     biigle.$declare('projects.labelTrees', {!! $labelTrees !!});
 </script>
-@foreach ($modules->getMixins('projectsShowScripts') as $module => $nestedMixins)
-    @include($module.'::projectsShowScripts')
-@endforeach
+@mixin('projectsShowScripts')
 @endpush
 
 @section('content')
@@ -34,9 +30,7 @@
     <div class="col-md-6">
         @include('projects::show.label-trees')
         @include('projects::show.members')
-        @foreach ($modules->getMixins('projectsShow') as $module => $nestedMixins)
-            @include($module.'::projectsShow')
-        @endforeach
+        @mixin('projectsShow')
     </div>
 </div>
 @endsection
