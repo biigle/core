@@ -67,10 +67,7 @@
                 </div>
             </div>
 
-            @foreach ($modules->getMixins('annotationsSettingsTab') as $module => $nestedMixins)
-                @include($module.'::annotationsSettingsTab', ['mixins' => $nestedMixins])
-            @endforeach
-
+            @mixin('annotationsSettingsTab')
         </div>
     </settings-tab>
 </sidebar-tab>

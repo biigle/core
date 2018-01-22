@@ -1,7 +1,6 @@
 @extends('manual.base')
-@inject('modules', 'Biigle\Services\Modules')
 
-@section('manual-title') Sidebar @stop
+@section('manual-title', 'Sidebar')
 
 @section('manual-content')
     <div class="row">
@@ -33,9 +32,7 @@
             The label trees tab shows all label trees that are available for the image. Here you can find and choose the labels you want to attach to new or existing annotations. Use the search field at the top to quickly find labels of deeply nested label trees. Mark up to ten labels as favorites to quickly select them with the <code>0</code>-<code>9</code> keys of your keyboard. To select a label as favorite, click the <i class="fa fa-star-o"></i> icon next to the label in the label tree. Now it will appear in the "Favorites" label tree at the top and can be selected with a shortcut key. Click the <i class="fa fa-star"></i> icon of a favorite label to remove it from the favorites.
         </p>
 
-        @foreach ($modules->getMixins('annotationsManualSidebarLabelTrees') as $module => $nestedMixins)
-            @include($module.'::annotationsManualSidebarLabelTrees')
-        @endforeach
+        @mixin('annotationsManualSidebarLabelTrees')
 
         <h3><a name="image-labels-tab"></a> <i class="fa fa-image"></i> Image Labels</h3>
 
@@ -120,8 +117,6 @@
             The annotation tooltip switch controls the display of a tooltip that appears when you hover your cursor over annotations. The tooltip shows the names of the labels that are attached to these annotations.
         </p>
 
-        @foreach ($modules->getMixins('annotationsManualSidebarSettings') as $module => $nestedMixins)
-            @include($module.'::annotationsManualSidebarSettings')
-        @endforeach
+        @mixin('annotationsManualSidebarSettings')
     </div>
 @endsection
