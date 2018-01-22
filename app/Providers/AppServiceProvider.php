@@ -4,6 +4,7 @@ namespace Biigle\Providers;
 
 use Auth;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,6 +28,12 @@ class AppServiceProvider extends ServiceProvider
                 'request_fulluri' => true,
             ]]);
         }
+
+        Blade::directive('mixin', function ($name) {
+            // Used code from:
+            // Illuminate\View\Compilers\Concerns\CompilesIncludes::compileInclude
+            return "<?php foreach (app('modules')->getViewMixins({$name}) as \$module => \$nestedMixins): ?><?php echo \$__env->make(\$module.'::'.{$name}, ['mixins' => \$nestedMixins], array_except(get_defined_vars(), array('__data', '__path')))->render(); ?><?php endforeach; ?>";
+        });
     }
 
     /**
