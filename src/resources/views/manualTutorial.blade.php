@@ -11,3 +11,6 @@
 <p>
     Larn how to create, modify or delete labels of a label tree.
 </p>
+@foreach ($modules->getMixins('labelTreesManual') as $module => $nestedMixins)
+    @include($module.'::labelTreesManual')
+@endforeach

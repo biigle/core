@@ -5,8 +5,8 @@
 
 @push('styles')
 <link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
-@foreach ($modules->getMixins('labelTreeShowStyles') as $module => $nestedMixins)
-    @include($module.'::labelTreeShowStyles')
+@foreach ($modules->getMixins('labelTreesShowStyles') as $module => $nestedMixins)
+    @include($module.'::labelTreesShowStyles')
 @endforeach
 @endpush
 
@@ -31,8 +31,8 @@
         biigle.$declare('labelTrees.defaultRoleId', {!! Biigle\Role::$editor->id !!});
     @endcan
 </script>
-@foreach ($modules->getMixins('labelTreeShowScripts') as $module => $nestedMixins)
-    @include($module.'::labelTreeShowScripts')
+@foreach ($modules->getMixins('labelTreesShowScripts') as $module => $nestedMixins)
+    @include($module.'::labelTreesShowScripts')
 @endforeach
 @endpush
 
@@ -40,13 +40,11 @@
 @section('content')
 <div class="container">
     @include('label-trees::show.title')
+    @include('label-trees::show.toolbar')
     <div class="col-md-6">
         @include('label-trees::show.labels')
     </div>
     <div class="col-md-6">
-        @foreach ($modules->getMixins('labelTreeShow') as $module => $nestedMixins)
-            @include($module.'::labelTreeShow')
-        @endforeach
         @include('label-trees::show.projects')
         @can('update', $tree)
             @include('label-trees::show.authorized-projects')

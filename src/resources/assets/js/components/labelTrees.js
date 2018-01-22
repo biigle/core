@@ -10,8 +10,8 @@ biigle.$component('labelTrees.components.labelTrees', {
             '<typeahead v-if="typeahead" :items="labels" @select="handleSelect" placeholder="Label name"></typeahead>' +
         '</div>' +
         '<div class="label-trees__body">' +
-            '<label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>' +
-            '<label-tree :name="tree.name" :labels="tree.labels" :multiselect="multiselect" :show-favourites="showFavourites" v-for="tree in trees" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>' +
+            '<label-tree v-if="hasFavourites" name="Favourites" :labels="favourites" :show-favourites="showFavourites" :flat="true" :collapsible="collapsible" @select="handleSelect" @deselect="handleDeselect" @remove-favourite="handleRemoveFavourite"></label-tree>' +
+            '<label-tree :name="tree.name" :labels="tree.labels" :multiselect="multiselect" :show-favourites="showFavourites" :collapsible="collapsible" v-for="tree in trees" @select="handleSelect" @deselect="handleDeselect"  @add-favourite="handleAddFavourite" @remove-favourite="handleRemoveFavourite"></label-tree>' +
         '</div>' +
     '</div>',
     components: {
@@ -46,6 +46,10 @@ biigle.$component('labelTrees.components.labelTrees', {
         showFavourites: {
             type: Boolean,
             default: false,
+        },
+        collapsible: {
+            type: Boolean,
+            default: true,
         },
     },
     computed: {
