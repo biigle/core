@@ -192,7 +192,10 @@ class Project extends Model
      */
     public function volumes()
     {
-        return $this->belongsToMany(Volume::class);
+        return $this->belongsToMany(Volume::class)
+            ->using(ProjectVolume::class)
+            ->withPivot('id')
+            ->withTimestamps();
     }
 
     /**
@@ -214,30 +217,29 @@ class Project extends Model
     }
 
     /**
-     * Detaches the volume from this project. Fails if this is the last
-     * project, the volume is attached to, unless force is `true`.
+     * Detaches the volume from this project. Fails if this would delete annotations,
+     * unless force is `true`.
      *
      * @param Volume $volume
-     * @param bool $force Delete the volume completely if this is the last
-     * project it belongs to
+     * @param bool $force Detach the volume even if this deletes annotations.
      */
-    public function removeVolume($volume, $force = false)
+    public function detachVolume($volume, $force = false)
     {
         if (!$volume) {
-            // nothing to remove
+            // nothing to detach
             return;
         }
 
         // this is the last project the volume belongs to, so it should be
         // deleted
-        if ($volume->projects()->count() === 1) {
-            // but delete the volume only with force!
-            if (!$force) {
-                abort(400, 'The volume would not belong to any project after detaching. Use the "force" argument to detach and delete it.');
-            }
+        // if ($volume->projects()->count() === 1) {
+        //     // but delete the volume only with force!
+        //     if (!$force) {
+        //         abort(400, 'The volume would not belong to any project after detaching. Use the "force" argument to detach and delete it.');
+        //     }
 
-            $volume->delete();
-        }
+        //     $volume->delete();
+        // }
 
         // if the volume still belongs to other projects, just detach it
         $this->volumes()->detach($volume->id);
@@ -246,26 +248,26 @@ class Project extends Model
     }
 
     /**
-     * Detaches all volumes from this project. Fails if this is the last
-     * project, one of the volumes is attached to, unless force is `true`.
+     * Detaches all volumes from this project. Fails if this would delete annotations,
+     * unless force is `true`.
      *
      * @param bool $force
      */
-    public function removeAllVolumes($force = false)
+    public function detachAllVolumes($force = false)
     {
-        $volumes = $this->volumes;
+        // if (!$force) {
+        //     foreach ($volumes as $volume) {
+        //         if ($volume->projects()->count() === 1) {
+        //             abort(400, 'One volume would not belong to any project after detaching. Use the "force" argument or detach and delete it first.');
+        //         }
+        //     }
+        // }
 
-        if (!$force) {
-            foreach ($volumes as $volume) {
-                if ($volume->projects()->count() === 1) {
-                    abort(400, 'One volume would not belong to any project after detaching. Use the "force" argument or detach and delete it first.');
-                }
-            }
-        }
+        $this->volumes()->detach();
 
-        foreach ($volumes as $volume) {
-            $this->removeVolume($volume, $force);
-        }
+        // foreach ($volumes as $volume) {
+        //     $this->removeVolume($volume, $force);
+        // }
         Cache::forget("project-thumbnail-{$this->id}");
     }
 
@@ -298,8 +300,8 @@ class Project extends Model
     {
         return Cache::remember("project-thumbnail-{$this->id}", 60, function () {
             $volume = $this->volumes()
-                ->select('id')
-                ->orderBy('id')
+                ->select('volumes.id')
+                ->orderBy('volumes.id')
                 ->first();
 
             return $volume ? $volume->thumbnail : null;

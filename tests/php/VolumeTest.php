@@ -81,6 +81,11 @@ class VolumeTest extends ModelTestCase
         $this->assertEquals(0, $this->model->projects()->count());
         $project->volumes()->attach($this->model);
         $this->assertEquals(1, $this->model->projects()->count());
+        $pivot = $project->volumes()->first()->pivot;
+        $this->assertInstanceOf(\Biigle\ProjectVolume::class, $pivot);
+        $this->assertNotNull($pivot->id);
+        $this->assertNotNull($pivot->created_at);
+        $this->assertNotNull($pivot->updated_at);
     }
 
     public function testSetMediaType()

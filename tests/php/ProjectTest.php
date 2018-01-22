@@ -126,6 +126,11 @@ class ProjectTest extends ModelTestCase
         $this->model->volumes()->save($volume);
         $this->assertEquals($volume->id, $this->model->volumes()->first()->id);
         $this->assertEquals(1, $this->model->volumes()->count());
+        $pivot = $this->model->volumes()->first()->pivot;
+        $this->assertInstanceOf(\Biigle\ProjectVolume::class, $pivot);
+        $this->assertNotNull($pivot->id);
+        $this->assertNotNull($pivot->created_at);
+        $this->assertNotNull($pivot->updated_at);
     }
 
     public function testAddUserId()
@@ -189,56 +194,52 @@ class ProjectTest extends ModelTestCase
         $this->model->changeRole($admin->id, Role::$editor->id);
     }
 
-    public function testRemoveVolume()
+    public function testDetachVolume()
     {
-        $secondProject = self::create();
-        $secondProject->save();
         $volume = VolumeTest::create();
         $this->model->volumes()->attach($volume);
-        $secondProject->volumes()->attach($volume);
 
-        $this->assertNotEmpty($secondProject->fresh()->volumes);
-        $secondProject->removeVolume($volume);
-        $this->assertEmpty($secondProject->fresh()->volumes);
+        $this->model->detachVolume($volume);
+        $this->assertFalse($this->model->volumes()->exists());
+        $this->assertNotNull($volume->fresh());
 
-        try {
-            // trying to detach a volume belonging to only one project fails
-            // without force
-            $this->model->removeVolume($volume);
-            $this->assertFalse(true);
-        } catch (HttpException $e) {
-            $this->assertNotNull($e);
-        }
+        // try {
+        //     // trying to detach a volume belonging to only one project fails
+        //     // without force
+        //     $this->model->detachVolume($volume);
+        //     $this->assertFalse(true);
+        // } catch (HttpException $e) {
+        //     $this->assertNotNull($e);
+        // }
 
-        // use the force to detach and delete the volume
-        $this->model->removeVolume($volume, true);
-        $this->assertNull($volume->fresh());
+        // // use the force to detach and delete the volume
+        // $this->model->detachVolume($volume, true);
+        // $this->assertNull($volume->fresh());
+        $this->markTestIncomplete('Require force if annotations would be deleted.');
     }
 
-    public function testRemoveAllVolumes()
+    public function testDetachAllVolumes()
     {
-        $secondProject = self::create();
-        $secondProject->save();
         $volume = VolumeTest::create();
         $this->model->volumes()->attach($volume);
-        $secondProject->volumes()->attach($volume);
 
-        $this->assertNotEmpty($secondProject->fresh()->volumes);
-        $secondProject->removeAllVolumes();
-        $this->assertEmpty($secondProject->fresh()->volumes);
+        $this->model->detachAllVolumes();
+        $this->assertFalse($this->model->volumes()->exists());
+        $this->assertNotNull($volume->fresh());
 
-        try {
-            // trying to detach a volume belonging to only one project fails
-            // without force
-            $this->model->removeAllVolumes();
-            $this->assertFalse(true);
-        } catch (HttpException $e) {
-            $this->assertNotNull($e);
-        }
+        // try {
+        //     // trying to detach a volume belonging to only one project fails
+        //     // without force
+        //     $this->model->detachAllVolumes();
+        //     $this->assertFalse(true);
+        // } catch (HttpException $e) {
+        //     $this->assertNotNull($e);
+        // }
 
-        // use the force to detach and delete the volume
-        $this->model->removeAllVolumes(true);
-        $this->assertNull($volume->fresh());
+        // // use the force to detach and delete the volume
+        // $this->model->detachAllVolumes(true);
+        // $this->assertNull($volume->fresh());
+        $this->markTestIncomplete('Require force if annotations would be deleted.');
     }
 
     public function testLabelTrees()

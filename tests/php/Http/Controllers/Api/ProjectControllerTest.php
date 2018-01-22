@@ -126,9 +126,9 @@ class ProjectControllerTest extends ApiTestCase
 
         // project still has a volume belonging only to this project
         $this->beAdmin();
-        $this->assertNotNull($this->project()->fresh());
-        $response = $this->json('DELETE', "/api/v1/projects/{$id}");
-        $response->assertStatus(400);
+        // $this->assertNotNull($this->project()->fresh());
+        // $response = $this->json('DELETE', "/api/v1/projects/{$id}");
+        // $response->assertStatus(400);
 
         $this->assertNotNull($this->project()->fresh());
         $response = $this->json('DELETE', "/api/v1/projects/{$id}", ['force' => 'true']);
@@ -138,5 +138,7 @@ class ProjectControllerTest extends ApiTestCase
         // already deleted projects can't be re-deleted
         $response = $this->delete("/api/v1/projects/{$id}");
         $response->assertStatus(404);
+
+        $this->markTestIncomplete('Require force if this would delete annotations?');
     }
 }

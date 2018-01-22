@@ -104,4 +104,7 @@ class VolumeController extends Controller
                 ->with('saved', $isDirty);
         }
     }
+
+    // TODO destroy
+    // Fire the cleanup event for the images.
 }

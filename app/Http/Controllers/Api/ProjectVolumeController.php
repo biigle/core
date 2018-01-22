@@ -156,14 +156,14 @@ class ProjectVolumeController extends Controller
      * Attaches the existing specified volume to the existing specified
      * project.
      *
-     * @api {post} projects/:pid/volumes/:tid Attach a volume
+     * @api {post} projects/:pid/volumes/:vid Attach a volume
      * @apiGroup Projects
      * @apiName AttachProjectVolumes
      * @apiPermission projectAdmin
      * @apiDescription This endpoint attaches an existing volume to another existing project. The volume then will belong to multiple projects. The user performing this operation needs to be project admin in both the project, the volume initially belongs to, and the project, the volume should be attached to.
      *
      * @apiParam {Number} pid ID of the project that should get the annotation.
-     * @apiParam {Number} tid ID of the existing volume to attach to the project.
+     * @apiParam {Number} vid ID of the existing volume to attach to the project.
      *
      * @param Request $request
      * @param int $projectId
@@ -179,9 +179,9 @@ class ProjectVolumeController extends Controller
         $project = Project::findOrFail($projectId);
         $this->authorize('update', $project);
 
-        if ($project->volumes()->where('id', $volumeId)->exists()) {
+        if ($project->volumes()->where('volumes.id', $volumeId)->exists()) {
             return $this->buildFailedValidationResponse($request, [
-                'tid' => 'The volume is already attached to the project.',
+                'vid' => 'The volume is already attached to the project.',
             ]);
         }
 
@@ -189,20 +189,23 @@ class ProjectVolumeController extends Controller
     }
 
     /**
-     * Removes the specified volume from the specified project.
-     * If it is the last project the volume belongs to, the volume is
-     * deleted (if the `force` argument is present in the request).
+     * Detaches the specified volume from the specified project. If this would delete
+     * annotations, the `force` parameter is required.
      *
-     * @api {delete} projects/:pid/volumes/:tid Detach/delete a volume
+     * @api {delete} projects/:pid/volumes/:vid Detach a volume
      * @apiGroup Projects
      * @apiName DestroyProjectVolumes
      * @apiPermission projectAdmin
-     * @apiDescription Detaches a volume from a project. The volume will no longer belong to the project it was detached from. If the volume belongs only to a single project, it cannot be detached but should be deleted. Use the `force` parameter to delete a volume belonging only to one project.
+     * @apiDescription Detaches a volume from a project. This will delete any
+     * annotations that were created in the project and volume. If there are annotations
+     * to be deleted, the `force` parameter is required.
      *
-     * @apiParam {Number} pid The project ID, the volume should be detached from.
-     * @apiParam {Number} tid The volume ID.
+     * @apiParam {Number} pid ID of the project, from which the volume should be
+     * detached.
+     * @apiParam {Number} vid The volume ID.
      *
-     * @apiParam (Optional parameters) {Boolean} force If the volume only belongs to a single project, set this parameter to delete it instead of detaching it. Otherwise the volume cannot be removed.
+     * @apiParam (Optional parameters) {Boolean} force Set this parameter if the request
+     * should delete annotations. Else the request will be rejected.
      *
      * @param Request $request
      * @param  int  $projectId
@@ -215,7 +218,7 @@ class ProjectVolumeController extends Controller
         $volume = $project->volumes()->findOrFail($volumeId);
         $this->authorize('destroy', $volume);
 
-        $project->removeVolume($volume, $request->has('force'));
+        $project->detachVolume($volume, $request->has('force'));
 
         return response('Removed.', 200);
     }

@@ -234,9 +234,9 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response->assertStatus(403);
 
         $this->beAdmin();
-        $response = $this->delete("/api/v1/projects/{$pid}/volumes/{$id}");
-        // trying to delete without force
-        $response->assertStatus(400);
+        // $response = $this->delete("/api/v1/projects/{$pid}/volumes/{$id}");
+        // // trying to delete without force
+        // $response->assertStatus(400);
 
         $otherVolume = VolumeTest::create();
         $response = $this->delete("/api/v1/projects/{$pid}/volumes/{$otherVolume->id}");
@@ -254,6 +254,10 @@ class ProjectVolumeControllerTest extends ApiTestCase
         ]);
         // deleting with force succeeds
         $response->assertStatus(200);
-        $this->assertNull($this->volume->fresh());
+        $this->assertNotNull($this->volume->fresh());
+        $this->assertFalse($this->project()->volumes()->exists());
+
+        $this->markTestIncomplete('Require force if this would delete annotations.');
+        $this->markTestIncomplete('Assert that a cleanup event is fired for the deleted annotations.');
     }
 }

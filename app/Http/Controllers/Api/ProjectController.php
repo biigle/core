@@ -174,11 +174,13 @@ class ProjectController extends Controller
      * @apiGroup Projects
      * @apiName DestroyProjects
      * @apiPermission projectAdmin
-     * @apiDescription A project cannot be deleted if it contains any volumes that belong **only** to this project. To delete the project **and** these volumes, use the `force` parameter.
+     * @apiDescription Requires the `force` parameter if the request would delete
+     * annotations.
      *
      * @apiParam {Number} id The project ID.
      *
-     * @apiParam (Optional parameters) {Boolean} force Set this parameter to delete the project **and** all volumes that belong only to this project.
+     * @apiParam (Optional parameters) {Boolean} force Set this parameter if the request
+     * should delete annotations. Else the request will be rejected.
      *
      * @param Request $request
      * @param  int  $id
@@ -190,7 +192,7 @@ class ProjectController extends Controller
         $this->authorize('destroy', $project);
 
         try {
-            $project->removeAllVolumes($request->has('force'));
+            $project->detachAllVolumes($request->has('force'));
         } catch (HttpException $e) {
             if (static::isAutomatedRequest($request)) {
                 abort(400, $e->getMessage());
