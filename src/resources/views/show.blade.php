@@ -1,7 +1,5 @@
 @extends('app')
 @section('full-navbar', true)
-@inject('modules', 'Biigle\Services\Modules')
-
 @section('title', $volume->name)
 
 @push('scripts')
@@ -23,17 +21,13 @@
             biigle.$declare('volumes.labelTrees', {!!$labelTrees!!});
         @endcan
     </script>
-    @foreach ($modules->getMixins('volumesScripts') as $module => $nestedMixins)
-        @include($module.'::volumesScripts', ['mixins' => $nestedMixins])
-    @endforeach
+    @mixin('volumesScripts')
 @endpush
 
 @push('styles')
     <link href="{{ cachebust_asset('vendor/label-trees/styles/main.css') }}" rel="stylesheet">
     <link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
-    @foreach ($modules->getMixins('volumesStyles') as $module => $nestedMixins)
-        @include($module.'::volumesStyles', ['mixins' => $nestedMixins])
-    @endforeach
+    @mixin('volumesStyles')
 @endpush
 
 @section('navbar')
@@ -59,9 +53,7 @@
         <sidebar-tab name="sorting" icon="sort" title="Sort images" :highlight="sortingActive">
             @include('volumes::show.sorting')
         </sidebar-tab>
-        @foreach ($modules->getMixins('volumesSidebar') as $module => $nestedMixins)
-            @include($module.'::volumesSidebar')
-        @endforeach
+        @mixin('volumesSidebar')
     </sidebar>
     <div class="volume-content">
         <loader-block v-cloak :active="loading"></loader-block>

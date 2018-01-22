@@ -1,6 +1,4 @@
 @extends('app')
-@inject('modules', 'Biigle\Services\Modules')
-
 @section('title', "Edit volume {$volume->name}")
 
 @push('scripts')
@@ -10,16 +8,12 @@
         biigle.$declare('volumes.annotationSessions', {!! $annotationSessions !!});
         biigle.$declare('volumes.images', {!! $images !!});
     </script>
-    @foreach ($modules->getMixins('volumesEditScripts') as $module => $nestedMixins)
-        @include($module.'::volumesEditScripts', ['mixins' => $nestedMixins])
-    @endforeach
+    @mixin('volumesEditScripts')
 @endpush
 
 @push('styles')
     <link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
-    @foreach ($modules->getMixins('volumesEditStyles') as $module => $nestedMixins)
-        @include($module.'::volumesEditStyles', ['mixins' => $nestedMixins])
-    @endforeach
+    @mixin('volumesEditStyles')
 @endpush
 
 @section('navbar')
@@ -40,16 +34,12 @@
     <div class="col-sm-6">
         @include('volumes::edit.information')
         @include('volumes::edit.annotation-sessions')
-        @foreach ($modules->getMixins('volumesEditLeft') as $module => $nestedMixins)
-            @include($module.'::volumesEditLeft', ['mixins' => $nestedMixins])
-        @endforeach
+        @mixin('volumesEditLeft')
     </div>
     <div class="col-sm-6">
         @include('volumes::edit.images')
         @include('volumes::edit.metadata')
-        @foreach ($modules->getMixins('volumesEditRight') as $module => $nestedMixins)
-            @include($module.'::volumesEditRight', ['mixins' => $nestedMixins])
-        @endforeach
+        @mixin('volumesEditRight')
     </div>
 </div>
 
