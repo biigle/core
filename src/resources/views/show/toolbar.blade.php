@@ -3,9 +3,7 @@
 @if ($modules->getMixins('labelTreesShowToolbar'))
     <div class="col-md-12 form">
         <div class="form-group">
-            @foreach ($modules->getMixins('labelTreesShowToolbar') as $module => $nestedMixins)
-                @include($module.'::labelTreesShowToolbar')
-            @endforeach
+            @mixin('labelTreesShowToolbar')
         </div>
     </div>
 @endif
