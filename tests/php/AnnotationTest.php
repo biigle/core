@@ -6,6 +6,7 @@ use Biigle\Role;
 use Biigle\Shape;
 use ModelTestCase;
 use Biigle\Annotation;
+use Biigle\ProjectVolume;
 
 class AnnotationTest extends ModelTestCase
 {
@@ -18,15 +19,22 @@ class AnnotationTest extends ModelTestCase
     {
         $this->assertNotNull($this->model->image);
         $this->assertNotNull($this->model->shape);
+        $this->assertNotNull($this->model->project_volume_id);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
     }
 
-    public function testImageOnDeleteCascade()
+    public function testProjectVolumeOnDeleteCascade()
     {
         $this->assertNotNull(Annotation::find($this->model->id));
-        $this->model->image()->delete();
+        ProjectVolume::where('id', $this->model->project_volume_id)->delete();
         $this->assertNull(Annotation::find($this->model->id));
+    }
+
+    public function testImageOnDeleteRestrict()
+    {
+        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->model->image()->delete();
     }
 
     public function testShapeOnDeleteRestrict()

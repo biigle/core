@@ -93,6 +93,8 @@ class ProjectVolumeController extends Controller
      */
     public function store(Request $request, Guard $auth, $id)
     {
+        // TODO implement this independently from an initial project (but with optional
+        // project_id parameter similar to label trees).
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
         $this->validate($request, Volume::$createRules);
@@ -190,22 +192,22 @@ class ProjectVolumeController extends Controller
 
     /**
      * Detaches the specified volume from the specified project. If this would delete
-     * annotations, the `force` parameter is required.
+     * annotations or image labels, the `force` parameter is required.
      *
      * @api {delete} projects/:pid/volumes/:vid Detach a volume
      * @apiGroup Projects
      * @apiName DestroyProjectVolumes
      * @apiPermission projectAdmin
      * @apiDescription Detaches a volume from a project. This will delete any
-     * annotations that were created in the project and volume. If there are annotations
-     * to be deleted, the `force` parameter is required.
+     * annotations or image labels that were created in the project and volume. If there
+     * are annotations or image labels to be deleted, the `force` parameter is required.
      *
      * @apiParam {Number} pid ID of the project, from which the volume should be
      * detached.
      * @apiParam {Number} vid The volume ID.
      *
      * @apiParam (Optional parameters) {Boolean} force Set this parameter if the request
-     * should delete annotations. Else the request will be rejected.
+     * should delete annotations or image labels. Else the request will be rejected.
      *
      * @param Request $request
      * @param  int  $projectId
@@ -219,7 +221,5 @@ class ProjectVolumeController extends Controller
         $this->authorize('destroy', $volume);
 
         $project->detachVolume($volume, $request->has('force'));
-
-        return response('Removed.', 200);
     }
 }

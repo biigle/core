@@ -8,6 +8,7 @@ use Biigle\User;
 use Biigle\Role;
 use Biigle\Image;
 use Biigle\Label;
+use Biigle\ProjectVolume;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ImagePolicy extends CachedPolicy
@@ -37,41 +38,36 @@ class ImagePolicy extends CachedPolicy
      */
     public function access(User $user, Image $image)
     {
-        // put this to permanent cache for rapid querying of image thumbnails
+        // Put this to permanent cache for rapid querying of image thumbnails.
         return Cache::remember("image-can-access-{$user->id}-{$image->volume_id}", 0.5, function () use ($user, $image) {
             // check if user is member of one of the projects, the image belongs to
             return DB::table('project_user')
-                ->where('user_id', $user->id)
-                ->whereIn('project_id', function ($query) use ($image) {
-                    // the projects, the image belongs to
-                    $query->select('project_id')
-                        ->from('project_volume')
-                        ->where('volume_id', $image->volume_id);
-                })
+                ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
+                ->where('project_user.user_id', $user->id)
+                ->where('project_volume.volume_id', $image->volume_id)
                 ->exists();
         });
     }
 
     /**
-     * Determine if the user can add an annotation to given image.
+     * Determine if the user can add an annotation via the given project volume
+     * to given image.
      *
      * @param  User  $user
      * @param  Image  $image
      * @return bool
      */
-    public function addAnnotation(User $user, Image $image)
+    public function addAnnotation(User $user, Image $image, ProjectVolume $pivot)
     {
-        return $this->remember("image-can-add-annotation-{$user->id}-{$image->id}", function () use ($user, $image) {
-            // check if user is member of one of the projects, the image belongs to
+        return $this->remember("image-can-add-annotation-{$user->id}-{$image->id}-{$pivot->id}", function () use ($user, $image, $pivot) {
+            // Check if user is member of the project, the image belongs to via the
+            // project volume.
             return DB::table('project_user')
-                ->where('user_id', $user->id)
-                ->whereIn('project_id', function ($query) use ($image) {
-                    // the projects, the image belongs to
-                    $query->select('project_id')
-                        ->from('project_volume')
-                        ->where('volume_id', $image->volume_id);
-                })
-                ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
+                ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
+                ->where('project_user.user_id', $user->id)
+                ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id])
+                ->where('project_volume.volume_id', $image->volume_id)
+                ->where('project_volume.id', $pivot->id)
                 ->exists();
         });
     }
@@ -88,14 +84,10 @@ class ImagePolicy extends CachedPolicy
         return $this->remember("image-can-destroy-{$user->id}-{$image->id}", function () use ($user, $image) {
             // check if user is member of one of the projects, the image belongs to
             return DB::table('project_user')
-                ->where('user_id', $user->id)
-                ->whereIn('project_id', function ($query) use ($image) {
-                    // the projects, the image belongs to
-                    $query->select('project_id')
-                        ->from('project_volume')
-                        ->where('volume_id', $image->volume_id);
-                })
-                ->where('project_role_id', Role::$admin->id)
+                ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
+                ->where('project_user.user_id', $user->id)
+                ->where('project_user.project_role_id', Role::$admin->id)
+                ->where('project_volume.volume_id', $image->volume_id)
                 ->exists();
         });
     }
@@ -114,6 +106,8 @@ class ImagePolicy extends CachedPolicy
      */
     public function attachLabel(User $user, Image $image, Label $label)
     {
+        // TODO take code from AnnotationPolicy::attachLabel
+
         return $this->remember("image-can-attach-label-{$user->id}-{$image->id}-{$label->id}", function () use ($user, $image, $label) {
             // projects, the image belongs to *and* the user is editor or admin of
             $projectIds = DB::table('project_user')

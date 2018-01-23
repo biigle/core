@@ -53,6 +53,8 @@ class TestCase extends BaseTestCase
 
         $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
+        Hash::setRounds(4);
+
         return $app;
     }
 }

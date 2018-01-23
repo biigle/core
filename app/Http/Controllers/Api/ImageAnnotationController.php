@@ -7,6 +7,7 @@ use Biigle\Image;
 use Biigle\Shape;
 use Biigle\Label;
 use Biigle\Annotation;
+use Biigle\ProjectVolume;
 use Biigle\AnnotationLabel;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
@@ -61,6 +62,7 @@ class ImageAnnotationController extends Controller
      */
     public function index($id, Guard $auth)
     {
+        // TODO require project_id in URL?
         $image = Image::findOrFail($id);
         $this->authorize('access', $image);
         $user = $auth->user();
@@ -80,11 +82,12 @@ class ImageAnnotationController extends Controller
      * @apiGroup Annotations
      * @apiName StoreImageAnnotations
      * @apiPermission projectEditor
-     * @apiDescription Only labels may be used that belong to a label tree used by one of
-     * the projects, the image belongs to.
+     * @apiDescription Only labels may be used that belong to a label tree which is
+     * attached to the project specified by `project_id`.
      *
      * @apiParam {Number} id The image ID.
      *
+     * @apiParam (Required arguments) {Number} project_id ID of the project to which the new annotation should belong.
      * @apiParam (Required arguments) {Number} shape_id ID of the shape of the new annotation.
      * @apiParam (Required arguments) {Number} label_id ID of the initial category label of the new annotation.
      * @apiParam (Required arguments) {Number} confidence Confidence of the initial annotation label of the new annotation. Must be a value between 0 and 1.
@@ -101,7 +104,8 @@ class ImageAnnotationController extends Controller
      *    "shape_id": 3,
      *    "label_id": 1,
      *    "confidence": 0.75,
-     *    "points": [10, 11, 20, 21]
+     *    "points": [10, 11, 20, 21],
+     *    "project_id": 1
      * }
      *
      * @apiParamExample {String} Request example (String):
@@ -109,6 +113,7 @@ class ImageAnnotationController extends Controller
      * label_id: 1
      * confidence: 0.75
      * points: '[10, 11, 20, 21]'
+     * project_id: 1
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -118,6 +123,7 @@ class ImageAnnotationController extends Controller
      *    "shape_id": 3,
      *    "updated_at": "2015-02-18 11:45:00",
      *    "points": [10, 11, 20, 21],
+     *    "project_volume_id": 21,
      *    "labels": [
      *       {
      *          "confidence": 1,
@@ -147,7 +153,10 @@ class ImageAnnotationController extends Controller
     public function store(Request $request, Guard $auth, $id)
     {
         $image = Image::findOrFail($id);
-        $this->authorize('add-annotation', $image);
+        $pivot = ProjectVolume::where('volume_id', $image->volume_id)
+            ->where('project_id', $request->input('project_id'))
+            ->firstOrFail();
+        $this->authorize('add-annotation', [$image, $pivot]);
 
         $this->validate($request, Image::$createAnnotationRules);
         $this->validate($request, Annotation::$attachLabelRules);
@@ -161,7 +170,8 @@ class ImageAnnotationController extends Controller
 
         $annotation = new Annotation;
         $annotation->shape_id = $request->input('shape_id');
-        $annotation->image()->associate($image);
+        $annotation->project_volume_id = $pivot->id;
+        $annotation->image_id = $image->id;
 
         try {
             $annotation->validatePoints($points);

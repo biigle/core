@@ -6,6 +6,7 @@ use Cache;
 use ApiTestCase;
 use Biigle\Shape;
 use Carbon\Carbon;
+use Biigle\Tests\ImageTest;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationSessionTest;
 
@@ -16,8 +17,12 @@ class AnnotationControllerTest extends ApiTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->annotation = AnnotationTest::create();
-        $this->project()->volumes()->attach($this->annotation->image->volume_id);
+        $this->image = ImageTest::create();
+        $this->project()->volumes()->attach($this->image->volume);
+        $this->annotation = AnnotationTest::create([
+            'image_id' => $this->image->id,
+            'project_volume_id' => $this->project()->volumes()->find($this->image->volume_id)->pivot->id,
+        ]);
     }
 
     public function testShow()
@@ -44,10 +49,6 @@ class AnnotationControllerTest extends ApiTestCase
             ->assertJsonFragment(['points' => [10, 10, 20, 20]]);
         // the labels should be fetched separately
         $this->assertNotContains('labels', $response->getContent());
-        // image and volume objects from projectIds() call shouldn't be
-        // included in the output
-        $this->assertNotContains('"image"', $response->getContent());
-        $this->assertNotContains('volume', $response->getContent());
     }
 
     public function testShowAnnotationSession()
@@ -72,6 +73,8 @@ class AnnotationControllerTest extends ApiTestCase
 
         $response = $this->get("api/v1/annotations/{$this->annotation->id}");
         $response->assertStatus(403);
+
+        $this->markTestIncomplete('Handle new behavior of annotation sessions');
     }
 
     public function testUpdate()
@@ -135,8 +138,10 @@ class AnnotationControllerTest extends ApiTestCase
 
         $this->assertNull($this->annotation->fresh());
 
-        $this->annotation = AnnotationTest::create();
-        $this->project()->volumes()->attach($this->annotation->image->volume);
+        $this->annotation = AnnotationTest::create([
+            'image_id' => $this->image->id,
+            'project_volume_id' => $this->project()->volumes()->find($this->image->volume_id)->pivot->id,
+        ]);
         $id = $this->annotation->id;
 
         $this->beUser();

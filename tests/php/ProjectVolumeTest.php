@@ -3,12 +3,18 @@
 namespace Biigle\Tests;
 
 use DB;
-use TestCase;
+use ModelTestCase;
+use Biigle\ProjectVolume;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
 
-class ProjectVolumeTest extends TestCase
+class ProjectVolumeTest extends ModelTestCase
 {
+    /**
+     * The model class this class will test.
+     */
+    protected static $modelClass = ProjectVolume::class;
+
     public function testAttributes()
     {
         $project = ProjectTest::create();
@@ -23,28 +29,23 @@ class ProjectVolumeTest extends TestCase
 
     public function testProjectOnDeleteCascade()
     {
-        $project = ProjectTest::create();
-        $project->volumes()->attach(VolumeTest::create());
-        $pivot = $project->volumes()->first()->pivot;
-        $this->assertNotNull(DB::table('project_volume')->find($pivot->id));
-        $project->delete();
-        $this->assertNull(DB::table('project_volume')->find($pivot->id));
+        $this->assertNotNull(ProjectVolume::find($this->model->id));
+        $this->model->project()->delete();
+        $this->assertNull(ProjectVolume::find($this->model->id));
     }
 
     public function testVolumeOnDeleteRestrict()
     {
-        $project = ProjectTest::create();
-        $project->volumes()->attach(VolumeTest::create());
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $project->volumes()->delete();
+        $this->model->volume()->delete();
     }
 
     public function testUniqueProperties()
     {
-        $project = ProjectTest::create();
-        $volume = VolumeTest::create();
-        $project->volumes()->attach($volume);
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $project->volumes()->attach($volume);
+        self::create([
+            'project_id' => $this->model->project_id,
+            'volume_id' => $this->model->volume_id,
+        ]);
     }
 }

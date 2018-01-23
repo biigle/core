@@ -28,18 +28,32 @@ class AnnotationPolicyTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->annotation = AnnotationTest::create();
+        $this->image = ImageTest::create();
         $this->project = ProjectTest::create();
-        $this->project->volumes()->attach($this->annotation->image->volume);
+        $this->project->volumes()->attach($this->image->volume);
+        $this->annotation = AnnotationTest::create([
+            'image_id' => $this->image->id,
+            'project_volume_id' => $this->project->volumes()->find($this->image->volume_id)->pivot->id,
+        ]);
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
         $this->editor = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
-
         $this->project->addUserId($this->guest->id, Role::$guest->id);
         $this->project->addUserId($this->editor->id, Role::$editor->id);
         $this->project->addUserId($this->admin->id, Role::$admin->id);
+        $this->globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
+
+        $this->otherProject = ProjectTest::create();
+        $this->otherProject->volumes()->attach($this->image->volume);
+        $this->otherGuest = UserTest::create();
+        $this->otherEditor = UserTest::create();
+        $this->otherAdmin = UserTest::create();
+        $this->otherProject->addUserId($this->otherGuest->id, Role::$guest->id);
+        $this->otherProject->addUserId($this->otherEditor->id, Role::$editor->id);
+        $this->otherProject->addUserId($this->otherAdmin->id, Role::$admin->id);
+
+        $this->others = [$this->otherGuest, $this->otherEditor, $this->otherAdmin];
     }
 
     public function testAccess()
@@ -49,6 +63,10 @@ class AnnotationPolicyTest extends TestCase
         $this->assertTrue($this->editor->can('access', $this->annotation));
         $this->assertTrue($this->admin->can('access', $this->annotation));
         $this->assertTrue($this->globalAdmin->can('access', $this->annotation));
+
+        foreach ($this->others as $user) {
+            $this->assertTrue($user->can('access', $this->annotation));
+        }
     }
 
     public function testAccessAnnotationSession()
@@ -84,6 +102,8 @@ class AnnotationPolicyTest extends TestCase
         $this->assertFalse($this->editor->can('access', $this->annotation));
         $this->assertFalse($this->admin->can('access', $this->annotation));
         $this->assertTrue($this->globalAdmin->can('access', $this->annotation));
+
+        $this->markTestIncomplete('Update the annotation session behavior with project volumes');
     }
 
     public function testUpdate()
@@ -93,21 +113,20 @@ class AnnotationPolicyTest extends TestCase
         $this->assertTrue($this->editor->can('update', $this->annotation));
         $this->assertTrue($this->admin->can('update', $this->annotation));
         $this->assertTrue($this->globalAdmin->can('update', $this->annotation));
+
+        foreach ($this->others as $user) {
+            $this->assertFalse($user->can('update', $this->annotation));
+        }
     }
 
     public function testAttachLabel()
     {
         $allowedLabel = LabelTest::create();
         $this->project->labelTrees()->attach($allowedLabel->label_tree_id);
-        $disallowedLabel = LabelTest::create();
 
-        // the annotation belongs to this project, too, and the label is a valid one
-        // for the project *but* no user belongs to the project so they shouldn't be able
-        // to attach the label
-        $otherProject = ProjectTest::create();
-        $otherProject->volumes()->attach($this->annotation->image->volume);
+        $disallowedLabel = LabelTest::create();
         $otherDisallowedLabel = LabelTest::create();
-        $otherProject->labelTrees()->attach($otherDisallowedLabel->label_tree_id);
+        $this->otherProject->labelTrees()->attach($otherDisallowedLabel->label_tree_id);
 
         $this->assertFalse($this->user->can('attach-label', [$this->annotation, $allowedLabel]));
         $this->assertFalse($this->user->can('attach-label', [$this->annotation, $disallowedLabel]));
@@ -128,34 +147,50 @@ class AnnotationPolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('attach-label', [$this->annotation, $allowedLabel]));
         $this->assertTrue($this->globalAdmin->can('attach-label', [$this->annotation, $disallowedLabel]));
         $this->assertTrue($this->globalAdmin->can('attach-label', [$this->annotation, $otherDisallowedLabel]));
+
+        foreach ($this->others as $user) {
+            $this->assertFalse($user->can('attach-label', [$this->annotation, $allowedLabel]));
+            $this->assertFalse($user->can('attach-label', [$this->annotation, $disallowedLabel]));
+            $this->assertFalse($user->can('attach-label', [$this->annotation, $otherDisallowedLabel]));
+        }
     }
 
     public function testDestroy()
     {
-        $volume = VolumeTest::create();
-        $this->project->volumes()->attach($volume);
-        $image = ImageTest::create(['volume_id' => $volume->id]);
-
-        // has a label of user
-        $a1 = AnnotationTest::create(['image_id' => $image->id]);
-        // has a label of guest
-        $a2 = AnnotationTest::create(['image_id' => $image->id]);
-        // has a label of editor
-        $a3 = AnnotationTest::create(['image_id' => $image->id]);
-        // has labels od editor and admin
-        $a4 = AnnotationTest::create(['image_id' => $image->id]);
-
+        // Has a label of user.
+        $a1 = AnnotationTest::create([
+            'image_id' => $this->annotation->image_id,
+            'project_volume_id' => $this->annotation->project_volume_id,
+        ]);
         AnnotationLabelTest::create([
             'annotation_id' => $a1->id,
             'user_id' => $this->user->id,
+        ]);
+
+        // Has a label of guest.
+        $a2 = AnnotationTest::create([
+            'image_id' => $this->annotation->image_id,
+            'project_volume_id' => $this->annotation->project_volume_id,
         ]);
         AnnotationLabelTest::create([
             'annotation_id' => $a2->id,
             'user_id' => $this->guest->id,
         ]);
+
+        // Has a label of editor.
+        $a3 = AnnotationTest::create([
+            'image_id' => $this->annotation->image_id,
+            'project_volume_id' => $this->annotation->project_volume_id,
+        ]);
         AnnotationLabelTest::create([
             'annotation_id' => $a3->id,
             'user_id' => $this->editor->id,
+        ]);
+
+        // Has labels of editor and admin.
+        $a4 = AnnotationTest::create([
+            'image_id' => $this->annotation->image_id,
+            'project_volume_id' => $this->annotation->project_volume_id,
         ]);
         AnnotationLabelTest::create([
             'annotation_id' => $a4->id,
@@ -179,7 +214,7 @@ class AnnotationPolicyTest extends TestCase
         $this->assertFalse($this->editor->can('destroy', $a1));
         $this->assertFalse($this->editor->can('destroy', $a2));
         $this->assertTrue($this->editor->can('destroy', $a3));
-        // there is a label of another user attached
+        // There is a label of another user attached.
         $this->assertFalse($this->editor->can('destroy', $a4));
 
         $this->assertTrue($this->admin->can('destroy', $a1));
@@ -191,5 +226,12 @@ class AnnotationPolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('destroy', $a2));
         $this->assertTrue($this->globalAdmin->can('destroy', $a3));
         $this->assertTrue($this->globalAdmin->can('destroy', $a4));
+
+        foreach ($this->others as $user) {
+            $this->assertFalse($user->can('destroy', $a1));
+            $this->assertFalse($user->can('destroy', $a2));
+            $this->assertFalse($user->can('destroy', $a3));
+            $this->assertFalse($user->can('destroy', $a4));
+        }
     }
 }

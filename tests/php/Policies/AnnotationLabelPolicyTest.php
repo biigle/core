@@ -5,6 +5,7 @@ namespace Biigle\Tests\Policies;
 use TestCase;
 use Biigle\Role;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\AnnotationTest;
@@ -23,9 +24,13 @@ class AnnotationLabelPolicyTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->annotation = AnnotationTest::create();
+        $image = ImageTest::create();
         $this->project = ProjectTest::create();
-        $this->project->volumes()->attach($this->annotation->image->volume);
+        $this->project->volumes()->attach($image->volume);
+        $this->annotation = AnnotationTest::create([
+            'image_id' => $image->id,
+            'project_volume_id' => $this->project->volumes()->find($image->volume_id)->pivot->id,
+        ]);
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
         $this->editor = UserTest::create();
@@ -35,6 +40,11 @@ class AnnotationLabelPolicyTest extends TestCase
         $this->project->addUserId($this->guest->id, Role::$guest->id);
         $this->project->addUserId($this->editor->id, Role::$editor->id);
         $this->project->addUserId($this->admin->id, Role::$admin->id);
+
+        $this->otherProject = ProjectTest::create();
+        $this->otherProject->volumes()->attach($image->volume);
+        $this->otherAdmin = UserTest::create();
+        $this->otherProject->addUserId($this->otherAdmin->id, Role::$admin->id);
     }
 
     public function testUpdate()
@@ -77,6 +87,10 @@ class AnnotationLabelPolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('update', $al1));
         $this->assertTrue($this->globalAdmin->can('update', $al2));
         $this->assertTrue($this->globalAdmin->can('update', $al3));
+
+        $this->assertFalse($this->otherAdmin->can('update', $al1));
+        $this->assertFalse($this->otherAdmin->can('update', $al2));
+        $this->assertFalse($this->otherAdmin->can('update', $al3));
     }
 
     public function testDestroy()
@@ -119,5 +133,9 @@ class AnnotationLabelPolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('destroy', $al1));
         $this->assertTrue($this->globalAdmin->can('destroy', $al2));
         $this->assertTrue($this->globalAdmin->can('destroy', $al3));
+
+        $this->assertFalse($this->otherAdmin->can('destroy', $al1));
+        $this->assertFalse($this->otherAdmin->can('destroy', $al2));
+        $this->assertFalse($this->otherAdmin->can('destroy', $al3));
     }
 }

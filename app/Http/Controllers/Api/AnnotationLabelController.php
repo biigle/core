@@ -174,7 +174,5 @@ class AnnotationLabelController extends Controller
         if (!$annotationLabel->annotation->labels()->exists()) {
             $annotationLabel->annotation->delete();
         }
-
-        return response('Deleted.', 200);
     }
 }

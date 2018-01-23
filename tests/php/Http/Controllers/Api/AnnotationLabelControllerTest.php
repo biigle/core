@@ -6,6 +6,7 @@ use Cache;
 use Session;
 use ApiTestCase;
 use Carbon\Carbon;
+use Biigle\Tests\ImageTest;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
@@ -17,8 +18,12 @@ class AnnotationLabelControllerTest extends ApiTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->annotation = AnnotationTest::create();
-        $this->project()->volumes()->attach($this->annotation->image->volume);
+        $this->image = ImageTest::create();
+        $this->project()->volumes()->attach($this->image->volume);
+        $this->annotation = AnnotationTest::create([
+            'image_id' => $this->image->id,
+            'project_volume_id' => $this->project()->volumes()->find($this->image->volume_id)->pivot->id,
+        ]);
     }
 
     public function testIndex()
@@ -67,6 +72,8 @@ class AnnotationLabelControllerTest extends ApiTestCase
 
         $response = $this->get("api/v1/annotations/{$this->annotation->id}/labels");
         $response->assertStatus(403);
+
+        $this->markTestIncomplete('Handle new behavior of annotation sessions');
     }
 
     public function testStore()

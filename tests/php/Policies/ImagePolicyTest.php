@@ -8,23 +8,18 @@ use Biigle\Tests\UserTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
+use Biigle\Tests\ProjectVolumeTest;
 
 class ImagePolicyTest extends TestCase
 {
-    private $image;
-    private $project;
-    private $user;
-    private $guest;
-    private $editor;
-    private $admin;
-    private $globalAdmin;
-
     public function setUp()
     {
         parent::setUp();
-        $this->image = ImageTest::create();
-        $this->project = ProjectTest::create();
-        $this->project->volumes()->attach($this->image->volume);
+        $this->projectVolume = ProjectVolumeTest::create();
+        $this->image = ImageTest::create([
+            'volume_id' => $this->projectVolume->volume_id
+        ]);
+        $this->project = $this->projectVolume->project;
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
         $this->editor = UserTest::create();
@@ -43,15 +38,17 @@ class ImagePolicyTest extends TestCase
         $this->assertTrue($this->editor->can('access', $this->image));
         $this->assertTrue($this->admin->can('access', $this->image));
         $this->assertTrue($this->globalAdmin->can('access', $this->image));
+
+        $this->markTestIncomplete('Distinguish between project access and volume access?');
     }
 
     public function testAddAnnotation()
     {
-        $this->assertFalse($this->user->can('add-annotation', $this->image));
-        $this->assertFalse($this->guest->can('add-annotation', $this->image));
-        $this->assertTrue($this->editor->can('add-annotation', $this->image));
-        $this->assertTrue($this->admin->can('add-annotation', $this->image));
-        $this->assertTrue($this->globalAdmin->can('add-annotation', $this->image));
+        $this->assertFalse($this->user->can('add-annotation', [$this->image, $this->projectVolume]));
+        $this->assertFalse($this->guest->can('add-annotation', [$this->image, $this->projectVolume]));
+        $this->assertTrue($this->editor->can('add-annotation', [$this->image, $this->projectVolume]));
+        $this->assertTrue($this->admin->can('add-annotation', [$this->image, $this->projectVolume]));
+        $this->assertTrue($this->globalAdmin->can('add-annotation', [$this->image, $this->projectVolume]));
     }
 
     public function testDestroy()
@@ -61,6 +58,8 @@ class ImagePolicyTest extends TestCase
         $this->assertFalse($this->editor->can('destroy', $this->image));
         $this->assertTrue($this->admin->can('destroy', $this->image));
         $this->assertTrue($this->globalAdmin->can('destroy', $this->image));
+
+        $this->markTestIncomplete('Require volume membership');
     }
 
     public function testAttachLabel()
@@ -96,5 +95,7 @@ class ImagePolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('attach-label', [$this->image, $allowedLabel]));
         $this->assertTrue($this->globalAdmin->can('attach-label', [$this->image, $disallowedLabel]));
         $this->assertTrue($this->globalAdmin->can('attach-label', [$this->image, $otherDisallowedLabel]));
+
+        $this->markTestIncomplete('Check new project_volume_id similar to the annotation policy.');
     }
 }

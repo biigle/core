@@ -32,6 +32,7 @@ class Image extends Model
     public static $createAnnotationRules = [
         'shape_id' => 'required|exists:shapes,id',
         'points'   => 'required',
+        'project_id' => 'required|exists:projects,id',
     ];
 
     /**

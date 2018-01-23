@@ -102,7 +102,5 @@ class AnnotationController extends Controller
         $this->authorize('destroy', $annotation);
 
         $annotation->delete();
-
-        return response('Deleted.', 200);
     }
 }

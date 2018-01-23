@@ -89,6 +89,8 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $this->assertEquals('my cool name', $session->name);
         $this->assertEquals('2016-09-07', $session->ends_at->format('Y-m-d'));
         $this->assertEquals([$this->admin()->id], $session->users()->pluck('id')->all());
+
+        $this->markTestIncomplete('Handle new annotation session behavior.');
     }
 
     public function testUpdateTimezones()
@@ -108,6 +110,8 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $session = $session->fresh();
 
         $this->assertTrue(Carbon::parse('2016-09-06T22:00:00.000Z')->eq($session->ends_at));
+
+        $this->markTestIncomplete('Handle new annotation session behavior.');
     }
 
     public function testUpdateForceStartDate()
@@ -146,6 +150,8 @@ class AnnotationSessionControllerTest extends ApiTestCase
             'force' => true,
         ]);
         $response->assertStatus(200);
+
+        $this->markTestIncomplete('Handle new annotation session behavior.');
     }
 
     public function testUpdateForceEndDate()
@@ -184,6 +190,8 @@ class AnnotationSessionControllerTest extends ApiTestCase
             'force' => true,
         ]);
         $response->assertStatus(200);
+
+        $this->markTestIncomplete('Handle new annotation session behavior.');
     }
 
     public function testUpdateForceUsers()
@@ -222,6 +230,8 @@ class AnnotationSessionControllerTest extends ApiTestCase
             'force' => true,
         ]);
         $response->assertStatus(200);
+
+        $this->markTestIncomplete('Handle new annotation session behavior.');
     }
 
     public function testDestroy()
@@ -241,6 +251,8 @@ class AnnotationSessionControllerTest extends ApiTestCase
         $response->assertStatus(200);
 
         $this->assertNull($session->fresh());
+
+        $this->markTestIncomplete('Handle new annotation session behavior.');
     }
 
     public function testDestroyForce()
@@ -276,5 +288,7 @@ class AnnotationSessionControllerTest extends ApiTestCase
             'force' => true,
         ]);
         $response->assertStatus(200);
+
+        $this->markTestIncomplete('Handle new annotation session behavior.');
     }
 }

@@ -10,24 +10,17 @@ use Biigle\Image;
 use ApiTestCase;
 use Biigle\Volume;
 use Biigle\MediaType;
-use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
+use Biigle\Tests\AnnotationTest;
 
 class ProjectVolumeControllerTest extends ApiTestCase
 {
-    private $volume;
-
-    public function setUp()
-    {
-        parent::setUp();
-        $this->volume = VolumeTest::create();
-        $this->project()->volumes()->attach($this->volume);
-    }
-
     public function testIndex()
     {
         $id = $this->project()->id;
+        // Create volume.
+        $this->volume();
         $this->doTestApiRoute('GET', "/api/v1/projects/{$id}/volumes");
 
         $this->beUser();
@@ -149,6 +142,8 @@ class ProjectVolumeControllerTest extends ApiTestCase
         File::shouldReceive('isReadable')->twice()->andReturn(true);
 
         $id = $this->project()->id;
+        // Create volume.
+        $this->volume();
         $this->beAdmin();
         $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
@@ -182,7 +177,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
     public function testAttach()
     {
-        $tid = $this->volume->id;
+        $tid = $this->volume()->id;
 
         $secondProject = ProjectTest::create();
         $pid = $secondProject->id;
@@ -205,7 +200,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
     public function testAttachDuplicate()
     {
-        $tid = $this->volume->id;
+        $tid = $this->volume()->id;
         $pid = $this->project()->id;
 
         $this->beAdmin();
@@ -216,8 +211,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
     public function testDestroy()
     {
         $pid = $this->project()->id;
-        $id = $this->volume->id;
-        $image = ImageTest::create(['volume_id' => $id]);
+        $id = $this->volume()->id;
 
         $this->doTestApiRoute('DELETE', "/api/v1/projects/{$pid}/volumes/{$id}");
 
@@ -234,30 +228,43 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response->assertStatus(403);
 
         $this->beAdmin();
-        // $response = $this->delete("/api/v1/projects/{$pid}/volumes/{$id}");
-        // // trying to delete without force
-        // $response->assertStatus(400);
-
         $otherVolume = VolumeTest::create();
         $response = $this->delete("/api/v1/projects/{$pid}/volumes/{$otherVolume->id}");
-        // does not belong to the project
+        // Does not belong to the project.
         $response->assertStatus(404);
 
-        Event::shouldReceive('fire')
-            ->once()
-            ->with('images.cleanup', [[$image->uuid]]);
+        $response = $this->delete("/api/v1/projects/{$pid}/volumes/{$id}");
+        $response->assertStatus(200);
 
-        Event::shouldReceive('dispatch'); // catch other events
+        $this->assertNotNull($this->volume()->fresh());
+        $this->assertFalse($this->project()->volumes()->exists());
+    }
+
+    public function testDestroyForce()
+    {
+        $pid = $this->project()->id;
+        $id = $this->volume()->id;
+        $annotation = AnnotationTest::create([
+            'project_volume_id' => $this->project()->volumes()->find($id)->pivot->id,
+        ]);
+
+        $this->beAdmin();
+        $response = $this->delete("/api/v1/projects/{$pid}/volumes/{$id}");
+        $response->assertStatus(400);
+
+        Event::fake();
 
         $response = $this->delete("/api/v1/projects/{$pid}/volumes/{$id}", [
             'force' => 'abc',
         ]);
-        // deleting with force succeeds
         $response->assertStatus(200);
-        $this->assertNotNull($this->volume->fresh());
+        $this->assertNotNull($this->volume()->fresh());
         $this->assertFalse($this->project()->volumes()->exists());
 
-        $this->markTestIncomplete('Require force if this would delete annotations.');
-        $this->markTestIncomplete('Assert that a cleanup event is fired for the deleted annotations.');
+        Event::assertDispatched('annotations.cleanup', function ($e, $arg) use ($annotation) {
+            return $arg[0] === $annotation->id;
+        });
+
+        $this->markTestIncomplete('Require force if this would delete image labels.');
     }
 }

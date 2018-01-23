@@ -2,8 +2,10 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
+use Event;
 use ApiTestCase;
 use Biigle\Project;
+use Biigle\Tests\AnnotationTest;
 
 class ProjectControllerTest extends ApiTestCase
 {
@@ -114,31 +116,50 @@ class ProjectControllerTest extends ApiTestCase
     public function testDestroy()
     {
         $id = $this->project()->id;
-        // create volume
+        // Create volume which is attached to the project.
         $this->volume();
 
         $this->doTestApiRoute('DELETE', "/api/v1/projects/{$id}");
 
-        // non-admins are not allowed to delete the project
+        // Non-admins are not allowed to delete the project.
         $this->beEditor();
         $response = $this->json('DELETE', "/api/v1/projects/{$id}");
         $response->assertStatus(403);
-
-        // project still has a volume belonging only to this project
-        $this->beAdmin();
-        // $this->assertNotNull($this->project()->fresh());
-        // $response = $this->json('DELETE', "/api/v1/projects/{$id}");
-        // $response->assertStatus(400);
-
         $this->assertNotNull($this->project()->fresh());
-        $response = $this->json('DELETE', "/api/v1/projects/{$id}", ['force' => 'true']);
+
+        $this->beAdmin();
+        $response = $this->json('DELETE', "/api/v1/projects/{$id}");
         $response->assertStatus(200);
         $this->assertNull($this->project()->fresh());
+        $this->assertNotNull($this->volume()->fresh());
 
         // already deleted projects can't be re-deleted
         $response = $this->delete("/api/v1/projects/{$id}");
         $response->assertStatus(404);
+    }
 
-        $this->markTestIncomplete('Require force if this would delete annotations?');
+    public function testDestroyForce()
+    {
+        $id = $this->project()->id;
+        $annotation = AnnotationTest::create([
+            'project_volume_id' => $this->project()->volumes()->find($this->volume()->id)->pivot->id,
+        ]);
+
+        $this->beAdmin();
+        $response = $this->json('DELETE', "/api/v1/projects/{$id}");
+        $response->assertStatus(400);
+        $this->assertNotNull($this->project()->fresh());
+
+        Event::fake();
+
+        $response = $this->json('DELETE', "/api/v1/projects/{$id}", ['force' => 'true']);
+        $response->assertStatus(200);
+        $this->assertNull($this->project()->fresh());
+        $this->assertNull($annotation->fresh());
+        Event::assertDispatched('annotations.cleanup', function ($e, $arg) use ($annotation) {
+            return $arg[0] === $annotation->id;
+        });
+
+        $this->markTestIncomplete('Require force if this would delete image labels');
     }
 }

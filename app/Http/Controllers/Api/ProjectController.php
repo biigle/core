@@ -175,12 +175,12 @@ class ProjectController extends Controller
      * @apiName DestroyProjects
      * @apiPermission projectAdmin
      * @apiDescription Requires the `force` parameter if the request would delete
-     * annotations.
+     * annotations or image labels.
      *
      * @apiParam {Number} id The project ID.
      *
      * @apiParam (Optional parameters) {Boolean} force Set this parameter if the request
-     * should delete annotations. Else the request will be rejected.
+     * should delete annotations or image labels. Else the request will be rejected.
      *
      * @param Request $request
      * @param  int  $id
@@ -202,6 +202,7 @@ class ProjectController extends Controller
                 ->with('message', $e->getMessage())
                 ->with('messageType', 'danger');
         }
+
         $project->delete();
 
         if (static::isAutomatedRequest($request)) {

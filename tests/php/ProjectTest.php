@@ -2,9 +2,13 @@
 
 namespace Biigle\Tests;
 
+use Event;
 use Biigle\Role;
-use Biigle\Project;
 use ModelTestCase;
+use Biigle\Project;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ProjectVolumeTest;
 use Illuminate\Database\QueryException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -127,7 +131,8 @@ class ProjectTest extends ModelTestCase
         $this->assertEquals($volume->id, $this->model->volumes()->first()->id);
         $this->assertEquals(1, $this->model->volumes()->count());
         $pivot = $this->model->volumes()->first()->pivot;
-        $this->assertInstanceOf(\Biigle\ProjectVolume::class, $pivot);
+        // This might be implemented with Laravel 5.5.
+        // $this->assertInstanceOf(\Biigle\ProjectVolume::class, $pivot);
         $this->assertNotNull($pivot->id);
         $this->assertNotNull($pivot->created_at);
         $this->assertNotNull($pivot->updated_at);
@@ -196,50 +201,100 @@ class ProjectTest extends ModelTestCase
 
     public function testDetachVolume()
     {
-        $volume = VolumeTest::create();
-        $this->model->volumes()->attach($volume);
+        $pivot = ProjectVolumeTest::create([
+            'project_id' => $this->model->id,
+        ]);
+        $volume = $pivot->volume;
 
         $this->model->detachVolume($volume);
         $this->assertFalse($this->model->volumes()->exists());
         $this->assertNotNull($volume->fresh());
+    }
 
-        // try {
-        //     // trying to detach a volume belonging to only one project fails
-        //     // without force
-        //     $this->model->detachVolume($volume);
-        //     $this->assertFalse(true);
-        // } catch (HttpException $e) {
-        //     $this->assertNotNull($e);
-        // }
+    public function testDetachVolumeForce()
+    {
+        $pivot = ProjectVolumeTest::create([
+            'project_id' => $this->model->id,
+        ]);
+        $volume = $pivot->volume;
+        $annotation = AnnotationTest::create([
+            'project_volume_id' => $pivot->id,
+        ]);
 
-        // // use the force to detach and delete the volume
-        // $this->model->detachVolume($volume, true);
-        // $this->assertNull($volume->fresh());
-        $this->markTestIncomplete('Require force if annotations would be deleted.');
+        Event::fake();
+
+        try {
+            // Trying to detach a volume which would delete annotations fails without
+            // force.
+            $this->model->detachVolume($volume);
+            $this->assertFalse(true);
+        } catch (HttpException $e) {
+            $this->assertNotNull($e);
+        }
+
+        $this->assertNotNull($annotation->fresh());
+        Event::assertNotDispatched('annotations.cleanup');
+
+        // Use the force to detach the volume and delete annotations.
+        $this->model->detachVolume($volume, true);
+
+        Event::assertDispatched('annotations.cleanup', function ($e, $arg) use ($annotation) {
+            return $arg[0] === $annotation->id;
+        });
+        $this->assertNull($annotation->fresh());
+        $this->assertFalse($this->model->volumes()->exists());
+        $this->assertNotNull($volume->fresh());
+
+        $this->markTestIncomplete('Require force if image labels would be deleted.');
     }
 
     public function testDetachAllVolumes()
     {
-        $volume = VolumeTest::create();
-        $this->model->volumes()->attach($volume);
+        $pivot = ProjectVolumeTest::create([
+            'project_id' => $this->model->id,
+        ]);
+        $volume = $pivot->volume;
 
         $this->model->detachAllVolumes();
         $this->assertFalse($this->model->volumes()->exists());
         $this->assertNotNull($volume->fresh());
+    }
 
-        // try {
-        //     // trying to detach a volume belonging to only one project fails
-        //     // without force
-        //     $this->model->detachAllVolumes();
-        //     $this->assertFalse(true);
-        // } catch (HttpException $e) {
-        //     $this->assertNotNull($e);
-        // }
+    public function testDetachAllVolumesForce()
+    {
+        $pivot = ProjectVolumeTest::create([
+            'project_id' => $this->model->id,
+        ]);
+        $volume = $pivot->volume;
+        $annotation = AnnotationTest::create([
+            'project_volume_id' => $pivot->id,
+        ]);
 
-        // // use the force to detach and delete the volume
-        // $this->model->detachAllVolumes(true);
-        // $this->assertNull($volume->fresh());
-        $this->markTestIncomplete('Require force if annotations would be deleted.');
+        Event::fake();
+
+        try {
+            // Trying to detach a volume which would delete annotations fails without
+            // force.
+            $this->model->detachAllVolumes();
+            $this->assertFalse(true);
+        } catch (HttpException $e) {
+            $this->assertNotNull($e);
+        }
+
+        $this->assertNotNull($annotation->fresh());
+        Event::assertNotDispatched('annotations.cleanup');
+
+        // Use the force to detach the volume and delete annotations.
+        $this->model->detachAllVolumes(true);
+
+        Event::assertDispatched('annotations.cleanup', function ($e, $arg) use ($annotation) {
+            return $arg[0] === $annotation->id;
+        });
+        $this->assertNull($annotation->fresh());
+        $this->assertFalse($this->model->volumes()->exists());
+        $this->assertNotNull($volume->fresh());
+
+        $this->markTestIncomplete('Require force if image labels would be deleted.');
     }
 
     public function testLabelTrees()

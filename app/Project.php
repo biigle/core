@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use Cache;
+use Event;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
@@ -193,7 +194,6 @@ class Project extends Model
     public function volumes()
     {
         return $this->belongsToMany(Volume::class)
-            ->using(ProjectVolume::class)
             ->withPivot('id')
             ->withTimestamps();
     }
@@ -217,57 +217,62 @@ class Project extends Model
     }
 
     /**
-     * Detaches the volume from this project. Fails if this would delete annotations,
-     * unless force is `true`.
+     * Detaches the volume from this project. Fails if this would delete annotations or
+     * image labels, unless force is `true`.
      *
      * @param Volume $volume
      * @param bool $force Detach the volume even if this deletes annotations.
      */
     public function detachVolume($volume, $force = false)
     {
-        if (!$volume) {
-            // nothing to detach
-            return;
+        $pivot = $this->volumes()->find($volume->id)->pivot;
+
+        $annotationQuery = Annotation::where('project_volume_id', $pivot->id);
+        $hasAnnotations = $annotationQuery->exists();
+
+        // TODO check if this would delete image labels
+        $requiresForce = $hasAnnotations;
+
+        if ($requiresForce && !$force) {
+            abort(400, 'Detaching the volume would delete annotations or image labels. Use the "force" parameter to detach the volume anyway.');
         }
 
-        // this is the last project the volume belongs to, so it should be
-        // deleted
-        // if ($volume->projects()->count() === 1) {
-        //     // but delete the volume only with force!
-        //     if (!$force) {
-        //         abort(400, 'The volume would not belong to any project after detaching. Use the "force" argument to detach and delete it.');
-        //     }
+        if ($hasAnnotations) {
+            Event::fire('annotations.cleanup', $annotationQuery->pluck('id'));
+        }
 
-        //     $volume->delete();
-        // }
-
-        // if the volume still belongs to other projects, just detach it
+        // Detaching will automatically delete any annotations and image labels.
         $this->volumes()->detach($volume->id);
         // Maybe we get a new thumbnail now.
         Cache::forget("project-thumbnail-{$this->id}");
     }
 
     /**
-     * Detaches all volumes from this project. Fails if this would delete annotations,
-     * unless force is `true`.
+     * Detaches all volumes from this project. Fails if this would delete annotations or
+     * image labels, unless force is `true`.
      *
      * @param bool $force
      */
     public function detachAllVolumes($force = false)
     {
-        // if (!$force) {
-        //     foreach ($volumes as $volume) {
-        //         if ($volume->projects()->count() === 1) {
-        //             abort(400, 'One volume would not belong to any project after detaching. Use the "force" argument or detach and delete it first.');
-        //         }
-        //     }
-        // }
+        $pivotIds = $this->volumes()->pluck('project_volume.id');
 
+        $annotationQuery = Annotation::whereIn('project_volume_id', $pivotIds);
+        $hasAnnotations = $annotationQuery->exists();
+
+        // TODO check if this would delete image labels
+        $requiresForce = $hasAnnotations;
+
+        if ($requiresForce && !$force) {
+            abort(400, 'Detaching one volume would delete annotations or image labels. Use the "force" parameter to detach the volume anyway.');
+        }
+
+        if ($hasAnnotations) {
+            Event::fire('annotations.cleanup', $annotationQuery->pluck('id'));
+        }
+
+        // Detaching will automatically delete any annotations and image labels.
         $this->volumes()->detach();
-
-        // foreach ($volumes as $volume) {
-        //     $this->removeVolume($volume, $force);
-        // }
         Cache::forget("project-thumbnail-{$this->id}");
     }
 

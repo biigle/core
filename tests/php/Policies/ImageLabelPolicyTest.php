@@ -76,5 +76,7 @@ class ImageLabelPolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('destroy', $il1));
         $this->assertTrue($this->globalAdmin->can('destroy', $il2));
         $this->assertTrue($this->globalAdmin->can('destroy', $il3));
+
+        $this->markTestIncomplete('Add project_volume_id to image labels');
     }
 }

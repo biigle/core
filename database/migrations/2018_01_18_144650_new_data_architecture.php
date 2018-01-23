@@ -39,22 +39,26 @@ class NewDataArchitecture extends Migration
         // null project_volume_id.
         // Assign existing annotations to the oldest project?
 
-        // Schema::table('annotations', function (Blueprint $table) {
-        //     $table->integer('project_volume_id')->unsigned();
-        //     $table->foreign('project_volume_id')
-        //           ->references('id')
-        //           ->on('project_volume')
-        //           ->onDelete('cascade');
+        // TODO migrate existing annotation sessions to be attached to a project and not
+        // a volume. They can be duplicated for all projects they affect. They don't
+        // require associated users any more. Instead, they affect all project users.
 
-        //     $table->dropForeign(['image_id']);
-        //     $table->foreign('image_id')
-        //           ->references('id')
-        //           ->on('images')
-        //           // A volume must not be deleted if an image still has annotations.
-        //           // All project volumes must be deleted first, which will delete the
-        //           // annotations (see above).
-        //           ->onDelete('restrict');
-        // });
+        Schema::table('annotations', function (Blueprint $table) {
+            $table->integer('project_volume_id')->unsigned();
+            $table->foreign('project_volume_id')
+                  ->references('id')
+                  ->on('project_volume')
+                  ->onDelete('cascade');
+
+            $table->dropForeign(['image_id']);
+            $table->foreign('image_id')
+                  ->references('id')
+                  ->on('images')
+                  // A volume must not be deleted if an image still has annotations.
+                  // All project volumes must be deleted first, which will delete the
+                  // annotations (see above).
+                  ->onDelete('restrict');
+        });
 
         // Schema::table('image_labels', function (Blueprint $table) {
         //     $table->integer('project_volume_id')->unsigned();
@@ -77,6 +81,9 @@ class NewDataArchitecture extends Migration
         //     $table->unique(['image_id', 'label_id', 'project_volume_id']);
         // });
 
+        // TODO Add volume_members table. Migrate project admins to be volume admins.
+
+        // Volumes should be private by default.
         // Schema::table('volumes', function (Blueprint $table) {
         //     $table->integer('visibility_id')->unsigned();
         //     $table->foreign('visibility_id')
@@ -111,15 +118,15 @@ class NewDataArchitecture extends Migration
         //     $table->unique(['image_id', 'label_id']);
         // });
 
-        // Schema::table('annotations', function (Blueprint $table) {
-        //     $table->dropColumn('project_volume_id');
+        Schema::table('annotations', function (Blueprint $table) {
+            $table->dropColumn('project_volume_id');
 
-        //     $table->dropForeign(['image_id']);
-        //     $table->foreign('image_id')
-        //           ->references('id')
-        //           ->on('images')
-        //           ->onDelete('cascade');
-        // });
+            $table->dropForeign(['image_id']);
+            $table->foreign('image_id')
+                  ->references('id')
+                  ->on('images')
+                  ->onDelete('cascade');
+        });
 
         Schema::table('project_volume', function (Blueprint $table) {
             $table->dropColumn(['id', 'created_at', 'updated_at']);

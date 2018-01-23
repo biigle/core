@@ -55,6 +55,9 @@ class Annotation extends Model
             return $query;
         }
 
+        // A user should see all annotations of all images they have access to,
+        // even if they belong to another project.
+
         return $query->join('images', 'images.id', '=', 'annotations.image_id')
             ->join('project_volume', 'project_volume.volume_id', '=', 'images.volume_id')
             ->whereIn('project_volume.project_id', function ($query) use ($user) {
@@ -90,6 +93,8 @@ class Annotation extends Model
      */
     public function scopeAllowedBySession($query, AnnotationSession $session, User $user)
     {
+        // TODO this should become simpler with the new project_volume_id
+
         if ($session->hide_own_annotations && $session->hide_other_users_annotations) {
 
             // take only annotations of this session

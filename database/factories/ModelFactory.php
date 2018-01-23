@@ -57,6 +57,17 @@ $factory->define(Biigle\Volume::class, function ($faker) {
     ];
 });
 
+$factory->define(Biigle\ProjectVolume::class, function ($faker) {
+    return [
+        'project_id' => function () {
+            return factory(Biigle\Project::class)->create()->id;
+        },
+        'volume_id' => function () {
+            return factory(Biigle\Volume::class)->create()->id;
+        },
+    ];
+});
+
 $factory->define(Biigle\Image::class, function ($faker) {
     return [
         'filename' => 'test-image.jpg',
@@ -86,12 +97,18 @@ $factory->define(Biigle\Shape::class, function ($faker) {
 });
 
 $factory->define(Biigle\Annotation::class, function ($faker) {
+    $image = factory(Biigle\Image::class)->create();
     return [
-        'image_id' => function () {
-            return factory(Biigle\Image::class)->create()->id;
+        'image_id' => function () use ($image) {
+            return $image->id;
         },
         'shape_id' => function () {
             return factory(Biigle\Shape::class)->create()->id;
+        },
+        'project_volume_id' => function () use ($image) {
+            return factory(Biigle\ProjectVolume::class)->create([
+                'volume_id' => $image->volume_id,
+            ])->id;
         },
         'points' => [0, 0],
     ];
