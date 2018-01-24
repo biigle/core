@@ -7,6 +7,7 @@ use ApiTestCase;
 use Carbon\Carbon;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
+use Biigle\Tests\ProjectTest;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
@@ -48,17 +49,31 @@ class ProjectImageAnnotationControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/projects/{$pid}/images/{$iid}/annotations");
 
         $this->beUser();
-        $response = $this->get("/api/v1/projects/{$pid}/images/{$iid}/annotations");
-        $response->assertStatus(403);
+        $this->get("/api/v1/projects/{$pid}/images/{$iid}/annotations")
+            ->assertStatus(403);
 
         $this->beGuest();
-        $response = $this->get("/api/v1/projects/{$pid}/images/{$iid}/annotations")
+        $this->get("/api/v1/projects/{$pid}/images/{$iid}/annotations")
             ->assertJsonFragment(['points' => [10, 20, 30, 40]])
             ->assertJsonFragment(['color' => 'bada55'])
-            ->assertJsonFragment(['name' => 'My label']);
-        $response->assertStatus(200);
+            ->assertJsonFragment(['name' => 'My label'])
+            ->assertStatus(200);
+    }
 
-        $this->markTestIncomplete('Implement "access-image-through-project" policy to prevent users from accessing the image annotations through projects they are not member of.');
+    public function testIndexAccessThroughProject()
+    {
+        $pid = $this->project()->id;
+        $iid = $this->image->id;
+
+        $otherProject = ProjectTest::create();
+        $otherProject->volumes()->attach($this->image->volume_id);
+
+        $this->be($otherProject->creator);
+        $this->get("/api/v1/projects/{$pid}/images/{$iid}/annotations")
+            ->assertStatus(403);
+
+        $this->get("/api/v1/projects/{$otherProject->id}/images/{$iid}/annotations")
+            ->assertStatus(200);
     }
 
     public function testIndexAnnotationSessionHideOwn()
@@ -89,10 +104,10 @@ class ProjectImageAnnotationControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $response = $this->get("/api/v1/projects/{$pid}/images/{$iid}/annotations")
+        $this->get("/api/v1/projects/{$pid}/images/{$iid}/annotations")
             ->assertJsonFragment(['points' => [10, 20]])
-            ->assertJsonFragment(['points' => [20, 30]]);
-        $response->assertStatus(200);
+            ->assertJsonFragment(['points' => [20, 30]])
+            ->assertStatus(200);
 
         $session = AnnotationSessionTest::create([
             'project_id' => $pid,
@@ -103,10 +118,10 @@ class ProjectImageAnnotationControllerTest extends ApiTestCase
         ]);
         Cache::flush();
 
-        $response = $this->get("/api/v1/projects/{$pid}/images/{$iid}/annotations")
+        $this->get("/api/v1/projects/{$pid}/images/{$iid}/annotations")
             ->assertJsonMissing(['points' => [10, 20]])
-            ->assertJsonFragment(['points' => [20, 30]]);
-        $response->assertStatus(200);
+            ->assertJsonFragment(['points' => [20, 30]])
+            ->assertStatus(200);
     }
 
     public function testIndexAnnotationSessionHideOther()
@@ -123,90 +138,88 @@ class ProjectImageAnnotationControllerTest extends ApiTestCase
         $this->doTestApiRoute('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations");
 
         $this->beGuest();
-        $response = $this->post("/api/v1/projects/{$pid}/images/{$iid}/annotations");
-        $response->assertStatus(403);
+        $this->post("/api/v1/projects/{$pid}/images/{$iid}/annotations")
+            ->assertStatus(403);
 
         $this->beEditor();
-        $response = $this->json('POST', "/api/v1/projects/9999/images/{$iid}/annotations");
-        // project does not exist
-        $response->assertStatus(404);
+        $this->json('POST', "/api/v1/projects/9999/images/{$iid}/annotations")
+            // project does not exist
+            ->assertStatus(404);
 
-        $response = $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations");
-        // missing arguments
-        $response->assertStatus(422);
+        $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations")
+            // missing arguments
+            ->assertStatus(422);
 
-        $response = $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
-            'shape_id' => 99999,
-            'points' => '[0,0]',
-        ]);
-        // shape does not exist
-        $response->assertStatus(422);
+        $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
+                'shape_id' => 99999,
+                'points' => '[0,0]',
+            ])
+            // shape does not exist
+            ->assertStatus(422);
 
-        $response = $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
-            'shape_id' => \Biigle\Shape::$lineId,
-            'label_id' => 99999,
-        ]);
-        // label does not exist
-        $response->assertStatus(422);
+        $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
+                'shape_id' => \Biigle\Shape::$lineId,
+                'label_id' => 99999,
+            ])
+            // label does not exist
+            ->assertStatus(422);
 
-        $response = $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
-            'label_id' => $label->id,
-            'points' => '[0,0]',
-        ]);
-        // confidence required
-        $response->assertStatus(422);
+        $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
+                'shape_id' => \Biigle\Shape::$pointId,
+                'label_id' => $label->id,
+                'points' => '[0,0]',
+            ])
+            // confidence required
+            ->assertStatus(422);
 
-        $response = $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
-            'label_id' => $label->id,
-            'confidence' => 2,
-        ]);
-        // confidence must be between 0 and 1
-        $response->assertStatus(422);
+        $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
+                'shape_id' => \Biigle\Shape::$pointId,
+                'label_id' => $label->id,
+                'confidence' => 2,
+            ])
+            // confidence must be between 0 and 1
+            ->assertStatus(422);
 
-        $response = $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
-            'label_id' => $label->id,
-            'confidence' => -1,
-        ]);
-        // confidence must be between 0 and 1
-        $response->assertStatus(422);
+        $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
+                'shape_id' => \Biigle\Shape::$pointId,
+                'label_id' => $label->id,
+                'confidence' => -1,
+            ])
+            // confidence must be between 0 and 1
+            ->assertStatus(422);
 
-        $response = $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
-            'label_id' => $label->id,
-            'confidence' => 0.5,
-            'points' => '[]',
-        ]);
-        // at least one point required
-        $response->assertStatus(422);
+        $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
+                'shape_id' => \Biigle\Shape::$pointId,
+                'label_id' => $label->id,
+                'confidence' => 0.5,
+                'points' => '[]',
+            ])
+            // at least one point required
+            ->assertStatus(422);
 
-        $response = $this->post("/api/v1/projects/{$pid}/images/{$iid}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
-            'label_id' => $label->id,
-            'confidence' => 0.5,
-            'points' => '[10, 11]',
-        ]);
-        // label does not belong to a label tree of the project of the image
-        $response->assertStatus(403);
+        $this->post("/api/v1/projects/{$pid}/images/{$iid}/annotations", [
+                'shape_id' => \Biigle\Shape::$pointId,
+                'label_id' => $label->id,
+                'confidence' => 0.5,
+                'points' => '[10, 11]',
+            ])
+            // label does not belong to a label tree of the project of the image
+            ->assertStatus(403);
 
         $this->project()->labelTrees()->attach($label->label_tree_id);
         // policies are cached
         Cache::flush();
 
-        $response = $this->post("/api/v1/projects/{$pid}/images/{$iid}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
-            'label_id' => $label->id,
-            'confidence' => 0.5,
-            'points' => '[10, 11]',
-        ]);
-
-        $response->assertStatus(200);
-
-        $response->assertJsonFragment(['points' => [10, 11]]);
-        $response->assertJsonFragment(['name' => $label->name]);
-        $response->assertJsonFragment(['color' => $label->color]);
+        $this->post("/api/v1/projects/{$pid}/images/{$iid}/annotations", [
+                'shape_id' => \Biigle\Shape::$pointId,
+                'label_id' => $label->id,
+                'confidence' => 0.5,
+                'points' => '[10, 11]',
+            ])
+            ->assertStatus(200)
+            ->assertJsonFragment(['points' => [10, 11]])
+            ->assertJsonFragment(['name' => $label->name])
+            ->assertJsonFragment(['color' => $label->color]);
 
         $annotation = $this->image->annotations->first();
         $this->assertNotNull($annotation);
@@ -221,13 +234,13 @@ class ProjectImageAnnotationControllerTest extends ApiTestCase
         $iid = $this->image->id;
 
         $this->beEditor();
-        $response = $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
-            'label_id' => $this->labelRoot()->id,
-            'confidence' => 0.5,
-            'points' => '[10, 11, 12, 13]',
-        ]);
-        // invalid number of points
-        $response->assertStatus(422);
+        $this->json('POST', "/api/v1/projects/{$pid}/images/{$iid}/annotations", [
+                'shape_id' => \Biigle\Shape::$pointId,
+                'label_id' => $this->labelRoot()->id,
+                'confidence' => 0.5,
+                'points' => '[10, 11, 12, 13]',
+            ])
+            // invalid number of points
+            ->assertStatus(422);
     }
 }

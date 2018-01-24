@@ -96,6 +96,8 @@ class NewDataArchitecture extends Migration
         });
 
         // TODO Add volume_members table. Migrate project admins to be volume admins.
+        // There are *only* volume admins. Everybody else gets implicit access through
+        // the volume visibility or through project membership.
 
         // Volumes should be private by default.
         // Schema::table('volumes', function (Blueprint $table) {

@@ -47,7 +47,18 @@ class ImagePolicyTest extends TestCase
         $this->assertTrue($this->admin->can('access', $this->image));
         $this->assertTrue($this->globalAdmin->can('access', $this->image));
 
-        $this->markTestIncomplete('Distinguish between project access and volume access?');
+        $this->markTestIncomplete('Implement explicit access through volume membership.');
+    }
+
+    public function testAccessThroughProject()
+    {
+        $this->assertFalse($this->user->can('access-through-project', [$this->image, $this->project->id]));
+        $this->assertTrue($this->guest->can('access-through-project', [$this->image, $this->project->id]));
+        $this->assertTrue($this->editor->can('access-through-project', [$this->image, $this->project->id]));
+        $this->assertTrue($this->admin->can('access-through-project', [$this->image, $this->project->id]));
+        $this->assertTrue($this->globalAdmin->can('access-through-project', [$this->image, $this->project->id]));
+        $this->assertFalse($this->otherAdmin->can('access-through-project', [$this->image, $this->project->id]));
+        $this->assertTrue($this->otherAdmin->can('access-through-project', [$this->image, $this->otherProject->id]));
     }
 
     public function testAddAnnotation()

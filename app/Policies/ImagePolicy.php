@@ -38,13 +38,41 @@ class ImagePolicy extends CachedPolicy
      */
     public function access(User $user, Image $image)
     {
-        // Put this to permanent cache for rapid querying of image thumbnails.
+        // Put this to permanent cache for rapid querying of image thumbnails or
+        // annotations.
         return Cache::remember("image-can-access-{$user->id}-{$image->volume_id}", 0.5, function () use ($user, $image) {
+            // TODO This is the implicit image access through project membership.
+            // Add the explicit access through volume membership.
+
             // Check if user is member of one of the projects, the image belongs to.
             return DB::table('project_user')
                 ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
                 ->where('project_user.user_id', $user->id)
                 ->where('project_volume.volume_id', $image->volume_id)
+                ->exists();
+        });
+    }
+
+    /**
+     * Determine if the user can access the given image through the given project.
+     *
+     * @param  User  $user
+     * @param  Image  $image
+     * @param  int  $pid Project ID
+     * @return bool
+     */
+    public function accessThroughProject(User $user, Image $image, $pid)
+    {
+        // Put this to permanent cache for rapid querying of image thumbnails or
+        // annotations.
+        return Cache::remember("image-can-access-through-project-{$user->id}-{$image->volume_id}-{$pid}", 0.5, function () use ($user, $image, $pid) {
+
+            // Check if user is member of one of the projects, the image belongs to.
+            return DB::table('project_user')
+                ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
+                ->where('project_user.user_id', $user->id)
+                ->where('project_volume.volume_id', $image->volume_id)
+                ->where('project_volume.project_id', $pid)
                 ->exists();
         });
     }

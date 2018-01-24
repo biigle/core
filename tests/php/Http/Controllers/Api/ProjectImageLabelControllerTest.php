@@ -4,6 +4,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
 use Biigle\Tests\ImageTest;
+use Biigle\Tests\ProjectTest;
 use Biigle\Tests\ImageLabelTest;
 
 class ProjectImageLabelControllerTest extends ApiTestCase
@@ -54,8 +55,22 @@ class ProjectImageLabelControllerTest extends ApiTestCase
         $response->assertJsonMissing([
             'name' => $il2->label->name,
         ]);
+    }
 
-        $this->markTestIncomplete('Implement "access-through-project" policy');
+    public function testIndexAccessThroughProject()
+    {
+        $pid = $this->project()->id;
+        $iid = $this->image->id;
+
+        $otherProject = ProjectTest::create();
+        $otherProject->volumes()->attach($this->image->volume_id);
+
+        $this->be($otherProject->creator);
+        $this->get("/api/v1/projects/{$pid}/images/{$iid}/labels")
+            ->assertStatus(403);
+
+        $this->get("/api/v1/projects/{$otherProject->id}/images/{$iid}/labels")
+            ->assertStatus(200);
     }
 
     public function testStore()

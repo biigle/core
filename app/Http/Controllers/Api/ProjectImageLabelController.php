@@ -50,8 +50,7 @@ class ProjectImageLabelController extends Controller
     public function index($pid, $id)
     {
         $image = Image::findOrFail($id);
-        // TODO authorize('access-through-project', [$image, $pid])
-        $this->authorize('access', $image);
+        $this->authorize('access-through-project', [$image, $pid]);
 
         return $image->labels()
             ->where('project_volume_id', function ($query) use ($pid, $image) {

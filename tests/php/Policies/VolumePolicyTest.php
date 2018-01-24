@@ -43,6 +43,7 @@ class VolumePolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('access', $this->volume));
 
         $this->markTestIncomplete('Update volume access similar to label trees');
+        $this->markTestIncomplete('Implement access-though-project like for images. This will be used for the view(s).');
     }
 
     public function testEditIn()

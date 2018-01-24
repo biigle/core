@@ -71,8 +71,7 @@ class ProjectImageAnnotationController extends Controller
     public function index(Guard $auth, $pid, $iid)
     {
         $image = Image::findOrFail($iid);
-        // TODO authorize('access-through-project', [$image, $pid])
-        $this->authorize('access', $image);
+        $this->authorize('access-through-project', [$image, $pid]);
 
         $session = AnnotationSession::active()->where('project_id', $pid)->first();
 
