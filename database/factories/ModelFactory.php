@@ -185,8 +185,8 @@ $factory->define(Biigle\AnnotationSession::class, function ($faker) {
     return [
         'name' => $faker->username(),
         'description' => $faker->sentence(),
-        'volume_id' => function () {
-            return factory(Biigle\Volume::class)->create()->id;
+        'project_id' => function () {
+            return factory(Biigle\Project::class)->create()->id;
         },
         'starts_at' => '2016-09-04',
         'ends_at' => '2016-09-06',

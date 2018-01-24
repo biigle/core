@@ -4,6 +4,7 @@ namespace Biigle;
 
 use Cache;
 use Event;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
@@ -307,5 +308,60 @@ class Project extends Model
 
             return $volume ? $volume->thumbnail : null;
         });
+    }
+
+    /**
+     * The annotation sessions of this project.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function annotationSessions()
+    {
+        return $this->hasMany(AnnotationSession::class);
+    }
+
+    /**
+     * The active annotation sessions of this project (if any).
+     *
+     * @return AnnotationSession
+     */
+    public function getActiveAnnotationSession()
+    {
+        return AnnotationSession::active()
+            ->where('project_id', $this->id)
+            ->first();
+    }
+
+    /**
+     * Check if the given annotation session is in conflict with existing ones.
+     *
+     * A conflict exists if the active time period of two sessions overlaps.
+     *
+     * @param AnnotationSession $session The annotation session to check
+     *
+     * @return bool
+     */
+    public function hasConflictingAnnotationSession(AnnotationSession $session)
+    {
+        return $this->annotationSessions()
+            ->when(!is_null($session->id), function ($query) use ($session) {
+                return $query->where('id', '!=', $session->id);
+            })
+            ->where(function ($query) use ($session) {
+                $query->where(function ($query) use ($session) {
+                    $query->where('starts_at', '<=', $session->starts_at)
+                        ->where('ends_at', '>', $session->starts_at);
+                });
+                $query->orWhere(function ($query) use ($session) {
+                    // ends_at is exclusive so it may equal starts_at of another session
+                    $query->where('starts_at', '<', $session->ends_at)
+                        ->where('ends_at', '>=', $session->ends_at);
+                });
+                $query->orWhere(function ($query) use ($session) {
+                    $query->where('starts_at', '>=', $session->starts_at)
+                        ->where('ends_at', '<=', $session->ends_at);
+                });
+            })
+            ->exists();
     }
 }

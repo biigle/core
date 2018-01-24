@@ -30,6 +30,16 @@ class ImageLabel extends Model
     }
 
     /**
+     * The project volume of this image label.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function projectVolume()
+    {
+        return $this->belongsTo(ProjectVolume::class);
+    }
+
+    /**
      * The user who created this image label.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

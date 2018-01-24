@@ -18,7 +18,7 @@ class ImageLabelTest extends ModelTestCase
         $this->assertNotNull($this->model->image);
         $this->assertNotNull($this->model->label);
         $this->assertNotNull($this->model->user);
-        $this->assertNotNull($this->model->project_volume_id);
+        $this->assertNotNull($this->model->projectVolume);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
     }

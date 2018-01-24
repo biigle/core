@@ -19,7 +19,7 @@ class AnnotationTest extends ModelTestCase
     {
         $this->assertNotNull($this->model->image);
         $this->assertNotNull($this->model->shape);
-        $this->assertNotNull($this->model->project_volume_id);
+        $this->assertNotNull($this->model->projectVolume);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
     }
@@ -170,7 +170,6 @@ class AnnotationTest extends ModelTestCase
         ]);
 
         $session = AnnotationSessionTest::create([
-            'volume_id' => $image->volume->id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => true,
@@ -232,7 +231,6 @@ class AnnotationTest extends ModelTestCase
         ]);
 
         $session = AnnotationSessionTest::create([
-            'volume_id' => $image->volume->id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => false,
@@ -294,7 +292,6 @@ class AnnotationTest extends ModelTestCase
         ]);
 
         $session = AnnotationSessionTest::create([
-            'volume_id' => $image->volume->id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => true,

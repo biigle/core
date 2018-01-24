@@ -6,23 +6,29 @@ use Exception;
 use Biigle\Image;
 use Biigle\Shape;
 use Biigle\Label;
+use Biigle\Project;
 use Biigle\Annotation;
 use Biigle\ProjectVolume;
 use Biigle\AnnotationLabel;
 use Illuminate\Http\Request;
+use Biigle\AnnotationSession;
 use Illuminate\Contracts\Auth\Guard;
 
-class ImageAnnotationController extends Controller
+class ProjectImageAnnotationController extends Controller
 {
     /**
      * Shows a list of all annotations of the specified image.
      *
-     * @api {get} images/:id/annotations Get all annotations
-     * @apiGroup Images
+     * @api {get} projects/:pid/images/:id/annotations Get all annotations of an image
+     * @apiGroup Projects
      * @apiName IndexImageAnnotations
      * @apiPermission projectMember
-     * @apiDescription If there is an active annotation session for the volume of this image, only those annotations will be returned that the user is allowed to access.
+     * @apiDescription For now all annotations of the image are returned, even if they
+     * belong to another project. If there is an active annotation session for the
+     * project, only those annotations will be returned that the user is allowed to
+     * access.
      *
+     * @apiParam {Number} pid The project ID.
      * @apiParam {Number} id The image ID.
      *
      * @apiSuccessExample {json} Success response:
@@ -34,6 +40,7 @@ class ImageAnnotationController extends Controller
      *       "shape_id": 1,
      *       "updated_at": "2015-02-18 11:45:00",
      *       "points": [100, 200],
+     *       "project_volume_id": 12,
      *       "labels": [
      *          {
      *             "confidence": 1,
@@ -56,20 +63,21 @@ class ImageAnnotationController extends Controller
      *    }
      * ]
      *
-     * @param int $id image id
      * @param Guard $auth
+     * @param int $pid Project id
+     * @param int $id Image id
      * @return \Illuminate\Http\Response
      */
-    public function index($id, Guard $auth)
+    public function index(Guard $auth, $pid, $iid)
     {
-        // TODO require project_id in URL?
-        $image = Image::findOrFail($id);
+        $image = Image::findOrFail($iid);
+        // TODO authorize('access-through-project', [$image, $pid])
         $this->authorize('access', $image);
-        $user = $auth->user();
-        $session = $image->volume->getActiveAnnotationSession($user);
+
+        $session = AnnotationSession::active()->where('project_id', $pid)->first();
 
         if ($session) {
-            return $session->getImageAnnotations($image, $user);
+            return $session->getImageAnnotations($image, $auth->user());
         }
 
         return $image->annotations()->with('labels')->get();
@@ -78,16 +86,16 @@ class ImageAnnotationController extends Controller
     /**
      * Creates a new annotation in the specified image.
      *
-     * @api {post} images/:id/annotations Create a new annotation
-     * @apiGroup Annotations
+     * @api {post} projects/:pid/images/:id/annotations Create a new annotation
+     * @apiGroup Projects
      * @apiName StoreImageAnnotations
      * @apiPermission projectEditor
      * @apiDescription Only labels may be used that belong to a label tree which is
-     * attached to the project specified by `project_id`.
+     * attached to the project.
      *
+     * @apiParam {Number} pid ID of the project to which the new annotation should belong.
      * @apiParam {Number} id The image ID.
      *
-     * @apiParam (Required arguments) {Number} project_id ID of the project to which the new annotation should belong.
      * @apiParam (Required arguments) {Number} shape_id ID of the shape of the new annotation.
      * @apiParam (Required arguments) {Number} label_id ID of the initial category label of the new annotation.
      * @apiParam (Required arguments) {Number} confidence Confidence of the initial annotation label of the new annotation. Must be a value between 0 and 1.
@@ -105,7 +113,6 @@ class ImageAnnotationController extends Controller
      *    "label_id": 1,
      *    "confidence": 0.75,
      *    "points": [10, 11, 20, 21],
-     *    "project_id": 1
      * }
      *
      * @apiParamExample {String} Request example (String):
@@ -113,7 +120,6 @@ class ImageAnnotationController extends Controller
      * label_id: 1
      * confidence: 0.75
      * points: '[10, 11, 20, 21]'
-     * project_id: 1
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -147,14 +153,15 @@ class ImageAnnotationController extends Controller
      *
      * @param Request $request
      * @param Guard $auth
-     * @param int $id image ID
+     * @param int $pid Project ID
+     * @param int $id Image ID
      * @return Annotation
      */
-    public function store(Request $request, Guard $auth, $id)
+    public function store(Request $request, Guard $auth, $pid, $id)
     {
         $image = Image::findOrFail($id);
         $pivot = ProjectVolume::where('volume_id', $image->volume_id)
-            ->where('project_id', $request->input('project_id'))
+            ->where('project_id', $pid)
             ->firstOrFail();
         $this->authorize('add-annotation', [$image, $pivot]);
 

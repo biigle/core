@@ -13,6 +13,7 @@ class ApiTestCase extends TestCase
 {
     private $project;
     private $volume;
+    private $projectVolume;
     private $admin;
     private $editor;
     private $guest;
@@ -43,32 +44,39 @@ class ApiTestCase extends TestCase
 
     protected function project()
     {
-        if ($this->project) {
-            return $this->project;
+        if (!$this->project) {
+            $this->project = ProjectTest::create();
         }
 
-        return $this->project = ProjectTest::create();
+        return $this->project;
     }
 
     protected function volume()
     {
-        if ($this->volume) {
-            return $this->volume;
+        if (!$this->volume) {
+            $this->volume = VolumeTest::create();
+            $this->project()->volumes()->attach($this->volume);
         }
-
-        $this->volume = VolumeTest::create();
-        $this->project()->volumes()->attach($this->volume);
 
         return $this->volume;
     }
 
-    protected function admin()
+    protected function projectVolume()
     {
-        if ($this->admin) {
-            return $this->admin;
+        if (!$this->projectVolume) {
+            $this->projectVolume = $this->project()->volumes()->find($this->volume()->id)->pivot;
         }
 
-        return $this->admin = $this->newProjectUser(Role::$admin);
+        return $this->projectVolume;
+    }
+
+    protected function admin()
+    {
+        if (!$this->admin) {
+            $this->admin = $this->newProjectUser(Role::$admin);
+        }
+
+        return $this->admin;
     }
 
     protected function beAdmin()
@@ -78,11 +86,11 @@ class ApiTestCase extends TestCase
 
     protected function editor()
     {
-        if ($this->editor) {
-            return $this->editor;
+        if (!$this->editor) {
+            $this->editor = $this->newProjectUser(Role::$editor);
         }
 
-        return $this->editor = $this->newProjectUser(Role::$editor);
+        return $this->editor;
     }
 
     protected function beEditor()
@@ -92,11 +100,11 @@ class ApiTestCase extends TestCase
 
     protected function guest()
     {
-        if ($this->guest) {
-            return $this->guest;
+        if (!$this->guest) {
+            $this->guest = $this->newProjectUser(Role::$guest);
         }
 
-        return $this->guest = $this->newProjectUser(Role::$guest);
+        return $this->guest;
     }
 
     protected function beGuest()
@@ -106,11 +114,11 @@ class ApiTestCase extends TestCase
 
     protected function user()
     {
-        if ($this->user) {
-            return $this->user;
+        if (!$this->user) {
+            $this->user = $this->newUser();
         }
 
-        return $this->user = $this->newUser();
+        return $this->user;
     }
 
     protected function beUser()
@@ -120,11 +128,11 @@ class ApiTestCase extends TestCase
 
     protected function globalAdmin()
     {
-        if ($this->globalAdmin) {
-            return $this->globalAdmin;
+        if (!$this->globalAdmin) {
+            $this->globalAdmin = $this->newUser(Role::$admin);
         }
 
-        return $this->globalAdmin = $this->newUser(Role::$admin);
+        return $this->globalAdmin;
     }
 
     protected function beGlobalAdmin()
@@ -134,46 +142,45 @@ class ApiTestCase extends TestCase
 
     protected function labelTree()
     {
-        if ($this->labelTree) {
-            return $this->labelTree;
+        if (!$this->labelTree) {
+            // Initialize project before label tree, else the tree (as global tree
+            // without members) would be attached by default
+            $this->project();
+
+            $this->labelTree = $this->labelTree = LabelTreeTest::create([
+                'visibility_id' => Visibility::$public->id,
+            ]);
+
+            $this->labelTree->projects()->attach($this->project());
         }
 
-        // initialize project before label tree, else the tree (as global tree without members)
-        // would be attached by default
-        $this->project();
-
-        $this->labelTree = $this->labelTree = LabelTreeTest::create([
-            'visibility_id' => Visibility::$public->id,
-        ]);
-
-        $this->labelTree->projects()->attach($this->project());
 
         return $this->labelTree;
     }
 
     protected function labelRoot()
     {
-        if ($this->labelRoot) {
-            return $this->labelRoot;
+        if (!$this->labelRoot) {
+            $this->labelRoot = LabelTest::create([
+                'name' => 'Test Root',
+                'label_tree_id' => $this->labelTree()->id,
+            ]);
         }
 
-        return $this->labelRoot = LabelTest::create([
-            'name' => 'Test Root',
-            'label_tree_id' => $this->labelTree()->id,
-        ]);
+        return $this->labelRoot;
     }
 
     protected function labelChild()
     {
-        if ($this->labelChild) {
-            return $this->labelChild;
+        if (!$this->labelChild) {
+            $this->labelChild = LabelTest::create([
+                'name' => 'Test Child',
+                'parent_id' => $this->labelRoot()->id,
+                'label_tree_id' => $this->labelTree()->id,
+            ]);
         }
 
-        return $this->labelChild = LabelTest::create([
-            'name' => 'Test Child',
-            'parent_id' => $this->labelRoot()->id,
-            'label_tree_id' => $this->labelTree()->id,
-        ]);
+        return $this->labelChild;
     }
 
     /*

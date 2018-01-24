@@ -143,7 +143,7 @@ class ProjectControllerTest extends ApiTestCase
     {
         $id = $this->project()->id;
         $annotation = AnnotationTest::create([
-            'project_volume_id' => $this->project()->volumes()->find($this->volume()->id)->pivot->id,
+            'project_volume_id' => $this->projectVolume()->id,
         ]);
 
         $this->beAdmin();
@@ -166,7 +166,7 @@ class ProjectControllerTest extends ApiTestCase
     {
         $id = $this->project()->id;
         $imageLabel = ImageLabelTest::create([
-            'project_volume_id' => $this->project()->volumes()->find($this->volume()->id)->pivot->id,
+            'project_volume_id' => $this->projectVolume()->id,
         ]);
 
         $this->beAdmin();

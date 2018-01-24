@@ -39,10 +39,6 @@ class NewDataArchitecture extends Migration
         // null project_volume_id.
         // Assign existing annotations to the oldest project?
 
-        // TODO migrate existing annotation sessions to be attached to a project and not
-        // a volume. They can be duplicated for all projects they affect. They don't
-        // require associated users any more. Instead, they affect all project users.
-
         Schema::table('annotations', function (Blueprint $table) {
             $table->integer('project_volume_id')->unsigned();
             $table->foreign('project_volume_id')
@@ -81,6 +77,24 @@ class NewDataArchitecture extends Migration
             $table->unique(['image_id', 'label_id', 'project_volume_id']);
         });
 
+        // TODO migrate existing annotation sessions to be attached to a project and not
+        // a volume. They can be duplicated for all projects they affect. They don't
+        // require associated users any more. Instead, they affect all project users.
+
+        Schema::drop('annotation_session_user');
+
+        Schema::table('annotation_sessions', function (Blueprint $table) {
+            $table->dropColumn('volume_id');
+
+            $table->integer('project_id')->unsigned();
+            $table->foreign('project_id')
+                  ->references('id')
+                  ->on('projects')
+                  ->onDelete('cascade');
+
+            $table->index(['project_id', 'starts_at', 'ends_at']);
+        });
+
         // TODO Add volume_members table. Migrate project admins to be volume admins.
 
         // Volumes should be private by default.
@@ -104,6 +118,34 @@ class NewDataArchitecture extends Migration
         // Schema::table('volumes', function (Blueprint $table) {
         //     $table->dropColumn('visibility_id');
         // });
+
+        Schema::table('annotation_sessions', function (Blueprint $table) {
+            $table->dropColumn('project_id');
+
+            $table->integer('volume_id')->unsigned();
+            $table->foreign('volume_id')
+                  ->references('id')
+                  ->on('volumes')
+                  ->onDelete('cascade');
+
+            $table->index(['volume_id', 'starts_at', 'ends_at']);
+        });
+
+        Schema::create('annotation_session_user', function (Blueprint $table) {
+            $table->integer('annotation_session_id')->unsigned();
+            $table->foreign('annotation_session_id')
+                  ->references('id')
+                  ->on('annotation_sessions')
+                  ->onDelete('cascade');
+
+            $table->integer('user_id')->unsigned();
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('cascade');
+
+            $table->unique(['annotation_session_id', 'user_id']);
+        });
 
         Schema::table('image_labels', function (Blueprint $table) {
             // This drops the foreign and unique constraints, too.

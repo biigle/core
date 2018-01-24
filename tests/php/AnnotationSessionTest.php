@@ -21,7 +21,7 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertNotNull($this->model->ends_at);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
-        $this->assertNotNull($this->model->volume_id);
+        $this->assertNotNull($this->model->project_id);
         $this->assertNotNull($this->model->hide_other_users_annotations);
         $this->assertNotNull($this->model->hide_own_annotations);
     }
@@ -47,26 +47,25 @@ class AnnotationSessionTest extends ModelTestCase
         $this->model->save();
     }
 
-    public function testVolumeOnDeleteCascade()
+    public function testProjectOnDeleteCascade()
     {
-        $this->model->volume()->delete();
+        $this->model->project()->delete();
         $this->assertNull($this->model->fresh());
     }
 
-    public function testUsers()
+    public function testScopeActive()
     {
-        $user = UserTest::create();
-        $this->model->users()->attach($user);
-        $sessionUser = $this->model->users()->first();
-        $this->assertEquals([
-            'id' => $user->id,
-            'firstname' => $user->firstname,
-            'lastname' => $user->lastname,
-            'email' => $user->email,
-        ], $sessionUser->toArray());
+        $active = self::create([
+            'starts_at' => Carbon::yesterday(),
+            'ends_at' => Carbon::tomorrow(),
+        ]);
 
-        $user->delete();
-        $this->assertEmpty($this->model->users()->get());
+        self::create([
+            'starts_at' => Carbon::yesterday()->subDay(),
+            'ends_at' => Carbon::yesterday(),
+        ]);
+
+        $this->assertEquals($active->id, AnnotationSession::active()->first()->id);
     }
 
     public function testGetImageAnnotationsHideOwn()
@@ -105,7 +104,6 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::create([
-            'volume_id' => $image->volume_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => true,
@@ -148,7 +146,6 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::create([
-            'volume_id' => $image->volume_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => false,
@@ -188,7 +185,6 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::create([
-            'volume_id' => $image->volume_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => true,
@@ -227,7 +223,6 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::create([
-            'volume_id' => $image->volume_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => false,
@@ -292,7 +287,6 @@ class AnnotationSessionTest extends ModelTestCase
         ]);
 
         $session = static::make([
-            'volume_id' => $image->volume_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
             'hide_own_annotations' => false,
@@ -357,59 +351,45 @@ class AnnotationSessionTest extends ModelTestCase
 
     public function testAnnotations()
     {
-        $ownUser = UserTest::create();
-        $otherUser = UserTest::create();
-        $image = ImageTest::create();
+        $pivot = ProjectVolumeTest::create();
+        $image = ImageTest::create(['volume_id' => $pivot->volume_id]);
 
         $a1 = AnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
+            'project_volume_id' => $pivot->id,
         ]);
         $al1 = AnnotationLabelTest::create([
             'annotation_id' => $a1->id,
-            'user_id' => $ownUser->id,
             'created_at' => '2016-09-06',
         ]);
 
         $a2 = AnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
+            'project_volume_id' => $pivot->id,
         ]);
         $al2 = AnnotationLabelTest::create([
             'annotation_id' => $a2->id,
-            'user_id' => $ownUser->id,
             'created_at' => '2016-09-05',
         ]);
 
         $a3 = AnnotationTest::create([
-            'image_id' => $image->id,
             'created_at' => '2016-09-06',
         ]);
         $al3 = AnnotationLabelTest::create([
             'annotation_id' => $a3->id,
-            'user_id' => $otherUser->id,
-            'created_at' => '2016-09-06',
-        ]);
-
-        $a4 = AnnotationTest::create([
-            'created_at' => '2016-09-06',
-        ]);
-        $al4 = AnnotationLabelTest::create([
-            'annotation_id' => $a4->id,
-            'user_id' => $ownUser->id,
             'created_at' => '2016-09-06',
         ]);
 
         $session = static::create([
-            'volume_id' => $image->volume_id,
+            'project_id' => $pivot->project_id,
             'starts_at' => '2016-09-06',
             'ends_at' => '2016-09-07',
         ]);
-        $session->users()->attach($ownUser);
 
         $this->assertTrue($session->annotations()->where('id', $a1->id)->exists());
         $this->assertFalse($session->annotations()->where('id', $a2->id)->exists());
         $this->assertFalse($session->annotations()->where('id', $a3->id)->exists());
-        $this->assertFalse($session->annotations()->where('id', $a4->id)->exists());
     }
 }

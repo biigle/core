@@ -23,8 +23,6 @@ class AnnotationSession extends Model
         'ends_at' => 'required|date|after:starts_at',
         'hide_other_users_annotations' => 'filled|boolean',
         'hide_own_annotations' => 'filled|boolean',
-        'users' => 'required|array',
-        'users.*' => 'distinct|exists:users,id',
     ];
 
     /**
@@ -38,8 +36,6 @@ class AnnotationSession extends Model
         'ends_at' => 'filled|date',
         'hide_other_users_annotations' => 'filled|boolean',
         'hide_own_annotations' => 'filled|boolean',
-        'users' => 'filled|array',
-        'users.*' => 'distinct|exists:users,id',
         'force' => 'filled|boolean',
     ];
 
@@ -76,28 +72,33 @@ class AnnotationSession extends Model
     ];
 
     /**
-     * The volume, this annotation session belongs to.
+     * Scope a query to only include active annotation sessions.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeActive($query)
+    {
+        $now = Carbon::now();
+
+        return $query->where('annotation_sessions.starts_at', '<=', $now)
+            ->where('annotation_sessions.ends_at', '>', $now);
+    }
+
+    /**
+     * The project, this annotation session belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function volume()
+    public function project()
     {
-        return $this->belongsTo(Volume::class);
+        return $this->belongsTo(Project::class);
     }
 
     /**
-     * The users, this annotation session is restricted to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function users()
-    {
-        return $this->belongsToMany(User::class)
-            ->select('id', 'firstname', 'lastname', 'email');
-    }
-
-    /**
-     * Get the annotations of the image (with labels), filtered by the restrictions of this annotation session.
+     * Get the annotations of the image (with labels), filtered by the restrictions of
+     * this annotation session.
      *
      * @param Image $image The image to get the annotations from
      * @param User $user The user to whom the restrictions should apply ('own' user)
@@ -118,16 +119,14 @@ class AnnotationSession extends Model
          * if else block.
          */
         if ($this->hide_other_users_annotations) {
-
-            // hide all annotation labels of other users
+            // Hide all annotation labels of other users.
             $query->with(['labels' => function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             }]);
         } elseif ($this->hide_own_annotations) {
-
-            // take only labels of this session or any labels of other users
+            // Take only labels of this session or any labels of other users.
             $query->with(['labels' => function ($query) use ($user) {
-                // wrap this in a where because the default query already has a where
+                // Wrap this in a where because the default query already has a where.
                 $query->where(function ($query) use ($user) {
                     $query->where(function ($query) {
                         $query->where('created_at', '>=', $this->starts_at)
@@ -153,31 +152,21 @@ class AnnotationSession extends Model
     public function annotations()
     {
         return Annotation::where(function ($query) {
-            // all annotations of the associated volume
-            return $query->whereIn('image_id', function ($query) {
-                $query->select('id')
-                        ->from('images')
-                        ->where('volume_id', $this->volume_id);
-            })
-            // that were created between the start and end date
+            // All annotations of the associated project....
+            return $query->whereIn('project_volume_id', function ($query) {
+                    $query->select('id')
+                        ->from('project_volume')
+                        ->where('project_id', $this->project_id);
+                })
+                // ...that were created between the start and end date.
                 ->where('created_at', '>=', $this->starts_at)
-                ->where('created_at', '<', $this->ends_at)
-            // and have a label by one of the members of this session
-                ->whereExists(function ($query) {
-                    $query->select(DB::raw(1))
-                        ->from('annotation_labels')
-                        ->whereRaw('annotation_labels.annotation_id = annotations.id')
-                        ->whereIn('annotation_labels.user_id', function ($query) {
-                            $query->select('user_id')
-                                ->from('annotation_session_user')
-                                ->where('annotation_session_id', $this->id);
-                        });
-                });
+                ->where('created_at', '<', $this->ends_at);
         });
     }
 
     /**
-     * Check if the given user is allowed to access the annotation if this annotation session is active.
+     * Check if the given user is allowed to access the annotation if this annotation
+     * session is active.
      *
      * @param Annotation $annotation
      * @param User $user

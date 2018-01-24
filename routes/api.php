@@ -38,16 +38,6 @@ $router->resource('images', 'ImageController', [
     'parameters' => ['images' => 'id'],
 ]);
 
-$router->resource('images.annotations', 'ImageAnnotationController', [
-    'only' => ['index', 'store'],
-    'parameters' => ['images' => 'id'],
-]);
-
-$router->resource('images.labels', 'ImageLabelController', [
-    'only' => ['index', 'store'],
-    'parameters' => ['images' => 'id'],
-]);
-
 $router->resource('image-labels', 'ImageLabelController', [
     'only' => ['destroy'],
     'parameters' => ['image-labels' => 'id'],
@@ -95,6 +85,11 @@ $router->resource('projects', 'ProjectController', [
     'parameters' => ['projects' => 'id'],
 ]);
 
+$router->resource('projects.annotation-sessions', 'ProjectAnnotationSessionController', [
+    'only' => ['index', 'store'],
+    'parameters' => ['projects' => 'id'],
+]);
+
 $router->get(
     'projects/{id}/label-trees/available',
     'ProjectLabelTreeController@available'
@@ -102,6 +97,16 @@ $router->get(
 $router->resource('projects.label-trees', 'ProjectLabelTreeController', [
     'only' => ['index', 'store', 'destroy'],
     'parameters' => ['projects' => 'id', 'label-trees' => 'id2'],
+]);
+
+$router->resource('projects.images.annotations', 'ProjectImageAnnotationController', [
+    'only' => ['index', 'store'],
+    'parameters' => ['projects' => 'id', 'images' => 'id2'],
+]);
+
+$router->resource('projects.images.labels', 'ProjectImageLabelController', [
+    'only' => ['index', 'store'],
+    'parameters' => ['projects' => 'id', 'images' => 'id2'],
 ]);
 
 $router->post(
@@ -139,11 +144,6 @@ $router->resource('system-messages', 'SystemMessageController', [
 
 $router->resource('volumes', 'VolumeController', [
     'only' => ['show', 'update'],
-    'parameters' => ['volumes' => 'id'],
-]);
-
-$router->resource('volumes.annotation-sessions', 'VolumeAnnotationSessionController', [
-    'only' => ['index', 'store'],
     'parameters' => ['volumes' => 'id'],
 ]);
 

@@ -22,7 +22,6 @@ class Image extends Model
      */
     public static $attachLabelRules = [
         'label_id' => 'required|exists:labels,id',
-        'project_id' => 'required|exists:projects,id',
     ];
 
     /**
@@ -33,7 +32,6 @@ class Image extends Model
     public static $createAnnotationRules = [
         'shape_id' => 'required|exists:shapes,id',
         'points' => 'required',
-        'project_id' => 'required|exists:projects,id',
     ];
 
     /**

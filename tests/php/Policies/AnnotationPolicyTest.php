@@ -67,26 +67,18 @@ class AnnotationPolicyTest extends TestCase
         $this->annotation->created_at = Carbon::yesterday();
         $this->annotation->save();
 
-        $session = AnnotationSessionTest::create([
-            'volume_id' => $this->annotation->image->volume_id,
-            'starts_at' => Carbon::today(),
-            'ends_at' => Carbon::tomorrow(),
-            'hide_own_annotations' => true,
-            'hide_other_users_annotations' => true,
-        ]);
-
         $this->assertFalse($this->user->can('access', $this->annotation));
         $this->assertTrue($this->guest->can('access', $this->annotation));
         $this->assertTrue($this->editor->can('access', $this->annotation));
         $this->assertTrue($this->admin->can('access', $this->annotation));
         $this->assertTrue($this->globalAdmin->can('access', $this->annotation));
 
-        $session->users()->attach([
-            $this->user->id,
-            $this->guest->id,
-            $this->editor->id,
-            $this->admin->id,
-            $this->globalAdmin->id,
+        $session = AnnotationSessionTest::create([
+            'project_id' => $this->project->id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
         ]);
         Cache::flush();
 
@@ -95,8 +87,6 @@ class AnnotationPolicyTest extends TestCase
         $this->assertFalse($this->editor->can('access', $this->annotation));
         $this->assertFalse($this->admin->can('access', $this->annotation));
         $this->assertTrue($this->globalAdmin->can('access', $this->annotation));
-
-        $this->markTestIncomplete('Update the annotation session behavior with project volumes');
     }
 
     public function testUpdate()

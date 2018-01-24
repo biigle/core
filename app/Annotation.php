@@ -93,14 +93,11 @@ class Annotation extends Model
      */
     public function scopeAllowedBySession($query, AnnotationSession $session, User $user)
     {
-        // TODO this should become simpler with the new project_volume_id
-
         if ($session->hide_own_annotations && $session->hide_other_users_annotations) {
-
-            // take only annotations of this session
+            // Take only annotations of this session...
             $query->where('annotations.created_at', '>=', $session->starts_at)
                 ->where('annotations.created_at', '<', $session->ends_at)
-                // which have at least one label of the current user
+                // ...which have at least one label of the current user.
                 ->whereExists(function ($query) use ($user) {
                     $query->select(DB::raw(1))
                         ->from('annotation_labels')
@@ -109,10 +106,10 @@ class Annotation extends Model
                 });
         } elseif ($session->hide_own_annotations) {
             $query->where(function ($query) use ($session, $user) {
-                // take all annotations of this session
+                // Take all annotations of this session...
                 $query->where('annotations.created_at', '>=', $session->starts_at)
                     ->where('annotations.created_at', '<', $session->ends_at)
-                    // or older annotations with at least one label of another user
+                    // ...or older annotations with at least one label of another user.
                     ->orWhereExists(function ($query) use ($user) {
                         $query->select(DB::raw(1))
                             ->from('annotation_labels')
@@ -121,8 +118,7 @@ class Annotation extends Model
                     });
             });
         } elseif ($session->hide_other_users_annotations) {
-
-            // take only annotations with labels of the current user
+            // Take only annotations with labels of the current user.
             $query->whereExists(function ($query) use ($user) {
                 $query->select(DB::raw(1))
                     ->from('annotation_labels')
@@ -201,6 +197,16 @@ class Annotation extends Model
     public function labels()
     {
         return $this->hasMany(AnnotationLabel::class)->with('label', 'user');
+    }
+
+    /**
+     * The project volume of this annotation.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function projectVolume()
+    {
+        return $this->belongsTo(ProjectVolume::class);
     }
 
     /**

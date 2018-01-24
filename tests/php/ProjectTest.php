@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use Event;
 use Biigle\Role;
+use Carbon\Carbon;
 use ModelTestCase;
 use Biigle\Project;
 use Biigle\Tests\ImageTest;
@@ -394,5 +395,111 @@ class ProjectTest extends ModelTestCase
         $this->model->addVolumeId($i2->volume_id);
 
         $this->assertEquals($i1->uuid, $this->model->thumbnail->uuid);
+    }
+
+    public function testAnnotationSessions()
+    {
+        $this->assertFalse($this->model->annotationSessions()->exists());
+        $session = AnnotationSessionTest::create(['project_id' => $this->model->id]);
+        $this->assertTrue($this->model->annotationSessions()->exists());
+    }
+
+    public function testGetActiveAnnotationSession()
+    {
+        $active = AnnotationSessionTest::create([
+            'project_id' => $this->model->id,
+            'starts_at' => Carbon::yesterday(),
+            'ends_at' => Carbon::tomorrow(),
+        ]);
+
+        $this->assertEquals($active->id, $this->model->getActiveAnnotationSession()->id);
+    }
+
+    public function testHasConflictingAnnotationSession()
+    {
+        $a = AnnotationSessionTest::create([
+            'project_id' => $this->model->id,
+            'starts_at' => '2016-09-04',
+            'ends_at' => '2016-09-07',
+        ]);
+
+        $this->assertFalse($this->model->hasConflictingAnnotationSession($a));
+
+        /*
+         * |--a--|
+         *  |-b-|
+         */
+        $b = AnnotationSessionTest::make([
+            'project_id' => $this->model->id,
+            'starts_at' => '2016-09-05',
+            'ends_at' => '2016-09-06',
+        ]);
+
+        $this->assertTrue($this->model->hasConflictingAnnotationSession($b));
+
+        /*
+         *   |--a--|
+         * |-b-|
+         */
+        $b = AnnotationSessionTest::make([
+            'project_id' => $this->model->id,
+            'starts_at' => '2016-09-03',
+            'ends_at' => '2016-09-05',
+        ]);
+
+        $this->assertTrue($this->model->hasConflictingAnnotationSession($b));
+
+        /*
+         * |--a--|
+         *     |-b-|
+         */
+        $b = AnnotationSessionTest::make([
+            'project_id' => $this->model->id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-08',
+        ]);
+
+        $this->assertTrue($this->model->hasConflictingAnnotationSession($b));
+
+        /*
+         *  |--a--|
+         * |---b---|
+         */
+        $b = AnnotationSessionTest::make([
+            'project_id' => $this->model->id,
+            'starts_at' => '2016-09-03',
+            'ends_at' => '2016-09-08',
+        ]);
+
+        $this->assertTrue($this->model->hasConflictingAnnotationSession($b));
+
+        /*
+         *     |--a--|
+         * |-b-|
+         */
+        $b = AnnotationSessionTest::make([
+            'project_id' => $this->model->id,
+            'starts_at' => '2016-09-03',
+            'ends_at' => '2016-09-04',
+        ]);
+
+        $this->assertFalse($this->model->hasConflictingAnnotationSession($b));
+
+        /*
+         * |--a--|
+         *       |-b-|
+         */
+        $b = AnnotationSessionTest::make([
+            'project_id' => $this->model->id,
+            'starts_at' => '2016-09-07',
+            'ends_at' => '2016-09-08',
+        ]);
+
+        $this->assertFalse($this->model->hasConflictingAnnotationSession($b));
+
+        $b->save();
+        $b = $b->fresh();
+        // should not count the own annotation session (for updating)
+        $this->assertFalse($this->model->hasConflictingAnnotationSession($b));
     }
 }

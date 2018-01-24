@@ -6,9 +6,10 @@ use DB;
 use Biigle\User;
 use Biigle\Role;
 use Biigle\Label;
-use Biigle\Volume;
+use Biigle\Project;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
+use Biigle\AnnotationSession;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AnnotationPolicy extends CachedPolicy
@@ -39,24 +40,35 @@ class AnnotationPolicy extends CachedPolicy
     public function access(User $user, Annotation $annotation)
     {
         return $this->remember("annotation-can-access-{$user->id}-{$annotation->id}", function () use ($user, $annotation) {
-            $volume = Volume::select('volumes.id')
-                ->join('images', 'images.volume_id', '=', 'volumes.id')
-                ->where('images.id', $annotation->image_id)
-                ->first();
 
-            $session = $volume->getActiveAnnotationSession($user);
-            $sessionAccess = !$session || $session->allowsAccess($annotation, $user);
+            // Check if the user belongs to the same project than the annotation.
+            $belongsToProject = DB::table('project_user')
+                ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
+                ->where('project_user.user_id', $user->id)
+                ->where('project_volume.id', $annotation->project_volume_id)
+                ->exists();
 
-            return $sessionAccess &&
-                // TODO user must be member of one of the projects, the annotation belongs to
-                DB::table('project_user')
-                    ->where('user_id', $user->id)
-                    ->whereIn('project_id', function ($query) use ($volume) {
+            // Only project members are affected by annotation sessions of the project.
+            if ($belongsToProject) {
+                $session = AnnotationSession::active()
+                    ->where('project_id', function ($query) use ($annotation) {
                         $query->select('project_id')
                             ->from('project_volume')
-                            ->where('volume_id', $volume->id);
+                            ->where('id', $annotation->project_volume_id);
                     })
+                    ->first();
+
+                return !$session || $session->allowsAccess($annotation, $user);
+            } else {
+                // Other users are allowed to see the annotation if they belong to a
+                // project which has the same volume attached.
+                return DB::table('images')
+                    ->join('project_volume', 'project_volume.volume_id', 'images.volume_id')
+                    ->join('project_user', 'project_user.project_id', 'project_volume.project_id')
+                    ->where('images.id', $annotation->image_id)
+                    ->where('project_user.user_id', $user->id)
                     ->exists();
+            }
         });
     }
 

@@ -17,11 +17,12 @@ class AnnotationControllerTest extends ApiTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->image = ImageTest::create();
-        $this->project()->volumes()->attach($this->image->volume);
+        $this->image = ImageTest::create([
+            'volume_id' => $this->volume()->id,
+        ]);
         $this->annotation = AnnotationTest::create([
             'image_id' => $this->image->id,
-            'project_volume_id' => $this->project()->volumes()->find($this->image->volume_id)->pivot->id,
+            'project_volume_id' => $this->projectVolume()->id,
         ]);
     }
 
@@ -56,25 +57,21 @@ class AnnotationControllerTest extends ApiTestCase
         $this->annotation->created_at = Carbon::yesterday();
         $this->annotation->save();
 
+        $this->beAdmin();
+        $response = $this->get("api/v1/annotations/{$this->annotation->id}");
+        $response->assertStatus(200);
+
         $session = AnnotationSessionTest::create([
-            'volume_id' => $this->annotation->image->volume_id,
+            'project_id' => $this->annotation->projectVolume->project_id,
             'starts_at' => Carbon::today(),
             'ends_at' => Carbon::tomorrow(),
             'hide_own_annotations' => true,
             'hide_other_users_annotations' => true,
         ]);
-
-        $this->beAdmin();
-        $response = $this->get("api/v1/annotations/{$this->annotation->id}");
-        $response->assertStatus(200);
-
-        $session->users()->attach($this->admin());
         Cache::flush();
 
         $response = $this->get("api/v1/annotations/{$this->annotation->id}");
         $response->assertStatus(403);
-
-        $this->markTestIncomplete('Handle new behavior of annotation sessions');
     }
 
     public function testUpdate()
@@ -140,7 +137,7 @@ class AnnotationControllerTest extends ApiTestCase
 
         $this->annotation = AnnotationTest::create([
             'image_id' => $this->image->id,
-            'project_volume_id' => $this->project()->volumes()->find($this->image->volume_id)->pivot->id,
+            'project_volume_id' => $this->projectVolume()->id,
         ]);
         $id = $this->annotation->id;
 
