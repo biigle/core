@@ -122,7 +122,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
             'project_id' => 9999,
         ]);
-        // project volume does not exist
+        // project does not exist
         $response->assertStatus(404);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [

@@ -58,8 +58,8 @@ class AnnotationLabelController extends Controller
      * @apiGroup Annotations
      * @apiName StoreAnnotationLabels
      * @apiPermission projectEditor
-     * @apiDescription Only labels may be used that belong to a label tree used by one of
-     * the projects, the annotation belongs to.
+     * @apiDescription Only labels may be used that belong to a label tree which is
+     * attached to the project, the annotation belongs to.
      *
      * @apiParam {Number} id The annotation ID.
      * @apiParam (Required arguments) {Number} label_id The ID of the label category to attach to the annotation.

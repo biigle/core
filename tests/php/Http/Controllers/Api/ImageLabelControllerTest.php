@@ -49,28 +49,26 @@ class ImageLabelControllerTest extends ApiTestCase
         $id = $this->image->id;
         $this->doTestApiRoute('POST', "/api/v1/images/{$id}/labels");
 
-        // missing arguments
+        $this->beGuest();
+        $response = $this->post("/api/v1/images/{$id}/labels", [
+            'label_id' => $this->labelRoot()->id,
+            'project_id' => $this->project()->id,
+        ]);
+        $response->assertStatus(403);
+
         $this->beEditor();
-        $response = $this->json('POST', "/api/v1/images/{$id}/labels");
+        $response = $this->json('POST', "/api/v1/images/{$id}/labels", [
+            'label_id' => $this->labelRoot()->id,
+            'project_id' => 9999,
+        ]);
+        // project does not exist
         $response->assertStatus(422);
 
         $this->assertEquals(0, $this->image->labels()->count());
 
-        $this->beUser();
         $response = $this->post("/api/v1/images/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
-        ]);
-        $response->assertStatus(403);
-
-        $this->beGuest();
-        $response = $this->post("/api/v1/images/{$id}/labels", [
-            'label_id' => $this->labelRoot()->id,
-        ]);
-        $response->assertStatus(403);
-
-        $this->beEditor();
-        $response = $this->post("/api/v1/images/{$id}/labels", [
-            'label_id' => $this->labelRoot()->id,
+            'project_id' => $this->project()->id,
         ]);
         $response->assertStatus(200);
         $this->assertEquals(1, $this->image->labels()->count());
@@ -79,12 +77,14 @@ class ImageLabelControllerTest extends ApiTestCase
         // the same label cannot be attached twice
         $response = $this->post("/api/v1/images/{$id}/labels", [
             'label_id' => $this->labelRoot()->id,
+            'project_id' => $this->project()->id,
         ]);
         $response->assertStatus(400);
         $this->assertEquals(1, $this->image->labels()->count());
 
         $response = $this->json('POST', "/api/v1/images/{$id}/labels", [
             'label_id' => $this->labelChild()->id,
+            'project_id' => $this->project()->id,
         ]);
         $response->assertStatus(200);
         $this->assertEquals(2, $this->image->labels()->count());
@@ -103,16 +103,19 @@ class ImageLabelControllerTest extends ApiTestCase
 
     public function testDestroy()
     {
+        $projectVolume = $this->project()->volumes()->find($this->volume()->id)->pivot;
         $id = ImageLabelTest::create([
             'label_id' => $this->labelChild()->id,
             'image_id' => $this->image->id,
             'user_id' => $this->editor()->id,
+            'project_volume_id' => $projectVolume->id,
         ])->id;
 
         $id2 = ImageLabelTest::create([
             'label_id' => $this->labelRoot()->id,
             'image_id' => $this->image->id,
             'user_id' => $this->admin()->id,
+            'project_volume_id' => $projectVolume->id,
         ])->id;
 
         $this->doTestApiRoute('DELETE', '/api/v1/image-labels/'.$id);
@@ -141,6 +144,7 @@ class ImageLabelControllerTest extends ApiTestCase
             'label_id' => $this->labelChild()->id,
             'image_id' => $this->image->id,
             'user_id' => $this->editor()->id,
+            'project_volume_id' => $projectVolume->id,
         ])->id;
         $this->assertTrue($this->image->labels()->where('id', $id)->exists());
 

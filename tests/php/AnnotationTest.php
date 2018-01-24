@@ -26,9 +26,9 @@ class AnnotationTest extends ModelTestCase
 
     public function testProjectVolumeOnDeleteCascade()
     {
-        $this->assertNotNull(Annotation::find($this->model->id));
+        $this->assertNotNull($this->model->fresh());
         ProjectVolume::where('id', $this->model->project_volume_id)->delete();
-        $this->assertNull(Annotation::find($this->model->id));
+        $this->assertNull($this->model->fresh());
     }
 
     public function testImageOnDeleteRestrict()

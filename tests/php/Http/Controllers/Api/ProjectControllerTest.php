@@ -6,6 +6,7 @@ use Event;
 use ApiTestCase;
 use Biigle\Project;
 use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ImageLabelTest;
 
 class ProjectControllerTest extends ApiTestCase
 {
@@ -138,7 +139,7 @@ class ProjectControllerTest extends ApiTestCase
         $response->assertStatus(404);
     }
 
-    public function testDestroyForce()
+    public function testDestroyForceAnnotations()
     {
         $id = $this->project()->id;
         $annotation = AnnotationTest::create([
@@ -159,7 +160,25 @@ class ProjectControllerTest extends ApiTestCase
         Event::assertDispatched('annotations.cleanup', function ($e, $arg) use ($annotation) {
             return $arg[0] === $annotation->id;
         });
+    }
 
-        $this->markTestIncomplete('Require force if this would delete image labels');
+    public function testDestroyForceImageLabels()
+    {
+        $id = $this->project()->id;
+        $imageLabel = ImageLabelTest::create([
+            'project_volume_id' => $this->project()->volumes()->find($this->volume()->id)->pivot->id,
+        ]);
+
+        $this->beAdmin();
+        $response = $this->json('DELETE', "/api/v1/projects/{$id}");
+        $response->assertStatus(400);
+        $this->assertNotNull($this->project()->fresh());
+
+        Event::fake();
+        $response = $this->json('DELETE', "/api/v1/projects/{$id}", ['force' => 'true']);
+        $response->assertStatus(200);
+        $this->assertNull($this->project()->fresh());
+        $this->assertNull($imageLabel->fresh());
+        Event::assertNotDispatched('annotations.cleanup');
     }
 }

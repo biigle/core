@@ -40,7 +40,7 @@ class ImagePolicy extends CachedPolicy
     {
         // Put this to permanent cache for rapid querying of image thumbnails.
         return Cache::remember("image-can-access-{$user->id}-{$image->volume_id}", 0.5, function () use ($user, $image) {
-            // check if user is member of one of the projects, the image belongs to
+            // Check if user is member of one of the projects, the image belongs to.
             return DB::table('project_user')
                 ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
                 ->where('project_user.user_id', $user->id)
@@ -55,6 +55,7 @@ class ImagePolicy extends CachedPolicy
      *
      * @param  User  $user
      * @param  Image  $image
+     * @param ProjectVolume $pivot
      * @return bool
      */
     public function addAnnotation(User $user, Image $image, ProjectVolume $pivot)
@@ -82,7 +83,7 @@ class ImagePolicy extends CachedPolicy
     public function destroy(User $user, Image $image)
     {
         return $this->remember("image-can-destroy-{$user->id}-{$image->id}", function () use ($user, $image) {
-            // check if user is member of one of the projects, the image belongs to
+            // Check if user is member of one of the projects, the image belongs to.
             return DB::table('project_user')
                 ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
                 ->where('project_user.user_id', $user->id)
@@ -95,39 +96,28 @@ class ImagePolicy extends CachedPolicy
     /**
      * Determine if the user can attach the given label to the given image.
      *
-     * The image must belong to a project where the user is an editor or
-     * admin. The label must belong to a label tree that is used by one of the projects
-     * the user and the image belong to.
-     *
      * @param  User  $user
      * @param  Image  $image
      * @param  Label  $label
+     * @param ProjectVolume $pivot
      * @return bool
      */
-    public function attachLabel(User $user, Image $image, Label $label)
+    public function attachLabel(User $user, Image $image, Label $label, ProjectVolume $pivot)
     {
-        // TODO take code from AnnotationPolicy::attachLabel
-
-        return $this->remember("image-can-attach-label-{$user->id}-{$image->id}-{$label->id}", function () use ($user, $image, $label) {
-            // projects, the image belongs to *and* the user is editor or admin of
-            $projectIds = DB::table('project_user')
-                ->where('user_id', $user->id)
-                ->whereIn('project_id', function ($query) use ($image) {
-                    // the projects, the image belongs to
-                    $query->select('project_id')
-                        ->from('project_volume')
-                        ->where('volume_id', $image->volume_id);
-                })
-                ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
-                ->pluck('project_id');
-
-            // user must be editor or admin in one of the projects
-            return !empty($projectIds)
-                // label must belong to a label tree that is used by one of the projects
-                && DB::table('label_tree_project')
-                    ->whereIn('project_id', $projectIds)
-                    ->where('label_tree_id', $label->label_tree_id)
-                    ->exists();
+        return $this->remember("image-can-attach-label-{$user->id}-{$image->id}-{$label->id}-{$pivot->id}", function () use ($user, $image, $label, $pivot) {
+            return DB::table('project_user')
+                ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
+                ->join('label_tree_project', 'label_tree_project.project_id', '=', 'project_user.project_id')
+                // User must be editor or admin of the project to which the new image
+                // label should belong to.
+                ->where('project_user.user_id', $user->id)
+                ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id])
+                ->where('project_volume.id', $pivot->id)
+                ->where('project_volume.volume_id', $image->volume_id)
+                // The label must belong to one of the label trees that are attached
+                // to the project to which the annotation belongs.
+                ->where('label_tree_project.label_tree_id', $label->label_tree_id)
+                ->exists();
         });
     }
 }

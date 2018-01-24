@@ -48,7 +48,7 @@ class AnnotationPolicy extends CachedPolicy
             $sessionAccess = !$session || $session->allowsAccess($annotation, $user);
 
             return $sessionAccess &&
-                // user must be member of one of the projects, the annotation belongs to
+                // TODO user must be member of one of the projects, the annotation belongs to
                 DB::table('project_user')
                     ->where('user_id', $user->id)
                     ->whereIn('project_id', function ($query) use ($volume) {

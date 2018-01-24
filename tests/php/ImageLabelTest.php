@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use ModelTestCase;
 use Biigle\ImageLabel;
+use Biigle\ProjectVolume;
 
 class ImageLabelTest extends ModelTestCase
 {
@@ -17,15 +18,23 @@ class ImageLabelTest extends ModelTestCase
         $this->assertNotNull($this->model->image);
         $this->assertNotNull($this->model->label);
         $this->assertNotNull($this->model->user);
+        $this->assertNotNull($this->model->project_volume_id);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
     }
 
-    public function testImageOnDeleteCascade()
+    public function testProjectVolumeOnDeleteCascade()
     {
         $this->assertNotNull($this->model->fresh());
-        $this->model->image()->delete();
+        ProjectVolume::where('id', $this->model->project_volume_id)->delete();
         $this->assertNull($this->model->fresh());
+    }
+
+    public function testImageOnDeleteRestrict()
+    {
+        $this->assertNotNull($this->model->fresh());
+        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->model->image()->delete();
     }
 
     public function testLabelOnDeleteRestrict()
@@ -48,6 +57,7 @@ class ImageLabelTest extends ModelTestCase
         self::create([
             'image_id' => $this->model->image_id,
             'label_id' => $this->model->label_id,
+            'project_volume_id' => $this->model->project_volume_id,
         ]);
     }
 }

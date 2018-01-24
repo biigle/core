@@ -9,23 +9,16 @@ use Biigle\Tests\LabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\ImageLabelTest;
+use Biigle\Tests\ProjectVolumeTest;
 
 class ImageLabelPolicyTest extends TestCase
 {
-    private $image;
-    private $project;
-    private $user;
-    private $guest;
-    private $editor;
-    private $admin;
-    private $globalAdmin;
-
     public function setUp()
     {
         parent::setUp();
-        $this->image = ImageTest::create();
-        $this->project = ProjectTest::create();
-        $this->project->volumes()->attach($this->image->volume);
+        $this->projectVolume = ProjectVolumeTest::create();
+        $this->image = ImageTest::create(['volume_id' => $this->projectVolume->volume_id]);
+        $this->project = $this->projectVolume->project;
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
         $this->editor = UserTest::create();
@@ -35,6 +28,11 @@ class ImageLabelPolicyTest extends TestCase
         $this->project->addUserId($this->guest->id, Role::$guest->id);
         $this->project->addUserId($this->editor->id, Role::$editor->id);
         $this->project->addUserId($this->admin->id, Role::$admin->id);
+
+        $this->otherAdmin = UserTest::create();
+        $project = ProjectTest::create();
+        $project->volumes()->attach($this->image->volume);
+        $project->addUserId($this->otherAdmin->id, Role::$admin->id);
     }
 
     public function testDestroy()
@@ -43,18 +41,21 @@ class ImageLabelPolicyTest extends TestCase
             'image_id' => $this->image->id,
             'label_id' => LabelTest::create()->id,
             'user_id' => $this->user->id,
+            'project_volume_id' => $this->projectVolume->id,
         ]);
 
         $il2 = ImageLabelTest::create([
             'image_id' => $this->image->id,
             'label_id' => LabelTest::create()->id,
             'user_id' => $this->guest->id,
+            'project_volume_id' => $this->projectVolume->id,
         ]);
 
         $il3 = ImageLabelTest::create([
             'image_id' => $this->image->id,
             'label_id' => LabelTest::create()->id,
             'user_id' => $this->editor->id,
+            'project_volume_id' => $this->projectVolume->id,
         ]);
 
         $this->assertFalse($this->user->can('destroy', $il1));
@@ -77,6 +78,8 @@ class ImageLabelPolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('destroy', $il2));
         $this->assertTrue($this->globalAdmin->can('destroy', $il3));
 
-        $this->markTestIncomplete('Add project_volume_id to image labels');
+        $this->assertFalse($this->otherAdmin->can('destroy', $il1));
+        $this->assertFalse($this->otherAdmin->can('destroy', $il2));
+        $this->assertFalse($this->otherAdmin->can('destroy', $il3));
     }
 }

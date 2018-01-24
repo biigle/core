@@ -9,27 +9,20 @@ use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ProjectVolumeTest;
 use Biigle\Tests\AnnotationLabelTest;
 
 class AnnotationLabelPolicyTest extends TestCase
 {
-    private $annotation;
-    private $project;
-    private $user;
-    private $guest;
-    private $editor;
-    private $admin;
-    private $globalAdmin;
-
     public function setUp()
     {
         parent::setUp();
-        $image = ImageTest::create();
-        $this->project = ProjectTest::create();
-        $this->project->volumes()->attach($image->volume);
+        $this->projectVolume = ProjectVolumeTest::create();
+        $this->image = ImageTest::create(['volume_id' => $this->projectVolume->volume_id]);
+        $this->project = $this->projectVolume->project;
         $this->annotation = AnnotationTest::create([
-            'image_id' => $image->id,
-            'project_volume_id' => $this->project->volumes()->find($image->volume_id)->pivot->id,
+            'image_id' => $this->image->id,
+            'project_volume_id' => $this->projectVolume->id,
         ]);
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
@@ -42,7 +35,7 @@ class AnnotationLabelPolicyTest extends TestCase
         $this->project->addUserId($this->admin->id, Role::$admin->id);
 
         $this->otherProject = ProjectTest::create();
-        $this->otherProject->volumes()->attach($image->volume);
+        $this->otherProject->volumes()->attach($this->image->volume);
         $this->otherAdmin = UserTest::create();
         $this->otherProject->addUserId($this->otherAdmin->id, Role::$admin->id);
     }

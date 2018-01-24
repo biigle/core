@@ -12,28 +12,21 @@ use Biigle\Tests\ImageTest;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\ProjectVolumeTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
 
 class AnnotationPolicyTest extends TestCase
 {
-    private $user;
-    private $guest;
-    private $admin;
-    private $editor;
-    private $project;
-    private $annotation;
-    private $globalAdmin;
-
     public function setUp()
     {
         parent::setUp();
-        $this->image = ImageTest::create();
-        $this->project = ProjectTest::create();
-        $this->project->volumes()->attach($this->image->volume);
+        $this->projectVolume = ProjectVolumeTest::create();
+        $this->image = ImageTest::create(['volume_id' => $this->projectVolume->volume_id]);
+        $this->project = $this->projectVolume->project;
         $this->annotation = AnnotationTest::create([
             'image_id' => $this->image->id,
-            'project_volume_id' => $this->project->volumes()->find($this->image->volume_id)->pivot->id,
+            'project_volume_id' => $this->projectVolume->id,
         ]);
         $this->user = UserTest::create();
         $this->guest = UserTest::create();

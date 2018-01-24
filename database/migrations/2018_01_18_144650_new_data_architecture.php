@@ -60,26 +60,26 @@ class NewDataArchitecture extends Migration
                   ->onDelete('restrict');
         });
 
-        // Schema::table('image_labels', function (Blueprint $table) {
-        //     $table->integer('project_volume_id')->unsigned();
-        //     $table->foreign('project_volume_id')
-        //           ->references('id')
-        //           ->on('project_volume')
-        //           ->onDelete('cascade');
+        Schema::table('image_labels', function (Blueprint $table) {
+            $table->integer('project_volume_id')->unsigned();
+            $table->foreign('project_volume_id')
+                  ->references('id')
+                  ->on('project_volume')
+                  ->onDelete('cascade');
 
-        //     $table->dropForeign(['image_id']);
-        //     $table->foreign('image_id')
-        //           ->references('id')
-        //           ->on('images')
-        //           // A volume must not be deleted if an image still has image labels.
-        //           // All project volumes must be deleted first, which will delete the
-        //           // image labels (see above).
-        //           ->onDelete('restrict');
+            $table->dropForeign(['image_id']);
+            $table->foreign('image_id')
+                  ->references('id')
+                  ->on('images')
+                  // A volume must not be deleted if an image still has image labels.
+                  // All project volumes must be deleted first, which will delete the
+                  // image labels (see above).
+                  ->onDelete('restrict');
 
-        //     $table->dropUnique(['image_id', 'label_id']);
-        //     // Each image may have the same label attached only once per project volume.
-        //     $table->unique(['image_id', 'label_id', 'project_volume_id']);
-        // });
+            $table->dropUnique(['image_id', 'label_id']);
+            // Each image may have the same label attached only once per project volume.
+            $table->unique(['image_id', 'label_id', 'project_volume_id']);
+        });
 
         // TODO Add volume_members table. Migrate project admins to be volume admins.
 
@@ -105,18 +105,18 @@ class NewDataArchitecture extends Migration
         //     $table->dropColumn('visibility_id');
         // });
 
-        // Schema::table('image_labels', function (Blueprint $table) {
-        //     // This drops the foreign and unique constraints, too.
-        //     $table->dropColumn('project_volume_id');
+        Schema::table('image_labels', function (Blueprint $table) {
+            // This drops the foreign and unique constraints, too.
+            $table->dropColumn('project_volume_id');
 
-        //     $table->dropForeign(['image_id']);
-        //     $table->foreign('image_id')
-        //           ->references('id')
-        //           ->on('images')
-        //           ->onDelete('cascade');
+            $table->dropForeign(['image_id']);
+            $table->foreign('image_id')
+                  ->references('id')
+                  ->on('images')
+                  ->onDelete('cascade');
 
-        //     $table->unique(['image_id', 'label_id']);
-        // });
+            $table->unique(['image_id', 'label_id']);
+        });
 
         Schema::table('annotations', function (Blueprint $table) {
             $table->dropColumn('project_volume_id');

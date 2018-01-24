@@ -229,11 +229,9 @@ class Project extends Model
 
         $annotationQuery = Annotation::where('project_volume_id', $pivot->id);
         $hasAnnotations = $annotationQuery->exists();
+        $hasImageLabels = ImageLabel::where('project_volume_id', $pivot->id)->exists();
 
-        // TODO check if this would delete image labels
-        $requiresForce = $hasAnnotations;
-
-        if ($requiresForce && !$force) {
+        if (($hasAnnotations || $hasImageLabels) && !$force) {
             abort(400, 'Detaching the volume would delete annotations or image labels. Use the "force" parameter to detach the volume anyway.');
         }
 
@@ -259,11 +257,9 @@ class Project extends Model
 
         $annotationQuery = Annotation::whereIn('project_volume_id', $pivotIds);
         $hasAnnotations = $annotationQuery->exists();
+        $hasImageLabels = ImageLabel::whereIn('project_volume_id', $pivotIds)->exists();
 
-        // TODO check if this would delete image labels
-        $requiresForce = $hasAnnotations;
-
-        if ($requiresForce && !$force) {
+        if (($hasAnnotations || $hasImageLabels) && !$force) {
             abort(400, 'Detaching one volume would delete annotations or image labels. Use the "force" parameter to detach the volume anyway.');
         }
 

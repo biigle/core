@@ -60,10 +60,6 @@ class AnnotationLabelPolicy extends CachedPolicy
     /**
      * Determine if the user can delete the given annotation label.
      *
-     * If the user created the annotation label, they must be editor or admin of one
-     * of the projects, the annotation belongs to. If another user created it, they must
-     * be admin of one of the projects.
-     *
      * @param  User  $user
      * @param  AnnotationLabel  $annotationLabel
      * @return bool
