@@ -47,8 +47,10 @@ services:
   # The database
   database:
     image: postgres:9.4-alpine
+    tmpfs:
+      - /var/lib/postgresql/data
     volumes:
-      - dbdata:/var/lib/postgresql
+      # - dbdata:/var/lib/postgresql
       - ./:/data
     environment:
       - "POSTGRES_DB=homestead"
@@ -57,6 +59,6 @@ services:
     ports:
       - "54320:5432"
 
-volumes:
-  dbdata:
+# volumes:
+#   dbdata:
 
