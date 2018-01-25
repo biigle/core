@@ -96,7 +96,7 @@ class ImagePolicy extends CachedPolicy
             return DB::table('project_user')
                 ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
                 ->where('project_user.user_id', $user->id)
-                ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id])
+                ->whereIn('project_user.role_id', [Role::$editor->id, Role::$admin->id])
                 ->where('project_volume.volume_id', $image->volume_id)
                 ->where('project_volume.id', $pivot->id)
                 ->exists();
@@ -117,7 +117,7 @@ class ImagePolicy extends CachedPolicy
             return DB::table('project_user')
                 ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
                 ->where('project_user.user_id', $user->id)
-                ->where('project_user.project_role_id', Role::$admin->id)
+                ->where('project_user.role_id', Role::$admin->id)
                 ->where('project_volume.volume_id', $image->volume_id)
                 ->exists();
         });
@@ -141,7 +141,7 @@ class ImagePolicy extends CachedPolicy
                 // User must be editor or admin of the project to which the new image
                 // label should belong to.
                 ->where('project_user.user_id', $user->id)
-                ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id])
+                ->whereIn('project_user.role_id', [Role::$editor->id, Role::$admin->id])
                 ->where('project_volume.id', $pivot->id)
                 ->where('project_volume.volume_id', $image->volume_id)
                 // The label must belong to one of the label trees that are attached

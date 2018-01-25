@@ -58,7 +58,7 @@ class ProjectPolicy extends CachedPolicy
             return DB::table(self::TABLE)
                 ->where('project_id', $project->id)
                 ->where('user_id', $user->id)
-                ->whereIn('project_role_id', [Role::$admin->id, Role::$editor->id])
+                ->whereIn('role_id', [Role::$admin->id, Role::$editor->id])
                 ->exists();
         });
     }
@@ -87,7 +87,7 @@ class ProjectPolicy extends CachedPolicy
                 return $isMember && DB::table(self::TABLE)
                     ->where('project_id', $project->id)
                     ->where('user_id', $user->id)
-                    ->where('project_role_id', Role::$admin->id)
+                    ->where('role_id', Role::$admin->id)
                     ->exists();
             }
         });
@@ -106,7 +106,7 @@ class ProjectPolicy extends CachedPolicy
             return DB::table(self::TABLE)
                 ->where('project_id', $project->id)
                 ->where('user_id', $user->id)
-                ->where('project_role_id', Role::$admin->id)
+                ->where('role_id', Role::$admin->id)
                 ->exists();
         });
     }

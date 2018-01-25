@@ -25,13 +25,13 @@ class ProjectUserController extends Controller
      *       "id": 1,
      *       "firstname": "Joe",
      *       "firstname": "User",
-     *       "project_role_id": 1
+     *       "role_id": 1
      *    },
      *    {
      *       "id": 2,
      *       "firstname": "Jane",
      *       "firstname": "User",
-     *       "project_role_id": 2
+     *       "role_id": 2
      *    }
      * ]
      *
@@ -57,7 +57,7 @@ class ProjectUserController extends Controller
      * @apiParam {Number} pid The project ID.
      * @apiParam {Number} uid The user ID of the project member.
      *
-     * @apiParam (Attributes that can be updated) {Number} project_role_id The project role of the member.
+     * @apiParam (Attributes that can be updated) {Number} role_id The project role of the member.
      *
      * @param Request $request
      * @param  int  $projectId
@@ -69,15 +69,13 @@ class ProjectUserController extends Controller
         $project = Project::findOrFail($projectId);
         $this->authorize('update', $project);
 
-        $role = Role::find($request->input('project_role_id'));
+        $role = Role::find($request->input('role_id'));
 
         if (!$role) {
             abort(400, 'Role does not exist.');
         }
 
         $project->changeRole($userId, $role->id);
-
-        return response('Ok.', 200);
     }
 
     /**
@@ -91,10 +89,10 @@ class ProjectUserController extends Controller
      * @apiParam {Number} pid The project ID.
      * @apiParam {Number} uid The user ID of the new member.
      *
-     * @apiParam (Required attributes) {Number} project_role_id The project role of the member.
+     * @apiParam (Required attributes) {Number} role_id The project role of the member.
      *
      * @apiParamExample {String} Request example:
-     * project_role_id: 3
+     * role_id: 3
      *
      * @param Request $request
      * @param int $projectId
@@ -107,15 +105,13 @@ class ProjectUserController extends Controller
         $this->authorize('update', $project);
 
         $user = User::find($userId);
-        $role = Role::find($request->input('project_role_id'));
+        $role = Role::find($request->input('role_id'));
 
         if (!$user || !$role) {
             abort(400, 'Bad arguments.');
         }
 
         $project->addUserId($user->id, $role->id);
-
-        return response('Ok.', 200);
     }
 
     /**

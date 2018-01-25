@@ -77,8 +77,7 @@ class UserTest extends ModelTestCase
     public function testProjects()
     {
         $project = ProjectTest::create();
-        $role = RoleTest::create();
-        $project->addUserId($this->model->id, $role->id);
+        $project->addUserId($this->model->id, Role::$guest->id);
 
         $this->assertEquals($this->model->projects()->first()->id, $project->id);
     }

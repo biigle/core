@@ -5,11 +5,14 @@ namespace Biigle;
 use Cache;
 use Event;
 use Carbon\Carbon;
+use Biigle\Traits\HasMembers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
 class Project extends Model
 {
+    use HasMembers;
+
     /**
      * Validation rules for creating a new project.
      *
@@ -49,45 +52,14 @@ class Project extends Model
     ];
 
     /**
-     * The members of this project. Every member has a project-specific
-     * `project_role_id` besides their global user role.
+     * The members of this project.
      *
+     * @deprecated Use members() instead.
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users()
     {
-        return $this->belongsToMany(User::class)
-            ->withPivot('project_role_id as project_role_id');
-    }
-
-    /**
-     * All members of this project with the `admin` role.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function admins()
-    {
-        return $this->users()->whereProjectRoleId(Role::$admin->id);
-    }
-
-    /**
-     * All members of this project with the `editor` role.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function editors()
-    {
-        return $this->users()->whereProjectRoleId(Role::$editor->id);
-    }
-
-    /**
-     * All members of this project with the `guest` role.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function guests()
-    {
-        return $this->users()->whereProjectRoleId(Role::$guest->id);
+        return $this->members();
     }
 
     /**
@@ -123,40 +95,27 @@ class Project extends Model
     /**
      * Adds the user with the given role to this project.
      *
+     * @deprecated Use addMember() or addMemberId() instead.
      * @param int $userId
      * @param int $roleId
      * @return void
      */
     public function addUserId($userId, $roleId)
     {
-        try {
-            $this->users()->attach($userId, ['project_role_id' => $roleId]);
-        } catch (QueryException $e) {
-            abort(400, 'The user already exists in this project.');
-        }
+        return $this->addMemberId($userId, $roleId);
     }
 
     /**
      * Changes the role of an existing user in this project.
      *
+     * @deprecated Use updateMember() instead.
      * @param int $userId
      * @param int $roleId
      * @return void
      */
     public function changeRole($userId, $roleId)
     {
-        if ($this->users()->find($userId) === null) {
-            abort(400, "User doesn't exist in this project.");
-        }
-
-        // removeUserId prevents changing the last remaining admin to anything
-        // else, too!
-        if ($this->removeUserId($userId)) {
-            // only re-attach if detach was successful
-            $this->users()->attach($userId, ['project_role_id' => $roleId]);
-        } else {
-            abort(500, "The user couldn't be modified.");
-        }
+        return $this->updateMemberId($userId, $roleId);
     }
 
     /**
@@ -167,9 +126,7 @@ class Project extends Model
      */
     public function checkUserCanBeRemoved($userId)
     {
-        $admins = $this->admins();
-        // is this an attempt to remove the last remaining admin?
-        if ($admins->count() === 1 && $admins->find($userId) !== null) {
+        if (!$this->memberCanLooseAdminStatus($userId)) {
             abort(400, "The last admin of {$this->name} cannot be removed. The admin status must be passed on to another user first.");
         }
     }

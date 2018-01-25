@@ -35,7 +35,7 @@ class ImagePolicyTest extends TestCase
             'volume_id' => $this->projectVolume->volume_id,
         ]);
         $this->otherProject = $otherProjectVolume->project;
-        $this->otherProject->addUserId($this->otherAdmin, Role::$admin->id);
+        $this->otherProject->addUserId($this->otherAdmin->id, Role::$admin->id);
     }
 
     public function testAccess()

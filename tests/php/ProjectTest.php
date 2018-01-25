@@ -91,41 +91,6 @@ class ProjectTest extends ModelTestCase
         $this->assertNotNull($this->model->users()->find($user->id));
     }
 
-    public function testAdmins()
-    {
-        $admin = UserTest::create();
-        $member = UserTest::create();
-        $this->model->addUserId($admin->id, Role::$admin->id);
-        $this->model->addUserId($member->id, Role::$editor->id);
-        // the creator doesn't count
-        $this->model->creator->delete();
-
-        $this->assertEquals(2, $this->model->users()->count());
-        $this->assertEquals(1, $this->model->admins()->count());
-    }
-
-    public function testEditors()
-    {
-        $editor = UserTest::create();
-        $member = UserTest::create();
-        $this->model->addUserId($editor->id, Role::$editor->id);
-        $this->model->addUserId($member->id, Role::$guest->id);
-
-        // count the project creator, too
-        $this->assertEquals(3, $this->model->users()->count());
-        $this->assertEquals(1, $this->model->editors()->count());
-    }
-
-    public function testGuests()
-    {
-        $member = UserTest::create();
-        $this->model->addUserId($member->id, Role::$guest->id);
-
-        // count the project creator, too
-        $this->assertEquals(2, $this->model->users()->count());
-        $this->assertEquals(1, $this->model->guests()->count());
-    }
-
     public function testVolumes()
     {
         $volume = VolumeTest::make();
@@ -148,7 +113,7 @@ class ProjectTest extends ModelTestCase
         $this->model->addUserId($user->id, Role::$editor->id);
         $user = $this->model->users()->find($user->id);
         $this->assertNotNull($user);
-        $this->assertEquals(Role::$editor->id, $user->project_role_id);
+        $this->assertEquals(Role::$editor->id, $user->role_id);
 
         // a user can only be added once regardless the role
         $this->setExpectedException(HttpException::class);
@@ -183,18 +148,13 @@ class ProjectTest extends ModelTestCase
         $admin = $this->model->creator;
         $user = UserTest::create();
 
-        try {
-            $this->model->changeRole($user->id, Role::$admin->id);
-            // this shouldn't be reached
-            $this->assertTrue(false);
-        } catch (HttpException $e) {
-            $this->assertNotNull($e);
-        }
+        $this->model->changeRole($user->id, Role::$admin->id);
+        $this->assertNull($this->model->users()->find($user->id));
 
         $this->model->addUserId($user->id, Role::$admin->id);
-        $this->assertEquals(Role::$admin->id, $this->model->users()->find($user->id)->project_role_id);
+        $this->assertEquals(Role::$admin->id, $this->model->users()->find($user->id)->role_id);
         $this->model->changeRole($user->id, Role::$editor->id);
-        $this->assertEquals(Role::$editor->id, $this->model->users()->find($user->id)->project_role_id);
+        $this->assertEquals(Role::$editor->id, $this->model->users()->find($user->id)->role_id);
 
         // attempt to change the last admin to an editor
         $this->setExpectedException(HttpException::class);

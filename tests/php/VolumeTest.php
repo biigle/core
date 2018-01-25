@@ -282,13 +282,13 @@ class VolumeTest extends ModelTestCase
         $u4 = UserTest::create();
 
         $p1 = ProjectTest::create();
-        $p1->addUserId($u1, $editor->id);
-        $p1->addUserId($u2, $editor->id);
+        $p1->addUserId($u1->id, $editor->id);
+        $p1->addUserId($u2->id, $editor->id);
         $p1->volumes()->attach($this->model);
 
         $p2 = ProjectTest::create();
-        $p2->addUserId($u2, $editor->id);
-        $p2->addUserId($u3, $editor->id);
+        $p2->addUserId($u2->id, $editor->id);
+        $p2->addUserId($u3->id, $editor->id);
         $p2->volumes()->attach($this->model);
 
         $users = $this->model->users()->get();

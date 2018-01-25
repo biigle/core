@@ -88,7 +88,7 @@ class AnnotationPolicy extends CachedPolicy
             return DB::table('project_user')
                 ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
                 ->where('project_user.user_id', $user->id)
-                ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id])
+                ->whereIn('project_user.role_id', [Role::$editor->id, Role::$admin->id])
                 ->where('project_volume.id', $annotation->project_volume_id)
                 ->exists();
         });
@@ -116,7 +116,7 @@ class AnnotationPolicy extends CachedPolicy
                 // User must be editor or admin of the project to which the annotation
                 // belongs.
                 ->where('project_user.user_id', $user->id)
-                ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id])
+                ->whereIn('project_user.role_id', [Role::$editor->id, Role::$admin->id])
                 ->where('project_volume.id', $annotation->project_volume_id)
                 // The label must belong to one of the label trees that are attached
                 // to the project to which the annotation belongs.
@@ -151,13 +151,13 @@ class AnnotationPolicy extends CachedPolicy
                 // Only project admins may delete annotations to which labels of other
                 // users are still attached.
                 return $query
-                    ->where('project_role_id', Role::$admin->id)
+                    ->where('project_user.role_id', Role::$admin->id)
                     ->exists();
             } else {
                 // Editors may delete only those annotations that have their own label
                 // attached as only label.
                 return $query
-                    ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
+                    ->whereIn('project_user.role_id', [Role::$editor->id, Role::$admin->id])
                     ->exists();
             }
         });

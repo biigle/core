@@ -46,12 +46,12 @@ class AnnotationLabelPolicy extends CachedPolicy
             if ($annotationLabel->user_id === $user->id) {
                 // Editors and admins may update their own labels.
                 return $query
-                    ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
+                    ->whereIn('project_user.role_id', [Role::$editor->id, Role::$admin->id])
                     ->exists();
             } else {
                 // Only admins may update labels other than their own.
                 return $query
-                    ->where('project_role_id', Role::$admin->id)
+                    ->where('project_user.role_id', Role::$admin->id)
                     ->exists();
             }
         });

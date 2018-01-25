@@ -92,7 +92,7 @@ class VolumePolicy extends CachedPolicy
                         ->where('volume_id', $volume->id);
                 })
                 ->where('user_id', $user->id)
-                ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
+                ->whereIn('project_user.role_id', [Role::$editor->id, Role::$admin->id])
                 ->exists();
         });
     }
@@ -114,7 +114,7 @@ class VolumePolicy extends CachedPolicy
                         ->where('volume_id', $volume->id);
                 })
                 ->where('user_id', $user->id)
-                ->where('project_role_id', Role::$admin->id)
+                ->where('project_user.role_id', Role::$admin->id)
                 ->exists();
         });
     }

@@ -36,7 +36,7 @@ class VolumePolicyTest extends TestCase
         $this->otherProject = ProjectTest::create();
         $this->otherAdmin = UserTest::create();
         $this->otherProject->volumes()->attach($this->volume);
-        $this->otherProject->addUserId($this->otherAdmin, Role::$admin->id);
+        $this->otherProject->addUserId($this->otherAdmin->id, Role::$admin->id);
     }
 
     public function testAccess()

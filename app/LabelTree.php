@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use DB;
+use Biigle\Traits\HasMembers;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class LabelTree extends Model
 {
+    use HasMembers;
+
     /**
      * Validation rules for creating a new label tree.
      *
@@ -83,21 +86,6 @@ class LabelTree extends Model
     ];
 
     /**
-     * Check if a member can loose their admin status.
-     *
-     * @param User $member
-     * @return bool
-     */
-    private function memberCanLooseAdminStatus(User $member)
-    {
-        return DB::table('label_tree_user')
-            ->where('label_tree_id', $this->id)
-            ->where('role_id', Role::$admin->id)
-            ->where('user_id', '!=', $member->id)
-            ->exists();
-    }
-
-    /**
      * Scope a query to public label trees.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
@@ -130,18 +118,6 @@ class LabelTree extends Model
     }
 
     /**
-     * The members of this label tree. Every member has a tree-specific role.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function members()
-    {
-        return $this->belongsToMany(User::class)
-            ->select('id', 'firstname', 'lastname')
-            ->withPivot('role_id as role_id');
-    }
-
-    /**
      * The labels that belong to this tree.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -166,68 +142,6 @@ class LabelTree extends Model
             && !ImageLabel::join('labels', 'image_labels.label_id', '=', 'labels.id')
             ->where('labels.label_tree_id', $this->id)
             ->exists();
-    }
-
-    /**
-     * Checks is a role can be used for a member of a label tree.
-     *
-     * @param Role $role
-     * @return bool
-     */
-    public function isRoleValid(Role $role)
-    {
-        return $role->id === Role::$admin->id || $role->id === Role::$editor->id;
-    }
-
-    /**
-     * Add a new member with a certain role (either admin or editor).
-     *
-     * @param User $user
-     * @param Role $role
-     */
-    public function addMember(User $user, Role $role)
-    {
-        if (!$this->isRoleValid($role)) {
-            abort(422, 'Invalid label tree member role.');
-        }
-
-        if ($this->members()->where('id', $user->id)->exists()) {
-            abort(422, 'The user is already member of this label tree.');
-        } else {
-            $this->members()->attach($user->id, ['role_id' => $role->id]);
-        }
-    }
-
-    /**
-     * Update a member (role).
-     *
-     * @param User $user
-     * @param Role $role
-     */
-    public function updateMember(User $user, Role $role)
-    {
-        if (!$this->isRoleValid($role)) {
-            abort(422, 'Invalid label tree member role.');
-        }
-
-        if ($role->id !== Role::$admin->id && !$this->memberCanLooseAdminStatus($user)) {
-            abort(403, 'The last label tree admin cannot be demoted.');
-        }
-
-        $this->members()->updateExistingPivot($user->id, ['role_id' => $role->id]);
-    }
-
-    /**
-     * Determines if a member can be removed.
-     *
-     * A member can be removed if at least one admin member remains afterwards.
-     *
-     * @param User $member
-     * @return bool
-     */
-    public function memberCanBeRemoved(User $member)
-    {
-        return $this->memberCanLooseAdminStatus($member);
     }
 
     /**
@@ -263,5 +177,19 @@ class LabelTree extends Model
                     ->from('label_tree_authorized_project')
                     ->where('label_tree_id', $this->id);
             })->delete();
+    }
+
+    /**
+     * Checks if a role ID can be used for a member of this model.
+     *
+     * @param int $roleId
+     * @return bool
+     */
+    public function isRoleIdValid($roleId)
+    {
+        return in_array($roleId, [
+            Role::$admin->id,
+            Role::$editor->id,
+        ]);
     }
 }

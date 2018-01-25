@@ -35,9 +35,10 @@ class RoleTest extends ModelTestCase
     {
         $project = ProjectTest::create();
         $user = UserTest::create();
-        $project->addUserId($user->id, $this->model->id);
+        $role = Role::$guest;
+        $project->addUserId($user->id, $role->id);
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $this->model->delete();
+        $role->delete();
     }
 
     public function testAdminId()
