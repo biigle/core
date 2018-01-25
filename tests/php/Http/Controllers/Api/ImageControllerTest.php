@@ -4,8 +4,10 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use File;
 use ApiTestCase;
+use Biigle\Role;
 use Biigle\Image;
 use Biigle\Volume;
+use Biigle\Visibility;
 use Biigle\Tests\ImageTest;
 use Illuminate\Support\Facades\Event;
 use Biigle\Jobs\ProcessThumbnailChunkJob;
@@ -19,6 +21,9 @@ class ImageControllerTest extends ApiTestCase
         parent::setUp();
         $this->image = ImageTest::create();
         $this->project()->volumes()->attach($this->image->volume);
+        $this->image->volume->visibility_id = Visibility::$private->id;
+        $this->image->volume->save();
+        $this->image->volume->addMember($this->guest(), Role::$admin);
     }
 
     public function testShow()
@@ -26,7 +31,6 @@ class ImageControllerTest extends ApiTestCase
         $id = $this->image->id;
         $this->doTestApiRoute('GET', "/api/v1/images/{$id}");
 
-        // api key authentication
         $this->beUser();
         $response = $this->get("/api/v1/images/{$id}");
         $response->assertStatus(403);
@@ -117,15 +121,11 @@ class ImageControllerTest extends ApiTestCase
         $response = $this->delete("/api/v1/images/{$id}");
         $response->assertStatus(403);
 
-        $this->beGuest();
-        $response = $this->delete("/api/v1/images/{$id}");
-        $response->assertStatus(403);
-
-        $this->beEditor();
-        $response = $this->delete("/api/v1/images/{$id}");
-        $response->assertStatus(403);
-
         $this->beAdmin();
+        $response = $this->delete("/api/v1/images/{$id}");
+        $response->assertStatus(403);
+
+        $this->beGuest();
         $response = $this->delete('/api/v1/images/999');
         $response->assertStatus(404);
 

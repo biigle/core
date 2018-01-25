@@ -39,3 +39,8 @@
  * @apiDefine labelTreeAdmin Label tree admin
  * The authenticated user needs to be admin of the label tree.
  */
+
+/**
+ * @apiDefine volumeAdmin Volume admin
+ * The authenticated user needs to be admin of the volume.
+ */

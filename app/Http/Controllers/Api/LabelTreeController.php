@@ -193,7 +193,7 @@ class LabelTreeController extends Controller
             $project = Project::findOrFail($request->input('project_id'));
             if (!$user->can('update', $project)) {
                 return $this->buildFailedValidationResponse($request, [
-                    'project_id' => ['You have no permission to create a label tree for this project.'],
+                    'project_id' => ['You have no permission to attach a label tree to this project.'],
                 ]);
             }
         }
@@ -214,7 +214,6 @@ class LabelTreeController extends Controller
         if (static::isAutomatedRequest($request)) {
             return $tree;
         }
-
 
         if ($request->has('_redirect')) {
             return redirect($request->input('_redirect'))

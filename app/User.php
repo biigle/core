@@ -130,6 +130,16 @@ class User extends Authenticatable
     }
 
     /**
+     * The volumes, this user is a member of.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function volumes()
+    {
+        return $this->belongsToMany(Volume::class);
+    }
+
+    /**
      * The global role of this user.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -173,6 +183,12 @@ class User extends Authenticatable
         foreach ($this->labelTrees as $tree) {
             if (!$tree->memberCanBeRemoved($this)) {
                 abort(400, "The user can't be removed from label tree '{$tree->name}'. The label tree needs at least one other admin.");
+            }
+        }
+
+        foreach ($this->volumes as $volume) {
+            if (!$volume->memberCanBeRemoved($this)) {
+                abort(400, "The user can't be removed from volume '{$volume->name}'. The volume needs at least one other admin.");
             }
         }
     }

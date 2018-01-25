@@ -4,6 +4,7 @@ namespace Biigle\Tests\Policies;
 
 use TestCase;
 use Biigle\Role;
+use Biigle\Visibility;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
@@ -38,16 +39,39 @@ class ImagePolicyTest extends TestCase
         $this->otherProject->addUserId($this->otherAdmin->id, Role::$admin->id);
     }
 
-    public function testAccess()
+    public function testAccessPublic()
     {
-        $this->assertFalse($this->user->can('access', $this->image));
-        $this->assertTrue($this->otherAdmin->can('access', $this->image));
+        $this->assertTrue($this->user->can('access', $this->image));
         $this->assertTrue($this->guest->can('access', $this->image));
         $this->assertTrue($this->editor->can('access', $this->image));
         $this->assertTrue($this->admin->can('access', $this->image));
         $this->assertTrue($this->globalAdmin->can('access', $this->image));
+    }
 
-        $this->markTestIncomplete('Implement explicit access through volume membership.');
+    public function testAccessPrivate()
+    {
+        $volume = $this->image->volume;
+        $volume->visibility_id = Visibility::$private->id;
+        $volume->save();
+        $this->project->volumes()->detach($volume);
+        $volume->addMember($this->user, Role::$admin);
+        $this->assertTrue($this->user->can('access', $this->image));
+        $this->assertFalse($this->guest->can('access', $this->image));
+        $this->assertFalse($this->editor->can('access', $this->image));
+        $this->assertFalse($this->admin->can('access', $this->image));
+        $this->assertTrue($this->globalAdmin->can('access', $this->image));
+    }
+
+    public function testAccessViaProjectMembership()
+    {
+        $volume = $this->image->volume;
+        $volume->visibility_id = Visibility::$private->id;
+        $volume->save();
+        $this->assertFalse($this->user->can('access', $this->image));
+        $this->assertTrue($this->guest->can('access', $this->image));
+        $this->assertTrue($this->editor->can('access', $this->image));
+        $this->assertTrue($this->admin->can('access', $this->image));
+        $this->assertTrue($this->globalAdmin->can('access', $this->image));
     }
 
     public function testAccessThroughProject()
@@ -73,14 +97,10 @@ class ImagePolicyTest extends TestCase
 
     public function testDestroy()
     {
-        $this->assertFalse($this->user->can('destroy', $this->image));
-        $this->assertTrue($this->otherAdmin->can('destroy', $this->image));
-        $this->assertFalse($this->guest->can('destroy', $this->image));
-        $this->assertFalse($this->editor->can('destroy', $this->image));
-        $this->assertTrue($this->admin->can('destroy', $this->image));
+        $this->image->volume->addMember($this->user, Role::$admin);
+        $this->assertTrue($this->user->can('destroy', $this->image));
+        $this->assertFalse($this->admin->can('destroy', $this->image));
         $this->assertTrue($this->globalAdmin->can('destroy', $this->image));
-
-        $this->markTestIncomplete('Require volume membership');
     }
 
     public function testAttachLabel()

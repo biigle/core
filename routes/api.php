@@ -109,23 +109,23 @@ $router->resource('projects.images.labels', 'ProjectImageLabelController', [
     'parameters' => ['projects' => 'id', 'images' => 'id2'],
 ]);
 
-$router->post(
-    'projects/{id}/volumes/{id2}',
-    'ProjectVolumeController@attach'
-);
 $router->resource('projects.volumes', 'ProjectVolumeController', [
-    'only' => ['index', 'store', 'destroy'],
+    'only' => ['index', 'destroy'],
     'parameters' => ['projects' => 'id', 'volumes' => 'id2'],
 ]);
-
 $router->post(
-    'projects/{id}/users/{id2}',
-    'ProjectUserController@attach'
+    'projects/{id}/volumes/{id2}',
+    'ProjectVolumeController@store'
 );
+
 $router->resource('projects.users', 'ProjectUserController', [
     'only' => ['index', 'update', 'destroy'],
     'parameters' => ['projects' => 'id', 'users' => 'id2'],
 ]);
+$router->post(
+    'projects/{id}/users/{id2}',
+    'ProjectUserController@attach'
+);
 
 $router->resource('roles', 'RoleController', [
     'only' => ['index', 'show'],
@@ -143,13 +143,18 @@ $router->resource('system-messages', 'SystemMessageController', [
 ]);
 
 $router->resource('volumes', 'VolumeController', [
-    'only' => ['show', 'update'],
+    'only' => ['show', 'store', 'update', 'destroy'],
     'parameters' => ['volumes' => 'id'],
 ]);
 
 $router->resource('volumes.images', 'VolumeImageController', [
     'only' => ['index', 'store'],
     'parameters' => ['volumes' => 'id'],
+]);
+
+$router->resource('volumes.users', 'VolumeUserController', [
+    'only' => ['store', 'destroy'],
+    'parameters' => ['volumes' => 'id', 'users' => 'id2'],
 ]);
 
 $router->get('users/find/{pattern}', 'UserController@find');

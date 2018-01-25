@@ -7,6 +7,7 @@ use Cache;
 use Biigle\User;
 use Biigle\Role;
 use Biigle\Volume;
+use Biigle\Visibility;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class VolumePolicy extends CachedPolicy
@@ -39,15 +40,18 @@ class VolumePolicy extends CachedPolicy
         // Put this to permanent cache for rapid querying of image thumbnails or
         // annotations later.
         return Cache::remember("volume-can-access-{$user->id}-{$volume->id}", 0.5, function () use ($user, $volume) {
-            // TODO This is the implicit volume access through project membership.
-            // Add the explicit access through volume membership.
-
-            // Check if user is member of one of the projects, the volume belongs to.
-            return DB::table('project_user')
-                ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
-                ->where('project_user.user_id', $user->id)
-                ->where('project_volume.volume_id', $volume->id)
-                ->exists();
+            // Every user may access apublic volume.
+            return $volume->visibility_id === Visibility::$public->id
+                // Private volumes may be accessed by members...
+                || $volume->members()
+                    ->where('id', $user->id)
+                    ->exists()
+                // ...or by members of projects to which the volume is attached.
+                || DB::table('project_user')
+                    ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
+                    ->where('project_user.user_id', $user->id)
+                    ->where('project_volume.volume_id', $volume->id)
+                    ->exists();
         });
     }
 
@@ -76,22 +80,24 @@ class VolumePolicy extends CachedPolicy
     }
 
     /**
-     * Determine if the user can edit something in the given volume.
+     * Determine if the user can edit something in the given volume through the given
+     * project.
      *
      * @param  User  $user
      * @param  Volume  $volume
+     * @param int $pid Project ID
      * @return bool
      */
-    public function editIn(User $user, Volume $volume)
+    public function editThroughProject(User $user, Volume $volume, $pid)
     {
-        return $this->remember("volume-can-edit-in-{$user->id}-{$volume->id}", function () use ($user, $volume) {
+        return $this->remember("volume-can-edit-through-project-{$user->id}-{$volume->id}-{$pid}", function () use ($user, $volume, $pid) {
+            // Editors and admins of the project are able to edit in the volume if the
+            // volume is attached to the project.
             return DB::table('project_user')
-                ->whereIn('project_id', function ($query) use ($volume) {
-                    $query->select('project_id')
-                        ->from('project_volume')
-                        ->where('volume_id', $volume->id);
-                })
-                ->where('user_id', $user->id)
+                ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
+                ->where('project_user.user_id', $user->id)
+                ->where('project_volume.volume_id', $volume->id)
+                ->where('project_volume.project_id', $pid)
                 ->whereIn('project_user.role_id', [Role::$editor->id, Role::$admin->id])
                 ->exists();
         });
@@ -107,14 +113,8 @@ class VolumePolicy extends CachedPolicy
     public function update(User $user, Volume $volume)
     {
         return $this->remember("volume-can-update-{$user->id}-{$volume->id}", function () use ($user, $volume) {
-            return DB::table('project_user')
-                ->whereIn('project_id', function ($query) use ($volume) {
-                    $query->select('project_id')
-                        ->from('project_volume')
-                        ->where('volume_id', $volume->id);
-                })
-                ->where('user_id', $user->id)
-                ->where('project_user.role_id', Role::$admin->id)
+            return $volume->members()
+                ->where('id', $user->id)
                 ->exists();
         });
     }
@@ -127,6 +127,30 @@ class VolumePolicy extends CachedPolicy
      * @return bool
      */
     public function destroy(User $user, Volume $volume)
+    {
+        return $this->update($user, $volume);
+    }
+
+    /**
+     * Determine if the user can add members to the given volume.
+     *
+     * @param  User  $user
+     * @param  Volume  $volume
+     * @return bool
+     */
+    public function addMember(User $user, Volume $volume)
+    {
+        return $this->update($user, $volume);
+    }
+
+    /**
+     * Determine if the user can remove members from the given volume.
+     *
+     * @param  User  $user
+     * @param  Volume  $volume
+     * @return bool
+     */
+    public function removeMember(User $user, Volume $volume)
     {
         return $this->update($user, $volume);
     }

@@ -54,7 +54,9 @@ class ApiTestCase extends TestCase
     protected function volume()
     {
         if (!$this->volume) {
-            $this->volume = VolumeTest::create();
+            $this->volume = VolumeTest::create([
+                'visibility_id' => Visibility::$public->id,
+            ]);
             $this->project()->volumes()->attach($this->volume);
         }
 
@@ -147,7 +149,7 @@ class ApiTestCase extends TestCase
             // without members) would be attached by default
             $this->project();
 
-            $this->labelTree = $this->labelTree = LabelTreeTest::create([
+            $this->labelTree = LabelTreeTest::create([
                 'visibility_id' => Visibility::$public->id,
             ]);
 

@@ -89,6 +89,13 @@ class UserTest extends ModelTestCase
         $this->assertTrue($this->model->labelTrees()->exists());
     }
 
+    public function testVolumes()
+    {
+        $this->assertFalse($this->model->volumes()->exists());
+        VolumeTest::create()->addMember($this->model, Role::$admin);
+        $this->assertTrue($this->model->volumes()->exists());
+    }
+
     public function testRole()
     {
         $this->assertEquals(Role::$editor->id, $this->model->role->id);
@@ -142,7 +149,9 @@ class UserTest extends ModelTestCase
 
     public function testCheckCanBeDeletedVolumes()
     {
-        $this->markTestIncomplete('Implement check so all volumes have at least one admin.');
+        VolumeTest::create(['creator_id' => $this->model->id]);
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->model->checkCanBeDeleted();
     }
 
     public function testCastSettings()

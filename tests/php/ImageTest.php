@@ -128,16 +128,6 @@ class ImageTest extends ModelTestCase
         $this->assertTrue($this->model->getFile());
     }
 
-    public function testCleanupVolumeThumbnails()
-    {
-        Event::shouldReceive('fire')
-            ->once()
-            ->with('images.cleanup', [[$this->model->uuid]]);
-        Event::shouldReceive('fire'); // catch other events
-
-        $this->model->volume->delete();
-    }
-
     public function testGetExif()
     {
         $exif = $this->model->getExif();

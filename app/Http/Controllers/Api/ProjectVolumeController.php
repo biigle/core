@@ -3,8 +3,8 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Exception;
-use Biigle\Project;
 use Biigle\Volume;
+use Biigle\Project;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 
@@ -45,120 +45,6 @@ class ProjectVolumeController extends Controller
     }
 
     /**
-     * Creates a new volume associated to the specified project.
-     *
-     * @api {post} projects/:id/volumes Create a new volume
-     * @apiGroup Volumes
-     * @apiName StoreProjectVolumes
-     * @apiPermission projectAdmin
-     *
-     * @apiParam {Number} id The project ID.
-     *
-     * @apiParam (Required attributes) {String} name The name of the new volume.
-     * @apiParam (Required attributes) {String} url The base URL ot the image files. Can be a local path like `/vol/volumes/1` or a remote path like `https://example.com/volumes/1`.
-     * @apiParam (Required attributes) {Number} visibility_id ID of the visibility of the new label tree (public or private).
-     * @apiParam (Required attributes) {Number} media_type_id The ID of the media type of the new volume.
-     * @apiParam (Required attributes) {String} images List of image file names of the images that can be found at the base URL, formatted as comma separated values. With the base URL `/vol/volumes/1` and the image `1.jpg`, the local file `/vol/volumes/1/1.jpg` will be used.
-     *
-     * @apiParam (Optional attributes) {String} video_link Link to a video that belongs to or was the source of this volume.
-     * @apiParam (Optional attributes) {String} gis_link Link to a GIS that belongs to this volume.
-     * @apiParam (Optional attributes) {String} doi The DOI of the dataset that is represented by the new volume.
-     *
-     * @apiParamExample {String} Request example:
-     * name: 'New volume'
-     * url: '/vol/volumes/test-volume'
-     * media_type_id: 1
-     * visibility_id: 1
-     * images: '1.jpg,2.jpg,3.jpg'
-     * video_link: 'http://example.com'
-     * gis_link: 'http://gis.example.com'
-     * doi: '10.3389/fmars.2017.00083'
-     *
-     * @apiSuccessExample {json} Success response:
-     * {
-     *    "id": 2,
-     *    "name": "New volume",
-     *    "media_type_id": 1,
-     *    "visibility_id": 1,
-     *    "creator_id": 2,
-     *    "created_at": "2015-02-19 16:10:17",
-     *    "updated_at": "2015-02-19 16:10:17",
-     *    "url": "/vol/volumes/test-volume",
-     *    "video_link": "http://example.com",
-     *    "gis_link": "http://gis.example.com",
-     *    "doi": "10.3389/fmars.2017.00083"
-     * }
-     *
-     * @param Request $request
-     * @param Guard $auth
-     * @param int $id Project ID
-     * @return Volume
-     */
-    public function store(Request $request, Guard $auth, $id)
-    {
-        // TODO implement this independently from an initial project (but with optional
-        // project_id parameter similar to label trees).
-        $project = Project::findOrFail($id);
-        $this->authorize('update', $project);
-        $this->validate($request, Volume::$createRules);
-
-        $volume = new Volume;
-        $volume->name = $request->input('name');
-        $volume->url = $request->input('url');
-        $volume->media_type_id = $request->input('media_type_id');
-        $volume->visibility_id = $request->input('visibility_id');
-        $volume->video_link = $request->input('video_link');
-        $volume->gis_link = $request->input('gis_link');
-        $volume->doi = $request->input('doi');
-        $volume->creator()->associate($auth->user());
-
-        try {
-            $volume->validateUrl();
-        } catch (Exception $e) {
-            return $this->buildFailedValidationResponse($request, [
-                'url' => $e->getMessage(),
-            ]);
-        }
-
-        $images = Volume::parseImagesQueryString($request->input('images'));
-
-        try {
-            $volume->validateImages($images);
-        } catch (Exception $e) {
-            return $this->buildFailedValidationResponse($request, [
-                'images' => $e->getMessage(),
-            ]);
-        }
-
-        // save first, so the volume gets an ID for associating with images
-        $volume->save();
-
-        try {
-            $volume->createImages($images);
-        } catch (\Exception $e) {
-            $volume->delete();
-
-            return response($e->getMessage(), 400);
-        }
-
-        // it's important that this is done *after* all images were added
-        $volume->handleNewImages();
-
-        $project->volumes()->attach($volume);
-
-        if (static::isAutomatedRequest($request)) {
-            // media type shouldn't be returned
-            unset($volume->media_type);
-
-            return $volume;
-        } else {
-            return redirect()->route('home')
-                ->with('message', 'Volume '.$volume->name.' created')
-                ->with('messageType', 'success');
-        }
-    }
-
-    /**
      * Attaches the existing specified volume to the existing specified
      * project.
      *
@@ -176,7 +62,7 @@ class ProjectVolumeController extends Controller
      * @param int $volumeId
      * @return \Illuminate\Http\Response
      */
-    public function attach(Request $request, $projectId, $volumeId)
+    public function store(Request $request, $projectId, $volumeId)
     {
         // user must be able to admin the volume *and* the project it should
         // be attached to
@@ -221,9 +107,8 @@ class ProjectVolumeController extends Controller
     public function destroy(Request $request, $projectId, $volumeId)
     {
         $project = Project::findOrFail($projectId);
+        $this->authorize('update', $project);
         $volume = $project->volumes()->findOrFail($volumeId);
-        $this->authorize('destroy', $volume);
-
         $project->detachVolume($volume, $request->has('force'));
     }
 }

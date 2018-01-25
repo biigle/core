@@ -27,17 +27,17 @@ class ProjectVolumeTest extends ModelTestCase
         $this->assertNotNull($pivot->updated_at);
     }
 
-    public function testProjectOnDeleteCascade()
+    public function testVolumeOnDeleteCascade()
     {
         $this->assertNotNull(ProjectVolume::find($this->model->id));
-        $this->model->project()->delete();
+        $this->model->volume()->delete();
         $this->assertNull(ProjectVolume::find($this->model->id));
     }
 
-    public function testVolumeOnDeleteRestrict()
+    public function testProjectOnDeleteRestrict()
     {
         $this->setExpectedException('Illuminate\Database\QueryException');
-        $this->model->volume()->delete();
+        $this->model->project()->delete();
     }
 
     public function testUniqueProperties()

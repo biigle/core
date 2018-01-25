@@ -39,7 +39,7 @@ class LabelTreePolicy extends CachedPolicy
     public function access(User $user, LabelTree $tree)
     {
         return $this->remember("label-tree-can-access-{$user->id}-{$tree->id}", function () use ($user, $tree) {
-            return (int) $tree->visibility_id === Visibility::$public->id
+            return $tree->visibility_id === Visibility::$public->id
                 || DB::table(self::TABLE)
                     ->where('label_tree_id', $tree->id)
                     ->where('user_id', $user->id)

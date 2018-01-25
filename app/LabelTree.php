@@ -7,7 +7,7 @@ use Biigle\Traits\HasMembers;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * A label tree is a group of labels. Projects can choose to used different label trees,
+ * A label tree is a group of labels. Projects can choose to use different label trees,
  * which are then offered for labeling things in the project.
  * Label trees have admins and editors as members. Editors can add and delete labels.
  * Admins can also manage members and modify the tree (name, visibility etc).
@@ -187,9 +187,6 @@ class LabelTree extends Model
      */
     public function isRoleIdValid($roleId)
     {
-        return in_array($roleId, [
-            Role::$admin->id,
-            Role::$editor->id,
-        ]);
+        return in_array($roleId, [Role::$admin->id, Role::$editor->id]);
     }
 }

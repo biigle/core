@@ -42,15 +42,9 @@ class ImagePolicy extends CachedPolicy
         // annotations. This is the same than VolumePolicy::access but with the
         // volume_id from the image.
         return Cache::remember("volume-can-access-{$user->id}-{$image->volume_id}", 0.5, function () use ($user, $image) {
-            // TODO This is the implicit image access through project membership.
-            // Add the explicit access through volume membership.
-
-            // Check if user is member of one of the projects, the image belongs to.
-            return DB::table('project_user')
-                ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
-                ->where('project_user.user_id', $user->id)
-                ->where('project_volume.volume_id', $image->volume_id)
-                ->exists();
+            // We need to fetch the volume to check the visibility so we can just use
+            // the volume policy directly.
+            return $user->can('access', $image->volume);
         });
     }
 
@@ -112,13 +106,12 @@ class ImagePolicy extends CachedPolicy
      */
     public function destroy(User $user, Image $image)
     {
-        return $this->remember("image-can-destroy-{$user->id}-{$image->id}", function () use ($user, $image) {
-            // Check if user is member of one of the projects, the image belongs to.
-            return DB::table('project_user')
-                ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
-                ->where('project_user.user_id', $user->id)
-                ->where('project_user.role_id', Role::$admin->id)
-                ->where('project_volume.volume_id', $image->volume_id)
+        // These are the same permissions that VolumePolicy::update so we use the same
+        // key for the cache.
+        return $this->remember("volume-can-update-{$user->id}-{$image->volume_id}", function () use ($user, $image) {
+            return DB::table('user_volume')
+                ->where('user_id', $user->id)
+                ->where('volume_id', $image->volume_id)
                 ->exists();
         });
     }

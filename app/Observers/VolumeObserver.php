@@ -4,6 +4,7 @@ namespace Biigle\Observers;
 
 use Event;
 use Exception;
+use Biigle\Role;
 use Biigle\Volume;
 
 class VolumeObserver
@@ -21,6 +22,17 @@ class VolumeObserver
         }
 
         return true;
+    }
+
+    /**
+     * Handle actions for newly created volumes.
+     *
+     * @param Volume $volume
+     * @return void
+     */
+    public function created($volume)
+    {
+        $volume->addMember($volume->creator, Role::$admin);
     }
 
     /**

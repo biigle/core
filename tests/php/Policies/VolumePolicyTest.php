@@ -4,19 +4,13 @@ namespace Biigle\Tests\Policies;
 
 use TestCase;
 use Biigle\Role;
+use Biigle\Visibility;
 use Biigle\Tests\UserTest;
-use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
+use Biigle\Tests\ProjectTest;
 
 class VolumePolicyTest extends TestCase
 {
-    private $volume;
-    private $user;
-    private $guest;
-    private $editor;
-    private $admin;
-    private $globalAdmin;
-
     public function setUp()
     {
         parent::setUp();
@@ -39,21 +33,40 @@ class VolumePolicyTest extends TestCase
         $this->otherProject->addUserId($this->otherAdmin->id, Role::$admin->id);
     }
 
-    public function testAccess()
+    public function testAccessPublic()
     {
+        $this->assertTrue($this->user->can('access', $this->volume));
+        $this->assertTrue($this->guest->can('access', $this->volume));
+        $this->assertTrue($this->editor->can('access', $this->volume));
+        $this->assertTrue($this->admin->can('access', $this->volume));
+        $this->assertTrue($this->globalAdmin->can('access', $this->volume));
+    }
+
+    public function testAccessPrivate()
+    {
+        $this->volume->visibility_id = Visibility::$private->id;
+        $this->project->volumes()->detach($this->volume);
+        $this->volume->addMember($this->user, Role::$admin);
+        $this->assertTrue($this->user->can('access', $this->volume));
+        $this->assertFalse($this->guest->can('access', $this->volume));
+        $this->assertFalse($this->editor->can('access', $this->volume));
+        $this->assertFalse($this->admin->can('access', $this->volume));
+        $this->assertTrue($this->globalAdmin->can('access', $this->volume));
+    }
+
+    public function testAccessViaProjectMembership()
+    {
+        $this->volume->visibility_id = Visibility::$private->id;
         $this->assertFalse($this->user->can('access', $this->volume));
         $this->assertTrue($this->guest->can('access', $this->volume));
         $this->assertTrue($this->editor->can('access', $this->volume));
         $this->assertTrue($this->admin->can('access', $this->volume));
         $this->assertTrue($this->globalAdmin->can('access', $this->volume));
-
-        $this->markTestIncomplete('Update volume access similar to label trees');
     }
 
     public function testAccessThroughProject()
     {
         $this->assertFalse($this->user->can('access-through-project', [$this->volume, $this->project->id]));
-        $this->assertFalse($this->user->can('access-through-project', [$this->volume, $this->otherProject->id]));
         $this->assertTrue($this->guest->can('access-through-project', [$this->volume, $this->project->id]));
         $this->assertTrue($this->editor->can('access-through-project', [$this->volume, $this->project->id]));
         $this->assertTrue($this->admin->can('access-through-project', [$this->volume, $this->project->id]));
@@ -62,25 +75,46 @@ class VolumePolicyTest extends TestCase
         $this->assertTrue($this->otherAdmin->can('access-through-project', [$this->volume, $this->otherProject->id]));
     }
 
-    public function testEditIn()
+    public function testEditThroughProject()
     {
-        $this->assertFalse($this->user->can('edit-in', $this->volume));
-        $this->assertFalse($this->guest->can('edit-in', $this->volume));
-        $this->assertTrue($this->editor->can('edit-in', $this->volume));
-        $this->assertTrue($this->admin->can('edit-in', $this->volume));
-        $this->assertTrue($this->globalAdmin->can('edit-in', $this->volume));
-
-        $this->markTestIncomplete('Update volume access similar to label trees');
+        $this->assertFalse($this->user->can('edit-through-project', [$this->volume, $this->project->id]));
+        $this->assertFalse($this->guest->can('edit-through-project', [$this->volume, $this->project->id]));
+        $this->assertTrue($this->editor->can('edit-through-project', [$this->volume, $this->project->id]));
+        $this->assertTrue($this->admin->can('edit-through-project', [$this->volume, $this->project->id]));
+        $this->assertTrue($this->globalAdmin->can('edit-through-project', [$this->volume, $this->project->id]));
+        $this->assertFalse($this->otherAdmin->can('edit-through-project', [$this->volume, $this->project->id]));
+        $this->assertTrue($this->otherAdmin->can('edit-through-project', [$this->volume, $this->otherProject->id]));
     }
 
     public function testUpdate()
     {
-        $this->assertFalse($this->user->can('update', $this->volume));
-        $this->assertFalse($this->guest->can('update', $this->volume));
-        $this->assertFalse($this->editor->can('update', $this->volume));
-        $this->assertTrue($this->admin->can('update', $this->volume));
+        $this->volume->addMember($this->user, Role::$admin);
+        $this->assertTrue($this->user->can('update', $this->volume));
+        $this->assertFalse($this->admin->can('update', $this->volume));
         $this->assertTrue($this->globalAdmin->can('update', $this->volume));
+    }
 
-        $this->markTestIncomplete('Update volume access similar to label trees');
+    public function testDestroy()
+    {
+        $this->volume->addMember($this->user, Role::$admin);
+        $this->assertTrue($this->user->can('destroy', $this->volume));
+        $this->assertFalse($this->admin->can('destroy', $this->volume));
+        $this->assertTrue($this->globalAdmin->can('destroy', $this->volume));
+    }
+
+    public function testAddMember()
+    {
+        $this->volume->addMember($this->user, Role::$admin);
+        $this->assertTrue($this->user->can('add-member', $this->volume));
+        $this->assertFalse($this->admin->can('add-member', $this->volume));
+        $this->assertTrue($this->globalAdmin->can('add-member', $this->volume));
+    }
+
+    public function testRemoveMember()
+    {
+        $this->volume->addMember($this->user, Role::$admin);
+        $this->assertTrue($this->user->can('remove-member', $this->volume));
+        $this->assertFalse($this->admin->can('remove-member', $this->volume));
+        $this->assertTrue($this->globalAdmin->can('remove-member', $this->volume));
     }
 }

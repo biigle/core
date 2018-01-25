@@ -18,6 +18,7 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Handler\MockHandler;
 use Illuminate\Database\QueryException;
 use GuzzleHttp\Exception\RequestException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class VolumeTest extends ModelTestCase
 {
@@ -67,6 +68,12 @@ class VolumeTest extends ModelTestCase
     {
         $this->model->creator()->delete();
         $this->assertNull($this->model->fresh()->creator_id);
+    }
+
+    public function testCreator()
+    {
+        // Creator will be user as well.
+        $this->assertNotNull($this->model->members()->find($this->model->creator_id));
     }
 
     public function testVisibilityOnDeleteRestrict()
@@ -244,9 +251,10 @@ class VolumeTest extends ModelTestCase
 
     public function testImageCleanupEventOnDelete()
     {
+        $uuid = ImageTest::create(['volume_id' => $this->model->id])->uuid;
         Event::shouldReceive('fire')
             ->once()
-            ->with('images.cleanup', [[]]);
+            ->with('images.cleanup', [[$uuid]]);
         Event::shouldReceive('fire'); // catch other events
 
         $this->model->delete();
@@ -259,7 +267,7 @@ class VolumeTest extends ModelTestCase
         $this->assertNotNull($image->uuid);
     }
 
-    public function testUsers()
+    public function testProjectMembers()
     {
         $editor = Role::$editor;
         $u1 = UserTest::create();
@@ -277,7 +285,7 @@ class VolumeTest extends ModelTestCase
         $p2->addUserId($u3->id, $editor->id);
         $p2->volumes()->attach($this->model);
 
-        $users = $this->model->users()->get();
+        $users = $this->model->projectMembers()->get();
         // project creators are counted, too
         $this->assertEquals(5, $users->count());
         $this->assertEquals(1, $users->where('id', $u1->id)->count());
@@ -388,5 +396,67 @@ class VolumeTest extends ModelTestCase
         $this->model->doi = 'http://doi.org/10.3389/fmars.2017.00083';
         $this->model->save();
         $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
+    }
+
+    public function testAddAdmin()
+    {
+        $this->model->addMember(UserTest::create(), Role::$admin);
+        $this->assertEquals(Role::$admin->id, $this->model->members()->first()->role_id);
+    }
+
+    public function testAddEditor()
+    {
+        $this->setExpectedException(HttpException::class);
+        $this->model->addMember(UserTest::create(), Role::$editor);
+    }
+
+    public function testAddGuest()
+    {
+        $this->setExpectedException(HttpException::class);
+        $this->model->addMember(UserTest::create(), Role::$guest);
+    }
+
+    public function testAddMemberUserExists()
+    {
+        $user = UserTest::create();
+        $this->model->addMember($user, Role::$admin);
+        $this->setExpectedException(HttpException::class);
+        $this->model->addMember($user, Role::$admin);
+    }
+
+    public function testMemberCanBeRemoved()
+    {
+        $admin = $this->model->creator;
+        $otherAdmin = UserTest::create();
+        $this->assertFalse($this->model->memberCanBeRemoved($admin));
+        $this->model->addMember($otherAdmin, Role::$admin);
+        $this->assertTrue($this->model->memberCanBeRemoved($admin));
+        $this->assertTrue($this->model->memberCanBeRemoved($otherAdmin));
+    }
+
+    public function testUpdateMemberLastAdmin()
+    {
+        $user = UserTest::create();
+        $this->model->addMember($user, Role::$admin);
+        $this->setExpectedException(HttpException::class);
+        $this->model->updateMember($user, Role::$editor);
+    }
+
+    public function testCanBeDeletedAnnotation()
+    {
+        $this->assertTrue($this->model->canBeDeleted());
+        AnnotationTest::create([
+            'image_id' => ImageTest::create(['volume_id' => $this->model->id])->id
+        ]);
+        $this->assertFalse($this->model->canBeDeleted());
+    }
+
+    public function testCanBeDeletedImageLabel()
+    {
+        $this->assertTrue($this->model->canBeDeleted());
+        ImageLabelTest::create([
+            'image_id' => ImageTest::create(['volume_id' => $this->model->id])->id
+        ]);
+        $this->assertFalse($this->model->canBeDeleted());
     }
 }

@@ -19,20 +19,6 @@ class NewDataArchitecture extends Migration
             // labels.
             $table->increments('id');
 
-            // When a project is deleted, all of its project volumes are deleted as well.
-            $table->dropForeign('project_transect_project_id_foreign');
-            $table->foreign('project_id')
-                ->references('id')
-                ->on('projects')
-                ->onDelete('cascade');
-
-            // A volume must not be deleted if it is still attached to any project.
-            $table->dropForeign('project_transect_transect_id_foreign');
-            $table->foreign('volume_id')
-                ->references('id')
-                ->on('volumes')
-                ->onDelete('restrict');
-
             $table->timestamps();
         });
 
@@ -111,28 +97,30 @@ class NewDataArchitecture extends Migration
                   ->onDelete('restrict');
         });
 
-        // Schema::create('user_volume', function (Blueprint $table) {
-        //     $table->integer('volume_id')->unsigned();
-        //     $table->foreign('volume_id')
-        //           ->references('id')
-        //           ->on('volumes')
-        //           ->onDelete('cascade');
+        Schema::create('user_volume', function (Blueprint $table) {
+            $table->integer('volume_id')->unsigned();
+            $table->foreign('volume_id')
+                  ->references('id')
+                  ->on('volumes')
+                  ->onDelete('cascade');
 
-        //     $table->integer('user_id')->unsigned();
-        //     $table->foreign('user_id')
-        //           ->references('id')
-        //           ->on('users')
-        //           ->onDelete('cascade');
+            $table->integer('user_id')->unsigned();
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('cascade');
 
-        //     $table->integer('role_id')->unsigned();
-        //     $table->foreign('role_id')
-        //           ->references('id')
-        //           ->on('roles')
-        //           ->onDelete('restrict');
+            $table->integer('role_id')->unsigned();
+            $table->foreign('role_id')
+                  ->references('id')
+                  ->on('roles')
+                  ->onDelete('restrict');
 
-        //     // each user must not be added twice as a label tree member
-        //     $table->unique(['volume_id', 'user_id']);
-        // });
+            // each user must not be added twice as a label tree member
+            $table->unique(['volume_id', 'user_id']);
+        });
+
+        // TODO add volume_authorized_project
     }
 
     /**
@@ -142,7 +130,7 @@ class NewDataArchitecture extends Migration
      */
     public function down()
     {
-        // Schema::drop('user_volume');
+        Schema::drop('user_volume');
 
         Schema::table('volumes', function (Blueprint $table) {
             $table->dropColumn('visibility_id');
@@ -201,18 +189,6 @@ class NewDataArchitecture extends Migration
 
         Schema::table('project_volume', function (Blueprint $table) {
             $table->dropColumn(['id', 'created_at', 'updated_at']);
-
-            $table->dropForeign(['project_id']);
-            $table->foreign('project_id', 'project_transect_project_id_foreign')
-                ->references('id')
-                ->on('projects')
-                ->onDelete('restrict');
-
-            $table->dropForeign(['volume_id']);
-            $table->foreign('volume_id', 'project_transect_transect_id_foreign')
-                ->references('id')
-                ->on('volumes')
-                ->onDelete('cascade');
         });
     }
 }

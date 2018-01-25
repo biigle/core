@@ -10,6 +10,7 @@ use Exception;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use GuzzleHttp\Client;
+use Biigle\Traits\HasMembers;
 use Biigle\Jobs\GenerateImageTiles;
 use Biigle\Jobs\GenerateThumbnails;
 use Biigle\Traits\HasJsonAttributes;
@@ -22,12 +23,17 @@ use GuzzleHttp\Exception\RequestException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
- * A volume is a collection of images. Volumes belong to one or many
- * projects.
+ * A volume is a collection of images. Projects can attach multiple volumes which are
+ * then offered for annotation through the project.
+ * Volumes have admins who can edit the volumes. Volumes can be public or private.
+ * Private volumes can be accessed only by volume admins or members of projects to which
+ * the volume is attached. Public volumes can be accessed by anyone. Private volumes
+ * maintain a list of projects that are authorized to use the volume. This list is
+ * maintained by volume admins.
  */
 class Volume extends Model
 {
-    use DispatchesJobs, HasJsonAttributes;
+    use DispatchesJobs, HasJsonAttributes, HasMembers;
 
     /**
      * Validation rules for creating a new volume.
@@ -40,6 +46,7 @@ class Volume extends Model
         'url'           => 'required',
         'images'        => 'required',
         'visibility_id' => 'required|integer|exists:visibilities,id',
+        'project_id'    => 'filled|integer|exists:projects,id',
     ];
 
     /**
@@ -52,6 +59,15 @@ class Volume extends Model
         'media_type_id' => 'filled|integer|exists:media_types,id',
         'url'           => 'filled',
         'visibility_id' => 'filled|integer|exists:visibilities,id',
+    ];
+
+    /**
+     * Validation rules for adding a volume member.
+     *
+     * @var array
+     */
+    public static $addMemberRules = [
+        'id' => 'required|integer|exists:users,id',
     ];
 
     /**
@@ -156,17 +172,14 @@ class Volume extends Model
      *
      * @return  \Illuminate\Database\Eloquent\Builder
      */
-    public function users()
+    public function projectMembers()
     {
         return User::whereIn('id', function ($query) {
-            $query->select('user_id')
-                ->distinct()
-                ->from('project_user')
-                ->whereIn('project_id', function ($query) {
-                    $query->select('project_id')
-                        ->from('project_volume')
-                        ->where('volume_id', $this->id);
-                });
+            $query->from('project_user')
+                ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
+                ->where('project_volume.volume_id', $this->id)
+                ->select('project_user.user_id')
+                ->distinct();
         });
     }
 
@@ -241,22 +254,20 @@ class Volume extends Model
      *
      * @param array $filenames image filenames at the location of the volume URL
      *
-     * @throws QueryException If there was an error creating the images (e.g. if there were
-     * duplicate filenames).
+     * @throws QueryException If there was an error creating the images (e.g. if there were duplicate filenames).
      * @throws \Ramsey\Uuid\Exception\UnsatisfiedDependencyException If the UUID generator cannot be executed for some reason.
      *
      * @return bool
      */
     public function createImages($filenames)
     {
-        $images = [];
-        foreach ($filenames as $filename) {
-            $images[] = [
+        $images = array_map(function ($filename) {
+            return [
                 'filename' => $filename,
                 'volume_id' => $this->id,
                 'uuid' => Uuid::uuid4(),
             ];
-        }
+        }, $filenames);
 
         return Image::insert($images);
     }
@@ -441,5 +452,34 @@ class Volume extends Model
         return Cache::store('array')->remember("volume-{$this->id}-has-tiled", 1, function () {
             return $this->images()->where('tiled', true)->exists();
         });
+    }
+
+    /**
+     * Checks if a role ID can be used for a member of this model.
+     *
+     * @param int $roleId
+     * @return bool
+     */
+    public function isRoleIdValid($roleId)
+    {
+        return $roleId === Role::$admin->id;
+    }
+
+    /**
+     * Determines if the volume can be safely deleted.
+     *
+     * A volume can be safely deleted if none if its images have annotations or image
+     * labels.
+     *
+     * @return bool
+     */
+    public function canBeDeleted()
+    {
+        return !Annotation::join('images', 'annotations.image_id', '=', 'images.id')
+            ->where('images.volume_id', $this->id)
+            ->exists()
+            && !ImageLabel::join('images', 'image_labels.image_id', '=', 'images.id')
+            ->where('images.volume_id', $this->id)
+            ->exists();
     }
 }

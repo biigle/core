@@ -2,7 +2,10 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
+use Cache;
 use ApiTestCase;
+use Biigle\Role;
+use Biigle\Visibility;
 use Biigle\Tests\ImageTest;
 
 class VolumeImageControllerTest extends ApiTestCase
@@ -16,6 +19,13 @@ class VolumeImageControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', "/api/v1/volumes/{$id}/images");
 
         $this->beUser();
+        $response = $this->get("/api/v1/volumes/{$id}/images");
+        $response->assertStatus(200);
+
+        $this->volume()->visibility_id = Visibility::$private->id;
+        $this->volume()->save();
+        Cache::flush();
+
         $response = $this->get("/api/v1/volumes/{$id}/images");
         $response->assertStatus(403);
 
@@ -31,22 +41,15 @@ class VolumeImageControllerTest extends ApiTestCase
     {
         $id = $this->volume()->id;
         ImageTest::create(['filename' => 'no.jpg', 'volume_id' => $id]);
+        $this->volume()->addMember($this->user(), Role::$admin);
 
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/images");
 
-        $this->beUser();
-        $response = $this->post("/api/v1/volumes/{$id}/images");
-        $response->assertStatus(403);
-
-        $this->beGuest();
-        $response = $this->post("/api/v1/volumes/{$id}/images");
-        $response->assertStatus(403);
-
-        $this->beEditor();
-        $response = $this->post("/api/v1/volumes/{$id}/images");
-        $response->assertStatus(403);
-
         $this->beAdmin();
+        $response = $this->post("/api/v1/volumes/{$id}/images");
+        $response->assertStatus(403);
+
+        $this->beUser();
         $response = $this->json('POST', "/api/v1/volumes/{$id}/images");
         $response->assertStatus(422);
 
