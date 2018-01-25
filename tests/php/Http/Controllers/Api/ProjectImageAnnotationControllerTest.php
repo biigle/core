@@ -126,7 +126,65 @@ class ProjectImageAnnotationControllerTest extends ApiTestCase
 
     public function testIndexAnnotationSessionHideOther()
     {
-        $this->markTestIncomplete('Test this case and include the new behavior where all annotations of other projects are hidden with this flag.');
+        $pid = $this->project()->id;
+        $iid = $this->image->id;
+
+        $a1 = AnnotationTest::create([
+            'image_id' => $this->image->id,
+            'created_at' => Carbon::yesterday(),
+            'points' => [10, 20],
+            'project_volume_id' => $this->projectVolume()->id,
+        ]);
+
+        $al1 = AnnotationLabelTest::create([
+            'user_id' => $this->editor()->id,
+            'annotation_id' => $a1->id,
+        ]);
+
+        $a2 = AnnotationTest::create([
+            'image_id' => $this->image->id,
+            'created_at' => Carbon::yesterday(),
+            'points' => [20, 30],
+            'project_volume_id' => $this->projectVolume()->id,
+        ]);
+
+        $al2 = AnnotationLabelTest::create([
+            'user_id' => $this->admin()->id,
+            'annotation_id' => $a2->id,
+        ]);
+
+        $a3 = AnnotationTest::create([
+            'image_id' => $this->image->id,
+            'created_at' => Carbon::yesterday(),
+            'points' => [30, 40],
+        ]);
+
+        $al3 = AnnotationLabelTest::create([
+            'user_id' => $this->editor()->id,
+            'annotation_id' => $a3->id,
+        ]);
+
+        $this->beEditor();
+        $this->get("/api/v1/projects/{$pid}/images/{$iid}/annotations")
+            ->assertJsonFragment(['points' => [10, 20]])
+            ->assertJsonFragment(['points' => [20, 30]])
+            ->assertJsonFragment(['points' => [30, 40]])
+            ->assertStatus(200);
+
+        $session = AnnotationSessionTest::create([
+            'project_id' => $pid,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => false,
+            'hide_other_users_annotations' => true,
+        ]);
+        Cache::flush();
+
+        $this->get("/api/v1/projects/{$pid}/images/{$iid}/annotations")
+            ->assertJsonFragment(['points' => [10, 20]])
+            ->assertJsonMissing(['points' => [20, 30]])
+            ->assertJsonMissing(['points' => [30, 40]])
+            ->assertStatus(200);
     }
 
     public function testStore()

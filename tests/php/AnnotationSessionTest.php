@@ -128,11 +128,21 @@ class AnnotationSessionTest extends ModelTestCase
         $otherUser = UserTest::create();
         $image = ImageTest::create();
 
+        $session = static::create([
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => false,
+            'hide_other_users_annotations' => true,
+        ]);
+        $session->project->volumes()->attach($image->volume_id);
+        $pivot = $session->project->volumes()->find($image->volume_id)->pivot;
+
         // this should be shown but the annotation label of other users should be hidden
         $a = AnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
             'points' => [20, 30, 40],
+            'project_volume_id' => $pivot->id,
         ]);
         $al1 = AnnotationLabelTest::create([
             'annotation_id' => $a->id,
@@ -145,12 +155,6 @@ class AnnotationSessionTest extends ModelTestCase
             'created_at' => '2016-09-05',
         ]);
 
-        $session = static::create([
-            'starts_at' => '2016-09-06',
-            'ends_at' => '2016-09-07',
-            'hide_own_annotations' => false,
-            'hide_other_users_annotations' => true,
-        ]);
 
         $annotations = $session->getImageAnnotations($image, $ownUser);
         // expand the models in the collection so we can make assertions
@@ -167,11 +171,21 @@ class AnnotationSessionTest extends ModelTestCase
         $otherUser = UserTest::create();
         $image = ImageTest::create();
 
+        $session = static::create([
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+        $session->project->volumes()->attach($image->volume_id);
+        $pivot = $session->project->volumes()->find($image->volume_id)->pivot;
+
         // this should be shown but the annotation label of other users should be hidden
         $a = AnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
             'points' => [40, 50, 60],
+            'project_volume_id' => $pivot->id,
         ]);
         $al1 = AnnotationLabelTest::create([
             'annotation_id' => $a->id,
@@ -182,13 +196,6 @@ class AnnotationSessionTest extends ModelTestCase
             'annotation_id' => $a->id,
             'user_id' => $otherUser->id,
             'created_at' => '2016-09-06',
-        ]);
-
-        $session = static::create([
-            'starts_at' => '2016-09-06',
-            'ends_at' => '2016-09-07',
-            'hide_own_annotations' => true,
-            'hide_other_users_annotations' => true,
         ]);
 
         $annotations = $session->getImageAnnotations($image, $ownUser);

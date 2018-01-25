@@ -186,10 +186,20 @@ class AnnotationTest extends ModelTestCase
         $otherUser = UserTest::create();
         $image = ImageTest::create();
 
-        // this should be shown
+        $session = AnnotationSessionTest::create([
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => false,
+            'hide_other_users_annotations' => true,
+        ]);
+        $session->project->volumes()->attach($image->volume_id);
+        $pivot = $session->project->volumes()->find($image->volume_id)->pivot;
+
+        // This should be shown even if it's outside the annotation session.
         $a1 = static::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
+            'project_volume_id' => $pivot->id,
         ]);
         $al1 = AnnotationLabelTest::create([
             'annotation_id' => $a1->id,
@@ -197,10 +207,11 @@ class AnnotationTest extends ModelTestCase
             'created_at' => '2016-09-05',
         ]);
 
-        // this should not be shown
+        // This should not be shown because it belongs to another user.
         $a2 = static::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
+            'project_volume_id' => $pivot->id,
         ]);
         $al2 = AnnotationLabelTest::create([
             'annotation_id' => $a2->id,
@@ -208,10 +219,11 @@ class AnnotationTest extends ModelTestCase
             'created_at' => '2016-09-05',
         ]);
 
-        // this should be shown
+        // This should be shown.
         $a3 = static::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
+            'project_volume_id' => $pivot->id,
         ]);
         $al3 = AnnotationLabelTest::create([
             'annotation_id' => $a3->id,
@@ -219,10 +231,11 @@ class AnnotationTest extends ModelTestCase
             'created_at' => '2016-09-06',
         ]);
 
-        // this should not be shown
+        // This should not be shown because it belongs to another user.
         $a4 = static::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
+            'project_volume_id' => $pivot->id,
         ]);
         $al4 = AnnotationLabelTest::create([
             'annotation_id' => $a4->id,
@@ -230,11 +243,15 @@ class AnnotationTest extends ModelTestCase
             'created_at' => '2016-09-06',
         ]);
 
-        $session = AnnotationSessionTest::create([
-            'starts_at' => '2016-09-06',
-            'ends_at' => '2016-09-07',
-            'hide_own_annotations' => false,
-            'hide_other_users_annotations' => true,
+        // This should not be shown because it belongs to another project.
+        $a5 = static::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al5 = AnnotationLabelTest::create([
+            'annotation_id' => $a5->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
         ]);
 
         $ids = Annotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
@@ -247,10 +264,20 @@ class AnnotationTest extends ModelTestCase
         $otherUser = UserTest::create();
         $image = ImageTest::create();
 
-        // this should not be shown
+        $session = AnnotationSessionTest::create([
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+        $session->project->volumes()->attach($image->volume_id);
+        $pivot = $session->project->volumes()->find($image->volume_id)->pivot;
+
+        // This should not be shown because it's outside the session.
         $a1 = static::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
+            'project_volume_id' => $pivot->id,
         ]);
         $al1 = AnnotationLabelTest::create([
             'annotation_id' => $a1->id,
@@ -258,10 +285,11 @@ class AnnotationTest extends ModelTestCase
             'created_at' => '2016-09-05',
         ]);
 
-        // this should not be shown
+        // This should not be shown because it belongs to another user.
         $a2 = static::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
+            'project_volume_id' => $pivot->id,
         ]);
         $al2 = AnnotationLabelTest::create([
             'annotation_id' => $a2->id,
@@ -269,10 +297,11 @@ class AnnotationTest extends ModelTestCase
             'created_at' => '2016-09-05',
         ]);
 
-        // this should be shown
+        // This should be shown.
         $a3 = static::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
+            'project_volume_id' => $pivot->id,
         ]);
         $al3 = AnnotationLabelTest::create([
             'annotation_id' => $a3->id,
@@ -280,10 +309,11 @@ class AnnotationTest extends ModelTestCase
             'created_at' => '2016-09-06',
         ]);
 
-        // this should not be shown
+        // This should not be shown because it belongs to another user.
         $a4 = static::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
+            'project_volume_id' => $pivot->id,
         ]);
         $al4 = AnnotationLabelTest::create([
             'annotation_id' => $a4->id,
@@ -291,11 +321,15 @@ class AnnotationTest extends ModelTestCase
             'created_at' => '2016-09-06',
         ]);
 
-        $session = AnnotationSessionTest::create([
-            'starts_at' => '2016-09-06',
-            'ends_at' => '2016-09-07',
-            'hide_own_annotations' => true,
-            'hide_other_users_annotations' => true,
+        // This should not be shown because it belongs to another project.
+        $a5 = static::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al5 = AnnotationLabelTest::create([
+            'annotation_id' => $a5->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-06',
         ]);
 
         $ids = Annotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();

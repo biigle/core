@@ -94,17 +94,26 @@ class Annotation extends Model
     public function scopeAllowedBySession($query, AnnotationSession $session, User $user)
     {
         if ($session->hide_own_annotations && $session->hide_other_users_annotations) {
+
             // Take only annotations of this session...
             $query->where('annotations.created_at', '>=', $session->starts_at)
                 ->where('annotations.created_at', '<', $session->ends_at)
-                // ...which have at least one label of the current user.
+                // ...which have at least one label of the current user...
                 ->whereExists(function ($query) use ($user) {
                     $query->select(DB::raw(1))
                         ->from('annotation_labels')
                         ->whereRaw('annotation_labels.annotation_id = annotations.id')
                         ->where('annotation_labels.user_id', $user->id);
+                })
+                // ...and belong to the project of the annotation session.
+                ->whereIn('project_volume_id', function ($query) use ($session) {
+                    $query->select('id')
+                        ->from('project_volume')
+                        ->where('project_id', $session->project_id);
                 });
+
         } elseif ($session->hide_own_annotations) {
+
             $query->where(function ($query) use ($session, $user) {
                 // Take all annotations of this session...
                 $query->where('annotations.created_at', '>=', $session->starts_at)
@@ -117,14 +126,23 @@ class Annotation extends Model
                             ->where('annotation_labels.user_id', '!=', $user->id);
                     });
             });
+
         } elseif ($session->hide_other_users_annotations) {
-            // Take only annotations with labels of the current user.
+
+            // Take only annotations with labels of the current user...
             $query->whereExists(function ($query) use ($user) {
                 $query->select(DB::raw(1))
                     ->from('annotation_labels')
                     ->whereRaw('annotation_labels.annotation_id = annotations.id')
                     ->where('annotation_labels.user_id', $user->id);
+            })
+            // ...that belong to the project of the annotation session.
+            ->whereIn('project_volume_id', function ($query) use ($session) {
+                $query->select('id')
+                    ->from('project_volume')
+                    ->where('project_id', $session->project_id);
             });
+
         }
 
         return $query;
