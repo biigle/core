@@ -10,6 +10,7 @@ use Biigle\Image;
 use ApiTestCase;
 use Biigle\Volume;
 use Biigle\MediaType;
+use Biigle\Visibility;
 use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\AnnotationTest;
@@ -56,6 +57,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => 99999,
+            'visibility_id' => Visibility::$private->id,
             'images' => '1.jpg, 2.jpg',
         ]);
         // media type does not exist
@@ -65,6 +67,17 @@ class ProjectVolumeControllerTest extends ApiTestCase
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
+            'visibility_id' => 9999,
+            'images' => '1.jpg, 2.jpg',
+        ]);
+        // visibility does not exist
+        $response->assertStatus(422);
+
+        $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'random',
+            'media_type_id' => MediaType::$timeSeriesId,
+            'visibility_id' => Visibility::$private->id,
             'images' => '',
         ]);
         // images array is empty
@@ -77,6 +90,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
+            'visibility_id' => Visibility::$private->id,
             'images' => '1.jpg, , 1.jpg',
         ]);
         // error because of duplicate image
@@ -86,6 +100,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
+            'visibility_id' => Visibility::$private->id,
             'images' => '1.bmp',
         ]);
         // error because of unsupported image format
@@ -98,6 +113,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
+            'visibility_id' => Visibility::$private->id,
             'images' => '1.jpg',
         ]);
         // volume url does not exist
@@ -107,6 +123,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
+            'visibility_id' => Visibility::$private->id,
             'images' => '1.jpg',
         ]);
         // volume url is not readable
@@ -121,6 +138,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
+            'visibility_id' => Visibility::$private->id,
             // empty parts should be discarded
             'images' => '1.jpg, , 2.jpg, , ,',
         ]);
@@ -151,6 +169,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
+            'visibility_id' => Visibility::$private->id,
             'images' => '1.jpg',
             'video_link' => 'http://example.com',
             'gis_link' => 'http://my.example.com',
@@ -165,6 +184,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
             'name' => 'my volume no. 1',
             'url' => 'random',
             'media_type_id' => MediaType::$timeSeriesId,
+            'visibility_id' => Visibility::$private->id,
             'images' => '1.jpg',
             'video_link' => '',
             'gis_link' => '',

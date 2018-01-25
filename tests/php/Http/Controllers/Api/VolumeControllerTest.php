@@ -5,6 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use File;
 use ApiTestCase;
 use Biigle\MediaType;
+use Biigle\Visibility;
 
 class VolumeControllerTest extends ApiTestCase
 {
@@ -31,6 +32,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $id = $this->volume()->id;
         $this->volume()->media_type_id = MediaType::$timeSeriesId;
+        $this->volume()->visibility_id = Visibility::$public->id;
         $this->volume()->save();
         $this->doTestApiRoute('PUT', '/api/v1/volumes/'.$id);
 
@@ -47,10 +49,12 @@ class VolumeControllerTest extends ApiTestCase
         $response = $this->json('PUT', '/api/v1/volumes/'.$id, [
             'name' => 'the new volume',
             'media_type_id' => MediaType::$locationSeriesId,
+            'visibility_id' => Visibility::$private->id,
         ]);
         $response->assertStatus(200);
         $this->assertEquals('the new volume', $this->volume()->fresh()->name);
         $this->assertEquals(MediaType::$locationSeriesId, $this->volume()->fresh()->media_type_id);
+        $this->assertEquals(Visibility::$private->id, $this->volume()->fresh()->visibility_id);
     }
 
     public function testJsonAttrs()
@@ -121,6 +125,18 @@ class VolumeControllerTest extends ApiTestCase
             'media_type_id' => 999,
         ]);
         // media type id does not exist
+        $response->assertStatus(422);
+
+        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'visibility_id' => '',
+        ]);
+        // visibility id must not be empty if present
+        $response->assertStatus(422);
+
+        $response = $this->json('PUT', "/api/v1/volumes/{$id}", [
+            'visibility_id' => 999,
+        ]);
+        // visibility id does not exist
         $response->assertStatus(422);
 
         $response = $this->json('PUT', "/api/v1/volumes/{$id}", [

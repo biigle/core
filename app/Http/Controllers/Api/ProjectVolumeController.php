@@ -56,6 +56,7 @@ class ProjectVolumeController extends Controller
      *
      * @apiParam (Required attributes) {String} name The name of the new volume.
      * @apiParam (Required attributes) {String} url The base URL ot the image files. Can be a local path like `/vol/volumes/1` or a remote path like `https://example.com/volumes/1`.
+     * @apiParam (Required attributes) {Number} visibility_id ID of the visibility of the new label tree (public or private).
      * @apiParam (Required attributes) {Number} media_type_id The ID of the media type of the new volume.
      * @apiParam (Required attributes) {String} images List of image file names of the images that can be found at the base URL, formatted as comma separated values. With the base URL `/vol/volumes/1` and the image `1.jpg`, the local file `/vol/volumes/1/1.jpg` will be used.
      *
@@ -67,6 +68,7 @@ class ProjectVolumeController extends Controller
      * name: 'New volume'
      * url: '/vol/volumes/test-volume'
      * media_type_id: 1
+     * visibility_id: 1
      * images: '1.jpg,2.jpg,3.jpg'
      * video_link: 'http://example.com'
      * gis_link: 'http://gis.example.com'
@@ -77,6 +79,7 @@ class ProjectVolumeController extends Controller
      *    "id": 2,
      *    "name": "New volume",
      *    "media_type_id": 1,
+     *    "visibility_id": 1,
      *    "creator_id": 2,
      *    "created_at": "2015-02-19 16:10:17",
      *    "updated_at": "2015-02-19 16:10:17",
@@ -102,7 +105,8 @@ class ProjectVolumeController extends Controller
         $volume = new Volume;
         $volume->name = $request->input('name');
         $volume->url = $request->input('url');
-        $volume->setMediaTypeId($request->input('media_type_id'));
+        $volume->media_type_id = $request->input('media_type_id');
+        $volume->visibility_id = $request->input('visibility_id');
         $volume->video_link = $request->input('video_link');
         $volume->gis_link = $request->input('gis_link');
         $volume->doi = $request->input('doi');

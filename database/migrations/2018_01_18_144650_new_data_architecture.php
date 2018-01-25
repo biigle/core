@@ -98,18 +98,40 @@ class NewDataArchitecture extends Migration
             $table->index(['project_id', 'starts_at', 'ends_at']);
         });
 
-        // TODO Add volume_members table. Migrate project admins to be volume admins.
+        // TODO Migrate project admins to be volume admins.
         // There are *only* volume admins for now. Everybody else gets implicit access
         // through the volume visibility or through project membership.
-
         // Volumes should be private by default.
-        // Schema::table('volumes', function (Blueprint $table) {
-        //     $table->integer('visibility_id')->unsigned();
-        //     $table->foreign('visibility_id')
+
+        Schema::table('volumes', function (Blueprint $table) {
+            $table->integer('visibility_id')->unsigned();
+            $table->foreign('visibility_id')
+                  ->references('id')
+                  ->on('visibilities')
+                  ->onDelete('restrict');
+        });
+
+        // Schema::create('user_volume', function (Blueprint $table) {
+        //     $table->integer('volume_id')->unsigned();
+        //     $table->foreign('volume_id')
         //           ->references('id')
-        //           ->on('visibilities')
-        //           // don't delete a visibility that is in use
+        //           ->on('volumes')
+        //           ->onDelete('cascade');
+
+        //     $table->integer('user_id')->unsigned();
+        //     $table->foreign('user_id')
+        //           ->references('id')
+        //           ->on('users')
+        //           ->onDelete('cascade');
+
+        //     $table->integer('role_id')->unsigned();
+        //     $table->foreign('role_id')
+        //           ->references('id')
+        //           ->on('roles')
         //           ->onDelete('restrict');
+
+        //     // each user must not be added twice as a label tree member
+        //     $table->unique(['volume_id', 'user_id']);
         // });
     }
 
@@ -120,9 +142,11 @@ class NewDataArchitecture extends Migration
      */
     public function down()
     {
-        // Schema::table('volumes', function (Blueprint $table) {
-        //     $table->dropColumn('visibility_id');
-        // });
+        // Schema::drop('user_volume');
+
+        Schema::table('volumes', function (Blueprint $table) {
+            $table->dropColumn('visibility_id');
+        });
 
         Schema::table('annotation_sessions', function (Blueprint $table) {
             $table->dropColumn('project_id');

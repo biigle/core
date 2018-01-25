@@ -140,6 +140,11 @@ class UserTest extends ModelTestCase
         $this->model->checkCanBeDeleted();
     }
 
+    public function testCheckCanBeDeletedVolumes()
+    {
+        $this->markTestIncomplete('Implement check so all volumes have at least one admin.');
+    }
+
     public function testCastSettings()
     {
         $user = self::create(['settings' => ['abc' => 'def']]);

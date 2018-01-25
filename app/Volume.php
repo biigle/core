@@ -36,9 +36,10 @@ class Volume extends Model
      */
     public static $createRules = [
         'name'          => 'required|max:512',
-        'media_type_id' => 'required|exists:media_types,id',
+        'media_type_id' => 'required|integer|exists:media_types,id',
         'url'           => 'required',
         'images'        => 'required',
+        'visibility_id' => 'required|integer|exists:visibilities,id',
     ];
 
     /**
@@ -48,8 +49,9 @@ class Volume extends Model
      */
     public static $updateRules = [
         'name'          => 'filled|max:512',
-        'media_type_id' => 'filled|exists:media_types,id',
+        'media_type_id' => 'filled|integer|exists:media_types,id',
         'url'           => 'filled',
+        'visibility_id' => 'filled|integer|exists:visibilities,id',
     ];
 
     /**
@@ -120,29 +122,13 @@ class Volume extends Model
     }
 
     /**
-     * Sets the media type of this volume.
+     * The visibility of the volume.
      *
-     * @param Biigle\MediaType $mediaType
-     * @return void
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function setMediaType($mediaType)
+    public function visibility()
     {
-        $this->mediaType()->associate($mediaType);
-    }
-
-    /**
-     * Sets the media type of this volume to the media type with the given ID.
-     *
-     * @param int $id media type ID
-     * @return void
-     */
-    public function setMediaTypeId($id)
-    {
-        $type = MediaType::find($id);
-        if ($type === null) {
-            abort(400, 'The media type "'.$id.'" does not exist!');
-        }
-        $this->setMediaType($type);
+        return $this->belongsTo(Visibility::class);
     }
 
     /**

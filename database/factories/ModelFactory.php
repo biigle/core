@@ -54,6 +54,7 @@ $factory->define(Biigle\Volume::class, function ($faker) {
             return factory(Biigle\User::class)->create()->id;
         },
         'url' => base_path('tests/files'),
+        'visibility_id' => Biigle\Visibility::$public->id,
     ];
 });
 

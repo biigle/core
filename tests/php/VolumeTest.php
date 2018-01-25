@@ -69,6 +69,12 @@ class VolumeTest extends ModelTestCase
         $this->assertNull($this->model->fresh()->creator_id);
     }
 
+    public function testVisibilityOnDeleteRestrict()
+    {
+        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->model->visibility()->delete();
+    }
+
     public function testImages()
     {
         $image = ImageTest::create(['volume_id' => $this->model->id]);
@@ -87,26 +93,6 @@ class VolumeTest extends ModelTestCase
         $this->assertNotNull($pivot->id);
         $this->assertNotNull($pivot->created_at);
         $this->assertNotNull($pivot->updated_at);
-    }
-
-    public function testSetMediaType()
-    {
-        $type = MediaTypeTest::create();
-        $this->assertNotEquals($type->id, $this->model->mediaType->id);
-        $this->model->setMediaType($type);
-        $this->assertEquals($type->id, $this->model->mediaType->id);
-    }
-
-    public function testSetMediaTypeId()
-    {
-        $type = MediaTypeTest::create();
-        $this->assertNotEquals($type->id, $this->model->mediaType->id);
-        $this->model->setMediaTypeId($type->id);
-        $this->assertEquals($type->id, $this->model->mediaType->id);
-
-        // media type does not exist
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
-        $this->model->setMediaTypeId(99999);
     }
 
     public function testCreateImages()

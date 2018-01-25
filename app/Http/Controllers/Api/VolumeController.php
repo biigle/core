@@ -51,6 +51,7 @@ class VolumeController extends Controller
      * @apiParam {Number} id The volume ID.
      *
      * @apiParam (Attributes that can be updated) {String} name Name of the volume.
+     * @apiParam (Attributes that can be updated) {Number} visibility_id ID of the visibility of the new label tree (public or private).
      * @apiParam (Attributes that can be updated) {Number} media_type_id The ID of the media type of the volume.
      * @apiParam (Attributes that can be updated) {String} url The base URL ot the image files. Can be a local path like `/vol/volumes/1` or a remote path like `https://example.com/volumes/1`. Updating the URL will trigger a re-generation of all volume image thumbnails.
      * @apiParam (Attributes that can be updated) {String} video_link Link to a video that belongs to or was the source of this volume.
@@ -81,6 +82,7 @@ class VolumeController extends Controller
 
         $volume->name = $request->input('name', $volume->name);
         $volume->media_type_id = $request->input('media_type_id', $volume->media_type_id);
+        $volume->visibility_id = $request->input('visibility_id', $volume->visibility_id);
         $volume->video_link = $request->input('video_link', $volume->video_link);
         $volume->gis_link = $request->input('gis_link', $volume->gis_link);
         $volume->doi = $request->input('doi', $volume->doi);
