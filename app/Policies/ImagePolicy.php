@@ -39,8 +39,9 @@ class ImagePolicy extends CachedPolicy
     public function access(User $user, Image $image)
     {
         // Put this to permanent cache for rapid querying of image thumbnails or
-        // annotations.
-        return Cache::remember("image-can-access-{$user->id}-{$image->volume_id}", 0.5, function () use ($user, $image) {
+        // annotations. This is the same than VolumePolicy::access but with the
+        // volume_id from the image.
+        return Cache::remember("volume-can-access-{$user->id}-{$image->volume_id}", 0.5, function () use ($user, $image) {
             // TODO This is the implicit image access through project membership.
             // Add the explicit access through volume membership.
 
@@ -64,10 +65,11 @@ class ImagePolicy extends CachedPolicy
     public function accessThroughProject(User $user, Image $image, $pid)
     {
         // Put this to permanent cache for rapid querying of image thumbnails or
-        // annotations.
-        return Cache::remember("image-can-access-through-project-{$user->id}-{$image->volume_id}-{$pid}", 0.5, function () use ($user, $image, $pid) {
+        // annotations. This is the same than VolumePolicy::accessThroughProject but
+        // with the volume_id from the image.
+        return Cache::remember("volume-can-access-through-project-{$user->id}-{$image->volume_id}-{$pid}", 0.5, function () use ($user, $image, $pid) {
 
-            // Check if user is member of one of the projects, the image belongs to.
+            // Check if user and image belong to same the project.
             return DB::table('project_user')
                 ->join('project_volume', 'project_volume.project_id', '=', 'project_user.project_id')
                 ->where('project_user.user_id', $user->id)

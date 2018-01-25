@@ -8,6 +8,7 @@ class NewDataArchitecture extends Migration
 {
     /**
      * Run the migrations.
+     * see: https://github.com/BiodataMiningGroup/biigle-core/issues/53
      *
      * @return void
      */
@@ -37,7 +38,7 @@ class NewDataArchitecture extends Migration
 
         // TODO migrate existing annotations and image labels before adding the new not
         // null project_volume_id.
-        // Assign existing annotations to the oldest project?
+        // Assign existing annotations and image labels to the oldest project.
 
         Schema::table('annotations', function (Blueprint $table) {
             $table->integer('project_volume_id')->unsigned();
@@ -80,6 +81,8 @@ class NewDataArchitecture extends Migration
         // TODO migrate existing annotation sessions to be attached to a project and not
         // a volume. They can be duplicated for all projects they affect. They don't
         // require associated users any more. Instead, they affect all project users.
+        // Handle conflicting annotation sessions, too. If annotation sessions overlap,
+        // cut off the newer one or delete it if it lies completely inside the older one.
 
         Schema::drop('annotation_session_user');
 
@@ -96,8 +99,8 @@ class NewDataArchitecture extends Migration
         });
 
         // TODO Add volume_members table. Migrate project admins to be volume admins.
-        // There are *only* volume admins. Everybody else gets implicit access through
-        // the volume visibility or through project membership.
+        // There are *only* volume admins for now. Everybody else gets implicit access
+        // through the volume visibility or through project membership.
 
         // Volumes should be private by default.
         // Schema::table('volumes', function (Blueprint $table) {

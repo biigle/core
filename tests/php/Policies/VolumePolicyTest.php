@@ -20,18 +20,23 @@ class VolumePolicyTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $project = ProjectTest::create();
+        $this->project = ProjectTest::create();
         $this->volume = VolumeTest::create();
-        $project->volumes()->attach($this->volume);
+        $this->project->volumes()->attach($this->volume);
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
         $this->editor = UserTest::create();
         $this->admin = UserTest::create();
         $this->globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
 
-        $project->addUserId($this->guest->id, Role::$guest->id);
-        $project->addUserId($this->editor->id, Role::$editor->id);
-        $project->addUserId($this->admin->id, Role::$admin->id);
+        $this->project->addUserId($this->guest->id, Role::$guest->id);
+        $this->project->addUserId($this->editor->id, Role::$editor->id);
+        $this->project->addUserId($this->admin->id, Role::$admin->id);
+
+        $this->otherProject = ProjectTest::create();
+        $this->otherAdmin = UserTest::create();
+        $this->otherProject->volumes()->attach($this->volume);
+        $this->otherProject->addUserId($this->otherAdmin, Role::$admin->id);
     }
 
     public function testAccess()
@@ -43,7 +48,18 @@ class VolumePolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('access', $this->volume));
 
         $this->markTestIncomplete('Update volume access similar to label trees');
-        $this->markTestIncomplete('Implement access-though-project like for images. This will be used for the view(s).');
+    }
+
+    public function testAccessThroughProject()
+    {
+        $this->assertFalse($this->user->can('access-through-project', [$this->volume, $this->project->id]));
+        $this->assertFalse($this->user->can('access-through-project', [$this->volume, $this->otherProject->id]));
+        $this->assertTrue($this->guest->can('access-through-project', [$this->volume, $this->project->id]));
+        $this->assertTrue($this->editor->can('access-through-project', [$this->volume, $this->project->id]));
+        $this->assertTrue($this->admin->can('access-through-project', [$this->volume, $this->project->id]));
+        $this->assertTrue($this->globalAdmin->can('access-through-project', [$this->volume, $this->project->id]));
+        $this->assertFalse($this->otherAdmin->can('access-through-project', [$this->volume, $this->project->id]));
+        $this->assertTrue($this->otherAdmin->can('access-through-project', [$this->volume, $this->otherProject->id]));
     }
 
     public function testEditIn()
