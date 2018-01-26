@@ -50,31 +50,6 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $this->assertEquals(1, $t->members()->where('label_tree_user.role_id', Role::$admin->id)->count());
     }
 
-    public function testUpdateFormRequest()
-    {
-        $t = LabelTreeTest::create();
-        $t->addMember($this->editor(), Role::$editor);
-        $u = $this->editor();
-        $t->addMember($this->admin(), Role::$admin);
-
-        $this->beAdmin();
-        $this->get('/');
-        $response = $this->put("/api/v1/label-trees/{$t->id}/users/{$u->id}", [
-            'role_id' => Role::$admin->id,
-        ]);
-        $this->assertEquals(2, $t->members()->where('label_tree_user.role_id', Role::$admin->id)->count());
-        $response->assertRedirect('/');
-        $response->assertSessionHas('saved', true);
-
-        $response = $this->put("/api/v1/label-trees/{$t->id}/users/{$u->id}", [
-            'role_id' => Role::$editor->id,
-            '_redirect' => 'settings',
-        ]);
-        $this->assertEquals(1, $t->members()->where('label_tree_user.role_id', Role::$admin->id)->count());
-        $response->assertRedirect('/settings');
-        $response->assertSessionHas('saved', true);
-    }
-
     public function testStore()
     {
         $tree = LabelTreeTest::create();
@@ -130,30 +105,6 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $this->assertEquals(Role::$editor->id, $user->role_id);
     }
 
-    public function testStoreFormRequest()
-    {
-        $tree = LabelTreeTest::create();
-        $tree->addMember($this->admin(), Role::$admin);
-        $this->beAdmin();
-        $this->get('/');
-        $response = $this->post("/api/v1/label-trees/{$tree->id}/users", [
-            'id' => $this->user()->id,
-            'role_id' => Role::$editor->id,
-        ]);
-        $this->assertEquals(2, $tree->members()->count());
-        $response->assertRedirect('/');
-        $response->assertSessionHas('saved', true);
-
-        $response = $this->post("/api/v1/label-trees/{$tree->id}/users", [
-            'id' => $this->guest()->id,
-            'role_id' => Role::$editor->id,
-            '_redirect' => 'settings',
-        ]);
-        $this->assertEquals(3, $tree->members()->count());
-        $response->assertRedirect('/settings');
-        $response->assertSessionHas('saved', true);
-    }
-
     public function testDestroy()
     {
         $tree = LabelTreeTest::create();
@@ -193,29 +144,5 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $this->beGlobalAdmin();
         $response = $this->json('DELETE', "/api/v1/label-trees/{$tree->id}/users/{$admin->id}");
         $response->assertStatus(200);
-    }
-
-    public function testDestroyFormRequest()
-    {
-        $tree = LabelTreeTest::create();
-        $tree->addMember($this->editor(), Role::$editor);
-        $editor = $this->editor();
-        $tree->addMember($this->admin(), Role::$admin);
-
-        $this->beAdmin();
-        $this->get('/');
-        $response = $this->delete("/api/v1/label-trees/{$tree->id}/users/{$editor->id}");
-        $this->assertFalse($tree->members()->where('id', $editor->id)->exists());
-        $response->assertRedirect('/');
-        $response->assertSessionHas('deleted', true);
-
-        $tree->addMember($this->editor(), Role::$editor);
-
-        $response = $this->delete("/api/v1/label-trees/{$tree->id}/users/{$editor->id}", [
-            '_redirect' => 'settings',
-        ]);
-        $this->assertFalse($tree->members()->where('id', $editor->id)->exists());
-        $response->assertRedirect('/settings');
-        $response->assertSessionHas('deleted', true);
     }
 }

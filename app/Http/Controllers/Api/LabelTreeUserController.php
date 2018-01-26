@@ -42,18 +42,6 @@ class LabelTreeUserController extends Controller
         if ($request->has('role_id')) {
             $tree->updateMember($user, Role::findOrFail($request->input('role_id')));
         }
-
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('saved', true);
-        }
-
-        return redirect()->back()
-            ->with('saved', true);
     }
 
     /**
@@ -85,17 +73,7 @@ class LabelTreeUserController extends Controller
             Role::findOrFail($request->input('role_id'))
         );
 
-        if (static::isAutomatedRequest($request)) {
-            return $tree;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('saved', true);
-        }
-
-        return redirect()->back()
-            ->with('saved', true);
+        return $tree;
     }
 
     /**
@@ -130,17 +108,5 @@ class LabelTreeUserController extends Controller
         }
 
         $tree->members()->detach($uid);
-
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('deleted', true);
-        }
-
-        return redirect()->back()
-            ->with('deleted', true);
     }
 }
