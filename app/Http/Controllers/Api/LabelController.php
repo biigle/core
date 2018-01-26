@@ -2,12 +2,16 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Exception;
 use Biigle\Label;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Access\AuthorizationException;
+use Biigle\Http\Controllers\Api\Traits\ValidatesLabelParents;
 
 class LabelController extends Controller
 {
+    use ValidatesLabelParents;
+
     /**
      * Update a label.
      *
@@ -30,17 +34,14 @@ class LabelController extends Controller
     {
         $label = Label::findOrFail($id);
         $this->authorize('update', $label);
-
         $this->validate($request, Label::$updateRules);
 
-        // parent must be of the same tree
         if ($request->has('parent_id')) {
-            $exists = Label::where('id', $request->input('parent_id'))
-                ->where('label_tree_id', $label->label_tree_id)
-                ->exists();
-            if (!$exists) {
+            try {
+                $this->validateLabelParent($label->label_tree_id, $request->input('parent_id'));
+            } catch (Exception $e) {
                 return $this->buildFailedValidationResponse($request, [
-                    'parent_id' => ['The parent label must belong to the same label tree than the updated label.'],
+                    'parent_id' => [$e->getMessage()],
                 ]);
             }
         }

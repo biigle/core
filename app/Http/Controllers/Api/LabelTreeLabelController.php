@@ -2,14 +2,18 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Exception;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\LabelSource;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Biigle\Http\Controllers\Api\Traits\ValidatesLabelParents;
 
 class LabelTreeLabelController extends Controller
 {
+    use ValidatesLabelParents;
+
     /**
      * Add labels to a label tree.
      *
@@ -49,17 +53,14 @@ class LabelTreeLabelController extends Controller
     {
         $tree = LabelTree::findOrFail($id);
         $this->authorize('create-label', $tree);
-
         $this->validate($request, Label::$createRules);
 
-        // parent must be of the same tree
         if ($request->has('parent_id')) {
-            $exists = Label::where('id', $request->input('parent_id'))
-                ->where('label_tree_id', $id)
-                ->exists();
-            if (!$exists) {
+            try {
+                $this->validateLabelParent($id, $request->input('parent_id'));
+            } catch (Exception $e) {
                 return $this->buildFailedValidationResponse($request, [
-                    'parent_id' => ['The parent label must belong to the same label tree than the new label.'],
+                    'parent_id' => [$e->getMessage()],
                 ]);
             }
         }
