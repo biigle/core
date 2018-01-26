@@ -18,7 +18,6 @@ class NewDataArchitecture extends Migration
             // Add the ID so we can use on delete cascade on annotations and image
             // labels.
             $table->increments('id');
-
             $table->timestamps();
         });
 
@@ -116,7 +115,6 @@ class NewDataArchitecture extends Migration
                   ->on('roles')
                   ->onDelete('restrict');
 
-            // each user must not be added twice as a label tree member
             $table->unique(['volume_id', 'user_id']);
         });
 

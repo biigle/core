@@ -103,9 +103,7 @@ $factory->define(Biigle\Annotation::class, function ($faker) {
         'image_id' => function () use ($image) {
             return $image->id;
         },
-        'shape_id' => function () {
-            return factory(Biigle\Shape::class)->create()->id;
-        },
+        'shape_id' => Biigle\Shape::$pointId,
         'project_volume_id' => function () use ($image) {
             return factory(Biigle\ProjectVolume::class)->create([
                 'volume_id' => $image->volume_id,

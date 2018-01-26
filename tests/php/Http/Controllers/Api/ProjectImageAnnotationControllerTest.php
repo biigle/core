@@ -32,7 +32,7 @@ class ProjectImageAnnotationControllerTest extends ApiTestCase
         // The annotation should be shown no matter what project it belongs to.
         $annotation = AnnotationTest::create([
             'image_id' => $iid,
-            'points' => [10, 20, 30, 40],
+            'points' => [10, 20],
         ]);
 
         $label = LabelTest::create([
@@ -54,7 +54,7 @@ class ProjectImageAnnotationControllerTest extends ApiTestCase
 
         $this->beGuest();
         $this->get("/api/v1/projects/{$pid}/images/{$iid}/annotations")
-            ->assertJsonFragment(['points' => [10, 20, 30, 40]])
+            ->assertJsonFragment(['points' => [10, 20]])
             ->assertJsonFragment(['color' => 'bada55'])
             ->assertJsonFragment(['name' => 'My label'])
             ->assertStatus(200);

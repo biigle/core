@@ -78,7 +78,7 @@ class AnnotationSessionTest extends ModelTestCase
         $a1 = AnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
-            'points' => [20, 30, 40],
+            'points' => [20, 30],
         ]);
         $al11 = AnnotationLabelTest::create([
             'annotation_id' => $a1->id,
@@ -95,7 +95,7 @@ class AnnotationSessionTest extends ModelTestCase
         $a2 = AnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
-            'points' => [30, 40, 50],
+            'points' => [30, 40],
         ]);
         $al2 = AnnotationLabelTest::create([
             'annotation_id' => $a2->id,
@@ -114,11 +114,11 @@ class AnnotationSessionTest extends ModelTestCase
         // expand the models in the collection so we can make assertions
         $annotations = collect($annotations->toArray());
 
-        $this->assertTrue($annotations->contains('points', [20, 30, 40]));
+        $this->assertTrue($annotations->contains('points', [20, 30]));
         $this->assertFalse($annotations->contains('labels', [$al11->load('user', 'label')->toArray()]));
         $this->assertTrue($annotations->contains('labels', [$al12->load('user', 'label')->toArray()]));
 
-        $this->assertTrue($annotations->contains('points', [30, 40, 50]));
+        $this->assertTrue($annotations->contains('points', [30, 40]));
         $this->assertTrue($annotations->contains('labels', [$al2->load('user', 'label')->toArray()]));
     }
 
@@ -141,7 +141,7 @@ class AnnotationSessionTest extends ModelTestCase
         $a = AnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-05',
-            'points' => [20, 30, 40],
+            'points' => [20, 30],
             'project_volume_id' => $pivot->id,
         ]);
         $al1 = AnnotationLabelTest::create([
@@ -160,7 +160,7 @@ class AnnotationSessionTest extends ModelTestCase
         // expand the models in the collection so we can make assertions
         $annotations = collect($annotations->toArray());
 
-        $this->assertTrue($annotations->contains('points', [20, 30, 40]));
+        $this->assertTrue($annotations->contains('points', [20, 30]));
         $this->assertFalse($annotations->contains('labels', [$al1->load('user', 'label')->toArray()]));
         $this->assertTrue($annotations->contains('labels', [$al2->load('user', 'label')->toArray()]));
     }
@@ -184,7 +184,7 @@ class AnnotationSessionTest extends ModelTestCase
         $a = AnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
-            'points' => [40, 50, 60],
+            'points' => [40, 50],
             'project_volume_id' => $pivot->id,
         ]);
         $al1 = AnnotationLabelTest::create([
@@ -202,7 +202,7 @@ class AnnotationSessionTest extends ModelTestCase
         // expand the models in the collection so we can make assertions
         $annotations = collect($annotations->toArray());
 
-        $this->assertTrue($annotations->contains('points', [40, 50, 60]));
+        $this->assertTrue($annotations->contains('points', [40, 50]));
         $this->assertTrue($annotations->contains('labels', [$al1->load('user', 'label')->toArray()]));
         $this->assertFalse($annotations->contains('labels', [$al2->load('user', 'label')->toArray()]));
     }
@@ -216,7 +216,7 @@ class AnnotationSessionTest extends ModelTestCase
         $a = AnnotationTest::create([
             'image_id' => $image->id,
             'created_at' => '2016-09-06',
-            'points' => [40, 50, 60],
+            'points' => [40, 50],
         ]);
         $al1 = AnnotationLabelTest::create([
             'annotation_id' => $a->id,
@@ -240,7 +240,7 @@ class AnnotationSessionTest extends ModelTestCase
         // expand the models in the collection so we can make assertions
         $annotations = collect($annotations->toArray());
 
-        $this->assertTrue($annotations->contains('points', [40, 50, 60]));
+        $this->assertTrue($annotations->contains('points', [40, 50]));
         $this->assertTrue($annotations->contains('labels', [
             $al1->load('user', 'label')->toArray(),
             $al2->load('user', 'label')->toArray(),

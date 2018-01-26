@@ -64,22 +64,14 @@ class AnnotationController extends Controller
         $annotation = Annotation::findOrFail($id);
         $this->authorize('update', $annotation);
 
-        // from a JSON request, the array may already be decoded
-        $points = $request->input('points');
-
-        if (is_string($points)) {
-            $points = json_decode($points);
-        }
-
         try {
-            $annotation->validatePoints($points);
+            $annotation->points = $request->input('points');
         } catch (Exception $e) {
             return $this->buildFailedValidationResponse($request, [
                 'points' => [$e->getMessage()],
             ]);
         }
 
-        $annotation->points = $points;
         $annotation->save();
     }
 

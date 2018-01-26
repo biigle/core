@@ -46,17 +46,25 @@ class AnnotationTest extends ModelTestCase
     public function testCastPoints()
     {
         $annotation = static::make();
-        $annotation->points = [1, 2, 3, 4];
+        $annotation->points = [1, 2];
         $annotation->save();
-        $this->assertEquals([1, 2, 3, 4], $annotation->fresh()->points);
+        $this->assertEquals([1, 2], $annotation->fresh()->points);
     }
 
     public function testRoundPoints()
     {
         $annotation = static::make();
-        $annotation->points = [1.23456789, 2.23456789, 3.1415];
+        $annotation->points = [1.23456789, 2.23456789];
         $annotation->save();
-        $this->assertEquals([1.23, 2.23, 3.14], $annotation->fresh()->points);
+        $this->assertEquals([1.23, 2.23], $annotation->fresh()->points);
+    }
+
+    public function testDecodePoints()
+    {
+        $annotation = static::make();
+        $annotation->points = '[1.23456789, 2.23456789]';
+        $annotation->save();
+        $this->assertEquals([1.23, 2.23], $annotation->fresh()->points);
     }
 
     public function testLabels()
@@ -79,55 +87,55 @@ class AnnotationTest extends ModelTestCase
     public function testValidatePointsInteger()
     {
         $this->setExpectedException('Exception');
-        $this->model->validatePoints([10, 'a']);
+        $this->model->points = [10, 'a'];
     }
 
     public function testValidatePointsPoint()
     {
         $this->model->shape_id = Shape::$pointId;
-        $this->model->validatePoints([10.5, 10.5]);
+        $this->model->points = [10.5, 10.5];
         $this->setExpectedException('Exception');
-        $this->model->validatePoints([10, 10, 20, 20]);
+        $this->model->points = [10, 10, 20, 20];
     }
 
     public function testValidatePointsCircle()
     {
         $this->model->shape_id = Shape::$circleId;
-        $this->model->validatePoints([10, 10, 20]);
+        $this->model->points = [10, 10, 20];
         $this->setExpectedException('Exception');
-        $this->model->validatePoints([10, 10]);
+        $this->model->points = [10, 10];
     }
 
     public function testValidatePointsRectangle()
     {
         $this->model->shape_id = Shape::$rectangleId;
-        $this->model->validatePoints([10, 10, 10, 20, 20, 20, 20, 10]);
+        $this->model->points = [10, 10, 10, 20, 20, 20, 20, 10];
         $this->setExpectedException('Exception');
-        $this->model->validatePoints([10, 10]);
+        $this->model->points = [10, 10];
     }
 
     public function testValidatePointsEllipse()
     {
         $this->model->shape_id = Shape::$ellipseId;
-        $this->model->validatePoints([10, 10, 10, 20, 20, 20, 20, 10]);
+        $this->model->points = [10, 10, 10, 20, 20, 20, 20, 10];
         $this->setExpectedException('Exception');
-        $this->model->validatePoints([10, 10]);
+        $this->model->points = [10, 10];
     }
 
     public function testValidatePointsLine()
     {
         $this->model->shape_id = Shape::$lineId;
-        $this->model->validatePoints([10, 10]);
+        $this->model->points = [10, 10];
         $this->setExpectedException('Exception');
-        $this->model->validatePoints([10]);
+        $this->model->points = [10];
     }
 
     public function testValidatePointsPolygon()
     {
         $this->model->shape_id = Shape::$polygonId;
-        $this->model->validatePoints([10, 10]);
+        $this->model->points = [10, 10];
         $this->setExpectedException('Exception');
-        $this->model->validatePoints([10]);
+        $this->model->points = [10];
     }
 
     public function testAllowedBySessionScopeHideOwn()
@@ -255,7 +263,9 @@ class AnnotationTest extends ModelTestCase
         ]);
 
         $ids = Annotation::allowedBySession($session, $ownUser)->pluck('id')->toArray();
-        $this->assertEquals([$a1->id, $a3->id], $ids);
+        $this->assertEquals(2, count($ids));
+        $this->assertContains($a1->id, $ids);
+        $this->assertContains($a3->id, $ids);
     }
 
     public function testAllowedBySessionScopeHideBoth()

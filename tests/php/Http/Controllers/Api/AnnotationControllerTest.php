@@ -29,7 +29,7 @@ class AnnotationControllerTest extends ApiTestCase
     public function testShow()
     {
         $id = $this->annotation->id;
-        $this->annotation->points = [10, 10, 20, 20];
+        $this->annotation->points = [10, 20];
         $this->annotation->save();
         $this->doTestApiRoute('GET', "api/v1/annotations/{$id}");
 
@@ -47,7 +47,7 @@ class AnnotationControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $response = $this->get("api/v1/annotations/{$id}")
-            ->assertJsonFragment(['points' => [10, 10, 20, 20]]);
+            ->assertJsonFragment(['points' => [10, 20]]);
         // the labels should be fetched separately
         $this->assertNotContains('labels', $response->getContent());
     }
@@ -88,21 +88,18 @@ class AnnotationControllerTest extends ApiTestCase
         $this->annotation->save();
 
         $this->beAdmin();
-        $response = $this->put("api/v1/annotations/{$id}", ['points' => '[10, 15, 100, 200]']);
+        $response = $this->put("api/v1/annotations/{$id}", ['points' => '[10, 15]']);
         $response->assertStatus(200);
 
         $this->annotation = $this->annotation->fresh();
-
-        $this->assertEquals(4, sizeof($this->annotation->points));
-        $this->assertEquals(15, $this->annotation->points[1]);
+        $this->assertEquals([10, 15], $this->annotation->points);
 
         $response = $this->json('PUT', "api/v1/annotations/{$id}", ['points' => [20, 25]]);
         $response->assertStatus(200);
 
         $this->annotation = $this->annotation->fresh();
 
-        $this->assertEquals(2, sizeof($this->annotation->points));
-        $this->assertEquals(25, $this->annotation->points[1]);
+        $this->assertEquals([20, 25], $this->annotation->points);
     }
 
     public function testUpdateValidatePoints()
