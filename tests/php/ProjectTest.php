@@ -143,22 +143,27 @@ class ProjectTest extends ModelTestCase
         $this->model->checkUserCanBeRemoved($this->model->creator->id);
     }
 
-    public function testChangeRole()
+    public function testUpdateMemberId()
     {
         $admin = $this->model->creator;
         $user = UserTest::create();
 
-        $this->model->changeRole($user->id, Role::$admin->id);
+        try {
+            $this->model->updateMemberId($user->id, Role::$admin->id);
+            $this->assertFalse(true);
+        } catch (HttpException $e) {
+            //
+        }
         $this->assertNull($this->model->users()->find($user->id));
 
         $this->model->addUserId($user->id, Role::$admin->id);
         $this->assertEquals(Role::$admin->id, $this->model->users()->find($user->id)->role_id);
-        $this->model->changeRole($user->id, Role::$editor->id);
+        $this->model->updateMemberId($user->id, Role::$editor->id);
         $this->assertEquals(Role::$editor->id, $this->model->users()->find($user->id)->role_id);
 
         // attempt to change the last admin to an editor
         $this->setExpectedException(HttpException::class);
-        $this->model->changeRole($admin->id, Role::$editor->id);
+        $this->model->updateMemberId($admin->id, Role::$editor->id);
     }
 
     public function testDetachVolume()

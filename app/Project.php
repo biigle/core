@@ -106,19 +106,6 @@ class Project extends Model
     }
 
     /**
-     * Changes the role of an existing user in this project.
-     *
-     * @deprecated Use updateMember() instead.
-     * @param int $userId
-     * @param int $roleId
-     * @return void
-     */
-    public function changeRole($userId, $roleId)
-    {
-        return $this->updateMemberId($userId, $roleId);
-    }
-
-    /**
      * Checks if the user can be removed from the project.
      * Throws an exception if not.
      *

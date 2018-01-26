@@ -51,20 +51,22 @@ class ProjectUserControllerTest extends ApiTestCase
         $response = $this->put("/api/v1/projects/{$id}/users/5");
         $response->assertStatus(403);
 
-        // user doesn't exist
         $this->beAdmin();
-        $response = $this->put("/api/v1/projects/{$id}/users/5");
-        $response->assertStatus(400);
+        $response = $this->put("/api/v1/projects/{$id}/users/5", [
+            'role_id' => Role::$guest->id,
+        ]);
+        // user doesn't exist
+        $response->assertStatus(404);
 
         // missing arguments
         $response = $this->put("/api/v1/projects/{$id}/users/".$this->editor()->id);
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         // role does not exist
         $response = $this->put("/api/v1/projects/{$id}/users/".$this->editor()->id, [
             'role_id' => 100,
         ]);
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         // last admin cannot be removed
         $response = $this->json('PUT', "/api/v1/projects/{$id}/users/".$this->admin()->id, [
@@ -93,11 +95,6 @@ class ProjectUserControllerTest extends ApiTestCase
         $response = $this->post("/api/v1/projects/{$pid}/users/{$id}");
         $response->assertStatus(403);
 
-        // missing arguments
-        $this->beAdmin();
-        $response = $this->post("/api/v1/projects/{$pid}/users/{$id}");
-        $response->assertStatus(400);
-
         // non-admins are not allowed to add users
         $this->beEditor();
         $response = $this->post("/api/v1/projects/{$pid}/users/{$id}");
@@ -108,7 +105,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $this->beAdmin();
         // missing arguments
         $response = $this->post("/api/v1/projects/{$pid}/users/{$id}");
-        $response->assertStatus(400);
+        $response->assertStatus(422);
 
         $response = $this->post("/api/v1/projects/{$pid}/users/{$id}", [
             'role_id' => 2,

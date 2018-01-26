@@ -132,25 +132,16 @@ class ProjectLabelTreeController extends Controller
         if (!$project->labelTrees()->where('id', $treeId)->exists()) {
             $tree = LabelTree::findOrFail($request->input('id'));
 
-            // only attach if the project is allowed to
-            if ((int) $tree->visibility_id === Visibility::$public->id || $tree->authorizedProjects()->where('label_tree_authorized_project.project_id', $id)->exists()) {
+            $isAuthorized = $tree->authorizedProjects()
+                ->where('label_tree_authorized_project.project_id', $id)
+                ->exists();
+
+            if ($tree->visibility_id === Visibility::$public->id || $isAuthorized) {
                 $project->labelTrees()->attach($tree->id);
             } else {
                 throw new AuthorizationException('The project is not authorized to use this label tree.');
             }
         }
-
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('saved', true);
-        }
-
-        return redirect()->back()
-            ->with('saved', true);
     }
 
     /**
@@ -173,18 +164,6 @@ class ProjectLabelTreeController extends Controller
     {
         $project = Project::findOrFail($pid);
         $this->authorize('update', $project);
-        $count = $project->labelTrees()->detach($lid);
-
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('deleted', $count > 0);
-        }
-
-        return redirect()->back()
-            ->with('deleted', $count > 0);
+        $project->labelTrees()->detach($lid);
     }
 }

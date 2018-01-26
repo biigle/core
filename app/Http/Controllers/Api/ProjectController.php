@@ -91,28 +91,11 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
-
         $this->validate($request, Project::$updateRules);
 
         $project->name = $request->input('name', $project->name);
         $project->description = $request->input('description', $project->description);
         $project->save();
-
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('saved', true)
-                ->with('message', 'Project updated.')
-                ->with('messageType', 'success');
-        }
-
-        return redirect()->back()
-            ->with('saved', true)
-            ->with('message', 'Project updated.')
-            ->with('messageType', 'success');
     }
 
     /**
@@ -194,31 +177,9 @@ class ProjectController extends Controller
         try {
             $project->detachAllVolumes($request->has('force'));
         } catch (HttpException $e) {
-            if (static::isAutomatedRequest($request)) {
-                abort(400, $e->getMessage());
-            }
-
-            return redirect()->back()
-                ->with('message', $e->getMessage())
-                ->with('messageType', 'danger');
+            abort(400, $e->getMessage());
         }
 
         $project->delete();
-
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('deleted', true)
-                ->with('message', 'Project deleted.')
-                ->with('messageType', 'success');
-        }
-
-        return redirect()->back()
-            ->with('deleted', true)
-            ->with('message', 'Project deleted.')
-            ->with('messageType', 'success');
     }
 }

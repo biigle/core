@@ -13,9 +13,7 @@ class ApiTokenController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('session', ['only' => [
-            'store',
-        ]]);
+        $this->middleware('session', ['only' => ['store']]);
     }
 
     /**
@@ -87,11 +85,11 @@ class ApiTokenController extends Controller
         // return the un-hashed token only this time
         $token->setAttribute('token', $secret);
 
-        if (!static::isAutomatedRequest($request)) {
-            return redirect()->back()->with('token', $token);
+        if (static::isAutomatedRequest($request)) {
+            return $token;
         }
 
-        return $token;
+        return redirect()->back()->with('token', $token);
     }
 
     /**
@@ -114,16 +112,15 @@ class ApiTokenController extends Controller
     {
         $token = ApiToken::findOrFail($id);
 
-        // IDs are automatically casted to ints by Eloquent
-        if ((int) $token->owner_id === $auth->user()->id) {
-            $token->delete();
-
-            if (!static::isAutomatedRequest($request)) {
-                return redirect()->back()->with('deleted', true);
-            }
-        } else {
-            // dont't disclose existing token IDs to other users
+        // Dont't disclose existing token IDs to other users.
+        if ($token->owner_id !== $auth->user()->id) {
             abort(404);
+        }
+
+        $token->delete();
+
+        if (!static::isAutomatedRequest($request)) {
+            return redirect()->back()->with('deleted', true);
         }
     }
 }

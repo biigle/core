@@ -73,7 +73,6 @@ class VolumeImageController extends Controller
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('update', $volume);
-
         $this->validate($request, Volume::$addImagesRules);
 
         $images = Volume::parseImagesQueryString($request->input('images'));

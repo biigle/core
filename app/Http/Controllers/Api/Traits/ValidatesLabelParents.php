@@ -13,8 +13,6 @@ trait ValidatesLabelParents
      * @param int $treeId
      * @param int $parentId
      * @throws Exception If the label does not exist in the tree.
-     *
-     * @return bool
      */
     protected function validateLabelParent($treeId, $parentId)
     {

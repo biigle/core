@@ -8,9 +8,12 @@ use Biigle\Project;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Auth\Access\AuthorizationException;
+use Biigle\Http\Controllers\Api\Traits\ValidatesAttachToProjectPermissions;
 
 class VolumeController extends Controller
 {
+    use ValidatesAttachToProjectPermissions;
+
     /**
      * Displays the specified volume.
      *
@@ -100,9 +103,11 @@ class VolumeController extends Controller
 
         if ($request->has('project_id')) {
             $project = Project::findOrFail($request->input('project_id'));
-            if (!$user->can('update', $project)) {
+            try {
+                $this->validateAttachToProject($user, $project);
+            } catch (Exception $e) {
                 return $this->buildFailedValidationResponse($request, [
-                    'project_id' => ['You have no permission to attach a volume to this project.'],
+                    'project_id' => [$e->getMessage()],
                 ]);
             }
         }

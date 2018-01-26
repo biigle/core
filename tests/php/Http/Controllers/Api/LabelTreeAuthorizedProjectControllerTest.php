@@ -47,28 +47,6 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
         $this->assertEquals(1, $tree->authorizedProjects()->count());
     }
 
-    public function testStoreFormRequest()
-    {
-        $tree = LabelTreeTest::create();
-        $tree->addMember($this->admin(), Role::$admin);
-        $this->beAdmin();
-        $this->get('/');
-        $response = $this->post("/api/v1/label-trees/{$tree->id}/authorized-projects", [
-            'id' => $this->project()->id,
-        ]);
-        $this->assertEquals(1, $tree->authorizedProjects()->count());
-        $response->assertRedirect('/');
-        $response->assertSessionHas('saved', true);
-
-        $response = $this->post("/api/v1/label-trees/{$tree->id}/authorized-projects", [
-            'id' => $this->project()->id,
-            '_redirect' => 'settings',
-        ]);
-        $this->assertEquals(1, $tree->authorizedProjects()->count());
-        $response->assertRedirect('/settings');
-        $response->assertSessionHas('saved', true);
-    }
-
     public function testDestroy()
     {
         $project = $this->project();
@@ -110,29 +88,5 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertEquals(0, $tree->authorizedProjects()->count());
         $this->assertEquals(0, $tree->projects()->count());
-    }
-
-    public function testDestroyFormRequest()
-    {
-        $tree = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
-        $tree->addMember($this->admin(), Role::$admin);
-        $project = $this->project();
-        $tree->authorizedProjects()->attach($project->id);
-
-        $this->beAdmin();
-        $this->get('/');
-        $response = $this->delete("/api/v1/label-trees/{$tree->id}/authorized-projects/{$project->id}");
-        $this->assertFalse($tree->authorizedProjects()->exists());
-        $response->assertRedirect('/');
-        $response->assertSessionHas('deleted', true);
-
-        $tree->authorizedProjects()->attach($project->id);
-
-        $response = $this->delete("/api/v1/label-trees/{$tree->id}/authorized-projects/{$project->id}", [
-            '_redirect' => 'settings',
-        ]);
-        $this->assertFalse($tree->authorizedProjects()->exists());
-        $response->assertRedirect('/settings');
-        $response->assertSessionHas('deleted', true);
     }
 }

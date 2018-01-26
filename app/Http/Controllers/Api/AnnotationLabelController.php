@@ -93,8 +93,8 @@ class AnnotationLabelController extends Controller
      */
     public function store(Request $request, Guard $auth, $id)
     {
-        $this->validate($request, Annotation::$attachLabelRules);
         $annotation = Annotation::findOrFail($id);
+        $this->validate($request, Annotation::$attachLabelRules);
         $label = Label::findOrFail($request->input('label_id'));
         $this->authorize('attach-label', [$annotation, $label]);
 

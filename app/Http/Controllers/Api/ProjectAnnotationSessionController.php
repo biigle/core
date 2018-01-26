@@ -103,18 +103,16 @@ class ProjectAnnotationSessionController extends Controller
         $session = new AnnotationSession;
         $session->name = $request->input('name');
         $session->description = $request->input('description');
-
         $session->starts_at = $request->input('starts_at');
         $session->ends_at = $request->input('ends_at');
+        $session->hide_other_users_annotations = $request->input('hide_other_users_annotations', false);
+        $session->hide_own_annotations = $request->input('hide_own_annotations', false);
 
         if ($project->hasConflictingAnnotationSession($session)) {
             return $this->buildFailedValidationResponse($request, [
                 'starts_at' => ['There already is an annotation session in this time period.'],
             ]);
         }
-
-        $session->hide_other_users_annotations = $request->input('hide_other_users_annotations', false);
-        $session->hide_own_annotations = $request->input('hide_own_annotations', false);
 
         $project->annotationSessions()->save($session);
 

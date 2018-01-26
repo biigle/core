@@ -79,17 +79,5 @@ class LabelController extends Controller
         }
 
         $label->delete();
-
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('deleted', true);
-        }
-
-        return redirect()->back()
-            ->with('deleted', true);
     }
 }

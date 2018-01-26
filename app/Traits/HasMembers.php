@@ -109,6 +109,10 @@ trait HasMembers
             abort(403, 'The last admin cannot be demoted.');
         }
 
+        if (!$this->members()->where('id', $userId)->exists()) {
+            abort(404, 'This user is not a member.');
+        }
+
         $this->members()->updateExistingPivot($userId, [$this->roleColumnName => $roleId]);
     }
 

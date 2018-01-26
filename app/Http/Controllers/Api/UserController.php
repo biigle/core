@@ -60,15 +60,9 @@ class UserController extends Controller
      */
     public function find($pattern)
     {
-        if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
-            $operator = 'ilike';
-        } else {
-            $operator = 'like';
-        }
-
         return User::select('id', 'firstname', 'lastname', 'role_id')
-            ->where('firstname', $operator, "%{$pattern}%")
-            ->orWhere('lastname', $operator, "%{$pattern}%")
+            ->where('firstname', 'ilike', "%{$pattern}%")
+            ->orWhere('lastname', 'ilike', "%{$pattern}%")
             ->take(10)
             ->get();
     }

@@ -128,27 +128,6 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
         $this->assertEquals($count + 2, $p->labelTrees()->count());
     }
 
-    public function testStoreFormRequest()
-    {
-        $p = $this->project();
-        $public = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
-
-        $this->beAdmin();
-        $this->get('/');
-        $response = $this->post("/api/v1/projects/{$p->id}/label-trees", [
-            'id' => $public->id,
-        ]);
-        $response->assertRedirect('/');
-        $response->assertSessionHas('saved', true);
-
-        $response = $this->post("/api/v1/projects/{$p->id}/label-trees", [
-            'id' => $public->id,
-            '_redirect' => 'settings',
-        ]);
-        $response->assertRedirect('/settings');
-        $response->assertSessionHas('saved', true);
-    }
-
     public function testDestroy()
     {
         $p = $this->project();
@@ -178,25 +157,5 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
         $response = $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}");
         $response->assertStatus(200);
         $this->assertFalse($p->labelTrees()->where('id', $t->id)->exists());
-    }
-
-    public function testDestroyFormRequest()
-    {
-        $p = $this->project();
-        $t = LabelTreeTest::create();
-        $t->projects()->attach($p);
-
-        $this->beAdmin();
-        $this->get('/');
-        $response = $this->delete("/api/v1/projects/{$p->id}/label-trees/{$t->id}");
-        $response->assertRedirect('/');
-        $response->assertSessionHas('deleted', true);
-
-        $response = $this->delete("/api/v1/projects/{$p->id}/label-trees/{$t->id}", [
-            '_redirect' => 'settings',
-        ]);
-        $response->assertRedirect('/settings');
-        // should be false because nothing was deleted
-        $response->assertSessionHas('deleted', false);
     }
 }

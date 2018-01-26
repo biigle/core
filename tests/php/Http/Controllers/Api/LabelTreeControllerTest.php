@@ -127,33 +127,6 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->assertEquals(Visibility::$public->id, $tree->fresh()->visibility_id);
     }
 
-    public function testUpdateFormRequest()
-    {
-        $tree = LabelTreeTest::create([
-            'name' => '123',
-            'description' => '123',
-            'visibility_id' => Visibility::$private->id,
-        ]);
-        $id = $tree->id;
-        $tree->addMember($this->user(), Role::$admin);
-        $this->beUser();
-        $this->get('/');
-        $response = $this->put("/api/v1/label-trees/{$id}", [
-            'name' => 'abc',
-        ]);
-        $this->assertEquals('abc', $tree->fresh()->name);
-        $response->assertRedirect('/');
-        $response->assertSessionHas('saved', true);
-
-        $response = $this->put("/api/v1/label-trees/{$id}", [
-            'description' => 'abc',
-            '_redirect' => 'settings',
-        ]);
-        $this->assertEquals('abc', $tree->fresh()->description);
-        $response->assertRedirect('/settings');
-        $response->assertSessionHas('saved', true);
-    }
-
     public function testUpdateVisibility()
     {
         $tree = LabelTreeTest::create([
@@ -319,30 +292,5 @@ class LabelTreeControllerTest extends ApiTestCase
         $response = $this->json('DELETE', "/api/v1/label-trees/{$id}");
         $response->assertStatus(200);
         $this->assertNull($tree->fresh());
-    }
-
-    public function testDestroyFormRequest()
-    {
-        $tree = LabelTreeTest::create();
-        $id = $tree->id;
-        $tree->addMember($this->admin(), Role::$admin);
-
-        $this->beAdmin();
-        $this->get('/');
-        $response = $this->delete("/api/v1/label-trees/{$id}");
-        $this->assertNull($tree->fresh());
-        $response->assertRedirect('/');
-        $response->assertSessionHas('deleted', true);
-
-        $tree = LabelTreeTest::create();
-        $id = $tree->id;
-        $tree->addMember($this->admin(), Role::$admin);
-
-        $response = $this->delete("/api/v1/label-trees/{$id}", [
-            '_redirect' => 'settings',
-        ]);
-        $this->assertNull($tree->fresh());
-        $response->assertRedirect('/settings');
-        $response->assertSessionHas('deleted', true);
     }
 }

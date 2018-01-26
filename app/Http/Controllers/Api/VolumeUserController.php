@@ -32,7 +32,6 @@ class VolumeUserController extends Controller
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('add-member', $volume);
-
         $this->validate($request, Volume::$addMemberRules);
 
         $volume->addMember(User::findOrFail($request->input('id')), Role::$admin);

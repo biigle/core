@@ -28,26 +28,13 @@ class LabelTreeAuthorizedProjectController extends Controller
     {
         $tree = LabelTree::findOrFail($id);
         $this->authorize('update', $tree);
-
         $this->validate($request, LabelTree::$authorizeProjectRules);
 
         $pid = $request->input('id');
 
         if (!$tree->authorizedProjects()->where('id', $pid)->exists()) {
             $tree->authorizedProjects()->attach($pid);
-        }
-
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('saved', true);
-        }
-
-        return redirect()->back()
-            ->with('saved', true);
+        };
     }
 
     /**
@@ -75,20 +62,8 @@ class LabelTreeAuthorizedProjectController extends Controller
 
         $tree->authorizedProjects()->detach($pid);
 
-        if ((int) $tree->visibility_id === Visibility::$private->id) {
+        if ($tree->visibility_id === Visibility::$private->id) {
             $tree->projects()->detach($pid);
         }
-
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('deleted', true);
-        }
-
-        return redirect()->back()
-            ->with('deleted', true);
     }
 }

@@ -68,14 +68,7 @@ class ProjectUserController extends Controller
     {
         $project = Project::findOrFail($projectId);
         $this->authorize('update', $project);
-
-        $role = Role::find($request->input('role_id'));
-
-        if (!$role) {
-            abort(400, 'Role does not exist.');
-        }
-
-        $project->changeRole($userId, $role->id);
+        $project->updateMemberId($userId, $request->input('role_id'));
     }
 
     /**
@@ -103,15 +96,7 @@ class ProjectUserController extends Controller
     {
         $project = Project::findOrFail($projectId);
         $this->authorize('update', $project);
-
-        $user = User::find($userId);
-        $role = Role::find($request->input('role_id'));
-
-        if (!$user || !$role) {
-            abort(400, 'Bad arguments.');
-        }
-
-        $project->addUserId($user->id, $role->id);
+        $project->addMemberId($userId, $request->input('role_id'));
     }
 
     /**
@@ -136,9 +121,7 @@ class ProjectUserController extends Controller
     {
         $project = Project::findOrFail($projectId);
         $member = $project->users()->findOrFail($userId);
-
         $this->authorize('remove-member', [$project, $member]);
-
         $project->removeUserId($userId);
     }
 }

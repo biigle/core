@@ -98,27 +98,4 @@ class LabelControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertNull($label->fresh());
     }
-
-    public function testDestroyFormRequest()
-    {
-        $label = LabelTest::create();
-        $label->tree->addMember($this->editor(), Role::$editor);
-
-        $this->beEditor();
-        $this->get('/');
-        $response = $this->delete("/api/v1/labels/{$label->id}");
-        $this->assertNull($label->fresh());
-        $response->assertRedirect('/');
-        $response->assertSessionHas('deleted', true);
-
-        $label = LabelTest::create();
-        $label->tree->addMember($this->editor(), Role::$editor);
-
-        $response = $this->delete("/api/v1/labels/{$label->id}", [
-            '_redirect' => 'settings',
-        ]);
-        $this->assertNull($label->fresh());
-        $response->assertRedirect('/settings');
-        $response->assertSessionHas('deleted', true);
-    }
 }

@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Route;
+use Exception;
 use Biigle\Role;
 use Biigle\Project;
 use Biigle\LabelTree;
@@ -10,9 +11,12 @@ use Biigle\Visibility;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Auth\Access\AuthorizationException;
+use Biigle\Http\Controllers\Api\Traits\ValidatesAttachToProjectPermissions;
 
 class LabelTreeController extends Controller
 {
+    use ValidatesAttachToProjectPermissions;
+
     /**
      * Shows all public label trees.
      *
@@ -121,12 +125,10 @@ class LabelTreeController extends Controller
     {
         $tree = LabelTree::findOrFail($id);
         $this->authorize('update', $tree);
-
         $this->validate($request, LabelTree::$updateRules);
 
         $tree->name = $request->input('name', $tree->name);
         $tree->description = $request->input('description', $tree->description);
-
         $tree->visibility_id = $request->input('visibility_id', $tree->visibility_id);
 
         // Compare the ID of the label tree attribute because it is cast to an int.
@@ -136,22 +138,6 @@ class LabelTreeController extends Controller
         }
 
         $tree->save();
-
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('saved', true)
-                ->with('message', 'Label tree updated.')
-                ->with('messageType', 'success');
-        }
-
-        return redirect()->back()
-            ->with('saved', true)
-            ->with('message', 'Label tree updated.')
-            ->with('messageType', 'success');
     }
 
     /**
@@ -191,9 +177,11 @@ class LabelTreeController extends Controller
 
         if ($request->has('project_id')) {
             $project = Project::findOrFail($request->input('project_id'));
-            if (!$user->can('update', $project)) {
+            try {
+                $this->validateAttachToProject($user, $project);
+            } catch (Exception $e) {
                 return $this->buildFailedValidationResponse($request, [
-                    'project_id' => ['You have no permission to attach a label tree to this project.'],
+                    'project_id' => [$e->getMessage()],
                 ]);
             }
         }
@@ -255,25 +243,9 @@ class LabelTreeController extends Controller
         $this->authorize('destroy', $tree);
 
         if (!$tree->canBeDeleted()) {
-            throw new AuthorizationException('A label tree can\'t be deleted if any of its labels are still in use.');
+            throw new AuthorizationException('A label tree cannot be deleted if any of its labels are still in use.');
         }
 
         $tree->delete();
-
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('deleted', true)
-                ->with('message', 'Label tree deleted.')
-                ->with('messageType', 'success');
-        }
-
-        return redirect()->back()
-            ->with('deleted', true)
-            ->with('message', 'Label tree deleted.')
-                ->with('messageType', 'success');
     }
 }
