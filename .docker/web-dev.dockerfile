@@ -3,4 +3,4 @@ MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
 ADD .docker/vhost.conf /etc/nginx/conf.d/default.conf
 
-ADD certs /etc/letsencrypt/live
+ADD certificate /etc/letsencrypt/live/example.com
