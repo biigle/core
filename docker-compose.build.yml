@@ -5,14 +5,11 @@ services:
   app:
     image: biigle/app
     user: ${USER_ID}:${GROUP_ID}
-    restart: on-failure
     build:
       dockerfile: .docker/app.dockerfile
       context: ./
       args:
         GITHUB_OAUTH_TOKEN: ${GITHUB_OAUTH_TOKEN}
-    volumes:
-      - ./storage:/var/www/storage
     env_file:
       - .env
     environment:
@@ -21,66 +18,18 @@ services:
 
   web:
     image: biigle/web
-    restart: on-failure
     build:
       dockerfile: .docker/web.dockerfile
       context: ./
-    # We use this for the build only as biigle/web uses biigle/app for a multistage
-    # build.
-    depends_on:
-      - app
-    volumes_from:
-      - app
-    ports:
-      - 80:80
-      - 443:443
 
   worker:
     image: biigle/worker
     user: ${USER_ID}:${GROUP_ID}
-    restart: on-failure
     build:
       dockerfile: .docker/worker.dockerfile
       context: ./
-    # We use this for the build only as biigle/worker uses biigle/app for a multistage
-    # build.
-    depends_on:
-      - app
-    volumes_from:
-      - app
     env_file:
       - .env
     environment:
       - "DB_HOST=database"
       - "REDIS_HOST=cache"
-    command: "php -d memory_limit=1G artisan queue:work --queue=high,default --sleep=5 --tries=3 --timeout=0"
-
-  scheduler:
-    image: biigle/worker
-    user: ${USER_ID}:${GROUP_ID}
-    restart: on-failure
-    volumes_from:
-      - app
-    env_file:
-      - .env
-    environment:
-      - "DB_HOST=database"
-      - "REDIS_HOST=cache"
-    command: "/bin/sh -c 'while sleep 60; do php artisan schedule:run >> /dev/null 2>&1; done'"
-
-  database:
-    image: postgres:9.4-alpine
-    restart: on-failure
-    volumes:
-      - dbdata:/var/lib/postgresql
-    environment:
-      - "POSTGRES_DB=homestead"
-      - "POSTGRES_USER=homestead"
-      - "POSTGRES_PASSWORD=secret"
-
-  cache:
-    image: redis:3.0-alpine
-    restart: on-failure
-
-volumes:
-  dbdata:
