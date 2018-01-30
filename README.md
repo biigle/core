@@ -36,6 +36,8 @@ The development setup requires an SSL certificate for the webserver, as it is co
 
 Now you can run `docker-compose up` to build and run the ensemble of Docker containers. The first time may take a while. The BIIGLE application is now running at `https://localhost:8000`. Stop the containers with `docker-compose stop`. Destroy them (and the development database) with `docker-compose down`.
 
+Run the tests with `docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit`. The first time may fail since the database container needs to start up.
+
 For BIIGLE module development you should install the modules with the `--prefer-source` flag to keep Composer from deleting the VCS files (eg `.git`). Example:
 
 ```
