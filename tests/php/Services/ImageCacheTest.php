@@ -92,8 +92,7 @@ class ImageCacheTest extends TestCase
 
     public function testHandleDiskLocal()
     {
-        config(['filesystems.disks.local.root' => base_path('tests')]);
-        $volume = VolumeTest::create(['url' => 'local://files']);
+        $volume = VolumeTest::create(['url' => 'test://files']);
         $image = ImageTest::create([
             'filename' => 'test-image.jpg',
             'volume_id' => $volume->id,

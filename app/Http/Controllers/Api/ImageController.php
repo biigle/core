@@ -53,7 +53,7 @@ class ImageController extends Controller
      *       "creator_id":1,
      *       "created_at":"2015-05-04 07:34:04",
      *       "updated_at":"2015-05-04 07:34:04",
-     *       "url":"\/path\/to\/volume\/1"
+     *       "url":"disk:\/\/\/path\/to\/volume\/1"
      *    }
      * }
      *

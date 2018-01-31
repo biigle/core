@@ -4,8 +4,8 @@ namespace Biigle;
 
 use DB;
 use App;
-use File;
 use Cache;
+use Storage;
 use Exception;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
@@ -207,12 +207,17 @@ class Volume extends Model
                 throw new Exception('The remote volume URL does not seem to exist. '.$e->getMessage());
             }
         } else {
-            if (!File::exists($this->url)) {
-                throw new Exception('The volume URL does not exist.');
+            $url = explode('://', $this->url);
+            if (count($url) !== 2) {
+                throw new Exception("Unable to identify storage disk. Please set the URL as '[disk]://[path]'.");
             }
 
-            if (!File::isReadable($this->url)) {
-                throw new Exception('The volume URL is not readable. Please check the access permissions.');
+            if (!config("filesystems.disks.{$url[0]}")) {
+                throw new Exception("Storage disk '{$url[0]}' does not exist.");
+            }
+
+            if (!Storage::disk($url[0])->exists($url[1])) {
+                throw new Exception("Unable to access '{$url[1]}'. Does it exist and you have access permissions?");
             }
         }
 
@@ -235,14 +240,16 @@ class Volume extends Model
             throw new Exception('No images were supplied.');
         }
 
-        if (count($filenames) !== count(array_unique($filenames))) {
+        $count = count($filenames);
+
+        if ($count !== count(array_unique($filenames))) {
             throw new Exception('A volume must not have the same image twice.');
         }
 
-        foreach ($filenames as $filename) {
-            if (preg_match('/\.(jpe?g|png|tif?f)$/i', $filename) !== 1) {
-                throw new Exception('Only JPG, PNG or TIFF image formats are supported.');
-            }
+        $matches = preg_grep('/\.(jpe?g|png|tif?f)$/i', $filenames);
+
+        if ($count !== count($matches)) {
+            throw new Exception('Only JPEG, PNG or TIFF image formats are supported.');
         }
 
         return true;

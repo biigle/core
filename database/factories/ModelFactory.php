@@ -53,7 +53,7 @@ $factory->define(Biigle\Volume::class, function ($faker) {
         'creator_id' => function () {
             return factory(Biigle\User::class)->create()->id;
         },
-        'url' => base_path('tests/files'),
+        'url' => 'test://files',
     ];
 });
 
