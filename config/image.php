@@ -3,12 +3,12 @@
 return [
 
     /*
-    | Settings for the image cache. The image cache caches remote images locally so they
-    | don't have to be downloaded too often.
+    | Settings for the image cache. The image cache caches remote or cloud storage
+    | images locally so they don't have to be downloaded too often.
     */
     'cache' => [
         /*
-        | Maximum allowed remote image size in bytes.
+        | Maximum allowed size of a cached image in bytes.
         */
         'max_image_size' => 1E+8, // 100 MB
 

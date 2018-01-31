@@ -3,9 +3,12 @@
 namespace Biigle\Services;
 
 use File;
+use Storage;
 use Exception;
 use Biigle\Image;
 use GuzzleHttp\Client;
+use InvalidArgumentException;
+use League\Flysystem\Adapter\Local;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -29,23 +32,33 @@ class ImageCache
     }
 
     /**
-     * Cache a remote image if it is not cached and get the path to the cached file.
-     * If the image is not remote, nothing will be done and the path to the original
-     * image will be returned.
+     * Cache a remote or cloud storage image if it is not cached and get the path to
+     * the cached file. If the image is local, nothing will be done and the path to the
+     * local file will be returned.
      *
      * @param Image $image Image to get the path for
-     * @throws Exception If the remote image could not be cached.
+     * @throws Exception If the image could not be cached.
      *
      * @return string
      */
     public function get(Image $image)
     {
-        if (!$image->volume->isRemote()) {
-            return $image->url;
+        $cachePath = $this->getCachePath($image);
+
+        if (File::exists($cachePath)) {
+            // Update access and modification time to signal that this cached image was
+            // used recently.
+            touch($cachePath);
+
+            return $cachePath;
         }
 
         try {
-            return $this->getRemoteImage($image);
+            if ($image->volume->isRemote()) {
+                return $this->getRemoteImage($image);
+            } else {
+                return $this->getDiskImage($image);
+            }
         } catch (Exception $e) {
             throw new Exception("Error while caching remote image {$image->id}: {$e->getMessage()}");
         }
@@ -100,38 +113,85 @@ class ImageCache
     }
 
     /**
-     * Cache a remote image if it is not cached and get the path to the cached file.
+     * Cache a remote image and get the path to the cached file.
      *
-     * @param Image $image Remote(!) image
-     * @throws Exception If the remote image could not be cached.
+     * @param Image $image Remote image
+     * @throws Exception If the image could not be cached.
      *
      * @return string
      */
     protected function getRemoteImage(Image $image)
     {
+        $size = $this->getRemoteImageSize($image);
+        if ($size > config('image.cache.max_image_size')) {
+            throw new Exception("File too large with {$size} bytes.");
+        }
+
+        $stream = $this->getRemoteImageStream($image);
+        $cachePath = $this->cacheFromResource($image, $stream);
+        if (is_resource($stream)) {
+            fclose($stream);
+        }
+
+        return $cachePath;
+    }
+
+    /**
+     * Cache an image from a storage disk and get the path to the cached file. Images
+     * from local disks are not cached.
+     *
+     * @param Image $image Cloud storage image
+     * @throws Exception If the image could not be cached.
+     *
+     * @return string
+     */
+    protected function getDiskImage(Image $image)
+    {
+        $url = explode('://', $image->url);
+
+        if (!config("filesystems.disks.{$url[0]}")) {
+            throw new Exception("Storage disk '{$url[0]}' does not exist.");
+        }
+
+        $disk = Storage::disk($url[0]);
+        $adapter = $disk->getDriver()->getAdapter();
+
+        // Images from the local driver are not cached.
+        if ($adapter instanceof Local) {
+            return $adapter->getPathPrefix().$url[1];
+        }
+
+        $size = $disk->size($url[1]);
+        if ($size > config('image.cache.max_image_size')) {
+            throw new Exception("File too large with {$size} bytes.");
+        }
+
+        $stream = $disk->readStream($url[1]);
+        $cachePath = $this->cacheFromResource($image, $stream);
+        if (is_resource($stream)) {
+            fclose($stream);
+        }
+
+        return $cachePath;
+    }
+
+    /**
+     * Store the image from the given resource to a cached file.
+     *
+     * @param Image $image
+     * @param resource $stream
+     * @throws Exception If the image could not be cached.
+     *
+     * @return string Path to the cached file
+     */
+    protected function cacheFromResource(Image $image, $stream)
+    {
+        $this->ensurePathExists();
         $cachePath = $this->getCachePath($image);
+        $success = file_put_contents($cachePath, $stream);
 
-        if (File::exists($cachePath)) {
-            // Update access and modification time to signal that this cached image was
-            // used recently.
-            touch($cachePath);
-        } else {
-
-            $size = $this->getRemoteImageSize($image);
-            if ($size > config('image.cache.max_image_size')) {
-                throw new Exception("File too large with {$size} bytes.");
-            }
-
-            $this->ensurePathExists();
-
-            // Use copy so the file is not stored to PHP memory. This way much larger
-            // files can be processed.
-            $success = @File::copy($image->url, $cachePath);
-
-            if (!$success) {
-                $error = error_get_last();
-                throw new Exception($error['message']);
-            }
+        if ($success === false) {
+            throw new Exception('The stream resource is invalid.');
         }
 
         return $cachePath;
@@ -173,5 +233,17 @@ class ImageCache
         $size = (int) $response->getHeaderLine('Content-Length');
 
         return ($size > 0) ? $size : INF;
+    }
+
+    /**
+     * Get the stream resource for a remote image.
+     *
+     * @param Image $image
+     *
+     * @return resource
+     */
+    protected function getRemoteImageStream(Image $image)
+    {
+        return fopen($image->url);
     }
 }

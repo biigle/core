@@ -385,7 +385,7 @@ class Volume extends Model
     {
         // Cache this for a single request because it may be called lots of times.
         return Cache::store('array')->remember("volume-{$this->id}-is-remote", 1, function () {
-            return preg_match('#^https?://#i', $this->url) === 1;
+            return strpos($this->url, 'http') === 0;
         });
     }
 

@@ -3,11 +3,13 @@
 namespace Biigle\Tests\Services;
 
 use File;
+use Storage;
 use Mockery;
 use TestCase;
 use Exception;
 use ImageCache;
 use Biigle\Tests\ImageTest;
+use Biigle\Tests\VolumeTest;
 
 class ImageCacheTest extends TestCase
 {
@@ -18,38 +20,11 @@ class ImageCacheTest extends TestCase
         config(['image.cache.path' => $this->cachePath]);
     }
 
-    public function testHandleLocal()
-    {
-        $image = ImageTest::create();
-        File::shouldReceive('copy')->never();
-        $this->assertEquals($image->url, ImageCache::get($image));
-    }
-
-    public function testHandle()
-    {
-        $image = ImageTest::create();
-        $mock = Mockery::mock();
-        $mock->shouldReceive('isRemote')->once()->andReturn(true);
-        $mock->url = $image->volume->url;
-        $image->volume = $mock;
-
-        try {
-            $cache = new ImageCacheStub;
-            $this->assertFalse(File::exists("{$this->cachePath}/{$image->id}"));
-            $path = $cache->get($image);
-            $this->assertTrue(File::exists("{$this->cachePath}/{$image->id}"));
-            $this->assertEquals("{$this->cachePath}/{$image->id}", $path);
-        } finally {
-            File::deleteDirectory($this->cachePath);
-        }
-    }
-
     public function testHandleExists()
     {
         $image = ImageTest::create();
         $mock = Mockery::mock();
-        $mock->shouldReceive('isRemote')->once()->andReturn(true);
-        $mock->url = $image->volume->url;
+        $mock->shouldReceive('isRemote')->never();
         $image->volume = $mock;
 
         try {
@@ -67,7 +42,26 @@ class ImageCacheTest extends TestCase
         }
     }
 
-    public function testHandleTooLarge()
+    public function testHandleRemote()
+    {
+        $volume = VolumeTest::create(['url' => 'https://files']);
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+
+        try {
+            $cache = new ImageCacheStub;
+            $cache->stream = fopen(base_path('tests').'/files/test-image.jpg', 'r');
+            $this->assertFalse(File::exists("{$this->cachePath}/{$image->id}"));
+            $path = $cache->get($image);
+            $this->assertTrue(File::exists("{$this->cachePath}/{$image->id}"));
+            $this->assertEquals("{$this->cachePath}/{$image->id}", $path);
+        } finally {
+            File::deleteDirectory($this->cachePath);
+            // Stream should be closed.
+            $this->assertFalse(is_resource($cache->stream));
+        }
+    }
+
+    public function testHandleRemoteTooLarge()
     {
         $image = ImageTest::create();
         $mock = Mockery::mock();
@@ -81,6 +75,57 @@ class ImageCacheTest extends TestCase
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('File too large');
         $path = $cache->get($image);
+    }
+
+    public function testHandleDiskDoesNotExist()
+    {
+        $volume = VolumeTest::create(['url' => 'abc://files']);
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+
+        try {
+            ImageCache::get($image);
+            $this->assertTrue(false);
+        } catch (Exception $e) {
+            $this->assertContains("disk 'abc' does not exist", $e->getMessage());
+        }
+    }
+
+    public function testHandleDiskLocal()
+    {
+        config(['filesystems.disks.local.root' => base_path('tests')]);
+        $volume = VolumeTest::create(['url' => 'local://files']);
+        $image = ImageTest::create([
+            'filename' => 'test-image.jpg',
+            'volume_id' => $volume->id,
+        ]);
+        File::shouldReceive('exists')->once()->andReturn(false);
+        $this->assertEquals(base_path('tests').'/files/test-image.jpg', ImageCache::get($image));
+    }
+
+    public function testHandleDiskCloud()
+    {
+        $volume = VolumeTest::create(['url' => 's3://files']);
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+
+        $stream = fopen(base_path('tests').'/files/test-image.jpg', 'r');
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getDriver')->once()->andReturn($mock);
+        $mock->shouldReceive('getAdapter')->once()->andReturn($mock);
+        $mock->shouldReceive('size')->once()->andReturn(10);
+        $mock->shouldReceive('readStream')->once()->andReturn($stream);
+        Storage::shouldReceive('disk')->once()->with('s3')->andReturn($mock);
+
+        try {
+            $this->assertFalse(File::exists("{$this->cachePath}/{$image->id}"));
+            $path = ImageCache::get($image);
+            $this->assertTrue(File::exists("{$this->cachePath}/{$image->id}"));
+            $this->assertEquals("{$this->cachePath}/{$image->id}", $path);
+        } finally {
+            File::deleteDirectory($this->cachePath);
+            // Stream should be closed.
+            $this->assertFalse(is_resource($stream));
+        }
     }
 
     public function testForget()
@@ -121,8 +166,13 @@ class ImageCacheTest extends TestCase
 class ImageCacheStub extends \Biigle\Services\ImageCache
 {
     public $size = 0;
+    public $stream = null;
     protected function getRemoteImageSize(\Biigle\Image $image)
     {
         return $this->size;
+    }
+    protected function getRemoteImageStream(\Biigle\Image $image)
+    {
+        return $this->stream;
     }
 }
