@@ -65,6 +65,41 @@ class ImageCache
     }
 
     /**
+     * Get a stream resource for an image. If the image is cached, the resource points
+     * to the cached file instead. This will not cache uncached images. Make sure to
+     * close the streams!
+     *
+     * @param Image $image
+     * @throws Exception If the storage disk does not exist.
+     *
+     * @return resource
+     */
+    public function getStream(Image $image)
+    {
+        $cachePath = $this->getCachePath($image);
+
+        if (File::exists($cachePath)) {
+            // Update access and modification time to signal that this cached image was
+            // used recently.
+            touch($cachePath);
+
+            return $this->getImageStream($cachePath);
+        }
+
+        if ($image->volume->isRemote()) {
+            return $this->getImageStream($image->url);
+        }
+
+        $url = explode('://', $image->url);
+
+        if (!config("filesystems.disks.{$url[0]}")) {
+            throw new Exception("Storage disk '{$url[0]}' does not exist.");
+        }
+
+        return Storage::disk($url[0])->readStream($url[1]);
+    }
+
+    /**
      * Remove an image from the cache.
      *
      * @param Image $image
@@ -127,7 +162,7 @@ class ImageCache
             throw new Exception("File too large with {$size} bytes.");
         }
 
-        $stream = $this->getRemoteImageStream($image);
+        $stream = $this->getImageStream($image->url);
         $cachePath = $this->cacheFromResource($image, $stream);
         if (is_resource($stream)) {
             fclose($stream);
@@ -236,14 +271,14 @@ class ImageCache
     }
 
     /**
-     * Get the stream resource for a remote image.
+     * Get the stream resource for an image.
      *
-     * @param Image $image
+     * @param string $url
      *
      * @return resource
      */
-    protected function getRemoteImageStream(Image $image)
+    protected function getImageStream($url)
     {
-        return fopen($image->url);
+        return fopen($url);
     }
 }

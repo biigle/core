@@ -127,6 +127,56 @@ class ImageCacheTest extends TestCase
         }
     }
 
+    public function testGetStreamCached()
+    {
+        $image = ImageTest::create();
+
+        try {
+            $path = "{$this->cachePath}/{$image->id}";
+            File::makeDirectory($this->cachePath);
+            touch($path, time() - 1);
+
+            $cache = new ImageCacheStub;
+            $cache->stream = 'abc123';
+            $this->assertNotEquals(time(), fileatime($path));
+            $this->assertEquals('abc123', $cache->getStream($image));
+            clearstatcache();
+            $this->assertEquals(time(), fileatime($path));
+        } finally {
+            File::deleteDirectory($this->cachePath);
+        }
+    }
+
+    public function testGetStreamRemote()
+    {
+        $volume = VolumeTest::create(['url' => 'https://files']);
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+
+        try {
+            $cache = new ImageCacheStub;
+            $cache->stream = 'abc123';
+            $this->assertEquals('abc123', $cache->getStream($image));
+        } finally {
+            File::deleteDirectory($this->cachePath);
+        }
+    }
+
+    public function testGetStreamDisk()
+    {
+        Storage::fake('test');
+        Storage::disk('test')->put('files/test.txt', 'test123');
+
+        $volume = VolumeTest::create(['url' => 'test://files']);
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => 'test.txt',
+        ]);
+
+        $stream = ImageCache::getStream($image);
+        $this->assertTrue(is_resource($stream));
+        fclose($stream);
+    }
+
     public function testForget()
     {
         $image = ImageTest::create();
@@ -170,7 +220,7 @@ class ImageCacheStub extends \Biigle\Services\ImageCache
     {
         return $this->size;
     }
-    protected function getRemoteImageStream(\Biigle\Image $image)
+    protected function getImageStream($url)
     {
         return $this->stream;
     }
