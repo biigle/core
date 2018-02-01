@@ -1,7 +1,5 @@
 @extends('manual.base')
-@inject('modules', 'Biigle\Services\Modules')
-
-@section('manual-title') Remote volumes @stop
+@section('manual-title', 'Remote volumes')
 
 @section('manual-content')
     <div class="row">
@@ -70,9 +68,8 @@
             <li>
                 Image metadata such as camera model, orientation or flash extracted from the image EXIF headers is not displayed on the image information view.
             </li>
-            @foreach ($modules->getMixins('volumesManualRemoteVolumes') as $module => $nestedMixins)
-                @include($module.'::volumesManualRemoteVolumes')
-            @endforeach
+
+            @mixin('volumesManualRemoteVolumes')
         </ul>
     </div>
 @endsection

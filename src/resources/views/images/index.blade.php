@@ -1,6 +1,4 @@
 @extends('app')
-@inject('modules', 'Biigle\Services\Modules')
-
 @section('title', $image->filename)
 
 @push('styles')
@@ -14,9 +12,7 @@
             {{ $image->filename }}
             <span class="pull-right">
                 <a href="{{route('volume', $volume->id)}}" title="Back to {{ $volume->name }}" class="btn btn-default">back</a>
-                @foreach ($modules->getMixins('imagesIndexButtons') as $module => $nestedMixins)
-                    @include($module.'::imagesIndexButtons', array('mixins' => $nestedMixins))
-                @endforeach
+                @mixin('imagesIndexButtons')
             </span>
         </h2>
     </div>
@@ -29,9 +25,7 @@
         </div>
         <div class="col-sm-6 col-lg-8">
             <div class="row">
-                @foreach ($modules->getMixins('imagesIndex') as $module => $nestedMixins)
-                    @include($module.'::imagesIndex', array('mixins' => $nestedMixins))
-                @endforeach
+                @mixin('imagesIndex')
             </div>
         </div>
     </div>

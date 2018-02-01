@@ -1,5 +1,4 @@
 @extends('manual.base')
-@inject('modules', 'Biigle\Services\Modules')
 @section('manual-title', 'Image Labels')
 
 @section('manual-content')
@@ -43,8 +42,6 @@
             Images can be filtered by image label in the volume overview. This can help you to quickly find, explore and annotate those images of a large volume that are relevant to you. To filter images by label, open the filter tab in the volume overview with a click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-filter"></i></button> button in the sidebar. Now select the "image label" filter from the dropdown menu and enter the name of the image label in the field below. Finally, click <button class="btn btn-default btn-xs">Add rule</button> to activate the new filter rule. Of course you can combine this with other filter rules, too.
         </p>
 
-        @foreach ($modules->getMixins('volumesManualImageLabels') as $module => $nestedMixins)
-            @include($module.'::volumesManualImageLabels')
-        @endforeach
+        @mixin('volumesManualImageLabels')
     </div>
 @endsection
