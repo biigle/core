@@ -54,6 +54,12 @@
     }
 }
 
+.image-grid__image--catalog {
+    > a {
+        width: 100%;
+    }
+}
+
 .image-grid__image--dismiss, .image-grid__image--relabel {
     cursor: pointer;
 
