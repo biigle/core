@@ -49,6 +49,7 @@ class ImageCacheTest extends TestCase
 
         try {
             $cache = new ImageCacheStub;
+            $cache->size = 10;
             $cache->stream = fopen(base_path('tests').'/files/test-image.jpg', 'r');
             $this->assertFalse(File::exists("{$this->cachePath}/{$image->id}"));
             $path = $cache->get($image);
@@ -139,7 +140,12 @@ class ImageCacheTest extends TestCase
             $cache = new ImageCacheStub;
             $cache->stream = 'abc123';
             $this->assertNotEquals(time(), fileatime($path));
-            $this->assertEquals('abc123', $cache->getStream($image));
+            $expect = [
+                'stream' => 'abc123',
+                'mime' => 'inode/x-empty',
+                'size' => 0,
+            ];
+            $this->assertEquals($expect, $cache->getStream($image));
             clearstatcache();
             $this->assertEquals(time(), fileatime($path));
         } finally {
@@ -155,7 +161,13 @@ class ImageCacheTest extends TestCase
         try {
             $cache = new ImageCacheStub;
             $cache->stream = 'abc123';
-            $this->assertEquals('abc123', $cache->getStream($image));
+            $cache->size = 12;
+            $expect = [
+                'stream' => 'abc123',
+                'mime' => 'image/jpeg',
+                'size' => '12',
+            ];
+            $this->assertEquals($expect, $cache->getStream($image));
         } finally {
             File::deleteDirectory($this->cachePath);
         }
@@ -172,9 +184,11 @@ class ImageCacheTest extends TestCase
             'filename' => 'test.txt',
         ]);
 
-        $stream = ImageCache::getStream($image);
-        $this->assertTrue(is_resource($stream));
-        fclose($stream);
+        $array = ImageCache::getStream($image);
+        $this->assertEquals(7, $array['size']);
+        $this->assertEquals('text/plain', $array['mime']);
+        $this->assertTrue(is_resource($array['stream']));
+        fclose($array['stream']);
     }
 
     public function testForget()
@@ -216,10 +230,14 @@ class ImageCacheStub extends \Biigle\Services\ImageCache
 {
     public $size = 0;
     public $stream = null;
-    protected function getRemoteImageSize(\Biigle\Image $image)
+    protected function getRemoteImageHeaders(\Biigle\Image $image)
     {
-        return $this->size;
+        return [
+            'Content-Length' => ["$this->size"],
+            'Content-Type' => ['image/jpeg'],
+        ];
     }
+
     protected function getImageStream($url)
     {
         return $this->stream;

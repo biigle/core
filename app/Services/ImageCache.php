@@ -10,6 +10,7 @@ use GuzzleHttp\Client;
 use InvalidArgumentException;
 use League\Flysystem\Adapter\Local;
 use Symfony\Component\Finder\Finder;
+use League\Flysystem\FileNotFoundException;
 
 /**
  * The image cache.
@@ -70,9 +71,9 @@ class ImageCache
      * close the streams!
      *
      * @param Image $image
-     * @throws Exception If the storage disk does not exist.
+     * @throws Exception If the storage disk does not exist or the file was not found.
      *
-     * @return resource
+     * @return array Array containing 'stream', 'size' and 'mime' of the resource.
      */
     public function getStream(Image $image)
     {
@@ -83,11 +84,21 @@ class ImageCache
             // used recently.
             touch($cachePath);
 
-            return $this->getImageStream($cachePath);
+            return [
+                'stream' => $this->getImageStream($cachePath),
+                'size' => File::size($cachePath),
+                'mime' => File::mimeType($cachePath),
+            ];
         }
 
         if ($image->volume->isRemote()) {
-            return $this->getImageStream($image->url);
+            $headers = $this->getRemoteImageHeaders($image);
+
+            return [
+                'stream' => $this->getImageStream($image->url),
+                'size' => $headers['Content-Length'][0],
+                'mime' => $headers['Content-Type'][0],
+            ];
         }
 
         $url = explode('://', $image->url);
@@ -96,7 +107,15 @@ class ImageCache
             throw new Exception("Storage disk '{$url[0]}' does not exist.");
         }
 
-        return Storage::disk($url[0])->readStream($url[1]);
+        try {
+            return [
+                'stream' => Storage::disk($url[0])->readStream($url[1]),
+                'size' => Storage::disk($url[0])->getSize($url[1]),
+                'mime' => Storage::disk($url[0])->getMimetype($url[1]),
+            ];
+        } catch (FileNotFoundException $e) {
+            throw new Exception($e->getMessage());
+        }
     }
 
     /**
@@ -263,11 +282,18 @@ class ImageCache
      */
     protected function getRemoteImageSize(Image $image)
     {
-        $client = new Client;
-        $response = $client->head($image->url);
-        $size = (int) $response->getHeaderLine('Content-Length');
+        $headers = $this->getRemoteImageHeaders($image);
+        $size = (int) $headers['Content-Length'][0];
 
         return ($size > 0) ? $size : INF;
+    }
+
+    protected function getRemoteImageHeaders(Image $image)
+    {
+        $client = new Client;
+        $response = $client->head($image->url);
+
+        return $response->getHeaders();
     }
 
     /**

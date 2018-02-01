@@ -41,16 +41,13 @@ class ImageControllerTest extends ApiTestCase
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
         $this->assertContains('"volume"', $content);
-        $this->assertContains('"exif"', $content);
-        $this->assertContains('"width"', $content);
-        $this->assertContains('"height"', $content);
     }
 
     public function testShowThumb()
     {
         $id = $this->image->id;
         File::makeDirectory(File::dirname($this->image->thumbPath), 0755, true, true);
-        copy($this->image->url, $this->image->thumbPath);
+        File::put($this->image->thumbPath, 'test123');
 
         $this->doTestApiRoute('GET', "/api/v1/images/{$id}/thumb");
 
@@ -64,7 +61,7 @@ class ImageControllerTest extends ApiTestCase
 
         $response = $this->get("/api/v1/images/{$id}/thumb");
         $response->assertStatus(200);
-        $this->assertEquals('image/jpeg', $response->headers->get('content-type'));
+        $this->assertEquals('text/plain', $response->headers->get('content-type'));
         unlink($this->image->thumbPath);
         @rmdir(dirname($this->image->thumbPath, 1));
         @rmdir(dirname($this->image->thumbPath, 2));

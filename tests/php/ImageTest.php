@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use Event;
 use Response;
+use ImageCache;
 use Biigle\Image;
 use Carbon\Carbon;
 use ModelTestCase;
@@ -97,22 +98,22 @@ class ImageTest extends ModelTestCase
 
     public function testGetFile()
     {
-        Response::shouldReceive('download')
-            ->once()
-            ->with($this->model->url)
-            ->andReturn(true);
-
-        $this->assertTrue($this->model->getFile());
+        ImageCache::shouldReceive('getStream')->once()->with($this->model)->andReturn([
+            'stream' => 'abc',
+            'size' => 123,
+            'mime' => 'image/jpeg',
+        ]);
+        $response = $this->model->getFile();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('image/jpeg', $response->headers->get('content-type'));
+        $this->assertEquals(123, $response->headers->get('content-length'));
     }
 
     public function testGetFileNotFound()
     {
         // error handling when the original file is not readable
         $this->model->filename = '';
-
-        Response::shouldReceive('download')
-            ->once()
-            ->passthru();
+        $this->model->volume->url = 'test://abc';
 
         $this->setExpectedException('Symfony\Component\HttpKernel\Exception\NotFoundHttpException');
         $this->model->getFile();
@@ -128,6 +129,20 @@ class ImageTest extends ModelTestCase
         $this->assertTrue($this->model->getFile());
     }
 
+    public function testGetFileTiled()
+    {
+        $this->model->tiled = true;
+        $this->model->setTileProperties(['width' => 6000, 'height' => 7000]);
+        $expect = [
+            'id' => $this->model->id,
+            'uuid' => $this->model->uuid,
+            'tiled' => true,
+            'width' => 6000,
+            'height' => 7000,
+        ];
+        $this->assertEquals($expect, $this->model->getFile());
+    }
+
     public function testCleanupVolumeThumbnails()
     {
         Event::shouldReceive('fire')
@@ -136,27 +151,6 @@ class ImageTest extends ModelTestCase
         Event::shouldReceive('fire'); // catch other events
 
         $this->model->volume->delete();
-    }
-
-    public function testGetExif()
-    {
-        $exif = $this->model->getExif();
-        $this->assertEquals('image/jpeg', $exif['MimeType']);
-    }
-
-    public function testGetExifNotSupported()
-    {
-        $image = self::create(['filename' => 'test-image.png']);
-        // should not throw an error
-        $exif = $image->getExif();
-        $this->assertEquals([], $exif);
-    }
-
-    public function testGetSize()
-    {
-        $size = $this->model->getSize();
-        $this->assertEquals(640, $size[0]);
-        $this->assertEquals(480, $size[1]);
     }
 
     public function testImageCleanupEventOnDelete()
