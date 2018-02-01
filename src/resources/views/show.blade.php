@@ -1,8 +1,6 @@
 @extends('app')
 @section('full-navbar', true)
 
-@inject('modules', 'Biigle\Services\Modules')
-
 @section('title', "Annotate {$image->filename}")
 
 @push('scripts')
@@ -34,9 +32,7 @@
     biigle.$declare('annotations.isAdmin', @can('update', $volume) true @else false @endcan);
 
 </script>
-@foreach ($modules->getMixins('annotationsScripts') as $module => $nestedMixins)
-    @include($module.'::annotationsScripts', ['mixins' => $nestedMixins])
-@endforeach
+@mixin('annotationsScripts')
 @endpush
 
 @push('styles')
@@ -44,10 +40,7 @@
 <link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
 <link href="{{ cachebust_asset('vendor/annotations/styles/ol.css') }}" rel="stylesheet">
 <link href="{{ cachebust_asset('vendor/annotations/styles/main.css') }}" rel="stylesheet">
-
-@foreach ($modules->getMixins('annotationsStyles') as $module => $nestedMixins)
-    @include($module.'::annotationsStyles', ['mixins' => $nestedMixins])
-@endforeach
+@mixin('annotationsStyles')
 @endpush
 
 @section('navbar')

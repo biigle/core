@@ -5,9 +5,7 @@
                 <label-trees :trees="labelTrees" :show-favourites="true" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
             </div>
             <div class="labels-tab__plugins">
-                @foreach ($modules->getMixins('annotationsLabelsTab') as $module => $nestedMixins)
-                    @include($module.'::annotationsLabelsTab', ['mixins' => $nestedMixins])
-                @endforeach
+                @mixin('annotationsLabelsTab')
             </div>
         </div>
     </labels-tab>

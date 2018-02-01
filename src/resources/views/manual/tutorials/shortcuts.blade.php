@@ -45,7 +45,7 @@
                     <td>Select the circle annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>Shift+D</code></td>
+                    <td><code>Shift</code>+<code>D</code></td>
                     <td>Select the ellipse annotation tool</td>
                 </tr>
                 <tr>
@@ -57,7 +57,7 @@
                     <td>Select the polygon annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>Shift+G</code></td>
+                    <td><code>Shift</code>+<code>G</code></td>
                     <td>Select the magic wand annotation tool</td>
                 </tr>
                 <tr>
@@ -67,6 +67,10 @@
                 <tr>
                     <td><code>L</code></td>
                     <td>Select tool to attach labels to existing annotations</td>
+                </tr>
+                <tr>
+                    <td><code>Shift</code>+<code>Mouse left</code></td>
+                    <td>Select multiple annotation at the same time</td>
                 </tr>
                 <tr>
                     <td><code>Del</code></td>

@@ -32,9 +32,7 @@
                 </label-item>
             </ul>
             <div class="annotations-tab__plugins">
-                @foreach ($modules->getMixins('annotationsAnnotationsTab') as $module => $nestedMixins)
-                    @include($module.'::annotationsAnnotationsTab', ['mixins' => $nestedMixins])
-                @endforeach
+                @mixin('annotationsAnnotationsTab')
             </div>
         </div>
     </annotations-tab>
