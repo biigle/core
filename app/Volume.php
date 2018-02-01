@@ -10,10 +10,8 @@ use Exception;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use GuzzleHttp\Client;
-use Biigle\Jobs\GenerateImageTiles;
-use Biigle\Jobs\GenerateThumbnails;
+use Biigle\Jobs\ProcessNewImages;
 use Biigle\Traits\HasJsonAttributes;
-use Biigle\Jobs\CollectImageMetaInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use GuzzleHttp\Exception\ServerException;
@@ -289,9 +287,7 @@ class Volume extends Model
      */
     public function handleNewImages($only = [])
     {
-        $this->generateThumbnails($only);
-        $this->collectMetaInfo($only);
-        $this->generateImageTiles($only);
+        $this->dispatch(new ProcessNewImages($this, $only));
     }
 
     /**
@@ -494,38 +490,6 @@ class Volume extends Model
     public function getDoiAttribute()
     {
         return $this->getJsonAttr('doi');
-    }
-
-    /**
-     * (Re-) generates the thumbnail images for all images belonging to this volume.
-     *
-     * @param array $only (optional) Array of image IDs to restrict the (re-)generation
-     * of thumbnails to.
-     */
-    protected function generateThumbnails($only = [])
-    {
-        $this->dispatch(new GenerateThumbnails($this, $only));
-    }
-
-    /**
-     * (Re-) collects image meta information for images of this volume.
-     *
-     * @param array $only (optional) Array of image IDs to restrict the action to.
-     */
-    protected function collectMetaInfo($only = [])
-    {
-        $this->dispatch(new CollectImageMetaInfo($this, $only));
-    }
-
-    /**
-     * (Re-) generates the image tiles for all images belonging to this volume.
-     *
-     * @param array $only (optional) Array of image IDs to restrict the (re-)generation
-     * of image tiles to.
-     */
-    protected function generateImageTiles($only = [])
-    {
-        $this->dispatch(new GenerateImageTiles($this, $only));
     }
 
     /**

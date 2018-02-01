@@ -5,6 +5,7 @@ namespace Biigle\Jobs;
 use File;
 use VipsImage;
 use Exception;
+use ImageCache;
 use Biigle\Image;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -44,7 +45,9 @@ class TileSingleImage extends Job implements ShouldQueue
             File::makeDirectory($this->image->tilePath);
         }
 
-        $this->getVipsImage()->dzsave($this->image->tilePath, ['layout' => 'zoomify']);
+        $path = ImageCache::get($this->image);
+        $this->getVipsImage($path)->dzsave($this->image->tilePath, ['layout' => 'zoomify']);
+        ImageCache::forget($this->image);
         $xml = simplexml_load_string(strtolower(File::get("{$this->image->tilePath}/ImageProperties.xml")));
         $xml = ((array) $xml)['@attributes'];
         $this->image->setTileProperties(array_map('intval', $xml));
@@ -61,16 +64,19 @@ class TileSingleImage extends Job implements ShouldQueue
     public function failed(Exception $exception)
     {
         File::deleteDirectory($this->image->tilePath);
+
         throw $exception;
     }
 
     /**
      * Get the vips image instance
      *
+     * @param string $path
+     *
      * @return \Jcupitt\Vips\Image
      */
-    protected function getVipsImage()
+    protected function getVipsImage($path)
     {
-        return VipsImage::newFromFile($this->image->url);
+        return VipsImage::newFromFile($path);
     }
 }

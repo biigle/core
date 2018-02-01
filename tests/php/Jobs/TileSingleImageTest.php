@@ -8,6 +8,7 @@ use Mockery;
 use TestCase;
 use VipsImage;
 use Exception;
+use ImageCache;
 use Jcupitt\Vips\Image;
 use Biigle\Tests\ImageTest;
 use Biigle\Jobs\TileSingleImage;
@@ -17,6 +18,9 @@ class TileSingleImageTest extends TestCase
     public function testHandle()
     {
         $image = ImageTest::create();
+
+        ImageCache::shouldReceive('get')->once()->with($image)->andReturn('abc');
+        ImageCache::shouldReceive('forget')->once()->with($image);
 
         File::shouldReceive('isDirectory')
             ->once()
@@ -50,7 +54,7 @@ class TileSingleImageTest extends TestCase
 
 class TileSingleImageStub extends TileSingleImage
 {
-    protected function getVipsImage()
+    protected function getVipsImage($path)
     {
         return $this->mock;
     }

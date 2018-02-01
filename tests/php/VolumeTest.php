@@ -243,9 +243,7 @@ class VolumeTest extends ModelTestCase
 
     public function testHandleNewImages()
     {
-        $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
-        $this->expectsJobs(\Biigle\Jobs\CollectImageMetaInfo::class);
-        $this->expectsJobs(\Biigle\Jobs\GenerateImageTiles::class);
+        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
         $this->model->HandleNewImages();
     }
 
