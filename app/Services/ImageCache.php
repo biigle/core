@@ -305,6 +305,6 @@ class ImageCache
      */
     protected function getImageStream($url)
     {
-        return fopen($url);
+        return fopen($url, 'r');
     }
 }
