@@ -17,10 +17,13 @@ class ImageCacheTest extends TestCase
     {
         parent::setUp();
         $this->cachePath = sys_get_temp_dir().'/biigle_remote_cache_test';
+        $this->noop = function ($image, $path) {
+            return $path;
+        };
         config(['image.cache.path' => $this->cachePath]);
     }
 
-    public function testHandleExists()
+    public function testDoWithExists()
     {
         $image = ImageTest::create();
         $mock = Mockery::mock();
@@ -34,7 +37,7 @@ class ImageCacheTest extends TestCase
 
             $cache = new ImageCacheStub;
             $this->assertNotEquals(time(), fileatime($path));
-            $cache->get($image);
+            $cache->doWith($image, $this->noop);
             clearstatcache();
             $this->assertEquals(time(), fileatime($path));
         } finally {
@@ -42,7 +45,7 @@ class ImageCacheTest extends TestCase
         }
     }
 
-    public function testHandleRemote()
+    public function testDoWithRemote()
     {
         $volume = VolumeTest::create(['url' => 'https://files']);
         $image = ImageTest::create(['volume_id' => $volume->id]);
@@ -52,9 +55,9 @@ class ImageCacheTest extends TestCase
             $cache->size = 10;
             $cache->stream = fopen(base_path('tests').'/files/test-image.jpg', 'r');
             $this->assertFalse(File::exists("{$this->cachePath}/{$image->id}"));
-            $path = $cache->get($image);
-            $this->assertTrue(File::exists("{$this->cachePath}/{$image->id}"));
+            $path = $cache->doWith($image, $this->noop);
             $this->assertEquals("{$this->cachePath}/{$image->id}", $path);
+            $this->assertTrue(File::exists("{$this->cachePath}/{$image->id}"));
         } finally {
             File::deleteDirectory($this->cachePath);
             // Stream should be closed.
@@ -62,7 +65,7 @@ class ImageCacheTest extends TestCase
         }
     }
 
-    public function testHandleRemoteTooLarge()
+    public function testDoWithRemoteTooLarge()
     {
         $image = ImageTest::create();
         $mock = Mockery::mock();
@@ -75,23 +78,23 @@ class ImageCacheTest extends TestCase
         $cache->size = 2;
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('File too large');
-        $path = $cache->get($image);
+        $path = $cache->doWith($image, function () {});
     }
 
-    public function testHandleDiskDoesNotExist()
+    public function testDoWithDiskDoesNotExist()
     {
         $volume = VolumeTest::create(['url' => 'abc://files']);
         $image = ImageTest::create(['volume_id' => $volume->id]);
 
         try {
-            ImageCache::get($image);
+            ImageCache::doWith($image, $this->noop);
             $this->assertTrue(false);
         } catch (Exception $e) {
             $this->assertContains("disk 'abc' does not exist", $e->getMessage());
         }
     }
 
-    public function testHandleDiskLocal()
+    public function testDoWithDiskLocal()
     {
         $volume = VolumeTest::create(['url' => 'test://files']);
         $image = ImageTest::create([
@@ -99,10 +102,11 @@ class ImageCacheTest extends TestCase
             'volume_id' => $volume->id,
         ]);
         File::shouldReceive('exists')->once()->andReturn(false);
-        $this->assertEquals(base_path('tests').'/files/test-image.jpg', ImageCache::get($image));
+        $path = ImageCache::doWith($image, $this->noop);
+        $this->assertEquals(base_path('tests').'/files/test-image.jpg', $path);
     }
 
-    public function testHandleDiskCloud()
+    public function testDoWithDiskCloud()
     {
         $volume = VolumeTest::create(['url' => 's3://files']);
         $image = ImageTest::create(['volume_id' => $volume->id]);
@@ -118,13 +122,27 @@ class ImageCacheTest extends TestCase
 
         try {
             $this->assertFalse(File::exists("{$this->cachePath}/{$image->id}"));
-            $path = ImageCache::get($image);
-            $this->assertTrue(File::exists("{$this->cachePath}/{$image->id}"));
+            $path = ImageCache::doWith($image, $this->noop);
             $this->assertEquals("{$this->cachePath}/{$image->id}", $path);
+            $this->assertTrue(File::exists("{$this->cachePath}/{$image->id}"));
         } finally {
             File::deleteDirectory($this->cachePath);
             // Stream should be closed.
             $this->assertFalse(is_resource($stream));
+        }
+    }
+
+    public function testDoWithOnce()
+    {
+        $image = ImageTest::create();
+        File::makeDirectory($this->cachePath);
+        touch("{$this->cachePath}/{$image->id}");
+        try {
+            $this->assertTrue(File::exists("{$this->cachePath}/{$image->id}"));
+            ImageCache::doWithOnce($image, $this->noop);
+            $this->assertFalse(File::exists("{$this->cachePath}/{$image->id}"));
+        } finally {
+            File::deleteDirectory($this->cachePath);
         }
     }
 
@@ -189,21 +207,6 @@ class ImageCacheTest extends TestCase
         $this->assertEquals('text/plain', $array['mime']);
         $this->assertTrue(is_resource($array['stream']));
         fclose($array['stream']);
-    }
-
-    public function testForget()
-    {
-        $image = ImageTest::create();
-
-        File::makeDirectory($this->cachePath);
-        touch("{$this->cachePath}/{$image->id}");
-        try {
-            $this->assertTrue(File::exists("{$this->cachePath}/{$image->id}"));
-            ImageCache::forget($image);
-            $this->assertFalse(File::exists("{$this->cachePath}/{$image->id}"));
-        } finally {
-            File::deleteDirectory($this->cachePath);
-        }
     }
 
     public function testClean()

@@ -33,36 +33,44 @@ class ImageCache
     }
 
     /**
-     * Cache a remote or cloud storage image if it is not cached and get the path to
-     * the cached file. If the image is local, nothing will be done and the path to the
-     * local file will be returned.
+     * Perform a callback with the path of a cached image. This takes care of shared
+     * locks on the cached image file so it is not corrupted due to concurrent write
+     * operations.
      *
-     * @param Image $image Image to get the path for
-     * @throws Exception If the image could not be cached.
+     * @param Image $image
+     * @param callable $callback
      *
-     * @return string
+     * @return mixed Result of the callback.
      */
-    public function get(Image $image)
+    public function doWith(Image $image, $callback)
     {
-        $cachePath = $this->getCachePath($image);
+        $cachedPath = $this->get($image);
+        $handle = fopen($cachedPath, 'r');
+        // This blocks if the file is still written to with LOCK_EX.
+        flock($handle, LOCK_SH);
+        $result = call_user_func($callback, $image, $cachedPath);
+        // Release lock.
+        fclose($handle);
 
-        if (File::exists($cachePath)) {
-            // Update access and modification time to signal that this cached image was
-            // used recently.
-            touch($cachePath);
+        return $result;
+    }
 
-            return $cachePath;
-        }
+    /**
+     * Perform a callback with the path of a cached image. Remove the cached file
+     * afterwards. This takes care of shared locks on the cached image file so it is not
+     * corrupted due to concurrent write operations.
+     *
+     * @param Image $image
+     * @param callable $callback
+     *
+     * @return mixed Result of the callback.
+     */
+    public function doWithOnce(Image $image, $callback)
+    {
+        $result = $this->doWith($image, $callback);
+        $this->forget($image);
 
-        try {
-            if ($image->volume->isRemote()) {
-                return $this->getRemoteImage($image);
-            } else {
-                return $this->getDiskImage($image);
-            }
-        } catch (Exception $e) {
-            throw new Exception("Error while caching remote image {$image->id}: {$e->getMessage()}");
-        }
+        return $result;
     }
 
     /**
@@ -119,20 +127,6 @@ class ImageCache
     }
 
     /**
-     * Remove an image from the cache.
-     *
-     * @param Image $image
-     */
-    public function forget(Image $image)
-    {
-        $cachePath = $this->getCachePath($image);
-
-        if (File::exists($cachePath)) {
-            File::delete($cachePath);
-        }
-    }
-
-    /**
      * Remove the least recently accessed cached remote images if the cache gets too
      * large.
      */
@@ -163,6 +157,53 @@ class ImageCache
             $totalSize -= $file->getSize();
             File::delete($file->getRealPath());
             $files->next();
+        }
+    }
+
+    /**
+     * Cache a remote or cloud storage image if it is not cached and get the path to
+     * the cached file. If the image is local, nothing will be done and the path to the
+     * local file will be returned.
+     *
+     * @param Image $image Image to get the path for
+     * @throws Exception If the image could not be cached.
+     *
+     * @return string
+     */
+    protected function get(Image $image)
+    {
+        $cachePath = $this->getCachePath($image);
+
+        if (File::exists($cachePath)) {
+            // Update access and modification time to signal that this cached image was
+            // used recently.
+            touch($cachePath);
+
+            return $cachePath;
+        }
+
+        try {
+            if ($image->volume->isRemote()) {
+                return $this->getRemoteImage($image);
+            } else {
+                return $this->getDiskImage($image);
+            }
+        } catch (Exception $e) {
+            throw new Exception("Error while caching remote image {$image->id}: {$e->getMessage()}");
+        }
+    }
+
+    /**
+     * Remove an image from the cache.
+     *
+     * @param Image $image
+     */
+    protected function forget(Image $image)
+    {
+        $cachePath = $this->getCachePath($image);
+
+        if (File::exists($cachePath)) {
+            File::delete($cachePath);
         }
     }
 
@@ -242,7 +283,9 @@ class ImageCache
     {
         $this->ensurePathExists();
         $cachePath = $this->getCachePath($image);
-        $success = file_put_contents($cachePath, $stream);
+        // Acquire lock that can be checked in ImageCache::has. Also this prevents that
+        // multiple workers write to the file at the same time.
+        $success = file_put_contents($cachePath, $stream, LOCK_EX);
 
         if ($success === false) {
             throw new Exception('The stream resource is invalid.');

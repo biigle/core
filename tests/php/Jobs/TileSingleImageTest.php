@@ -15,12 +15,9 @@ use Biigle\Jobs\TileSingleImage;
 
 class TileSingleImageTest extends TestCase
 {
-    public function testHandle()
+    public function testHandleImage()
     {
         $image = ImageTest::create();
-
-        ImageCache::shouldReceive('get')->once()->with($image)->andReturn('abc');
-        ImageCache::shouldReceive('forget')->once()->with($image);
 
         File::shouldReceive('isDirectory')
             ->once()
@@ -45,7 +42,7 @@ class TileSingleImageTest extends TestCase
         $job->mock = $mock;
 
         $this->assertFalse($image->tiled);
-        $job->handle();
+        $job->handleImage($image, 'abc');
         $image->refresh();
         $this->assertTrue($image->tiled);
         $this->assertSame(['width' => 2352, 'height' => 18060], $image->getTileProperties());

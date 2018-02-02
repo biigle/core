@@ -41,18 +41,20 @@ class TileSingleImage extends Job implements ShouldQueue
      */
     public function handle()
     {
-        if (!File::isDirectory($this->image->tilePath)) {
-            File::makeDirectory($this->image->tilePath);
-        }
+        ImageCache::doWithOnce($this->image, [$this, 'handleImage']);
+    }
 
-        $path = ImageCache::get($this->image);
-        $this->getVipsImage($path)->dzsave($this->image->tilePath, ['layout' => 'zoomify']);
-        ImageCache::forget($this->image);
-        $xml = simplexml_load_string(strtolower(File::get("{$this->image->tilePath}/ImageProperties.xml")));
+    public function handleImage(Image $image, $path)
+    {
+        if (!File::isDirectory($image->tilePath)) {
+            File::makeDirectory($image->tilePath);
+        }
+        $this->getVipsImage($path)->dzsave($image->tilePath, ['layout' => 'zoomify']);
+        $xml = simplexml_load_string(strtolower(File::get("{$image->tilePath}/ImageProperties.xml")));
         $xml = ((array) $xml)['@attributes'];
-        $this->image->setTileProperties(array_map('intval', $xml));
-        $this->image->tiled = true;
-        $this->image->save();
+        $image->setTileProperties(array_map('intval', $xml));
+        $image->tiled = true;
+        $image->save();
     }
 
     /**

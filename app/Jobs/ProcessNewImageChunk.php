@@ -71,16 +71,20 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
         $this->height = config('thumbnails.height');
         $this->threshold = config('image.tiles.threshold');
         $images = Image::with('volume')->whereIn('id', $this->ids)->get();
-
-        foreach ($images as $image) {
-            $path = ImageCache::get($image);
+        $callback = function ($image, $path) {
             $this->collectMetadata($image, $path);
             $this->makeThumbnail($image, $path);
             if ($this->shouldBeTiled($image, $path)) {
                 $this->dispatch(new TileSingleImage($image));
             }
-            // Free cache immediately so it is not congested by newly created volumes.
-            ImageCache::forget($image);
+        };
+
+        foreach ($images as $image) {
+            try {
+                ImageCache::doWithOnce($image, $callback);
+            } catch (Exception $e) {
+                Log::error("Could not process new image {$image->id}: {$e->getMessage()}");
+            }
         }
 
         $images->pluck('volume')->unique()->each(function ($volume) {
@@ -101,13 +105,9 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
             return;
         }
 
-        try {
-            File::makeDirectory(File::dirname($image->thumbPath), 0755, true, true);
-            VipsImage::thumbnail($path, $this->width, ['height' => $this->height])
-                ->writeToFile($image->thumbPath);
-        } catch (Exception $e) {
-            Log::error("Could not generate thumbnail for image {$image->id}: {$e->getMessage()}");
-        }
+        File::makeDirectory(File::dirname($image->thumbPath), 0755, true, true);
+        VipsImage::thumbnail($path, $this->width, ['height' => $this->height])
+            ->writeToFile($image->thumbPath);
     }
 
     /**
