@@ -7,6 +7,7 @@ use Mockery;
 use TestCase;
 use VipsImage;
 use Biigle\Shape;
+use Biigle\Annotation;
 use Jcupitt\Vips\Image;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
@@ -48,7 +49,7 @@ class GenerateAnnotationPatchTest extends TestCase
             ->once()
             ->andReturn(true);
 
-        $job->handle();
+        $job->handleImage($annotation->image, 'abc');
     }
 
     public function testHandleCircle()
@@ -74,7 +75,7 @@ class GenerateAnnotationPatchTest extends TestCase
             ->once()
             ->andReturn(true);
 
-        $job->handle();
+        $job->handleImage($annotation->image, 'abc');
     }
 
     public function testHandleOther()
@@ -100,14 +101,20 @@ class GenerateAnnotationPatchTest extends TestCase
             ->once()
             ->andReturn(true);
 
-        $job->handle();
+        $job->handleImage($annotation->image, 'abc');
     }
 }
 
 
 class GenerateAnnotationPatchStub extends GenerateAnnotationPatch
 {
-    function getVipsImage(\Biigle\Image $image)
+    public function __construct(Annotation $annotation)
+    {
+        parent::__construct($annotation);
+        $this->annotation = $annotation;
+    }
+
+    function getVipsImage($path)
     {
         return $this->mock;
     }
