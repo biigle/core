@@ -214,7 +214,7 @@ class Volume extends Model
                 throw new Exception("Storage disk '{$url[0]}' does not exist.");
             }
 
-            if (!Storage::disk($url[0])->exists($url[1])) {
+            if (empty(Storage::disk($url[0])->files($url[1]))) {
                 throw new Exception("Unable to access '{$url[1]}'. Does it exist and you have access permissions?");
             }
         }

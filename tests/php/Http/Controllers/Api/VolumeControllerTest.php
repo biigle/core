@@ -89,6 +89,7 @@ class VolumeControllerTest extends ApiTestCase
     {
         Storage::fake('test');
         Storage::disk('test')->makeDirectory('volumes');
+        Storage::disk('test')->put('volumes/file.txt', 'abc');
 
         $this->beAdmin();
         $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);

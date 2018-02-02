@@ -96,6 +96,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/file.txt', 'abc');
 
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
@@ -152,6 +153,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
     public function testStoreJsonAttrs()
     {
         Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/file.txt', 'abc');
 
         $id = $this->project()->id;
         $this->beAdmin();

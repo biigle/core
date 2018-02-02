@@ -158,6 +158,7 @@ class VolumeTest extends ModelTestCase
     {
         Storage::fake('test');
         Storage::disk('test')->makeDirectory('dir');
+        Storage::disk('test')->put('dir/file.txt', 'abc');
         $this->model->url = 'test://dir';
         $this->assertTrue($this->model->validateUrl());
     }
