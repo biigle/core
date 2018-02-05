@@ -44,6 +44,12 @@ class TileSingleImage extends Job implements ShouldQueue
         ImageCache::doWithOnce($this->image, [$this, 'handleImage']);
     }
 
+    /**
+     * Handle a single image.
+     *
+     * @param Image $image
+     * @param string $path Path to the cached image file.
+     */
     public function handleImage(Image $image, $path)
     {
         if (!File::isDirectory($image->tilePath)) {
