@@ -201,9 +201,14 @@ class ImageCache
     protected function forget(Image $image)
     {
         $cachePath = $this->getCachePath($image);
+        $handle = @fopen($cachePath, 'r');
 
-        if (File::exists($cachePath)) {
-            File::delete($cachePath);
+        if (is_resource($handle)) {
+            // Only remove the file if nobody else is using it.
+            if (flock($handle, LOCK_EX|LOCK_NB)) {
+                File::delete($cachePath);
+            }
+            fclose($handle);
         }
     }
 
