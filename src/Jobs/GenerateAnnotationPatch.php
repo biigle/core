@@ -23,7 +23,14 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
      *
      * @var int
      */
-    private $annotationId;
+    protected $id;
+
+    /**
+     * The annotation that is set when the job is processed.
+     *
+     * @var Annotation
+     */
+    protected $annotation;
 
     /**
      * Create a new job instance.
@@ -34,9 +41,9 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
      */
     public function __construct(Annotation $annotation)
     {
-        // take only the ID and not the annotation because the annotation may already be
+        // Take only the ID and not the annotation because the annotation may already be
         // deleted when this job runs and the job would fail!
-        $this->annotationId = $annotation->id;
+        $this->id = $annotation->id;
     }
 
     /**
@@ -46,44 +53,54 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $annotation = Annotation::with('image.volume')->find($this->annotationId);
-        // annotation may have been deleted in the meantime
-        if ($annotation === null) {
+        $this->annotation = Annotation::with('image.volume')->find($this->id);
+        // Annotation may have been deleted in the meantime.
+        if ($this->annotation === null) {
             return;
         }
 
-        $image = $annotation->image;
+        try {
+            ImageCache::get($this->annotation->image, [$this, 'handleImage']);
+        } catch (Exception $e) {
+            Log::error("Could not generate annotation patch for annotation {$this->id}: {$e->getMessage()}");
+        }
+    }
+
+    /**
+     * Handle a single image
+     *
+     * @param Image $image
+     * @param string $path Path to the cached image file.
+     */
+    public function handleImage(Image $image, $path)
+    {
         $prefix = config('largo.patch_storage').'/'.$image->volume_id;
         $format = config('largo.patch_format');
         $thumbWidth = config('thumbnails.width');
         $thumbHeight = config('thumbnails.height');
-        $rect = $this->getPatchRect($annotation, $thumbWidth, $thumbHeight);
+        $rect = $this->getPatchRect($this->annotation, $thumbWidth, $thumbHeight);
 
         if (!File::exists($prefix)) {
             // make recursive
             File::makeDirectory($prefix, 0755, true);
         }
 
-        try {
-            $vipsImage = $this->getVipsImage($image);
-            $vipsImage->crop($rect['left'], $rect['top'], $rect['width'], $rect['height'])
-                ->resize(floatval($thumbWidth) / $rect['width'])
-                ->writeToFile("{$prefix}/{$annotation->id}.{$format}");
-        } catch (Exception $e) {
-            Log::error('Could not generate annotation patch for annotation '.$annotation->id.': '.$e->getMessage());
-        }
+        $this->getVipsImage($path)
+            ->crop($rect['left'], $rect['top'], $rect['width'], $rect['height'])
+            ->resize(floatval($thumbWidth) / $rect['width'])
+            ->writeToFile("{$prefix}/{$this->id}.{$format}");
     }
 
     /**
      * Get the vips image instance.
      *
-     * @param Image $image
+     * @param string $path
      *
      * @return \Jcupitt\Vips\Image
      */
-    protected function getVipsImage(Image $image)
+    protected function getVipsImage($path)
     {
-        return VipsImage::newFromFile(ImageCache::get($image), ['access' => 'sequential']);
+        return VipsImage::newFromFile($path, ['access' => 'sequential']);
     }
 
     /**
