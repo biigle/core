@@ -323,7 +323,7 @@ class ImageCache
     protected function ensurePathExists()
     {
         if (!File::exists($this->path)) {
-            File::makeDirectory($this->path, 0755, true);
+            File::makeDirectory($this->path, 0755, true, true);
         }
     }
 
