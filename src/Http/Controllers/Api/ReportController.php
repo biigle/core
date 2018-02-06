@@ -40,7 +40,7 @@ abstract class ReportController extends Controller
         $report->options = $this->getOptions($request);
         $report->save();
 
-        $this->dispatch(new GenerateReportJob($report));
+        $this->dispatch((new GenerateReportJob($report))->onQueue('high'));
     }
 
     /**
