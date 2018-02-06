@@ -34,7 +34,7 @@
                     <label for="url">URL</label>
                     <input type="text" class="form-control" name="url" id="url" value="{{ old('url', $volume->url) }}" placeholder="/vol/images/volume" required>
                     <p class="help-block">
-                        The directory containing the volume images. Can be local like <code>/vol/images/volume</code> or remote like <code>https://my-domain.tld/volume</code>.
+                        The directory containing the volume images. Can be a storage disk like <code>local://images/volume</code> or remote like <code>https://my-domain.tld/volume</code>.
                     </p>
                     @if($errors->has('url'))
                         <span class="help-block">{{ $errors->first('url') }}</span>

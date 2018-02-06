@@ -7,10 +7,10 @@
             With remote volumes you can use images from your own data source in BIIGLE.
         </p>
         <p>
-            Typically the image files of volumes are loaded through a network filesystem or even stored on the same machine that runs the BIIGLE application. If you request an image (e.g. in the annotation tool), the application receives the request, loads the image from the filesystem and returns the image file in the response.
+            Typically the image files of volumes are loaded through a network filesystem or even stored on the same machine that runs the BIIGLE application. If you request an image (e.g. in the annotation tool), the application receives the request, loads the image from a storage disk and returns the image file in the response.
         </p>
         <p>
-            Depending on where you come from (literally), this setup might pose some problems. Usually you want to work with your own images. This means that you have to transfer all the images to the machine (and the people) that run the BIIGLE instance. So first, you have to inconveniently transfer a large amount of data and second, you lose control of that data. This might not be a problem most of the time but sometimes you might want to keep (control of) your data.
+            Depending on where you come from (literally), this setup might pose some problems. Usually you want to work with your own images. This means that you have to transfer all the images to the people that run the BIIGLE instance. So first, you have to inconveniently transfer a large amount of data and second, you lose control of that data. This might not be a problem most of the time but sometimes you might want to keep (control of) your data.
         </p>
         <p>
             This is where remote volumes come in. When you request an image in BIIGLE, your browser doesn't care where this image comes from. So it actually doesn't have to be served from the same machine that runs the BIIGLE application. Instead, BIIGLE only has to know the "remote" location from where the image is served to redirect your request there. And this remote location can be under your control. In addition to that, a remote image location may speed up loading times of the images if your internet connection to the BIIGLE server is rather slow but the connection to the remote location is fast.
@@ -62,13 +62,6 @@
             A bigger drawback is that some of the features of BIIGLE require the images to be stored locally. This means that a few features are disabled for remote volumes. The core functionality for annotations and reports is always available, though. The following features are not available:
         </p>
         <ul>
-            <li>
-                Image metadata such as geo coordinates or creation date are not automatically extracted from new images. <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">Upload them as a CSV instead.</a>
-            </li>
-            <li>
-                Image metadata such as camera model, orientation or flash extracted from the image EXIF headers is not displayed on the image information view.
-            </li>
-
             @mixin('volumesManualRemoteVolumes')
         </ul>
     </div>
