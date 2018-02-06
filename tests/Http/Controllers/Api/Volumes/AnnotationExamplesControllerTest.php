@@ -79,15 +79,9 @@ class AnnotationExamplesControllerTest extends ApiTestCase
         $response = $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
         $response->assertStatus(200);
 
-        if ($this->isSqlite()) {
-            $expect = [(string) $annotation->id];
-        } else {
-            $expect = [$annotation->id];
-        }
-
         $response->assertExactJson([
             'label' => $label->toArray(),
-            'annotations' => $expect,
+            'annotations' => [$annotation->id],
         ]);
 
         $al0->delete();
@@ -95,15 +89,9 @@ class AnnotationExamplesControllerTest extends ApiTestCase
         $response = $this->json('GET', "/api/v1/volumes/{$id}/annotations/examples/{$label->id}");
         $response->assertStatus(200);
 
-        if ($this->isSqlite()) {
-            $expect = [(string) $annotation->id];
-        } else {
-            $expect = [$annotation->id];
-        }
-
         $response->assertExactJson([
             'label' => $parentLabel->toArray(),
-            'annotations' => $expect,
+            'annotations' => [$annotation->id],
         ]);
     }
 
@@ -157,52 +145,32 @@ class AnnotationExamplesControllerTest extends ApiTestCase
 
         $session->users()->attach($this->editor());
 
-        $expect = [$a2->id, $a3->id];
-        if ($this->isSqlite()) {
-            $expect = array_map('strval', $expect);
-        }
-
         $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
         $response->assertStatus(200);
-        $response->assertJsonFragment(['annotations' => $expect]);
+        $response->assertJsonFragment(['annotations' => [$a2->id, $a3->id]]);
 
         // test hide other
         $session->hide_own_annotations = false;
         $session->hide_other_users_annotations = true;
         $session->save();
 
-        $expect = [$a1->id, $a2->id];
-        if ($this->isSqlite()) {
-            $expect = array_map('strval', $expect);
-        }
-
         $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
         $response->assertStatus(200);
-        $response->assertJsonFragment(['annotations' => $expect]);
+        $response->assertJsonFragment(['annotations' => [$a1->id, $a2->id]]);
 
         // test hide both
         $session->hide_own_annotations = true;
         $session->save();
 
-        $expect = [$a2->id];
-        if ($this->isSqlite()) {
-            $expect = array_map('strval', $expect);
-        }
-
         $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
         $response->assertStatus(200);
-        $response->assertJsonFragment(['annotations' => $expect]);
+        $response->assertJsonFragment(['annotations' => [$a2->id]]);
 
         $session->users()->detach($this->editor());
 
-        $expect = [$a1->id, $a2->id, $a3->id];
-        if ($this->isSqlite()) {
-            $expect = array_map('strval', $expect);
-        }
-
         $response = $this->get("/api/v1/volumes/{$id}/annotations/examples/{$l1->label_id}");
         $response->assertStatus(200);
-        $response->assertJsonFragment(['annotations' => $expect]);
+        $response->assertJsonFragment(['annotations' => [$a1->id, $a2->id, $a3->id]]);
     }
 
     public function testIndexOtherTree()
