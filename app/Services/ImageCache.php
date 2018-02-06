@@ -44,13 +44,12 @@ class ImageCache
      */
     public function doWith(Image $image, $callback)
     {
-        $cachedPath = $this->get($image);
-        $handle = fopen($cachedPath, 'r');
-        // This blocks if the file is still written to with LOCK_EX.
-        flock($handle, LOCK_SH);
-        $result = call_user_func($callback, $image, $cachedPath);
-        // Release lock.
-        fclose($handle);
+        $file = $this->get($image);
+        try {
+            $result = call_user_func($callback, $image, $file['path']);
+        } finally {
+            fclose($file['handle']);
+        }
 
         return $result;
     }
@@ -67,8 +66,21 @@ class ImageCache
      */
     public function doWithOnce(Image $image, $callback)
     {
-        $result = $this->doWith($image, $callback);
-        $this->forget($image);
+        $file = $this->get($image);
+        try {
+            $result = call_user_func($callback, $image, $file['path']);
+            // Convert to exclusive lock for deletion. Don't delete if lock can't be
+            // obtained.
+            if (flock($file['handle'], LOCK_EX|LOCK_NB)) {
+                // This path is not the same than $cachedPath for locally stored files.
+                $path = $this->getCachedPath($image);
+                if (File::exists($path)) {
+                    File::delete($path);
+                }
+            }
+        } finally {
+            fclose($file['handle']);
+        }
 
         return $result;
     }
@@ -85,17 +97,17 @@ class ImageCache
      */
     public function getStream(Image $image)
     {
-        $cachePath = $this->getCachePath($image);
+        $cachedPath = $this->getCachedPath($image);
 
-        if (File::exists($cachePath)) {
+        if (File::exists($cachedPath)) {
             // Update access and modification time to signal that this cached image was
             // used recently.
-            touch($cachePath);
+            touch($cachedPath);
 
             return [
-                'stream' => $this->getImageStream($cachePath),
-                'size' => File::size($cachePath),
-                'mime' => File::mimeType($cachePath),
+                'stream' => $this->getImageStream($cachedPath),
+                'size' => File::size($cachedPath),
+                'mime' => File::mimeType($cachedPath),
             ];
         }
 
@@ -168,48 +180,57 @@ class ImageCache
      * @param Image $image Image to get the path for
      * @throws Exception If the image could not be cached.
      *
-     * @return string
+     * @return array Containing the 'path' to the file and the file 'handle'. Close the
+     * handle when finished.
      */
     protected function get(Image $image)
     {
-        $cachePath = $this->getCachePath($image);
+        $cachedPath = $this->getCachedPath($image);
+        $handle = @fopen($cachedPath, 'r');
 
-        if (File::exists($cachePath)) {
+        // Image is already cached.
+        if (is_resource($handle)) {
+            // This will block if the file is currently written (LOCK_EX below).
+            flock($handle, LOCK_SH);
             // Update access and modification time to signal that this cached image was
             // used recently.
-            touch($cachePath);
+            touch($cachedPath);
+        } else {
+            $this->ensurePathExists();
+            // Create and lock the file as fast as possible so concurrent workers will
+            // see it. Lock it exclusively until it is completely written.
+            touch($cachedPath);
+            $handle = fopen($cachedPath, 'r');
+            flock($handle, LOCK_EX);
 
-            return $cachePath;
-        }
+            try {
+                if ($image->volume->isRemote()) {
+                    $this->getRemoteImage($image);
+                } else {
+                    $newCachedPath = $this->getDiskImage($image);
 
-        try {
-            if ($image->volume->isRemote()) {
-                return $this->getRemoteImage($image);
-            } else {
-                return $this->getDiskImage($image);
+                    // If it is a locally stored image, delete the empty "placeholder"
+                    // file again. The handle may stay open; it doesn't matter.
+                    if ($newCachedPath !== $cachedPath) {
+                        unlink($cachedPath);
+                    }
+
+                    $cachedPath = $newCachedPath;
+                }
+
+                // Convert the lock so other workers can use the file from now on.
+                flock($handle, LOCK_SH);
+            } catch (Exception $e) {
+                unlink($cachedPath);
+                fclose($handle);
+                throw new Exception("Error while caching remote image {$image->id}: {$e->getMessage()}");
             }
-        } catch (Exception $e) {
-            throw new Exception("Error while caching remote image {$image->id}: {$e->getMessage()}");
         }
-    }
 
-    /**
-     * Remove an image from the cache.
-     *
-     * @param Image $image
-     */
-    protected function forget(Image $image)
-    {
-        $cachePath = $this->getCachePath($image);
-        $handle = @fopen($cachePath, 'r');
-
-        if (is_resource($handle)) {
-            // Only remove the file if nobody else is using it.
-            if (flock($handle, LOCK_EX|LOCK_NB)) {
-                File::delete($cachePath);
-            }
-            fclose($handle);
-        }
+        return [
+            'path' => $cachedPath,
+            'handle' => $handle,
+        ];
     }
 
     /**
@@ -228,12 +249,12 @@ class ImageCache
         }
 
         $stream = $this->getImageStream($image->url);
-        $cachePath = $this->cacheFromResource($image, $stream);
+        $cachedPath = $this->cacheFromResource($image, $stream);
         if (is_resource($stream)) {
             fclose($stream);
         }
 
-        return $cachePath;
+        return $cachedPath;
     }
 
     /**
@@ -267,12 +288,12 @@ class ImageCache
         }
 
         $stream = $disk->readStream($url[1]);
-        $cachePath = $this->cacheFromResource($image, $stream);
+        $cachedPath = $this->cacheFromResource($image, $stream);
         if (is_resource($stream)) {
             fclose($stream);
         }
 
-        return $cachePath;
+        return $cachedPath;
     }
 
     /**
@@ -286,17 +307,14 @@ class ImageCache
      */
     protected function cacheFromResource(Image $image, $stream)
     {
-        $this->ensurePathExists();
-        $cachePath = $this->getCachePath($image);
-        // Acquire lock that can be checked in ImageCache::has. Also this prevents that
-        // multiple workers write to the file at the same time.
-        $success = file_put_contents($cachePath, $stream, LOCK_EX);
+        $cachedPath = $this->getCachedPath($image);
+        $success = file_put_contents($cachedPath, $stream);
 
         if ($success === false) {
             throw new Exception('The stream resource is invalid.');
         }
 
-        return $cachePath;
+        return $cachedPath;
     }
 
     /**
@@ -316,7 +334,7 @@ class ImageCache
      *
      * @return string
      */
-    protected function getCachePath(Image $image)
+    protected function getCachedPath(Image $image)
     {
         return "{$this->path}/{$image->id}";
     }
