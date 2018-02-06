@@ -20,6 +20,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
     var featureRevisionMap = {};
 
     var imageLayer = new ol.layer.Image();
+    var tiledImageLayer = new ol.layer.Tile();
+
     var annotationFeatures = new ol.Collection();
     var annotationSource = new ol.source.Vector({
         features: annotationFeatures
@@ -157,8 +159,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             // Number of available image sections in x and y direction.
             imageSectionSteps: function () {
                 return [
-                    Math.ceil(this.extent[2] / (this.viewExtent[2] - this.viewExtent[0])),
-                    Math.ceil(this.extent[3] / (this.viewExtent[3] - this.viewExtent[1])),
+                    Math.ceil(this.image.width / (this.viewExtent[2] - this.viewExtent[0])),
+                    Math.ceil(this.image.height / (this.viewExtent[3] - this.viewExtent[1])),
                 ];
             },
             // Distance to travel between image sections in x and y direction.
@@ -169,18 +171,19 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 ];
                 var overlap;
                 if (this.imageSectionSteps[0] > 1) {
-                    overlap = (stepSize[0] * this.imageSectionSteps[0]) - this.extent[2];
+                    overlap = (stepSize[0] * this.imageSectionSteps[0]) - this.image.width;
                     stepSize[0] -= overlap / (this.imageSectionSteps[0] - 1);
                 } else {
                     stepSize[0] = this.viewExtent[2];
                 }
 
                 if (this.imageSectionSteps[1] > 1) {
-                    overlap = (stepSize[1] * this.imageSectionSteps[1]) - this.extent[3];
+                    overlap = (stepSize[1] * this.imageSectionSteps[1]) - this.image.height;
                     stepSize[1] -= overlap / (this.imageSectionSteps[1] - 1);
                 } else {
                     stepSize[1] = this.viewExtent[3];
                 }
+
 
                 return stepSize;
             },
@@ -288,34 +291,57 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     resolution: view.getResolution(),
                 });
             },
-            // Determines the OpenLayers geometry object for an annotation.
-            getGeometry: function (annotation) {
-                var points = annotation.points;
+            invertPointsYAxis: function (points) {
+                // Expects a points array like [x1, y1, x2, y2]. Inverts the y axis of
+                // the points. CAUTION: Modifies the array in place!
+                // The y axis should be switched from "top to bottom" to "bottom to top"
+                // or vice versa. Our database expects ttb, OpenLayers expects btt.
+
+                var height = this.extent[3];
+                for (var i = 1; i < points.length; i += 2) {
+                    points[i] = height - points[i];
+                }
+
+                return points;
+            },
+            convertPointsFromOlToDb: function (points) {
+                // Merge the individual point arrays to a single array first.
+                // [[x1, y1], [x2, y2]] -> [x1, y1, x2, y2]
+                return this.invertPointsYAxis(Array.prototype.concat.apply([], points));
+            },
+            convertPointsFromDbToOl: function (points) {
+                // Duplicate the points array because we don't want to modify the
+                // original array.
+                points = this.invertPointsYAxis(points.slice());
                 var newPoints = [];
-                var height = this.image.height;
                 for (var i = 0; i < points.length; i += 2) {
                     newPoints.push([
                         points[i],
-                        // Invert the y axis to OpenLayers coordinates.
                         // Circles have no fourth point so we take 0.
-                        height - (points[i + 1] || 0)
+                        (points[i + 1] || 0)
                     ]);
                 }
 
+                return newPoints;
+            },
+            // Determines the OpenLayers geometry object for an annotation.
+            getGeometry: function (annotation) {
+                var points = this.convertPointsFromDbToOl(annotation.points);
+
                 switch (annotation.shape) {
                     case 'Point':
-                        return new ol.geom.Point(newPoints[0]);
+                        return new ol.geom.Point(points[0]);
                     case 'Rectangle':
-                        return new ol.geom.Rectangle([newPoints]);
+                        return new ol.geom.Rectangle([points]);
                     case 'Polygon':
-                        return new ol.geom.Polygon([newPoints]);
+                        return new ol.geom.Polygon([points]);
                     case 'LineString':
-                        return new ol.geom.LineString(newPoints);
+                        return new ol.geom.LineString(points);
                     case 'Circle':
                         // radius is the x value of the second point of the circle
-                        return new ol.geom.Circle(newPoints[0], newPoints[1][0]);
+                        return new ol.geom.Circle(points[0], points[1][0]);
                     case 'Ellipse':
-                        return new ol.geom.Ellipse([newPoints]);
+                        return new ol.geom.Ellipse([points]);
                     default:
                         // unsupported shapes are ignored
                         console.error('Unknown annotation shape: ' + annotation.shape);
@@ -434,16 +460,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         points = geometry.getCoordinates();
                 }
 
-                // Merge the individual point arrays to a single array.
-                points = Array.prototype.concat.apply([], points);
-
-                // Invert y coordinates back to the format that is stored in the DB.
-                var height = this.image.height;
-                for (var i = 1; i < points.length; i += 2) {
-                    points[i] = height - points[i];
-                }
-
-                return points;
+                return this.convertPointsFromOlToDb(points);
             },
             handleNewFeature: function (e) {
                 if (this.hasNoSelectedLabel) {
@@ -624,10 +641,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             updateMousePosition: function (e) {
                 var self = this;
                 biigle.$require('annotations.stores.utils').throttle(function () {
-                    self.mousePosition = [
-                        Math.round(e.coordinate[0]),
-                        Math.round(self.extent[3] - e.coordinate[1]),
-                    ];
+                    self.mousePosition = self.invertPointsYAxis(e.coordinate).map(Math.round);
                 }, 100, 'annotations.canvas.mouse-position');
             },
             updateHoveredAnnotations: function (e) {
@@ -656,9 +670,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 this.hoveredAnnotationHash = '';
                 this.hoveredAnnotations = [];
             },
-        },
-        watch: {
-            image: function (image, oldImage) {
+            handleRegularImage: function (image, oldImage) {
                 if (!image) {
                     imageLayer.setSource(null);
                 } else {
@@ -677,11 +689,50 @@ biigle.$component('annotations.components.annotationCanvas', function () {
 
                     // The same performance optimizations mentioned above make the magic
                     // wand interaction unable to detect any change if the image is
-                    // swotched. So if the interaction is currently active we have to
+                    // switched. So if the interaction is currently active we have to
                     // update it manually here.
                     if (this.isMagicWanding) {
                         magicWandInteraction.updateSnapshot();
                     }
+                }
+            },
+            handleTiledImage: function (image, oldImage) {
+                if (!image) {
+                    tiledImageLayer.setSource(null);
+                } else {
+                    tiledImageLayer.setSource(new ol.source.Zoomify({
+                        url: image.url,
+                        size: [image.width, image.height],
+                        // Set the extent like this instead of default so static images
+                        // and tiled images can be treated the same.
+                        extent: [0, 0, image.width, image.height],
+                        transition: 100,
+                    }));
+                }
+            },
+        },
+        watch: {
+            image: function (image, oldImage) {
+                if (image.tiled === true) {
+                    if (!oldImage || oldImage.tiled !== true) {
+                        map.removeLayer(imageLayer);
+                        map.addLayer(tiledImageLayer);
+                        if (magicWandInteraction) {
+                            magicWandInteraction.setLayer(tiledImageLayer);
+                        }
+                    }
+
+                    this.handleTiledImage(image, oldImage);
+                } else {
+                    if (!oldImage || oldImage.tiled === true) {
+                        map.removeLayer(tiledImageLayer);
+                        map.addLayer(imageLayer);
+                        if (magicWandInteraction) {
+                            magicWandInteraction.setLayer(imageLayer);
+                        }
+                    }
+
+                    this.handleRegularImage(image, oldImage);
                 }
             },
             annotations: function (annotations) {
@@ -731,6 +782,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             extent: function (extent, oldExtent) {
                 // The extent only truly changes if the width and height changed.
+                // extent[0] and extent[1] are always 0.
                 if (extent[2] === oldExtent[2] && extent[3] === oldExtent[3]) {
                     return;
                 }
@@ -744,19 +796,27 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     this.initialized = true;
                 }
 
+                // Leave this undefined if the current image is not tiled.
+                var resolutions;
+
+                if (this.image.tiled === true) {
+                    resolutions = tiledImageLayer.getSource().getTileGrid().getResolutions();
+                }
+
                 map.setView(new ol.View({
                     projection: this.projection,
                     center: center,
                     resolution: this.resolution,
+                    resolutions: resolutions,
                     zoomFactor: 2,
-                    // allow a maximum of 4x magnification
+                    // Allow a maximum of 4x magnification for non-tiled images.
                     minResolution: 0.25,
-                    // restrict movement
+                    // Restrict movement.
                     extent: extent
                 }));
 
                 if (this.resolution === undefined) {
-                    map.getView().fit(extent, map.getSize());
+                    map.getView().fit(extent);
                 }
             },
             selectedLabel: function (label) {
@@ -817,8 +877,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             var self = this;
             styles = biigle.$require('annotations.stores.styles');
             map = biigle.$require('annotations.stores.map');
-
-            map.addLayer(imageLayer);
 
             annotationLayer.setStyle(styles.features);
             map.addLayer(annotationLayer);
@@ -899,7 +957,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     var MagicWandInteraction = biigle.$require('annotations.ol.MagicWandInteraction');
                     magicWandInteraction = new MagicWandInteraction({
                         map: map,
-                        layer: imageLayer,
                         source: annotationSource,
                         style: styles.editing,
                         indicatorPointStyle: styles.editing,

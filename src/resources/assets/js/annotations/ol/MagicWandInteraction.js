@@ -293,10 +293,10 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
     };
 
     /**
-     * Update the snapshot if the image layer.
+     * Update the snapshot of the image layer.
      */
     MagicWandInteraction.prototype.updateSnapshot = function () {
-        if (!this.updatingSnapshot) {
+        if (!this.updatingSnapshot && this.layer) {
             this.layer.once('postcompose', function (e) {
                 this.snapshotCanvas.width = e.context.canvas.width;
                 this.snapshotCanvas.height = e.context.canvas.height;
@@ -311,6 +311,13 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
             this.map.renderSync();
             this.updatingSnapshot = false;
         }
+    };
+
+    /**
+     * Update the layer to get the image information from.
+     */
+    MagicWandInteraction.prototype.setLayer = function (layer) {
+        this.layer = layer;
     };
 
     /**

@@ -49,6 +49,9 @@ biigle.$declare('annotations.stores.images', function () {
             imageFileUri: function () {
                 return biigle.$require('annotations.imageFileUri');
             },
+            tilesUri: function () {
+                return biigle.$require('annotations.tilesUri');
+            },
             supportedTextureSize: function () {
                 if (fxCanvas) {
                     return fxCanvas._.gl.getParameter(fxCanvas._.gl.MAX_TEXTURE_SIZE);
@@ -70,6 +73,9 @@ biigle.$declare('annotations.stores.images', function () {
             },
         },
         methods: {
+            isTiledImage: function (image) {
+                return image.tiled === true;
+            },
             isAdjustmentActive: function (type) {
                 return this.colorAdjustment[type].reduce(function (acc, value) {
                     return acc + value;
@@ -78,6 +84,11 @@ biigle.$declare('annotations.stores.images', function () {
             checkSupportsColorAdjustment: function (image) {
                 if (!fxCanvas || this.isRemoteVolume) {
                     return false;
+                }
+
+                if (this.isTiledImage(image)) {
+                    this.supportsColorAdjustment = false;
+                    return;
                 }
 
                 // If we already have a drawn image we only need to check the support
@@ -107,19 +118,20 @@ biigle.$declare('annotations.stores.images', function () {
                 this.supportsColorAdjustment = true;
             },
             createImage: function (id) {
+                var self = this;
                 var img = document.createElement('img');
+                // We want to use the same canvas element for drawing and to
+                // apply the color adjustments for better performance. But we
+                // also want Vue to detect switched images which would not work
+                // if we simply passed on the canvas element as a prop to a
+                // component. We therefore create this new object for each image.
+                // And pass it as a prop instead.
                 var promise = new Vue.Promise(function (resolve, reject) {
                     img.onload = function () {
-                        // We want to use the same canvas element for drawing and to
-                        // apply the color adjustments for better performance. But we
-                        // also want Vue to detect switched images which would not work
-                        // if we simply passed on the canvas element as a prop to a
-                        // component. We therefore create this new object for each image.
-                        // And pass it as a prop instead.
                         resolve({
-                            source: this,
-                            width: this.width,
-                            height: this.height,
+                            source: img,
+                            width: img.width,
+                            height: img.height,
                             canvas: canvas,
                         });
                     };
@@ -129,9 +141,33 @@ biigle.$declare('annotations.stores.images', function () {
                     };
                 });
 
-                img.src = this.imageFileUri.replace('{id}', id);
+                if (this.isRemoteVolume) {
+                    // Images of remote volumes *must* be loaded as src of an image
+                    // element because of cross origin restrictions!
+                    img.src = this.imageFileUri.replace('{id}', id);
 
-                return promise;
+                    return promise;
+
+                } else {
+                    // If the volume is not remote the image may be tiled. So we request
+                    // the data from the endpoint and check if it's an image or a JSON.
+                    return Vue.http.get(this.imageFileUri.replace('{id}', id))
+                        .catch(function () {
+                            return Vue.Promise.reject('Failed to load image ' + id + '!');
+                        })
+                        .then(function (response) {
+                            if (response.bodyBlob.type === 'application/json') {
+                                response.body.url = self.tilesUri.replace('{uuid}', response.body.uuid);
+
+                                return response.body;
+                            }
+
+                            var urlCreator = window.URL || window.webkitURL;
+                            img.src = urlCreator.createObjectURL(response.bodyBlob);
+
+                            return promise;
+                        });
+                }
             },
             drawSimpleImage: function (image) {
                 image.canvas.width = image.width;
@@ -171,6 +207,8 @@ biigle.$declare('annotations.stores.images', function () {
 
                 if (this.supportsColorAdjustment && this.hasColorAdjustment) {
                     return this.drawColorAdjustedImage(image);
+                } else if (this.isTiledImage(image)) {
+                    return image;
                 }
 
                 return this.drawSimpleImage(image);
@@ -180,6 +218,7 @@ biigle.$declare('annotations.stores.images', function () {
                     events.$emit('images.fetching', id);
                     this.cache[id] = this.createImage(id);
                     this.cachedIds.push(id);
+
                 }
 
                 return this.cache[id];

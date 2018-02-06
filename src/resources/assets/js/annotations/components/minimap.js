@@ -29,6 +29,16 @@ biigle.$component('annotations.components.minimap', function () {
                 required: true,
             },
         },
+        computed: {
+            // Width and height are only evaluated once on initialization. They will be
+            // used to calculate the actual minimap size based on the image aspect ratio.
+            intendedWidth: function () {
+                return this.$el.clientWidth;
+            },
+            intendedHeight: function () {
+                return this.$el.clientHeight;
+            },
+        },
         methods: {
             // Move the viewport rectangle on the minimap.
             updateViewport: function () {
@@ -44,10 +54,13 @@ biigle.$component('annotations.components.minimap', function () {
                 mapView = e.target.getView();
             },
             updateElementSize: function () {
+                var imageWidth = this.extent[2];
+                var imageHeight = this.extent[3];
+
                 // Calculate resolution that fits the image into the minimap element.
                 var resolution = Math.max(
-                    this.extent[2] / this.intendedWidth,
-                    this.extent[3] / this.intendedHeight
+                    imageWidth / this.intendedWidth,
+                    imageHeight / this.intendedHeight
                 );
                 minimap.setView(new ol.View({
                     projection: this.projection,
@@ -57,19 +70,21 @@ biigle.$component('annotations.components.minimap', function () {
 
                 // Update the minimap element size so it has the same dimensions than the
                 // image displayed by OpenLayers.
-                this.$el.style.width = Math.round(this.extent[2] / resolution) + 'px';
-                this.$el.style.height = Math.round(this.extent[3] / resolution) + 'px';
+                this.$el.style.width = Math.round(imageWidth / resolution) + 'px';
+                this.$el.style.height = Math.round(imageHeight / resolution) + 'px';
                 minimap.updateSize();
             },
-        },
-        computed: {
-            // Width and height are only evaluated once on initialization. They will be
-            // used to calculate the actual minimap size based on the image aspect ratio.
-            intendedWidth: function () {
-                return this.$el.clientWidth;
-            },
-            intendedHeight: function () {
-                return this.$el.clientHeight;
+            refreshImageLayer: function (e) {
+                // Set or refresh the layer that displays the image. This is done after
+                // the minimap element was created. The annotationCanvas can display
+                // either a regular image or a tiled image. If the type changes we have
+                // to update the layer here, too.
+                var layers = minimap.getLayers();
+                if (layers.getLength() > 1) {
+                    layers.setAt(0, e.target.item(e.target.getLength() - 1));
+                } else {
+                    layers.insertAt(0, e.target.item(e.target.getLength() - 1));
+                }
             },
         },
         created: function () {
@@ -84,11 +99,13 @@ biigle.$component('annotations.components.minimap', function () {
                 map.on('change:size', this.updateMapSize);
                 map.on('change:view', this.updateMapView);
 
-                minimap.addLayer(map.getLayers().item(0));
+                // Add the viewport layer now. Add the image layer later when it was
+                // added to the map.
                 minimap.addLayer(new ol.layer.Vector({
                     source: viewportSource,
                     style: biigle.$require('annotations.stores.styles').viewport
                 }));
+                map.getLayers().on('add', this.refreshImageLayer);
                 minimap.on('pointerdrag', this.dragViewport);
                 minimap.on('click', this.dragViewport);
             }
