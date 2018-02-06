@@ -11,11 +11,12 @@ use InvalidArgumentException;
 use League\Flysystem\Adapter\Local;
 use Symfony\Component\Finder\Finder;
 use League\Flysystem\FileNotFoundException;
+use Biigle\Contracts\ImageCache as ImageCacheContract;
 
 /**
  * The image cache.
  */
-class ImageCache
+class ImageCache implements ImageCacheContract
 {
     /**
      * Directory of the image cache.
@@ -33,14 +34,7 @@ class ImageCache
     }
 
     /**
-     * Perform a callback with the path of a cached image. This takes care of shared
-     * locks on the cached image file so it is not corrupted due to concurrent write
-     * operations.
-     *
-     * @param Image $image
-     * @param callable $callback
-     *
-     * @return mixed Result of the callback.
+     * {@inheritDoc}
      */
     public function doWith(Image $image, $callback)
     {
@@ -55,14 +49,7 @@ class ImageCache
     }
 
     /**
-     * Perform a callback with the path of a cached image. Remove the cached file
-     * afterwards. This takes care of shared locks on the cached image file so it is not
-     * corrupted due to concurrent write operations.
-     *
-     * @param Image $image
-     * @param callable $callback
-     *
-     * @return mixed Result of the callback.
+     * {@inheritDoc}
      */
     public function doWithOnce(Image $image, $callback)
     {
@@ -86,14 +73,7 @@ class ImageCache
     }
 
     /**
-     * Get a stream resource for an image. If the image is cached, the resource points
-     * to the cached file instead. This will not cache uncached images. Make sure to
-     * close the streams!
-     *
-     * @param Image $image
-     * @throws Exception If the storage disk does not exist or the file was not found.
-     *
-     * @return array Array containing 'stream', 'size' and 'mime' of the resource.
+     * {@inheritDoc}
      */
     public function getStream(Image $image)
     {
@@ -139,8 +119,7 @@ class ImageCache
     }
 
     /**
-     * Remove the least recently accessed cached remote images if the cache gets too
-     * large.
+     * {@inheritDoc}
      */
     public function clean()
     {

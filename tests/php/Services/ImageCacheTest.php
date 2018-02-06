@@ -201,6 +201,16 @@ class ImageCacheTest extends TestCase
         ImageCache::clean();
         $this->assertFalse(File::exists("{$this->cachePath}/def"));
     }
+
+    public function testFake()
+    {
+        ImageCache::fake();
+        $image = ImageTest::create();
+        $path = ImageCache::doWith($image, function ($image, $path) {
+            return $path;
+        });
+        $this->assertFalse(File::exists($path));
+    }
 }
 
 class ImageCacheStub extends \Biigle\Services\ImageCache
