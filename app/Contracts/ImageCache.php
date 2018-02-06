@@ -16,7 +16,7 @@ interface ImageCache
      *
      * @return mixed Result of the callback.
      */
-    public function doWith(Image $image, $callback);
+    public function get(Image $image, $callback);
 
     /**
      * Perform a callback with the path of a cached image. Remove the cached file
@@ -28,7 +28,7 @@ interface ImageCache
      *
      * @return mixed Result of the callback.
      */
-    public function doWithOnce(Image $image, $callback);
+    public function getOnce(Image $image, $callback);
 
     /**
      * Get a stream resource for an image. If the image is cached, the resource points

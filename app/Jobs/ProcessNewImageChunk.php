@@ -81,7 +81,7 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
 
         foreach ($images as $image) {
             try {
-                ImageCache::doWithOnce($image, $callback);
+                ImageCache::getOnce($image, $callback);
             } catch (Exception $e) {
                 Log::error("Could not process new image {$image->id}: {$e->getMessage()}");
             }

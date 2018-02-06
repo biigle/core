@@ -36,9 +36,9 @@ class ImageCache implements ImageCacheContract
     /**
      * {@inheritDoc}
      */
-    public function doWith(Image $image, $callback)
+    public function get(Image $image, $callback)
     {
-        $file = $this->get($image);
+        $file = $this->cache($image);
         try {
             $result = call_user_func($callback, $image, $file['path']);
         } finally {
@@ -51,9 +51,9 @@ class ImageCache implements ImageCacheContract
     /**
      * {@inheritDoc}
      */
-    public function doWithOnce(Image $image, $callback)
+    public function getOnce(Image $image, $callback)
     {
-        $file = $this->get($image);
+        $file = $this->cache($image);
         try {
             $result = call_user_func($callback, $image, $file['path']);
             // Convert to exclusive lock for deletion. Don't delete if lock can't be
@@ -162,7 +162,7 @@ class ImageCache implements ImageCacheContract
      * @return array Containing the 'path' to the file and the file 'handle'. Close the
      * handle when finished.
      */
-    protected function get(Image $image)
+    protected function cache(Image $image)
     {
         $cachedPath = $this->getCachedPath($image);
         $handle = @fopen($cachedPath, 'r');

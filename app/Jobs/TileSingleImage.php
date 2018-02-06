@@ -41,7 +41,7 @@ class TileSingleImage extends Job implements ShouldQueue
      */
     public function handle()
     {
-        ImageCache::doWithOnce($this->image, [$this, 'handleImage']);
+        ImageCache::getOnce($this->image, [$this, 'handleImage']);
     }
 
     /**

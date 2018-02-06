@@ -20,7 +20,7 @@ class ImageCacheFake implements ImageCacheContract
     /**
      * {@inheritDoc}
      */
-    public function doWith(Image $image, $callback)
+    public function get(Image $image, $callback)
     {
         return $callback($image, "{$this->path}/{$image->id}");
     }
@@ -28,9 +28,9 @@ class ImageCacheFake implements ImageCacheContract
     /**
      * {@inheritDoc}
      */
-    public function doWithOnce(Image $image, $callback)
+    public function getOnce(Image $image, $callback)
     {
-        return $this->doWith($image, $callback);
+        return $this->get($image, $callback);
     }
 
     /**
