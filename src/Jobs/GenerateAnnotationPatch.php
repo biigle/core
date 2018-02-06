@@ -60,7 +60,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         }
 
         try {
-            ImageCache::doWith($this->annotation->image, [$this, 'handleImage']);
+            ImageCache::get($this->annotation->image, [$this, 'handleImage']);
         } catch (Exception $e) {
             Log::error("Could not generate annotation patch for annotation {$this->id}: {$e->getMessage()}");
         }
