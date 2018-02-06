@@ -36,6 +36,12 @@ $volume-image-padding: 0.5em;
     }
 }
 
+.panel-image {
+    text-align: center;
+    padding: .5em;
+    background-color: $gray-lighter;
+}
+
 @import 'components/image-grid';
 @import 'components/image-grid-image';
 @import 'components/image-grid-progress';

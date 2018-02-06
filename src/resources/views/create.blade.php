@@ -19,7 +19,7 @@
             <label for="url">Volume url</label>
             <input type="text" class="form-control" name="url" id="url" value="{{ old('url') }}" placeholder="/vol/images/volume" required>
             <p class="help-block">
-               The directory containing the volume images. Can be local like <code>/vol/images/volume</code> or remote like <code>https://my-domain.tld/volume</code>.
+               The directory containing the volume images. Can be a storage disk like <code>local://images/volume</code> or remote like <code>https://my-domain.tld/volume</code>.
             </p>
             @if($errors->has('url'))
                <span class="help-block">{{ $errors->first('url') }}</span>
@@ -72,7 +72,7 @@
             <textarea class="form-control" name="images" id="images" placeholder="1.jpg, 2.jpg, 3.jpg" required>{{ old('images') }}</textarea>
             <p class="help-block">
                The filenames of the volume images in the directory of the volume URL formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>.<br>
-                    The supported image file formats are: JPG, PNG and GIF.
+                    The supported image file formats are: JPEG, PNG and TIFF.
             </p>
             @if($errors->has('images'))
                <span class="help-block">{{ $errors->first('images') }}</span>
