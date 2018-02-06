@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use File;
+use Storage;
 use ApiTestCase;
 use Biigle\MediaType;
 
@@ -27,7 +27,7 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testUpdate()
     {
-        $this->doesntExpectJobs(\Biigle\Jobs\GenerateThumbnails::class);
+        $this->doesntExpectJobs(\Biigle\Jobs\ProcessNewImages::class);
 
         $id = $this->volume()->id;
         $this->volume()->media_type_id = MediaType::$timeSeriesId;
@@ -53,7 +53,7 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertEquals(MediaType::$locationSeriesId, $this->volume()->fresh()->media_type_id);
     }
 
-    public function testJsonAttrs()
+    public function testUpdateJsonAttrs()
     {
         $volume = $this->volume();
         $id = $volume->id;
@@ -87,17 +87,17 @@ class VolumeControllerTest extends ApiTestCase
 
     public function testUpdateUrl()
     {
-        // URL validation
-        File::shouldReceive('exists')->once()->andReturn(true);
-        File::shouldReceive('isReadable')->once()->andReturn(true);
+        Storage::fake('test');
+        Storage::disk('test')->makeDirectory('volumes');
+        Storage::disk('test')->put('volumes/file.txt', 'abc');
 
         $this->beAdmin();
-        $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
+        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
         $response = $this->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
-            'url' => '/new/url',
+            'url' => 'test://volumes',
         ]);
         $response->assertStatus(200);
-        $this->assertEquals('/new/url', $this->volume()->fresh()->url);
+        $this->assertEquals('test://volumes', $this->volume()->fresh()->url);
     }
 
     public function testUpdateValidation()

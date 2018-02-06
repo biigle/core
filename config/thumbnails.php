@@ -3,12 +3,6 @@
 return [
 
     /*
-    | The service for generating thumbnails, this application should use.
-    | Default 'Biigle\Services\Thumbnails\InterventionImage' is provided by the core application.
-    */
-    'service' => Biigle\Services\Thumbnails\InterventionImage::class,
-
-    /*
     | URI where the image thumbnails are available from.
     | If you have 'thumbs', the URL will look like 'example.com/thumbs/abc.jpg'.
     |
@@ -37,11 +31,5 @@ return [
     | helper).
     */
     'empty_url' => 'assets/images/empty-thumbnail.svg',
-
-    /*
-    | PHP memory limit to use during processing of the images. After processing, the
-    | default memory limit will be used.
-    */
-    'memory_limit' => '512M',
 
 ];

@@ -50,30 +50,31 @@ class ProjectControllerTest extends ApiTestCase
 
     public function testUpdate()
     {
-        $this->doTestApiRoute('PUT', '/api/v1/projects/1');
+        $id = $this->project()->id;
+        $this->doTestApiRoute('PUT', "/api/v1/projects/{$id}");
 
         // non-admins are not allowed to update
         $this->beEditor();
-        $response = $this->put('/api/v1/projects/1');
+        $response = $this->put("/api/v1/projects/{$id}");
         $response->assertStatus(403);
 
         $this->beAdmin();
         $response = $this->put('/api/v1/projects/999');
         $response->assertStatus(404);
 
-        $response = $this->json('PUT', '/api/v1/projects/1', [
+        $response = $this->json('PUT', "/api/v1/projects/{$id}", [
             'name' => '',
         ]);
         // name must not be empty if it is present
         $response->assertStatus(422);
 
-        $response = $this->json('PUT', '/api/v1/projects/1', [
+        $response = $this->json('PUT', "/api/v1/projects/{$id}", [
             'description' => '',
         ]);
         // description must not be empty if it is present
         $response->assertStatus(422);
 
-        $response = $this->json('PUT', '/api/v1/projects/1', [
+        $response = $this->json('PUT', "/api/v1/projects/{$id}", [
             'name' => 'my test',
             'description' => 'this is my test',
             'creator_id' => 5,
@@ -95,7 +96,7 @@ class ProjectControllerTest extends ApiTestCase
         $response = $this->json('POST', '/api/v1/projects');
         $response->assertStatus(422);
 
-        $this->assertNull(Project::find(2));
+        $this->assertEquals(1, Project::count());
 
         $response = $this->json('POST', '/api/v1/projects', [
             'name' => 'test project',
@@ -107,7 +108,7 @@ class ProjectControllerTest extends ApiTestCase
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
         $this->assertContains('"name":"test project"', $content);
-        $this->assertNotNull(Project::find(2));
+        $this->assertEquals(2, Project::count());
     }
 
     public function testDestroy()

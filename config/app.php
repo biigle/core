@@ -179,7 +179,6 @@ return [
         /*
          * Package Service Providers...
          */
-        Intervention\Image\ImageServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -189,7 +188,6 @@ return [
         Biigle\Providers\AuthServiceProvider::class,
         Biigle\Providers\EventServiceProvider::class,
         Biigle\Providers\RouteServiceProvider::class,
-        Biigle\Providers\ThumbnailServiceProvider::class,
 
     ],
 
@@ -239,8 +237,9 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
-        'InterventionImage' => Intervention\Image\Facades\Image::class,
         'Modules' => Biigle\Facades\Modules::class,
+        'VipsImage' => Biigle\Facades\VipsImage::class,
+        'ImageCache' => Biigle\Facades\ImageCache::class,
     ],
 
 ];

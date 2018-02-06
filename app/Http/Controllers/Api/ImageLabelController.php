@@ -7,7 +7,6 @@ use Biigle\Label;
 use Biigle\ImageLabel;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Database\QueryException;
 
 class ImageLabelController extends Controller
 {
@@ -99,14 +98,19 @@ class ImageLabelController extends Controller
         $label = Label::findOrFail($request->input('label_id'));
         $this->authorize('attach-label', [$image, $label]);
 
-        try {
-            $imageLabel = new ImageLabel;
-            $imageLabel->user()->associate($auth->user());
-            $imageLabel->label()->associate($label);
-            $imageLabel->image()->associate($image);
-            $imageLabel->save();
-        } catch (QueryException $e) {
+        $imageLabel = new ImageLabel;
+        $imageLabel->user()->associate($auth->user());
+        $imageLabel->label()->associate($label);
+        $imageLabel->image()->associate($image);
+
+        $exists = ImageLabel::where('label_id', $imageLabel->label_id)
+            ->where('image_id', $imageLabel->image_id)
+            ->exists();
+
+        if ($exists) {
             abort(400, 'This label is already attached to the image.');
+        } else {
+            $imageLabel->save();
         }
 
         // should not be returned

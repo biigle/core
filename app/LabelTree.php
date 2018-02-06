@@ -4,7 +4,6 @@ namespace Biigle;
 
 use DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\QueryException;
 
 /**
  * A label tree is a group of labels. Projects can choose to used different label trees,
@@ -192,10 +191,10 @@ class LabelTree extends Model
             abort(422, 'Invalid label tree member role.');
         }
 
-        try {
-            $this->members()->attach($user->id, ['role_id' => $role->id]);
-        } catch (QueryException $e) {
+        if ($this->members()->where('id', $user->id)->exists()) {
             abort(422, 'The user is already member of this label tree.');
+        } else {
+            $this->members()->attach($user->id, ['role_id' => $role->id]);
         }
     }
 

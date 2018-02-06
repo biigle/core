@@ -15,6 +15,7 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         'images.cleanup' => [
             \Biigle\Listeners\CleanupThumbnails::class,
+            \Biigle\Listeners\CleanupImageTiles::class,
         ],
     ];
 

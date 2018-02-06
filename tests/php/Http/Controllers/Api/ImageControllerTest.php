@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
+use File;
 use ApiTestCase;
 use Biigle\Image;
 use Biigle\Volume;
@@ -22,33 +23,31 @@ class ImageControllerTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/images/1');
+        $id = $this->image->id;
+        $this->doTestApiRoute('GET', "/api/v1/images/{$id}");
 
         // api key authentication
         $this->beUser();
-        $response = $this->get('/api/v1/images/1');
+        $response = $this->get("/api/v1/images/{$id}");
         $response->assertStatus(403);
 
         $this->beGuest();
         $response = $this->get('/api/v1/images/-1');
         $response->assertStatus(404);
 
-        $response = $this->get('/api/v1/images/1');
+        $response = $this->get("/api/v1/images/{$id}");
         $response->assertStatus(200);
         $content = $response->getContent();
         $this->assertStringStartsWith('{', $content);
         $this->assertStringEndsWith('}', $content);
         $this->assertContains('"volume"', $content);
-        $this->assertContains('"exif"', $content);
-        $this->assertContains('"width"', $content);
-        $this->assertContains('"height"', $content);
     }
 
     public function testShowThumb()
     {
-        // generate thumbnail manually
-        with(new ProcessThumbnailChunkJob(collect([$this->image])))->handle();
         $id = $this->image->id;
+        File::makeDirectory(File::dirname($this->image->thumbPath), 0755, true, true);
+        File::put($this->image->thumbPath, 'test123');
 
         $this->doTestApiRoute('GET', "/api/v1/images/{$id}/thumb");
 
@@ -62,24 +61,47 @@ class ImageControllerTest extends ApiTestCase
 
         $response = $this->get("/api/v1/images/{$id}/thumb");
         $response->assertStatus(200);
-        $this->assertEquals('image/jpeg', $response->headers->get('content-type'));
+        $this->assertEquals('text/plain', $response->headers->get('content-type'));
+        unlink($this->image->thumbPath);
+        @rmdir(dirname($this->image->thumbPath, 1));
+        @rmdir(dirname($this->image->thumbPath, 2));
     }
 
     public function testShowFile()
     {
-        $this->doTestApiRoute('GET', '/api/v1/images/1/file');
+        $id = $this->image->id;
+        $this->doTestApiRoute('GET', "/api/v1/images/{$id}/file");
 
         $this->beUser();
-        $response = $this->get('/api/v1/images/1/file');
+        $response = $this->get("/api/v1/images/{$id}/file");
         $response->assertStatus(403);
 
         $this->beGuest();
         $response = $this->get('/api/v1/images/-1/file');
         $response->assertStatus(404);
 
-        $response = $this->get('/api/v1/images/1/file');
+        $response = $this->get("/api/v1/images/{$id}/file");
         $response->assertStatus(200);
         $this->assertEquals('image/jpeg', $response->headers->get('content-type'));
+    }
+
+    public function testShowFileTiled()
+    {
+        $id = $this->image->id;
+        $this->image->tiled = true;
+        $this->image->setTileProperties(['width' => 123, 'height' => 456]);
+        $this->image->save();
+
+        $this->beGuest();
+        $this->get("/api/v1/images/{$id}/file")
+            ->assertStatus(200)
+            ->assertExactJson([
+                'id' => $this->image->id,
+                'uuid' => $this->image->uuid,
+                'width' => 123,
+                'height' => 456,
+                'tiled' => true,
+            ]);
     }
 
     public function testDestroy()

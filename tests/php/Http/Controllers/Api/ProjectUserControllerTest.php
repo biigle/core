@@ -126,19 +126,20 @@ class ProjectUserControllerTest extends ApiTestCase
         $this->admin();
         // creator is an admin and shouldn't play a role in this test
         $this->project()->creator->delete();
+        $id = $this->project()->id;
 
         // token mismatch
-        $this->doTestApiRoute('DELETE', '/api/v1/projects/1/users/1');
+        $this->doTestApiRoute('DELETE', "/api/v1/projects/{$id}/users/1");
 
         // non-admins are not allowed to delete other users
         $this->beEditor();
-        $response = $this->delete('/api/v1/projects/1/users/'.$this->admin()->id);
+        $response = $this->delete("/api/v1/projects/{$id}/users/".$this->admin()->id);
         $response->assertStatus(403);
 
         // but they can delete themselves
         $this->assertNotNull($this->project()->fresh()->users()->find($this->editor()->id));
 
-        $response = $this->delete('/api/v1/projects/1/users/'.$this->editor()->id);
+        $response = $this->delete("/api/v1/projects/{$id}/users/".$this->editor()->id);
         $response->assertStatus(200);
         $this->assertNull($this->project()->fresh()->users()->find($this->editor()->id));
 
@@ -148,14 +149,14 @@ class ProjectUserControllerTest extends ApiTestCase
         $this->assertNotNull($this->project()->fresh()->users()->find($this->editor()->id));
 
         $this->beAdmin();
-        $response = $this->delete('/api/v1/projects/1/users/'.$this->editor()->id);
+        $response = $this->delete("/api/v1/projects/{$id}/users/".$this->editor()->id);
         $response->assertStatus(200);
         $this->assertNull($this->project()->fresh()->users()->find($this->editor()->id));
 
         $this->project()->addUserId($this->editor()->id, Role::$editor->id);
 
         // but admins cannot delete themselves if they are the only admin left
-        $response = $this->delete('/api/v1/projects/1/users/'.$this->admin()->id);
+        $response = $this->delete("/api/v1/projects/{$id}/users/".$this->admin()->id);
         $response->assertStatus(400);
     }
 }

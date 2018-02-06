@@ -1,0 +1,69 @@
+version: '2'
+
+services:
+  # The application
+  app:
+    image: biigle/app-dev
+    user: 1000:1000
+    build:
+      context: ./
+      dockerfile: .docker/app-dev.dockerfile
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    environment:
+      - "DB_PORT=5432"
+
+  worker:
+    image: biigle/worker-dev
+    user: 1000:1000
+    restart: unless-stopped
+    depends_on:
+      - database_testing
+    build:
+      context: ./
+      dockerfile: .docker/worker-dev.dockerfile
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    environment:
+      - "DB_PORT=5432"
+    command: "php -d memory_limit=1G artisan queue:work --queue=high,default --sleep=5 --tries=3 --timeout=0"
+
+  # The web server
+  web:
+    image: biigle/web-dev
+    build:
+      context: ./
+      dockerfile: .docker/web-dev.dockerfile
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    ports:
+      - 8000:443
+
+  # The database
+  database:
+    image: postgres:9.4-alpine
+    volumes:
+      - dbdata:/var/lib/postgresql
+      - ./:/data
+    environment:
+      - "POSTGRES_DB=homestead"
+      - "POSTGRES_USER=homestead"
+      - "POSTGRES_PASSWORD=secret"
+    ports:
+      - "54320:5432"
+
+  database_testing:
+    image: postgres:9.4-alpine
+    tmpfs:
+      - /var/lib/postgresql/data
+    environment:
+      - "POSTGRES_DB=homestead"
+      - "POSTGRES_USER=homestead"
+      - "POSTGRES_PASSWORD=secret"
+
+volumes:
+  dbdata:
+

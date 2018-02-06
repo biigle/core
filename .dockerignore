@@ -1,0 +1,15 @@
+.git
+.env
+node_modules
+vendor
+storage/framework/cache/**
+storage/framework/sessions/**
+storage/framework/views/**
+storage/framework/thumbs/**
+storage/framework/tiles/**
+storage/thumbs/**
+storage/tiles/**
+storage/images/**
+storage/logs/**
+public/thumbs/**
+public/tiles/**

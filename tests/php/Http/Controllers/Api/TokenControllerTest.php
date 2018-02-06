@@ -22,10 +22,6 @@ class ApiTokenControllerTest extends ApiTestCase
             'updated_at' => (string) $token->updated_at,
         ];
 
-        if ($this->isSqlite()) {
-            $expect['owner_id'] = "{$expect['owner_id']}";
-        }
-
         $this->be($token->owner);
         $this->get('/api/v1/api-tokens')
             ->assertExactJson([$expect]);
