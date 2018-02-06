@@ -3,6 +3,8 @@
 namespace Biigle;
 
 use Response;
+use Exception;
+use ImageCache;
 use ErrorException;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
@@ -32,36 +34,6 @@ class Image extends Model
     public static $createAnnotationRules = [
         'shape_id' => 'required|exists:shapes,id',
         'points'   => 'required',
-    ];
-
-    /**
-     * Contains the array keys that should be included in the EXIF data
-     * if the image. All other fields in the original EXIF array will be
-     * ignored.
-     *
-     * @var array
-     */
-    private static $exifSubset = [
-        'FileName',
-        'FileDateTime',
-        'FileSize',
-        'FileType',
-        'MimeType',
-        'Make',
-        'Model',
-        'Orientation',
-        'ExposureTime',
-        'FNumber',
-        'ShutterSpeedValue',
-        'ApertureValue',
-        'ExposureBiasValue',
-        'MaxApertureValue',
-        'MeteringMode',
-        'Flash',
-        'FocalLength',
-        'ExifImageWidth',
-        'ExifImageLength',
-        'ImageType',
     ];
 
     /**
@@ -164,7 +136,7 @@ class Image extends Model
      */
     public function getUrlAttribute()
     {
-        return $this->volume->url.'/'.$this->filename;
+        return "{$this->volume->url}/{$this->filename}";
     }
 
     /**
@@ -185,43 +157,6 @@ class Image extends Model
     public function getMetadataAttribute()
     {
         return $this->getJsonAttr('metadata', []);
-    }
-
-    /**
-     * Returns a subset of the EXIF metadata of the image file.
-     * The subset is defined in `$exifSubset`.
-     *
-     * Only works for local images.
-     *
-     * @return array
-     */
-    public function getExif()
-    {
-        if ($this->volume->isRemote()) {
-            return [];
-        }
-
-        try {
-            $exif = exif_read_data($this->url);
-        } catch (ErrorException $e) {
-            // exif not supported for the file
-            return [];
-        }
-
-        // get only part of the exif data because other fields may contain
-        // corrupted utf8 encoding, which will break json_encode()!
-        // also it limits the size of the JSON output
-        return array_only($exif, self::$exifSubset);
-    }
-
-    /**
-     * Returns the image size as `[width, height]`.
-     *
-     * @return array
-     */
-    public function getSize()
-    {
-        return getimagesize($this->url);
     }
 
     /**
@@ -258,9 +193,20 @@ class Image extends Model
             return $response;
         }
 
+
+
         try {
-            return Response::download($this->url);
-        } catch (FileNotFoundException $e) {
+            $streamInfo = ImageCache::getStream($this);
+
+            return response()->stream(function () use ($streamInfo) {
+                fpassthru($streamInfo['stream']);
+            }, 200, [
+                'Content-Type' => $streamInfo['mime'],
+                'Content-Length' => $streamInfo['size'],
+                'Content-Disposition' => 'inline',
+            ]);
+
+        } catch (Exception $e) {
             abort(404, $e->getMessage());
         }
     }

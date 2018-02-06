@@ -3,13 +3,6 @@
 return [
 
     /*
-    | The service for generating thumbnails, this application should use.
-    | Default 'Biigle\Services\Thumbnails\DefaultThumbnailService' is provided by the
-    | core application.
-    */
-    'service' => Biigle\Services\Thumbnails\DefaultThumbnailService::class,
-
-    /*
     | URI where the image thumbnails are available from.
     | If you have 'thumbs', the URL will look like 'example.com/thumbs/abc.jpg'.
     |

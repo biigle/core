@@ -5,6 +5,7 @@ namespace Biigle\Jobs;
 use File;
 use VipsImage;
 use Exception;
+use ImageCache;
 use Biigle\Image;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -40,16 +41,26 @@ class TileSingleImage extends Job implements ShouldQueue
      */
     public function handle()
     {
-        if (!File::isDirectory($this->image->tilePath)) {
-            File::makeDirectory($this->image->tilePath);
-        }
+        ImageCache::getOnce($this->image, [$this, 'handleImage']);
+    }
 
-        $this->getVipsImage()->dzsave($this->image->tilePath, ['layout' => 'zoomify']);
-        $xml = simplexml_load_string(strtolower(File::get("{$this->image->tilePath}/ImageProperties.xml")));
+    /**
+     * Handle a single image.
+     *
+     * @param Image $image
+     * @param string $path Path to the cached image file.
+     */
+    public function handleImage(Image $image, $path)
+    {
+        if (!File::isDirectory($image->tilePath)) {
+            File::makeDirectory($image->tilePath);
+        }
+        $this->getVipsImage($path)->dzsave($image->tilePath, ['layout' => 'zoomify']);
+        $xml = simplexml_load_string(strtolower(File::get("{$image->tilePath}/ImageProperties.xml")));
         $xml = ((array) $xml)['@attributes'];
-        $this->image->setTileProperties(array_map('intval', $xml));
-        $this->image->tiled = true;
-        $this->image->save();
+        $image->setTileProperties(array_map('intval', $xml));
+        $image->tiled = true;
+        $image->save();
     }
 
     /**
@@ -61,16 +72,19 @@ class TileSingleImage extends Job implements ShouldQueue
     public function failed(Exception $exception)
     {
         File::deleteDirectory($this->image->tilePath);
+
         throw $exception;
     }
 
     /**
      * Get the vips image instance
      *
+     * @param string $path
+     *
      * @return \Jcupitt\Vips\Image
      */
-    protected function getVipsImage()
+    protected function getVipsImage($path)
     {
-        return VipsImage::newFromFile($this->image->url);
+        return VipsImage::newFromFile($path);
     }
 }

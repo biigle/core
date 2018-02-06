@@ -188,7 +188,6 @@ return [
         Biigle\Providers\AuthServiceProvider::class,
         Biigle\Providers\EventServiceProvider::class,
         Biigle\Providers\RouteServiceProvider::class,
-        Biigle\Providers\ThumbnailServiceProvider::class,
 
     ],
 

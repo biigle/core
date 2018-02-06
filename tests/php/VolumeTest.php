@@ -5,6 +5,7 @@ namespace Biigle\Tests;
 use File;
 use Event;
 use Cache;
+use Storage;
 use Exception;
 use Biigle\Role;
 use ModelTestCase;
@@ -119,28 +120,46 @@ class VolumeTest extends ModelTestCase
         $return = $this->model->createImages(['1.jpg', '1.jpg']);
     }
 
-    public function testValidateUrlNotThere()
+    public function testValidateUrlNoDisk()
     {
         $this->model->url = 'test';
-        File::shouldReceive('exists')->andReturn(false);
-        $this->setExpectedException(Exception::class);
-        $this->model->validateUrl();
+        try {
+            $this->model->validateUrl();
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertContains('Unable to identify storage disk', $e->getMessage());
+        }
     }
 
-    public function testValidateUrlNotReadable()
+    public function testValidateUrlUnknownDisk()
     {
-        $this->model->url = 'test';
-        File::shouldReceive('exists')->andReturn(true);
-        File::shouldReceive('isReadable')->andReturn(false);
-        $this->setExpectedException(Exception::class);
-        $this->model->validateUrl();
+        $this->model->url = 'abc://dir';
+        try {
+            $this->model->validateUrl();
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertContains("Storage disk 'abc' does not exist", $e->getMessage());
+        }
+    }
+
+    public function testValidateUrlNotThere()
+    {
+        Storage::fake('test');
+        $this->model->url = 'test://dir';
+        try {
+            $this->model->validateUrl();
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertContains("Unable to access 'dir'", $e->getMessage());
+        }
     }
 
     public function testValidateUrlOk()
     {
-        $this->model->url = 'test';
-        File::shouldReceive('exists')->andReturn(true);
-        File::shouldReceive('isReadable')->andReturn(true);
+        Storage::fake('test');
+        Storage::disk('test')->makeDirectory('dir');
+        Storage::disk('test')->put('dir/file.txt', 'abc');
+        $this->model->url = 'test://dir';
         $this->assertTrue($this->model->validateUrl());
     }
 
@@ -225,9 +244,7 @@ class VolumeTest extends ModelTestCase
 
     public function testHandleNewImages()
     {
-        $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
-        $this->expectsJobs(\Biigle\Jobs\CollectImageMetaInfo::class);
-        $this->expectsJobs(\Biigle\Jobs\GenerateImageTiles::class);
+        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
         $this->model->HandleNewImages();
     }
 

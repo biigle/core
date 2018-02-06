@@ -4,16 +4,14 @@ namespace Biigle;
 
 use DB;
 use App;
-use File;
 use Cache;
+use Storage;
 use Exception;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use GuzzleHttp\Client;
-use Biigle\Jobs\GenerateImageTiles;
-use Biigle\Jobs\GenerateThumbnails;
+use Biigle\Jobs\ProcessNewImages;
 use Biigle\Traits\HasJsonAttributes;
-use Biigle\Jobs\CollectImageMetaInfo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use GuzzleHttp\Exception\ServerException;
@@ -207,12 +205,17 @@ class Volume extends Model
                 throw new Exception('The remote volume URL does not seem to exist. '.$e->getMessage());
             }
         } else {
-            if (!File::exists($this->url)) {
-                throw new Exception('The volume URL does not exist.');
+            $url = explode('://', $this->url);
+            if (count($url) !== 2) {
+                throw new Exception("Unable to identify storage disk. Please set the URL as '[disk]://[path]'.");
             }
 
-            if (!File::isReadable($this->url)) {
-                throw new Exception('The volume URL is not readable. Please check the access permissions.');
+            if (!config("filesystems.disks.{$url[0]}")) {
+                throw new Exception("Storage disk '{$url[0]}' does not exist.");
+            }
+
+            if (empty(Storage::disk($url[0])->files($url[1]))) {
+                throw new Exception("Unable to access '{$url[1]}'. Does it exist and you have access permissions?");
             }
         }
 
@@ -235,14 +238,16 @@ class Volume extends Model
             throw new Exception('No images were supplied.');
         }
 
-        if (count($filenames) !== count(array_unique($filenames))) {
+        $count = count($filenames);
+
+        if ($count !== count(array_unique($filenames))) {
             throw new Exception('A volume must not have the same image twice.');
         }
 
-        foreach ($filenames as $filename) {
-            if (preg_match('/\.(jpe?g|png|tif?f)$/i', $filename) !== 1) {
-                throw new Exception('Only JPG, PNG or TIFF image formats are supported.');
-            }
+        $matches = preg_grep('/\.(jpe?g|png|tif?f)$/i', $filenames);
+
+        if ($count !== count($matches)) {
+            throw new Exception('Only JPEG, PNG or TIFF image formats are supported.');
         }
 
         return true;
@@ -282,9 +287,7 @@ class Volume extends Model
      */
     public function handleNewImages($only = [])
     {
-        $this->generateThumbnails($only);
-        $this->collectMetaInfo($only);
-        $this->generateImageTiles($only);
+        $this->dispatch(new ProcessNewImages($this, $only));
     }
 
     /**
@@ -385,7 +388,7 @@ class Volume extends Model
     {
         // Cache this for a single request because it may be called lots of times.
         return Cache::store('array')->remember("volume-{$this->id}-is-remote", 1, function () {
-            return preg_match('#^https?://#i', $this->url) === 1;
+            return strpos($this->url, 'http') === 0;
         });
     }
 
@@ -487,38 +490,6 @@ class Volume extends Model
     public function getDoiAttribute()
     {
         return $this->getJsonAttr('doi');
-    }
-
-    /**
-     * (Re-) generates the thumbnail images for all images belonging to this volume.
-     *
-     * @param array $only (optional) Array of image IDs to restrict the (re-)generation
-     * of thumbnails to.
-     */
-    protected function generateThumbnails($only = [])
-    {
-        $this->dispatch(new GenerateThumbnails($this, $only));
-    }
-
-    /**
-     * (Re-) collects image meta information for images of this volume.
-     *
-     * @param array $only (optional) Array of image IDs to restrict the action to.
-     */
-    protected function collectMetaInfo($only = [])
-    {
-        $this->dispatch(new CollectImageMetaInfo($this, $only));
-    }
-
-    /**
-     * (Re-) generates the image tiles for all images belonging to this volume.
-     *
-     * @param array $only (optional) Array of image IDs to restrict the (re-)generation
-     * of image tiles to.
-     */
-    protected function generateImageTiles($only = [])
-    {
-        $this->dispatch(new GenerateImageTiles($this, $only));
     }
 
     /**

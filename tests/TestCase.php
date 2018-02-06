@@ -33,6 +33,12 @@ class TestCase extends BaseTestCase
 
         // Don't execute queued jobs
         Queue::fake();
+
+        // Set up storage disk for testing.
+        config(['filesystems.disks.test' => [
+            'driver' => 'local',
+            'root' => base_path('tests'),
+        ]]);
     }
 
     public function tearDown()

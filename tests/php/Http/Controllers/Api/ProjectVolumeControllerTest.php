@@ -2,9 +2,9 @@
 
 namespace Biigle\Tests\Http\Controllers\Api;
 
-use File;
 use Event;
 use Cache;
+use Storage;
 use Biigle\Role;
 use Biigle\Image;
 use ApiTestCase;
@@ -23,6 +23,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         parent::setUp();
         $this->volume = VolumeTest::create();
         $this->project()->volumes()->attach($this->volume);
+        Storage::fake('test');
     }
 
     public function testIndex()
@@ -69,7 +70,37 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
+            'url' => 'test',
+            'media_type_id' => MediaType::$timeSeriesId,
+            'images' => '1.jpg, 2.jpg',
+        ]);
+        // invalid url format
+        $response->assertStatus(422);
+
+        $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
             'url' => 'random',
+            'media_type_id' => MediaType::$timeSeriesId,
+            'images' => '1.jpg, 2.jpg',
+        ]);
+        // unknown storage disk
+        $response->assertStatus(422);
+
+        $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
+            'media_type_id' => MediaType::$timeSeriesId,
+            'images' => '1.jpg, 2.jpg',
+        ]);
+        // images directory dows not exist in storage disk
+        $response->assertStatus(422);
+
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/file.txt', 'abc');
+
+        $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
+            'name' => 'my volume no. 1',
+            'url' => 'test://images',
             'media_type_id' => MediaType::$timeSeriesId,
             'images' => '',
         ]);
@@ -81,7 +112,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
-            'url' => 'random',
+            'url' => 'test://images',
             'media_type_id' => MediaType::$timeSeriesId,
             'images' => '1.jpg, , 1.jpg',
         ]);
@@ -90,42 +121,18 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
-            'url' => 'random',
+            'url' => 'test://images',
             'media_type_id' => MediaType::$timeSeriesId,
             'images' => '1.bmp',
         ]);
         // error because of unsupported image format
         $response->assertStatus(422);
 
-        File::shouldReceive('exists')->times(3)->andReturn(false, true, true);
-        File::shouldReceive('isReadable')->twice()->andReturn(false, true);
+        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
 
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
-            'url' => 'random',
-            'media_type_id' => MediaType::$timeSeriesId,
-            'images' => '1.jpg',
-        ]);
-        // volume url does not exist
-        $response->assertStatus(422);
-
-        $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
-            'name' => 'my volume no. 1',
-            'url' => 'random',
-            'media_type_id' => MediaType::$timeSeriesId,
-            'images' => '1.jpg',
-        ]);
-        // volume url is not readable
-        $response->assertStatus(422);
-
-        $this->assertEquals($count, $this->project()->volumes()->count());
-        $this->assertEquals($imageCount, Image::all()->count());
-
-        $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
-
-        $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
-            'name' => 'my volume no. 1',
-            'url' => 'random',
+            'url' => 'test://images',
             'media_type_id' => MediaType::$timeSeriesId,
             // empty parts should be discarded
             'images' => '1.jpg, , 2.jpg, , ,',
@@ -143,17 +150,17 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $this->assertTrue($volume->images()->where('filename', '2.jpg')->exists());
     }
 
-    public function testJsonAttrs()
+    public function testStoreJsonAttrs()
     {
-        File::shouldReceive('exists')->twice()->andReturn(true);
-        File::shouldReceive('isReadable')->twice()->andReturn(true);
+        Storage::disk('test')->makeDirectory('images');
+        Storage::disk('test')->put('images/file.txt', 'abc');
 
         $id = $this->project()->id;
         $this->beAdmin();
-        $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
+        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
-            'url' => 'random',
+            'url' => 'test://images',
             'media_type_id' => MediaType::$timeSeriesId,
             'images' => '1.jpg',
             'video_link' => 'http://example.com',
@@ -167,7 +174,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
-            'url' => 'random',
+            'url' => 'test://images',
             'media_type_id' => MediaType::$timeSeriesId,
             'images' => '1.jpg',
             'video_link' => '',

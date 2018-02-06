@@ -8,13 +8,14 @@ use Mockery;
 use TestCase;
 use VipsImage;
 use Exception;
+use ImageCache;
 use Jcupitt\Vips\Image;
 use Biigle\Tests\ImageTest;
 use Biigle\Jobs\TileSingleImage;
 
 class TileSingleImageTest extends TestCase
 {
-    public function testHandle()
+    public function testHandleImage()
     {
         $image = ImageTest::create();
 
@@ -41,7 +42,7 @@ class TileSingleImageTest extends TestCase
         $job->mock = $mock;
 
         $this->assertFalse($image->tiled);
-        $job->handle();
+        $job->handleImage($image, 'abc');
         $image->refresh();
         $this->assertTrue($image->tiled);
         $this->assertSame(['width' => 2352, 'height' => 18060], $image->getTileProperties());
@@ -50,7 +51,7 @@ class TileSingleImageTest extends TestCase
 
 class TileSingleImageStub extends TileSingleImage
 {
-    protected function getVipsImage()
+    protected function getVipsImage($path)
     {
         return $this->mock;
     }

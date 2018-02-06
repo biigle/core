@@ -51,7 +51,7 @@ class VolumeImageControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $this->assertEquals(1, $this->volume()->images()->count());
-        $this->expectsJobs(\Biigle\Jobs\GenerateThumbnails::class);
+        $this->expectsJobs(\Biigle\Jobs\ProcessNewImages::class);
         $this->expectsEvents('images.created');
 
         $response = $this->json('POST', "/api/v1/volumes/{$id}/images", [

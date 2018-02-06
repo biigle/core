@@ -10,7 +10,6 @@ class ImageController extends Controller
      * Shows the specified image.
      *
      * @api {get} images/:id Get image information
-     * @apiDescription Image information includes a subset of the image EXIF
      * data as well as the volume, the image belongs to.
      * @apiGroup Images
      * @apiName ShowImages
@@ -20,32 +19,7 @@ class ImageController extends Controller
      * @apiSuccessExample {json} Success response:
      * {
      *    "id":1,
-     *    "width":1000,
-     *    "height":750,
      *    "filename":"IMG_3275.JPG",
-     *    "exif":{
-     *       "FileName":"IMG_3275.JPG",
-     *       "FileDateTime":1411554694,
-     *       "FileSize":3014886,
-     *       "FileType":2,
-     *       "MimeType":"image\/jpeg",
-     *       "Make":"Canon",
-     *       "Model":"Canon PowerShot G9",
-     *       "Orientation":1,
-     *       "DateTime":"2014:05:09 00:53:45",
-     *       "ExposureTime":"1\/100",
-     *       "FNumber":"28\/10",
-     *       "ShutterSpeedValue":"213\/32",
-     *       "ApertureValue":"95\/32",
-     *       "ExposureBiasValue":"0\/3",
-     *       "MaxApertureValue":"95\/32",
-     *       "MeteringMode":5,
-     *       "Flash":9,
-     *       "FocalLength":"7400\/1000",
-     *       "ExifImageWidth":3264,
-     *       "ExifImageLength":2448,
-     *       "ImageType":"IMG:PowerShot G9 JPEG"
-     *    },
      *    "volume":{
      *       "id":1,
      *       "name":"Test volume",
@@ -53,7 +27,7 @@ class ImageController extends Controller
      *       "creator_id":1,
      *       "created_at":"2015-05-04 07:34:04",
      *       "updated_at":"2015-05-04 07:34:04",
-     *       "url":"\/path\/to\/volume\/1"
+     *       "url":"disk:\/\/\/path\/to\/volume\/1"
      *    }
      * }
      *
@@ -62,13 +36,8 @@ class ImageController extends Controller
      */
     public function show($id)
     {
-        $image = Image::findOrFail($id);
+        $image = Image::with('volume')->findOrFail($id);
         $this->authorize('access', $image);
-
-        $image->setAttribute('exif', $image->getExif());
-        $size = $image->getSize();
-        $image->setAttribute('width', $size[0]);
-        $image->setAttribute('height', $size[1]);
 
         return $image;
     }

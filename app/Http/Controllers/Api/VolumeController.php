@@ -26,7 +26,7 @@ class VolumeController extends Controller
      *    "creator_id": 7,
      *    "created_at": "2015-02-20 17:51:03",
      *    "updated_at": "2015-02-20 17:51:03",
-     *    "url": "/vol/images/"
+     *    "url": "local://images/"
      * }
      *
      * @param  int  $id
@@ -52,7 +52,7 @@ class VolumeController extends Controller
      *
      * @apiParam (Attributes that can be updated) {String} name Name of the volume.
      * @apiParam (Attributes that can be updated) {Number} media_type_id The ID of the media type of the volume.
-     * @apiParam (Attributes that can be updated) {String} url The base URL ot the image files. Can be a local path like `/vol/volumes/1` or a remote path like `https://example.com/volumes/1`. Updating the URL will trigger a re-generation of all volume image thumbnails.
+     * @apiParam (Attributes that can be updated) {String} url The base URL of the image files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`. Updating the URL will trigger a re-generation of all volume image thumbnails.
      * @apiParam (Attributes that can be updated) {String} video_link Link to a video that belongs to or was the source of this volume.
      * @apiParam (Attributes that can be updated) {String} gis_link Link to a GIS that belongs to this volume.
      * @apiParam (Attributes that can be updated) {String} doi The DOI of the dataset that is represented by the new volume.
