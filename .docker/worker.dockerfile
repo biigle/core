@@ -43,10 +43,10 @@ RUN apk add --no-cache --virtual .build-deps \
 
 # Install Python dependencies. Note that these also depend on some image processing libs
 # that were installed along with vips.
-RUN apk add --no-cache --virtual .build-deps \
+RUN apk add --no-cache python freetype lapack libstdc++ \
+    && apk add --no-cache --virtual .build-deps \
         build-base python-dev freetype-dev lapack-dev gfortran \
         libjpeg-turbo-dev libpng-dev \
-    && apk add --no-cache freetype lapack \
     && curl -L https://bootstrap.pypa.io/get-pip.py > /tmp/get-pip.py \
     && python /tmp/get-pip.py \
     && pip install --no-cache-dir numpy==1.8.2 \
