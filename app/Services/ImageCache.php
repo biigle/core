@@ -108,10 +108,18 @@ class ImageCache implements ImageCacheContract
         }
 
         try {
+            $meta = Storage::disk($url[0])->getMetadata($url[1]);
+            if (!array_key_exists('size', $meta)) {
+                $meta['size'] = Storage::disk($url[0])->getSize($url[1]);
+            }
+            if (!array_key_exists('mimetype', $meta)) {
+                $meta['mimetype'] = Storage::disk($url[0])->getMimetype($url[1]);
+            }
+
             return [
                 'stream' => Storage::disk($url[0])->readStream($url[1]),
-                'size' => Storage::disk($url[0])->getSize($url[1]),
-                'mime' => Storage::disk($url[0])->getMimetype($url[1]),
+                'size' => $meta['size'],
+                'mime' => $meta['mimetype'],
             ];
         } catch (FileNotFoundException $e) {
             throw new Exception($e->getMessage());
