@@ -54,7 +54,7 @@ RUN apk add --no-cache --virtual .build-deps \
     && pip install --no-cache-dir Pillow==2.6.0 \
     && pip install --no-cache-dir scipy==0.13.3 \
     && pip install --no-cache-dir PyExcelerate==0.6.7 \
-    && pip install --no-cache-dir matplotlib==1.3.1 \
+    && pip install --no-cache-dir matplotlib==1.5.3 \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 

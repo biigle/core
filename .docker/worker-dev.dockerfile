@@ -85,7 +85,7 @@ RUN apt-get update \
     && pip install --no-cache-dir Pillow==2.6.0 \
     && pip install --no-cache-dir scipy==0.13.3 \
     && pip install --no-cache-dir PyExcelerate==0.6.7 \
-    && pip install --no-cache-dir matplotlib==1.3.1 \
+    && pip install --no-cache-dir matplotlib==1.5.3 \
     && apt-get remove -y --purge python-dev libfreetype6-dev libblas-dev liblapack-dev \
         gfortran libjpeg62-turbo-dev libpng-dev \
     && apt-get clean \
