@@ -154,7 +154,15 @@ class ImageCache implements ImageCacheContract
 
         while ($totalSize > $allowedSize && ($file = $files->current())) {
             $totalSize -= $file->getSize();
-            File::delete($file->getRealPath());
+            $handle = fopen($file->getRealPath(), 'r');
+            try {
+                // Only delete the file if it is not currently used. Else move on.
+                if (flock($handle, LOCK_EX|LOCK_NB)) {
+                    File::delete($file->getRealPath());
+                }
+            } finally {
+                fclose($handle);
+            }
             $files->next();
         }
     }
