@@ -56,6 +56,7 @@ class ImageCache implements ImageCacheContract
         $file = $this->cache($image);
         try {
             $result = call_user_func($callback, $image, $file['path']);
+        } finally {
             // Convert to exclusive lock for deletion. Don't delete if lock can't be
             // obtained.
             if (flock($file['handle'], LOCK_EX|LOCK_NB)) {
@@ -65,7 +66,6 @@ class ImageCache implements ImageCacheContract
                     File::delete($path);
                 }
             }
-        } finally {
             fclose($file['handle']);
         }
 
