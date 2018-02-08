@@ -85,6 +85,6 @@ class TileSingleImage extends Job implements ShouldQueue
      */
     protected function getVipsImage($path)
     {
-        return VipsImage::newFromFile($path);
+        return VipsImage::newFromFile($path, ['access' => 'sequential']);
     }
 }
