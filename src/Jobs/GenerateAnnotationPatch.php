@@ -74,18 +74,21 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
     public function handleImage(Image $image, $path)
     {
         $prefix = config('largo.patch_storage').'/'.$image->volume_id;
-        $format = config('largo.patch_format');
-        $thumbWidth = config('thumbnails.width');
-        $thumbHeight = config('thumbnails.height');
-        $rect = $this->getPatchRect($this->annotation, $thumbWidth, $thumbHeight);
-
         if (!File::exists($prefix)) {
             // make recursive
             File::makeDirectory($prefix, 0755, true);
         }
 
-        $this->getVipsImage($path)
-            ->crop($rect['left'], $rect['top'], $rect['width'], $rect['height'])
+        $format = config('largo.patch_format');
+        $thumbWidth = config('thumbnails.width');
+        $thumbHeight = config('thumbnails.height');
+
+        $rect = $this->getPatchRect($this->annotation, $thumbWidth, $thumbHeight);
+
+        $image = $this->getVipsImage($path);
+        $rect = $this->makeRectContained($rect, $image);
+
+        $image->crop($rect['left'], $rect['top'], $rect['width'], $rect['height'])
             ->resize(floatval($thumbWidth) / $rect['width'])
             ->writeToFile("{$prefix}/{$this->id}.{$format}");
     }
@@ -177,5 +180,29 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
             'left' => intval(round($left)),
             'top' => intval(round($top)),
         ];
+    }
+
+    /**
+     * Adjust the position and size of the patch rectangle so it is contained in the
+     * image.
+     *
+     * @param array $rect
+     * @param Jcupitt\Vips\Image $image
+     *
+     * @return array
+     */
+    protected function makeRectContained($rect, $image)
+    {
+        // Order of min max is importans so the point gets no negative coordinates.
+        $rect['left'] = min($image->width - $rect['width'], $rect['left']);
+        $rect['left'] = max(0, $rect['left']);
+        $rect['top'] = min($image->height - $rect['height'], $rect['top']);
+        $rect['top'] = max(0, $rect['top']);
+
+        // Adjust dimensions of rect if it is larger than the image.
+        $rect['width'] = min($image->width, $rect['width']);
+        $rect['height'] = min($image->height, $rect['height']);
+
+        return $rect;
     }
 }

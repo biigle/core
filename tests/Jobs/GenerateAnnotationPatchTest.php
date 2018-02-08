@@ -8,7 +8,6 @@ use TestCase;
 use VipsImage;
 use Biigle\Shape;
 use Biigle\Annotation;
-use Jcupitt\Vips\Image;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
@@ -18,9 +17,9 @@ class GenerateAnnotationPatchTest extends TestCase
     {
         parent::setUp();
 
-        // alias: is required because we want to test the public static method
-        // newFromFile.
-        $this->image = Mockery::mock(Image::class);
+        $this->image = Mockery::mock();
+        $this->image->width = 1000;
+        $this->image->height = 750;
         $this->image->shouldReceive('resize')
             ->once()
             ->andReturn($this->image);
@@ -100,6 +99,69 @@ class GenerateAnnotationPatchTest extends TestCase
         File::shouldReceive('exists')
             ->once()
             ->andReturn(true);
+
+        $job->handleImage($annotation->image, 'abc');
+    }
+
+    public function testHandleContainedNegative()
+    {
+        $annotation = AnnotationTest::create([
+            'points' => [0, 0],
+            'shape_id' => Shape::$pointId,
+        ]);
+        $job = new GenerateAnnotationPatchStub($annotation);
+        $job->mock = $this->image;
+
+        $this->image->shouldReceive('crop')
+            ->once()
+            ->with(0, 0, 197, 148)
+            ->andReturn($this->image);
+
+        $this->image->shouldReceive('writeToFile')->andReturn($this->image);
+        File::shouldReceive('exists')->andReturn(true);
+
+        $job->handleImage($annotation->image, 'abc');
+    }
+
+    public function testHandleContainedPositive()
+    {
+        $annotation = AnnotationTest::create([
+            'points' => [1000, 750],
+            'shape_id' => Shape::$pointId,
+        ]);
+        $job = new GenerateAnnotationPatchStub($annotation);
+        $job->mock = $this->image;
+
+        $this->image->shouldReceive('crop')
+            ->once()
+            ->with(803, 602, 197, 148)
+            ->andReturn($this->image);
+
+        $this->image->shouldReceive('writeToFile')->andReturn($this->image);
+        File::shouldReceive('exists')->andReturn(true);
+
+        $job->handleImage($annotation->image, 'abc');
+    }
+
+    public function testHandleContainedTooLarge()
+    {
+        $this->image->width = 100;
+        $this->image->height = 100;
+
+        $annotation = AnnotationTest::create([
+            'points' => [50, 50],
+            'shape_id' => Shape::$pointId,
+        ]);
+        $job = new GenerateAnnotationPatchStub($annotation);
+        $job->mock = $this->image;
+
+        $this->image->shouldReceive('crop')
+            ->once()
+            ->with(0, 0, 100, 100)
+            ->andReturn($this->image);
+
+        $this->image->shouldReceive('writeToFile')->andReturn($this->image);
+        File::shouldReceive('exists')->andReturn(true);
 
         $job->handleImage($annotation->image, 'abc');
     }
