@@ -31,7 +31,5 @@ COPY . /var/www
 # Make this writable for whatever user the app is running as.
 RUN chmod o+w /var/www/bootstrap/cache
 
-# Don't cache the config because this will ignore the environment variables of the
-# production container.
-RUN php /var/www/artisan route:cache
+# Route and config caching should be done in the distribution build. But we can optimize.
 RUN php /var/www/artisan optimize
