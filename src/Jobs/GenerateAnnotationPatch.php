@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Largo\Jobs;
 
-use Log;
 use File;
 use Exception;
 use VipsImage;
@@ -62,7 +61,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         try {
             ImageCache::get($this->annotation->image, [$this, 'handleImage']);
         } catch (Exception $e) {
-            Log::error("Could not generate annotation patch for annotation {$this->id}: {$e->getMessage()}");
+            throw new Exception("Could not generate annotation patch for annotation {$this->id}: {$e->getMessage()}");
         }
     }
 
