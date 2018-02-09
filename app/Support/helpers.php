@@ -45,18 +45,32 @@ if (!function_exists('readable_number')) {
     }
 }
 
+if (!function_exists('fragment_uuid_path')) {
+    /**
+     * Fragment a UUID beginning with "abcdef..."" to "ab/cd/abcdef...".
+     *
+     * @param  string $uuid
+     * @return string
+     */
+    function fragment_uuid_path($uuid)
+    {
+        return "{$uuid[0]}{$uuid[1]}/{$uuid[2]}{$uuid[3]}/{$uuid}";
+    }
+}
+
 if (!function_exists('thumbnail_url')) {
     /**
      * Assemble the public URL to an image thumbnail.
      *
-     * @param  Image UUID  $uuid
+     * @param  string $uuid
      * @return string
      */
     function thumbnail_url($uuid)
     {
         $uri = config('thumbnails.uri');
         $format = config('thumbnails.format');
+        $fragment = fragment_uuid_path($uuid);
 
-        return asset("{$uri}/{$uuid[0]}{$uuid[1]}/{$uuid[2]}{$uuid[3]}/{$uuid}.{$format}");
+        return asset("{$uri}/{$fragment}.{$format}");
     }
 }

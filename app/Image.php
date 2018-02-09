@@ -113,8 +113,9 @@ class Image extends Model
     {
         $uri = config('thumbnails.uri');
         $format = config('thumbnails.format');
+        $fragment = fragment_uuid_path($this->uuid);
 
-        return public_path("{$uri}/{$this->uuid[0]}{$this->uuid[1]}/{$this->uuid[2]}{$this->uuid[3]}/{$this->uuid}.{$format}");
+        return public_path("{$uri}/{$fragment}.{$format}");
     }
 
     /**

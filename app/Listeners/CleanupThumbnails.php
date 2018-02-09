@@ -19,7 +19,8 @@ class CleanupThumbnails implements ShouldQueue
         $format = config('thumbnails.format');
 
         foreach ($uuids as $uuid) {
-            $path = "{$prefix}/{$uuid[0]}{$uuid[1]}/{$uuid[2]}{$uuid[3]}/{$uuid}.{$format}";
+            $fragment = fragment_uuid_path($uuid);
+            $path = "{$prefix}/{$fragment}.{$format}";
             if (File::exists($path)) {
                 File::delete($path);
             }
