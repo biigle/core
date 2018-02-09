@@ -104,6 +104,7 @@ class ImageCacheTest extends TestCase
 
     public function testGetDiskCloud()
     {
+        config(['filesystems.disks.s3' => ['driver' => 's3']]);
         $volume = VolumeTest::create(['url' => 's3://files']);
         $image = ImageTest::create(['volume_id' => $volume->id]);
 
