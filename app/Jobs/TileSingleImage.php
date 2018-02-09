@@ -5,7 +5,6 @@ namespace Biigle\Jobs;
 use File;
 use Storage;
 use VipsImage;
-use Exception;
 use ImageCache;
 use Biigle\Image;
 use Illuminate\Queue\SerializesModels;
@@ -101,7 +100,7 @@ class TileSingleImage extends Job implements ShouldQueue
     }
 
     /**
-     * Get the vips image instance
+     * Get the vips image instance.
      *
      * @param string $path
      *

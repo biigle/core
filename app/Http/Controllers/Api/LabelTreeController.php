@@ -215,7 +215,6 @@ class LabelTreeController extends Controller
             return $tree;
         }
 
-
         if ($request->has('_redirect')) {
             return redirect($request->input('_redirect'))
                 ->with('newTree', $tree)

@@ -5,7 +5,6 @@ namespace Biigle;
 use Response;
 use Exception;
 use ImageCache;
-use ErrorException;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
@@ -183,8 +182,6 @@ class Image extends Model
             return $response;
         }
 
-
-
         try {
             $streamInfo = ImageCache::getStream($this);
 
@@ -195,7 +192,6 @@ class Image extends Model
                 'Content-Length' => $streamInfo['size'],
                 'Content-Disposition' => 'inline',
             ]);
-
         } catch (Exception $e) {
             abort(404, $e->getMessage());
         }

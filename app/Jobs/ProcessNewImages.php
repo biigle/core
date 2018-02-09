@@ -3,7 +3,6 @@
 namespace Biigle\Jobs;
 
 use Biigle\Volume;
-use Biigle\Jobs\ProcessNewImageChunk;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -25,7 +25,7 @@ class UpdateVolumeUrls extends Command
     /**
      * Is this a dry run?
      *
-     * @var boolean
+     * @var bool
      */
     protected $dryRun;
 

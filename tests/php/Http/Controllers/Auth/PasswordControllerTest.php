@@ -60,6 +60,7 @@ class PasswordControllerTest extends TestCase
         $token = '';
         Notification::assertSentTo($user, ResetPassword::class, function ($m) use (&$token) {
             $token = $m->token;
+
             return true;
         });
 
@@ -85,6 +86,7 @@ class PasswordControllerTest extends TestCase
         $token = '';
         Notification::assertSentTo($user, ResetPassword::class, function ($m) use (&$token) {
             $token = $m->token;
+
             return true;
         });
         $this->assertFalse(Hash::check('new-password', $user->fresh()->password));

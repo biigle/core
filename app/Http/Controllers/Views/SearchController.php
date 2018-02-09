@@ -9,7 +9,7 @@ use Illuminate\Contracts\Auth\Guard;
 class SearchController extends Controller
 {
     /**
-     * Shows the search page
+     * Shows the search page.
      *
      * @param Guard $auth
      * @param Request $request

@@ -34,6 +34,7 @@ class UpdateThumbnailStorageScheme extends Command
 
         if (empty($thumbs)) {
             $this->line('No thumbnails found. Maybe the new storage scheme has already been applied?');
+
             return;
         }
 
@@ -48,7 +49,8 @@ class UpdateThumbnailStorageScheme extends Command
             $progress->advance();
         }
 
-        $progress->finish();$this->info('');
+        $progress->finish();
+        $this->info('');
         $this->info('Done.');
     }
 }

@@ -117,7 +117,7 @@ class ProcessNewImageChunkTest extends TestCase
         Queue::fake();
         with(new ProcessNewImageChunkMock([$image->id]))->handle();
 
-        Queue::assertPushed(TileSingleImage::class, function($job) use ($image) {
+        Queue::assertPushed(TileSingleImage::class, function ($job) use ($image) {
             return $job->image->id === $image->id;
         });
     }
@@ -152,7 +152,7 @@ class ImageMock extends \Jcupitt\Vips\Image
 {
     public $width;
     public $height;
-    function __construct($width, $height)
+    public function __construct($width, $height)
     {
         parent::__construct(null);
         $this->width = $width;

@@ -7,7 +7,6 @@ use Storage;
 use Exception;
 use Biigle\Image;
 use GuzzleHttp\Client;
-use InvalidArgumentException;
 use League\Flysystem\Adapter\Local;
 use Symfony\Component\Finder\Finder;
 use League\Flysystem\FileNotFoundException;
@@ -34,7 +33,7 @@ class ImageCache implements ImageCacheContract
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function get(Image $image, $callback)
     {
@@ -49,7 +48,7 @@ class ImageCache implements ImageCacheContract
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getOnce(Image $image, $callback)
     {
@@ -59,7 +58,7 @@ class ImageCache implements ImageCacheContract
         } finally {
             // Convert to exclusive lock for deletion. Don't delete if lock can't be
             // obtained.
-            if (flock($file['handle'], LOCK_EX|LOCK_NB)) {
+            if (flock($file['handle'], LOCK_EX | LOCK_NB)) {
                 // This path is not the same than $cachedPath for locally stored files.
                 $path = $this->getCachedPath($image);
                 if (File::exists($path)) {
@@ -73,7 +72,7 @@ class ImageCache implements ImageCacheContract
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getStream(Image $image)
     {
@@ -127,7 +126,7 @@ class ImageCache implements ImageCacheContract
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function clean()
     {
@@ -157,7 +156,7 @@ class ImageCache implements ImageCacheContract
             $handle = fopen($file->getRealPath(), 'r');
             try {
                 // Only delete the file if it is not currently used. Else move on.
-                if (flock($handle, LOCK_EX|LOCK_NB)) {
+                if (flock($handle, LOCK_EX | LOCK_NB)) {
                     File::delete($file->getRealPath());
                 }
             } finally {

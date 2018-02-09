@@ -53,7 +53,7 @@ class ModulesTest extends TestCase
 
 class ControllerMixinStub
 {
-    function call ($arg)
+    public function call($arg)
     {
         return ['callableWithAtSign' => true];
     }

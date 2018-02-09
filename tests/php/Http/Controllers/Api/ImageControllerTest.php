@@ -7,8 +7,6 @@ use ApiTestCase;
 use Biigle\Image;
 use Biigle\Volume;
 use Biigle\Tests\ImageTest;
-use Illuminate\Support\Facades\Event;
-use Biigle\Jobs\ProcessThumbnailChunkJob;
 
 class ImageControllerTest extends ApiTestCase
 {

@@ -58,5 +58,4 @@ return [
         'disk' => 'local-tiles',
     ],
 
-
 ];

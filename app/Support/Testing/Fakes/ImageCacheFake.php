@@ -18,7 +18,7 @@ class ImageCacheFake implements ImageCacheContract
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function get(Image $image, $callback)
     {
@@ -26,7 +26,7 @@ class ImageCacheFake implements ImageCacheContract
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getOnce(Image $image, $callback)
     {
@@ -34,7 +34,7 @@ class ImageCacheFake implements ImageCacheContract
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getStream(Image $image)
     {
@@ -46,7 +46,7 @@ class ImageCacheFake implements ImageCacheContract
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function clean()
     {

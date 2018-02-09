@@ -21,7 +21,7 @@ if (!function_exists('cachebust_asset')) {
 
 if (!function_exists('readable_number')) {
     /**
-     * Shorten a large number to a readable size, e.g. 154222 => 154k
+     * Shorten a large number to a readable size, e.g. 154222 => 154k.
      *
      * @param  number  $n
      * @return string

@@ -3,13 +3,9 @@
 namespace Biigle\Tests\Jobs;
 
 use File;
-use Queue;
 use Storage;
 use Mockery;
 use TestCase;
-use VipsImage;
-use Exception;
-use ImageCache;
 use Jcupitt\Vips\Image;
 use Biigle\Tests\ImageTest;
 use Biigle\Jobs\TileSingleImage;

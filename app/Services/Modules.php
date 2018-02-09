@@ -107,7 +107,7 @@ class Modules
     }
 
     /**
-     * Call all controller mixins registered for a certain controller
+     * Call all controller mixins registered for a certain controller.
      *
      * @param string $controller
      * @param array $args
