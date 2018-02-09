@@ -222,7 +222,7 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     /**
      * Converts a fracture (string) like "1/2" to a float.
      *
-     * @param  [type] $frac
+     * @param  string $frac
      * @return float
      */
     protected function fracToFloat($frac)
@@ -248,7 +248,7 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
      */
     protected function shouldBeTiled(Image $image, $path)
     {
-        if (!$image->tiled || !File::isDirectory($image->tilePath)) {
+        if (!$image->tiled) {
             try {
                 $i = VipsImage::newFromFile($path);
             } catch (Exception $e) {

@@ -36,12 +36,6 @@ class ImageTest extends ModelTestCase
         $this->assertContains($contains, $path);
     }
 
-    public function testTilePath()
-    {
-        $path = $this->model->tilePath;
-        $this->assertStringEndsWith($this->model->uuid, $path);
-    }
-
     public function testHiddenAttributes()
     {
         $json = json_decode((string) $this->model);

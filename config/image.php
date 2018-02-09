@@ -42,6 +42,20 @@ return [
         | For 'tiles' there must be a 'public/tiles' directory (or link).
         */
         'uri' => 'tiles',
+
+        /*
+         | Directory to temporarily store the tiles when they are generated.
+         */
+        'tmp_dir' => sys_get_temp_dir(),
+
+        /*
+         | Storage disk from config('filesystems.disks') to permanently store the tiles.
+         | The default disk stores the tiles locally in storage/tiles, which are then
+         | served by the webserver through the public/tiles link.
+         | Alternatively you can use a public object storage container and configure
+         | the webserver to act as a reverse proxy for the uri configured above.
+         */
+        'disk' => 'local-tiles',
     ],
 
 

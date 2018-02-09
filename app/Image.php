@@ -119,17 +119,6 @@ class Image extends Model
     }
 
     /**
-     * Adds the `tilePath` attribute to the image model. The path points
-     * to the directory storing the image tiles.
-     *
-     * @return string
-     */
-    public function getTilePathAttribute()
-    {
-        return public_path(config('image.tiles.uri').'/'.$this->uuid);
-    }
-
-    /**
      * Adds the `url` attribute to the image model. The url is the absolute path
      * to the original image file.
      *

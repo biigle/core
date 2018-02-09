@@ -3,6 +3,7 @@
 namespace Biigle\Jobs;
 
 use File;
+use Storage;
 use VipsImage;
 use Exception;
 use ImageCache;
@@ -23,6 +24,13 @@ class TileSingleImage extends Job implements ShouldQueue
     public $image;
 
     /**
+     * Path to the temporary storage directory for the tiles.
+     *
+     * @var string
+     */
+    public $tempPath;
+
+    /**
      * Create a new job instance.
      *
      * @param Image $image The image to generate tiles for.
@@ -32,6 +40,7 @@ class TileSingleImage extends Job implements ShouldQueue
     public function __construct(Image $image)
     {
         $this->image = $image;
+        $this->tempPath = config('image.tiles.tmp_dir')."/biigle_tiles_{$image->uuid}";
     }
 
     /**
@@ -41,39 +50,54 @@ class TileSingleImage extends Job implements ShouldQueue
      */
     public function handle()
     {
-        ImageCache::getOnce($this->image, [$this, 'handleImage']);
+        try {
+            ImageCache::getOnce($this->image, [$this, 'generateTiles']);
+            $this->uploadToStorage();
+            $this->storeTileProperties();
+        } finally {
+            File::deleteDirectory($this->tempPath);
+        }
     }
 
     /**
-     * Handle a single image.
+     * Generate tiles for the image and put them to temporary storage.
      *
      * @param Image $image
      * @param string $path Path to the cached image file.
      */
-    public function handleImage(Image $image, $path)
+    public function generateTiles(Image $image, $path)
     {
-        if (!File::isDirectory($image->tilePath)) {
-            File::makeDirectory($image->tilePath);
+        if (!File::isDirectory($this->tempPath)) {
+            File::makeDirectory($this->tempPath);
         }
-        $this->getVipsImage($path)->dzsave($image->tilePath, ['layout' => 'zoomify']);
-        $xml = simplexml_load_string(strtolower(File::get("{$image->tilePath}/ImageProperties.xml")));
-        $xml = ((array) $xml)['@attributes'];
-        $image->setTileProperties(array_map('intval', $xml));
-        $image->tiled = true;
-        $image->save();
+        $this->getVipsImage($path)->dzsave($this->tempPath, ['layout' => 'zoomify']);
     }
 
     /**
-     * The job failed to process.
-     *
-     * @param  Exception  $exception
-     * @return void
+     * Upload the tiles from temporary local storage to the tiles storage disk.
      */
-    public function failed(Exception $exception)
+    public function uploadToStorage()
     {
-        File::deleteDirectory($this->image->tilePath);
+        $fragment = fragment_uuid_path($this->image->uuid);
+        $files = File::allFiles($this->tempPath);
+        $disk = Storage::disk(config('image.tiles.disk'));
 
-        throw $exception;
+        foreach ($files as $file) {
+            $path = File::dirname($file->getRelativePathname());
+            $disk->putFileAs("{$fragment}/{$path}", $file, $file->getFilename());
+        }
+    }
+
+    /**
+     * Store the properties of the tiled image in the DB.
+     */
+    public function storeTileProperties()
+    {
+        $xml = simplexml_load_string(strtolower(File::get("{$this->tempPath}/ImageProperties.xml")));
+        $xml = ((array) $xml)['@attributes'];
+        $this->image->setTileProperties(array_map('intval', $xml));
+        $this->image->tiled = true;
+        $this->image->save();
     }
 
     /**

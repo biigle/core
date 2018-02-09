@@ -2,7 +2,7 @@
 
 namespace Biigle\Listeners;
 
-use File;
+use Storage;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CleanupImageTiles implements ShouldQueue
@@ -15,12 +15,10 @@ class CleanupImageTiles implements ShouldQueue
      */
     public function handle(array $uuids)
     {
-        $prefix = public_path(config('image.tiles.uri'));
+        $disk = Storage::disk(config('image.tiles.disk'));
 
         foreach ($uuids as $uuid) {
-            if (File::exists("{$prefix}/{$uuid}")) {
-                File::deleteDirectory("{$prefix}/{$uuid}");
-            }
+            $disk->deleteDirectory(fragment_uuid_path($uuid));
         }
     }
 }

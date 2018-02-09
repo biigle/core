@@ -127,12 +127,10 @@ class ProcessNewImageChunkTest extends TestCase
 
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id, 'tiled' => true]);
-        File::makeDirectory($image->tilePath);
         VipsImage::shouldReceive('newFromFile')->never();
 
         Queue::fake();
         with(new ProcessNewImageChunkMock([$image->id]))->handle();
-        File::deleteDirectory($image->tilePath);
 
         Queue::assertNotPushed(TileSingleImage::class);
     }

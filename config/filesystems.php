@@ -49,6 +49,11 @@ return [
             'root' => storage_path('images'),
         ],
 
+        // Default storage disk for image tiles.
+        'local-tiles' => [
+            'driver' => 'local',
+            'root' => storage_path('tiles'),
+        ],
 
     ],
 

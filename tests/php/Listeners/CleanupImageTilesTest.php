@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Listeners;
 
-use File;
+use Storage;
 use TestCase;
 use Biigle\Tests\ImageTest;
 use Biigle\Listeners\CleanupImageTiles;
@@ -12,16 +12,12 @@ class ListenersCleanupImageTilesTest extends TestCase
     public function testHandle()
     {
         $image = ImageTest::create();
-
-        File::shouldReceive('exists')
-            ->once()
-            ->with($image->tilePath)
-            ->andReturn(true);
-
-        File::shouldReceive('deleteDirectory')
-            ->once()
-            ->with($image->tilePath);
+        $fragment = fragment_uuid_path($image->uuid);
+        Storage::fake('local-tiles');
+        Storage::disk('local-tiles')->put("{$fragment}/a/b.txt", 'test');
 
         with(new CleanupImageTiles)->handle([$image->uuid]);
+
+        Storage::disk('local-tiles')->assertMissing($fragment);
     }
 }
