@@ -5,6 +5,7 @@ namespace Biigle\Tests\Jobs;
 use Log;
 use File;
 use Queue;
+use Storage;
 use TestCase;
 use VipsImage;
 use Biigle\Image;
@@ -124,9 +125,12 @@ class ProcessNewImageChunkTest extends TestCase
     public function testHandleTileLargeImageSkip()
     {
         config(['image.tiles.threshold' => 300]);
+        Storage::fake('local-tiles');
 
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id, 'tiled' => true]);
+        $fragment = fragment_uuid_path($image->uuid);
+        Storage::disk('local-tiles')->put("{$fragment}/ImageProperties.xml", 'test');
         VipsImage::shouldReceive('newFromFile')->never();
 
         Queue::fake();

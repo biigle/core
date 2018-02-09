@@ -4,6 +4,7 @@ namespace Biigle\Jobs;
 
 use Log;
 use File;
+use Storage;
 use Exception;
 use VipsImage;
 use ImageCache;
@@ -248,16 +249,20 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
      */
     protected function shouldBeTiled(Image $image, $path)
     {
-        if (!$image->tiled) {
-            try {
-                $i = VipsImage::newFromFile($path);
-            } catch (Exception $e) {
+        if ($image->tiled) {
+            $disk = Storage::disk(config('image.tiles.disk'));
+            $fragment = fragment_uuid_path($image->uuid);
+            if ($disk->exists("{$fragment}/ImageProperties.xml")) {
                 return false;
             }
-
-            return $i->width > $this->threshold || $i->height > $this->threshold;
         }
 
-        return false;
+        try {
+            $i = VipsImage::newFromFile($path);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return $i->width > $this->threshold || $i->height > $this->threshold;
     }
 }
