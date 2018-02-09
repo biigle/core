@@ -157,7 +157,8 @@ biigle.$declare('annotations.stores.images', function () {
                         })
                         .then(function (response) {
                             if (response.bodyBlob.type === 'application/json') {
-                                response.body.url = self.tilesUri.replace('{uuid}', response.body.uuid);
+                                var uuid = response.body.uuid;
+                                response.body.url = self.tilesUri.replace('{uuid}', uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid);
 
                                 return response.body;
                             }
