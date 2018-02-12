@@ -18,12 +18,16 @@ services:
 
   web:
     image: biigle/web
+    depends_on:
+      - app
     build:
       dockerfile: .docker/web.dockerfile
       context: ./
 
   worker:
     image: biigle/worker
+    depends_on:
+      - app
     user: ${USER_ID}:${GROUP_ID}
     build:
       dockerfile: .docker/worker.dockerfile
