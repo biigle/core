@@ -130,7 +130,7 @@ class ProcessNewImageChunkTest extends TestCase
         $volume = VolumeTest::create();
         $image = ImageTest::create(['volume_id' => $volume->id, 'tiled' => true]);
         $fragment = fragment_uuid_path($image->uuid);
-        Storage::disk('local-tiles')->put("{$fragment}/ImageProperties.xml", 'test');
+        Storage::disk('local-tiles')->put($fragment, 'test');
         VipsImage::shouldReceive('newFromFile')->never();
 
         Queue::fake();

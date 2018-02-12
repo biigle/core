@@ -252,7 +252,7 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
         if ($image->tiled) {
             $disk = Storage::disk(config('image.tiles.disk'));
             $fragment = fragment_uuid_path($image->uuid);
-            if ($disk->exists("{$fragment}/ImageProperties.xml")) {
+            if ($disk->exists($fragment)) {
                 return false;
             }
         }
