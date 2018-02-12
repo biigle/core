@@ -3,7 +3,7 @@ MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
 RUN apk add --no-cache openssl postgresql-dev libxml2-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-    && docker-php-ext-install pdo pdo_pgsql pgsql json fileinfo exif mbstring soap
+    && docker-php-ext-install pdo pdo_pgsql pgsql json zip fileinfo exif mbstring soap
 
 COPY composer.lock composer.json /var/www/
 

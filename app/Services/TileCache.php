@@ -44,7 +44,7 @@ class TileCache
         if (File::exists($cachedPath)) {
             // Update the modification time of the files to mark the image tiles as
             // recently used.
-            touch("{$cachedPath}/ImageProprties.xml");
+            touch("{$cachedPath}/ImageProperties.xml");
         } else {
             $this->ensureDirectoryExists($cachedPath);
             try {
