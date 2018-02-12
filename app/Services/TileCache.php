@@ -125,9 +125,9 @@ class TileCache
     protected function getDirectorySize($dir)
     {
         // du is the simplest and fastest method to get the size of a directory with
-        // lots of files.
-        $output = exec("/usr/bin/du -s -B1 '{$dir}'");
+        // lots of files. This shows the size in kilobytes.
+        $output = exec("/usr/bin/du -sk '{$dir}'");
 
-        return intval(explode("\t", $output)[0]);
+        return intval(explode("\t", $output)[0]) * 1000;
     }
 }
