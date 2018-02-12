@@ -4,6 +4,7 @@ namespace Biigle;
 
 use Response;
 use Exception;
+use TileCache;
 use ImageCache;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
@@ -178,6 +179,10 @@ class Image extends Model
             $response['id'] = $this->id;
             $response['uuid'] = $this->uuid;
             $response['tiled'] = true;
+
+            // Instruct the image tile cache to load and extract the tiles. This is done
+            // syncronously so the tiles are ready when this request returns.
+            TileCache::get($this);
 
             return $response;
         }

@@ -2,6 +2,7 @@
 
 namespace Biigle\Console;
 
+use TileCache;
 use ImageCache;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -29,6 +30,10 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             ImageCache::prune();
+        })->everyFiveMinutes();
+
+        $schedule->call(function () {
+            TileCache::prune();
         })->everyFiveMinutes();
     }
 

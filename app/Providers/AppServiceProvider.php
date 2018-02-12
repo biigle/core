@@ -54,5 +54,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind('image-cache', function () {
             return new \Biigle\Services\ImageCache;
         });
+
+        $this->app->bind('tile-cache', function () {
+            return new \Biigle\Services\TileCache;
+        });
     }
 }

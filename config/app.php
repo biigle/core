@@ -240,6 +240,7 @@ return [
         'Modules' => Biigle\Facades\Modules::class,
         'VipsImage' => Biigle\Facades\VipsImage::class,
         'ImageCache' => Biigle\Facades\ImageCache::class,
+        'TileCache' => Biigle\Facades\TileCache::class,
     ],
 
 ];

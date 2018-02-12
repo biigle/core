@@ -56,6 +56,24 @@ return [
          | the webserver to act as a reverse proxy for the uri configured above.
          */
         'disk' => 'local-tiles',
+
+        /*
+        | Settings for the image tile cache. The image tile cache extracts local or cloud
+        | storage image tiles (which are packed in ZIP files) locally so they can be
+        | served by the webserver. Image tiles are cached on demand when a user opens an
+        | image.
+        */
+        'cache' => [
+            /*
+            | Maximum size of the image tile cache in bytes.
+            */
+            'max_size' => 1E+9, // 1 GB
+
+            /*
+            | Directory to use for the image tile cache.
+            */
+            'path' => storage_path('framework/cache/tiles'),
+        ],
     ],
 
 ];

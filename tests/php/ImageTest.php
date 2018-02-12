@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use Event;
 use Response;
+use TileCache;
 use ImageCache;
 use Biigle\Image;
 use Carbon\Carbon;
@@ -134,6 +135,7 @@ class ImageTest extends ModelTestCase
             'width' => 6000,
             'height' => 7000,
         ];
+        TileCache::shouldReceive('get')->once()->with($this->model);
         $this->assertEquals($expect, $this->model->getFile());
     }
 
