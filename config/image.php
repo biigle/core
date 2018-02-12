@@ -32,7 +32,7 @@ return [
         |
         | Set to INF to disable tiling.
         */
-        'threshold' => 5000,
+        'threshold' => 10000,
 
         /*
         | URI where the image tiles are available from.
