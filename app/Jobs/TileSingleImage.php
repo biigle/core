@@ -2,6 +2,7 @@
 
 namespace Biigle\Jobs;
 
+use File;
 use Storage;
 use VipsImage;
 use ImageCache;
@@ -40,7 +41,7 @@ class TileSingleImage extends Job implements ShouldQueue
     public function __construct(Image $image)
     {
         $this->image = $image;
-        $this->tempPath = config('image.tiles.tmp_dir')."/{$image->uuid}";
+        $this->tempPath = config('image.tiles.tmp_dir')."/{$image->uuid}.zip";
     }
 
     /**
@@ -79,10 +80,9 @@ class TileSingleImage extends Job implements ShouldQueue
      */
     public function uploadToStorage()
     {
-        $fragment = fragment_uuid_path($this->image->uuid);
+        $directory = $this->image->uuid[0].$this->image->uuid[1].'/'.$this->image->uuid[2].$this->image->uuid[3];
         $file = new SplFileInfo($this->tempPath);
-        Storage::disk(config('image.tiles.disk'))
-            ->putFileAs($fragment, $file, $this->image->uuid);
+        Storage::disk(config('image.tiles.disk'))->putFileAs($directory, $file, $this->image->uuid);
     }
 
     /**

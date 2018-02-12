@@ -42,7 +42,7 @@ class TileSingleImageTest extends TestCase
         try {
             Storage::fake('local-tiles');
             $job->uploadToStorage();
-            Storage::disk('local-tiles')->assertExists("{$fragment}/{$image->uuid}");
+            Storage::disk('local-tiles')->assertExists($fragment);
         } finally {
             File::delete($job->tempPath);
         }
