@@ -128,7 +128,7 @@ class ImageCache implements ImageCacheContract
     /**
      * {@inheritdoc}
      */
-    public function clean()
+    public function prune()
     {
         if (!File::exists($this->path)) {
             return;

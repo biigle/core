@@ -187,19 +187,19 @@ class ImageCacheTest extends TestCase
         fclose($array['stream']);
     }
 
-    public function testClean()
+    public function testPrune()
     {
         File::put("{$this->cachePath}/abc", 'abc');
         touch("{$this->cachePath}/abc", time() - 1);
         File::put("{$this->cachePath}/def", 'def');
         config(['image.cache.max_size' => 3]);
 
-        ImageCache::clean();
+        ImageCache::prune();
         $this->assertFalse(File::exists("{$this->cachePath}/abc"));
         $this->assertTrue(File::exists("{$this->cachePath}/def"));
 
         config(['image.cache.max_size' => 0]);
-        ImageCache::clean();
+        ImageCache::prune();
         $this->assertFalse(File::exists("{$this->cachePath}/def"));
     }
 

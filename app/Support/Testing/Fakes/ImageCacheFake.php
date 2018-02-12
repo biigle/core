@@ -48,7 +48,7 @@ class ImageCacheFake implements ImageCacheContract
     /**
      * {@inheritdoc}
      */
-    public function clean()
+    public function prune()
     {
         //
     }

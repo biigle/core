@@ -46,5 +46,5 @@ interface ImageCache
      * Remove the least recently accessed cached remote images if the cache gets too
      * large.
      */
-    public function clean();
+    public function prune();
 }

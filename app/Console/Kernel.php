@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
-            ImageCache::clean();
+            ImageCache::prune();
         })->everyFiveMinutes();
     }
 
