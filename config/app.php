@@ -179,6 +179,7 @@ return [
         /*
          * Package Service Providers...
          */
+        // Insert package service providers here.
 
         /*
          * Application Service Providers...
@@ -188,6 +189,8 @@ return [
         Biigle\Providers\AuthServiceProvider::class,
         Biigle\Providers\EventServiceProvider::class,
         Biigle\Providers\RouteServiceProvider::class,
+
+        // Insert Biigle module service providers here.
 
     ],
 
@@ -241,6 +244,7 @@ return [
         'VipsImage' => Biigle\Facades\VipsImage::class,
         'ImageCache' => Biigle\Facades\ImageCache::class,
         'TileCache' => Biigle\Facades\TileCache::class,
+        // Insert aliases here.
     ],
 
 ];

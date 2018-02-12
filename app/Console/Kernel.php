@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         Commands\NewUser::class,
         Commands\UpdateThumbnailStorageScheme::class,
         Commands\UpdateVolumeUrls::class,
+        // Insert console commands here.
     ];
 
     /**
@@ -35,6 +36,8 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             TileCache::prune();
         })->everyFiveMinutes();
+
+        // Insert scheduled tasks here.
     }
 
     /**
