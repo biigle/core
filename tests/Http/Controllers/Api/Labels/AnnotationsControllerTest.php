@@ -39,4 +39,17 @@ class AnnotationsControllerTest extends ApiTestCase
             ->assertExactJson([$a1->id]);
         $response->assertStatus(200);
     }
+
+    public function testIndexDuplicates()
+    {
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
+        $label = LabelTest::create();
+        $a1 = AnnotationTest::create(['image_id' => $image->id]);
+        AnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a1->id]);
+        AnnotationLabelTest::create(['label_id' => $label->id, 'annotation_id' => $a1->id]);
+
+        $this->beGuest();
+        $response = $this->get("/api/v1/labels/{$label->id}/annotations")
+            ->assertExactJson([$a1->id]);
+    }
 }

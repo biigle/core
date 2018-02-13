@@ -35,6 +35,8 @@ class AnnotationsController extends Controller
             ->when($request->has('take'), function ($query) use ($request) {
                 return $query->take($request->input('take'));
             })
+            ->select('annotations.id')
+            ->distinct()
             ->pluck('id');
     }
 }
