@@ -45,6 +45,8 @@ class FilterAnnotationsByLabelController extends Controller
                 return $query->orderBy('annotations.created_at', 'desc')
                     ->take($take);
             })
+            ->select('annotations.id', 'annotations.created_at')
+            ->distinct()
             ->pluck('annotations.id');
     }
 }

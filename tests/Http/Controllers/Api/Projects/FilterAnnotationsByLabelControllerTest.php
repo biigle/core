@@ -48,4 +48,30 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $response->assertExactJson([$a1->id]);
     }
+
+    public function testIndexDuplicate()
+    {
+        $id = $this->project()->id;
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
+
+        $a1 = AnnotationTest::create([
+            'image_id' => $image->id,
+        ]);
+
+        $l1 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $this->editor()->id,
+        ]);
+
+        $l2 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'label_id' => $l1->label_id,
+            'user_id' => $this->admin()->id,
+        ]);
+
+        $this->beEditor();
+        $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}")
+            ->assertStatus(200)
+            ->assertExactJson([$a1->id]);
+    }
 }
