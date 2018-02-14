@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "3952f771b043cf4cbc0ad8946c939f81",
+    "content-hash": "10e73d22496c21370fa3ce2a64f43970",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -1513,6 +1513,72 @@
             "time": "2016-12-07T09:37:55+00:00"
         },
         {
+            "name": "justinrainbow/json-schema",
+            "version": "5.2.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/justinrainbow/json-schema.git",
+                "reference": "d283e11b6e14c6f4664cf080415c4341293e5bbd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/justinrainbow/json-schema/zipball/d283e11b6e14c6f4664cf080415c4341293e5bbd",
+                "reference": "d283e11b6e14c6f4664cf080415c4341293e5bbd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.1",
+                "json-schema/json-schema-test-suite": "1.2.0",
+                "phpunit/phpunit": "^4.8.22"
+            },
+            "bin": [
+                "bin/validate-json"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "JsonSchema\\": "src/JsonSchema/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bruno Prieto Reis",
+                    "email": "bruno.p.reis@gmail.com"
+                },
+                {
+                    "name": "Justin Rainbow",
+                    "email": "justin.rainbow@gmail.com"
+                },
+                {
+                    "name": "Igor Wiedler",
+                    "email": "igor@wiedler.ch"
+                },
+                {
+                    "name": "Robert Schönthal",
+                    "email": "seroscho@googlemail.com"
+                }
+            ],
+            "description": "A library to validate a json schema.",
+            "homepage": "https://github.com/justinrainbow/json-schema",
+            "keywords": [
+                "json",
+                "schema"
+            ],
+            "time": "2017-10-21T13:15:38+00:00"
+        },
+        {
             "name": "laravel/framework",
             "version": "v5.4.32",
             "source": {
@@ -1910,6 +1976,51 @@
             "time": "2017-01-23T04:29:33+00:00"
         },
         {
+            "name": "mzur/laravel-openstack-swift",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mzur/laravel-openstack-swift.git",
+                "reference": "0926a3c78af3236564a722fefa4677f8855e039c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mzur/laravel-openstack-swift/zipball/0926a3c78af3236564a722fefa4677f8855e039c",
+                "reference": "0926a3c78af3236564a722fefa4677f8855e039c",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/filesystem": "~5.1",
+                "illuminate/support": "~5.1",
+                "nimbusoft/flysystem-openstack-swift": "^0.2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Mzur\\Filesystem\\SwiftServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Mzur\\Filesystem\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@zurowietz.de"
+                }
+            ],
+            "description": "OpenStack Swift storage driver for Laravel 5.",
+            "time": "2018-02-02T09:15:55+00:00"
+        },
+        {
             "name": "nesbot/carbon",
             "version": "1.22.1",
             "source": {
@@ -2014,6 +2125,63 @@
             "time": "2018-01-25T21:31:33+00:00"
         },
         {
+            "name": "nimbusoft/flysystem-openstack-swift",
+            "version": "0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nimbusoftltd/flysystem-openstack-swift.git",
+                "reference": "88ed487871218546862453a22ef1271b294b5da5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nimbusoftltd/flysystem-openstack-swift/zipball/88ed487871218546862453a22ef1271b294b5da5",
+                "reference": "88ed487871218546862453a22ef1271b294b5da5",
+                "shasum": ""
+            },
+            "require": {
+                "league/flysystem": "^1.0",
+                "php-opencloud/openstack": "^2.0"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "^1.6.4",
+                "mockery/mockery": "^0.9.5",
+                "phpunit/phpunit": "^5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Nimbusoft\\Flysystem\\OpenStack\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nimbusoft Ltd",
+                    "email": "support@nimbusoft.co.uk"
+                },
+                {
+                    "name": "Chris Harvey",
+                    "email": "chris@nimbusoft.co.uk"
+                }
+            ],
+            "description": "Flysystem adapter for OpenStack Swift",
+            "keywords": [
+                "Flysystem",
+                "Openstack",
+                "chrisnharvey",
+                "files",
+                "filesystem",
+                "filesystems",
+                "opencloud",
+                "storage",
+                "swift"
+            ],
+            "time": "2017-07-24T13:42:08+00:00"
+        },
+        {
             "name": "paragonie/random_compat",
             "version": "v2.0.10",
             "source": {
@@ -2060,6 +2228,65 @@
                 "random"
             ],
             "time": "2017-03-13T16:27:32+00:00"
+        },
+        {
+            "name": "php-opencloud/openstack",
+            "version": "v2.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-opencloud/openstack.git",
+                "reference": "75e84c7212f01b399b849d0e04ea505b0b3ffdc4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-opencloud/openstack/zipball/75e84c7212f01b399b849d0e04ea505b0b3ffdc4",
+                "reference": "75e84c7212f01b399b849d0e04ea505b0b3ffdc4",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "~6.1",
+                "justinrainbow/json-schema": "~5.2",
+                "php": ">=7.0 <7.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.9",
+                "jakub-onderka/php-parallel-lint": "0.*",
+                "phpunit/phpunit": "~4.0",
+                "psr/log": "~1.0",
+                "sami/sami": "dev-master",
+                "satooshi/php-coveralls": "~1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "OpenStack\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jamie Hannaford",
+                    "email": "jamie.hannaford@rackspace.com",
+                    "homepage": "https://github.com/jamiehannaford"
+                },
+                {
+                    "name": "Ha Phan",
+                    "email": "thanhha.work@gmail.com",
+                    "homepage": "https://github.com/haphan"
+                }
+            ],
+            "description": "PHP SDK for OpenStack APIs. Supports BlockStorage, Compute, Identity, Images, Networking and Metric Gnocchi",
+            "homepage": "https://github.com/php-opencloud/openstack",
+            "keywords": [
+                "Openstack",
+                "api",
+                "php",
+                "sdk"
+            ],
+            "time": "2018-02-09T15:24:20+00:00"
         },
         {
             "name": "predis/predis",

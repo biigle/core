@@ -26,6 +26,7 @@
         "jcupitt/vips": "^1.0",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "^1.0",
+        "mzur/laravel-openstack-swift": "^1.0",
         "predis/predis": "^1.1",
         "ramsey/uuid": "^3.5",
         "ramsey/uuid-doctrine": "^1.2"
