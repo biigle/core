@@ -84,21 +84,11 @@ class ImageCache implements ImageCacheContract
             // used recently.
             touch($cachedPath);
 
-            return [
-                'stream' => $this->getImageStream($cachedPath),
-                'size' => File::size($cachedPath),
-                'mime' => File::mimeType($cachedPath),
-            ];
+            return $this->getImageStream($cachedPath);
         }
 
         if ($image->volume->isRemote()) {
-            $headers = $this->getRemoteImageHeaders($image);
-
-            return [
-                'stream' => $this->getImageStream($image->url),
-                'size' => $headers['Content-Length'][0],
-                'mime' => $headers['Content-Type'][0],
-            ];
+            return $this->getImageStream($cachedPath);
         }
 
         $url = explode('://', $image->url);
@@ -108,19 +98,7 @@ class ImageCache implements ImageCacheContract
         }
 
         try {
-            $meta = Storage::disk($url[0])->getMetadata($url[1]);
-            if (!array_key_exists('size', $meta)) {
-                $meta['size'] = Storage::disk($url[0])->getSize($url[1]);
-            }
-            if (!array_key_exists('mimetype', $meta)) {
-                $meta['mimetype'] = Storage::disk($url[0])->getMimetype($url[1]);
-            }
-
-            return [
-                'stream' => Storage::disk($url[0])->readStream($url[1]),
-                'size' => $meta['size'],
-                'mime' => $meta['mimetype'],
-            ];
+            return Storage::disk($url[0])->readStream($url[1]);
         } catch (FileNotFoundException $e) {
             throw new Exception($e->getMessage());
         }
@@ -372,18 +350,11 @@ class ImageCache implements ImageCacheContract
      */
     protected function getRemoteImageSize(Image $image)
     {
-        $headers = $this->getRemoteImageHeaders($image);
-        $size = (int) $headers['Content-Length'][0];
-
-        return ($size > 0) ? $size : INF;
-    }
-
-    protected function getRemoteImageHeaders(Image $image)
-    {
         $client = new Client;
         $response = $client->head($image->url);
+        $size = (int) $response->getHeaderLine('Content-Length');
 
-        return $response->getHeaders();
+        return ($size > 0) ? $size : INF;
     }
 
     /**

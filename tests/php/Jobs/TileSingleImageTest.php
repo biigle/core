@@ -47,28 +47,6 @@ class TileSingleImageTest extends TestCase
             File::delete($job->tempPath);
         }
     }
-
-    public function testStoreTileProperties()
-    {
-        $image = ImageTest::create();
-        $job = new TileSingleImageStub($image);
-
-        $zip = new ZipArchive;
-        $zip->open($job->tempPath, ZipArchive::CREATE);
-        $zip->addFromString("{$image->uuid}/ImageProperties.xml", '<IMAGE_PROPERTIES WIDTH="2352" HEIGHT="18060" NUMTILES="973" NUMIMAGES="1" VERSION="1.8" TILESIZE="256"/>');
-        $zip->close();
-
-        try {
-            $this->assertFalse($image->tiled);
-            $job->storeTileProperties();
-            $image->refresh();
-            $this->assertTrue($image->tiled);
-            $this->assertSame(['width' => 2352, 'height' => 18060], $image->getTileProperties());
-        } finally {
-            File::delete($job->tempPath);
-        }
-
-    }
 }
 
 class TileSingleImageStub extends TileSingleImage

@@ -38,7 +38,7 @@ interface ImageCache
      * @param Image $image
      * @throws Exception If the storage disk does not exist or the file was not found.
      *
-     * @return array Array containing 'stream', 'size' and 'mime' of the resource.
+     * @return resource
      */
     public function getStream(Image $image);
 

@@ -50,6 +50,20 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     protected $threshold;
 
     /**
+     * Caches if an image needs a new thumbnail.
+     *
+     * @var array
+     */
+    protected $needsThumbnailCache;
+
+    /**
+     * Caches if an image needs a check for metadata.
+     *
+     * @var array
+     */
+    protected $needsMetadataCache;
+
+    /**
      * Create a new job instance.
      *
      * @param Collection $ids IDs oth the images to generate thumbnails for.
@@ -59,6 +73,8 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     public function __construct($ids)
     {
         $this->ids = $ids;
+        $this->needsThumbnailCache = [];
+        $this->needsMetadataCache = [];
     }
 
     /**
@@ -75,14 +91,18 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
         $callback = function ($image, $path) {
             $this->collectMetadata($image, $path);
             $this->makeThumbnail($image, $path);
-            if ($this->shouldBeTiled($image, $path)) {
-                $this->dispatch(new TileSingleImage($image));
-            }
         };
 
         foreach ($images as $image) {
             try {
-                ImageCache::getOnce($image, $callback);
+                if ($this->needsProcessing($image)) {
+                    ImageCache::getOnce($image, $callback);
+                }
+
+                // Do this after processing so the image has width and height attributes.
+                if ($this->shouldBeTiled($image)) {
+                    $this->dispatch(new TileSingleImage($image));
+                }
             } catch (Exception $e) {
                 Log::error("Could not process new image {$image->id}: {$e->getMessage()}");
             }
@@ -94,6 +114,34 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     }
 
     /**
+     * Determine if an image needs to be processed.
+     *
+     * @param Image $image
+     *
+     * @return bool
+     */
+    protected function needsProcessing(Image $image)
+    {
+        return $this->needsThumbnail($image) || $this->needsMetadata($image);
+    }
+
+    /**
+     * Chack if an image needs a thumbnail.
+     *
+     * @param Image $image
+     *
+     * @return bool
+     */
+    protected function needsThumbnail(Image $image)
+    {
+        if (!array_key_exists($image->id, $this->needsThumbnailCache)) {
+            $this->needsThumbnailCache[$image->id] = !File::exists($image->thumbPath);
+        }
+
+        return $this->needsThumbnailCache[$image->id];
+    }
+
+    /**
      * Makes a thumbnail for a single image.
      *
      * @param Image $image
@@ -102,13 +150,34 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     protected function makeThumbnail(Image $image, $path)
     {
         // Skip existing thumbnails.
-        if (File::exists($image->thumbPath)) {
-            return;
+        if ($this->needsThumbnail($image)) {
+            File::makeDirectory(File::dirname($image->thumbPath), 0755, true, true);
+            VipsImage::thumbnail($path, $this->width, ['height' => $this->height])
+                ->writeToFile($image->thumbPath);
+        }
+    }
+
+    /**
+     * Chack if an image has missing metadata.
+     *
+     * @param Image $image
+     *
+     * @return bool
+     */
+    protected function needsMetadata(Image $image)
+    {
+        if (!array_key_exists($image->id, $this->needsMetadataCache)) {
+            $this->needsMetadataCache[$image->id] = !$image->taken_at ||
+                !$image->lng ||
+                !$image->lat ||
+                !$image->width ||
+                !$image->height ||
+                !$image->size ||
+                !$image->mimetype ||
+                !array_key_exists('gps_altitude', $image->metadata);
         }
 
-        File::makeDirectory(File::dirname($image->thumbPath), 0755, true, true);
-        VipsImage::thumbnail($path, $this->width, ['height' => $this->height])
-            ->writeToFile($image->thumbPath);
+        return $this->needsMetadataCache[$image->id];
     }
 
     /**
@@ -119,6 +188,28 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
      */
     protected function collectMetadata(Image $image, $path)
     {
+        if (!$this->needsMetadata($image)) {
+            return;
+        }
+
+        if (is_null($image->size)) {
+            $image->size = File::size($path);
+        }
+
+        if (is_null($image->mimetype)) {
+            $image->mimetype = File::mimeType($path);
+        }
+
+        if (is_null($image->width) || is_null($image->height)) {
+            try {
+                $i = VipsImage::newFromFile($path);
+                $image->width = $i->width;
+                $image->height = $i->height;
+            } catch (Exception $e) {
+                // dimensions stay null
+            }
+        }
+
         try {
             $exif = @exif_read_data($path);
         } catch (ErrorException $e) {
@@ -243,11 +334,10 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
      * Determine if an image should be tiled.
      *
      * @param Image $image
-     * @param string $path Path to the cached image file.
      *
      * @return bool
      */
-    protected function shouldBeTiled(Image $image, $path)
+    protected function shouldBeTiled(Image $image)
     {
         if ($image->tiled) {
             $disk = Storage::disk(config('image.tiles.disk'));
@@ -257,12 +347,6 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
             }
         }
 
-        try {
-            $i = VipsImage::newFromFile($path);
-        } catch (Exception $e) {
-            return false;
-        }
-
-        return $i->width > $this->threshold || $i->height > $this->threshold;
+        return $image->width > $this->threshold || $image->height > $this->threshold;
     }
 }
