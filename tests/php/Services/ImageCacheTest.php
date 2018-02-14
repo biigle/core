@@ -212,6 +212,18 @@ class ImageCacheTest extends TestCase
         });
         $this->assertFalse(File::exists($path));
     }
+
+    public function testClear()
+    {
+        File::put("{$this->cachePath}/abc", 'abc');
+        File::put("{$this->cachePath}/def", 'abc');
+        $handle = fopen("{$this->cachePath}/def", 'r');
+        flock($handle, LOCK_SH);
+        ImageCache::clear();
+        fclose($handle);
+        $this->assertTrue(File::exists("{$this->cachePath}/def"));
+        $this->assertFalse(File::exists("{$this->cachePath}/abc"));
+    }
 }
 
 class ImageCacheStub extends \Biigle\Services\ImageCache
