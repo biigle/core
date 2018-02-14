@@ -127,7 +127,8 @@ class ImageTest extends ModelTestCase
     public function testGetFileTiled()
     {
         $this->model->tiled = true;
-        $this->model->setTileProperties(['width' => 6000, 'height' => 7000]);
+        $this->model->width = 6000;
+        $this->model->height = 7000;
         $expect = [
             'id' => $this->model->id,
             'uuid' => $this->model->uuid,
@@ -200,26 +201,37 @@ class ImageTest extends ModelTestCase
         $this->assertFalse($i->fresh()->tiled);
     }
 
-    public function testSetGetTileProperties()
-    {
-        $this->model->setTileProperties([
-            'width' => 2352,
-            'height' => 18060,
-            'junk' => 973,
-        ]);
-        $this->model->save();
-
-        $this->assertEquals([
-            'width' => 2352,
-            'height' => 18060,
-        ], $this->model->fresh()->getTileProperties());
-    }
-
     public function testSetGetMetadataAttribute()
     {
         $this->assertEquals([], $this->model->metadata);
         $this->model->metadata = ['water_depth' => 4000];
         $this->model->save();
         $this->assertEquals(['water_depth' => 4000], $this->model->fresh()->metadata);
+    }
+
+    public function testSetGetWidthHeight()
+    {
+        $this->model->width = 500;
+        $this->model->height = 375;
+        $this->model->save();
+        $this->model->refresh();
+        $this->assertEquals(500, $this->model->width);
+        $this->assertEquals(375, $this->model->height);
+    }
+
+    public function testSetGetSize()
+    {
+        $this->model->size = 12345;
+        $this->model->save();
+        $this->model->refresh();
+        $this->assertEquals(12345, $this->model->size);
+    }
+
+    public function testSetGetMimetype()
+    {
+        $this->model->mimetype = 'image/jpeg';
+        $this->model->save();
+        $this->model->refresh();
+        $this->assertEquals('image/jpeg', $this->model->mimetype);
     }
 }

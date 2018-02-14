@@ -54,7 +54,8 @@ class TileSingleImage extends Job implements ShouldQueue
         try {
             ImageCache::getOnce($this->image, [$this, 'generateTiles']);
             $this->uploadToStorage();
-            $this->storeTileProperties();
+            $this->image->tiled = true;
+            $this->image->save();
         } finally {
             File::delete($this->tempPath);
         }
@@ -83,22 +84,6 @@ class TileSingleImage extends Job implements ShouldQueue
         $directory = $this->image->uuid[0].$this->image->uuid[1].'/'.$this->image->uuid[2].$this->image->uuid[3];
         $file = new SplFileInfo($this->tempPath);
         Storage::disk(config('image.tiles.disk'))->putFileAs($directory, $file, $this->image->uuid);
-    }
-
-    /**
-     * Store the properties of the tiled image in the DB.
-     */
-    public function storeTileProperties()
-    {
-        $zip = new ZipArchive;
-        $zip->open($this->tempPath);
-        $contents = $zip->getFromName("{$this->image->uuid}/ImageProperties.xml");
-        $zip->close();
-        $xml = simplexml_load_string(strtolower($contents));
-        $xml = ((array) $xml)['@attributes'];
-        $this->image->setTileProperties(array_map('intval', $xml));
-        $this->image->tiled = true;
-        $this->image->save();
     }
 
     /**

@@ -33,6 +33,10 @@ class ProcessNewImageChunkTest extends TestCase
         $this->assertEquals(12.486211944, $image->lng, '', 0.000001);
         $this->assertEquals(41.8898575, $image->lat, '', 0.000001);
         $this->assertEquals(56.819, $image->metadata['gps_altitude']);
+        $this->assertEquals(500, $image->width);
+        $this->assertEquals(375, $image->height);
+        $this->assertEquals(62411, $image->size);
+        $this->assertEquals('image/jpeg', $image->mimetype);
         $this->assertTrue($volume->hasGeoInfo());
     }
 
@@ -131,7 +135,6 @@ class ProcessNewImageChunkTest extends TestCase
         $image = ImageTest::create(['volume_id' => $volume->id, 'tiled' => true]);
         $fragment = fragment_uuid_path($image->uuid);
         Storage::disk('local-tiles')->put($fragment, 'test');
-        VipsImage::shouldReceive('newFromFile')->never();
 
         Queue::fake();
         with(new ProcessNewImageChunkMock([$image->id]))->handle();

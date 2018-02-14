@@ -87,7 +87,8 @@ class ImageControllerTest extends ApiTestCase
     {
         $id = $this->image->id;
         $this->image->tiled = true;
-        $this->image->setTileProperties(['width' => 123, 'height' => 456]);
+        $this->image->width = 123;
+        $this->image->height = 456;
         $this->image->save();
 
         $this->beGuest();

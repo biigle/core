@@ -175,10 +175,13 @@ class Image extends Model
         }
 
         if ($this->tiled === true) {
-            $response = $this->getTileProperties();
-            $response['id'] = $this->id;
-            $response['uuid'] = $this->uuid;
-            $response['tiled'] = true;
+            $response = [
+                'id' => $this->id,
+                'uuid' => $this->uuid,
+                'width' => $this->width,
+                'height' => $this->height,
+                'tiled' => true,
+            ];
 
             // Instruct the image tile cache to load and extract the tiles. This is done
             // syncronously so the tiles are ready when this request returns.
@@ -203,25 +206,82 @@ class Image extends Model
     }
 
     /**
-     * Set properties of a tiled image as dynamic JSON attributes.
+     * Set the width attribute.
      *
-     * @param array $properties
+     * @param int $value
      */
-    public function setTileProperties(array $properties)
+    public function setWidthAttribute($value)
     {
-        $properties = array_only($properties, ['width', 'height']);
-        if (!empty($properties)) {
-            $this->setJsonAttr('tileProperties', $properties);
-        }
+        $this->setJsonAttr('width', $value);
     }
 
     /**
-     * Get properties of a tiled image from dynamic JSON attributes.
+     * Get the width attribute.
      *
-     * @return [type]
+     * @return int|null
      */
-    public function getTileProperties()
+    public function getWidthAttribute()
     {
-        return $this->getJsonAttr('tileProperties');
+        return $this->getJsonAttr('width');
+    }
+
+    /**
+     * Set the height attribute.
+     *
+     * @param int $value
+     */
+    public function setHeightAttribute($value)
+    {
+        $this->setJsonAttr('height', $value);
+    }
+
+    /**
+     * Get the height attribute.
+     *
+     * @return int|null
+     */
+    public function getHeightAttribute()
+    {
+        return $this->getJsonAttr('height');
+    }
+
+    /**
+     * Set the size attribute.
+     *
+     * @param int $value
+     */
+    public function setSizeAttribute($value)
+    {
+        $this->setJsonAttr('size', $value);
+    }
+
+    /**
+     * Get the size attribute.
+     *
+     * @return int|null
+     */
+    public function getSizeAttribute()
+    {
+        return $this->getJsonAttr('size');
+    }
+
+    /**
+     * Set the mimetype attribute.
+     *
+     * @param string $value
+     */
+    public function setMimetypeAttribute($value)
+    {
+        $this->setJsonAttr('mimetype', $value);
+    }
+
+    /**
+     * Get the mimetype attribute.
+     *
+     * @return string|null
+     */
+    public function getMimetypeAttribute()
+    {
+        return $this->getJsonAttr('mimetype');
     }
 }
