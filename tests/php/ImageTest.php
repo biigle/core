@@ -93,11 +93,8 @@ class ImageTest extends ModelTestCase
 
     public function testGetFile()
     {
-        ImageCache::shouldReceive('getStream')->once()->with($this->model)->andReturn([
-            'stream' => 'abc',
-            'size' => 123,
-            'mime' => 'image/jpeg',
-        ]);
+        $this->model->mimetype = 'image/jpeg';
+        $this->model->size = 123;
         $response = $this->model->getFile();
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('image/jpeg', $response->headers->get('content-type'));

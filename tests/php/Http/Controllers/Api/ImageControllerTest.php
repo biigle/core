@@ -68,6 +68,8 @@ class ImageControllerTest extends ApiTestCase
     public function testShowFile()
     {
         $id = $this->image->id;
+        $this->image->mimetype = 'image/jpeg';
+        $this->image->save();
         $this->doTestApiRoute('GET', "/api/v1/images/{$id}/file");
 
         $this->beUser();

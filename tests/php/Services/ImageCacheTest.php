@@ -143,12 +143,7 @@ class ImageCacheTest extends TestCase
         $cache = new ImageCacheStub;
         $cache->stream = 'abc123';
         $this->assertNotEquals(time(), fileatime($path));
-        $expect = [
-            'stream' => 'abc123',
-            'mime' => 'inode/x-empty',
-            'size' => 0,
-        ];
-        $this->assertEquals($expect, $cache->getStream($image));
+        $this->assertEquals('abc123', $cache->getStream($image));
         clearstatcache();
         $this->assertEquals(time(), fileatime($path));
     }
@@ -160,13 +155,7 @@ class ImageCacheTest extends TestCase
 
         $cache = new ImageCacheStub;
         $cache->stream = 'abc123';
-        $cache->size = 12;
-        $expect = [
-            'stream' => 'abc123',
-            'mime' => 'image/jpeg',
-            'size' => '12',
-        ];
-        $this->assertEquals($expect, $cache->getStream($image));
+        $this->assertEquals('abc123', $cache->getStream($image));
     }
 
     public function testGetStreamDisk()
@@ -180,11 +169,9 @@ class ImageCacheTest extends TestCase
             'filename' => 'test.txt',
         ]);
 
-        $array = ImageCache::getStream($image);
-        $this->assertEquals(7, $array['size']);
-        $this->assertEquals('text/plain', $array['mime']);
-        $this->assertTrue(is_resource($array['stream']));
-        fclose($array['stream']);
+        $stream = ImageCache::getStream($image);
+        $this->assertTrue(is_resource($stream));
+        fclose($stream);
     }
 
     public function testPrune()
@@ -230,12 +217,9 @@ class ImageCacheStub extends \Biigle\Services\ImageCache
 {
     public $size = 0;
     public $stream = null;
-    protected function getRemoteImageHeaders(\Biigle\Image $image)
+    protected function getRemoteImageSize(\Biigle\Image $image)
     {
-        return [
-            'Content-Length' => ["$this->size"],
-            'Content-Type' => ['image/jpeg'],
-        ];
+        return $this->size;
     }
 
     protected function getImageStream($url)

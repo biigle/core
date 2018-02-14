@@ -191,13 +191,15 @@ class Image extends Model
         }
 
         try {
-            $streamInfo = ImageCache::getStream($this);
-
-            return response()->stream(function () use ($streamInfo) {
-                fpassthru($streamInfo['stream']);
+            $stream = ImageCache::getStream($this);
+            if (!is_resource($stream)) {
+                abort(404);
+            }
+            return response()->stream(function () use ($stream) {
+                fpassthru($stream);
             }, 200, [
-                'Content-Type' => $streamInfo['mime'],
-                'Content-Length' => $streamInfo['size'],
+                'Content-Type' => $this->mimetype,
+                'Content-Length' => $this->size,
                 'Content-Disposition' => 'inline',
             ]);
         } catch (Exception $e) {
