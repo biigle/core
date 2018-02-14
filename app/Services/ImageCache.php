@@ -5,6 +5,7 @@ namespace Biigle\Services;
 use File;
 use Storage;
 use Exception;
+use SplFileInfo;
 use Biigle\Image;
 use GuzzleHttp\Client;
 use League\Flysystem\Adapter\Local;
@@ -153,16 +154,46 @@ class ImageCache implements ImageCacheContract
 
         while ($totalSize > $allowedSize && ($file = $files->current())) {
             $totalSize -= $file->getSize();
-            $handle = fopen($file->getRealPath(), 'r');
-            try {
-                // Only delete the file if it is not currently used. Else move on.
-                if (flock($handle, LOCK_EX | LOCK_NB)) {
-                    File::delete($file->getRealPath());
-                }
-            } finally {
-                fclose($handle);
-            }
+            $this->delete($file);
             $files->next();
+        }
+    }
+
+    /**
+     * Delete all unused cached files.
+     */
+    public function clear()
+    {
+        if (!File::exists($this->path)) {
+            return;
+        }
+
+        $files = Finder::create()
+            ->files()
+            ->ignoreDotFiles(true)
+            ->in($this->path)
+            ->getIterator();
+
+        foreach ($files as $file) {
+            $this->delete($file);
+        }
+    }
+
+    /**
+     * Delete a cached file it it is not used.
+     *
+     * @param SplFileInfo $file
+     */
+    protected function delete(SplFileInfo $file)
+    {
+        $handle = fopen($file->getRealPath(), 'r');
+        try {
+            // Only delete the file if it is not currently used. Else move on.
+            if (flock($handle, LOCK_EX | LOCK_NB)) {
+                File::delete($file->getRealPath());
+            }
+        } finally {
+            fclose($handle);
         }
     }
 

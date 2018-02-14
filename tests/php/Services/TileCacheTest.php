@@ -62,4 +62,12 @@ class TileCacheTest extends TestCase
             File::deleteDirectory(File::dirname(File::dirname($path)));
         }
     }
+
+    public function testClear()
+    {
+        $cachePath = config('image.tiles.cache.path');
+        File::makeDirectory("{$cachePath}/abcd", 0755, true, true);
+        TileCache::clear();
+        $this->assertFalse(File::exists("{$cachePath}/abcd"));
+    }
 }

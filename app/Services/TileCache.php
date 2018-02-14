@@ -105,6 +105,23 @@ class TileCache
     }
 
     /**
+     * Delete all cached tiles.
+     */
+    public function clear()
+    {
+        $files = Finder::create()
+            ->directories()
+            ->in($this->path)
+            ->ignoreDotFiles(true)
+            ->depth(0)
+            ->getIterator();
+
+        foreach ($files as $file) {
+            File::deleteDirectory($file->getRealPath());
+        }
+    }
+
+    /**
      * Creates the subdirectories that are required by the given path to the cached
      * tiles.
      *
