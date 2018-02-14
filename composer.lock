@@ -4,8 +4,328 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "bfae9dd550c175292042278a272312ed",
+    "content-hash": "3952f771b043cf4cbc0ad8946c939f81",
     "packages": [
+        {
+            "name": "biigle/ananas",
+            "version": "v1.0.4",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:BiodataMiningGroup/biigle-ananas.git",
+                "reference": "f002958d4c3d10e5d31a8decbbea0a87f10247cd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-ananas/zipball/f002958d4c3d10e5d31a8decbbea0a87f10247cd",
+                "reference": "f002958d4c3d10e5d31a8decbbea0a87f10247cd",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/annotations": ">=2.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Ananas\\": "src"
+                }
+            },
+            "support": {
+                "source": "https://github.com/BiodataMiningGroup/biigle-ananas/tree/v1.0.4",
+                "issues": "https://github.com/BiodataMiningGroup/biigle-ananas/issues"
+            },
+            "time": "2018-02-13T14:46:28+00:00"
+        },
+        {
+            "name": "biigle/annotations",
+            "version": "v2.11.1",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:BiodataMiningGroup/biigle-annotations.git",
+                "reference": "d0ac1d5b4ffb4139ab4800ac63021557f300219f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-annotations/zipball/d0ac1d5b4ffb4139ab4800ac63021557f300219f",
+                "reference": "d0ac1d5b4ffb4139ab4800ac63021557f300219f",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/label-trees": "~1.3",
+                "biigle/volumes": "~1.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Annotations\\": "src"
+                }
+            },
+            "scripts": {
+                "fix": [
+                    "php-cs-fixer --config-file='.php_cs' fix"
+                ]
+            },
+            "support": {
+                "source": "https://github.com/BiodataMiningGroup/biigle-annotations/tree/master",
+                "issues": "https://github.com/BiodataMiningGroup/biigle-annotations/issues"
+            },
+            "time": "2018-01-22T11:24:40+00:00"
+        },
+        {
+            "name": "biigle/color-sort",
+            "version": "v1.8.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:BiodataMiningGroup/biigle-color-sort.git",
+                "reference": "6223c11bfa64fcd9501165bac384ad2c7e379225"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-color-sort/zipball/6223c11bfa64fcd9501165bac384ad2c7e379225",
+                "reference": "6223c11bfa64fcd9501165bac384ad2c7e379225",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/volumes": "~1.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\ColorSort\\": "src"
+                }
+            },
+            "scripts": {
+                "fix": [
+                    "php-cs-fixer --config-file='.php_cs' fix"
+                ]
+            },
+            "support": {
+                "source": "https://github.com/BiodataMiningGroup/biigle-color-sort/tree/v1.8.0",
+                "issues": "https://github.com/BiodataMiningGroup/biigle-color-sort/issues"
+            },
+            "time": "2018-01-16T08:52:46+00:00"
+        },
+        {
+            "name": "biigle/export",
+            "version": "v2.3.2",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:BiodataMiningGroup/biigle-export.git",
+                "reference": "49f50de5326018fb2dec9fc5530287c1dd437e5b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-export/zipball/49f50de5326018fb2dec9fc5530287c1dd437e5b",
+                "reference": "49f50de5326018fb2dec9fc5530287c1dd437e5b",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/projects": "~1.4",
+                "ext-zip": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Export\\": "src"
+                }
+            },
+            "support": {
+                "source": "https://github.com/BiodataMiningGroup/biigle-export/tree/master",
+                "issues": "https://github.com/BiodataMiningGroup/biigle-export/issues"
+            },
+            "time": "2018-01-19T12:39:12+00:00"
+        },
+        {
+            "name": "biigle/geo",
+            "version": "v1.6.3",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:BiodataMiningGroup/biigle-geo.git",
+                "reference": "295eda772b37e6238a40d72f4ab5dd645e3b2319"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-geo/zipball/295eda772b37e6238a40d72f4ab5dd645e3b2319",
+                "reference": "295eda772b37e6238a40d72f4ab5dd645e3b2319",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/label-trees": "~1.3",
+                "biigle/volumes": "~1.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Geo\\": "src"
+                }
+            },
+            "support": {
+                "source": "https://github.com/BiodataMiningGroup/biigle-geo/tree/master",
+                "issues": "https://github.com/BiodataMiningGroup/biigle-geo/issues"
+            },
+            "time": "2018-01-19T12:40:12+00:00"
+        },
+        {
+            "name": "biigle/label-trees",
+            "version": "v1.12.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:BiodataMiningGroup/biigle-label-trees.git",
+                "reference": "32e4eff24003653ca0f9426c1a4f3d70912e494e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-label-trees/zipball/32e4eff24003653ca0f9426c1a4f3d70912e494e",
+                "reference": "32e4eff24003653ca0f9426c1a4f3d70912e494e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-soap": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\LabelTrees\\": "src"
+                }
+            },
+            "scripts": {
+                "fix": [
+                    "php-cs-fixer --config-file='.php_cs' fix"
+                ]
+            },
+            "support": {
+                "source": "https://github.com/BiodataMiningGroup/biigle-label-trees/tree/master",
+                "issues": "https://github.com/BiodataMiningGroup/biigle-label-trees/issues"
+            },
+            "time": "2018-01-22T11:24:12+00:00"
+        },
+        {
+            "name": "biigle/largo",
+            "version": "v1.11.2",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:BiodataMiningGroup/biigle-largo.git",
+                "reference": "ea3000fc2235dc837972ed6a9c6a65ce1de7236c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-largo/zipball/ea3000fc2235dc837972ed6a9c6a65ce1de7236c",
+                "reference": "ea3000fc2235dc837972ed6a9c6a65ce1de7236c",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/label-trees": "~1.3",
+                "biigle/volumes": "~1.5",
+                "intervention/image": "~2.1",
+                "intervention/imagecache": "~2.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Largo\\": "src"
+                }
+            },
+            "support": {
+                "source": "https://github.com/BiodataMiningGroup/biigle-largo/tree/v1.11.2",
+                "issues": "https://github.com/BiodataMiningGroup/biigle-largo/issues"
+            },
+            "time": "2018-02-13T14:07:06+00:00"
+        },
+        {
+            "name": "biigle/laserpoints",
+            "version": "v1.5.2",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:BiodataMiningGroup/biigle-laserpoints.git",
+                "reference": "24dd253d98d08a6df3ae864ead32fc6e609be5e1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-laserpoints/zipball/24dd253d98d08a6df3ae864ead32fc6e609be5e1",
+                "reference": "24dd253d98d08a6df3ae864ead32fc6e609be5e1",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/annotations": "~2.0",
+                "biigle/volumes": "~1.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Laserpoints\\": "src"
+                }
+            },
+            "support": {
+                "source": "https://github.com/BiodataMiningGroup/biigle-laserpoints/tree/v1.5.2",
+                "issues": "https://github.com/BiodataMiningGroup/biigle-laserpoints/issues"
+            },
+            "time": "2018-01-29T12:35:34+00:00"
+        },
+        {
+            "name": "biigle/projects",
+            "version": "v1.9.2",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:BiodataMiningGroup/biigle-projects.git",
+                "reference": "9c03df09ceb1823e6bf4cb9e2aaed85786daad26"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-projects/zipball/9c03df09ceb1823e6bf4cb9e2aaed85786daad26",
+                "reference": "9c03df09ceb1823e6bf4cb9e2aaed85786daad26",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Projects\\": "src"
+                }
+            },
+            "scripts": {
+                "fix": [
+                    "php-cs-fixer --config-file='.php_cs' fix"
+                ]
+            },
+            "support": {
+                "source": "https://github.com/BiodataMiningGroup/biigle-projects/tree/master",
+                "issues": "https://github.com/BiodataMiningGroup/biigle-projects/issues"
+            },
+            "time": "2018-01-22T11:24:58+00:00"
+        },
+        {
+            "name": "biigle/volumes",
+            "version": "v1.14.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:BiodataMiningGroup/biigle-volumes.git",
+                "reference": "9bfd0ff31caa2aa3a6658c400c0e7135274c5792"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-volumes/zipball/9bfd0ff31caa2aa3a6658c400c0e7135274c5792",
+                "reference": "9bfd0ff31caa2aa3a6658c400c0e7135274c5792",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/label-trees": "~1.3",
+                "biigle/projects": "~1.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Volumes\\": "src"
+                }
+            },
+            "scripts": {
+                "fix": [
+                    "php-cs-fixer --config-file='.php_cs' fix"
+                ]
+            },
+            "support": {
+                "source": "https://github.com/BiodataMiningGroup/biigle-volumes/tree/master",
+                "issues": "https://github.com/BiodataMiningGroup/biigle-volumes/issues"
+            },
+            "time": "2018-01-22T11:25:12+00:00"
+        },
         {
             "name": "dnoegel/php-xdg-base-dir",
             "version": "0.1",
@@ -869,6 +1189,129 @@
             "time": "2017-03-20T17:10:46+00:00"
         },
         {
+            "name": "intervention/image",
+            "version": "2.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Intervention/image.git",
+                "reference": "3603dbcc9a17d307533473246a6c58c31cf17919"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/3603dbcc9a17d307533473246a6c58c31cf17919",
+                "reference": "3603dbcc9a17d307533473246a6c58c31cf17919",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "guzzlehttp/psr7": "~1.1",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9.2",
+                "phpunit/phpunit": "^4.8 || ^5.7"
+            },
+            "suggest": {
+                "ext-gd": "to use GD library based image processing.",
+                "ext-imagick": "to use Imagick based image processing.",
+                "intervention/imagecache": "Caching extension for the Intervention Image library"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Intervention\\Image\\ImageServiceProvider"
+                    ],
+                    "aliases": {
+                        "Image": "Intervention\\Image\\Facades\\Image"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Intervention\\Image\\": "src/Intervention/Image"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Vogel",
+                    "email": "oliver@olivervogel.com",
+                    "homepage": "http://olivervogel.com/"
+                }
+            ],
+            "description": "Image handling and manipulation library with support for Laravel integration",
+            "homepage": "http://image.intervention.io/",
+            "keywords": [
+                "gd",
+                "image",
+                "imagick",
+                "laravel",
+                "thumbnail",
+                "watermark"
+            ],
+            "time": "2017-09-21T16:29:17+00:00"
+        },
+        {
+            "name": "intervention/imagecache",
+            "version": "2.3.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Intervention/imagecache.git",
+                "reference": "7936b90e695daee1aafbd25221815352ef97bcbc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Intervention/imagecache/zipball/7936b90e695daee1aafbd25221815352ef97bcbc",
+                "reference": "7936b90e695daee1aafbd25221815352ef97bcbc",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/cache": "~4|~5",
+                "illuminate/filesystem": "~4|~5",
+                "intervention/image": "dev-master|~2,>=2.2.0",
+                "jeremeamia/superclosure": "~1|~2",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9.2",
+                "phpunit/phpunit": "3.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Intervention\\Image\\": "src/Intervention/Image"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Vogel",
+                    "email": "oliver@olivervogel.net",
+                    "homepage": "http://olivervogel.net/"
+                }
+            ],
+            "description": "Caching extension for the Intervention Image Class",
+            "homepage": "http://image.intervention.io",
+            "keywords": [
+                "cache",
+                "gd",
+                "image",
+                "imagick",
+                "laravel"
+            ],
+            "time": "2015-09-22T15:22:47+00:00"
+        },
+        {
             "name": "jakub-onderka/php-console-color",
             "version": "0.1",
             "source": {
@@ -1010,6 +1453,64 @@
                 "processing"
             ],
             "time": "2017-04-30T15:40:43+00:00"
+        },
+        {
+            "name": "jeremeamia/SuperClosure",
+            "version": "2.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jeremeamia/super_closure.git",
+                "reference": "443c3df3207f176a1b41576ee2a66968a507b3db"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jeremeamia/super_closure/zipball/443c3df3207f176a1b41576ee2a66968a507b3db",
+                "reference": "443c3df3207f176a1b41576ee2a66968a507b3db",
+                "shasum": ""
+            },
+            "require": {
+                "nikic/php-parser": "^1.2|^2.0|^3.0",
+                "php": ">=5.4",
+                "symfony/polyfill-php56": "^1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0|^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "SuperClosure\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jeremy Lindblom",
+                    "email": "jeremeamia@gmail.com",
+                    "homepage": "https://github.com/jeremeamia",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Serialize Closure objects, including their context and binding",
+            "homepage": "https://github.com/jeremeamia/super_closure",
+            "keywords": [
+                "closure",
+                "function",
+                "lambda",
+                "parser",
+                "serializable",
+                "serialize",
+                "tokenizer"
+            ],
+            "time": "2016-12-07T09:37:55+00:00"
         },
         {
             "name": "laravel/framework",
@@ -1463,16 +1964,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v3.1.0",
+            "version": "v3.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "4d4896e553f2094e657fe493506dc37c509d4e2b"
+                "reference": "e57b3a09784f846411aa7ed664eedb73e3399078"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/4d4896e553f2094e657fe493506dc37c509d4e2b",
-                "reference": "4d4896e553f2094e657fe493506dc37c509d4e2b",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/e57b3a09784f846411aa7ed664eedb73e3399078",
+                "reference": "e57b3a09784f846411aa7ed664eedb73e3399078",
                 "shasum": ""
             },
             "require": {
@@ -1510,7 +2011,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2017-07-28T14:45:09+00:00"
+            "time": "2018-01-25T21:31:33+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -2459,6 +2960,114 @@
                 "shim"
             ],
             "time": "2017-06-09T14:24:12+00:00"
+        },
+        {
+            "name": "symfony/polyfill-php56",
+            "version": "v1.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-php56.git",
+                "reference": "ebc999ce5f14204c5150b9bd15f8f04e621409d8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-php56/zipball/ebc999ce5f14204c5150b9bd15f8f04e621409d8",
+                "reference": "ebc999ce5f14204c5150b9bd15f8f04e621409d8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "symfony/polyfill-util": "~1.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php56\\": ""
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill backporting some PHP 5.6+ features to lower PHP versions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "time": "2018-01-30T19:27:44+00:00"
+        },
+        {
+            "name": "symfony/polyfill-util",
+            "version": "v1.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-util.git",
+                "reference": "e17c808ec4228026d4f5a8832afa19be85979563"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-util/zipball/e17c808ec4228026d4f5a8832afa19be85979563",
+                "reference": "e17c808ec4228026d4f5a8832afa19be85979563",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Polyfill\\Util\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony utilities for portability of PHP codes",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compat",
+                "compatibility",
+                "polyfill",
+                "shim"
+            ],
+            "time": "2018-01-31T18:08:44+00:00"
         },
         {
             "name": "symfony/process",
@@ -4345,6 +4954,16 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "biigle/ananas": 20,
+        "biigle/annotations": 20,
+        "biigle/color-sort": 20,
+        "biigle/export": 20,
+        "biigle/geo": 20,
+        "biigle/label-trees": 20,
+        "biigle/largo": 20,
+        "biigle/laserpoints": 20,
+        "biigle/projects": 20,
+        "biigle/volumes": 20,
         "mockery/mockery": 20
     },
     "prefer-stable": true,

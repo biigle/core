@@ -10,14 +10,24 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-vips": "*",
+        "biigle/ananas": "@dev",
+        "biigle/annotations": "@dev",
+        "biigle/color-sort": "@dev",
+        "biigle/export": "@dev",
+        "biigle/geo": "@dev",
+        "biigle/label-trees": "@dev",
+        "biigle/largo": "@dev",
+        "biigle/laserpoints": "@dev",
+        "biigle/projects": "@dev",
+        "biigle/volumes": "@dev",
         "doctrine/annotations": "1.4.0",
+        "doctrine/dbal": "^2.5",
         "guzzlehttp/guzzle": "~6.0",
         "jcupitt/vips": "^1.0",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "^1.0",
         "predis/predis": "^1.1",
         "ramsey/uuid": "^3.5",
-        "doctrine/dbal": "^2.5",
         "ramsey/uuid-doctrine": "^1.2"
     },
     "require-dev": {
@@ -88,5 +98,47 @@
         "optimize-autoloader": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:BiodataMiningGroup/biigle-projects.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:BiodataMiningGroup/biigle-volumes.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:BiodataMiningGroup/biigle-annotations.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:BiodataMiningGroup/biigle-color-sort.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:BiodataMiningGroup/biigle-label-trees.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:BiodataMiningGroup/biigle-largo.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:BiodataMiningGroup/biigle-laserpoints.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:BiodataMiningGroup/biigle-export.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:BiodataMiningGroup/biigle-geo.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:BiodataMiningGroup/biigle-ananas.git"
+        }
+    ]
 }
