@@ -14,7 +14,6 @@ WORKDIR /var/www
 ARG GITHUB_OAUTH_TOKEN
 ENV COMPOSER_NO_INTERACTION 1
 ENV COMPOSER_ALLOW_SUPERUSER 1
-
 # Ignore platform reqs because the app image is stripped down to the essentials
 # and doens't meet some of the requirements. We do this for the worker, though.
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
@@ -22,14 +21,16 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php -r "if (hash_file('SHA384', 'composer-setup.php') === '$COMPOSER_SIGNATURE') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
     && php composer-setup.php \
     && rm composer-setup.php \
-    && php composer.phar config github-oauth.github.com ${GITHUB_OAUTH_TOKEN} \
-    && php composer.phar install --no-dev --no-scripts --ignore-platform-reqs \
-    && rm composer.phar
+    && COMPOSER_AUTH="{\"github-oauth\":{\"github.com\":\"${GITHUB_OAUTH_TOKEN}\"}}" \
+        php composer.phar install --no-dev --no-scripts --ignore-platform-reqs
 
 COPY . /var/www
 
+# This is required so the artisan optimize command does not fail.
+RUN mkdir -p /var/www/storage/framework/views
+
+RUN php composer.phar dump-autoload -o \
+    && rm composer.phar
+
 # Make this writable for whatever user the app is running as.
 RUN chmod o+w /var/www/bootstrap/cache
-
-# Route and config caching should be done in the distribution build. But we can optimize.
-RUN php /var/www/artisan optimize

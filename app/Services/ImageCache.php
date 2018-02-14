@@ -193,8 +193,7 @@ class ImageCache implements ImageCacheContract
             $this->ensurePathExists();
             // Create and lock the file as fast as possible so concurrent workers will
             // see it. Lock it exclusively until it is completely written.
-            touch($cachedPath);
-            $handle = fopen($cachedPath, 'r');
+            $handle = fopen($cachedPath, 'w+');
             flock($handle, LOCK_EX);
 
             try {
