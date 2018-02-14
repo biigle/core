@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "10e73d22496c21370fa3ce2a64f43970",
+    "content-hash": "90ec50794650fb0158fd102ce29b4148",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -290,6 +290,35 @@
                 "issues": "https://github.com/BiodataMiningGroup/biigle-projects/issues"
             },
             "time": "2018-01-22T11:24:58+00:00"
+        },
+        {
+            "name": "biigle/rare",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:BiodataMiningGroup/biigle-rare.git",
+                "reference": "1aa94b70aebe9e677fdc208d91f4453c9a76de50"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-rare/zipball/1aa94b70aebe9e677fdc208d91f4453c9a76de50",
+                "reference": "1aa94b70aebe9e677fdc208d91f4453c9a76de50",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/volumes": ">=1.14"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Rare\\": "src"
+                }
+            },
+            "support": {
+                "source": "https://github.com/BiodataMiningGroup/biigle-rare/tree/v0.1.0",
+                "issues": "https://github.com/BiodataMiningGroup/biigle-rare/issues"
+            },
+            "time": "2018-02-14T13:12:45+00:00"
         },
         {
             "name": "biigle/volumes",
@@ -5190,6 +5219,7 @@
         "biigle/largo": 20,
         "biigle/laserpoints": 20,
         "biigle/projects": 20,
+        "biigle/rare": 20,
         "biigle/volumes": 20,
         "mockery/mockery": 20
     },

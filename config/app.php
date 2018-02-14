@@ -202,6 +202,7 @@ return [
         Biigle\Modules\Laserpoints\LaserpointsServiceProvider::class,
         Biigle\Modules\Export\ExportServiceProvider::class,
         Biigle\Modules\Ananas\AnanasServiceProvider::class,
+        Biigle\Modules\Rare\RareServiceProvider::class,
 
     ],
 
