@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         Commands\NewUser::class,
         Commands\UpdateThumbnailStorageScheme::class,
         Commands\UpdateVolumeUrls::class,
+        Commands\UpdateImageMetadata::class,
         // Insert console commands here.
     ];
 

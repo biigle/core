@@ -2,9 +2,9 @@
 
 namespace Biigle\Console\Commands;
 
-use Illuminate\Console\Command;
 use Biigle\User;
 use Biigle\Role;
+use Illuminate\Console\Command;
 
 class NewUser extends Command
 {
