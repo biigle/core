@@ -2006,16 +2006,16 @@
         },
         {
             "name": "mzur/laravel-openstack-swift",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mzur/laravel-openstack-swift.git",
-                "reference": "0926a3c78af3236564a722fefa4677f8855e039c"
+                "reference": "f9c3d7b344be6cafe1660a0be159bb544e671c90"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mzur/laravel-openstack-swift/zipball/0926a3c78af3236564a722fefa4677f8855e039c",
-                "reference": "0926a3c78af3236564a722fefa4677f8855e039c",
+                "url": "https://api.github.com/repos/mzur/laravel-openstack-swift/zipball/f9c3d7b344be6cafe1660a0be159bb544e671c90",
+                "reference": "f9c3d7b344be6cafe1660a0be159bb544e671c90",
                 "shasum": ""
             },
             "require": {
@@ -2047,7 +2047,7 @@
                 }
             ],
             "description": "OpenStack Swift storage driver for Laravel 5.",
-            "time": "2018-02-02T09:15:55+00:00"
+            "time": "2018-02-15T12:20:47+00:00"
         },
         {
             "name": "nesbot/carbon",
