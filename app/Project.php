@@ -14,8 +14,8 @@ class Project extends Model
      * @var array
      */
     public static $createRules = [
-        'name'        => 'required|max:512',
-        'description' => 'required',
+        'name'        => 'required|min:2|max:512',
+        'description' => 'required|min:2',
     ];
 
     /**
