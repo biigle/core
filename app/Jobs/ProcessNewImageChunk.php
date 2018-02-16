@@ -217,39 +217,43 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
         }
 
         // Exif may be false if no error has been thrown, too (e.g. if the image is PNG)!
-        if ($exif === false) {
-            return;
-        }
-
-        if ($this->hasTakenAtInfo($exif)) {
-            try {
-                $image->taken_at = new Carbon($exif['DateTimeOriginal']);
-            } catch (Exception $e) {
-                // date could not be parsed
-                $image->taken_at = null;
+        if ($exif !== false) {
+            if ($this->hasTakenAtInfo($exif)) {
+                try {
+                    $image->taken_at = new Carbon($exif['DateTimeOriginal']);
+                } catch (Exception $e) {
+                    // date could not be parsed
+                    $image->taken_at = null;
+                }
             }
-        }
 
-        if ($this->hasGpsInfo($exif)) {
-            $image->lng = $this->getGps($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
-            $image->lat = $this->getGps($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
+            if ($this->hasGpsInfo($exif)) {
+                $image->lng = $this->getGps(
+                    $exif['GPSLongitude'],
+                    $exif['GPSLongitudeRef']
+                );
+                $image->lat = $this->getGps(
+                    $exif['GPSLatitude'],
+                    $exif['GPSLatitudeRef']
+                );
 
-            // It is unlikely that the position is exactly 0. More likely is a false
-            // position if the camera sets 0 as "no position detected". So we assume
-            // the image has no position information in this case.
-            if ($image->lng === 0.0 && $image->lat === 0.0) {
-                $image->lng = null;
-                $image->lat = null;
+                // It is unlikely that the position is exactly 0. More likely is a false
+                // position if the camera sets 0 as "no position detected". So we assume
+                // the image has no position information in this case.
+                if ($image->lng === 0.0 && $image->lat === 0.0) {
+                    $image->lng = null;
+                    $image->lat = null;
+                }
             }
-        }
 
-        if ($this->hasExtendedGpsInfo($exif)) {
-            // GPSAltitudeRef is \x00 for above sea level and \x01 for below sea
-            // level. We use a negative gps_altitude for below sea level.
-            $ref = ($exif['GPSAltitudeRef'] === "\x00") ? 1 : -1;
-            $image->metadata = [
-                'gps_altitude' => $ref * $this->fracToFloat($exif['GPSAltitude']),
-            ];
+            if ($this->hasExtendedGpsInfo($exif)) {
+                // GPSAltitudeRef is \x00 for above sea level and \x01 for below sea
+                // level. We use a negative gps_altitude for below sea level.
+                $ref = ($exif['GPSAltitudeRef'] === "\x00") ? 1 : -1;
+                $image->metadata = [
+                    'gps_altitude' => $ref * $this->fracToFloat($exif['GPSAltitude']),
+                ];
+            }
         }
 
         $image->save();
