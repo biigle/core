@@ -42,6 +42,7 @@ RUN apt-get update \
 # Install libvips and the vips PHP extension in one go so the *-dev dependencies are
 # reused.
 ARG LIBVIPS_VERSION=8.5.7
+ARG PHP_VIPS_EXT_VERSION=1.0.7
 RUN apt-get update \
     && apt-get -y install \
         automake gtk-doc-tools build-essential pkg-config glib2.0-dev libexpat1-dev \
@@ -50,7 +51,6 @@ RUN apt-get update \
     && cd /tmp \
     && curl -L https://github.com/jcupitt/libvips/releases/download/v${LIBVIPS_VERSION}/vips-${LIBVIPS_VERSION}.tar.gz > vips-${LIBVIPS_VERSION}.tar.gz \
     && tar -xzf vips-${LIBVIPS_VERSION}.tar.gz \
-    && rm vips-${LIBVIPS_VERSION}.tar.gz \
     && cd /tmp/vips-${LIBVIPS_VERSION} \
     && ./configure \
         --without-python \
@@ -62,9 +62,10 @@ RUN apt-get update \
     && make \
     && make -s install-strip \
     && cd /tmp \
-    && rm -r vips-${LIBVIPS_VERSION} \
-    && pecl install vips \
+    && curl -L https://github.com/jcupitt/php-vips-ext/releases/download/v${PHP_VIPS_EXT_VERSION}/vips-${PHP_VIPS_EXT_VERSION}.tgz > vips-${PHP_VIPS_EXT_VERSION}.tgz \
+    && pecl install vips-${PHP_VIPS_EXT_VERSION}.tgz \
     && docker-php-ext-enable vips \
+    && rm -r /tmp/* \
     && apt-get remove --purge -y automake gtk-doc-tools build-essential glib2.0-dev \
         libexpat1-dev libtiff5-dev libjpeg62-turbo-dev libgsf-1-dev libpng-dev \
     && apt-get autoremove -y \
