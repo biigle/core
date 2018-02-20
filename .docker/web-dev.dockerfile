@@ -6,5 +6,3 @@ ADD .docker/vhost.conf /etc/nginx/conf.d/default.conf
 # Remove this line to prevent errors because of the self signed local development
 # certificate
 RUN sed -i '/add_header/d' /etc/nginx/conf.d/default.conf
-
-ADD certificate /etc/letsencrypt/live/example.com
