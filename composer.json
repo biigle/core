@@ -19,7 +19,6 @@
         "biigle/largo": "@dev",
         "biigle/laserpoints": "@dev",
         "biigle/projects": "@dev",
-        "biigle/rare": "@dev",
         "biigle/volumes": "@dev",
         "doctrine/annotations": "1.4.0",
         "doctrine/dbal": "^2.5",
