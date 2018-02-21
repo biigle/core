@@ -1,6 +1,6 @@
 <component :is="plugins.exportArea" :settings="settings" inline-template>
-    <div class="settings-tab__section">
-        <label title="Opacity of the export area">Export Area Opacity (<span v-if="shown" v-text="opacity"></span><span v-else>hidden</span>)</label>
+    <div class="sidebar-tab__section">
+        <h5 title="Opacity of the export area">Export Area Opacity (<span v-if="shown" v-text="opacity"></span><span v-else>hidden</span>)</h5>
         <div class="form-group">
             <input type="range" min="0" max="1" step="0.1" v-model="opacityValue">
         </div>
