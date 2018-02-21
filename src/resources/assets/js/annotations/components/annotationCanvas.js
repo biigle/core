@@ -89,7 +89,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 type: Number,
                 default: 1,
             },
-            cycleMode: {
+            annotationMode: {
                 type: String,
                 default: 'default',
             },
@@ -193,7 +193,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 return this.lastCreatedAnnotation !== null;
             },
             previousButtonTitle: function () {
-                switch (this.cycleMode) {
+                switch (this.annotationMode) {
                     case 'volare':
                         return 'Previous annotation';
                     case 'lawnmower':
@@ -203,7 +203,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 }
             },
             nextButtonTitle: function () {
-                switch (this.cycleMode) {
+                switch (this.annotationMode) {
                     case 'volare':
                         return 'Next annotation';
                     case 'lawnmower':

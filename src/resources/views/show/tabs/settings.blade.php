@@ -1,66 +1,43 @@
 <sidebar-tab name="settings" icon="cog" title="Settings">
-    <settings-tab v-cloak v-on:change="handleSettingsChange" v-on:attach-label="handleAttachAllSelected" inline-template>
+    <settings-tab v-cloak v-on:change="handleSettingsChange" inline-template>
         <div class="settings-tab">
             <h4>Settings</h4>
 
-            <div class="settings-tab__section">
-                <screenshot-button inline-template>
-                    <button class="btn btn-default" :title="screenshotTitle" :disabled="!screenshotSupported" v-on:click="capture"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> Capture screenshot</button>
-                </screenshot-button>
-            </div>
+            <screenshot-button inline-template>
+                <button class="btn btn-default" :title="screenshotTitle" :disabled="!screenshotSupported" v-on:click="capture"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> Capture screenshot</button>
+            </screenshot-button>
 
-            <div class="settings-tab__section">
-                <label title="Set the opacity of annotations on the map">Annotation Opacity (<span v-text="annotationOpacity"></span>)</label>
+            <div class="sidebar-tab__section">
+                <h5 title="Set the opacity of annotations on the map">Annotation Opacity (<span v-text="annotationOpacity"></span>)</h5>
                 <input type="range" min="0" max="1" step="0.1" v-model="annotationOpacity">
             </div>
 
-            <div class="settings-tab__section">
-                <label title="Cycle through all annotations">Volare<br><small>cycle through annotations</small></label>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default" :class="{active: isVolareActive}" v-on:click="startVolare" title="Start cycling through all annotations">on</button>
-                    <button type="button" class="btn btn-default" :class="{active: !isVolareActive}" v-on:click="resetCycleMode" title="Stop cycling through all annotations 𝗘𝘀𝗰">off</button>
-                </div>
-                <div class="btn-group">
-                    @can('add-annotation', $image)
-                        <button class="btn btn-default" :disabled="!isVolareActive" v-on:click="emitAttachLabel" title="Attach the current label to the selected annotation 𝗘𝗻𝘁𝗲𝗿"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-                    @endcan
-                </div>
-            </div>
-
-            <div class="settings-tab__section">
-                <label title="Cycle through image sections">Lawnmower Mode<br><small>cycle through image sections</small></label>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default" :class="{active: isLawnmowerActive}" v-on:click="startLawnmower" title="Start cycling through image sections">on</button>
-                    <button type="button" class="btn btn-default" :class="{active: !isLawnmowerActive}" v-on:click="resetCycleMode" title="Stop cycling through image sections 𝗘𝘀𝗰">off</button>
-                </div>
-            </div>
-
-            <div class="settings-tab__section">
-                <label>Minimap</label>
+            <div class="sidebar-tab__section">
+                <h5>Minimap</h5>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" :class="{active: minimap}" v-on:click="showMinimap" title="Show minimap">show</button>
                     <button type="button" class="btn btn-default" :class="{active: !minimap}" v-on:click="hideMinimap" title="Hide minimap">hide</button>
                 </div>
             </div>
 
-            <div class="settings-tab__section">
-                <label>Mouse Position</label>
+            <div class="sidebar-tab__section">
+                <h5>Mouse Position</h5>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" :class="{active: mousePosition}" v-on:click="showMousePosition" title="Show mouse position">show</button>
                     <button type="button" class="btn btn-default" :class="{active: !mousePosition}" v-on:click="hideMousePosition" title="Hide mouse position">hide</button>
                 </div>
             </div>
 
-            <div class="settings-tab__section">
-                <label>Zoom Level</label>
+            <div class="sidebar-tab__section">
+                <h5>Zoom Level</h5>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" :class="{active: zoomLevel}" v-on:click="showZoomLevel" title="Show zoom level">show</button>
                     <button type="button" class="btn btn-default" :class="{active: !zoomLevel}" v-on:click="hideZoomLevel" title="Hide zoom level">hide</button>
                 </div>
             </div>
 
-            <div class="settings-tab__section">
-                <label>Annotation Tooltip</label>
+            <div class="sidebar-tab__section">
+                <h5>Annotation Tooltip</h5>
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" :class="{active: annotationTooltip}" v-on:click="showAnnotationTooltip" title="Show annotation tooltip">show</button>
                     <button type="button" class="btn btn-default" :class="{active: !annotationTooltip}" v-on:click="hideAnnotationTooltip" title="Hide annotation tooltip">hide</button>

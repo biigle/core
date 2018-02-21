@@ -20,6 +20,7 @@ biigle.$viewModel('annotator-container', function (element) {
             sidebarTab: biigle.$require('core.components.sidebarTab'),
             annotationsTab: biigle.$require('annotations.components.annotationsTab'),
             labelsTab: biigle.$require('annotations.components.labelsTab'),
+            annotationModesTab: biigle.$require('annotations.components.annotationModesTab'),
             colorAdjustmentTab: biigle.$require('annotations.components.colorAdjustmentTab'),
             imageLabelTab: biigle.$require('annotations.components.imageLabelTab'),
             settingsTab: biigle.$require('annotations.components.settingsTab'),
@@ -38,10 +39,7 @@ biigle.$viewModel('annotator-container', function (element) {
             mapCenter: undefined,
             mapResolution: undefined,
             selectedLabel: null,
-            // Specifies what to cycle on the previous/next buttons or the arrow keys.
-            // Default is the image, others can be annotations (Volare) or image
-            // sections (lawnmower mode).
-            cycleMode: 'default',
+            annotationMode: 'default',
             // Index of the focussed annotation in the 'volare' cycle mode.
             focussedAnnotationIndex: null,
             // Determines if the current image section is the last (Infinity) or the
@@ -82,14 +80,14 @@ biigle.$viewModel('annotator-container', function (element) {
             focussedAnnotation: function () {
                 return this.filteredAnnotations[this.focussedAnnotationIndex];
             },
-            isDefaultCycleMode: function () {
-                return this.cycleMode === 'default';
+            isDefaultAnnotationMode: function () {
+                return this.annotationMode === 'default';
             },
-            isVolareCycleMode: function () {
-                return this.cycleMode === 'volare';
+            isVolareAnnotationMode: function () {
+                return this.annotationMode === 'volare';
             },
-            isLawnmowerCycleMode: function () {
-                return this.cycleMode === 'lawnmower';
+            isLawnmowerAnnotationMode: function () {
+                return this.annotationMode === 'lawnmower';
             },
             imagesIds: function () {
                 // Look for a sequence of image IDs in local storage. This sequence is
@@ -145,7 +143,7 @@ biigle.$viewModel('annotator-container', function (element) {
                     return;
                 }
 
-                if (this.isVolareCycleMode) {
+                if (this.isVolareAnnotationMode) {
                     if (this.focussedAnnotationIndex < (this.filteredAnnotations.length - 1)) {
                         this.focussedAnnotationIndex++;
                         return;
@@ -154,7 +152,7 @@ biigle.$viewModel('annotator-container', function (element) {
                         // don't return.
                         this.focussedAnnotationIndex = -Infinity;
                     }
-                } else if (this.isLawnmowerCycleMode) {
+                } else if (this.isLawnmowerAnnotationMode) {
                     // This returns false if the image section can't be advanced (i.e.
                     // the last section is shown).
                     if (this.$refs.canvas.showNextImageSection()) {
@@ -174,7 +172,7 @@ biigle.$viewModel('annotator-container', function (element) {
                     return;
                 }
 
-                if (this.isVolareCycleMode) {
+                if (this.isVolareAnnotationMode) {
                     if (this.focussedAnnotationIndex > 0) {
                         this.focussedAnnotationIndex--;
                         return;
@@ -183,7 +181,7 @@ biigle.$viewModel('annotator-container', function (element) {
                         // so don't return.
                         this.focussedAnnotationIndex = Infinity;
                     }
-                } else if (this.isLawnmowerCycleMode) {
+                } else if (this.isLawnmowerAnnotationMode) {
                     // This returns false if the image section can't be reversed (i.e.
                     // the first section is shown).
                     if (this.$refs.canvas.showPreviousImageSection()) {
@@ -199,7 +197,7 @@ biigle.$viewModel('annotator-container', function (element) {
                 this.imageIndex = this.getPreviousIndex(this.imageIndex);
             },
             maybeUpdateFocussedAnnotation: function () {
-                if (this.isVolareCycleMode) {
+                if (this.isVolareAnnotationMode) {
                     if (this.filteredAnnotations.length > 0) {
                         if (this.focussedAnnotationIndex === Infinity) {
                             // Show the last annotation if the previous image is shown.
@@ -219,7 +217,7 @@ biigle.$viewModel('annotator-container', function (element) {
                 }
             },
             maybeUpdateShownImageSection: function () {
-                if (this.isLawnmowerCycleMode) {
+                if (this.isLawnmowerAnnotationMode) {
                     if (this.focussedImageSectionIndex === Infinity) {
                         this.$refs.canvas.showLastImageSection();
                     } else {
@@ -382,11 +380,6 @@ biigle.$viewModel('annotator-container', function (element) {
                     case 'annotationOpacity':
                         this.annotationOpacity = value;
                         break;
-                    case 'cycleMode':
-                        this.cycleMode = value;
-                        this.maybeUpdateFocussedAnnotation();
-                        this.maybeUpdateShownImageSection();
-                        break;
                     case 'mousePosition':
                         this.showMousePosition = value;
                         break;
@@ -400,6 +393,11 @@ biigle.$viewModel('annotator-container', function (element) {
                         this.showMinimap = value;
                         break;
                 }
+            },
+            handleAnnotationModeChange: function (mode) {
+                this.annotationMode = mode;
+                this.maybeUpdateFocussedAnnotation();
+                this.maybeUpdateShownImageSection();
             },
             handleOpenedTab: function (name) {
                 settings.set('openTab', name);

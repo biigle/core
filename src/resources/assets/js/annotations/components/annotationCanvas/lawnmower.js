@@ -65,8 +65,8 @@ biigle.$component('annotations.components.annotationCanvas.lawnmower', function 
 
                 return startCenter;
             },
-            isLawnmowerCycleMode: function () {
-                return this.cycleMode === 'lawnmower';
+            isLawnmowerAnnotationMode: function () {
+                return this.annotationMode === 'lawnmower';
             },
         },
         methods: {
@@ -125,7 +125,7 @@ biigle.$component('annotations.components.annotationCanvas.lawnmower', function 
             // Update the current image section if either the resolution or the map size
             // changed. viewExtent depends on both so we can use it as watcher.
             viewExtent: function () {
-                if (!this.isLawnmowerCycleMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
+                if (!this.isLawnmowerAnnotationMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
                     return;
                 }
                 var distance = function (p1, p2) {
