@@ -43,6 +43,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             biigle.$require('annotations.components.annotationCanvas.mousePosition'),
             biigle.$require('annotations.components.annotationCanvas.zoomLevel'),
             biigle.$require('annotations.components.annotationCanvas.annotationTooltip'),
+            biigle.$require('annotations.components.annotationCanvas.randomSampling'),
         ],
         components: {
             minimap: biigle.$require('annotations.components.minimap'),

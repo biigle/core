@@ -1,4 +1,4 @@
-<sidebar-tab name="settings" icon="cog" title="Toggle the settings tab">
+<sidebar-tab name="settings" icon="cog" title="Settings">
     <settings-tab v-cloak v-on:change="handleSettingsChange" v-on:attach-label="handleAttachAllSelected" inline-template>
         <div class="settings-tab">
             <h4>Settings</h4>

@@ -1,4 +1,4 @@
-<sidebar-tab name="color-adjustment" icon="adjust" :title="supportsColorAdjustment ? 'Toggle the color adjustment tab' : 'Color adjustment is not available for this image'" :disabled="!supportsColorAdjustment">
+<sidebar-tab name="color-adjustment" icon="adjust" :title="supportsColorAdjustment ? 'Color adjustment' : 'Color adjustment is not available for this image'" :disabled="!supportsColorAdjustment">
     <color-adjustment-tab v-on:change="updateColorAdjustment" v-cloak inline-template>
         <div class="color-adjustment-tab">
             <h4 class="clearfix">
