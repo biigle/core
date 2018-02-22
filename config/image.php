@@ -8,7 +8,7 @@ return [
     */
     'cache' => [
         /*
-        | Maximum allowed size of a cached image in bytes.
+        | Maximum allowed size of a cached image in bytes. Set to -1 to allow any size.
         */
         'max_image_size' => 1E+8, // 100 MB
 

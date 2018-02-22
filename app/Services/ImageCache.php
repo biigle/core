@@ -207,9 +207,9 @@ class ImageCache implements ImageCacheContract
 
             try {
                 if ($image->volume->isRemote()) {
-                    $this->getRemoteImage($image);
+                    $this->getRemoteImage($image, $handle);
                 } else {
-                    $newCachedPath = $this->getDiskImage($image);
+                    $newCachedPath = $this->getDiskImage($image, $handle);
 
                     // If it is a locally stored image, delete the empty "placeholder"
                     // file again. The handle may stay open; it doesn't matter.
@@ -239,21 +239,17 @@ class ImageCache implements ImageCacheContract
      * Cache a remote image and get the path to the cached file.
      *
      * @param Image $image Remote image
+     * @param resource $target Target file resource
      * @throws Exception If the image could not be cached.
      *
      * @return string
      */
-    protected function getRemoteImage(Image $image)
+    protected function getRemoteImage(Image $image, $target)
     {
-        $size = $this->getRemoteImageSize($image);
-        if ($size > config('image.cache.max_image_size')) {
-            throw new Exception("File too large with {$size} bytes.");
-        }
-
-        $stream = $this->getImageStream($image->url);
-        $cachedPath = $this->cacheFromResource($image, $stream);
-        if (is_resource($stream)) {
-            fclose($stream);
+        $source = $this->getImageStream($image->url);
+        $cachedPath = $this->cacheFromResource($image, $source, $target);
+        if (is_resource($source)) {
+            fclose($source);
         }
 
         return $cachedPath;
@@ -264,11 +260,12 @@ class ImageCache implements ImageCacheContract
      * from local disks are not cached.
      *
      * @param Image $image Cloud storage image
+     * @param resource $target Target file resource
      * @throws Exception If the image could not be cached.
      *
      * @return string
      */
-    protected function getDiskImage(Image $image)
+    protected function getDiskImage(Image $image, $target)
     {
         $url = explode('://', $image->url);
 
@@ -284,15 +281,10 @@ class ImageCache implements ImageCacheContract
             return $adapter->getPathPrefix().$url[1];
         }
 
-        $size = $disk->size($url[1]);
-        if ($size > config('image.cache.max_image_size')) {
-            throw new Exception("File too large with {$size} bytes.");
-        }
-
-        $stream = $disk->readStream($url[1]);
-        $cachedPath = $this->cacheFromResource($image, $stream);
-        if (is_resource($stream)) {
-            fclose($stream);
+        $source = $disk->readStream($url[1]);
+        $cachedPath = $this->cacheFromResource($image, $source, $target);
+        if (is_resource($source)) {
+            fclose($source);
         }
 
         return $cachedPath;
@@ -302,18 +294,24 @@ class ImageCache implements ImageCacheContract
      * Store the image from the given resource to a cached file.
      *
      * @param Image $image
-     * @param resource $stream
+     * @param resource $source
+     * @param resource $target
      * @throws Exception If the image could not be cached.
      *
      * @return string Path to the cached file
      */
-    protected function cacheFromResource(Image $image, $stream)
+    protected function cacheFromResource(Image $image, $source, $target)
     {
         $cachedPath = $this->getCachedPath($image);
-        $success = file_put_contents($cachedPath, $stream);
+        $maxBytes = intval(config('image.cache.max_image_size'));
+        $bytes = stream_copy_to_stream($source, $target, $maxBytes);
 
-        if ($success === false) {
-            throw new Exception('The stream resource is invalid.');
+        if ($bytes === $maxBytes) {
+            throw new Exception("File too large with more than {$maxBytes} bytes.");
+        }
+
+        if ($bytes === false) {
+            throw new Exception('The source resource is invalid.');
         }
 
         return $cachedPath;
@@ -339,22 +337,6 @@ class ImageCache implements ImageCacheContract
     protected function getCachedPath(Image $image)
     {
         return "{$this->path}/{$image->id}";
-    }
-
-    /**
-     * Get the size of the remot image in Bytes.
-     *
-     * @param Image $image
-     *
-     * @return int
-     */
-    protected function getRemoteImageSize(Image $image)
-    {
-        $client = new Client;
-        $response = $client->head($image->url);
-        $size = (int) $response->getHeaderLine('Content-Length');
-
-        return ($size > 0) ? $size : INF;
     }
 
     /**

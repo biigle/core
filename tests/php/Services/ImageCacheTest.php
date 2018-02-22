@@ -64,18 +64,15 @@ class ImageCacheTest extends TestCase
 
     public function testGetRemoteTooLarge()
     {
-        $image = ImageTest::create();
-        $mock = Mockery::mock();
-        $mock->shouldReceive('isRemote')->once()->andReturn(true);
-        $mock->url = $image->volume->url;
-        $image->volume = $mock;
+        $volume = VolumeTest::create(['url' => 'http://example.com']);
+        $image = ImageTest::create(['volume_id' => $volume]);
         config(['image.cache.max_image_size' => 1]);
 
         $cache = new ImageCacheStub;
-        $cache->size = 2;
+        $cache->stream = fopen(base_path('tests').'/files/test-image.jpg', 'r');
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('File too large');
-        $path = $cache->get($image, function () {});
+        $path = $cache->get($image, $this->noop);
     }
 
     public function testGetDiskDoesNotExist()
@@ -113,7 +110,6 @@ class ImageCacheTest extends TestCase
         $mock = Mockery::mock();
         $mock->shouldReceive('getDriver')->once()->andReturn($mock);
         $mock->shouldReceive('getAdapter')->once()->andReturn($mock);
-        $mock->shouldReceive('size')->once()->andReturn(10);
         $mock->shouldReceive('readStream')->once()->andReturn($stream);
         Storage::shouldReceive('disk')->once()->with('s3')->andReturn($mock);
 
@@ -122,6 +118,27 @@ class ImageCacheTest extends TestCase
         $this->assertEquals("{$this->cachePath}/{$image->id}", $path);
         $this->assertTrue(File::exists("{$this->cachePath}/{$image->id}"));
         $this->assertFalse(is_resource($stream));
+    }
+
+    public function testGetDiskCloudTooLarge()
+    {
+        config(['filesystems.disks.s3' => ['driver' => 's3']]);
+        $volume = VolumeTest::create(['url' => 's3://files']);
+        $image = ImageTest::create(['volume_id' => $volume->id]);
+        config(['image.cache.max_image_size' => 1]);
+
+        $stream = fopen(base_path('tests').'/files/test-image.jpg', 'r');
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('getDriver')->once()->andReturn($mock);
+        $mock->shouldReceive('getAdapter')->once()->andReturn($mock);
+        $mock->shouldReceive('readStream')->once()->andReturn($stream);
+        Storage::shouldReceive('disk')->once()->with('s3')->andReturn($mock);
+
+        $this->assertFalse(File::exists("{$this->cachePath}/{$image->id}"));
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('File too large');
+        $path = ImageCache::get($image, $this->noop);
     }
 
     public function testGetOnce()
@@ -215,12 +232,7 @@ class ImageCacheTest extends TestCase
 
 class ImageCacheStub extends \Biigle\Services\ImageCache
 {
-    public $size = 0;
     public $stream = null;
-    protected function getRemoteImageSize(\Biigle\Image $image)
-    {
-        return $this->size;
-    }
 
     protected function getImageStream($url)
     {
