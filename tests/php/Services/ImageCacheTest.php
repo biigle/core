@@ -130,10 +130,11 @@ class ImageCacheTest extends TestCase
         $stream = fopen(base_path('tests').'/files/test-image.jpg', 'r');
 
         $mock = Mockery::mock();
-        $mock->shouldReceive('getDriver')->once()->andReturn($mock);
-        $mock->shouldReceive('getAdapter')->once()->andReturn($mock);
-        $mock->shouldReceive('readStream')->once()->andReturn($stream);
-        Storage::shouldReceive('disk')->once()->with('s3')->andReturn($mock);
+        // Called twice because the image cache retries failed attempts.
+        $mock->shouldReceive('getDriver')->twice()->andReturn($mock);
+        $mock->shouldReceive('getAdapter')->twice()->andReturn($mock);
+        $mock->shouldReceive('readStream')->twice()->andReturn($stream);
+        Storage::shouldReceive('disk')->twice()->with('s3')->andReturn($mock);
 
         $this->assertFalse(File::exists("{$this->cachePath}/{$image->id}"));
         $this->expectException(Exception::class);
@@ -232,10 +233,15 @@ class ImageCacheTest extends TestCase
 
 class ImageCacheStub extends \Biigle\Services\ImageCache
 {
+    const MAX_RETRIES = 1;
     public $stream = null;
 
     protected function getImageStream($url)
     {
+        if (is_null($this->stream)) {
+            return parent::getImageStream($url);
+        }
+
         return $this->stream;
     }
 }
