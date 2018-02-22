@@ -2,6 +2,7 @@
 
 namespace Biigle\Console\Commands;
 
+use DB;
 use Biigle\Volume;
 use Illuminate\Console\Command;
 
@@ -76,7 +77,8 @@ class UpdateVolumeUrls extends Command
             $matches->each(function ($url, $id) use ($prefix, $disk) {
                 $url = preg_replace("#^{$prefix}/?#", "{$disk}://", $url, 1);
                 if (!$this->dryRun) {
-                    Volume::where('id', $id)->update(['url' => $url]);
+                    // Use DB here to skip automatically updating the timestamps.
+                    DB::table('volumes')->where('id', $id)->update(['url' => $url]);
                 }
             });
         } else {
