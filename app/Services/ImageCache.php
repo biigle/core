@@ -189,10 +189,10 @@ class ImageCache implements ImageCacheContract
     protected function cache(Image $image)
     {
         $cachedPath = $this->getCachedPath($image);
-        $handle = @fopen($cachedPath, 'r');
 
         // Image is already cached.
-        if (is_resource($handle)) {
+        if (File::exists($cachedPath)) {
+            $handle = fopen($cachedPath, 'r');
             // This will block if the file is currently written (LOCK_EX below).
             flock($handle, LOCK_SH);
             // Update access and modification time to signal that this cached image was
