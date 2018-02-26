@@ -78,7 +78,7 @@ class GenerateMissing extends Command
         $progress = $this->output->createProgressBar($total);
         $this->info("Checking {$total} annotations...");
 
-        $annotations->chunk(10000, function ($chunk) use ($progress, $pushToQueue) {
+        $handleChunk = function ($chunk) use ($progress, $pushToQueue) {
             foreach ($chunk as $annotation) {
                 if (!File::exists("{$this->prefix}/{$annotation->volume_id}/{$annotation->id}.{$this->format}")) {
                     $this->count++;
@@ -88,7 +88,9 @@ class GenerateMissing extends Command
                 }
             }
             $progress->advance($chunk->count());
-        });
+        };
+
+        $annotations->chunkById(10000, $handleChunk, 'annotations.id', 'id');
         $progress->finish();
 
         $percent = round($this->count / $total * 100, 2);
