@@ -45,6 +45,8 @@ biigle.$viewModel('annotator-container', function (element) {
             // Determines if the current image section is the last (Infinity) or the
             // first (0) one.
             focussedImageSectionIndex: null,
+            // Progress in random or regular sampling on this image.
+            currentSamplingIndex: null,
             showMousePosition: false,
             showZoomLevel: false,
             showAnnotationTooltip: false,
@@ -88,6 +90,12 @@ biigle.$viewModel('annotator-container', function (element) {
             },
             isLawnmowerAnnotationMode: function () {
                 return this.annotationMode === 'lawnmower';
+            },
+            isRandomSamplingAnnotationMode: function () {
+                return this.annotationMode === 'randomSampling';
+            },
+            isRegularSamplingAnnotationMode: function () {
+                return this.annotationMode === 'regularSampling';
             },
             imagesIds: function () {
                 // Look for a sequence of image IDs in local storage. This sequence is
@@ -162,6 +170,13 @@ biigle.$viewModel('annotator-container', function (element) {
                         // so don't return.
                         this.focussedImageSectionIndex = 0;
                     }
+                } else if (this.isRegularSamplingAnnotationMode) {
+                    // Similar mechanism than for Lanwmower Mode.
+                    if (this.$refs.canvas.showNextRegularSamplingLocation()) {
+                        return;
+                    } else {
+                        this.currentSamplingIndex = 0;
+                    }
                 }
 
                 // Show next image.
@@ -190,6 +205,13 @@ biigle.$viewModel('annotator-container', function (element) {
                         // Show the last image section in the previous image in this
                         // case, so don't return.
                         this.focussedImageSectionIndex = Infinity;
+                    }
+                } else if (this.isRegularSamplingAnnotationMode) {
+                    // Similar mechanism than for Lanwmower Mode.
+                    if (this.$refs.canvas.showPreviousRegularSamplingLocation()) {
+                        return;
+                    } else {
+                        this.currentSamplingIndex = Infinity;
                     }
                 }
 
@@ -224,6 +246,34 @@ biigle.$viewModel('annotator-container', function (element) {
                         this.$refs.canvas.showFirstImageSection();
                     }
                 }
+            },
+            maybeUpdateShownRandomSampling: function (number) {
+                if (this.isRandomSamplingAnnotationMode) {
+                    this.currentSamplingIndex = 0;
+                    if (number > 0) {
+                        this.currentRandomSamplingCount = number;
+                        console.log('IMPLEMENT');
+                    }
+                }
+            },
+            maybeUpdateShownRegularSampling: function (data) {
+                if (this.isRegularSamplingAnnotationMode) {
+                    if (Array.isArray(data) && data[0] > 0 && data[1] > 0) {
+                        this.$refs.canvas.setRegularSamplingData(data[0], data[1]);
+                    }
+
+                    if (this.currentSamplingIndex === Infinity) {
+                        this.$refs.canvas.showLastRegularSamplingLocation();
+                    } else {
+                        this.$refs.canvas.showFirstRegularSamplingLocation();
+                    }
+                }
+            },
+            maybeUpdateAnnotationMode: function (data) {
+                this.maybeUpdateFocussedAnnotation();
+                this.maybeUpdateShownImageSection();
+                this.maybeUpdateShownRandomSampling(data);
+                this.maybeUpdateShownRegularSampling(data);
             },
             handleMapMoveend: function (viewport) {
                 this.mapCenter = viewport.center;
@@ -394,10 +444,9 @@ biigle.$viewModel('annotator-container', function (element) {
                         break;
                 }
             },
-            handleAnnotationModeChange: function (mode) {
+            handleAnnotationModeChange: function (mode, data) {
                 this.annotationMode = mode;
-                this.maybeUpdateFocussedAnnotation();
-                this.maybeUpdateShownImageSection();
+                this.maybeUpdateAnnotationMode(data);
             },
             handleOpenedTab: function (name) {
                 settings.set('openTab', name);
@@ -408,6 +457,9 @@ biigle.$viewModel('annotator-container', function (element) {
             handleLoadingError: function (message) {
                 messages.danger(message);
             },
+            createSampledAnnotation: function () {
+                this.$refs.canvas.createRegularlySampledAnnotation();
+            },
         },
         watch: {
             imageId: function (id) {
@@ -417,8 +469,7 @@ biigle.$viewModel('annotator-container', function (element) {
                         .catch(this.handleLoadingError)
                         .then(this.setCurrentImageAndAnnotations)
                         .then(this.updateUrlSlug)
-                        .then(this.maybeUpdateFocussedAnnotation)
-                        .then(this.maybeUpdateShownImageSection)
+                        .then(this.maybeUpdateAnnotationMode)
                         .then(this.emitImageChanged)
                         // When everything is loaded, pre-fetch the data of the next and
                         // previous images so they can be switched fast.

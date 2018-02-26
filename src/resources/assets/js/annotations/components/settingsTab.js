@@ -94,18 +94,13 @@ biigle.$component('annotations.components.settingsTab', {
         },
     },
     created: function () {
-        var storedProperties = [
+        this.settings.restoreProperties(this, [
             'annotationOpacity',
             'mousePosition',
             'zoomLevel',
             'annotationTooltip',
             'minimap',
-        ];
-        storedProperties.forEach(function (property) {
-            if (this.settings.has(property)) {
-                this[property] = this.settings.get(property);
-            }
-        }, this);
+        ]);
     },
 });
 

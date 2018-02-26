@@ -43,7 +43,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             biigle.$require('annotations.components.annotationCanvas.mousePosition'),
             biigle.$require('annotations.components.annotationCanvas.zoomLevel'),
             biigle.$require('annotations.components.annotationCanvas.annotationTooltip'),
-            biigle.$require('annotations.components.annotationCanvas.randomSampling'),
+            biigle.$require('annotations.components.annotationCanvas.sampling'),
         ],
         components: {
             minimap: biigle.$require('annotations.components.minimap'),
@@ -183,8 +183,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             isAttaching: function () {
                 return this.interactionMode === 'attach';
             },
-            hasNoSelectedLabel: function () {
-                return !this.selectedLabel;
+            hasSelectedLabel: function () {
+                return Boolean(this.selectedLabel);
             },
             hasSelectedAnnotations: function () {
                 return this.selectedAnnotations.length > 0;
@@ -198,6 +198,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         return 'Previous annotation';
                     case 'lawnmower':
                         return 'Previous image section';
+                    case 'randomSampling':
+                    case 'regularSampling':
+                        return 'Previous sample location';
                     default:
                         return 'Previous image';
                 }
@@ -208,6 +211,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         return 'Next annotation';
                     case 'lawnmower':
                         return 'Next image section';
+                    case 'randomSampling':
+                    case 'regularSampling':
+                        return 'Next sample location';
                     default:
                         return 'Next image';
                 }
@@ -396,23 +402,27 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 return this.convertPointsFromOlToDb(points);
             },
             handleNewFeature: function (e) {
-                if (this.hasNoSelectedLabel) {
-                    annotationSource.removeFeature(e.feature);
-                } else {
+                if (this.hasSelectedLabel) {
                     var geometry = e.feature.getGeometry();
                     e.feature.set('color', this.selectedLabel.color);
 
-                    // This callback is called in case saving the annotation failed.
-                    // If saving the annotation succeeded, the temporary feature will
-                    // be removed during the reactive update of the annotations property.
+                    // This callback is called when saving the annotation succeeded or
+                    // failed, to remove the temporary feature.
                     var removeCallback = function () {
-                        annotationSource.removeFeature(e.feature);
+                        try {
+                            annotationSource.removeFeature(e.feature);
+                        } catch (e) {
+                            // If this failed, the feature was already removed.
+                            // Do nothing in this case.
+                        }
                     };
 
                     this.$emit('new', {
                         shape: geometry.getType(),
                         points: this.getPoints(geometry),
                     }, removeCallback);
+                } else {
+                    annotationSource.removeFeature(e.feature);
                 }
             },
             deleteSelectedAnnotations: function () {
@@ -423,6 +433,17 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             deleteLastCreatedAnnotation: function () {
                 if (this.hasLastCreatedAnnotation) {
                     this.$emit('delete', [this.lastCreatedAnnotation]);
+                }
+            },
+            createPointAnnotationAt: function (x, y) {
+                if (this.hasSelectedLabel) {
+                    var feature = new ol.Feature(new ol.geom.Point([x, y]));
+                    // Simulare a feature created event so we can reuse the apropriate
+                    // function.
+                    annotationSource.addFeature(feature);
+                    this.handleNewFeature({feature: feature});
+                } else {
+                    this.requireSelectedLabel();
                 }
             },
             toggleTranslating: function () {
@@ -467,9 +488,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 }
 
                 if (this.isDrawing) {
-                    if (this.hasNoSelectedLabel) {
-                        this.requireSelectedLabel();
-                    } else {
+                    if (this.hasSelectedLabel) {
                         drawInteraction = new ol.interaction.Draw({
                             source: annotationSource,
                             type: mode.slice(4), // remove 'draw' prefix
@@ -477,15 +496,17 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         });
                         drawInteraction.on('drawend', this.handleNewFeature);
                         map.addInteraction(drawInteraction);
+                    } else {
+                        this.requireSelectedLabel();
                     }
                 } else if (this.isAttaching) {
-                    if (this.hasNoSelectedLabel) {
-                        this.requireSelectedLabel();
-                    } else {
+                    if (this.hasSelectedLabel) {
                         attachLabelInteraction.setActive(true);
+                    } else {
+                        this.requireSelectedLabel();
                     }
                 } else if (this.isMagicWanding) {
-                    if (this.hasNoSelectedLabel) {
+                    if (!this.hasSelectedLabel) {
                         this.requireSelectedLabel();
                     } else if (magicWandInteraction) {
                         magicWandInteraction.setActive(true);

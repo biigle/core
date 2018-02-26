@@ -1,8 +1,6 @@
 <sidebar-tab name="settings" icon="cog" title="Settings">
     <settings-tab v-cloak v-on:change="handleSettingsChange" inline-template>
-        <div class="settings-tab">
-            <h4>Settings</h4>
-
+        <div class="annotator-tab">
             <screenshot-button inline-template>
                 <button class="btn btn-default" :title="screenshotTitle" :disabled="!screenshotSupported" v-on:click="capture"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> Capture screenshot</button>
             </screenshot-button>

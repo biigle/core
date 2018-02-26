@@ -1,6 +1,6 @@
 <sidebar-tab name="color-adjustment" icon="adjust" :title="supportsColorAdjustment ? 'Color adjustment' : 'Color adjustment is not available for this image'" :disabled="!supportsColorAdjustment">
     <color-adjustment-tab v-on:change="updateColorAdjustment" v-cloak inline-template>
-        <div class="color-adjustment-tab">
+        <div class="annotator-tab">
             <h4 class="clearfix">
                 <button class="btn btn-default pull-right" v-on:click="reset" title="Reset color adjustment"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                 Color adjustment
