@@ -34,6 +34,12 @@
 
         @mixin('annotationsManualSidebarLabelTrees')
 
+        <h3><a name="annotation-modes-tab"></a> <i class="fa fa-th"></i> Annotation Modes</h3>
+
+        <p>
+            See the <a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}#annotation-modes">Navigating Images</a> section for more information on the available annotation modes.
+        </p>
+
         <h3><a name="image-labels-tab"></a> <i class="fa fa-image"></i> Image Labels</h3>
 
         <p>
@@ -99,10 +105,6 @@
 
         <p>
             The annotation opacity slider allows you to make annotations more transparent or hide them completely. Note that this setting will be remembered permanently so don't be confused if no annotations show up the next time you open an image in the annotation tool.
-        </p>
-
-        <p>
-            See the <a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}">Navigating Images</a> section for more information on <a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}#volare">Volare</a> and <a href="{{route('manual-tutorials', ['annotations', 'navigating-images'])}}#lawnmower-mode">Lawnmower Mode</a>.
         </p>
 
         <p>

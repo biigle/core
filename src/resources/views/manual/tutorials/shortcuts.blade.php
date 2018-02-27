@@ -88,6 +88,37 @@
         </table>
 
         <p>
+            When Volare (cycle through annotations) is activated:
+        </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>Arrow left</code></td>
+                    <td>Previous annotation</td>
+                </tr>
+                <tr>
+                    <td><code>Arrow right</code>, <code>Space</code></td>
+                    <td>Next annotation</td>
+                </tr>
+                <tr>
+                    <td><code>Enter</code></td>
+                    <td>Attach the currently selected label<br>to the current annotation</td>
+                </tr>
+                <tr>
+                    <td><code>Esc</code></td>
+                    <td>Exit Volare</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
             When Lawnmower Mode (cycle through image sections) is activated:
         </p>
 
@@ -115,7 +146,7 @@
         </table>
 
         <p>
-            When Volare (cycle through annotations) is activated:
+            When the random/regular sampling annotation modes are activated:
         </p>
 
         <table class="table">
@@ -128,19 +159,19 @@
             <tbody>
                 <tr>
                     <td><code>Arrow left</code></td>
-                    <td>Previous annotation</td>
+                    <td>Previous sample location</td>
                 </tr>
                 <tr>
                     <td><code>Arrow right</code>, <code>Space</code></td>
-                    <td>Next annotation</td>
+                    <td>Next sample location</td>
                 </tr>
                 <tr>
                     <td><code>Enter</code></td>
-                    <td>Attach the currently selected label<br>to the current annotation</td>
+                    <td>Create an annotation with the currently selected<br>label at the current sample location</td>
                 </tr>
                 <tr>
                     <td><code>Esc</code></td>
-                    <td>Exit Volare</td>
+                    <td>Exit random/regular sampling mode</td>
                 </tr>
             </tbody>
         </table>
