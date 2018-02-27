@@ -4,6 +4,9 @@
  * @type {Object}
  */
 biigle.$require('annotations.components.settingsTabPlugins').exampleAnnotations = {
+    components: {
+        powerButton: biigle.$require('annotations.components.powerButton'),
+    },
     props: {
         settings: {
             type: Object,
