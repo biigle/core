@@ -134,10 +134,6 @@
         {
             "type": "vcs",
             "url": "git@github.com:BiodataMiningGroup/biigle-ananas.git"
-        },
-        {
-            "type": "vcs",
-            "url": "git@github.com:BiodataMiningGroup/biigle-rare.git"
         }
     ]
 }

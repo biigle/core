@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac4828cbe9732ba4f5aea533e1b25cbd",
+    "content-hash": "94253661c228f70f6d2a79400c4565d1",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -1978,16 +1978,16 @@
         },
         {
             "name": "mzur/laravel-openstack-swift",
-            "version": "v1.2.0",
+            "version": "v1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mzur/laravel-openstack-swift.git",
-                "reference": "97a03d549dda6fce1fe511ac560c621a0d5a0a85"
+                "reference": "e73dd7886fa18ab25ccacca83d156057b82ddfdf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mzur/laravel-openstack-swift/zipball/97a03d549dda6fce1fe511ac560c621a0d5a0a85",
-                "reference": "97a03d549dda6fce1fe511ac560c621a0d5a0a85",
+                "url": "https://api.github.com/repos/mzur/laravel-openstack-swift/zipball/e73dd7886fa18ab25ccacca83d156057b82ddfdf",
+                "reference": "e73dd7886fa18ab25ccacca83d156057b82ddfdf",
                 "shasum": ""
             },
             "require": {
@@ -2019,7 +2019,7 @@
                 }
             ],
             "description": "OpenStack Swift storage driver for Laravel 5.",
-            "time": "2018-02-20T15:29:59+00:00"
+            "time": "2018-02-27T13:18:56+00:00"
         },
         {
             "name": "nesbot/carbon",
