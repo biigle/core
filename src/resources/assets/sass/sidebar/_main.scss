@@ -6,10 +6,12 @@
     }
 
     .sidebar-tab__section {
-        &:first-child {
-            > h5 {
-                margin-top: 0;
-            }
+        &:not(:first-child) {
+            padding-top: 10px;
+        }
+
+        > h5 {
+            margin-top: 0;
         }
     }
 }

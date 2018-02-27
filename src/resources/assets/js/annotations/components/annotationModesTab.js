@@ -4,6 +4,9 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.annotationModesTab', {
+    components: {
+        powerButton: biigle.$require('annotations.components.powerButton'),
+    },
     data: function () {
         return {
             mode: 'default',

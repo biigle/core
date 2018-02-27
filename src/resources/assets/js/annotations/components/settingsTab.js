@@ -6,6 +6,7 @@
 biigle.$component('annotations.components.settingsTab', {
     components: {
         screenshotButton: biigle.$require('annotations.components.screenshotButton'),
+        powerButton: biigle.$require('annotations.components.powerButton'),
     },
     data: function () {
         return {
