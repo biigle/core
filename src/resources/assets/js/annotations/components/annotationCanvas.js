@@ -582,7 +582,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         },
         watch: {
             image: function (image, oldImage) {
-                if (image.tiled === true) {
+                if (!image) {
+                    map.removeLayer(tiledImageLayer);
+                    map.removeLayer(imageLayer);
+                } else if (image.tiled === true) {
                     if (!oldImage || oldImage.tiled !== true) {
                         map.removeLayer(imageLayer);
                         map.addLayer(tiledImageLayer);
@@ -668,7 +671,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 // Leave this undefined if the current image is not tiled.
                 var resolutions;
 
-                if (this.image.tiled === true) {
+                if (this.image && this.image.tiled === true) {
                     resolutions = tiledImageLayer.getSource().getTileGrid().getResolutions();
                 }
 
