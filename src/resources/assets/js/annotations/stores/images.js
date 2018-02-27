@@ -129,6 +129,7 @@ biigle.$declare('annotations.stores.images', function () {
                 var promise = new Vue.Promise(function (resolve, reject) {
                     img.onload = function () {
                         resolve({
+                            id: id,
                             source: img,
                             width: img.width,
                             height: img.height,

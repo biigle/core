@@ -28,7 +28,7 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
                 })
             }),
         ],
-        zIndex: 3,
+        zIndex: 110,
         updateWhileAnimating: true,
         updateWhileInteracting: true,
     });
@@ -41,7 +41,11 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
             return {
                 regularSamplingRows: null,
                 regularSamplingColumns: null,
-                currentRegularSamplingIndex: null,
+                currentSamplingIndex: null,
+                randomSamplingCount: null,
+                // Store random locations for each image here so they remain consistent
+                // for one session (e.g. if the user wants to go back).
+                randomLocationMemory: {},
             };
         },
         computed: {
@@ -65,62 +69,94 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
 
                 return locations;
             },
+            randomSamplingLocations: function () {
+                if (!this.randomLocationMemory.hasOwnProperty(this.image.id)) {
+                    var locations = [];
+                    var width = this.image.width;
+                    var height = this.image.height;
+
+                    for (var i = this.randomSamplingCount; i > 0; i--) {
+                        locations.push([
+                            Math.round(Math.random() * width),
+                            Math.round(Math.random() * height),
+                        ]);
+                    }
+
+                    this.randomLocationMemory[this.image.id] = locations;
+                }
+
+                return this.randomLocationMemory[this.image.id];
+            },
+            samplingLocations: function () {
+                return this[this.annotationMode + 'Locations'];
+            },
             isSamplingAnnotationMode: function () {
                 return this.annotationMode.endsWith('Sampling');
             },
         },
         methods: {
-            setRegularSamplingData: function (rows, cols) {
-                this.regularSamplingRows = rows;
-                this.regularSamplingColumns = cols;
-            },
-            showRegularSamplingLocation: function (index) {
-                if (index >= 0 && index < this.regularSamplingLocations.length) {
-                    map.getView().setCenter(this.regularSamplingLocations[index]);
-                    crosshairFeature.getGeometry().setCoordinates(this.regularSamplingLocations[index]);
+            setSamplingData: function (mode, data) {
+                if (mode === 'regularSampling') {
+                    if (Array.isArray(data) && data[0] > 0 && data[1] > 0) {
+                        this.regularSamplingRows = data[0];
+                        this.regularSamplingColumns = data[1];
+                    }
+                } else if (mode === 'randomSampling') {
+                    if (data > 0) {
+                        this.randomSamplingCount = data;
+                    }
                 }
             },
-            showFirstRegularSamplingLocation: function () {
-                this.currentRegularSamplingIndex = 0;
+            updateShownSamplingLocation: function () {
+                var index = this.currentSamplingIndex;
+                if (index !== null && index >= 0 && index < this.samplingLocations.length) {
+                    map.getView().setCenter(this.samplingLocations[index]);
+                    crosshairFeature.getGeometry().setCoordinates(this.samplingLocations[index]);
+                }
             },
-            showLastRegularSamplingLocation: function () {
-                this.currentRegularSamplingIndex = this.regularSamplingLocations.length - 1;
+            showFirstSamplingLocation: function () {
+                this.currentSamplingIndex = 0;
+                this.updateShownSamplingLocation();
             },
-            showPreviousRegularSamplingLocation: function () {
-                var value = this.currentRegularSamplingIndex - 1;
+            showLastSamplingLocation: function () {
+                this.currentSamplingIndex = this.samplingLocations.length - 1;
+                this.updateShownSamplingLocation();
+            },
+            showPreviousSamplingLocation: function () {
+                var value = this.currentSamplingIndex - 1;
                 if (value < 0) {
                     return false;
                 }
 
-                this.currentRegularSamplingIndex = value;
+                this.currentSamplingIndex = value;
+                this.updateShownSamplingLocation();
 
                 return true;
             },
-            showNextRegularSamplingLocation: function () {
-                var value = this.currentRegularSamplingIndex + 1;
-                if (value >= this.regularSamplingLocations.length) {
+            showNextSamplingLocation: function () {
+                var value = this.currentSamplingIndex + 1;
+                if (value >= this.samplingLocations.length) {
                     return false;
                 }
 
-                this.currentRegularSamplingIndex = value;
+                this.currentSamplingIndex = value;
+                this.updateShownSamplingLocation();
 
                 return true;
             },
-            createRegularlySampledAnnotation: function () {
-                var location = this.regularSamplingLocations[this.currentRegularSamplingIndex];
+            createSampledAnnotation: function () {
+                var location = this.samplingLocations[this.currentSamplingIndex];
                 this.createPointAnnotationAt(location[0], location[1]);
             },
         },
         watch: {
-            currentRegularSamplingIndex: function (index) {
-                this.showRegularSamplingLocation(index);
-            },
             isSamplingAnnotationMode: function (is) {
-                if (is) {
-                    crosshairLayer.setVisible(true);
-                } else {
-                    crosshairLayer.setVisible(false);
-                }
+                crosshairLayer.setVisible(is);
+            },
+            randomSamplingCount: function () {
+                // Clear memory if sampling count changed. Compute new locations in this
+                // case.
+                this.randomLocationMemory = {};
             },
         },
         created: function () {

@@ -8,13 +8,13 @@ biigle.$component('annotations.components.annotationModesTab', {
         return {
             mode: 'default',
             defaults: {
-                randomSamplingNumber: 10,
-                regularSamplingRows: 10,
-                regularSamplingColumns: 10,
+                randomSamplingNumber: 9,
+                regularSamplingRows: 3,
+                regularSamplingColumns: 3,
             },
-            randomSamplingNumber: 10,
-            regularSamplingRows: 10,
-            regularSamplingColumns: 10,
+            randomSamplingNumber: 9,
+            regularSamplingRows: 3,
+            regularSamplingColumns: 3,
         };
     },
     computed: {
@@ -62,8 +62,11 @@ biigle.$component('annotations.components.annotationModesTab', {
     },
     watch: {
         mode: function (mode, oldMode) {
-            // Remove key listeners.
             switch (oldMode) {
+                case 'default':
+                    // ESC key.
+                    this.keyboard.on(27, this.resetMode);
+                    break;
                 case 'volare':
                     // Enter key.
                     this.keyboard.off(13, this.emitAttachLabel);
@@ -73,13 +76,13 @@ biigle.$component('annotations.components.annotationModesTab', {
                     // Enter key.
                     this.keyboard.off(13, this.emitCreateSample);
                     break;
-                default:
-                    // ESC key.
-                    this.keyboard.on(27, this.resetMode);
             }
 
-            // Add key listeners.
             switch (mode) {
+                case 'default':
+                    // ESC key.
+                    this.keyboard.off(27, this.resetMode);
+                    break;
                 case 'volare':
                     // Enter key.
                     this.keyboard.on(13, this.emitAttachLabel);
@@ -89,9 +92,6 @@ biigle.$component('annotations.components.annotationModesTab', {
                     // Enter key.
                     this.keyboard.on(13, this.emitCreateSample);
                     break;
-                default:
-                    // ESC key.
-                    this.keyboard.off(27, this.resetMode);
             }
 
             // Emit event.
