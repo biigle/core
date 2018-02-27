@@ -41,6 +41,13 @@ biigle.$declare('annotations.stores.settings', new Vue({
 
             window.localStorage.removeItem(this.storageKey);
         },
+        restoreProperties: function (context, properties) {
+            properties.forEach(function (property) {
+                if (this.has(property)) {
+                    Vue.set(context, property, this.get(property));
+                }
+            }, this);
+        },
     },
     created: function () {
         var settings = JSON.parse(window.localStorage.getItem(this.storageKey));

@@ -10,7 +10,6 @@ biigle.$component('annotations.components.settingsTab', {
     data: function () {
         return {
             annotationOpacity: 1.0,
-            cycleMode: 'default',
             mousePosition: false,
             zoomLevel: false,
             annotationTooltip: false,
@@ -21,32 +20,11 @@ biigle.$component('annotations.components.settingsTab', {
         settings: function () {
             return biigle.$require('annotations.stores.settings');
         },
-        keyboard: function () {
-            return biigle.$require('keyboard');
-        },
-        isVolareActive: function () {
-            return this.cycleMode === 'volare';
-        },
-        isLawnmowerActive: function () {
-            return this.cycleMode === 'lawnmower';
-        },
         plugins: function () {
             return biigle.$require('annotations.components.settingsTabPlugins');
         },
     },
     methods: {
-        startVolare: function () {
-            this.cycleMode = 'volare';
-        },
-        startLawnmower: function () {
-            this.cycleMode = 'lawnmower';
-        },
-        resetCycleMode: function () {
-            this.cycleMode = 'default';
-        },
-        emitAttachLabel: function () {
-            this.$emit('attach-label');
-        },
         showMousePosition: function () {
             this.mousePosition = true;
         },
@@ -82,23 +60,6 @@ biigle.$component('annotations.components.settingsTab', {
             }
             this.$emit('change', 'annotationOpacity', opacity);
         },
-        cycleMode: function (mode) {
-            this.$emit('change', 'cycleMode', mode);
-
-            if (mode === 'default') {
-                this.keyboard.off(27, this.resetCycleMode);
-            } else {
-                // ESC key.
-                this.keyboard.on(27, this.resetCycleMode);
-            }
-
-            if (mode === 'volare') {
-                // Enter key.
-                this.keyboard.on(13, this.emitAttachLabel);
-            } else {
-                this.keyboard.off(13, this.emitAttachLabel);
-            }
-        },
         mousePosition: function (show) {
             if (show) {
                 this.settings.set('mousePosition', true);
@@ -133,18 +94,13 @@ biigle.$component('annotations.components.settingsTab', {
         },
     },
     created: function () {
-        var storedProperties = [
+        this.settings.restoreProperties(this, [
             'annotationOpacity',
             'mousePosition',
             'zoomLevel',
             'annotationTooltip',
             'minimap',
-        ];
-        storedProperties.forEach(function (property) {
-            if (this.settings.has(property)) {
-                this[property] = this.settings.get(property);
-            }
-        }, this);
+        ]);
     },
 });
 

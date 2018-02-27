@@ -1,4 +1,4 @@
-<sidebar-tab class="sidebar__tab--nopad" name="image" icon="picture" title="Toggle the image label list">
+<sidebar-tab class="sidebar__tab--nopad" name="image-labels" icon="picture" title="Image labels">
     <image-label-tab :image-id="imageId" :selected-label="selectedLabel" v-cloak inline-template>
         <div class="image-label-tab">
             <span class="image-label__buttons">

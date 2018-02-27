@@ -64,7 +64,7 @@
             :resolution="mapResolution"
             :selected-label="selectedLabel"
             :annotation-opacity="annotationOpacity"
-            :cycle-mode="cycleMode"
+            :annotation-mode="annotationMode"
             :show-mouse-position="showMousePosition"
             :show-zoom-level="showZoomLevel"
             :show-annotation-tooltip="showAnnotationTooltip"
@@ -83,12 +83,13 @@
             @include('annotations::show.annotationCanvas')
         </annotation-canvas>
     </div>
-    <sidebar :open-tab="openTab" :toggle-on-keyboard="true" v-on:open="handleOpenedTab" v-on:close="handleClosedTab">
+    <sidebar :open-tab="openTab" :toggle-on-keyboard="true" v-on:open="handleOpenedTab" v-on:close="handleClosedTab" v-cloak>
         @include('annotations::show.tabs.annotations')
         @can('add-annotation', $image)
             @include('annotations::show.tabs.labels')
         @endcan
-        @include('annotations::show.tabs.image-labels')
+        @include('annotations::show.tabs.annotationModes')
+        @include('annotations::show.tabs.imageLabels')
         @include('annotations::show.tabs.colorAdjustment')
         @include('annotations::show.tabs.settings')
     </sidebar>

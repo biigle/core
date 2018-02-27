@@ -32,15 +32,23 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         updateWhileAnimating: true,
         updateWhileInteracting: true,
     });
+    // The name can be used for layer filters, e.g. with forEachFeatureAtPixel.
+    annotationLayer.set('name', 'annotations');
 
     return {
+        mixins: [
+            // Since this component got quite huge some logic is outsourced to these
+            // mixins.
+            biigle.$require('annotations.components.annotationCanvas.lawnmower'),
+            biigle.$require('annotations.components.annotationCanvas.mousePosition'),
+            biigle.$require('annotations.components.annotationCanvas.zoomLevel'),
+            biigle.$require('annotations.components.annotationCanvas.annotationTooltip'),
+            biigle.$require('annotations.components.annotationCanvas.sampling'),
+        ],
         components: {
             minimap: biigle.$require('annotations.components.minimap'),
             labelIndicator: biigle.$require('annotations.components.labelIndicator'),
-            mousePositionIndicator: biigle.$require('annotations.components.mousePositionIndicator'),
-            zoomLevelIndicator: biigle.$require('annotations.components.zoomLevelIndicator'),
             controlButton: biigle.$require('annotations.components.controlButton'),
-            annotationTooltip: biigle.$require('annotations.components.annotationTooltip'),
         },
         props: {
             editable: {
@@ -81,21 +89,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 type: Number,
                 default: 1,
             },
-            cycleMode: {
+            annotationMode: {
                 type: String,
                 default: 'default',
-            },
-            showMousePosition: {
-                type: Boolean,
-                default: false,
-            },
-            showZoomLevel: {
-                type: Boolean,
-                default: false,
-            },
-            showAnnotationTooltip: {
-                type: Boolean,
-                default: false,
             },
             showMinimap: {
                 type: Boolean,
@@ -123,18 +119,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 interactionMode: 'default',
                 // Size of the OpenLayers map in px.
                 mapSize: [0, 0],
-                // The image section information is needed for the lawnmower cycling mode
-                // Index of the current image section in x and y direction.
-                imageSection: [0, 0],
-                // Actual center point of the current image section.
-                imageSectionCenter: [0, 0],
-                // Mouse position in image coordinates.
-                mousePosition: [0, 0],
-                // Mouse position in DOM element coordinates.
-                mouseDomPosition: [0, 0],
-                // Used to efficiently determine when to update hoveredAnnotations.
-                hoveredAnnotationHash: '',
-                hoveredAnnotations: [],
             };
         },
         computed: {
@@ -155,54 +139,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 }
 
                 return [0, 0, 0, 0];
-            },
-            // Number of available image sections in x and y direction.
-            imageSectionSteps: function () {
-                return [
-                    Math.ceil(this.image.width / (this.viewExtent[2] - this.viewExtent[0])),
-                    Math.ceil(this.image.height / (this.viewExtent[3] - this.viewExtent[1])),
-                ];
-            },
-            // Distance to travel between image sections in x and y direction.
-            imageSectionStepSize: function () {
-                var stepSize = [
-                    this.viewExtent[2] - this.viewExtent[0],
-                    this.viewExtent[3] - this.viewExtent[1],
-                ];
-                var overlap;
-                if (this.imageSectionSteps[0] > 1) {
-                    overlap = (stepSize[0] * this.imageSectionSteps[0]) - this.image.width;
-                    stepSize[0] -= overlap / (this.imageSectionSteps[0] - 1);
-                } else {
-                    stepSize[0] = this.viewExtent[2];
-                }
-
-                if (this.imageSectionSteps[1] > 1) {
-                    overlap = (stepSize[1] * this.imageSectionSteps[1]) - this.image.height;
-                    stepSize[1] -= overlap / (this.imageSectionSteps[1] - 1);
-                } else {
-                    stepSize[1] = this.viewExtent[3];
-                }
-
-
-                return stepSize;
-            },
-            // Center position of the first image section [0, 0].
-            imageSectionStartCenter: function () {
-                var startCenter = [
-                    (this.viewExtent[2] - this.viewExtent[0]) / 2,
-                    (this.viewExtent[3] - this.viewExtent[1]) / 2,
-                ];
-
-                if (this.imageSectionSteps[0] <= 1) {
-                    startCenter[0] = this.extent[2] / 2;
-                }
-
-                if (this.imageSectionSteps[1] <= 1) {
-                    startCenter[1] = this.extent[3] / 2;
-                }
-
-                return startCenter;
             },
             projection: function () {
                 return new ol.proj.Projection({
@@ -247,8 +183,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             isAttaching: function () {
                 return this.interactionMode === 'attach';
             },
-            hasNoSelectedLabel: function () {
-                return !this.selectedLabel;
+            hasSelectedLabel: function () {
+                return Boolean(this.selectedLabel);
             },
             hasSelectedAnnotations: function () {
                 return this.selectedAnnotations.length > 0;
@@ -257,27 +193,30 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 return this.lastCreatedAnnotation !== null;
             },
             previousButtonTitle: function () {
-                switch (this.cycleMode) {
+                switch (this.annotationMode) {
                     case 'volare':
                         return 'Previous annotation';
                     case 'lawnmower':
                         return 'Previous image section';
+                    case 'randomSampling':
+                    case 'regularSampling':
+                        return 'Previous sample location';
                     default:
                         return 'Previous image';
                 }
             },
             nextButtonTitle: function () {
-                switch (this.cycleMode) {
+                switch (this.annotationMode) {
                     case 'volare':
                         return 'Next annotation';
                     case 'lawnmower':
                         return 'Next image section';
+                    case 'randomSampling':
+                    case 'regularSampling':
+                        return 'Next sample location';
                     default:
                         return 'Next image';
                 }
-            },
-            isLawnmowerCycleMode: function () {
-                return this.cycleMode === 'lawnmower';
             },
         },
         methods: {
@@ -463,23 +402,27 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 return this.convertPointsFromOlToDb(points);
             },
             handleNewFeature: function (e) {
-                if (this.hasNoSelectedLabel) {
-                    annotationSource.removeFeature(e.feature);
-                } else {
+                if (this.hasSelectedLabel) {
                     var geometry = e.feature.getGeometry();
                     e.feature.set('color', this.selectedLabel.color);
 
-                    // This callback is called in case saving the annotation failed.
-                    // If saving the annotation succeeded, the temporary feature will
-                    // be removed during the reactive update of the annotations property.
+                    // This callback is called when saving the annotation succeeded or
+                    // failed, to remove the temporary feature.
                     var removeCallback = function () {
-                        annotationSource.removeFeature(e.feature);
+                        try {
+                            annotationSource.removeFeature(e.feature);
+                        } catch (e) {
+                            // If this failed, the feature was already removed.
+                            // Do nothing in this case.
+                        }
                     };
 
                     this.$emit('new', {
                         shape: geometry.getType(),
                         points: this.getPoints(geometry),
                     }, removeCallback);
+                } else {
+                    annotationSource.removeFeature(e.feature);
                 }
             },
             deleteSelectedAnnotations: function () {
@@ -490,6 +433,17 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             deleteLastCreatedAnnotation: function () {
                 if (this.hasLastCreatedAnnotation) {
                     this.$emit('delete', [this.lastCreatedAnnotation]);
+                }
+            },
+            createPointAnnotationAt: function (x, y) {
+                if (this.hasSelectedLabel) {
+                    var feature = new ol.Feature(new ol.geom.Point([x, y]));
+                    // Simulare a feature created event so we can reuse the apropriate
+                    // function.
+                    annotationSource.addFeature(feature);
+                    this.handleNewFeature({feature: feature});
+                } else {
+                    this.requireSelectedLabel();
                 }
             },
             toggleTranslating: function () {
@@ -534,9 +488,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 }
 
                 if (this.isDrawing) {
-                    if (this.hasNoSelectedLabel) {
-                        this.requireSelectedLabel();
-                    } else {
+                    if (this.hasSelectedLabel) {
                         drawInteraction = new ol.interaction.Draw({
                             source: annotationSource,
                             type: mode.slice(4), // remove 'draw' prefix
@@ -544,15 +496,17 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         });
                         drawInteraction.on('drawend', this.handleNewFeature);
                         map.addInteraction(drawInteraction);
+                    } else {
+                        this.requireSelectedLabel();
                     }
                 } else if (this.isAttaching) {
-                    if (this.hasNoSelectedLabel) {
-                        this.requireSelectedLabel();
-                    } else {
+                    if (this.hasSelectedLabel) {
                         attachLabelInteraction.setActive(true);
+                    } else {
+                        this.requireSelectedLabel();
                     }
                 } else if (this.isMagicWanding) {
-                    if (this.hasNoSelectedLabel) {
+                    if (!this.hasSelectedLabel) {
                         this.requireSelectedLabel();
                     } else if (magicWandInteraction) {
                         magicWandInteraction.setActive(true);
@@ -584,91 +538,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 if (map) {
                     map.render();
                 }
-            },
-            // Calculate the center point of an image section based on its index in x and
-            // y direction (e.g. [0, 0] for the first section).
-            getImageSectionCenter: function (section) {
-                return [
-                    section[0] * this.imageSectionStepSize[0] + this.imageSectionStartCenter[0],
-                    section[1] * this.imageSectionStepSize[1] + this.imageSectionStartCenter[1],
-                ];
-            },
-            showImageSection: function (section) {
-                if (section[0] < this.imageSectionSteps[0] && section[1] < this.imageSectionSteps[1] && section[0] >= 0 && section[1] >= 0) {
-                    this.imageSection = section;
-                    // Don't make imageSectionCenter a computed property because it
-                    // would automatically update when the resolution changes. But we
-                    // need the old value to compute the new image section in the
-                    // resolution watcher first!
-                    this.imageSectionCenter = this.getImageSectionCenter(section);
-                    map.getView().setCenter(this.imageSectionCenter);
-                    return true;
-                }
-
-                return false;
-            },
-            showLastImageSection: function () {
-                this.showImageSection([
-                    this.imageSectionSteps[0] - 1,
-                    this.imageSectionSteps[1] - 1,
-                ]);
-            },
-            showFirstImageSection: function () {
-                this.showImageSection([0, 0]);
-            },
-            showPreviousImageSection: function () {
-                var x = this.imageSection[0] - 1;
-                if (x >= 0) {
-                    return this.showImageSection([x, this.imageSection[1]]);
-                } else {
-                    return this.showImageSection([
-                        this.imageSectionSteps[0] - 1,
-                        this.imageSection[1] - 1,
-                    ]);
-                }
-            },
-            showNextImageSection: function () {
-                var x = this.imageSection[0] + 1;
-                if (x < this.imageSectionSteps[0]) {
-                    return this.showImageSection([x, this.imageSection[1]]);
-                } else {
-                    return this.showImageSection([0, this.imageSection[1] + 1]);
-                }
-            },
-            updateMouseDomPosition: function (e) {
-                this.mouseDomPosition = e.pixel;
-            },
-            updateMousePosition: function (e) {
-                var self = this;
-                biigle.$require('annotations.stores.utils').throttle(function () {
-                    self.mousePosition = self.invertPointsYAxis(e.coordinate).map(Math.round);
-                }, 100, 'annotations.canvas.mouse-position');
-            },
-            updateHoveredAnnotations: function (e) {
-                var annotations = [];
-                map.forEachFeatureAtPixel(e.pixel,
-                    function (feature) {
-                        if (feature.get('annotation')) {
-                            annotations.push(feature.get('annotation'));
-                        }
-                    },
-                    {
-                        layerFilter: function (layer) {
-                            return layer === annotationLayer;
-                        }
-                    }
-                );
-
-                var hash = annotations.map(function (a) {return a.id;}).sort().join('');
-
-                if (this.hoveredAnnotationHash !== hash) {
-                    this.hoveredAnnotationHash = hash;
-                    this.hoveredAnnotations = annotations;
-                }
-            },
-            resetHoveredAnnotations: function () {
-                this.hoveredAnnotationHash = '';
-                this.hoveredAnnotations = [];
             },
             handleRegularImage: function (image, oldImage) {
                 if (!image) {
@@ -828,49 +697,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             annotationOpacity: function (opacity) {
                 annotationLayer.setOpacity(opacity);
-            },
-            // Update the current image section if either the resolution or the map size
-            // changed. viewExtent depends on both so we can use it as watcher.
-            viewExtent: function () {
-                if (!this.isLawnmowerCycleMode || !Number.isInteger(this.imageSectionSteps[0]) || !Number.isInteger(this.imageSectionSteps[1])) {
-                    return;
-                }
-                var distance = function (p1, p2) {
-                    return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
-                };
-
-                var nearest = Infinity;
-                var current = 0;
-                var nearestStep = [0, 0];
-                for (var y = 0; y < this.imageSectionSteps[1]; y++) {
-                    for (var x = 0; x < this.imageSectionSteps[0]; x++) {
-                        current = distance(this.imageSectionCenter, this.getImageSectionCenter([x, y]));
-                        if (current < nearest) {
-                            nearestStep[0] = x;
-                            nearestStep[1] = y;
-                            nearest = current;
-                        }
-                    }
-                }
-
-                this.showImageSection(nearestStep);
-            },
-            showMousePosition: function (show) {
-                if (show) {
-                    map.on('pointermove', this.updateMousePosition);
-                } else {
-                    map.un('pointermove', this.updateMousePosition);
-                }
-            },
-            showAnnotationTooltip: function (show) {
-                if (show) {
-                    map.on('pointermove', this.updateMouseDomPosition);
-                    map.on('pointermove', this.updateHoveredAnnotations);
-                } else {
-                    map.un('pointermove', this.updateMouseDomPosition);
-                    map.un('pointermove', this.updateHoveredAnnotations);
-                    this.resetHoveredAnnotations();
-                }
             },
         },
         created: function () {

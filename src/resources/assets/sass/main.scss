@@ -47,13 +47,14 @@
     position: relative;
 }
 
+.sidebar-tab__section {
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 @import "ol";
 @import "icons";
-@import "sidebar/annotations";
-@import "sidebar/labels";
-@import "sidebar/color-adjustment";
-@import "sidebar/image-labels";
-@import "sidebar/settings";
+@import "sidebar/main";
 @import "components/annotation-canvas";
 @import "components/label-indicator";
 @import "components/mouse-position-indicator";

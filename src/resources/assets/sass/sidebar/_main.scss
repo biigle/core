@@ -1,0 +1,21 @@
+.annotator-tab {
+    > h4 {
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    .sidebar-tab__section {
+        &:first-child {
+            > h5 {
+                margin-top: 0;
+            }
+        }
+    }
+}
+
+@import "sidebar/annotations";
+@import "sidebar/labels";
+@import "sidebar/annotation-modes";
+@import "sidebar/image-labels";
+
