@@ -12,13 +12,19 @@ biigle.$viewModel('notifications-navbar-indicator', function (element) {
         computed: {
             unread: function () {
                 // When on the notifications view, update unread state "live"
-                if (store.isInitialized()) {
-                    return store.hasUnread();
+                if (store.initialized) {
+                    return store.countUnread;
                 }
 
                 // Else take the value of the unread attribute.
-                return this.$el.attributes.unread.value === 'true';
-            }
+                return parseInt(this.$el.attributes.unread.value);
+            },
+            hasUnread: function () {
+                return this.unread > 0;
+            },
+            title: function () {
+                return 'You have ' + (this.hasUnread ? this.unread : 'no') + ' unread notifications';
+            },
         }
     });
 });

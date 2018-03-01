@@ -19,6 +19,13 @@ use Biigle\Contracts\ImageCache as ImageCacheContract;
 class ImageCache implements ImageCacheContract
 {
     /**
+     * Number of attempts for fetching a remote image.
+     *
+     * @var int
+     */
+    const MAX_ATTEMPTS = 2;
+
+    /**
      * Directory of the image cache.
      *
      * @var string
@@ -192,19 +199,55 @@ class ImageCache implements ImageCacheContract
 
         // Image is already cached.
         if (File::exists($cachedPath)) {
-            $handle = fopen($cachedPath, 'r');
-            // This will block if the file is currently written (LOCK_EX below).
-            flock($handle, LOCK_SH);
-            // Update access and modification time to signal that this cached image was
-            // used recently.
-            touch($cachedPath);
-        } else {
-            $this->ensurePathExists();
-            // Create and lock the file as fast as possible so concurrent workers will
-            // see it. Lock it exclusively until it is completely written.
-            $handle = fopen($cachedPath, 'w+');
-            flock($handle, LOCK_EX);
+            return $this->cacheExistingFile($cachedPath);
+        }
 
+        return $this->cacheNewFile($image, $cachedPath);
+    }
+
+    /**
+     * Get path and handle for a file that exists in the cache.
+     *
+     * @param string $cachedPath
+     *
+     * @return array
+     */
+    protected function cacheExistingFile($cachedPath)
+    {
+        $handle = fopen($cachedPath, 'r');
+        // This will block if the file is currently written (LOCK_EX below).
+        flock($handle, LOCK_SH);
+        // Update access and modification time to signal that this cached image was
+        // used recently.
+        touch($cachedPath);
+
+        return [
+            'path' => $cachedPath,
+            'handle' => $handle,
+        ];
+    }
+
+    /**
+     * Get path and handle for a file that does not yet exist in the cache.
+     *
+     * @param Image $image
+     * @param string $cachedPath
+     *
+     * @return array
+     */
+    protected function cacheNewFile(Image $image, $cachedPath)
+    {
+        $this->ensurePathExists();
+        // Create and lock the file as fast as possible so concurrent workers will
+        // see it. Lock it exclusively until it is completely written.
+        $handle = fopen($cachedPath, 'w+');
+        flock($handle, LOCK_EX);
+
+        $attempts = 0;
+        $success = false;
+
+        // If fetching the image failed, try again MAX_ATTEMPTS times.
+        do {
             try {
                 if ($image->volume->isRemote()) {
                     $this->getRemoteImage($image, $handle);
@@ -222,12 +265,16 @@ class ImageCache implements ImageCacheContract
 
                 // Convert the lock so other workers can use the file from now on.
                 flock($handle, LOCK_SH);
+                $success = true;
             } catch (Exception $e) {
-                unlink($cachedPath);
-                fclose($handle);
-                throw new Exception("Error while caching remote image {$image->id}: {$e->getMessage()}");
+                $attempts++;
+                if ($attempts >= static::MAX_ATTEMPTS) {
+                    unlink($cachedPath);
+                    fclose($handle);
+                    throw new Exception("Error while caching remote image {$image->id}: {$e->getMessage()}");
+                }
             }
-        }
+        } while (!$success);
 
         return [
             'path' => $cachedPath,

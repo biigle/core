@@ -42,14 +42,15 @@ RUN apk add --no-cache --virtual .build-deps \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 
+# Set this library path to the Python modules are linked correctly.
+# See: https://github.com/python-pillow/Pillow/issues/1763#issuecomment-204252397
+ENV LIBRARY_PATH=/lib:/usr/lib
 # Install Python dependencies. Note that these also depend on some image processing libs
 # that were installed along with vips.
 RUN apk add --no-cache python freetype lapack libstdc++ \
     && apk add --no-cache --virtual .build-deps \
-        build-base python-dev freetype-dev lapack-dev gfortran \
-        libjpeg-turbo-dev libpng-dev \
-    && curl -L https://bootstrap.pypa.io/get-pip.py > /tmp/get-pip.py \
-    && python /tmp/get-pip.py \
+        build-base python-dev py-pip freetype-dev lapack-dev gfortran \
+        libjpeg-turbo-dev libpng-dev zlib-dev \
     && pip install --no-cache-dir numpy==1.8.2 \
     && pip install --no-cache-dir scikit-learn==0.14.1 \
     && pip install --no-cache-dir Pillow==2.6.0 \

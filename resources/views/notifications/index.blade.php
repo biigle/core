@@ -36,13 +36,15 @@
                     </div>
                 </div>
             </notification>
-            <p class="text-muted" v-if="!hasNotifications()" v-cloak>
-                @if ($all)
+            @if ($all)
+                <p class="text-muted" v-if="!hasNotifications" v-cloak>
                     You have no notifications.
-                @else
+                </p>
+            @else
+                <p class="text-muted" v-if="!hasUnreadNotifications" v-cloak>
                     You have no unread notifications.
-                @endif
-            </p>
+                </p>
+            @endif
         </div>
     </div>
 </div>

@@ -18,8 +18,8 @@
                     <li>
                         <a href="{{route('search')}}" title="Search BIIGLE"><i class="glyphicon glyphicon-search"></i></a>
                     </li>
-                    <li id="notifications-navbar-indicator" unread="{{$user->unreadNotifications()->exists() ? 'true' : 'false'}}">
-                        <a href="{{route('notifications')}}" class="notifications-icon" v-bind:class="{'notifications-icon--unread': unread}" v-bind:title="'You have ' + (unread ? '' : 'no ') + 'unread notifications'"><i class="glyphicon glyphicon-bell"></i></a>
+                    <li id="notifications-navbar-indicator" unread="{{$user->unreadNotifications()->count()}}">
+                        <a href="{{route('notifications')}}" class="notifications-icon" v-bind:title="title"><i class="glyphicon glyphicon-bell"></i><span class="notifications-icon__count badge" v-if="hasUnread" v-cloak v-text="unread"></span></a>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-menu-hamburger"></i> <span class="caret"></span></a>

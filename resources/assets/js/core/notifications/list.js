@@ -64,10 +64,13 @@ biigle.$viewModel('notifications-list', function (element) {
         data: {
             notifications: notificationStore.all
         },
-        methods: {
+        computed: {
             hasNotifications: function () {
-                return notificationStore.count() > 0;
-            }
+                return notificationStore.count > 0;
+            },
+            hasUnreadNotifications: function () {
+                return notificationStore.countUnread > 0;
+            },
         }
     });
 });
