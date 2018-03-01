@@ -9,7 +9,9 @@ biigle.$viewModel('notifications-unread-count', function (element) {
     new Vue({
         el: element,
         computed: {
-            count: store.countUnread
+            count: function () {
+                return store.countUnread;
+            }
         }
     });
 });
