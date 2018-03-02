@@ -11,3 +11,4 @@ vendor
 
 *.phar
 *.php_cs.cache
+*.sh
