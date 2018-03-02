@@ -1,7 +1,9 @@
 User-agent: *
+
+Allow: /$
+Allow: /login
+Allow: /password
+Allow: /register
+Allow: /manual
+
 Disallow: /
-# allow public routes
-Allow: /login/
-Allow: /password/
-#Allow: /register/
-Allow: /manual/
