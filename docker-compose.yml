@@ -3,7 +3,7 @@ version: '2'
 services:
   # The application
   app:
-    image: biigle/app
+    image: biigle/app:arm32v6
     user: ${USER_ID}:${GROUP_ID}
     build:
       dockerfile: .docker/app.dockerfile
@@ -18,7 +18,7 @@ services:
       - "REDIS_HOST=cache"
 
   worker:
-    image: biigle/worker
+    image: biigle/worker:arm32v6
     user: ${USER_ID}:${GROUP_ID}
     depends_on:
       - app
@@ -36,7 +36,7 @@ services:
 
   # The web server
   web:
-    image: biigle/web
+    image: biigle/web:arm32v6
     depends_on:
       - app
     build:
