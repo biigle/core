@@ -17,9 +17,9 @@
 
          <div class="form-group{{ $errors->has('url') ? ' has-error' : '' }}">
             <label for="url">Volume url</label>
-            <input type="text" class="form-control" name="url" id="url" value="{{ old('url') }}" placeholder="/vol/images/volume" required>
+            <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required value="{{old('url')}}">
             <p class="help-block">
-               The directory containing the volume images. Can be a storage disk like <code>local://images/volume</code> or remote like <code>https://my-domain.tld/volume</code>.
+               The directory containing the volume images. Can be a storage disk like <code>local://images/volume</code> or <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote</a> like <code>https://my-domain.tld/volume</code>.
             </p>
             @if($errors->has('url'))
                <span class="help-block">{{ $errors->first('url') }}</span>
@@ -27,7 +27,7 @@
          </div>
          <div class="panel panel-warning">
             <div class="panel-body text-warning">
-                Please contact the <a href="mailto:{{config('biigle.admin_email')}}">BIIGLE administrators</a> if you want to upload images for a new volume. Alternatively you can always create a new <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote volume</a>.
+                Please <a href="mailto:{{config('biigle.admin_email')}}">contact the admins</a> if you want to create a new volume that is not a remote volume.
             </div>
         </div>
 
@@ -69,11 +69,15 @@
 
          <div class="form-group{{ $errors->has('images') ? ' has-error' : '' }}">
             <label for="images">Volume images</label>
-            <textarea class="form-control" name="images" id="images" placeholder="1.jpg, 2.jpg, 3.jpg" required>{{ old('images') }}</textarea>
+            <textarea class="form-control" name="images" id="images" placeholder="1.jpg, 2.jpg, 3.jpg" required v-model="filenames"></textarea>
             <p class="help-block">
-               The filenames of the volume images in the directory of the volume URL formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>.<br>
-                    The supported image file formats are: JPEG, PNG and TIFF.
+               The filenames of the volume images in the directory of the volume URL formatted as comma separated values. Example: <code>1.jpg, 2.jpg, 3.jpg</code>. The supported image file formats are: JPEG, PNG and TIFF.
             </p>
+            <div v-if="showFilenameWarning" v-cloak class="panel panel-warning">
+                <div class="panel-body text-warning">
+                    Most browsers do not support the TIFF format. Only use it for very large images with more than {{config('image.tiles.threshold')}} pixels at one edge, as these will be automatically converted by BIIGLE.
+                </div>
+            </div>
             @if($errors->has('images'))
                <span class="help-block">{{ $errors->first('images') }}</span>
             @endif
@@ -90,7 +94,18 @@
 @push('scripts')
     <script type="text/javascript">
         biigle.$viewModel('create-volume-form', function (element) {
-            new Vue({el: element, mixins: [biigle.$require('core.mixins.loader')]});
+            new Vue({
+                el: element,
+                mixins: [biigle.$require('core.mixins.loader')],
+                data: {
+                    filenames: '{!! old('images') !!}',
+                },
+                computed: {
+                    showFilenameWarning: function () {
+                        return this.filenames.includes('.tif');
+                    },
+                },
+            });
         });
     </script>
 @endpush
