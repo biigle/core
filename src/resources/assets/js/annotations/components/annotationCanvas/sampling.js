@@ -28,7 +28,7 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
                 })
             }),
         ],
-        zIndex: 110,
+        zIndex: 90,
         updateWhileAnimating: true,
         updateWhileInteracting: true,
     });
