@@ -29,4 +29,8 @@ $router->group([
         $router->get('volumes/{id}/annotation-labels', [
             'uses' => 'VolumeLabelController@index',
         ]);
+
+        $router->get('images/{id}/area', [
+            'uses' => 'ImageAreaController@show',
+        ]);
     });
