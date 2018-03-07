@@ -26,10 +26,5 @@ biigle.$component('annotations.components.annotationTooltip', {
         styleObject: function () {
             return 'transform: translate(' + this.position[0] + 'px,' + this.position[1] + 'px);';
         },
-        classObject: function () {
-            return {
-                'annotation-tooltip--shown': this.shown,
-            };
-        },
     },
 });

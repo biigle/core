@@ -16,7 +16,7 @@
         </label-indicator>
     </div>
     <annotation-tooltip :annotations="hoveredAnnotations" :position="mouseDomPosition" inline-template>
-        <div class="annotation-tooltip" :style="styleObject" :class="classObject">
+        <div v-if="shown" class="annotation-tooltip" :style="styleObject">
             <ul class="annotation-tooltip__annotations">
                 <li v-for="annotation in annotations">
                     <ul class="annotation-tooltip__labels">

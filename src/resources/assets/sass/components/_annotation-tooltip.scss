@@ -4,11 +4,7 @@
     top: 0;
     left: 15px;
     z-index: 1;
-    display: none;
-
-    &.annotation-tooltip--shown {
-        display: block;
-    }
+    display: block;
 }
 
 .annotation-tooltip__annotations, .annotation-tooltip__labels {
