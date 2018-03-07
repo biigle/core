@@ -25,6 +25,10 @@
             </div>
 
             <div class="sidebar-tab__section">
+                <power-button :active="scaleLine" title-off="Show scale line" title-on="Hide scale line" v-on:on="showScaleLine" v-on:off="hideScaleLine">Scale Line</power-button>
+            </div>
+
+            <div class="sidebar-tab__section">
                 <power-button :active="annotationTooltip" title-off="Show annotation tooltip" title-on="Hide annotation tooltip" v-on:on="showAnnotationTooltip" v-on:off="hideAnnotationTooltip">Annotation Tooltip</power-button>
             </div>
 

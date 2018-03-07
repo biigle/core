@@ -49,6 +49,7 @@ biigle.$viewModel('annotator-container', function (element) {
             showZoomLevel: false,
             showAnnotationTooltip: false,
             showMinimap: true,
+            showScaleLine: false,
             openTab: null,
         },
         computed: {
@@ -420,6 +421,9 @@ biigle.$viewModel('annotator-container', function (element) {
                         break;
                     case 'zoomLevel':
                         this.showZoomLevel = value;
+                        break;
+                    case 'scaleLine':
+                        this.showScaleLine = value;
                         break;
                     case 'annotationTooltip':
                         this.showAnnotationTooltip = value;

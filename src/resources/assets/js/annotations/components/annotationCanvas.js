@@ -44,6 +44,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             biigle.$require('annotations.components.annotationCanvas.zoomLevel'),
             biigle.$require('annotations.components.annotationCanvas.annotationTooltip'),
             biigle.$require('annotations.components.annotationCanvas.sampling'),
+            biigle.$require('annotations.components.annotationCanvas.scaleLine'),
         ],
         components: {
             minimap: biigle.$require('annotations.components.minimap'),

@@ -3,6 +3,11 @@
         <div class="annotation-canvas__minimap"></div>
     </minimap>
     <div class="annotation-canvas__left-indicators">
+        <scale-line-indicator v-if="showScaleLine" :image="image" :resolution="resolution" inline-template>
+            <div class="scale-line-indicator" title="">
+                <span class="scale-line-indicator__line" :style="styleObject" v-text="text"></span>
+            </div>
+        </scale-line-indicator>
         <mouse-position-indicator v-if="showMousePosition" :position="mousePosition" inline-template>
             <div class="mouse-position-indicator" title="Mouse position on the image" v-text="positionText"></div>
         </mouse-position-indicator>

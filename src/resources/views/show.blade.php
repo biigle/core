@@ -67,6 +67,7 @@
             :annotation-mode="annotationMode"
             :show-mouse-position="showMousePosition"
             :show-zoom-level="showZoomLevel"
+            :show-scale-line="showScaleLine"
             :show-annotation-tooltip="showAnnotationTooltip"
             :show-minimap="showMinimap"
             :cross-origin="@if($volume->isRemote()) true @else false @endif"
