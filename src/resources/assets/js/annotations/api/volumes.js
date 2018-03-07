@@ -1,0 +1,11 @@
+/**
+ * Resource for the area of images of a volume.
+ *
+ * var resource = biigle.$require('annotations.api.volumeImageArea');
+ *
+ * Get the area in m² of all images of the volume:
+ * resource.get({id: 1}).then(...);
+ *
+ * @type {Vue.resource}
+ */
+biigle.$declare('annotations.api.volumeImageArea', Vue.resource('api/v1/volumes{/id}/images/area'));

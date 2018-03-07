@@ -3,8 +3,8 @@
         <div class="annotation-canvas__minimap"></div>
     </minimap>
     <div class="annotation-canvas__left-indicators">
-        <scale-line-indicator v-if="showScaleLine" :image="image" :resolution="resolution" inline-template>
-            <div class="scale-line-indicator" title="">
+        <scale-line-indicator v-if="showScaleLine" :image="image" :areas="imagesArea" :resolution="resolution" inline-template>
+            <div class="scale-line-indicator" title="Scale">
                 <span class="scale-line-indicator__line" :style="styleObject" v-text="text"></span>
             </div>
         </scale-line-indicator>

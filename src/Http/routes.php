@@ -30,7 +30,7 @@ $router->group([
             'uses' => 'VolumeLabelController@index',
         ]);
 
-        $router->get('images/{id}/area', [
-            'uses' => 'ImageAreaController@show',
+        $router->get('volumes/{id}/images/area', [
+            'uses' => 'VolumeImageAreaController@index',
         ]);
     });

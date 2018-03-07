@@ -50,6 +50,7 @@ biigle.$viewModel('annotator-container', function (element) {
             showAnnotationTooltip: false,
             showMinimap: true,
             showScaleLine: false,
+            imagesArea: null,
             openTab: null,
         },
         computed: {
@@ -450,6 +451,9 @@ biigle.$viewModel('annotator-container', function (element) {
             createSampledAnnotation: function () {
                 this.$refs.canvas.createSampledAnnotation();
             },
+            setImagesArea: function (response) {
+                this.imagesArea = response.body;
+            },
         },
         watch: {
             imageId: function (id) {
@@ -474,6 +478,14 @@ biigle.$viewModel('annotator-container', function (element) {
             },
             annotationFilter: function () {
                 this.maybeUpdateFocussedAnnotation();
+            },
+            showScaleLine: function (show) {
+                if (show && !this.imagesArea) {
+                    this.imagesArea = {};
+                    biigle.$require('annotations.api.volumeImageArea')
+                        .get({id: volumeId})
+                        .then(this.setImagesArea, messages.handleErrorResponse);
+                }
             },
         },
         created: function () {

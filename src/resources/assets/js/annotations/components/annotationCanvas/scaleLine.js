@@ -13,6 +13,10 @@ biigle.$component('annotations.components.annotationCanvas.scaleLine', function 
                 type: Boolean,
                 default: false,
             },
+            imagesArea: {
+                type: Object,
+                default: null,
+            },
         },
     };
 });
