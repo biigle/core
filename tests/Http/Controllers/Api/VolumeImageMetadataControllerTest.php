@@ -95,6 +95,7 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
         $this->assertEquals(52.220, $jpg->lng);
         $this->assertEquals(28.123, $jpg->lat);
         $this->assertEquals(-1500, $jpg->metadata['gps_altitude']);
+        $this->assertEquals(2.6, $jpg->metadata['area']);
         // Import should update but not destroy existing metadata.
         $this->assertEquals(10, $jpg->metadata['distance_to_ground']);
         $this->assertEquals(4000, $jpg->metadata['water_depth']);

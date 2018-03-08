@@ -16,14 +16,23 @@ class VolumeImageMetadataController extends Controller
      *
      * @var array
      */
-    protected $allowedAttributes = ['filename', 'taken_at', 'lng', 'lat'];
+    protected $allowedAttributes = [
+        'filename',
+        'taken_at',
+        'lng',
+        'lat',
+    ];
 
     /**
      * Allowed columns for the CSV file to change image metadata.
      *
      * @var array
      */
-    protected $allowedMetadata = ['gps_altitude', 'distance_to_ground'];
+    protected $allowedMetadata = [
+        'gps_altitude',
+        'distance_to_ground',
+        'area',
+    ];
 
     /**
      * Add or update image metadata for a volume.
@@ -44,10 +53,11 @@ class VolumeImageMetadataController extends Controller
      * @apiParam (CSV columns) {Number} lat Latitude where the image was taken in decimal form. If this column is present, `lng` must be present, too. Example: `28.775`
      * @apiParam (CSV columns) {Number} gps_altitude GPS Altitude where the image was taken in meters. Negative for below sea level. Example: `-1500.5`
      * @apiParam (CSV columns) {Number} distance_to_ground Distance to the sea floor in meters. Example: `30.25`
+     * @apiParam (CSV columns) {Number} area Area shown by the image in m². Example `2.6`.
      *
      * @apiParamExample {String} Request example:
-     * file: "filename,taken_at,lng,lat,gps_altitude,distance_to_ground
-     * image_1.png,2016-12-19 12:49:00,52.3211,28.775,-1500.5,30.25"
+     * file: "filename,taken_at,lng,lat,gps_altitude,distance_to_ground,area
+     * image_1.png,2016-12-19 12:49:00,52.3211,28.775,-1500.5,30.25,2.6"
      *
      * @param Request $request
      * @param int $id Volume ID
@@ -202,12 +212,16 @@ class VolumeImageMetadataController extends Controller
     {
         $toFill = array_only($toFill, $this->allowedMetadata);
 
-        if (array_key_exists('gps_altitude', $toFill) && !is_numeric($toFill['gps_altitude'])) {
-            throw new Exception("'{$toFill['gps_altitude']}' is no valid GPS altitude for image {$image->filename}.");
-        }
+        $numeric = [
+            'gps_altitude' => 'GPS altitude',
+            'distance_to_ground' => 'distance to ground',
+            'area' => 'area',
+        ];
 
-        if (array_key_exists('distance_to_ground', $toFill) && !is_numeric($toFill['distance_to_ground'])) {
-            throw new Exception("'{$toFill['distance_to_ground']}' is no valid distance to ground for image {$image->filename}.");
+        foreach ($numeric as $key => $text) {
+            if (array_key_exists($key, $toFill) && !is_numeric($toFill[$key])) {
+                throw new Exception("'{$toFill[$key]}' is no valid {$text} for image {$image->filename}.");
+            }
         }
 
         try {

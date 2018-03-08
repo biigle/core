@@ -8,7 +8,7 @@
             Upload image metadata to add information that can't be extracted from the images.
         </p>
         <p>
-            BIIGLE supports image metadata like the date and time of creation or the geo coordinates of an image. Every time a new volume is created BIIGLE attempts to automatically read the metadata from the EXIF information of JPG files. This doesn't work if the images have another format than JPG, come from a <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote location</a> or simply don't have the metadata stored in their EXIF information.
+            BIIGLE supports image metadata like the date and time of creation or the geo coordinates of an image. Every time a new volume is created, BIIGLE attempts to automatically read the metadata from the EXIF information of JPEG files. This doesn't work if the images have another format than JPEG or simply don't have the metadata stored in their EXIF information.
         </p>
         <p>
             In this case you can upload an image metadata file. The file should be a CSV file with <code>,</code> as delimiter, <code>&quot;</code> as enclosure and <code>\</code> as escape characters. The following columns are supported:
@@ -71,6 +71,15 @@
                         Example: 30.25
                     </td>
                 </tr>
+                <tr>
+                    <td>
+                        <code>area</code>
+                    </td>
+                    <td>
+                        Area shown by the image in square meters.
+                        Example: 2.6
+                    </td>
+                </tr>
             </tbody>
         </table>
         <div class="panel panel-info">
@@ -82,9 +91,9 @@
             Example:
         </p>
 <pre>
-filename,taken_at,lng,lat,gps_altitude,distance_to_ground
-image_1.png,2016-12-19 17:09:00,52.112,28.001,-1500.5,30.25
-image_2.png,2016-12-19 17:09:31,52.215,28.501,-1502.5,28.25
+filename,taken_at,lng,lat,gps_altitude,distance_to_ground,area
+image_1.png,2016-12-19 17:09:00,52.112,28.001,-1500.5,30.25,2.6
+image_2.png,2016-12-19 17:09:31,52.215,28.501,-1502.5,28.25,2.1
 </pre>
         <p>
             The image metadata CSV file can be uploaded by volume admins on the volume edit page that you can reach with the <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button> button of the volume overview.
