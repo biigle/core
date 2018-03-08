@@ -669,18 +669,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     this.initialized = true;
                 }
 
-                // Leave this undefined if the current image is not tiled.
-                var resolutions;
-
-                if (this.image && this.image.tiled === true) {
-                    resolutions = tiledImageLayer.getSource().getTileGrid().getResolutions();
-                }
-
                 map.setView(new ol.View({
                     projection: this.projection,
                     center: center,
                     resolution: this.resolution,
-                    resolutions: resolutions,
                     zoomFactor: 2,
                     // Allow a maximum of 4x magnification for non-tiled images.
                     minResolution: 0.25,
