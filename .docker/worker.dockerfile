@@ -1,6 +1,6 @@
-FROM biigle/app:arm32v6 as intermediate
+FROM biigle/app:arm64v8 as intermediate
 
-FROM arm32v6/php:7.2-rc-alpine
+FROM arm64v8/php:7.2-cli-alpine
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
 # Use edge branch for repositories.

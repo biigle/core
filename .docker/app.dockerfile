@@ -1,4 +1,4 @@
-FROM arm32v6/php:7.2-rc-fpm-alpine
+FROM arm64v8/php:7.2-fpm-alpine
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
 RUN apk add --no-cache openssl postgresql-dev libxml2-dev \
