@@ -116,6 +116,14 @@
         </p>
 
         <p>
+            The zoom level switch controls the display of a map overlay that shows the current zoom level of the viewport.
+        </p>
+
+        <p>
+            The scale line switch controls the display of a map overlay that shows the a scale line. By default, the scale is shown in pixels. If image area information is available (via <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">image metadata</a> or <a href="{{route('manual-tutorials', ['laserpoints', 'laserpoint-detection'])}}">laser point detection</a>), the scale is shown in meters.
+        </p>
+
+        <p>
             The annotation tooltip switch controls the display of a tooltip that appears when you hover your cursor over annotations. The tooltip shows the names of the labels that are attached to these annotations.
         </p>
 
