@@ -1,6 +1,9 @@
 User-agent: *
 
 Allow: /$
+Allow: /assets
+Allow: /doc
+Allow: /vendor
 Allow: /login
 Allow: /password
 Allow: /register
