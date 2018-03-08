@@ -83,10 +83,10 @@ biigle.$component('annotations.components.scaleLineIndicator', {
         },
         text: function () {
             if (this.hasArea) {
-                return (this.scaleNearest / this.unitMultipliers[this.unitNearest]) + ' ' + this.unitNames[this.unitNearest];
+                return Math.round(this.scaleNearest / this.unitMultipliers[this.unitNearest]) + ' ' + this.unitNames[this.unitNearest];
             }
 
-            return this.scaleNearest + ' px';
+            return Math.round(this.scaleNearest) + ' px';
         },
     },
 });
