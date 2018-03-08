@@ -41,11 +41,11 @@ biigle.$declare('annotations.ol.ZoomToNativeControl', function () {
         if (currentResolution) {
             if (this.duration_ > 0) {
                 view.animate({
-                    resolution: view.constrainResolution(1),
+                    resolution: 1,
                     duration: this.duration_,
                 });
             } else {
-                view.setResolution(view.constrainResolution(1));
+                view.setResolution(1);
             }
 
         }
