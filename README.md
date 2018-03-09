@@ -11,7 +11,7 @@ Benthic Image Indexing, Graphical Labeling and Exploration
 
 ### For Production
 
-Run `docker-compose -f docker-compose.build.yml build` to build the `biigle/app`, `biigle/web` and `biigle/worker` Docker images.
+Run `docker-compose build` to build the `biigle/app`, `biigle/web` and `biigle/worker` Docker images.
 
 Now head over to [biigle-distribution](https://github.com/BiodataMiningGroup/biigle-distribution) to configure and build your production setup.
 

@@ -71,7 +71,7 @@ class ImageCacheTest extends TestCase
         $cache = new ImageCacheStub;
         $cache->stream = fopen(base_path('tests').'/files/test-image.jpg', 'r');
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('File too large');
+        $this->expectExceptionMessage('file is too large');
         $path = $cache->get($image, $this->noop);
     }
 
@@ -130,15 +130,14 @@ class ImageCacheTest extends TestCase
         $stream = fopen(base_path('tests').'/files/test-image.jpg', 'r');
 
         $mock = Mockery::mock();
-        // Called twice because the image cache retries failed attempts.
-        $mock->shouldReceive('getDriver')->twice()->andReturn($mock);
-        $mock->shouldReceive('getAdapter')->twice()->andReturn($mock);
-        $mock->shouldReceive('readStream')->twice()->andReturn($stream);
-        Storage::shouldReceive('disk')->twice()->with('s3')->andReturn($mock);
+        $mock->shouldReceive('getDriver')->once()->andReturn($mock);
+        $mock->shouldReceive('getAdapter')->once()->andReturn($mock);
+        $mock->shouldReceive('readStream')->once()->andReturn($stream);
+        Storage::shouldReceive('disk')->once()->with('s3')->andReturn($mock);
 
         $this->assertFalse(File::exists("{$this->cachePath}/{$image->id}"));
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('File too large');
+        $this->expectExceptionMessage('file is too large');
         $path = ImageCache::get($image, $this->noop);
     }
 
@@ -236,10 +235,10 @@ class ImageCacheStub extends \Biigle\Services\ImageCache
     const MAX_RETRIES = 1;
     public $stream = null;
 
-    protected function getImageStream($url)
+    protected function getImageStream($url, $context = null)
     {
         if (is_null($this->stream)) {
-            return parent::getImageStream($url);
+            return parent::getImageStream($url, $context);
         }
 
         return $this->stream;
