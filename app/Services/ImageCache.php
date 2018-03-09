@@ -19,13 +19,6 @@ use Biigle\Contracts\ImageCache as ImageCacheContract;
 class ImageCache implements ImageCacheContract
 {
     /**
-     * Number of attempts for fetching a remote image.
-     *
-     * @var int
-     */
-    const MAX_ATTEMPTS = 2;
-
-    /**
      * Directory of the image cache.
      *
      * @var string
@@ -243,38 +236,28 @@ class ImageCache implements ImageCacheContract
         $handle = fopen($cachedPath, 'w+');
         flock($handle, LOCK_EX);
 
-        $attempts = 0;
-        $success = false;
+        try {
+            if ($image->volume->isRemote()) {
+                $this->getRemoteImage($image, $handle);
+            } else {
+                $newCachedPath = $this->getDiskImage($image, $handle);
 
-        // If fetching the image failed, try again MAX_ATTEMPTS times.
-        do {
-            try {
-                if ($image->volume->isRemote()) {
-                    $this->getRemoteImage($image, $handle);
-                } else {
-                    $newCachedPath = $this->getDiskImage($image, $handle);
-
-                    // If it is a locally stored image, delete the empty "placeholder"
-                    // file again. The handle may stay open; it doesn't matter.
-                    if ($newCachedPath !== $cachedPath) {
-                        unlink($cachedPath);
-                    }
-
-                    $cachedPath = $newCachedPath;
-                }
-
-                // Convert the lock so other workers can use the file from now on.
-                flock($handle, LOCK_SH);
-                $success = true;
-            } catch (Exception $e) {
-                $attempts++;
-                if ($attempts >= static::MAX_ATTEMPTS) {
+                // If it is a locally stored image, delete the empty "placeholder"
+                // file again. The handle may stay open; it doesn't matter.
+                if ($newCachedPath !== $cachedPath) {
                     unlink($cachedPath);
-                    fclose($handle);
-                    throw new Exception("Error while caching remote image {$image->id}: {$e->getMessage()}");
                 }
+
+                $cachedPath = $newCachedPath;
             }
-        } while (!$success);
+
+            // Convert the lock so other workers can use the file from now on.
+            flock($handle, LOCK_SH);
+        } catch (Exception $e) {
+            unlink($cachedPath);
+            fclose($handle);
+            throw new Exception("Error while caching image {$image->id}: {$e->getMessage()}");
+        }
 
         return [
             'path' => $cachedPath,
@@ -293,7 +276,10 @@ class ImageCache implements ImageCacheContract
      */
     protected function getRemoteImage(Image $image, $target)
     {
-        $source = $this->getImageStream($image->url);
+        $context = stream_context_create(['http' => [
+            'timeout' => config('image.cache.timeout'),
+        ]]);
+        $source = $this->getImageStream($image->url, $context);
         $cachedPath = $this->cacheFromResource($image, $source, $target);
         if (is_resource($source)) {
             fclose($source);
@@ -349,16 +335,24 @@ class ImageCache implements ImageCacheContract
      */
     protected function cacheFromResource(Image $image, $source, $target)
     {
+        if (!is_resource($source)) {
+            throw new Exception("The source resource could not be established.");
+        }
+
         $cachedPath = $this->getCachedPath($image);
         $maxBytes = intval(config('image.cache.max_image_size'));
         $bytes = stream_copy_to_stream($source, $target, $maxBytes);
 
         if ($bytes === $maxBytes) {
-            throw new Exception("File too large with more than {$maxBytes} bytes.");
+            throw new Exception("The file is too large with more than {$maxBytes} bytes.");
         }
 
         if ($bytes === false) {
             throw new Exception('The source resource is invalid.');
+        }
+
+        if (stream_get_meta_data($source)['timed_out']) {
+            throw new Exception("The source stream timed out while reading data.");
         }
 
         return $cachedPath;
@@ -390,11 +384,12 @@ class ImageCache implements ImageCacheContract
      * Get the stream resource for an image.
      *
      * @param string $url
+     * @param array|null $contaxt Stream context
      *
      * @return resource
      */
-    protected function getImageStream($url)
+    protected function getImageStream($url, $context = null)
     {
-        return fopen($url, 'r');
+        return @fopen($url, 'r', false, $context);
     }
 }

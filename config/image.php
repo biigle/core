@@ -21,6 +21,13 @@ return [
         | Directory to use for the image cache.
         */
         'path' => storage_path('framework/cache/images'),
+
+        /*
+         | Read timeout in seconds for fetching remote images. If the stream transmits
+         | no data for longer than this period (or cannot be established), caching the
+         | image fails.
+         */
+        'timeout' => 5.0,
     ],
 
     'tiles' => [
