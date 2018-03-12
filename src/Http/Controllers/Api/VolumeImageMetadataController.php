@@ -191,7 +191,8 @@ class VolumeImageMetadataController extends Controller
             throw new Exception("'{$toFill['lat']}' is no valid latitude for image {$image->filename}.");
         }
 
-        if (array_key_exists('taken_at', $toFill) && strtotime($toFill['taken_at']) === false) {
+        // Catch both a malformed date (false) and the zero date (negative integer).
+        if (array_key_exists('taken_at', $toFill) && !(strtotime($toFill['taken_at']) > 0)) {
             throw new Exception("'{$toFill['taken_at']}' is no valid date for image {$image->filename}.");
         }
 
