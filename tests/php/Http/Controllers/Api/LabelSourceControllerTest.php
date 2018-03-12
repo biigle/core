@@ -5,6 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 use App;
 use Mockery;
 use ApiTestCase;
+use Illuminate\Http\Request;
 use Biigle\Tests\LabelSourceTest;
 
 class LabelSourceControllerTest extends ApiTestCase
@@ -16,7 +17,7 @@ class LabelSourceControllerTest extends ApiTestCase
         $mock = Mockery::mock();
         $mock->shouldReceive('find')
             ->once()
-            ->with('my query')
+            ->with(Mockery::type(Request::class))
             ->andReturn([['name' => 'My Query Label']]);
 
         App::singleton('Biigle\Services\LabelSourceAdapters\MySourceAdapter', function () use ($mock) {

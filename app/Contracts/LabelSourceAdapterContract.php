@@ -12,11 +12,11 @@ interface LabelSourceAdapterContract
     /**
      * Find a label in the label source.
      *
-     * @param string $query The query string (e.g. label name)
+     * @param Request $request
      *
      * @return array All labels of the label source that match the query
      */
-    public function find($query);
+    public function find(Request $request);
 
     /**
      * Create the label (or labels) from the label source based on an API request.
