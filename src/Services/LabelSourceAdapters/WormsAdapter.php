@@ -53,15 +53,17 @@ class WormsAdapter implements LabelSourceAdapterContract
      * Uses the `getAphiaRecords` function of the WoRMS web service.
      * see: http://www.marinespecies.org/aphia.php?p=soap
      *
-     * @param string $query
+     * @param Request $request
      *
      * @return array
      */
-    public function find($query)
+    public function find(Request $request)
     {
         $results = [];
         $currentResults = [];
         $offset = 1;
+
+        $query = $request->input('query', '');
 
         // WoRMS returns a maximum of 50 results per request. We use a loop to get more
         // results but take care to stop it if it runs too often.

@@ -63,7 +63,11 @@ class WormsAdapterTest extends TestCase
 
         $adapter = new WormsAdapter;
         $adapter->setSoapClient($mock);
-        $results = $adapter->find('Kolga');
+
+        $request = new Request;
+        $request->merge(['query' => 'Kolga']);
+
+        $results = $adapter->find($request);
 
         $expect = [[
             'aphia_id' => 124731,
@@ -81,7 +85,8 @@ class WormsAdapterTest extends TestCase
 
         $this->assertEquals($expect, $results);
 
-        $results = $adapter->find('');
+        $request = new Request;
+        $results = $adapter->find($request);
         $this->assertEquals([], $results);
     }
 
