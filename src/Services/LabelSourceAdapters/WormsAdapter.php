@@ -63,7 +63,11 @@ class WormsAdapter implements LabelSourceAdapterContract
         $currentResults = [];
         $offset = 1;
 
-        $query = $request->input('query', '');
+        $query = $request->input('query');
+
+        if (!$query) {
+            return [];
+        }
 
         // WoRMS returns a maximum of 50 results per request. We use a loop to get more
         // results but take care to stop it if it runs too often.
@@ -82,9 +86,11 @@ class WormsAdapter implements LabelSourceAdapterContract
             $offset += 50;
         } while (count($currentResults) === 50 && $offset < self::MAX_RESULTS);
 
-        // use array_values because array_filter retains the keys and this might
-        // produce a JSON object output and no array output in the HTTP response
-        $results = array_values(array_filter($results, [$this, 'filterUnaccepted']));
+        if (!$request->input('unaccepted', false)) {
+            // use array_values because array_filter retains the keys and this might
+            // produce a JSON object output and no array output in the HTTP response
+            $results = array_values(array_filter($results, [$this, 'filterUnaccepted']));
+        }
 
         return array_map([$this, 'parseItem'], $results);
     }

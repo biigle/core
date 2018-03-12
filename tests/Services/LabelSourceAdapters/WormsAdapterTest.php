@@ -14,6 +14,43 @@ use Biigle\Modules\LabelTrees\Services\LabelSourceAdapters\WormsAdapter;
 
 class WormsAdapterTest extends TestCase
 {
+    protected $wormsResponse;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->wormsResponse = [
+            (object) [
+                'AphiaID' => 124731,
+                'url' => 'http://www.marinespecies.org/aphia.php?p=taxdetails&id=124731',
+                'scientificname' => 'Kolga hyalina',
+                'rank' => 'Species',
+                'status' => 'accepted',
+                'kingdom' => 'Animalia',
+                'phylum' => 'Echinodermata',
+                'class' => 'Holothuroidea',
+                'order' => 'Elasipodida',
+                'family' => 'Elpidiidae',
+                // is not raeally null but we want to test if this is omitted later
+                'genus' => null,
+            ],
+            (object) [
+                // should not be returned
+                'AphiaID' => 124732,
+                'url' => 'http://www.marinespecies.org/aphia.php?p=taxdetails&id=124731',
+                'scientificname' => 'Kolga hyalina',
+                'rank' => 'Species',
+                'status' => 'unaccepted',
+                'kingdom' => 'Animalia',
+                'phylum' => 'Echinodermata',
+                'class' => 'Holothuroidea',
+                'order' => 'Elasipodida',
+                'family' => 'Elpidiidae',
+                'genus' => null,
+            ],
+        ];
+    }
+
     public function testRegister()
     {
         $this->assertInstanceOf(WormsAdapter::class, App::make("Biigle\Services\LabelSourceAdapters\WormsAdapter"));
@@ -25,41 +62,7 @@ class WormsAdapterTest extends TestCase
         $mock->shouldReceive('getAphiaRecords')
             ->once()
             ->with('%Kolga%', null, null, true, 1)
-            ->andReturn([
-                (object) [
-                    'AphiaID' => 124731,
-                    'url' => 'http://www.marinespecies.org/aphia.php?p=taxdetails&id=124731',
-                    'scientificname' => 'Kolga hyalina',
-                    'rank' => 'Species',
-                    'status' => 'accepted',
-                    'kingdom' => 'Animalia',
-                    'phylum' => 'Echinodermata',
-                    'class' => 'Holothuroidea',
-                    'order' => 'Elasipodida',
-                    'family' => 'Elpidiidae',
-                    // is not raeally null but we want to test if this is omitted later
-                    'genus' => null,
-                ],
-                (object) [
-                    // should not be returned
-                    'AphiaID' => 124732,
-                    'url' => 'http://www.marinespecies.org/aphia.php?p=taxdetails&id=124731',
-                    'scientificname' => 'Kolga hyalina',
-                    'rank' => 'Species',
-                    'status' => 'unaccepted',
-                    'kingdom' => 'Animalia',
-                    'phylum' => 'Echinodermata',
-                    'class' => 'Holothuroidea',
-                    'order' => 'Elasipodida',
-                    'family' => 'Elpidiidae',
-                    'genus' => null,
-                ],
-            ]);
-
-        $mock->shouldReceive('getAphiaRecords')
-            ->once()
-            ->with('%%', null, null, true, 1)
-            ->andReturn(null);
+            ->andReturn($this->wormsResponse);
 
         $adapter = new WormsAdapter;
         $adapter->setSoapClient($mock);
@@ -84,7 +87,32 @@ class WormsAdapterTest extends TestCase
         ]];
 
         $this->assertEquals($expect, $results);
+    }
 
+    public function testFindAccepted()
+    {
+        $mock = Mockery::mock(SoapClient::class);
+        $mock->shouldReceive('getAphiaRecords')
+            ->once()
+            ->with('%Kolga%', null, null, true, 1)
+            ->andReturn($this->wormsResponse);
+
+        $adapter = new WormsAdapter;
+        $adapter->setSoapClient($mock);
+
+        $request = new Request;
+        $request->merge(['query' => 'Kolga', 'unaccepted' => true]);
+
+        $results = $adapter->find($request);
+        $this->assertCount(2, $results);
+    }
+
+    public function testFindEmpty()
+    {
+        $mock = Mockery::mock(SoapClient::class);
+        $mock->shouldReceive('getAphiaRecords')->never();
+        $adapter = new WormsAdapter;
+        $adapter->setSoapClient($mock);
         $request = new Request;
         $results = $adapter->find($request);
         $this->assertEquals([], $results);
