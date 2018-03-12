@@ -77,6 +77,7 @@ class WormsAdapterTest extends TestCase
             'name' => 'Kolga hyalina',
             'url' => 'http://www.marinespecies.org/aphia.php?p=taxdetails&id=124731',
             'rank' => 'Species',
+            'accepted' => true,
             'parents' => [
                 'Animalia',
                 'Echinodermata',

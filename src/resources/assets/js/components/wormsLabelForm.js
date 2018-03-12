@@ -13,6 +13,7 @@ biigle.$component('labelTrees.components.wormsLabelForm', {
             results: [],
             recursive: false,
             hasSearched: false,
+            unaccepted: false,
         };
     },
     computed: {
@@ -22,9 +23,15 @@ biigle.$component('labelTrees.components.wormsLabelForm', {
         recursiveButtonClass: function () {
             return {
                 active: this.recursive,
-                'btn-primary': this.recursive,
+                'btn-info': this.recursive,
             };
-        }
+        },
+        unacceptedButtonClass: function () {
+            return {
+                active: this.unaccepted,
+                'btn-info': this.unaccepted,
+            };
+        },
     },
     methods: {
         findName: function () {
@@ -34,7 +41,13 @@ biigle.$component('labelTrees.components.wormsLabelForm', {
             var self = this;
             this.$emit('load-start');
 
-            labelSource.query({id: worms.id, query: this.selectedName})
+            var query = {id: worms.id, query: this.selectedName};
+
+            if (this.unaccepted) {
+                query.unaccepted = 'true';
+            }
+
+            labelSource.query(query)
                 .then(this.updateResults, messages.handleErrorResponse)
                 .finally(function () {
                     self.hasSearched = true;
@@ -64,6 +77,9 @@ biigle.$component('labelTrees.components.wormsLabelForm', {
         },
         toggleRecursive: function () {
             this.recursive = !this.recursive;
-        }
+        },
+        toggleUnaccepted: function () {
+            this.unaccepted = !this.unaccepted;
+        },
     },
 });

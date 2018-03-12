@@ -175,6 +175,7 @@ class WormsAdapter implements LabelSourceAdapterContract
             'name' => $item['scientificname'],
             'url' => $item['url'],
             'rank' => $item['rank'],
+            'accepted' => $item['status'] === 'accepted',
             // use array_filter to remove empty elements
             // and the outer array_values to reset array keys so it is not parsed as
             // object in the JSON output

@@ -19,9 +19,14 @@
                 </span>
             </div>
         </div>
-        <div class="col-xs-6 form-group">
+        <div class="col-xs-3 form-group">
+            <button type="button" class="btn btn-default btn-block" v-on:click="toggleUnaccepted" :class="unacceptedButtonClass" title="Include unaccepted items from WoRMS in the results">
+                unaccepted
+            </button>
+        </div>
+        <div class="col-xs-3 form-group">
             <button type="button" class="btn btn-default btn-block" v-on:click="toggleRecursive" :class="recursiveButtonClass" title="Recursively import all parent labels from WoRMS (if they don't already exist)">
-                Recursive
+                recursive
             </button>
         </div>
         <div class="col-xs-6 form-group">
@@ -41,7 +46,11 @@
                             <span class="pull-right">
                                 <button class="btn btn-default btn-xs" v-on:click.prevent="select" :title="buttonTitle" :disabled="selected"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
                             </span>
-                            <span v-text="item.rank"></span>: <a :href="item.url" target="_blank" title="Show WoRMS page" v-text="item.name"></a>
+                            <span v-text="item.rank"></span>:
+                            <a :href="item.url" target="_blank" title="Show WoRMS page">
+                                <span v-text="item.name"></span>
+                                <span v-if="!item.accepted">(unaccepted)</span>
+                            </a>
                         </div>
                     </li>
                 </worms-result-item>
