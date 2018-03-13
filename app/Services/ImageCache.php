@@ -384,7 +384,7 @@ class ImageCache implements ImageCacheContract
      * Get the stream resource for an image.
      *
      * @param string $url
-     * @param resource|null $contaxt Stream context
+     * @param resource|null $context Stream context
      *
      * @return resource
      */
