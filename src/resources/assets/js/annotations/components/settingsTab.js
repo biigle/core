@@ -111,13 +111,15 @@ biigle.$component('annotations.components.settingsTab', {
     },
     created: function () {
         this.settings.restoreProperties(this, [
+            // Take care when modifying these variable names as they are mentioned as
+            // configurable URL parameters in the documentation.
             'annotationOpacity',
             'mousePosition',
             'zoomLevel',
             'scaleLine',
             'annotationTooltip',
             'minimap',
-        ]);
+        ], true);
     },
 });
 

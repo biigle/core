@@ -41,7 +41,30 @@ biigle.$declare('annotations.stores.settings', new Vue({
 
             window.localStorage.removeItem(this.storageKey);
         },
-        restoreProperties: function (context, properties) {
+        parseUrlParam: function (value) {
+            if (!isNaN(value)) {
+                return parseFloat(value);
+            } else if (value === 'true' || value === 'false') {
+                return value === 'true';
+            }
+
+            return value;
+        },
+        loadFromUrlParams: function (properties) {
+            var urlParams = biigle.$require('volumes.urlParams');
+
+            properties.forEach(function (property) {
+                var value = urlParams.get(property);
+                if (value) {
+                    this.set(property, this.parseUrlParam(value));
+                }
+            }, this);
+        },
+        restoreProperties: function (context, properties, fromUrlParams) {
+            if (fromUrlParams) {
+                this.loadFromUrlParams(properties);
+            }
+
             properties.forEach(function (property) {
                 if (this.has(property)) {
                     Vue.set(context, property, this.get(property));

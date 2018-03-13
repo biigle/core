@@ -133,9 +133,11 @@ biigle.$component('annotations.components.annotationModesTab', {
     },
     created: function () {
         this.settings.restoreProperties(this, [
+            // Take care when modifying these variable names as they are mentioned as
+            // configurable URL parameters in the documentation.
             'randomSamplingNumber',
             'regularSamplingRows',
             'regularSamplingColumns',
-        ]);
+        ], true);
     },
 });
