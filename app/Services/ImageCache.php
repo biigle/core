@@ -384,12 +384,16 @@ class ImageCache implements ImageCacheContract
      * Get the stream resource for an image.
      *
      * @param string $url
-     * @param array|null $contaxt Stream context
+     * @param resource|null $contaxt Stream context
      *
      * @return resource
      */
     protected function getImageStream($url, $context = null)
     {
-        return @fopen($url, 'r', false, $context);
+        if (is_resource($context)) {
+            return @fopen($url, 'r', false, $context);
+        }
+
+        return @fopen($url, 'r');
     }
 }
