@@ -3,8 +3,8 @@
 namespace Biigle\Tests;
 
 use Biigle\Role;
-use Biigle\Project;
 use ModelTestCase;
+use Biigle\Project;
 use Illuminate\Database\QueryException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -277,5 +277,20 @@ class ProjectTest extends ModelTestCase
         $this->model->addVolumeId($i2->volume_id);
 
         $this->assertEquals($i1->uuid, $this->model->thumbnail->uuid);
+    }
+
+    public function testHasGeoInfo()
+    {
+        $this->assertFalse($this->model->hasGeoInfo());
+        $v = VolumeTest::create();
+        $this->model->volumes()->attach($v);
+        ImageTest::create([
+            'lng' => 5.5,
+            'lat' => 5.5,
+            'volume_id' => $v->id,
+        ]);
+        $this->assertFalse($this->model->hasGeoInfo());
+        $this->model->flushGeoInfoCache();
+        $this->assertTrue($this->model->hasGeoInfo());
     }
 }
