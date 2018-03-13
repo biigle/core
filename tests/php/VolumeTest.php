@@ -487,6 +487,22 @@ class VolumeTest extends ModelTestCase
         $this->assertTrue($this->model->hasGeoInfo());
     }
 
+    public function testFlushGeoInfoCacheProjects()
+    {
+        $p = ProjectTest::create();
+        $p->volumes()->attach($this->model);
+        $this->assertFalse($this->model->hasGeoInfo());
+        $this->assertFalse($p->hasGeoInfo());
+        ImageTest::create([
+            'lng' => 5.5,
+            'lat' => 5.5,
+            'volume_id' => $this->model->id,
+        ]);
+        $this->model->flushGeoInfoCache();
+        $this->assertTrue($this->model->hasGeoInfo());
+        $this->assertTrue($p->hasGeoInfo());
+    }
+
     public function testLinkAttrs()
     {
         foreach (['video_link', 'gis_link'] as $attr) {

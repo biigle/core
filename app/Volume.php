@@ -426,6 +426,9 @@ class Volume extends Model
     public function flushGeoInfoCache()
     {
         Cache::forget("volume-{$this->id}-has-geo-info");
+        $this->projects->each(function ($p) {
+            $p->flushGeoInfoCache();
+        });
     }
 
     /**
