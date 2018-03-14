@@ -145,6 +145,10 @@ class ProjectVolumeController extends Controller
             unset($volume->media_type);
 
             return $volume;
+        } else if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
+                ->with('message', 'Volume '.$volume->name.' created')
+                ->with('messageType', 'success');
         } else {
             return redirect()->route('home')
                 ->with('message', 'Volume '.$volume->name.' created')
