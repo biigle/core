@@ -115,11 +115,11 @@ biigle.$component('volumes.components.imageGrid', {
         jumpToEnd: function () {
             this.jumpToPercent(1);
         },
-        emitSelect: function (image) {
-            this.$emit('select', image);
+        emitSelect: function (image, event) {
+            this.$emit('select', image, event);
         },
-        emitDeselect: function (image) {
-            this.$emit('deselect', image);
+        emitDeselect: function (image, event) {
+            this.$emit('deselect', image, event);
         },
     },
     watch: {

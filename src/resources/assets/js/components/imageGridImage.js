@@ -34,11 +34,11 @@ biigle.$component('volumes.components.imageGridImage', {
         }
     },
     methods: {
-        toggleSelect: function () {
+        toggleSelect: function (event) {
             if (this.selected) {
-                this.$emit('deselect', this.image);
+                this.$emit('deselect', this.image, event);
             } else {
-                this.$emit('select', this.image);
+                this.$emit('select', this.image, event);
             }
         },
         gotBlob: function (response) {
