@@ -210,17 +210,19 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
             }
         }
 
-        try {
-            $exif = @exif_read_data($path);
-        } catch (ErrorException $e) {
-            $exif = false;
-        }
+        $exif = $this->getExif($path);
 
         // Exif may be false if no error has been thrown, too (e.g. if the image is PNG)!
         if ($exif !== false) {
             if ($this->hasTakenAtInfo($exif)) {
                 try {
-                    $image->taken_at = new Carbon($exif['DateTimeOriginal']);
+                    $date = Carbon::parse($exif['DateTimeOriginal']);
+                    // Carbon returns a negative timestamp for the date
+                    // '0000-00-00 00:00:00'. This will not be accepted by the database
+                    // so catch it here.
+                    if ($date->timestamp > 0) {
+                        $image->taken_at = $date;
+                    }
                 } catch (Exception $e) {
                     // date could not be parsed
                     $image->taken_at = null;
@@ -294,6 +296,24 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     {
         return array_key_exists('GPSAltitude', $exif) &&
             array_key_exists('GPSAltitudeRef', $exif);
+    }
+
+    /**
+     * Get the exif information of an image if possible.
+     *
+     * @param string $path Path to the image file
+     *
+     * @return array|bool
+     */
+    protected function getExif($path)
+    {
+        try {
+            $exif = @exif_read_data($path);
+        } catch (ErrorException $e) {
+            $exif = false;
+        }
+
+        return $exif;
     }
 
     /**

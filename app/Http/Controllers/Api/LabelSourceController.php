@@ -27,6 +27,6 @@ class LabelSourceController extends Controller
         $source = LabelSource::findOrFail($id);
         $this->validate($request, LabelSource::$findRules);
 
-        return $source->getAdapter()->find($request->input('query'));
+        return $source->getAdapter()->find($request);
     }
 }

@@ -305,4 +305,32 @@ class Project extends Model
             return $volume ? $volume->thumbnail : null;
         });
     }
+
+    /**
+     * Check if the project has volumes which have some images with GPS coordinates.
+     *
+     * @return bool
+     */
+    public function hasGeoInfo()
+    {
+        return Cache::remember("project-{$this->id}-has-geo-info", 60, function () {
+            return Image::whereIn('volume_id', function ($query) {
+                    return $query->select('volume_id')
+                        ->from('project_volume')
+                        ->where('project_id', $this->id);
+                })
+                ->whereNotNull('lng')
+                ->whereNotNull('lat')
+                ->exists();
+        });
+    }
+
+    /**
+     * Flush the cached information if this project has volumes which have images with
+     * GPS coordinates.
+     */
+    public function flushGeoInfoCache()
+    {
+        Cache::forget("project-{$this->id}-has-geo-info");
+    }
 }
