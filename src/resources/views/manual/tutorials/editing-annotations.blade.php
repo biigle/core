@@ -1,6 +1,6 @@
 @extends('manual.base')
 
-@section('manual-title') Editing Annotations @stop
+@section('manual-title', 'Editing Annotations')
 
 @section('manual-content')
     <div class="row">

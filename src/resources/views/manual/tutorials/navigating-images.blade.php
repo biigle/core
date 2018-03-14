@@ -1,6 +1,6 @@
 @extends('manual.base')
 
-@section('manual-title') Navigating Images @stop
+@section('manual-title', 'Navigating Images')
 
 @section('manual-content')
     <div class="row">

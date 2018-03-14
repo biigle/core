@@ -13,7 +13,7 @@
 </style>
 @endpush
 
-@section('manual-title') Creating Annotations @stop
+@section('manual-title', 'Creating Annotations')
 
 @section('manual-content')
     <div class="row">

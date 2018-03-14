@@ -46,3 +46,11 @@
 <p>
     A list of all available shortcut keys in the annotation tool.
 </p>
+
+<h4>
+    <a href="{{route('manual-tutorials', ['annotations', 'url-parameters'])}}">URL Parameters</a>
+</h4>
+
+<p>
+    Advanced configuration of the annotation tool.
+</p>
