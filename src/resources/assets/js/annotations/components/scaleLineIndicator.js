@@ -42,7 +42,7 @@ biigle.$component('annotations.components.scaleLineIndicator', {
                 return this.resolution * this.pxWidthInMeter;
             }
 
-            return this.resolution;
+            return this.resolution || 0;
         },
         scale: function () {
             return this.targetWidth * this.scaleMultiplier;

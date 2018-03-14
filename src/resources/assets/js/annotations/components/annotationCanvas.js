@@ -666,7 +666,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 // afterwards, the center should be reset.
                 if (!this.initialized) {
                     center = this.center || center;
-                    this.initialized = true;
                 }
 
                 map.setView(new ol.View({
@@ -682,6 +681,13 @@ biigle.$component('annotations.components.annotationCanvas', function () {
 
                 if (this.resolution === undefined) {
                     map.getView().fit(extent);
+                }
+
+                // Fake a map moveend event here so everything that is dependent on the
+                // map viwport is initialized.
+                if (!this.initialized) {
+                    this.updateMapView({target: map});
+                    this.initialized = true;
                 }
             },
             selectedLabel: function (label) {
