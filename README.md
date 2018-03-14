@@ -27,14 +27,7 @@ composer create-project biigle/core --repository='{"type":"vcs","url":"git@githu
 
 Note the `--ignore-platform-reqs` flag to keep Composer from complaining about missing requirements. These requirements will be met by the Docker containers.
 
-The development setup requires an SSL certificate for the webserver, as it is configured as similar to the production setup as possible. You can generate a self-signed certificate as follows:
-
-1. `openssl genrsa -out privkey.pem 2048`
-2. `openssl req -new -x509 -key privkey.pem -out fullchain.pem -days 3650 -subj /CN=localhost`
-3. Put `privkey.pem` and `fullchain.pem` in the `certificate/` directory of this repository.
-4. Add a security exception to your browser when you first visit you local BIIGLE instance.
-
-Now you can run `docker-compose up` to build and run the ensemble of Docker containers. The first time may take a while. The BIIGLE application is now running at `https://localhost:8000`. Stop the containers with `docker-compose stop`. Destroy them (and the development database) with `docker-compose down`.
+Now you can run `docker-compose up` to build and run the ensemble of Docker containers. The first time may take a while. The BIIGLE application is now running at `http://localhost:8000`. Stop the containers with `docker-compose stop`. Destroy them (and the development database) with `docker-compose down`.
 
 Run the tests with `docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit`. The first time may fail since the database container needs to start up.
 
