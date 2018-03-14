@@ -10,6 +10,13 @@ biigle.$component('annotations.components.annotationModesTab', {
     data: function () {
         return {
             mode: 'default',
+            modes: [
+                'default',
+                'volare',
+                'lawnmower',
+                'randomSampling',
+                'regularSampling',
+            ],
             defaults: {
                 randomSamplingNumber: 9,
                 regularSamplingRows: 3,
@@ -42,16 +49,21 @@ biigle.$component('annotations.components.annotationModesTab', {
     },
     methods: {
         startVolare: function () {
-            this.mode = 'volare';
+            this.setMode('volare');
         },
         startLawnmower: function () {
-            this.mode = 'lawnmower';
+            this.setMode('lawnmower');
         },
         startRandomSampling: function () {
-            this.mode = 'randomSampling';
+            this.setMode('randomSampling');
         },
         startRegularSampling: function () {
-            this.mode = 'regularSampling';
+            this.setMode('regularSampling');
+        },
+        setMode: function (mode) {
+            if (this.modes.indexOf(mode) !== -1) {
+                this.mode = mode;
+            }
         },
         resetMode: function () {
             this.mode = 'default';
@@ -139,5 +151,13 @@ biigle.$component('annotations.components.annotationModesTab', {
             'regularSamplingRows',
             'regularSamplingColumns',
         ], true);
+
+        var mode = biigle.$require('volumes.urlParams').get('annotationMode');
+        if (mode) {
+            var self = this;
+            biigle.$require('events').$once('images.change', function () {
+                self.setMode(mode);
+            });
+        }
     },
 });
