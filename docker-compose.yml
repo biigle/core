@@ -45,9 +45,9 @@ services:
     working_dir: /var/www
     volumes:
       - ./:/var/www
-      - ./certificate:/etc/letsencrypt/live/example.com
     ports:
-      - 8000:443
+      - 8000:80
+    command: nginx -g 'daemon off;' -c /etc/nginx/nginx-no-ssl.conf
 
   # The database
   database:

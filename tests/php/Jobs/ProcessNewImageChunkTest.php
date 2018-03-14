@@ -40,6 +40,22 @@ class ProcessNewImageChunkTest extends TestCase
         $this->assertTrue($volume->hasGeoInfo());
     }
 
+    public function testHandleCollectMetadataZeroDate()
+    {
+        $volume = VolumeTest::create();
+        $image = ImageTest::create([
+            'filename' => 'exif-test.jpg',
+            'volume_id' => $volume->id,
+        ]);
+        $this->assertFalse($volume->hasGeoInfo());
+
+        $job = new ProcessNewImageChunkMock([$image->id]);
+        $job->exif = ['DateTimeOriginal' => '0000-00-00 00:00:00'];
+        $job->handle();
+        $image = $image->fresh();
+        $this->assertEquals(null, $image->taken_at);
+    }
+
     public function testHandleMakeThumbnail()
     {
         if (!function_exists('vips_call')) {
@@ -165,8 +181,17 @@ class ImageMock extends \Jcupitt\Vips\Image
 
 class ProcessNewImageChunkMock extends ProcessNewImageChunk
 {
+    public $exif = false;
     protected function makeThumbnail(Image $image, $path)
     {
         // do nothing
+    }
+    protected function getExif($path)
+    {
+        if ($this->exif) {
+            return $this->exif;
+        }
+
+        return parent::getExif($path);
     }
 }
