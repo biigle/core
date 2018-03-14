@@ -15,6 +15,7 @@ biigle.$declare('largo.mixins.largoContainer', {
         step: 0,
         selectedLabel: null,
         annotationsCache: {},
+        lastSelectedImage: null,
     },
     computed: {
         isInDismissStep: function () {
@@ -125,8 +126,13 @@ biigle.$declare('largo.mixins.largoContainer', {
         handleDeselectedLabel: function () {
             this.selectedLabel = null;
         },
-        handleDismissedImage: function (image) {
+        handleDismissedImage: function (image, event) {
             image.dismissed = true;
+            if (event.shiftKey && this.lastSelectedImage) {
+                this.dismissAllImagesBetween(image, this.lastSelectedImage);
+            } else {
+                this.lastSelectedImage = image;
+            }
         },
         handleUndismissedImage: function (image) {
             image.dismissed = false;
@@ -134,16 +140,23 @@ biigle.$declare('largo.mixins.largoContainer', {
         },
         goToRelabel: function () {
             this.step = 1;
+            this.lastSelectedImage = null;
         },
         goToDismiss: function () {
             this.step = 0;
+            this.lastSelectedImage = null;
             if (this.selectedLabel) {
                 this.getAnnotations(this.selectedLabel);
             }
         },
-        handleRelabelledImage: function (image) {
+        handleRelabelledImage: function (image, event) {
             if (this.selectedLabel) {
                 image.newLabel = this.selectedLabel;
+                if (event.shiftKey && this.lastSelectedImage) {
+                    this.relabelAllImagesBetween(image, this.lastSelectedImage);
+                } else {
+                    this.lastSelectedImage = image;
+                }
             }
         },
         handleUnrelabelledImage: function (image) {
@@ -171,6 +184,31 @@ biigle.$declare('largo.mixins.largoContainer', {
                 delete this.annotationsCache[key];
             }
             this.handleSelectedLabel(this.selectedLabel);
+        },
+        performOnAllImagesBetween: function (image1, image2, callback) {
+            var index1 = this.annotations.indexOf(image1);
+            var index2 = this.annotations.indexOf(image2);
+            if (index2 < index1) {
+                var tmp = index2;
+                index2 = index1;
+                index1 = tmp;
+            }
+
+            for (var i = index1 + 1; i < index2; i++) {
+                callback(this.annotations[i]);
+            }
+
+        },
+        dismissAllImagesBetween: function (image1, image2) {
+            this.performOnAllImagesBetween(image1, image2, function (image) {
+                image.dismissed = true;
+            });
+        },
+        relabelAllImagesBetween: function (image1, image2) {
+            var label = this.selectedLabel;
+            this.performOnAllImagesBetween(image1, image2, function (image) {
+                image.newLabel = label;
+            });
         },
     },
     watch: {

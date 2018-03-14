@@ -30,12 +30,6 @@
             The initial view of Largo shows a sidebar with all available label trees of the project or volume. When you select one of the labels, all annotations to which this label is attached will be shown in the grid. You can navigate the grid in the same way than the image grid of the <a href="{{route('manual-tutorials', ['volumes', 'volume-overview'])}}">volume overview</a>.
         </p>
 
-        <div class="panel panel-info">
-            <div class="panel-body text-info">
-                If an annotation has the same label attached multiple times (by different users) it may appear multiple times in the grid, too.
-            </div>
-        </div>
-
         <p class="text-center">
             <a href="{{asset('vendor/largo/images/manual/largo_3.png')}}"><img src="{{asset('vendor/largo/images/manual/largo_3.png')}}" width="100%"></a>
         </p>
@@ -62,8 +56,14 @@
             <a href="{{asset('vendor/largo/images/manual/largo_7.png')}}"><img src="{{asset('vendor/largo/images/manual/largo_7.png')}}" width="33%"></a>
         </p>
 
+        <div class="panel panel-info">
+            <div class="panel-body text-info">
+                To quickly dismiss or re-label consecutive annotations, press the <code>shift</code> key when you click on an annotation. This will dismiss/re-label all annotations between the current one and the last one you have selected.
+            </div>
+        </div>
+
         <p>
-            You can go <button class="btn btn-default btn-xs">Back</button> to the first step at any time. Your re-labeled annotations will not be forgotten. When you are finished re-labeling the annotations, click <button class="btn btn-success btn-xs">Save</button> in the sidebar. When a Largo session is saved one of three things can happen for each annotation:
+            You can go <button class="btn btn-default btn-xs">Back</button> to the first step at any time. Your re-labeled annotations will not be forgotten. When you are finished re-labeling the annotations, click <button class="btn btn-success btn-xs">Save</button> in the sidebar. When a Largo session is saved, one of three things can happen for each annotation:
         </p>
 
         <ul>
