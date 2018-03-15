@@ -12,4 +12,9 @@ return [
    */
    'admin_email' => env('ADMIN_EMAIL', ''),
 
+   /*
+   | Disable all features that require a working internet connection.
+   */
+   'offline_mode' => false,
+
 ];
