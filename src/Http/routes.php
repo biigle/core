@@ -72,9 +72,8 @@ $router->group([
         ]);
 
         $router->group(['prefix' => 'browser'], function ($router) {
-            $router->get('directories/{disk}', 'BrowserController@indexRoot');
-            $router->get('directories/{disk}/{path}', 'BrowserController@indexDirectories');
-            $router->get('images/{disk}/{path}', 'BrowserController@indexImages');
+            $router->get('directories/{disk}', 'BrowserController@indexDirectories');
+            $router->get('images/{disk}', 'BrowserController@indexImages');
         });
 
     });

@@ -4,6 +4,7 @@ namespace Biigle\Modules\Volumes\Http\Controllers\Api;
 
 use Storage;
 use Biigle\Volume;
+use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
 
 class BrowserController extends Controller
@@ -25,38 +26,9 @@ class BrowserController extends Controller
     }
 
     /**
-     * List root directories in a storage disk.
-     *
-     * @api {get} volumes/browser/directories/:disk List root directories in a storage disk
-     * @apiGroup Volumes
-     * @apiName VolumeBrowserIndexRoot
-     * @apiPermission user
-     *
-     * @apiParam {Number} disk Name of the storage disk to browse.
-     *
-     * @apiSuccessExample {json} Success response:
-     * [
-     *    'images_1',
-     *    'cruise_42',
-     *    'kitten'
-     * ]
-     *
-     * @param  string $disk
-     * @return \Illuminate\Http\Response
-     */
-    public function indexRoot($disk)
-    {
-        if (!$this->diskAccessible($disk)) {
-            abort(404);
-        }
-
-        return Storage::disk($disk)->directories();
-    }
-
-    /**
      * List directories in a storage disk.
      *
-     * @api {get} volumes/browser/directories/:disk/:path List directories in a storage disk
+     * @api {get} volumes/browser/directories/:disk List directories in a storage disk
      * @apiGroup Volumes
      * @apiName VolumeBrowserIndexDirectories
      * @apiPermission user
@@ -71,23 +43,30 @@ class BrowserController extends Controller
      *    'images_1_3',
      * ]
      *
+     * @param  Request $request
      * @param  string $disk
-     * @param  string $path
      * @return \Illuminate\Http\Response
      */
-    public function indexDirectories($disk, $path)
+    public function indexDirectories(Request $request, $disk)
     {
         if (!$this->diskAccessible($disk)) {
             abort(404);
         }
 
-        return $this->removePrefix($path, Storage::disk($disk)->directories($path));
+        if ($request->has('path')) {
+            $path = $request->input('path', '');
+            $directories = Storage::disk($disk)->directories($path);
+
+            return $this->removePrefix($path, $directories);
+        }
+
+        return Storage::disk($disk)->directories();
     }
 
     /**
      * List images in a storage disk.
      *
-     * @api {get} volumes/browser/images/:disk/:path List images in a storage disk
+     * @api {get} volumes/browser/images/:disk List images in a storage disk
      * @apiGroup Volumes
      * @apiName VolumeBrowserIndexImages
      * @apiPermission user
@@ -102,16 +81,16 @@ class BrowserController extends Controller
      *    'image_3.jpg',
      * ]
      *
+     * @param  Request $request
      * @param  string $disk
-     * @param  string $path
      * @return \Illuminate\Http\Response
      */
-    public function indexImages($disk, $path)
+    public function indexImages(Request $request, $disk)
     {
         if (!$this->diskAccessible($disk)) {
             abort(404);
         }
-
+        $path = $request->input('path', '');
         $files = Storage::disk($disk)->files($path);
 
         return $this->removePrefix($path, preg_grep(Volume::FILE_REGEX, $files));

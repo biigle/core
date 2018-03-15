@@ -19,7 +19,7 @@ class BrowserControllerTest extends ApiTestCase
         ]);
     }
 
-    public function testIndexRoot()
+    public function testIndexDirectoriesRoot()
     {
         Storage::disk('test')->makeDirectory('test_2');
 
@@ -41,18 +41,21 @@ class BrowserControllerTest extends ApiTestCase
     {
         Storage::disk('test')->makeDirectory('test_1/test_11');
 
-        $this->doTestApiRoute('GET', "/api/v1/volumes/browser/directories/test/test_1");
+        $this->doTestApiRoute('GET', "/api/v1/volumes/browser/directories/test", [
+            'path' => 'test_1',
+        ]);
 
         $this->beUser();
-        $this->get("/api/v1/volumes/browser/directories/test/test_1")->assertStatus(404);
+        $this->get("/api/v1/volumes/browser/directories/test?path=test_1")
+            ->assertStatus(404);
         config(['volumes.browser' => true]);
 
-        $this->get("/api/v1/volumes/browser/directories/local/test_1")
+        $this->get("/api/v1/volumes/browser/directories/local?path=test_1")
             ->assertStatus(404);
-        $this->get("/api/v1/volumes/browser/directories/missing/test_1")
+        $this->get("/api/v1/volumes/browser/directories/missing?path=test_1")
             ->assertStatus(404);
 
-        $this->get("/api/v1/volumes/browser/directories/test/test_1")
+        $this->get("/api/v1/volumes/browser/directories/test?path=test_1")
             ->assertStatus(200)
             ->assertExactJson(['test_11']);
     }
@@ -61,18 +64,21 @@ class BrowserControllerTest extends ApiTestCase
     {
         Storage::disk('test')->put('test_1/test.jpg', '');
 
-        $this->doTestApiRoute('GET', "/api/v1/volumes/browser/images/test/test_1");
+        $this->doTestApiRoute('GET', "/api/v1/volumes/browser/images/test", [
+            'path' => 'test_1',
+        ]);
 
         $this->beUser();
-        $this->get("/api/v1/volumes/browser/images/test/test_1")->assertStatus(404);
+        $this->get("/api/v1/volumes/browser/images/test?path=test_1")
+            ->assertStatus(404);
         config(['volumes.browser' => true]);
 
-        $this->get("/api/v1/volumes/browser/images/local/test_1")
+        $this->get("/api/v1/volumes/browser/images/local?path=test_1")
             ->assertStatus(404);
-        $this->get("/api/v1/volumes/browser/images/missing/test_1")
+        $this->get("/api/v1/volumes/browser/images/missing?path=test_1")
             ->assertStatus(404);
 
-        $this->get("/api/v1/volumes/browser/images/test/test_1")
+        $this->get("/api/v1/volumes/browser/images/test?path=test_1")
             ->assertStatus(200)
             ->assertExactJson(['test.jpg']);
     }
