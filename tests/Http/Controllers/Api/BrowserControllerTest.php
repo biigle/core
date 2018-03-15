@@ -7,16 +7,28 @@ use ApiTestCase;
 
 class BrowserControllerTest extends ApiTestCase
 {
-    public function testIndexRoot()
+    public function setUp()
     {
-        config(['volumes.browser_disks' => ['test', 'missing']]);
+        parent::setUp();
         Storage::fake('test');
         Storage::disk('test')->makeDirectory('test_1');
+        Storage::fake('local');
+        config([
+            'volumes.browser' => false,
+            'volumes.browser_disks' => ['test', 'missing'],
+        ]);
+    }
+
+    public function testIndexRoot()
+    {
         Storage::disk('test')->makeDirectory('test_2');
 
         $this->doTestApiRoute('GET', "/api/v1/volumes/browser/directories/test");
 
         $this->beUser();
+        $this->get("/api/v1/volumes/browser/directories/test")->assertStatus(404);
+        config(['volumes.browser' => true]);
+
         $this->get("/api/v1/volumes/browser/directories/local")->assertStatus(404);
         $this->get("/api/v1/volumes/browser/directories/missing")->assertStatus(404);
 
@@ -27,14 +39,14 @@ class BrowserControllerTest extends ApiTestCase
 
     public function testIndexDirectories()
     {
-        config(['volumes.browser_disks' => ['test', 'missing']]);
-        Storage::fake('test');
-        Storage::disk('test')->makeDirectory('test_1');
         Storage::disk('test')->makeDirectory('test_1/test_11');
 
         $this->doTestApiRoute('GET', "/api/v1/volumes/browser/directories/test/test_1");
 
         $this->beUser();
+        $this->get("/api/v1/volumes/browser/directories/test/test_1")->assertStatus(404);
+        config(['volumes.browser' => true]);
+
         $this->get("/api/v1/volumes/browser/directories/local/test_1")
             ->assertStatus(404);
         $this->get("/api/v1/volumes/browser/directories/missing/test_1")
@@ -47,14 +59,14 @@ class BrowserControllerTest extends ApiTestCase
 
     public function testIndexImages()
     {
-        config(['volumes.browser_disks' => ['test', 'missing']]);
-        Storage::fake('test');
-        Storage::disk('test')->makeDirectory('test_1');
         Storage::disk('test')->put('test_1/test.jpg', '');
 
         $this->doTestApiRoute('GET', "/api/v1/volumes/browser/images/test/test_1");
 
         $this->beUser();
+        $this->get("/api/v1/volumes/browser/images/test/test_1")->assertStatus(404);
+        config(['volumes.browser' => true]);
+
         $this->get("/api/v1/volumes/browser/images/local/test_1")
             ->assertStatus(404);
         $this->get("/api/v1/volumes/browser/images/missing/test_1")

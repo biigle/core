@@ -9,6 +9,22 @@ use Biigle\Http\Controllers\Api\Controller;
 class BrowserController extends Controller
 {
     /**
+     * Instantiate a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!config('volumes.browser')) {
+                abort(404);
+            }
+
+            return $next($request);
+        });
+    }
+
+    /**
      * List root directories in a storage disk.
      *
      * @api {get} volumes/browser/directories/:disk List root directories in a storage disk
