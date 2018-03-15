@@ -5,7 +5,7 @@ return [
     /*
     | Show the logfiles in the admin area.
     */
-   'admin-logs' => true,
+   'admin_logs' => true,
 
    /*
    | Email address of the admins of this BIIGLE instance.
