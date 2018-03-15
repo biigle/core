@@ -190,7 +190,7 @@ class Volume extends Model
      */
     public function validateUrl()
     {
-        if ($this->isRemote()) {
+        if ($this->isRemote() && !config('biigle.offline_mode')) {
             $client = App::make(Client::class);
             try {
                 $response = $client->head($this->url);
