@@ -29,7 +29,7 @@ class LogsControllerTest extends TestCase
 
     public function testIndexWhenDisabled()
     {
-        config(['biigle.admin-logs' => false]);
+        config(['biigle.admin_logs' => false]);
         // redirect to profile settings
         $admin = UserTest::create();
         $admin->role()->associate(Role::$admin);
