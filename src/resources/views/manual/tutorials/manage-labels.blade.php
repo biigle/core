@@ -27,7 +27,16 @@
             Once there is a label in the tree, you can (but don't have to) create child labels for it. To do this, select the label in the tree. Its name will appear in the label parent chooser. Alternatively you can enter the name of the parent label in the parent label chooser, too. This is particularly useful for large label trees. When you select a parent label, the selected color will automatically change to the one of the selected label. You can either re-use the same color for child labels or select a new color at this point. Finally, enter the name of the child label and hit enter.
         </p>
 
+
         <h3><a name="worms"></a>Import labels from WoRMS</h3>
+
+        @if (config('biigle.offline_mode'))
+            <div class="panel panel-danger">
+                <div class="panel-body text-danger">
+                    <strong>This BIIGLE instance is in offline mode.</strong> WoRMS label import is not available as it requires a working internet connection.
+                </div>
+            </div>
+        @endif
 
         <p class="text-center">
             <a href="{{asset('vendor/label-trees/images/manual/manage_labels_2.png')}}"><img src="{{asset('vendor/label-trees/images/manual/manage_labels_2.png')}}" width="90%"></a>
