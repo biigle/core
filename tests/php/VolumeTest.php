@@ -210,11 +210,23 @@ class VolumeTest extends ModelTestCase
             return $client;
         });
         $this->assertTrue($this->model->validateUrl());
-        $this->assertTrue($this->model->validateUrl());
 
         $request = $container[0]['request'];
         $this->assertEquals('HEAD', $request->getMethod());
         $this->assertEquals('http://localhost', (string) $request->getUri());
+    }
+
+    public function testValidateUrlRemoteOfflineMode()
+    {
+        config(['biigle.offline_mode' => true]);
+        $this->model->url = 'http://localhost';
+
+        try {
+            $this->model->validateUrl();
+            $this->assertTrue(false);
+        } catch (Exception $e) {
+            $this->assertContains("disk 'http' does not exist", $e->getMessage());
+        }
     }
 
     public function testValidateImagesFormatOk()
