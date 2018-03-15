@@ -6,6 +6,15 @@
         <p class="lead">
             With remote volumes you can use images from your own data source in BIIGLE.
         </p>
+
+        @if (config('biigle.offline_mode'))
+            <div class="panel panel-danger">
+                <div class="panel-body text-danger">
+                    <strong>This BIIGLE instance is in offline mode.</strong> Remote volumes cannot be created if BIIGLE has no working internet connection.
+                </div>
+            </div>
+        @endif
+
         <p>
             Typically the image files of volumes are loaded through a network filesystem or even stored on the same machine that runs the BIIGLE application. If you request an image (e.g. in the annotation tool), the application receives the request, loads the image from a storage disk and returns the image file in the response.
         </p>

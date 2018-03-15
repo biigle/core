@@ -19,17 +19,22 @@
             <label for="url">Volume url</label>
             <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required value="{{old('url')}}">
             <p class="help-block">
-               The directory containing the volume images. Can be a storage disk like <code>local://images/volume</code> or <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote</a> like <code>https://my-domain.tld/volume</code>.
+               The directory containing the volume images.
+               @unless (config('biigle.offline_mode'))
+                  Can be a storage disk like <code>local://images/volume</code> or <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote</a> like <code>https://my-domain.tld/volume</code>.
+               @endunless
             </p>
             @if($errors->has('url'))
                <span class="help-block">{{ $errors->first('url') }}</span>
             @endif
          </div>
-         <div class="panel panel-warning">
-            <div class="panel-body text-warning">
-                Please <a href="mailto:{{config('biigle.admin_email')}}">contact the admins</a> if you want to create a new volume that is not a remote volume.
+         @unless (config('biigle.offline_mode'))
+             <div class="panel panel-warning">
+                <div class="panel-body text-warning">
+                    Please <a href="mailto:{{config('biigle.admin_email')}}">contact the admins</a> if you want to create a new volume that is not a remote volume.
+                </div>
             </div>
-        </div>
+        @endunless
 
 
          <div class="row">
