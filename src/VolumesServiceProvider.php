@@ -61,6 +61,8 @@ class VolumesServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/config/volumes.php', 'volumes');
+
         $this->app->singleton('command.volumes.publish', function ($app) {
             return new \Biigle\Modules\Volumes\Console\Commands\Publish();
         });

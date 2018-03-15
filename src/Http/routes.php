@@ -32,42 +32,49 @@ $router->group([
 
 $router->group([
         'middleware' => 'auth:web,api',
-        'prefix' => 'api/v1',
+        'prefix' => 'api/v1/volumes',
         'namespace' => 'Api',
     ], function ($router) {
-        $router->get('volumes/{id}/images/order-by/filename', [
+        $router->get('{id}/images/order-by/filename', [
             'uses' => 'VolumeImageController@indexOrderByFilename',
         ]);
 
-        $router->get('volumes/{id}/images/filter/labels', [
+        $router->get('{id}/images/filter/labels', [
             'uses' => 'VolumeImageController@hasLabel',
         ]);
 
-        $router->get('volumes/{id}/images/filter/image-label-user/{id2}', [
+        $router->get('{id}/images/filter/image-label-user/{id2}', [
             'uses' => 'VolumeImageController@hasImageLabelUser',
         ]);
 
-        $router->get('volumes/{id}/images/filter/image-label/{id2}', [
+        $router->get('{id}/images/filter/image-label/{id2}', [
             'uses' => 'VolumeImageController@hasImageLabel',
         ]);
 
-        $router->get('volumes/{id}/images/filter/annotation-label/{id2}', [
+        $router->get('{id}/images/filter/annotation-label/{id2}', [
             'uses' => 'VolumeImageAnnotationLabelController@index',
         ]);
 
-        $router->get('volumes/{id}/images/filter/filename/{pattern}', [
+        $router->get('{id}/images/filter/filename/{pattern}', [
             'uses' => 'VolumeImageFilenameController@index',
         ]);
 
-        $router->get('volumes/{id}/image-labels', [
+        $router->get('{id}/image-labels', [
             'uses' => 'VolumeImageLabelController@index',
         ]);
 
-        $router->get('volumes/{id}/users', [
+        $router->get('{id}/users', [
             'uses' => 'VolumeUserController@index',
         ]);
 
-        $router->post('volumes/{id}/images/metadata', [
+        $router->post('{id}/images/metadata', [
             'uses' => 'VolumeImageMetadataController@store',
         ]);
+
+        $router->group(['prefix' => 'browser'], function ($router) {
+            $router->get('directories/{disk}', 'BrowserController@indexRoot');
+            $router->get('directories/{disk}/{path}', 'BrowserController@indexDirectories');
+            $router->get('images/{disk}/{path}', 'BrowserController@indexImages');
+        });
+
     });
