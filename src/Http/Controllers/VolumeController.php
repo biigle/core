@@ -26,9 +26,12 @@ class VolumeController extends Controller
         $project = Project::findOrFail($request->input('project'));
         $this->authorize('update', $project);
 
-        return view('volumes::create')
-            ->with('project', $project)
-            ->with('mediaTypes', MediaType::all());
+        return view('volumes::create', [
+            'project' => $project,
+            'mediaTypes' => MediaType::all(),
+            'hasBrowser' => config('volumes.browser'),
+            'disks' => config('volumes.browser_disks'),
+        ]);
     }
 
     /**

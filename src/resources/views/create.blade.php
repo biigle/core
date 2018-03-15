@@ -2,6 +2,21 @@
 
 @section('title', 'Create new volume')
 
+@push('scripts')
+   <script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
+   <script type="text/javascript">
+      biigle.$declare('volumes.url', '{!! old('url') !!}');
+      biigle.$declare('volumes.filenames', '{!! old('images') !!}');
+      @if ($hasBrowser)
+         biigle.$declare('volumes.disks', {!! json_encode($disks) !!});
+      @endif
+   </script>
+@endpush
+
+@push('styles')
+   <link href="{{ cachebust_asset('vendor/volumes/styles/main.css') }}" rel="stylesheet">
+@endpush
+
 @section('content')
 <div class="container">
    <div class="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
@@ -17,7 +32,16 @@
 
          <div class="form-group{{ $errors->has('url') ? ' has-error' : '' }}">
             <label for="url">Volume url</label>
-            <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required value="{{old('url')}}">
+            @if ($hasBrowser)
+               <div class="input-group">
+                  <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required v-model="url">
+                  <span class="input-group-btn">
+                     <button type="button" class="btn btn-default" v-bind:class="buttonClass" v-on:click="toggleBrowse" title="Open the volume directory browser">browse</button>
+                  </span>
+               </div>
+            @else
+               <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required v-model="url">
+            @endif
             <p class="help-block">
                The directory containing the volume images.
                @unless (config('biigle.offline_mode'))
@@ -28,14 +52,45 @@
                <span class="help-block">{{ $errors->first('url') }}</span>
             @endif
          </div>
+
+         @if ($hasBrowser)
+            <div class="row" v-if="browsing" v-cloak>
+               <div v-if="storageDisk" class="col-xs-12">
+                  <div class="form-group file-browser">
+                     <span class="file-browser__crumbs">
+                        <button v-on:click="goBack" type="button" class="btn btn-default btn-xs" title="Go back one directory" v-bind:disabled="!canGoBack"><i class="fa fa-chevron-left"></i></button>
+                        <a href="#" v-on:click="goTo(-1)">@{{storageDisk}}</a> :// <span v-for="(crumb, i) in breadCrumbs"><a href="#" v-on:click="goTo(i)" v-text="crumb"></a> / </span>
+                        <loader v-bind:active="loadingBrowser"></loader>
+                     </span>
+                     <div class="list-group file-browser__dirs">
+                        <a href="#" v-for="directory in currentDirectories" v-on:click="openDirectory(directory)" class="list-group-item" title="Open this directory">
+                           <button type="button" class="btn btn-default btn-xs pull-right" v-on:click.stop="selectDirectory(directory)" title="Select this directory for the new volume"><i class="fa fa-check"></i></button>
+                           @{{directory}}
+                        </a>
+                        <a v-if="!hasDirectories" href="#" class="list-group-item disabled">No directories</a>
+                     </div>
+                  </div>
+               </div>
+               <div v-else class="col-xs-12">
+                  <div class="form-group">
+                     <label>Storage disk</label>
+                     <select v-model="storageDisk" class="form-control">
+                        @foreach ($disks as $disk)
+                           <option value="{{$disk}}">{{$disk}}</option>
+                        @endforeach
+                     </select>
+                  </div>
+               </div>
+            </div>
+         @endif
+
          @unless (config('biigle.offline_mode'))
              <div class="panel panel-warning">
                 <div class="panel-body text-warning">
                     Please <a href="mailto:{{config('biigle.admin_email')}}">contact the admins</a> if you want to create a new volume that is not a remote volume.
                 </div>
             </div>
-        @endunless
-
+         @endunless
 
          <div class="row">
              <div class="form-group col-sm-6{{ $errors->has('media_type_id') ? ' has-error' : '' }}">
@@ -96,22 +151,3 @@
    </div>
 </div>
 @endsection
-
-@push('scripts')
-    <script type="text/javascript">
-        biigle.$viewModel('create-volume-form', function (element) {
-            new Vue({
-                el: element,
-                mixins: [biigle.$require('core.mixins.loader')],
-                data: {
-                    filenames: '{!! old('images') !!}',
-                },
-                computed: {
-                    showFilenameWarning: function () {
-                        return this.filenames.includes('.tif');
-                    },
-                },
-            });
-        });
-    </script>
-@endpush
