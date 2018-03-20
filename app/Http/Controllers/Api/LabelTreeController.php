@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Route;
 use Biigle\Role;
 use Biigle\Project;
+use Ramsey\Uuid\Uuid;
 use Biigle\LabelTree;
 use Biigle\Visibility;
 use Illuminate\Http\Request;
@@ -202,6 +203,7 @@ class LabelTreeController extends Controller
         $tree->name = $request->input('name');
         $tree->visibility_id = (int) $request->input('visibility_id');
         $tree->description = $request->input('description');
+        $tree->uuid = Uuid::uuid4();
         $tree->save();
 
         $tree->addMember($user, Role::$admin);

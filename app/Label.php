@@ -39,6 +39,15 @@ class Label extends Model
     ];
 
     /**
+     * The attributes hidden from the model's JSON form.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'uuid',
+    ];
+
+    /**
      * The attributes that should be casted to native types.
      *
      * @var array
