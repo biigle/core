@@ -6,12 +6,22 @@
 <h4>Create a new user</h4>
 <form class="clearfix" role="form" method="POST" action="{{ url('api/v1/users') }}">
 
-    <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-        <label for="email">Email</label>
-        <input type="email" class="form-control" name="email" id="email" value="{{ old('email') }}" required>
-        @if($errors->has('email'))
-            <span class="help-block">{{ $errors->first('email') }}</span>
-        @endif
+    <div class="row">
+        <div class=" col-sm-6 form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" name="email" id="email" value="{{ old('email') }}" required>
+            @if($errors->has('email'))
+                <span class="help-block">{{ $errors->first('email') }}</span>
+            @endif
+        </div>
+
+        <div class=" col-sm-6 form-group{{ $errors->has('uuid') ? ' has-error' : '' }}">
+            <label for="uuid">UUID <span class="text-muted">(leave blank to generate new one)</span></label>
+            <input type="text" class="form-control" name="uuid" id="uuid" value="{{ old('uuid') }}" required>
+            @if($errors->has('uuid'))
+                <span class="help-block">{{ $errors->first('uuid') }}</span>
+            @endif
+        </div>
     </div>
 
     <div class="row">
