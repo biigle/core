@@ -167,6 +167,7 @@ class WormsAdapterTest extends TestCase
         $this->assertEquals(1, $labels[0]->label_source_id);
         $this->assertEquals($label->id, $labels[0]->parent_id);
         $this->assertEquals($tree->id, $labels[0]->label_tree_id);
+        $this->assertNotNull($labels[0]->uuid);
     }
 
     public function testCreateParentRecursiveError()
@@ -264,6 +265,7 @@ class WormsAdapterTest extends TestCase
             'id' => $label->id + 1,
         ];
         $this->assertEquals($expect, $parent->toArray());
+        $this->assertNotNull($parent->uuid);
 
         $child = $tree->labels()->where('source_id', 124731)->first();
         $expect = [
@@ -276,5 +278,6 @@ class WormsAdapterTest extends TestCase
             'id' => $parent->id + 1,
         ];
         $this->assertEquals($expect, $child->toArray());
+        $this->assertNotNull($child->uuid);
     }
 }

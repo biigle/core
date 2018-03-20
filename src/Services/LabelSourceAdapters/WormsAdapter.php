@@ -4,6 +4,7 @@ namespace Biigle\Modules\LabelTrees\Services\LabelSourceAdapters;
 
 use SoapClient;
 use Biigle\Label;
+use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use Biigle\Contracts\LabelSourceAdapterContract;
 use Illuminate\Validation\ValidationException;
@@ -206,6 +207,7 @@ class WormsAdapter implements LabelSourceAdapterContract
         $label->source_id = (string) $attributes['source_id'];
         $label->label_source_id = $attributes['label_source_id'];
         $label->label_tree_id = $attributes['label_tree_id'];
+        $label->uuid = Uuid::uuid4();
         $label->save();
 
         return $label;
