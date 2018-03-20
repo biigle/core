@@ -4,6 +4,11 @@
 
 @section('settings-content')
 <?php $origin = session('origin'); ?>
+<div class="form-group">
+    <label>Your UUID</label>
+    <input class="form-control text-mono" type="text" name="uuid" readonly="true" value="{{$user->uuid}}" style="font-family:Menlo,Monaco,Consolas,'Courier New',monospace;">
+    <span class="help-block">The UUID is used to identify your user account across different BIIGLE instances.</span>
+</div>
 <div class="panel panel-default">
     <div class="panel-heading">Change password</div>
     <div class="panel-body">
@@ -87,7 +92,9 @@
     </div>
     <div class="panel-body">
         <p class="text-danger">
-            Deleting your account won't delete any of your projects, volumes or annotations etc. (they just won't be associated with you any more).<br>
+            Deleting your account will not delete any of your projects, volumes or annotations etc. They just will not be associated with you any more.
+        </p>
+        <p class="text-danger">
             <strong>Deleting your account cannot be undone!</strong>
         </p>
         <form role="form" method="POST" action="{{ url('api/v1/users/my') }}" onsubmit="return confirm('Do you really want to delete your account?')">
@@ -106,7 +113,7 @@
                 @if($errors->has('submit'))
                     <span class="help-block alert alert-danger">{{ $errors->first('submit') }}</span>
                 @endif
-                <input type="submit" class="btn btn-danger" id="delete-button" value="Delete your account">
+                <input type="submit" class="btn btn-danger" id="delete-button" value="Delete my account">
             </div>
         </form>
     </div>
