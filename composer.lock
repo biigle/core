@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "94253661c228f70f6d2a79400c4565d1",
+    "content-hash": "b0864d2a3a9709ece44625792bf72f21",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -290,6 +290,32 @@
                 "issues": "https://github.com/BiodataMiningGroup/biigle-projects/issues"
             },
             "time": "2018-01-22T11:24:58+00:00"
+        },
+        {
+            "name": "biigle/sync",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:BiodataMiningGroup/biigle-sync.git",
+                "reference": "e54aa721e31d7ec45a19bc8c6aa03ac362d0abca"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-sync/zipball/e54aa721e31d7ec45a19bc8c6aa03ac362d0abca",
+                "reference": "e54aa721e31d7ec45a19bc8c6aa03ac362d0abca",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Sync\\": "src"
+                }
+            },
+            "support": {
+                "source": "https://github.com/BiodataMiningGroup/biigle-sync/tree/v0.1.0",
+                "issues": "https://github.com/BiodataMiningGroup/biigle-sync/issues"
+            },
+            "time": "2018-03-20T14:05:07+00:00"
         },
         {
             "name": "biigle/volumes",
@@ -5196,6 +5222,7 @@
         "biigle/largo": 20,
         "biigle/laserpoints": 20,
         "biigle/projects": 20,
+        "biigle/sync": 20,
         "biigle/volumes": 20,
         "mockery/mockery": 20
     },
