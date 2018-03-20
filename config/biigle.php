@@ -17,4 +17,9 @@ return [
    */
    'offline_mode' => false,
 
+   /*
+   | Enable user registration. This allows everybody to create a new user account.
+   */
+   'user_registration' => false,
+
 ];
