@@ -1,0 +1,12 @@
+{
+    "name": "biigle/sync",
+    "require": {
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Biigle\\Modules\\Sync\\": "src"
+        }
+    }
+}
