@@ -25,6 +25,7 @@ $factory->define(Biigle\User::class, function ($faker) {
         'password' => '$2y$10$CD13uR2iKSZ2Eyuro5H4yu9sflwe/AA2GAJsdrzRyKnkV9qaz1FaK',
         'email' => $faker->email(),
         'remember_token' => 'abc',
+        'uuid' => $faker->uuid(),
     ];
 });
 
@@ -76,6 +77,7 @@ $factory->define(Biigle\Label::class, function ($faker) {
         'label_tree_id' => function () {
             return factory(Biigle\LabelTree::class)->create()->id;
         },
+        'uuid' => $faker->uuid(),
     ];
 });
 
@@ -134,6 +136,7 @@ $factory->define(Biigle\LabelTree::class, function ($faker) {
         'name' => $faker->username(),
         'description' => $faker->sentence(),
         'visibility_id' => Biigle\Visibility::$public->id,
+        'uuid' => $faker->uuid(),
     ];
 });
 
