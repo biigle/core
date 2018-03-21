@@ -55,10 +55,15 @@ class ReportReady extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
+        $message = (new MailMessage)
             ->subject('Your BIIGLE report is ready')
-            ->line("Your {$this->report->name} for {$this->report->subject} is ready for download!")
-            ->action('Download report', $this->report->getUrl());
+            ->line("Your {$this->report->name} for {$this->report->subject} is ready for download!");
+
+        if (config('app.url')) {
+            $message = $message->action('Download report', $this->report->getUrl());
+        }
+
+        return $message;
     }
 
     /**
@@ -69,11 +74,16 @@ class ReportReady extends Notification
      */
     public function toArray($notifiable)
     {
-        return [
+        $array = [
             'title' => 'Your BIIGLE report is ready',
             'message' => "Your {$this->report->name} for {$this->report->subject} is ready for download!",
-            'action' => 'Download report',
-            'actionLink' => $this->report->getUrl(),
         ];
+
+        if (config('app.url')) {
+            $array['action'] = 'Download report';
+            $array['actionLink'] = $this->report->getUrl();
+        }
+
+        return $array;
     }
 }
