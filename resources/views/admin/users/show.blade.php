@@ -7,6 +7,9 @@
     <span class="pull-right label label-{{$roleClass}}">{{ucfirst($shownUser->role->name)}}</span>
     {{$shownUser->firstname}} {{$shownUser->lastname}} <small>{{$shownUser->email}}</small>
 </h2>
+<p class="col-xs-12">
+    UUID: <code>{{$shownUser->uuid}}</code>
+</p>
 <p class="col-xs-12 text-muted">
     @if ($shownUser->login_at)
         <span title="{{$shownUser->login_at}}">active {{$shownUser->login_at->diffForHumans()}}</span>
