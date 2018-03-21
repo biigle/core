@@ -33,6 +33,16 @@ biigle.$viewModel('create-volume-form', function (element) {
             canGoBack: function () {
                 return this.breadCrumbs.length > 0 || disks.length > 1;
             },
+            hasCurrentDirectory: function () {
+                return this.breadCrumbs.length > 0;
+            },
+            currentDirectory: function () {
+                if (this.hasCurrentDirectory) {
+                    return this.breadCrumbs[this.breadCrumbs.length - 1];
+                }
+
+                return null;
+            },
         },
         methods: {
             toggleBrowse: function () {
@@ -89,7 +99,9 @@ biigle.$viewModel('create-volume-form', function (element) {
             },
             selectDirectory: function (directory) {
                 var crumbs = this.breadCrumbs.slice();
-                crumbs.push(directory);
+                if (directory) {
+                    crumbs.push(directory);
+                }
                 this.fetchImages(this.storageDisk, crumbs.join('/'))
                     .then(this.setImages)
                     .then(function () {

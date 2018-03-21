@@ -64,10 +64,13 @@
                      </span>
                      <div class="list-group file-browser__dirs">
                         <a href="#" v-for="directory in currentDirectories" v-on:click="openDirectory(directory)" class="list-group-item" title="Open this directory">
-                           <button type="button" class="btn btn-default btn-xs pull-right" v-on:click.stop="selectDirectory(directory)" title="Select this directory for the new volume"><i class="fa fa-check"></i></button>
+                           <button type="button" class="btn btn-default btn-xs pull-right" v-on:click.stop="selectDirectory(directory)" v-bind:title="'Select '+directory+' for the new volume'"><i class="fa fa-check"></i></button>
                            @{{directory}}
                         </a>
-                        <a v-if="!hasDirectories" href="#" class="list-group-item disabled">No directories</a>
+                        <a v-if="!hasDirectories" href="#" class="list-group-item disabled">
+                            <button v-if="hasCurrentDirectory" type="button" class="btn btn-default btn-xs pull-right" v-on:click.stop="selectDirectory()" v-bind:title="'Select '+currentDirectory+' for the new volume'"><i class="fa fa-check"></i></button>
+                            No directories
+                        </a>
                      </div>
                   </div>
                </div>
