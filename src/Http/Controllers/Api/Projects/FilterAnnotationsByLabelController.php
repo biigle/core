@@ -19,7 +19,7 @@ class FilterAnnotationsByLabelController extends Controller
      * @apiParam {Number} lit The Label ID
      * @apiParam (Optional arguments) {Number} take Number of annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited and unordered.
      * @apiPermission projectMember
-     * @apiDescription Returns a list of annotation IDs
+     * @apiDescription Returns a list of annotation IDs. The annotations are ordered by newest to oldest.
      *
      * @param Request $request
      * @param  int  $pid Project ID
@@ -42,11 +42,11 @@ class FilterAnnotationsByLabelController extends Controller
             })
             ->where('annotation_labels.label_id', $lid)
             ->when(!is_null($take), function ($query) use ($take) {
-                return $query->orderBy('annotations.created_at', 'desc')
-                    ->take($take);
+                return $query->take($take);
             })
-            ->select('annotations.id', 'annotations.created_at')
+            ->select('annotations.id')
             ->distinct()
+            ->orderBy('annotations.id', 'desc')
             ->pluck('annotations.id');
     }
 }

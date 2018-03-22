@@ -20,7 +20,7 @@ class FilterAnnotationsByLabelController extends Controller
      * @apiParam {Number} lid The Label ID
      * @apiParam (Optional arguments) {Number} take Number of annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited and unordered.
      * @apiPermission projectMember
-     * @apiDescription Returns a list of annotation IDs. If there is an active annotation session, images with annotations hidden by the session are not returned.
+     * @apiDescription Returns a list of annotation IDs. If there is an active annotation session, annotations hidden by the session are not returned. The annotations are ordered by newest to oldest.
      *
      * @param Request $request
      * @param Guard $auth
@@ -49,11 +49,11 @@ class FilterAnnotationsByLabelController extends Controller
             ->where('images.volume_id', $vid)
             ->where('annotation_labels.label_id', $lid)
             ->when(!is_null($take), function ($query) use ($take) {
-                return $query->orderBy('annotations.created_at', 'desc')
-                    ->take($take);
+                return $query->take($take);
             })
-            ->select('annotations.id', 'annotations.created_at')
+            ->select('annotations.id')
             ->distinct()
+            ->orderBy('annotations.id', 'desc')
             ->pluck('annotations.id');
     }
 }

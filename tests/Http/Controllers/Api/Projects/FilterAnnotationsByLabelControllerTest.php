@@ -38,7 +38,7 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
 
         $response = $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}");
         $response->assertStatus(200);
-        $response->assertExactJson([$a1->id, $a2->id]);
+        $response->assertExactJson([$a2->id, $a1->id]);
 
         $response = $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l3->label_id}");
         $response->assertStatus(200);
@@ -46,7 +46,7 @@ class FilterAnnotationsByLabelControllerTest extends ApiTestCase
 
         $response = $this->get("/api/v1/projects/{$id}/annotations/filter/label/{$l1->label_id}?take=1");
         $response->assertStatus(200);
-        $response->assertExactJson([$a1->id]);
+        $response->assertExactJson([$a2->id]);
     }
 
     public function testIndexDuplicate()
