@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Reports\Http\Controllers\Mixins\Views;
+namespace Biigle\Tests\Modules\Export\Http\Controllers\Mixins\Views;
 
 use TestCase;
 use Biigle\Volume;
@@ -38,11 +38,13 @@ class SearchControllerMixinTest extends TestCase
 
     public function testIndexDeleted()
     {
-        $r1 = ReportTest::create();
-        $name= $r1->source->name;
+        $r1 = ReportTest::create([
+            'source_id' => VolumeTest::create(['name' => 'my volume']),
+            'source_type' => Volume::class,
+        ]);
         $r1->source()->delete();
 
         $this->be($r1->user);
-        $this->get('search?t=reports')->assertSeeText($name);
+        $this->get('search?t=reports')->assertSeeText('my volume');
     }
 }

@@ -11,6 +11,7 @@ biigle.$viewModel('export-volume-report-form', function (element) {
             allowedOptions: {
                 'Annotations': [
                     'export_area',
+                    'newest_label',
                     'separate_label_trees',
                     'annotation_session_id',
                 ],

@@ -83,6 +83,17 @@
                     <div class="col-sm-5 help-block" v-if="options.export_area" v-cloak>
                         Annotations that are outside of the export area will be discarded for this report.
                     </div>
+                    <div class="col-sm-7" :class="{'has-error': errors.newest_label}">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" v-model="options.newest_label"> Restrict to newest label
+                            </label>
+                        </div>
+                        <div v-if="errors.newest_label" v-cloak class="help-block" v-text="getError('newest_label')"></div>
+                    </div>
+                    <div class="col-sm-5 help-block" v-if="options.newest_label" v-cloak>
+                        Only the newest label of each annotation will be included in the report.
+                    </div>
                 </div>
                 <div class="row form-group">
                     <div class="col-sm-7" :class="{'has-error': errors.separate_label_trees}">

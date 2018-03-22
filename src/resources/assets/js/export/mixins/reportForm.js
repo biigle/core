@@ -26,6 +26,7 @@ biigle.$component('export.mixins.reportForm', {
         errors: {},
         options: {
             export_area: false,
+            newest_label: false,
             separate_label_trees: false,
         },
     },

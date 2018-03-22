@@ -54,11 +54,13 @@ abstract class ReportController extends Controller
         $this->validate($request, [
             'separate_label_trees' => 'nullable|boolean',
             'export_area' => 'nullable|boolean',
+            'newest_label' => 'nullable|boolean',
         ]);
 
         return [
             'separateLabelTrees' => (bool) $request->input('separate_label_trees', false),
             'exportArea' => (bool) $request->input('export_area', false),
+            'newestLabel' => (bool) $request->input('newest_label', false),
         ];
     }
 

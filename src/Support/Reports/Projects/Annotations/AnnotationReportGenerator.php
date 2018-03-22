@@ -13,8 +13,20 @@ class AnnotationReportGenerator extends ProjectReportGenerator
      */
     public function getName()
     {
+        $restrictions = [];
+
         if ($this->isRestrictedToExportArea()) {
-            return "{$this->name} (restricted to export area)";
+            $restrictions[] = 'export area';
+        }
+
+        if ($this->isRestrictedToNewestLabel()) {
+            $restrictions[] = 'newest label for each annotation';
+        }
+
+        if (!empty($restrictions)) {
+            $suffix = implode(' and ', $restrictions);
+
+            return "{$this->name} (restricted to {$suffix})";
         }
 
         return $this->name;
@@ -27,8 +39,20 @@ class AnnotationReportGenerator extends ProjectReportGenerator
      */
     public function getFilename()
     {
+        $restrictions = [];
+
         if ($this->isRestrictedToExportArea()) {
-            return "{$this->filename}_restricted_to_export_area";
+            $restrictions[] = 'export_area';
+        }
+
+        if ($this->isRestrictedToNewestLabel()) {
+            $restrictions[] = 'newest_label';
+        }
+
+        if (!empty($restrictions)) {
+            $suffix = implode('_', $restrictions);
+
+            return "{$this->filename}_restricted_to_{$suffix}";
         }
 
         return $this->filename;
@@ -42,5 +66,15 @@ class AnnotationReportGenerator extends ProjectReportGenerator
     protected function isRestrictedToExportArea()
     {
         return $this->options->get('exportArea', false);
+    }
+
+    /**
+     * Determines if this report should take only the newest label for each annotation.
+     *
+     * @return bool
+     */
+    protected function isRestrictedToNewestLabel()
+    {
+        return $this->options->get('newestLabel', false);
     }
 }

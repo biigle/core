@@ -101,12 +101,22 @@ class AnnotationReportGeneratorTest extends TestCase
         $this->assertContains('restricted_to_annotation_session', $generator->getFilename());
 
         $generator = new AnnotationReportGenerator([
+            'newestLabel' => true,
+        ]);
+
+        $this->assertContains('restricted to newest label of each annotation', $generator->getName());
+        $this->assertContains('restricted_to_newest_label', $generator->getFilename());
+
+        $generator = new AnnotationReportGenerator([
             'exportArea' => true,
+            'newestLabel' => true,
             'annotationSession' => $session->id,
         ]);
 
         $this->assertContains('export area', $generator->getName());
         $this->assertContains('export_area', $generator->getFilename());
+        $this->assertContains('newest label', $generator->getName());
+        $this->assertContains('newest_label', $generator->getFilename());
         $this->assertContains('annotation session', $generator->getName());
         $this->assertContains($session->name, $generator->getName());
         $this->assertContains('annotation_session', $generator->getFilename());
@@ -162,5 +172,36 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $this->assertEquals(1, count($results));
         $this->assertEquals($al2->id, $results[0]->id);
+    }
+
+    public function testRestrictToNewestLabelQuery()
+    {
+        $a = AnnotationTest::create();
+
+        $al1 = AnnotationLabelTest::create([
+            'created_at' => '2016-10-05 09:15:00',
+            'annotation_id' => $a->id,
+        ]);
+
+        // Even if there are two labels created in the same second, we only want the
+        // newest one (as determined by the ID).
+        $al2 = AnnotationLabelTest::create([
+            'created_at' => '2016-10-05 09:16:00',
+            'annotation_id' => $a->id,
+        ]);
+
+        $al3 = AnnotationLabelTest::create([
+            'created_at' => '2016-10-05 09:16:00',
+            'annotation_id' => $a->id,
+        ]);
+
+        $generator = new AnnotationReportGenerator([
+            'newestLabel' => true,
+        ]);
+        $generator->setSource($a->image->volume);
+        $results = AnnotationLabel::when(true, [$generator, 'restrictToNewestLabelQuery'])->get();
+
+        $this->assertEquals(1, count($results));
+        $this->assertEquals($al3->id, $results[0]->id);
     }
 }

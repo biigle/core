@@ -35,10 +35,12 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->assertEquals($typeId, $report->type_id);
         $this->assertEquals($projectId, $report->source_id);
         $this->assertEquals(false, $report->options['exportArea']);
+        $this->assertEquals(false, $report->options['newestLabel']);
 
         $response = $this->json('POST', "api/v1/projects/{$projectId}/reports", [
                 'type_id' => $typeId,
                 'export_area' => true,
+                'newest_label' => true,
             ])
             ->assertStatus(200);
 
@@ -48,5 +50,6 @@ class ProjectReportControllerTest extends ApiTestCase
         $this->assertEquals($typeId, $report->type_id);
         $this->assertEquals($projectId, $report->source_id);
         $this->assertEquals(true, $report->options['exportArea']);
+        $this->assertEquals(true, $report->options['newestLabel']);
     }
 }

@@ -11,6 +11,7 @@ biigle.$viewModel('export-project-report-form', function (element) {
             allowedOptions: {
                 'Annotations': [
                     'export_area',
+                    'newest_label',
                     'separate_label_trees'
                 ],
                 'ImageLabels': [

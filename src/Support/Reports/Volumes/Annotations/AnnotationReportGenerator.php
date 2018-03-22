@@ -24,17 +24,25 @@ class AnnotationReportGenerator extends VolumeReportGenerator
      */
     public function getName()
     {
-        if ($this->isRestrictedToExportArea() && $this->isRestrictedToAnnotationSession()) {
+        $restrictions = [];
+
+        if ($this->isRestrictedToExportArea()) {
+            $restrictions[] = 'export area';
+        }
+
+        if ($this->isRestrictedToAnnotationSession()) {
             $name = $this->getAnnotationSessionName();
+            $restrictions[] = "annotation session {$name}";
+        }
 
-            return "{$this->name} (restricted to export area and annotation session {$name})";
-        } elseif ($this->isRestrictedToExportArea()) {
+        if ($this->isRestrictedToNewestLabel()) {
+            $restrictions[] = 'newest label of each annotation';
+        }
 
-            return "{$this->name} (restricted to export area)";
-        } elseif ($this->isRestrictedToAnnotationSession()) {
-            $name = $this->getAnnotationSessionName();
+        if (!empty($restrictions)) {
+            $suffix = implode(', ', $restrictions);
 
-            return "{$this->name} (restricted to annotation session {$name})";
+            return "{$this->name} (restricted to {$suffix})";
         }
 
         return $this->name;
@@ -47,19 +55,25 @@ class AnnotationReportGenerator extends VolumeReportGenerator
      */
     public function getFilename()
     {
-        if ($this->hasRestriction()) {
-            $suffix = '_restricted_to';
+        $restrictions = [];
 
-            if ($this->isRestrictedToExportArea()) {
-                $suffix .= '_export_area';
-            }
+        if ($this->isRestrictedToExportArea()) {
+            $restrictions[] = 'export_area';
+        }
 
-            if ($this->isRestrictedToAnnotationSession()) {
-                $name = Str::slug($this->getAnnotationSessionName());
-                $suffix .= "_annotation_session_{$name}";
-            }
+        if ($this->isRestrictedToAnnotationSession()) {
+            $name = Str::slug($this->getAnnotationSessionName());
+            $restrictions[] = "annotation_session_{$name}";
+        }
 
-            return "{$this->filename}{$suffix}";
+        if ($this->isRestrictedToNewestLabel()) {
+            $restrictions[] = 'newest_label';
+        }
+
+        if (!empty($restrictions)) {
+            $suffix = implode('_', $restrictions);
+
+            return "{$this->filename}_restricted_to_{$suffix}";
         }
 
         return $this->filename;
@@ -96,6 +110,28 @@ class AnnotationReportGenerator extends VolumeReportGenerator
                         ->from('annotation_session_user')
                         ->where('annotation_session_id', $session->id);
                 });
+        });
+    }
+
+    /**
+     * Callback to be used in a `when` query statement that restricts the results to the newest annotation labels of each annotation.
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function restrictToNewestLabelQuery($query)
+    {
+        // This is a quite inefficient query. Here is why:
+        // We could use "select distinct on" directly on the query but this would be
+        // overridden by the subsequent select() in self::initQuery(). If we would add
+        // the "select distinct on" **after** the select(), we would get invalid syntax:
+        // "select *, distinct on".
+        return $query->whereIn('annotation_labels.id', function ($query) {
+            return $query->selectRaw('distinct on (annotation_id) id')
+                ->from('annotation_labels')
+                ->orderBy('annotation_id', 'desc')
+                ->orderBy('id', 'desc')
+                ->orderBy('created_at', 'desc');
         });
     }
 
@@ -184,6 +220,7 @@ class AnnotationReportGenerator extends VolumeReportGenerator
             ->where('images.volume_id', $this->source->id)
             ->when($this->isRestrictedToExportArea(), [$this, 'restrictToExportAreaQuery'])
             ->when($this->isRestrictedToAnnotationSession(), [$this, 'restrictToAnnotationSessionQuery'])
+            ->when($this->isRestrictedToNewestLabel(), [$this, 'restrictToNewestLabelQuery'])
             ->select($columns);
 
         if ($this->shouldSeparateLabelTrees()) {
@@ -191,16 +228,6 @@ class AnnotationReportGenerator extends VolumeReportGenerator
         }
 
         return $query;
-    }
-
-    /**
-     * Is this report restricted in any way?
-     *
-     * @return bool
-     */
-    protected function hasRestriction()
-    {
-        return $this->isRestrictedToExportArea() || $this->isRestrictedToAnnotationSession();
     }
 
     /**
@@ -235,5 +262,15 @@ class AnnotationReportGenerator extends VolumeReportGenerator
         }
 
         return $this->annotationSession;
+    }
+
+    /**
+     * Determines if this report should take only the newest label of each annotation.
+     *
+     * @return bool
+     */
+    protected function isRestrictedToNewestLabel()
+    {
+        return $this->options->get('newestLabel', false);
     }
 }

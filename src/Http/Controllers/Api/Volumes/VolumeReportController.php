@@ -18,6 +18,7 @@ class VolumeReportController extends ReportController
      * @apiParam (Required arguments) {Number} type_id The report type ID.
      *
      * @apiParam (Optional arguments) {Boolean} export_area If `true`, restrict the report to the export area of the volume.
+     * @apiParam (Optional arguments) {Boolean} newest_label If `true`, restrict the report to the newest label of each annotation.
      * @apiParam (Optional arguments) {Boolean} separate_label_trees If `true`, separate annotations with labels of different label trees to different sheets of the spreadsheet.
      * @apiParam (Optional arguments) {Number} annotation_session_id ID of an annotation session of the volume. If given, only annotations belonging to the annotation session are included in the report.
      *
