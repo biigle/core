@@ -25,12 +25,12 @@ class SyncServiceProvider extends ServiceProvider
         //     __DIR__.'/public/assets' => public_path('vendor/sync'),
         // ], 'public');
 
-        // $router->group([
-        //     'namespace' => 'Biigle\Modules\Sync\Http\Controllers',
-        //     'middleware' => 'web',
-        // ], function ($router) {
-        //     require __DIR__.'/Http/routes.php';
-        // });
+        $router->group([
+            'namespace' => 'Biigle\Modules\Sync\Http\Controllers',
+            'middleware' => 'web',
+        ], function ($router) {
+            require __DIR__.'/Http/routes.php';
+        });
 
         $modules->register('sync', [
             'viewMixins' => [
@@ -46,8 +46,10 @@ class SyncServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/config/sync.php', 'sync');
+
         $this->app->singleton('command.sync.publish', function ($app) {
-            return new \Biigle\Modules\Sync\Console\Commands\Publish();
+            return new \Biigle\Modules\Sync\Console\Commands\Publish;
         });
 
         $this->commands('command.sync.publish');
