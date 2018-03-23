@@ -29,13 +29,15 @@ class UserExportController extends Controller
             'only' => 'filled',
         ]);
 
+        $query = User::getQuery();
+
         if ($request->has('except')) {
-            $ids = User::whereNotIn('id', explode(',', $request->input('except')))->pluck('id');
-        } elseif ($request->has('except')) {
-            $ids = User::whereIn('id', explode(',', $request->input('only')))->pluck('id');
-        } else {
-            $ids = User::pluck('id');
+            $query = $query->whereNotIn('id', explode(',', $request->input('except')));
+        } elseif ($request->has('only')) {
+            $query = $query->whereIn('id', explode(',', $request->input('only')));
         }
+
+        $ids = $query->pluck('id');
 
         $export = new UserExport($ids);
 
