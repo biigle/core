@@ -172,6 +172,8 @@ biigle.$declare('largo.mixins.largoContainer', {
                 return;
             }
 
+            this.startLoading();
+
             this.performSave(this.dismissedToSave, this.changedToSave)
                 .then(this.saved, biigle.$require('messages.store').handleErrorResponse)
                 .finally(this.finishLoading);
