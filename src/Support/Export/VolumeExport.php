@@ -20,7 +20,7 @@ class VolumeExport extends Export
 
         // Use DB helper instead of model to save memory.
         $annotations = DB::table('annotations')
-            ->join('images', 'image_id', '=', 'annotations.image_id')
+            ->join('images', 'images.id', '=', 'annotations.image_id')
             ->whereIn('images.volume_id', $this->ids)
             ->select(
                 'images.volume_id',
@@ -99,7 +99,6 @@ class VolumeExport extends Export
      */
     public function getAdditionalExports()
     {
-
         $labelTreeIds = DB::table('labels')
             ->join('annotation_labels', 'annotation_labels.label_id', '=', 'labels.id')
             ->join('annotations', 'annotations.id', '=', 'annotation_labels.annotation_id')
