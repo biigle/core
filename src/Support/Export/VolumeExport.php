@@ -3,7 +3,6 @@
 namespace Biigle\Modules\Sync\Support\Export;
 
 use DB;
-use Biigle\Volume;
 
 class VolumeExport extends Export
 {
@@ -12,76 +11,19 @@ class VolumeExport extends Export
      */
     public function getContent()
     {
-        $volumes = Volume::whereIn('id', $this->ids)
-            ->with(['images' => function ($query) {
-                $query->select('id', 'filename', 'volume_id');
-            }])
-            ->get();
-
-        // Use DB helper instead of model to save memory.
-        $annotations = DB::table('annotations')
-            ->join('images', 'images.id', '=', 'annotations.image_id')
-            ->whereIn('images.volume_id', $this->ids)
-            ->select(
-                'images.volume_id',
-                'annotations.image_id',
-                'annotations.shape_id',
-                'annotations.created_at',
-                'annotations.updated_at',
-                'annotations.points'
-            )
+        $volumes = DB::table('volumes')
+            ->whereIn('id', $this->ids)
+            ->select([
+                'id',
+                'name',
+                'media_type_id',
+                'url',
+                'attrs',
+            ])
             ->get()
-            ->groupBy('volume_id')
-            ->map(function ($group) {
-                return $group->map(function ($annotation) {
-                    unset($annotation->volume_id);
-                    return (array) $annotation;
-                });
-            })
-            ->toArray();
-
-        $annotationLabels = DB::table('annotation_labels')
-            ->join('annotations', 'annotations.id', '=', 'annotation_labels.annotation_id')
-            ->join('images', 'images.id', '=', 'annotations.image_id')
-            ->whereIn('images.volume_id', $this->ids)
-            ->select(
-                'images.volume_id',
-                'annotation_labels.annotation_id',
-                'annotation_labels.label_id',
-                'annotation_labels.user_id',
-                'annotation_labels.confidence',
-                'annotation_labels.created_at',
-                'annotation_labels.updated_at'
-            )
-            ->get()
-            ->groupBy('volume_id')
-            ->map(function ($group) {
-                return $group->map(function ($label) {
-                    unset($label->volume_id);
-                    return (array) $label;
-                });
-            })
-            ->toArray();
-
-        $volumes->each(function ($volume) use ($annotations, $annotationLabels) {
-            $volume->makeHidden(['creator_id', 'created_at', 'updated_at']);
-
-            if (array_key_exists($volume->id, $annotations)) {
-                $volume->annotations = $annotations[$volume->id];
-            } else {
-                $volume->annotations = [];
-            }
-
-            if (array_key_exists($volume->id, $annotationLabels)) {
-                $volume->annotationLabels = $annotationLabels[$volume->id];
-            } else {
-                $volume->annotationLabels = [];
-            }
-
-            $volume->images->each(function ($image) {
-                $image->makeHidden('volume_id');
+            ->map(function ($volume) {
+                return (array) $volume;
             });
-        });
 
         return $volumes->toArray();
     }
@@ -124,6 +66,16 @@ class VolumeExport extends Export
             ->toArray();
         $userExport->addIds($userIds);
 
-        return [$userExport, $labelTreeExport];
+        $imageExport = new ImageExport($this->ids);
+        $annotationExport = new AnnotationExport($this->ids);
+        $annotationLabelExport = new AnnotationLabelExport($this->ids);
+
+        return [
+            $userExport,
+            $labelTreeExport,
+            $imageExport,
+            $annotationExport,
+            $annotationLabelExport,
+        ];
     }
 }

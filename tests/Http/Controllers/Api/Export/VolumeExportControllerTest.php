@@ -27,8 +27,10 @@ class VolumeExportControllerTest extends ApiTestCase
         $zip->open($response->getFile()->getRealPath());
         $contents = collect(json_decode($zip->getFromName('volumes.json')));
         $this->assertEquals($volume->id, $contents->pluck('id')[0]);
-        $this->assertNotNull($zip->getFromName('users.json'));
-        $this->assertNotNull($zip->getFromName('label_trees.json'));
+        $this->assertNotFalse($zip->getFromName('users.json'));
+        $this->assertNotFalse($zip->getFromName('label_trees.json'));
+        $this->assertNotFalse($zip->getFromName('annotations.csv'));
+        $this->assertNotFalse($zip->getFromName('annotation_labels.csv'));
     }
 
     public function testShowExcept()
