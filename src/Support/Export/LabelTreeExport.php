@@ -2,27 +2,11 @@
 
 namespace Biigle\Modules\Sync\Support\Export;
 
+use DB;
 use Biigle\LabelTree;
 
 class LabelTreeExport extends Export
 {
-    /**
-     * IDs of the label trees of this export.
-     *
-     * @var array
-     */
-    protected $ids;
-
-    /**
-     * Create a new instance.
-     *
-     * @param array $ids Label tree IDs
-     */
-    function __construct($ids)
-    {
-        $this->ids = $ids;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -36,7 +20,7 @@ class LabelTreeExport extends Export
             ->get();
 
         $trees->each(function ($tree) {
-            $tree->makeVisible(['uuid']);
+            $tree->makeVisible('uuid');
             // All imported trees should become private by default.
             $tree->makeHidden(['visibility_id', 'created_at', 'updated_at']);
 
@@ -46,13 +30,7 @@ class LabelTreeExport extends Export
             });
         });
 
-        $ids = $trees->pluck('members')->flatten()->pluck('id')->unique();
-        $users = (new UserExport($ids))->getContent();
-
-        return [
-            'users' => $users,
-            'label-trees' => $trees->toArray(),
-        ];
+        return $trees->toArray();
     }
 
     /**
@@ -60,6 +38,21 @@ class LabelTreeExport extends Export
      */
     public function getFileName()
     {
-        return 'label-trees.json';
+        return 'label_trees.json';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAdditionalExports()
+    {
+        $ids = DB::table('label_tree_user')
+            ->whereIn('label_tree_id', $this->ids)
+            ->select('user_id')
+            ->distinct()
+            ->pluck('user_id')
+            ->toArray();
+
+        return [new UserExport($ids)];
     }
 }

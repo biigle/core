@@ -11,7 +11,7 @@ class ExportTest extends TestCase
 {
     public function testGetArchive()
     {
-        $export = new ExportStub;
+        $export = new ExportStub([]);
         $path = $export->getArchive();
         try {
             $zip = new ZipArchive;

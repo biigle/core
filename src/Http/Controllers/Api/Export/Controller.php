@@ -24,7 +24,7 @@ class Controller extends BaseController
             $query = $query->whereIn('id', explode(',', $request->input('only')));
         }
 
-        $export = $this->getExport($query->pluck('id'));
+        $export = $this->getExport($query->pluck('id')->toArray());
 
         return response()
             ->download($export->getArchive(), $this->getExportFilename())
@@ -47,7 +47,7 @@ class Controller extends BaseController
      * @param array $ids
      * @return Biigle\Modules\Sync\Support\Export
      */
-    protected function getExport($ids)
+    protected function getExport(array $ids)
     {
         return null;
     }

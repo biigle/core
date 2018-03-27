@@ -29,7 +29,7 @@ class UserExportController extends Controller
     /**
      * {@inheritdoc}
      */
-    protected function getExport($ids)
+    protected function getExport(array $ids)
     {
         return new UserExport($ids);
     }

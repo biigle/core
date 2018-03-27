@@ -5,7 +5,6 @@ namespace Biigle\Tests\Modules\Sync\Http\Controllers\Api\Export;
 use ZipArchive;
 use Biigle\User;
 use ApiTestCase;
-use Biigle\Tests\UserTest;
 use Biigle\Tests\LabelTreeTest;
 
 class LabelTreeExportControllerTest extends ApiTestCase
@@ -26,10 +25,9 @@ class LabelTreeExportControllerTest extends ApiTestCase
 
         $zip = new ZipArchive;
         $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('label-trees.json')));
-        $this->assertTrue($contents->has('users'));
-        $this->assertTrue($contents->has('label-trees'));
-        $this->assertEquals($tree->id, $contents['label-trees'][0]->id);
+        $contents = collect(json_decode($zip->getFromName('label_trees.json')));
+        $this->assertEquals($tree->id, $contents->pluck('id')[0]);
+        $this->assertNotNull($zip->getFromName('users.json'));
     }
 
     public function testShowExcept()
@@ -42,8 +40,8 @@ class LabelTreeExportControllerTest extends ApiTestCase
 
         $zip = new ZipArchive;
         $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('label-trees.json')));
-        $this->assertEquals($tree2->id, $contents['label-trees'][0]->id);
+        $contents = collect(json_decode($zip->getFromName('label_trees.json')));
+        $this->assertEquals($tree2->id, $contents->pluck('id')[0]);
     }
 
     public function testShowOnly()
@@ -56,7 +54,7 @@ class LabelTreeExportControllerTest extends ApiTestCase
 
         $zip = new ZipArchive;
         $zip->open($response->getFile()->getRealPath());
-        $contents = collect(json_decode($zip->getFromName('label-trees.json')));
-        $this->assertEquals($tree1->id, $contents['label-trees'][0]->id);
+        $contents = collect(json_decode($zip->getFromName('label_trees.json')));
+        $this->assertEquals($tree1->id, $contents->pluck('id')[0]);
     }
 }

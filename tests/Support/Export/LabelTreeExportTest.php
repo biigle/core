@@ -6,6 +6,7 @@ use TestCase;
 use Biigle\Role;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\LabelTest;
+use Biigle\Tests\LabelTreeTest;
 use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
 
 class LabelTreeExportTest extends TestCase
@@ -19,37 +20,38 @@ class LabelTreeExportTest extends TestCase
         $tree->addMember($user1, Role::$admin);
 
         $export = new LabelTreeExport([$tree->id]);
-        $expect = [
-            'users' => [[
+        $expect = [[
+            'id' => $tree->id,
+            'name' => $tree->name,
+            'description' => $tree->description,
+            'uuid' => $tree->uuid,
+            'labels' => [[
+                'id' => $label->id,
+                'name' => $label->name,
+                'color' => $label->color,
+                'parent_id' => $label->parent_id,
+                'uuid' => $label->uuid,
+                'source_id' => $label->source_id,
+                'label_source_id' => $label->label_source_id,
+            ]],
+            'members' => [[
                 'id' => $user1->id,
-                'firstname' => $user1->firstname,
-                'lastname' => $user1->lastname,
-                'password' => $user1->password,
-                'email' => $user1->email,
-                'settings' => $user1->settings,
-                'uuid' => $user1->uuid,
+                'role_id' => Role::$admin->id,
             ]],
-            'label-trees' => [[
-                'id' => $tree->id,
-                'name' => $tree->name,
-                'description' => $tree->description,
-                'uuid' => $tree->uuid,
-                'labels' => [[
-                    'id' => $label->id,
-                    'name' => $label->name,
-                    'color' => $label->color,
-                    'parent_id' => $label->parent_id,
-                    'uuid' => $label->uuid,
-                    'source_id' => $label->source_id,
-                    'label_source_id' => $label->label_source_id,
-                ]],
-                'members' => [[
-                    'id' => $user1->id,
-                    'role_id' => Role::$admin->id,
-                ]],
-            ]],
-        ];
+        ]];
 
         $this->assertEquals($expect, $export->getContent());
+    }
+
+    public function testGetAdditionalExports()
+    {
+        $tree = LabelTreeTest::create();
+        $user = UserTest::create();
+        $tree->addMember($user, Role::$admin);
+        $exports = (new LabelTreeExport([$tree->id]))->getAdditionalExports();
+
+        $this->assertCount(1, $exports);
+        $content = $exports[0]->getContent();
+        $this->assertEquals($user->uuid, $content[0]['uuid']);
     }
 }

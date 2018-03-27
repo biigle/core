@@ -7,23 +7,6 @@ use Biigle\User;
 class UserExport extends Export
 {
     /**
-     * IDs of the users of this export.
-     *
-     * @var array
-     */
-    protected $ids;
-
-    /**
-     * Create a new instance.
-     *
-     * @param array $ids User IDs
-     */
-    function __construct($ids)
-    {
-        $this->ids = $ids;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getContent()
