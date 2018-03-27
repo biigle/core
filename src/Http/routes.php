@@ -6,4 +6,5 @@ $router->group([
     'middleware' => ['auth:web,api', 'can:admin'],
 ], function ($router) {
     $router->get('export/users', 'Export\UserExportController@show');
+    $router->get('export/label-trees', 'Export\LabelTreeExportController@show');
 });
