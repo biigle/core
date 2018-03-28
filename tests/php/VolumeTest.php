@@ -554,4 +554,19 @@ class VolumeTest extends ModelTestCase
         $this->model->save();
         $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
     }
+
+    public function testScopeAccessibleBy()
+    {
+        $user = UserTest::create();
+        $project = ProjectTest::create();
+        $project->addUserId($user->id, Role::$guest->id);
+
+        $ids = Volume::accessibleBy($user)->pluck('id');
+        $this->assertEmpty($ids);
+
+        $project->addVolumeId($this->model->id);
+
+        $ids = Volume::accessibleBy($user)->pluck('id');
+        $this->assertContains($this->model->id, $ids);
+    }
 }

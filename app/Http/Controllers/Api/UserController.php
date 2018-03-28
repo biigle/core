@@ -81,6 +81,7 @@ class UserController extends Controller
      * @apiGroup Users
      * @apiName IndexUsers
      * @apiPermission user
+     * @apiDescription Global admins also see the email addresses of the users.
      *
      * @apiSuccessExample {json} Success response:
      * [
@@ -98,11 +99,16 @@ class UserController extends Controller
      *    }
      * ]
      *
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Guard $auth)
     {
-        return User::select('id', 'firstname', 'lastname', 'role_id')->get();
+        return User::select('id', 'firstname', 'lastname', 'role_id')
+            ->when($auth->user()->isAdmin, function ($query) {
+                $query->addSelect('email');
+            })
+            ->get();
     }
 
     /**

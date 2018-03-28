@@ -32,12 +32,17 @@ class UserControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/users');
 
         // everybody can do this
-        $this->beGuest();
-        $response = $this->get('/api/v1/users');
-        $content = $response->getContent();
-        $response->assertStatus(200);
-        $this->assertStringStartsWith('[', $content);
-        $this->assertStringEndsWith(']', $content);
+        $user = UserTest::create();
+        $this->be($user);
+        $this->get('/api/v1/users')
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $user->id])
+            ->assertJsonMissing(['email' => $user->email]);
+
+        // Global admins also see the email address of the users.
+        $user->role_id = Role::$admin->id;
+        $user->save();
+        $this->get('/api/v1/users')->assertJsonFragment(['email' => $user->email]);
     }
 
     public function testShow()
