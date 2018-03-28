@@ -5,9 +5,38 @@ namespace Biigle\Http\Controllers\Api;
 use Exception;
 use Biigle\Volume;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Auth\Guard;
 
 class VolumeController extends Controller
 {
+    /**
+     * Shows all volumes the user has access to.
+     *
+     * @api {get} volumes Get accessible volumes
+     * @apiGroup Volumes
+     * @apiName IndexVolumes
+     * @apiPermission user
+     *
+     * @apiSuccessExample {json} Success response:
+     * [
+     *    {
+     *       "id": 1,
+     *       "name": "My Volume",
+     *       "created_at": "2015-02-10 09:45:30",
+     *       "updated_at": "2015-02-10 09:45:30"
+     *    }
+     * ]
+     *
+     * @param Guard $auth
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Guard $auth)
+    {
+        return Volume::accessibleBy($auth->user())
+            ->select('id', 'name', 'created_at', 'updated_at')
+            ->get();
+    }
+
     /**
      * Displays the specified volume.
      *
