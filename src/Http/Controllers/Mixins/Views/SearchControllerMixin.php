@@ -18,17 +18,8 @@ class SearchControllerMixin
      */
     public function index(User $user, $query, $type)
     {
-        if ($user->isAdmin) {
-            $queryBuilder = Volume::query();
-        } else {
-            $queryBuilder = Volume::join('project_volume', 'volumes.id', '=', 'project_volume.volume_id')
-                ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
-                ->where('project_user.user_id', $user->id)
-                // Use distinct as volumes may be attached to more than one project.
-                ->distinct()
-                ->select('volumes.id', 'volumes.updated_at', 'volumes.name');
-        }
-
+        $queryBuilder = Volume::accessibleBy($user)
+            ->select('volumes.id', 'volumes.updated_at', 'volumes.name');
 
         if ($query) {
             if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
