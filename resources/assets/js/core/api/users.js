@@ -9,7 +9,7 @@
  * Get one user:
  * resource.get({id: 1}).then(...);
  *
- * Create a new project:
+ * Create a new user:
  * resource.save({}, {
  *    email: 'my@mail.com',
  *    password: '123456pw',
