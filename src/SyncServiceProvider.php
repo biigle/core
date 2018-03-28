@@ -18,12 +18,11 @@ class SyncServiceProvider extends ServiceProvider
      */
     public function boot(Modules $modules, Router $router)
     {
-        // $this->loadViewsFrom(__DIR__.'/resources/views', 'sync');
-        // $this->loadMigrationsFrom(__DIR__.'/database/migrations');
+        $this->loadViewsFrom(__DIR__.'/resources/views', 'sync');
 
-        // $this->publishes([
-        //     __DIR__.'/public/assets' => public_path('vendor/sync'),
-        // ], 'public');
+        $this->publishes([
+            __DIR__.'/public/assets' => public_path('vendor/sync'),
+        ], 'public');
 
         $router->group([
             'namespace' => 'Biigle\Modules\Sync\Http\Controllers',
@@ -34,7 +33,7 @@ class SyncServiceProvider extends ServiceProvider
 
         $modules->register('sync', [
             'viewMixins' => [
-                //
+                'adminMenu',
             ],
         ]);
     }

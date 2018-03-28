@@ -9,3 +9,13 @@ $router->group([
     $router->get('export/label-trees', 'Export\LabelTreeExportController@show');
     $router->get('export/volumes', 'Export\VolumeExportController@show');
 });
+
+$router->group([
+    'namespace' => 'Views',
+    'middleware' => ['auth', 'can:admin'],
+], function ($router) {
+    $router->get('admin/export', [
+        'as' => 'admin-export',
+        'uses' => 'AdminController@index',
+    ]);
+});
