@@ -33,6 +33,7 @@ class VolumeController extends Controller
     public function index(Guard $auth)
     {
         return Volume::accessibleBy($auth->user())
+            ->orderByDesc('id')
             ->select('id', 'name', 'created_at', 'updated_at')
             ->get();
     }

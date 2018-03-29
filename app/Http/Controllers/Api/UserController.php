@@ -108,6 +108,7 @@ class UserController extends Controller
             ->when($auth->user()->isAdmin, function ($query) {
                 $query->addSelect('email');
             })
+            ->orderByDesc('id')
             ->get();
     }
 
