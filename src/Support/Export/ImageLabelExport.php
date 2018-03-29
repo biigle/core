@@ -6,7 +6,7 @@ use DB;
 use File;
 use SplFileObject;
 
-class AnnotationExport extends Export
+class ImageLabelExport extends Export
 {
     /**
      * Path to the temporary CSV file.
@@ -21,37 +21,33 @@ class AnnotationExport extends Export
     public function getContent()
     {
         if (!$this->tmpPath) {
-            $this->tmpPath = tempnam(config('sync.tmp_storage'), 'biigle_annotation_export');
+            $this->tmpPath = tempnam(config('sync.tmp_storage'), 'biigle_image_label_export');
         }
 
         $csv = new SplFileObject($this->tmpPath, 'w');
 
-        DB::table('annotations')
-            ->join('images', 'images.id', '=', 'annotations.image_id')
+        DB::table('image_labels')
+            ->join('images', 'images.id', '=', 'image_labels.image_id')
             ->whereIn('images.volume_id', $this->ids)
             ->select([
-                'annotations.id as annotation_id',
-                'annotations.image_id',
-                'annotations.shape_id',
-                'annotations.created_at',
-                'annotations.updated_at',
-                'annotations.points',
+                'image_labels.id as image_label_id',
+                'image_labels.image_id',
+                'image_labels.label_id',
+                'image_labels.user_id',
+                'image_labels.created_at',
+                'image_labels.updated_at'
             ])
-            // The chunk size is lower than for the AnnotationLabelExport and the
-            // ImageExport because annotations can have a variable (and possibly large)
-            // number of points!
-            ->chunkById(5E+4, function ($rows) use ($csv) {
+            ->chunkById(1E+5, function ($rows) use ($csv) {
                 foreach ($rows as $row) {
                     $csv->fputcsv([
-                        $row->annotation_id,
                         $row->image_id,
-                        $row->shape_id,
+                        $row->label_id,
+                        $row->user_id,
                         $row->created_at,
                         $row->updated_at,
-                        $row->points,
                     ]);
                 }
-            }, 'annotations.id', 'annotation_id');
+            }, 'image_labels.id', 'image_label_id');
 
         return $this->tmpPath;
     }
@@ -61,7 +57,7 @@ class AnnotationExport extends Export
      */
     public function getFileName()
     {
-        return 'annotations.csv';
+        return 'image_labels.csv';
     }
 
     /**

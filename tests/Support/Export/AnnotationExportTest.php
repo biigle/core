@@ -19,6 +19,7 @@ class AnnotationExportTest extends TestCase
         $this->assertTrue(is_string($path));
         $file = new SplFileObject($path);
         $expect = [
+            "{$annotation->id}",
             "{$annotation->image_id}",
             "{$annotation->shape_id}",
             "{$annotation->created_at}",
