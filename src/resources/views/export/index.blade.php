@@ -42,21 +42,21 @@
                 Select volumes to export:
             </p>
             <entity-chooser v-bind:entities="volumes" v-on:select="handleChosenVolumes"></entity-chooser>
-            <a v-bind:href="volumeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="!hasChosenVolumes">Request volume export</a>
+            <a v-bind:href="volumeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenVolumes">Request volume export</a>
         </tab>
         <tab header="Label Trees" v-cloak>
             <p>
                 Select label trees to export:
             </p>
             <entity-chooser v-bind:entities="labelTrees" v-on:select="handleChosenLabelTrees"></entity-chooser>
-            <a v-bind:href="labelTreeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="!hasChosenLabelTrees">Request label tree export</a>
+            <a v-bind:href="labelTreeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenLabelTrees">Request label tree export</a>
         </tab>
         <tab header="Users" v-cloak>
             <p>
                 Select users to export:
             </p>
             <entity-chooser v-bind:entities="users" v-on:select="handleChosenUsers"></entity-chooser>
-            <a v-bind:href="userRequestUrl" class="btn btn-success pull-right" v-bind:disabled="!hasChosenUsers">Request user export</a>
+            <a v-bind:href="userRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenUsers">Request user export</a>
         </tab>
     </tabs>
 </div>

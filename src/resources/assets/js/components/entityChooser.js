@@ -28,13 +28,17 @@ biigle.$component('sync.components.entityChooser', {
         },
         unchosenFilteredEntities: function () {
             // This is a very simple fuzzy matching. It splits the query string at the
-            // spaces into "parts" and returns any entity whose name contains all parts.
+            // spaces into "parts" and returns any entity whose name or description
+            // contains all parts.
             // Example: "iv hau" matches the entity "Hausgarten IV PS62/161-3"
             var query = this.filterQuery.trim();
             if (query) {
                 var queryParts = query.toLowerCase().split(' ');
                 return this.unchosenEntities.filter(function (entity) {
                     var name = entity.name.toLowerCase();
+                    if (entity.description) {
+                        name += ' ' + entity.description.toLowerCase();
+                    }
                     return queryParts.reduce(function (match, part) {
                         return match && name.indexOf(part) !== -1;
                     }, true);
