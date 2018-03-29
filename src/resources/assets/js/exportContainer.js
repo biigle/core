@@ -99,15 +99,15 @@ biigle.$viewModel('export-container', function (element) {
                 var chosenEntities = this.chosenEntities[name];
 
                 if ((entities.length / 2) > chosenEntities.length) {
-                    return '?only=' + chosenEntities.map(function (e) {
-                        return e.id;
-                    }).join(',');
+                    return '?only=' + (chosenEntities.map(function (e) {
+                            return e.id;
+                        }).join(',') || -1);
                 } else if (entities.length > chosenEntities.length) {
                     return '?except=' + entities.filter(function (e) {
-                        return chosenEntities.indexOf(e) === -1;
-                    }).map(function (e) {
-                        return e.id;
-                    }).join(',');
+                            return chosenEntities.indexOf(e) === -1;
+                        }).map(function (e) {
+                            return e.id;
+                        }).join(',');
                 }
 
                 return '';
