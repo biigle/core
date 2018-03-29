@@ -38,6 +38,7 @@ class LabelTreeController extends Controller
     public function index(Guard $auth)
     {
         return LabelTree::accessibleBy($auth->user())
+            ->orderByDesc('id')
             ->select('id', 'name', 'description', 'created_at', 'updated_at')
             ->get();
     }
