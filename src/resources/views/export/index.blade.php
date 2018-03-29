@@ -9,6 +9,7 @@
 @push('scripts')
 <script type="text/javascript">
     biigle.$declare('sync.exportApiUrl', '{{url('api/v1/export')}}');
+    biigle.$declare('sync.allowedExports', {!!json_encode($allowedExports)!!});
 </script>
 <script src="{{ cachebust_asset('vendor/sync/scripts/main.js') }}"></script>
 <script type="text/x-template" id="entity-chooser-list-template">
@@ -36,43 +37,49 @@
 @section('admin-content')
 <div id="export-container">
     <tabs v-on:active="handleSwitchedTab">
-        <tab header="Volumes" v-cloak>
-            {{-- Woah, these are a lot of annotations you want to export. Consider splitting the export into multiple files or BIIGLE might not be able to process it fast enough. --}}
-            <p>
-                Select volumes to export:
-            </p>
-            <entity-chooser v-bind:entities="volumes" v-on:select="handleChosenVolumes"></entity-chooser>
-            <div class="panel panel-warning">
-                <div class="panel-body text-warning text-center">
-                    An export file contains user password hashes. Make sure no third party can read it!
+        @if (in_array('volumes', $allowedExports))
+            <tab header="Volumes" v-cloak>
+                {{-- Woah, these are a lot of annotations you want to export. Consider splitting the export into multiple files or BIIGLE might not be able to process it fast enough. --}}
+                <p>
+                    Select volumes to export:
+                </p>
+                <entity-chooser v-bind:entities="volumes" v-on:select="handleChosenVolumes"></entity-chooser>
+                <div class="panel panel-warning">
+                    <div class="panel-body text-warning text-center">
+                        An export file contains user password hashes. Make sure no third party can read it!
+                    </div>
                 </div>
-            </div>
-            <a v-bind:href="volumeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenVolumes">Request volume export</a>
-        </tab>
-        <tab header="Label Trees" v-cloak>
-            <p>
-                Select label trees to export:
-            </p>
-            <entity-chooser v-bind:entities="labelTrees" v-on:select="handleChosenLabelTrees"></entity-chooser>
-            <div class="panel panel-warning">
-                <div class="panel-body text-warning text-center">
-                    An export file contains user password hashes. Make sure no third party can read it!
+                <a v-bind:href="volumeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenVolumes">Request volume export</a>
+            </tab>
+        @endif
+        @if (in_array('labelTrees', $allowedExports))
+            <tab header="Label Trees" v-cloak>
+                <p>
+                    Select label trees to export:
+                </p>
+                <entity-chooser v-bind:entities="labelTrees" v-on:select="handleChosenLabelTrees"></entity-chooser>
+                <div class="panel panel-warning">
+                    <div class="panel-body text-warning text-center">
+                        An export file contains user password hashes. Make sure no third party can read it!
+                    </div>
                 </div>
-            </div>
-            <a v-bind:href="labelTreeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenLabelTrees">Request label tree export</a>
-        </tab>
-        <tab header="Users" v-cloak>
-            <p>
-                Select users to export:
-            </p>
-            <entity-chooser v-bind:entities="users" v-on:select="handleChosenUsers"></entity-chooser>
-            <div class="panel panel-warning">
-                <div class="panel-body text-warning text-center">
-                    An export file contains user password hashes. Make sure no third party can read it!
+                <a v-bind:href="labelTreeRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenLabelTrees">Request label tree export</a>
+            </tab>
+        @endif
+        @if (in_array('users', $allowedExports))
+            <tab header="Users" v-cloak>
+                <p>
+                    Select users to export:
+                </p>
+                <entity-chooser v-bind:entities="users" v-on:select="handleChosenUsers"></entity-chooser>
+                <div class="panel panel-warning">
+                    <div class="panel-body text-warning text-center">
+                        An export file contains user password hashes. Make sure no third party can read it!
+                    </div>
                 </div>
-            </div>
-            <a v-bind:href="userRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenUsers">Request user export</a>
-        </tab>
+                <a v-bind:href="userRequestUrl" class="btn btn-success pull-right" v-bind:disabled="hasNoChosenUsers">Request user export</a>
+            </tab>
+        @endif
     </tabs>
 </div>
 @endsection

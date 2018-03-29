@@ -60,4 +60,11 @@ class VolumeExportControllerTest extends ApiTestCase
         $contents = collect(json_decode($zip->getFromName('volumes.json')));
         $this->assertEquals($volume1->id, $contents->pluck('id')[0]);
     }
+
+    public function testIsAllowed()
+    {
+        config(['sync.allowed_exports' => ['labelTrees', 'users']]);
+        $this->beGlobalAdmin();
+        $response = $this->get('/api/v1/export/volumes')->assertStatus(404);
+    }
 }

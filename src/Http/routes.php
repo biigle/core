@@ -16,6 +16,6 @@ $router->group([
 ], function ($router) {
     $router->get('admin/export', [
         'as' => 'admin-export',
-        'uses' => 'AdminController@index',
+        'uses' => 'ExportAdminController@index',
     ]);
 });

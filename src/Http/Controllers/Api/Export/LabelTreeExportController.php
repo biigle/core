@@ -41,4 +41,12 @@ class LabelTreeExportController extends Controller
     {
         return 'biigle_label_tree_export.zip';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function isAllowed()
+    {
+        return in_array('labelTrees', config('sync.allowed_exports'));
+    }
 }

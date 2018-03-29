@@ -4,7 +4,7 @@ namespace Biigle\Modules\Sync\Http\Controllers\Views;
 
 use Biigle\Http\Controllers\Views\Controller;
 
-class AdminController extends Controller
+class ExportAdminController extends Controller
 {
     /**
      * Shows the export admin page.
@@ -13,6 +13,11 @@ class AdminController extends Controller
      */
     public function index()
     {
-        return view('sync::export.index');
+        $allowedExports = config('sync.allowed_exports');
+        if (empty($allowedExports)) {
+            abort(404);
+        }
+
+        return view('sync::export.index', compact('allowedExports'));
     }
 }

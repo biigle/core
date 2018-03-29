@@ -15,6 +15,10 @@ class Controller extends BaseController
      */
     public function show(Request $request)
     {
+        if (!$this->isAllowed()) {
+            abort(404);
+        }
+
         $this->validate($request, ['except' => 'filled', 'only' => 'filled']);
         $query = $this->getQuery();
 
@@ -60,5 +64,15 @@ class Controller extends BaseController
     protected function getExportFilename()
     {
         return 'export.zip';
+    }
+
+    /**
+     * Determine if this kind of export is allowed by the config.
+     *
+     * @return bool
+     */
+    protected function isAllowed()
+    {
+        return false;
     }
 }

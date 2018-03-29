@@ -41,4 +41,12 @@ class UserExportController extends Controller
     {
         return 'biigle_user_export.zip';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function isAllowed()
+    {
+        return in_array('users', config('sync.allowed_exports'));
+    }
 }

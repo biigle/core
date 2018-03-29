@@ -12,6 +12,7 @@ biigle.$viewModel('export-container', function (element) {
     };
 
     var exportApiUrl = biigle.$require('sync.exportApiUrl');
+    var allowedExports = biigle.$require('sync.allowedExports');
 
     new Vue({
         el: element,
@@ -22,7 +23,6 @@ biigle.$viewModel('export-container', function (element) {
             entityChooser: biigle.$require('sync.components.entityChooser'),
         },
         data: {
-            indexMap: ['volumes', 'labelTrees', 'users'],
             entities: {
                 volumes: [],
                 labelTrees: [],
@@ -36,6 +36,14 @@ biigle.$viewModel('export-container', function (element) {
             currentTab: 0,
         },
         computed: {
+            indexMap: function () {
+                // Do it like this because the ordering in allowerExports may be
+                // arbitrary but the ordering in indexMap must match the tabs in the
+                // view.
+                return ['volumes', 'labelTrees', 'users'].filter(function (item) {
+                    return allowedExports.indexOf(item) !== -1;
+                });
+            },
             volumes: function () {
                 return this.entities.volumes;
             },

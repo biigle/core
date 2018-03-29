@@ -41,4 +41,12 @@ class VolumeExportController extends Controller
     {
         return 'biigle_volume_export.zip';
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function isAllowed()
+    {
+        return in_array('volumes', config('sync.allowed_exports'));
+    }
 }

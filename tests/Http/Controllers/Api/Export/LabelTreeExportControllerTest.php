@@ -57,4 +57,11 @@ class LabelTreeExportControllerTest extends ApiTestCase
         $contents = collect(json_decode($zip->getFromName('label_trees.json')));
         $this->assertEquals($tree1->id, $contents->pluck('id')[0]);
     }
+
+    public function testIsAllowed()
+    {
+        config(['sync.allowed_exports' => ['volumes', 'users']]);
+        $this->beGlobalAdmin();
+        $response = $this->get('/api/v1/export/label-trees')->assertStatus(404);
+    }
 }

@@ -53,4 +53,11 @@ class UserExportControllerTest extends ApiTestCase
         $contents = collect(json_decode($zip->getFromName('users.json')));
         $this->assertEquals(collect([$id]), $contents->pluck('id'));
     }
+
+    public function testIsAllowed()
+    {
+        config(['sync.allowed_exports' => ['volumes', 'labelTrees']]);
+        $this->beGlobalAdmin();
+        $response = $this->get('/api/v1/export/users')->assertStatus(404);
+    }
 }
