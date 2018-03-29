@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/x-icon" href="{{ cachebust_asset('favicon.ico') }}">
-    <title>@yield('title')</title>
+    <title>@yield('title') - BIIGLE</title>
     <meta name="description" content="The Bio-Image Indexing and Graphical Labelling Environment is a sophisticated web service for efficient and rapid annotation of still images.">
 
     <link href="{{ cachebust_asset('assets/styles/main.css') }}" rel="stylesheet">

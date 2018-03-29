@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', trans('biigle.titles.login'))
+@section('title', 'Login')
 @section('show-navbar', false)
 
 @section('content')

@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', trans('biigle.titles.resetpw'))
+@section('title', 'Reset password')
 @section('show-navbar', false)
 
 @section('content')
