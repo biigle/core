@@ -21,10 +21,10 @@ To develop BIIGLE on your local machine you may use Docker containers, too. This
 
 #### Download the project files
 
-Set up the project in the current directory (using [Composer](https://getcomposer.org/doc/00-intro.md)):
+Set up the project in the `biigle` directory (using [Composer](https://getcomposer.org/doc/00-intro.md)):
 
 ```
-composer create-project biigle/core:dev-dev-modules --repository='{"type":"vcs","url":"git@github.com:BiodataMiningGroup/biigle-core.git"}' --keep-vcs --ignore-platform-reqs --prefer-source .
+composer create-project biigle/core:dev-dev-modules --repository='{"type":"vcs","url":"git@github.com:BiodataMiningGroup/biigle-core.git"}' --keep-vcs --ignore-platform-reqs --prefer-source biigle
 ```
 
 Note the `--ignore-platform-reqs` flag to keep Composer from complaining about missing requirements. These requirements will be met by the Docker containers.
@@ -54,6 +54,8 @@ Run the tests with `docker-compose run --rm worker php -d memory_limit=1G vendor
 #### Develop a module
 
 The BIIGLE modules are installed by Composer and located in the `vendor/biigle/` directory. As you have used the `dev-modules` branch, they should be there already. Also, the modules are installed as Git repositories, because of the `--prefer-source` flag of Composer. This allows you to modify and develop a module right in its `vendor/biigle/<name>/` directory, commit and push the changes, all while you see the changes instantly applid in the running development instance.
+
+Before you start developing, you should run `git checkout master && git pull` to get the most recent development version of a module.
 
 Module assets like CSS and JavaScript are processed with [Gulp](https://gulpjs.com/). To modify and reprocess the assets, you need to install Gulp first:
 
