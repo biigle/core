@@ -2,6 +2,7 @@
 
 namespace Biigle\Jobs;
 
+use App;
 use Log;
 use File;
 use Storage;
@@ -89,6 +90,10 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
         $this->threshold = config('image.tiles.threshold');
         $images = Image::with('volume')->whereIn('id', $this->ids)->get();
         $callback = function ($image, $path) {
+            if (!File::exists($path)) {
+                throw new Exception("File '{$path}' does not exist.");
+            }
+
             $this->collectMetadata($image, $path);
             $this->makeThumbnail($image, $path);
         };
@@ -105,6 +110,9 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
                 }
             } catch (Exception $e) {
                 Log::error("Could not process new image {$image->id}: {$e->getMessage()}");
+                if (App::runningUnitTests()) {
+                    throw $e;
+                }
             }
         }
 

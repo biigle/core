@@ -13,6 +13,7 @@ use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Jobs\TileSingleImage;
 use Biigle\Jobs\ProcessNewImageChunk;
+use Jcupitt\Vips\Exception as VipsException;
 
 class ProcessNewImageChunkTest extends TestCase
 {
@@ -82,20 +83,24 @@ class ProcessNewImageChunkTest extends TestCase
 
     public function testHandleMakeThumbnailNotReadable()
     {
-        if (!function_exists('vips_call')) {
-            $this->markTestSkipped('Requires the PHP vips extension.');
-        }
-
+        Storage::fake('test');
+        Storage::disk('test')->put('files/broken.jpg', '');
         Log::shouldReceive('error')->once();
-        $image = ImageTest::create(['filename' => 'does_not_exist']);
-        with(new ProcessNewImageChunk([$image->id]))->handle();
-        $this->cleanup($image, false);
+        $image = ImageTest::create(['filename' => 'broken.jpg']);
+        try {
+            (new ProcessNewImageChunk([$image->id]))->handle();
+            $this->assertFalse(true);
+        } catch (VipsException $e) {
+            $this->assertContains('not a known file format', $e->getMessage());
+        } finally {
+            $this->cleanup($image, false);
+        }
     }
 
     public function testHandleMakeThumbnailSkipExisting()
     {
         VipsImage::shouldReceive('thumbnail')->never();
-        $image = ImageTest::create(['filename' => 'random']);
+        $image = ImageTest::create();
         File::makeDirectory(File::dirname($image->thumbPath), 0755, true, true);
         touch($image->thumbPath);
 

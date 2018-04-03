@@ -3,9 +3,11 @@
 namespace Biigle\Tests\Http\Middleware;
 
 use App;
+use Closure;
 use ApiTestCase;
 use Biigle\Tests\ApiTokenTest;
 use Biigle\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Session\TokenMismatchException;
 
 class VerifyCsrfTokenTest extends ApiTestCase
 {
@@ -56,5 +58,15 @@ class VerifyCsrfTokenStub extends VerifyCsrfToken
     public function runningUnitTests()
     {
         return false;
+    }
+
+    public function handle($request, Closure $next)
+    {
+        try {
+            return parent::handle($request, $next);
+        } catch (TokenMismatchException $e) {
+            // Ignore the exceptions so they are not logged.
+            abort(403);
+        }
     }
 }
