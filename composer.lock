@@ -293,16 +293,16 @@
         },
         {
             "name": "biigle/sync",
-            "version": "v0.1.0",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:BiodataMiningGroup/biigle-sync.git",
-                "reference": "e54aa721e31d7ec45a19bc8c6aa03ac362d0abca"
+                "reference": "ae846dbd93b4c7c582917244e8eee16a2e4d64db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-sync/zipball/e54aa721e31d7ec45a19bc8c6aa03ac362d0abca",
-                "reference": "e54aa721e31d7ec45a19bc8c6aa03ac362d0abca",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-sync/zipball/ae846dbd93b4c7c582917244e8eee16a2e4d64db",
+                "reference": "ae846dbd93b4c7c582917244e8eee16a2e4d64db",
                 "shasum": ""
             },
             "type": "library",
@@ -312,10 +312,10 @@
                 }
             },
             "support": {
-                "source": "https://github.com/BiodataMiningGroup/biigle-sync/tree/v0.1.0",
+                "source": "https://github.com/BiodataMiningGroup/biigle-sync/tree/v.0.2.0",
                 "issues": "https://github.com/BiodataMiningGroup/biigle-sync/issues"
             },
-            "time": "2018-03-20T14:05:07+00:00"
+            "time": "2018-03-29T10:54:08+00:00"
         },
         {
             "name": "biigle/volumes",
