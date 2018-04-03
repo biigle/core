@@ -49,8 +49,22 @@ Before you can start using or developing BIIGLE, you need to perform a few initi
 
 #### Run the tests
 
-Run the tests with `docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit`. The first time may fail since the database container needs to start up.
+Run the tests with `docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit`. The first time might fail since the testing database container needs to start up.
 
 #### Develop a module
 
-WIP: `npm install -g gulp-cli`, `npm install`, `gulp`, `gulp watch`, `gulp --production`
+The BIIGLE modules are installed by Composer and located in the `vendor/biigle/` directory. As you have used the `dev-modules` branch, they should be there already. Also, the modules are installed as Git repositories, because of the `--prefer-source` flag of Composer. This allows you to modify and develop a module right in its `vendor/biigle/<name>/` directory, commit and push the changes, all while you see the changes instantly applid in the running development instance.
+
+Module assets like CSS and JavaScript are processed with [Gulp](https://gulpjs.com/). To modify and reprocess the assets, you need to install Gulp first:
+
+1. Install the Gulp CLI: `npm install -g gulp-cli`
+
+2. Install the JavaScript dependencies of a module (in `vendor/biigle/<name>/`): `npm install`
+
+Now you can use three commands to process the assets:
+
+- `gulp watch`: Keeps running, processes the assets and publishes the files to the running development instance whenever a source file has been modified. Use this during development.
+- `gulp`: This processes the assets and publishes the files to the running development instance once.
+- `gulp --production`: Like `gulp` but also minifies the CSS and JavaScript files. Always run this command before you commit new versions of the asset files to Git.
+
+Processing of the assets of the BIIGLE core works just the same.
