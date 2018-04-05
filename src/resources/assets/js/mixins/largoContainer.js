@@ -209,7 +209,9 @@ biigle.$declare('largo.mixins.largoContainer', {
         relabelAllImagesBetween: function (image1, image2) {
             var label = this.selectedLabel;
             this.performOnAllImagesBetween(image1, image2, function (image) {
-                image.newLabel = label;
+                if (image.dismissed) {
+                    image.newLabel = label;
+                }
             });
         },
     },
