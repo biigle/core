@@ -188,8 +188,8 @@ biigle.$declare('largo.mixins.largoContainer', {
             this.handleSelectedLabel(this.selectedLabel);
         },
         performOnAllImagesBetween: function (image1, image2, callback) {
-            var index1 = this.annotations.indexOf(image1);
-            var index2 = this.annotations.indexOf(image2);
+            var index1 = this.allAnnotations.indexOf(image1);
+            var index2 = this.allAnnotations.indexOf(image2);
             if (index2 < index1) {
                 var tmp = index2;
                 index2 = index1;
@@ -197,7 +197,7 @@ biigle.$declare('largo.mixins.largoContainer', {
             }
 
             for (var i = index1 + 1; i < index2; i++) {
-                callback(this.annotations[i]);
+                callback(this.allAnnotations[i]);
             }
 
         },
