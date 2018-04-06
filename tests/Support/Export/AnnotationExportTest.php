@@ -18,6 +18,7 @@ class AnnotationExportTest extends TestCase
         $path = $export->getContent();
         $this->assertTrue(is_string($path));
         $file = new SplFileObject($path);
+        $file->fgetcsv();
         $expect = [
             "{$annotation->id}",
             "{$annotation->image_id}",

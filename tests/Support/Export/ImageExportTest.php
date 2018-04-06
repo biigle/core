@@ -18,6 +18,7 @@ class ImageExportTest extends TestCase
         $path = $export->getContent();
         $this->assertTrue(is_string($path));
         $file = new SplFileObject($path);
+        $file->fgetcsv();
         $expect = [
             "{$image->id}",
             "{$image->filename}",

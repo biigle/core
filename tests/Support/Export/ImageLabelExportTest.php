@@ -18,6 +18,7 @@ class ImageLabelExportTest extends TestCase
         $path = $export->getContent();
         $this->assertTrue(is_string($path));
         $file = new SplFileObject($path);
+        $file->fgetcsv();
         $expect = [
             "{$label->image_id}",
             "{$label->label_id}",

@@ -25,6 +25,7 @@ class ImageExport extends Export
         }
 
         $csv = new SplFileObject($this->tmpPath, 'w');
+        $csv->fputcsv(['id', 'filename', 'volume_id']);
 
         DB::table('images')
             ->whereIn('volume_id', $this->ids)

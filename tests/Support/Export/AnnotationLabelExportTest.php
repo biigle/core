@@ -18,6 +18,7 @@ class AnnotationLabelExportTest extends TestCase
         $path = $export->getContent();
         $this->assertTrue(is_string($path));
         $file = new SplFileObject($path);
+        $file->fgetcsv();
         $expect = [
             "{$label->annotation_id}",
             "{$label->label_id}",

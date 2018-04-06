@@ -25,6 +25,14 @@ class AnnotationExport extends Export
         }
 
         $csv = new SplFileObject($this->tmpPath, 'w');
+        $csv->fputcsv([
+            'id',
+            'image_id',
+            'shape_id',
+            'created_at',
+            'updated_at',
+            'points',
+        ]);
 
         DB::table('annotations')
             ->join('images', 'images.id', '=', 'annotations.image_id')

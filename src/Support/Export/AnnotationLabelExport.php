@@ -25,6 +25,14 @@ class AnnotationLabelExport extends Export
         }
 
         $csv = new SplFileObject($this->tmpPath, 'w');
+        $csv->fputcsv([
+            'annotation_id',
+            'label_id',
+            'user_id',
+            'confidence',
+            'created_at',
+            'updated_at',
+        ]);
 
         DB::table('annotation_labels')
             ->join('annotations', 'annotations.id', '=', 'annotation_labels.annotation_id')
