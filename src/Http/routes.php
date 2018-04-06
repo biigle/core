@@ -8,6 +8,8 @@ $router->group([
     $router->get('export/users', 'Export\UserExportController@show');
     $router->get('export/label-trees', 'Export\LabelTreeExportController@show');
     $router->get('export/volumes', 'Export\VolumeExportController@show');
+
+    $router->post('import', 'Import\UploadController@store');
 });
 
 $router->group([
@@ -17,5 +19,10 @@ $router->group([
     $router->get('admin/export', [
         'as' => 'admin-export',
         'uses' => 'ExportAdminController@index',
+    ]);
+
+    $router->get('admin/import/{token}', [
+        'as' => 'admin-import-show',
+        'uses' => 'ImportAdminController@show',
     ]);
 });
