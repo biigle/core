@@ -51,7 +51,14 @@ class SyncServiceProvider extends ServiceProvider
             return new \Biigle\Modules\Sync\Console\Commands\Publish;
         });
 
-        $this->commands('command.sync.publish');
+        $this->app->singleton('command.sync.prune', function ($app) {
+            return new \Biigle\Modules\Sync\Console\Commands\Prune;
+        });
+
+        $this->commands([
+            'command.sync.publish',
+            'command.sync.prune'
+        ]);
     }
 
     /**
@@ -63,6 +70,7 @@ class SyncServiceProvider extends ServiceProvider
     {
         return [
             'command.sync.publish',
+            'command.sync.prune',
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace Biigle\Modules\Sync\Support\Import;
 use File;
 use Exception;
 use ZipArchive;
+use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ArchiveManager
@@ -68,23 +69,13 @@ class ArchiveManager
     }
 
     /**
-     * Generates a new token for an import.
-     *
-     * @return string
-     */
-    protected function generateToken()
-    {
-        return hash_hmac('sha256', str_random(40), config('app.key'));
-    }
-
-    /**
      * Get the correct import instance for the import with the given token.
      *
      * @param string $token Import token.
      * @throws Exception If the import files are invalid.
      * @return Import|null
      */
-    protected function get($token)
+    public function get($token)
     {
         $path = $this->path."/{$token}";
 
@@ -98,6 +89,30 @@ class ArchiveManager
         }
 
         return null;
+    }
+
+    /**
+     * Delete uploaded import files that are older than one week.
+     */
+    public function prune()
+    {
+        $directories = File::directories($this->path);
+        $limit = Carbon::now()->subWeek()->getTimestamp();
+        foreach ($directories as $directory) {
+            if (File::lastModified($directory) < $limit) {
+                FIle::deleteDirectory($directory);
+            }
+        }
+    }
+
+    /**
+     * Generates a new token for an import.
+     *
+     * @return string
+     */
+    protected function generateToken()
+    {
+        return hash_hmac('sha256', str_random(40), config('app.key'));
     }
 }
 

@@ -6,6 +6,7 @@ use File;
 use TestCase;
 use Exception;
 use ZipArchive;
+use Carbon\Carbon;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\LabelTreeTest;
@@ -116,5 +117,24 @@ class ArchiveManagerTest extends TestCase
         } catch (Exception $e) {
             $this->assertContains('not a valid import archive', $e->getMessage());
         }
+    }
+
+    public function testPrune()
+    {
+        $user = UserTest::create();
+        $export = new UserExport([$user->id]);
+        $path = $export->getArchive();
+
+        $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
+        $manager = new ArchiveManager;
+
+        $token = $manager->store($file);
+        $path = config('sync.import_storage')."/{$token}";
+
+        $manager->prune();
+        $this->assertTrue(File::exists($path));
+        touch($path, Carbon::now()->subDays(8)->getTimestamp());
+        $manager->prune();
+        $this->assertFalse(File::exists($path));
     }
 }
