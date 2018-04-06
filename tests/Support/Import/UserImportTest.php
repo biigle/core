@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Modules\Sync\Support\Import;
 
+use DB;
 use File;
 use TestCase;
 use Exception;
@@ -19,6 +20,7 @@ class UserImportTest extends TestCase
         parent::setUp();
 
         $user = UserTest::create();
+        $user->setSettings(['ab' => 'cd']);
         $export = new UserExport([$user->id]);
         $path = $export->getArchive();
         $this->destination = tempnam(sys_get_temp_dir(), 'user_import_test');
@@ -61,5 +63,32 @@ class UserImportTest extends TestCase
         } catch (Exception $e) {
             $this->assertContains('are missing keys: uuid', $e->getMessage());
         }
+    }
+
+    public function testGetUserImportCandidates()
+    {
+        $import = new UserImport($this->destination);
+        $this->assertCount(0, $import->getUserImportCandidates());
+        DB::table('users')->delete();
+        $this->assertCount(1, $import->getUserImportCandidates());
+    }
+
+    public function testImport()
+    {
+        $import = new UserImport($this->destination);
+        $count = DB::table('users')->count();
+        $map = $import->import();
+        $this->assertEquals($count, DB::table('users')->count());
+        $id = DB::table('users')->first()->id;
+        $this->assertEquals([$id => $id], $map);
+
+        DB::table('users')->delete();
+        $map = $import->import();
+        $this->assertEquals($count, DB::table('users')->count());
+        $user = DB::table('users')->first();
+        $this->assertEquals([$id => $user->id], $map);
+        $this->assertNotNull($user->created_at);
+        $this->assertNotNull($user->updated_at);
+
     }
 }

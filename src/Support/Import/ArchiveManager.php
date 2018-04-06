@@ -79,12 +79,14 @@ class ArchiveManager
     {
         $path = $this->path."/{$token}";
 
-        foreach ($this->importTypes as $type) {
-            $import = new $type($path);
-            if ($import->filesMatch()) {
-                $import->validateFiles();
+        if (File::isDirectory($path)) {
+            foreach ($this->importTypes as $type) {
+                $import = new $type($path);
+                if ($import->filesMatch()) {
+                    $import->validateFiles();
 
-                return $import;
+                    return $import;
+                }
             }
         }
 

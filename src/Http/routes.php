@@ -21,6 +21,11 @@ $router->group([
         'uses' => 'ExportAdminController@index',
     ]);
 
+    $router->get('admin/import', [
+        'as' => 'admin-import',
+        'uses' => 'ImportAdminController@index',
+    ]);
+
     $router->get('admin/import/{token}', [
         'as' => 'admin-import-show',
         'uses' => 'ImportAdminController@show',
