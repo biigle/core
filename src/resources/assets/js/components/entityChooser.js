@@ -4,7 +4,20 @@
  * @type {Object}
  */
 biigle.$component('sync.components.entityChooser', {
-    template: '#entity-chooser-template',
+    template: '<div class="entity-chooser">' +
+        '<entity-chooser-list ' +
+            'class="entity-chooser-list--left" '+
+            ':entities="unchosenFilteredEntities" ' +
+            ':filtering="true" ' +
+            '@select="handleSelect" ' +
+            '@filter="handleFiltering" ' +
+        '></entity-chooser-list>' +
+        '<div class="entity-chooser-buttons">' +
+            '<button class="btn btn-default btn-block" @click="chooseAll" :disabled="hasNoUnchosenEntities" title="Select all">all</button>' +
+            '<button class="btn btn-default btn-block" @click="chooseNone" :disabled="hasNoChosenEntities" title="Select none">none</button>' +
+        '</div>' +
+        '<entity-chooser-list class="entity-chooser-list--right" :entities="chosenEntities" @select="handleDeselect"></entity-chooser-list>' +
+    '</div>',
     components: {
         entityChooserList: biigle.$require('sync.components.entityChooserList'),
     },

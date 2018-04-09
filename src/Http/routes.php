@@ -9,7 +9,9 @@ $router->group([
     $router->get('export/label-trees', 'Export\LabelTreeExportController@show');
     $router->get('export/volumes', 'Export\VolumeExportController@show');
 
-    $router->post('import', 'Import\UploadController@store');
+    $router->resource('import', 'Import\ImportController', [
+        'only' => ['store', 'update', 'destroy'],
+    ]);
 });
 
 $router->group([

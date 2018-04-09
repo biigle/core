@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Sync\Http\Controllers\Views;
 
+use Biigle\User;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Modules\Sync\Support\Import\UserImport;
 use Biigle\Modules\Sync\Support\Import\VolumeImport;
@@ -38,11 +39,11 @@ class ImportAdminController extends Controller
 
         if (is_object($import)) {
             if ($import instanceof UserImport) {
-                return $this->showUserImport($import);
+                return $this->showUserImport($import, $token);
             } elseif ($import instanceof LabelTreeImport) {
-                return $this->showLabelTreeImport($import);
+                return $this->showLabelTreeImport($import, $token);
             } elseif ($import instanceof VolumeImport) {
-                return $this->showVolumeImport($import);
+                return $this->showVolumeImport($import, $token);
             }
         }
 
@@ -53,11 +54,43 @@ class ImportAdminController extends Controller
      * Show the view for an unfinished user import.
      *
      * @param UserImport $import
+     * @param string $token
      *
      * @return Illuminate\Http\Response
      */
-    protected function showUserImport(UserImport $import)
+    protected function showUserImport(UserImport $import, $token)
     {
-        return view('sync::import.showUser');
+        $conflictingImportUsers = $import->getConflicts();
+        if ($conflictingImportUsers->isNotEmpty()) {
+            $conflictingExistingUsers = User::whereIn('email', $conflictingImportUsers->pluck('email'))
+                ->get()
+                ->keyBy('email');
+
+            return view('sync::import.showUserConflicts', compact(
+                'conflictingImportUsers',
+                'conflictingExistingUsers',
+                'token'
+            ));
+        }
+
+        $importUsersCount = $import->getImportUsers()->count();
+        $importCandidates = $import->getUserImportCandidates()
+            ->map(function ($user) {
+                // Only return relevant information here. Do NOT return the password hashes!
+                return [
+                    'id' => $user['id'],
+                    'firstname' => $user['firstname'],
+                    'lastname' => $user['lastname'],
+                    'email' => $user['email'],
+                ];
+            });
+        $importCandidatesCount = $importCandidates->count();
+
+        return view('sync::import.showUser', compact(
+            'importUsersCount',
+            'importCandidates',
+            'importCandidatesCount',
+            'token'
+        ));
     }
 }

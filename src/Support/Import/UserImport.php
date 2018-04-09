@@ -19,13 +19,19 @@ class UserImport extends Import
     /**
      * Perform the import
      *
+     * @param array|null $only IDs of the import candidates to limit the import to.
      * @return array Maps external user IDs (from the import file) to user IDs of the database.
      */
-    public function import()
+    public function perform($only = null)
     {
         $users = $this->getImportUsers();
         $now = Carbon::now();
-        $insert = $this->getUserImportCandidates()->map(function ($u) use ($now) {
+        $candidates = $this->getUserImportCandidates();
+        if (is_array($only)) {
+            $candidates = $candidates->whereIn('id', $only);
+        }
+
+        $insert = $candidates->map(function ($u) use ($now) {
             unset($u['id']);
             $u['role_id'] = Role::$editor->id;
             $u['settings'] = json_encode($u['settings']);
@@ -40,10 +46,26 @@ class UserImport extends Import
         $map = [];
 
         foreach ($users as $user) {
-            $map[$user['id']] = $ids[$user['uuid']];
+            if ($ids->has($user['uuid'])) {
+                $map[$user['id']] = $ids[$user['uuid']];
+            }
         }
 
         return $map;
+    }
+
+    /**
+     * Get the contents of the user import file.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getImportUsers()
+    {
+        if (!$this->importUsers) {
+            $this->importUsers = collect(json_decode(File::get("{$this->path}/users.json"), true));
+        }
+
+        return $this->importUsers;
     }
 
     /**
@@ -56,7 +78,23 @@ class UserImport extends Import
         $users = $this->getImportUsers();
         $existing = User::whereIn('uuid', $users->pluck('uuid'))->pluck('uuid');
 
-        return $users->whereNotIn('uuid', $existing);
+        // Use values() to discard the original keys.
+        return $users->whereNotIn('uuid', $existing)->values();
+    }
+
+    /**
+     * Get import users whose email address matches with an existing user but the UUID doesn't.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getConflicts()
+    {
+        $users = $this->getImportUsers();
+        $existing = User::whereIn('email', $users->pluck('email'))->pluck('uuid', 'email');
+
+        return $users->filter(function ($user) use ($existing) {
+            return $existing->has($user['email']) && $user['uuid'] !== $existing->get($user['email']);
+        });
     }
 
     /**
@@ -85,19 +123,5 @@ class UserImport extends Import
         }
 
         return parent::validateFile($basename);
-    }
-
-    /**
-     * Get the contents of the user import file.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    protected function getImportUsers()
-    {
-        if (!$this->importUsers) {
-            $this->importUsers = collect(json_decode(File::get("{$this->path}/users.json"), true));
-        }
-
-        return $this->importUsers;
     }
 }

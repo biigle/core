@@ -12,26 +12,6 @@
     biigle.$declare('sync.allowedExports', {!!json_encode($allowedExports)!!});
 </script>
 <script src="{{ cachebust_asset('vendor/sync/scripts/main.js') }}"></script>
-<script type="text/x-template" id="entity-chooser-list-template">
-    <div class="entity-chooser-list">
-        <input type="text" class="form-control entity-chooser-list-search" placeholder="Filter..." v-model="filterQuery" v-if="filtering">
-        <ul>
-            <li v-for="e in entities" v-on:click="select(e)">
-                <span v-text="e.name"></span><span v-if="true"><br><span class="text-muted" v-text="e.description"></span></span>
-            </li>
-        </ul>
-    </div>
-</script>
-<script type="text/x-template" id="entity-chooser-template">
-    <div class="entity-chooser">
-        <entity-chooser-list class="entity-chooser-list--left" v-bind:entities="unchosenFilteredEntities" v-on:select="handleSelect" v-on:filter="handleFiltering" v-bind:filtering="true"></entity-chooser-list>
-        <div class="entity-chooser-buttons">
-            <button class="btn btn-default btn-block" v-on:click="chooseAll" v-bind:disabled="hasNoUnchosenEntities" title="Select all">all</button>
-            <button class="btn btn-default btn-block" v-on:click="chooseNone" v-bind:disabled="hasNoChosenEntities" title="Select none">none</button>
-        </div>
-        <entity-chooser-list class="entity-chooser-list--right" v-bind:entities="chosenEntities" v-on:select="handleDeselect"></entity-chooser-list>
-    </div>
-</script>
 @endpush
 
 @section('admin-content')
@@ -39,7 +19,7 @@
     <tabs v-on:active="handleSwitchedTab">
         @if (in_array('volumes', $allowedExports))
             <tab header="Volumes" v-cloak>
-                {{-- Woah, these are a lot of annotations you want to export. Consider splitting the export into multiple files or BIIGLE might not be able to process it fast enough. --}}
+                {{-- Implement: Woah, these are a lot of annotations you want to export. Consider splitting the export into multiple files or BIIGLE might not be able to process it fast enough. --}}
                 <p>
                     Select volumes to export:
                 </p>

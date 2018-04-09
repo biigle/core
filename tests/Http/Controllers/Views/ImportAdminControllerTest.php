@@ -24,6 +24,8 @@ class ImportAdminControllerTest extends ApiTestCase
 
     public function testShowUserImport()
     {
+        config(['sync.import_storage' => sys_get_temp_dir()]);
+
         $this->beAdmin();
         $this->get('admin/import/abc123')->assertStatus(403);
 

@@ -69,6 +69,18 @@ class ArchiveManager
     }
 
     /**
+     * Determine if the files of an import with tthe given token exist.
+     *
+     * @param string $token Import token.
+     *
+     * @return boolean
+     */
+    public function has($token)
+    {
+        return File::isDirectory("{$this->path}/{$token}");
+    }
+
+    /**
      * Get the correct import instance for the import with the given token.
      *
      * @param string $token Import token.
@@ -77,11 +89,9 @@ class ArchiveManager
      */
     public function get($token)
     {
-        $path = $this->path."/{$token}";
-
-        if (File::isDirectory($path)) {
+        if ($this->has($token)) {
             foreach ($this->importTypes as $type) {
-                $import = new $type($path);
+                $import = new $type("{$this->path}/{$token}");
                 if ($import->filesMatch()) {
                     $import->validateFiles();
 
@@ -94,6 +104,18 @@ class ArchiveManager
     }
 
     /**
+     * Delete the files of an import.
+     *
+     * @param string $token Import token.
+     */
+    public function delete($token)
+    {
+        if ($this->has($token)) {
+            File::deleteDirectory("{$this->path}/{$token}");
+        }
+    }
+
+    /**
      * Delete uploaded import files that are older than one week.
      */
     public function prune()
@@ -102,7 +124,7 @@ class ArchiveManager
         $limit = Carbon::now()->subWeek()->getTimestamp();
         foreach ($directories as $directory) {
             if (File::lastModified($directory) < $limit) {
-                FIle::deleteDirectory($directory);
+                File::deleteDirectory($directory);
             }
         }
     }

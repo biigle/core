@@ -137,4 +137,34 @@ class ArchiveManagerTest extends TestCase
         $manager->prune();
         $this->assertFalse(File::exists($path));
     }
+
+    public function testHas()
+    {
+        $user = UserTest::create();
+        $export = new UserExport([$user->id]);
+        $path = $export->getArchive();
+
+        $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
+        $manager = new ArchiveManager;
+
+        $token = $manager->store($file);
+        $this->assertTrue($manager->has($token));
+        $this->assertFalse($manager->has('abc123'));
+    }
+
+    public function testDelete()
+    {
+        $user = UserTest::create();
+        $export = new UserExport([$user->id]);
+        $path = $export->getArchive();
+
+        $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
+        $manager = new ArchiveManager;
+
+        $token = $manager->store($file);
+        $this->assertTrue($manager->has($token));
+        $manager->delete($token);
+        $this->assertFalse($manager->has($token));
+        $manager->delete('abc123');
+    }
 }

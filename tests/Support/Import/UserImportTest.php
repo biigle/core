@@ -7,21 +7,21 @@ use File;
 use TestCase;
 use Exception;
 use ZipArchive;
+use Ramsey\Uuid\Uuid;
 use Biigle\Tests\UserTest;
 use Biigle\Modules\Sync\Support\Export\UserExport;
 use Biigle\Modules\Sync\Support\Import\UserImport;
 
 class UserImportTest extends TestCase
 {
-    protected $destination;
-
     public function setUp()
     {
         parent::setUp();
 
-        $user = UserTest::create();
-        $user->setSettings(['ab' => 'cd']);
-        $export = new UserExport([$user->id]);
+        $this->user = UserTest::create();
+        $this->user->setSettings(['ab' => 'cd']);
+        $this->user2 = UserTest::create();
+        $export = new UserExport([$this->user->id, $this->user2->id]);
         $path = $export->getArchive();
         $this->destination = tempnam(sys_get_temp_dir(), 'user_import_test');
         // This should be a directory, not a file.
@@ -65,30 +65,59 @@ class UserImportTest extends TestCase
         }
     }
 
+    public function testGetImportUsers()
+    {
+        $import = new UserImport($this->destination);
+        $this->assertCount(2, $import->getImportUsers());
+    }
+
     public function testGetUserImportCandidates()
     {
         $import = new UserImport($this->destination);
         $this->assertCount(0, $import->getUserImportCandidates());
-        DB::table('users')->delete();
+        DB::table('users')->where('id', DB::table('users')->min('id'))->delete();
         $this->assertCount(1, $import->getUserImportCandidates());
     }
 
-    public function testImport()
+    public function testGetConflicts()
     {
         $import = new UserImport($this->destination);
-        $count = DB::table('users')->count();
-        $map = $import->import();
-        $this->assertEquals($count, DB::table('users')->count());
-        $id = DB::table('users')->first()->id;
-        $this->assertEquals([$id => $id], $map);
+        DB::table('users')->where('id', DB::table('users')->min('id'))->delete();
+        DB::table('users')
+            ->where('id', DB::table('users')->min('id'))
+            ->update(['uuid' => Uuid::uuid4()]);
+        $this->assertCount(1, $import->getConflicts());
+    }
 
+    public function testPerform()
+    {
+        $import = new UserImport($this->destination);
         DB::table('users')->delete();
-        $map = $import->import();
-        $this->assertEquals($count, DB::table('users')->count());
+        $map = $import->perform();
+        $this->assertEquals(2, DB::table('users')->count());
         $user = DB::table('users')->first();
-        $this->assertEquals([$id => $user->id], $map);
+        $this->assertEquals($user->id, $map[$this->user->id]);
         $this->assertNotNull($user->created_at);
         $this->assertNotNull($user->updated_at);
+    }
 
+    public function testPerformNone()
+    {
+        $import = new UserImport($this->destination);
+        $map = $import->perform();
+        $this->assertEquals(2, DB::table('users')->count());
+        $id = $this->user->id;
+        $id2 = $this->user2->id;
+        $this->assertEquals([$id => $id, $id2 => $id2], $map);
+    }
+
+    public function testPerformOnly()
+    {
+        $import = new UserImport($this->destination);
+        DB::table('users')->delete();
+        $map = $import->perform([$this->user->id]);
+        $this->assertEquals(1, DB::table('users')->count());
+        $id = DB::table('users')->first()->id;
+        $this->assertEquals([$this->user->id => $id], $map);
     }
 }
