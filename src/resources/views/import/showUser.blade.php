@@ -27,7 +27,7 @@
         <form method="post" action="{{url('api/v1/import/'.$token)}}">
             <input type="hidden" name="_method" value="DELETE">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            <button class="btn btn-success pull-right">Okay</button>
+            <button class="btn btn-success pull-right" title="Delete the uploaded import files">Okay</button>
         </form>
     @elseif ($importCandidatesCount === 0)
         <div class="panel panel-info">
@@ -38,7 +38,7 @@
         <form method="post" action="{{url('api/v1/import/'.$token)}}">
             <input type="hidden" name="_method" value="DELETE">
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
-            <button class="btn btn-success pull-right">Okay</button>
+            <button class="btn btn-success pull-right" title="Delete the uploaded import files">Okay</button>
         </form>
     @else
         <div class="panel panel-info">
@@ -54,7 +54,14 @@
             <div v-if="success" v-cloak class="alert alert-success">
                 The import was successful. You can now request a new import.
             </div>
-            <button v-else class="btn btn-success pull-right" v-on:click="performImport" v-bind:disabled="loading || hasNoChosenUsers">Perform import</button>
+            <div v-else class="pull-right">
+                <form method="post" action="{{url('api/v1/import/'.$token)}}">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-default" title="Delete the uploaded import files">Discard import</button>
+                    <button type="button" class="btn btn-success" v-on:click.prevent="performImport" v-bind:disabled="loading || hasNoChosenUsers">Perform import</button>
+                </form>
+            </div>
         </div>
     @endif
 </div>

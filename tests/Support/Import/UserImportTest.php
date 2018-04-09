@@ -79,16 +79,6 @@ class UserImportTest extends TestCase
         $this->assertCount(1, $import->getUserImportCandidates());
     }
 
-    public function testGetConflicts()
-    {
-        $import = new UserImport($this->destination);
-        DB::table('users')->where('id', DB::table('users')->min('id'))->delete();
-        DB::table('users')
-            ->where('id', DB::table('users')->min('id'))
-            ->update(['uuid' => Uuid::uuid4()]);
-        $this->assertCount(1, $import->getConflicts());
-    }
-
     public function testPerform()
     {
         $import = new UserImport($this->destination);
@@ -99,6 +89,20 @@ class UserImportTest extends TestCase
         $this->assertEquals($user->id, $map[$this->user->id]);
         $this->assertNotNull($user->created_at);
         $this->assertNotNull($user->updated_at);
+    }
+
+    public function testPerformConflicts()
+    {
+        $import = new UserImport($this->destination);
+        DB::table('users')
+            ->where('id', DB::table('users')->min('id'))
+            ->update(['uuid' => Uuid::uuid4()]);
+        try {
+            $import->perform();
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertContains('users exist according to their email address but the UUIDs do not match', $e->getMessage());
+        }
     }
 
     public function testPerformNone()

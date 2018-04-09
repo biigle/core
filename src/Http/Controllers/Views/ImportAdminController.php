@@ -60,19 +60,6 @@ class ImportAdminController extends Controller
      */
     protected function showUserImport(UserImport $import, $token)
     {
-        $conflictingImportUsers = $import->getConflicts();
-        if ($conflictingImportUsers->isNotEmpty()) {
-            $conflictingExistingUsers = User::whereIn('email', $conflictingImportUsers->pluck('email'))
-                ->get()
-                ->keyBy('email');
-
-            return view('sync::import.showUserConflicts', compact(
-                'conflictingImportUsers',
-                'conflictingExistingUsers',
-                'token'
-            ));
-        }
-
         $importUsersCount = $import->getImportUsers()->count();
         $importCandidates = $import->getUserImportCandidates()
             ->map(function ($user) {

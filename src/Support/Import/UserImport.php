@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Sync\Support\Import;
 
 use File;
+use Exception;
 use Biigle\User;
 use Biigle\Role;
 use Carbon\Carbon;
@@ -29,6 +30,15 @@ class UserImport extends Import
         $candidates = $this->getUserImportCandidates();
         if (is_array($only)) {
             $candidates = $candidates->whereIn('id', $only);
+        }
+
+        $conflicts = $candidates->whereIn('id', $this->getConflicts()->pluck('id'));
+        if ($conflicts->isNotEmpty()) {
+            $message = $conflicts->map(function ($user) {
+                return "{$user['firstname']} {$user['lastname']} ({$user['email']})";
+            })->implode(', ');
+
+            throw new Exception("Import cannot be performed. The following users exist according to their email address but the UUIDs do not match: {$message}.");
         }
 
         $insert = $candidates->map(function ($u) use ($now) {
@@ -83,21 +93,6 @@ class UserImport extends Import
     }
 
     /**
-     * Get import users whose email address matches with an existing user but the UUID doesn't.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function getConflicts()
-    {
-        $users = $this->getImportUsers();
-        $existing = User::whereIn('email', $users->pluck('email'))->pluck('uuid', 'email');
-
-        return $users->filter(function ($user) use ($existing) {
-            return $existing->has($user['email']) && $user['uuid'] !== $existing->get($user['email']);
-        });
-    }
-
-    /**
      * @{inheritdoc}
      */
     protected function expectedFiles()
@@ -123,5 +118,20 @@ class UserImport extends Import
         }
 
         return parent::validateFile($basename);
+    }
+
+    /**
+     * Get import users whose email address matches with an existing user but the UUID doesn't.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    protected function getConflicts()
+    {
+        $users = $this->getImportUsers();
+        $existing = User::whereIn('email', $users->pluck('email'))->pluck('uuid', 'email');
+
+        return $users->filter(function ($user) use ($existing) {
+            return $existing->has($user['email']) && $user['uuid'] !== $existing->get($user['email']);
+        });
     }
 }

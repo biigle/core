@@ -66,7 +66,6 @@ class ImportControllerTest extends ApiTestCase
     public function testUpdateUserImport()
     {
         $importMock = Mockery::mock(UserImport::class);
-        $importMock->shouldReceive('getConflicts')->once()->andReturn(collect());
         $importMock->shouldReceive('perform')->once();
         $managerMock = Mockery::mock(ArchiveManager::class);
         $managerMock->shouldReceive('get')
@@ -91,7 +90,6 @@ class ImportControllerTest extends ApiTestCase
     public function testUpdateUserImportOnly()
     {
         $importMock = Mockery::mock(UserImport::class);
-        $importMock->shouldReceive('getConflicts')->once()->andReturn(collect());
         $importMock->shouldReceive('perform')->once()->with([1, 2, 3]);
         $managerMock = Mockery::mock(ArchiveManager::class);
         $managerMock->shouldReceive('get')->with('abc123')->andReturn($importMock);
@@ -109,7 +107,7 @@ class ImportControllerTest extends ApiTestCase
     public function testUpdateUserImportConflicts()
     {
         $importMock = Mockery::mock(UserImport::class);
-        $importMock->shouldReceive('getConflicts')->once()->andReturn(collect(['a']));
+        $importMock->shouldReceive('perform')->once()->andThrow(Exception::class);
         $managerMock = Mockery::mock(ArchiveManager::class);
         $managerMock->shouldReceive('get')->with('abc123')->andReturn($importMock);
         $managerMock->shouldReceive('delete')->never();

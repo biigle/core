@@ -60,18 +60,20 @@ class ImportController extends Controller
             abort(404);
         }
 
-        if ($import instanceof UserImport) {
-            $response = $this->updateUserImport($import, $request);
-        } elseif ($import instanceof LabelTreeImport) {
-            $response = $this->updateLabelTreeImport($import, $request);
-        } elseif ($import instanceof VolumeImport) {
-            $response = $this->updateVolumeImport($import, $request);
-        }
+        try {
+            if ($import instanceof UserImport) {
+                $this->updateUserImport($import, $request);
+            } elseif ($import instanceof LabelTreeImport) {
+                $this->updateLabelTreeImport($import, $request);
+            } elseif ($import instanceof VolumeImport) {
+                $this->updateVolumeImport($import, $request);
+            }
 
-        if ($response === true) {
             $manager->delete($token);
-        } else {
-            return $response;
+        } catch (Exception $e) {
+            return $this->buildFailedValidationResponse($request, [
+                'import' => [$e->getMessage()],
+            ]);
         }
     }
 
@@ -101,8 +103,6 @@ class ImportController extends Controller
      *
      * @param Import $import
      * @param Request $request
-     *
-     * @return  mixed [<description>]
      */
     protected function updateUserImport(UserImport $import, Request $request)
     {
@@ -111,14 +111,6 @@ class ImportController extends Controller
             'only.*' => 'int',
         ]);
 
-        if ($import->getConflicts()->isNotEmpty()) {
-            return $this->buildFailedValidationResponse($request, [
-                'users' => ['There are conflicting users with the same email address but different UUIDs.'],
-            ]);
-        }
-
         $import->perform($request->input('only'));
-
-        return true;
     }
 }
