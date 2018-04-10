@@ -89,20 +89,20 @@ class Import
     /**
      * Validates a JSON file to contain an array of objects, each of which has all the expected keys.
      *
-     * @param string $path Path to the JSON file.
+     * @param string $file File name under $this->path
      * @param array $expectation Expected keys.
      *
      * @throws Exception If keys are missing.
      */
-    protected function expectKeysInJson($path, $expectation)
+    protected function expectKeysInJson($file, $expectation)
     {
-        $content = json_decode(File::get($path), true);
+        $content = $this->collectJson($file);
 
         foreach ($content as $item) {
             $diff = array_diff($expectation, array_keys($item));
             if (!empty($diff)) {
-                $basename = File::basename($path);
-                throw new Exception("Items in the {$basename} file are missing keys: ".implode(', ', $diff).'.');
+                $keys = implode(', ', $diff);
+                throw new Exception("Items in the {$file} file are missing keys: {$keys}.");
             }
         }
     }
@@ -110,23 +110,37 @@ class Import
     /**
      * Validates a CSV file to contain the expected columns.
      *
-     * @param string $path Path to the CSV file.
+     * @param string $file File name under $this->path
      * @param array $expectation Expected columns.
      *
      * @throws Exception If columns are missing.
      */
-    protected function expectColumnsInCsv($path, $expectation)
+    protected function expectColumnsInCsv($file, $expectation)
     {
-        $csv = new SplFileObject($path, 'r');
+        $csv = new SplFileObject("{$this->path}/{$file}", 'r');
         $columns = $csv->fgetcsv();
         $diff = array_diff($expectation, $columns);
         if (!empty($diff)) {
-            throw new Exception("The {$basename} file is missing columns: ".implode(', ', $diff).'.');
+            $columns = implode(', ', $diff);
+            throw new Exception("The {$file} file is missing columns: {$columns}.");
         }
 
         $diff = array_diff($columns, $expectation);
         if (!empty($diff)) {
-            throw new Exception("The {$basename} file has unexpected columns: ".implode(', ', $diff).'.');
+            $columns = implode(', ', $diff);
+            throw new Exception("The {$file} file has unexpected columns: {$columns}.");
         }
+    }
+
+    /**
+     * Read a JSON file containing an array and wrap it in a Laravel collection.
+     *
+     * @param string $file File name under $this->path
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    protected function collectJson($file)
+    {
+        return collect(json_decode(File::get("{$this->path}/{$file}"), true));
     }
 }

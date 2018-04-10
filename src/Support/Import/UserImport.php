@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
-use File;
 use Exception;
 use Biigle\User;
 use Biigle\Role;
@@ -72,7 +71,7 @@ class UserImport extends Import
     public function getImportUsers()
     {
         if (!$this->importUsers) {
-            $this->importUsers = collect(json_decode(File::get("{$this->path}/users.json"), true));
+            $this->importUsers = $this->collectJson('users.json');
         }
 
         return $this->importUsers;
@@ -106,7 +105,7 @@ class UserImport extends Import
     protected function validateFile($basename)
     {
         if ($basename === 'users.json') {
-            return $this->expectKeysInJson("{$this->path}/users.json", [
+            return $this->expectKeysInJson('users.json', [
                 'id',
                 'firstname',
                 'lastname',

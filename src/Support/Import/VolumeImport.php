@@ -30,7 +30,7 @@ class VolumeImport extends Import
             case 'label_trees.json':
                 return (new LabelTreeImport($this->path))->validateFile($basename);
             case 'volumes.json':
-                return $this->expectKeysInJson("{$this->path}/volumes.json", [
+                return $this->expectKeysInJson('volumes.json', [
                     'id',
                     'name',
                     'media_type_id',
@@ -38,13 +38,13 @@ class VolumeImport extends Import
                     'attrs',
                 ]);
             case 'images.csv':
-                return $this->expectColumnsInCsv("{$this->path}/images.csv", [
+                return $this->expectColumnsInCsv('images.csv', [
                     'id',
                     'filename',
                     'volume_id',
                 ]);
             case 'annotation_labels.csv':
-                return $this->expectColumnsInCsv("{$this->path}/annotation_labels.csv", [
+                return $this->expectColumnsInCsv('annotation_labels.csv', [
                     'annotation_id',
                     'label_id',
                     'user_id',
@@ -53,7 +53,7 @@ class VolumeImport extends Import
                     'updated_at',
                 ]);
             case 'annotations.csv':
-                return $this->expectColumnsInCsv("{$this->path}/annotations.csv", [
+                return $this->expectColumnsInCsv('annotations.csv', [
                     'id',
                     'image_id',
                     'shape_id',
@@ -62,7 +62,7 @@ class VolumeImport extends Import
                     'points',
                 ]);
             case 'image_labels.csv':
-                return $this->expectColumnsInCsv("{$this->path}/image_labels.csv", [
+                return $this->expectColumnsInCsv('image_labels.csv', [
                     'image_id',
                     'label_id',
                     'user_id',
