@@ -34,11 +34,11 @@ class UserImport extends Import
 
         $conflicts = $candidates->whereIn('id', $this->getConflicts()->pluck('id'));
         if ($conflicts->isNotEmpty()) {
-            $message = $conflicts->map(function ($user) {
+            $users = $conflicts->map(function ($user) {
                 return "{$user['firstname']} {$user['lastname']} ({$user['email']})";
             })->implode(', ');
 
-            throw new Exception("Import cannot be performed. The following users exist according to their email address but the UUIDs do not match: {$message}.");
+            throw new Exception("Import cannot be performed. The following users exist according to their email address but the UUIDs do not match: {$users}.");
         }
 
         $insert = $candidates->map(function ($u) use ($now) {
