@@ -19,9 +19,11 @@ class LabelTreeImport extends Import
      *
      * @param array|null $onlyTrees IDs of the label tree import candidates to limit the import to.
      * @param array|null $onlyLabels IDs of the label import candidates to limit the import to.
+     * @param array $nameConflictResolution Array mapping label IDs to 'import' or 'existing' for how to resolve name conflicts.
+     * @param array $parentConflictResolution Array mapping label IDs to 'import' or 'existing' for how to resolve parent conflicts.
      * @return array Map of external user IDs (from the import file) to user IDs of the database and of external labels to the labels of the database.
      */
-    public function perform($onlyTrees = null, $onlyLabels = null)
+    public function perform($onlyTrees = null, $onlyLabels = null, $nameConflictResolution = [], $parentConflictResolution = [])
     {
 
     }
@@ -128,7 +130,7 @@ class LabelTreeImport extends Import
     }
 
     /**
-     * Get users that might be implicitly imported along with a label tree.
+     * Get users who might be implicitly imported along with a label tree.
      *
      * @return \Illuminate\Support\Collection
      */

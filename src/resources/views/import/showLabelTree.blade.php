@@ -9,10 +9,10 @@
 @push('scripts')
 <script type="text/javascript">
     biigle.$declare('sync.importToken', '{{$token}}');
-    biigle.$declare('sync.importLabelTrees', {!!$labelTreeCandidates->toJson()!!});
-    biigle.$declare('sync.importLabels', {!!$labelCandidates->toJson()!!});
+    biigle.$declare('sync.labelTreeCandidates', {!!$labelTreeCandidates->toJson()!!});
+    biigle.$declare('sync.labelCandidates', {!!$labelCandidates->toJson()!!});
     biigle.$declare('sync.conflictingParents', {!!$conflictingParents->toJson()!!});
-    biigle.$declare('sync.importUsers', {!!$userCandidates->toJson()!!});
+    biigle.$declare('sync.userCandidates', {!!$userCandidates->toJson()!!});
     biigle.$declare('sync.adminRoleId', {!!$adminRoleId!!});
 </script>
 <script src="{{ cachebust_asset('vendor/sync/scripts/main.js') }}"></script>
@@ -48,18 +48,18 @@
         @if ($excludedLabelTreeCandidatesCount > 0)
             <div class="panel panel-info">
                 <div class="panel-body text-info">
-                    {{$excludedLabelTreeCandidatesCount}} of the {{$importLabelTreesCount}} label trees that should be imported already exist.
+                    {{$excludedLabelTreeCandidatesCount}} of the {{$importLabelTreesCount}} label trees that should be imported already exist(s).
                 </div>
             </div>
         @endif
         <div id="label-tree-import-container">
             @if ($labelTreeCandidatesCount > 0)
                 <h3>Select label trees to import</h3>
-                <entity-chooser v-bind:entities="importLabelTrees" v-on:select="handleChosenLabelTrees"></entity-chooser>
+                <entity-chooser v-bind:entities="labelTreeCandidates" v-on:select="handleChosenLabelTrees"></entity-chooser>
 
-                <div v-if="hasChosenUsers" class="panel panel-info">
+                <div v-if="hasChosenUsers" class="panel panel-info" v-cloak>
                     <div class="panel-body text-info">
-                        The following users will be imported as label tree admins:
+                        These users will be imported because they are label tree admins:
                     </div>
                     <ul class="list-group">
                         <li v-for="user in chosenUsers" class="list-group-item">

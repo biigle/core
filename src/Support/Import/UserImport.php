@@ -6,6 +6,7 @@ use Exception;
 use Biigle\User;
 use Biigle\Role;
 use Carbon\Carbon;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserImport extends Import
 {
@@ -20,6 +21,7 @@ class UserImport extends Import
      * Perform the import
      *
      * @param array|null $only IDs of the import candidates to limit the import to.
+     * @throws UnprocessableEntityHttpException If there are conflicts with the users that should be imported.
      * @return array Maps external user IDs (from the import file) to user IDs of the database.
      */
     public function perform($only = null)
@@ -37,7 +39,7 @@ class UserImport extends Import
                 return "{$user['firstname']} {$user['lastname']} ({$user['email']})";
             })->implode(', ');
 
-            throw new Exception("Import cannot be performed. The following users exist according to their email address but the UUIDs do not match: {$users}.");
+            throw new UnprocessableEntityHttpException("Import cannot be performed. The following users exist according to their email address but the UUIDs do not match: {$users}.");
         }
 
         $insert = $candidates->map(function ($u) use ($now) {

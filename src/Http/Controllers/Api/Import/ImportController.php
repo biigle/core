@@ -9,6 +9,7 @@ use Biigle\Modules\Sync\Support\Import\UserImport;
 use Biigle\Modules\Sync\Support\Import\VolumeImport;
 use Biigle\Modules\Sync\Support\Import\ArchiveManager;
 use Biigle\Modules\Sync\Support\Import\LabelTreeImport;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class ImportController extends Controller
 {
@@ -67,10 +68,12 @@ class ImportController extends Controller
                 $this->updateLabelTreeImport($import, $request);
             } elseif ($import instanceof VolumeImport) {
                 $this->updateVolumeImport($import, $request);
+            } else {
+                throw new Exception('Could not identify import type.');
             }
 
             $manager->delete($token);
-        } catch (Exception $e) {
+        } catch (UnprocessableEntityHttpException $e) {
             return $this->buildFailedValidationResponse($request, [
                 'import' => [$e->getMessage()],
             ]);
@@ -101,7 +104,7 @@ class ImportController extends Controller
     /**
      * Perform a user import
      *
-     * @param Import $import
+     * @param UserImport $import
      * @param Request $request
      */
     protected function updateUserImport(UserImport $import, Request $request)
@@ -112,5 +115,32 @@ class ImportController extends Controller
         ]);
 
         $import->perform($request->input('only'));
+    }
+
+    /**
+     * Perform a label tree import
+     *
+     * @param LabelTreeImport $import
+     * @param Request $request
+     */
+    protected function updateLabelTreeImport(LabelTreeImport $import, Request $request)
+    {
+        $this->validate($request, [
+            'only_label_trees' => 'filled|array',
+            'only_label_trees.*' => 'int',
+            'only_labels' => 'filled|array',
+            'only_labels.*' => 'int',
+            'name_conflicts' => 'filled|array',
+            'name_conflicts.*' => 'in:import,existing',
+            'parent_conflicts' => 'filled|array',
+            'parent_conflicts.*' => 'in:import,existing',
+        ]);
+
+        $import->perform(
+            $request->input('only_label_trees'),
+            $request->input('only_labels'),
+            $request->input('name_conflicts', []),
+            $request->input('parent_conflicts', [])
+        );
     }
 }

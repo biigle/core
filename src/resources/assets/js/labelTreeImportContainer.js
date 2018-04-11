@@ -11,17 +11,17 @@ biigle.$viewModel('label-tree-import-container', function (element) {
         el: element,
         mixins: [biigle.$require('sync.mixins.importContainer')],
         data: {
-            importLabelTrees: biigle.$require('sync.importLabelTrees'),
-            importLabels: biigle.$require('sync.importLabels'),
+            labelTreeCandidates: biigle.$require('sync.labelTreeCandidates'),
+            labelCandidates: biigle.$require('sync.labelCandidates'),
             conflictingParents: biigle.$require('sync.conflictingParents'),
-            importUsers: biigle.$require('sync.importUsers'),
+            userCandidates: biigle.$require('sync.userCandidates'),
             chosenLabelTrees: [],
             chosenLabels: [],
         },
         computed: {
             userMap: function () {
                 var map = {};
-                this.importUsers.forEach(function (user) {
+                this.userCandidates.forEach(function (user) {
                     user.name = user.firstname + ' ' + user.lastname;
                     map[user.id] = user;
                 });
@@ -50,8 +50,8 @@ biigle.$viewModel('label-tree-import-container', function (element) {
                 return this.chosenUsers.length > 0;
             },
             labels: function () {
-                return this.importLabels.map(function (label) {
-                    label.description = label.label_tree_name;
+                return this.labelCandidates.map(function (label) {
+                    label.description = 'Label tree: ' + label.label_tree_name;
                     return label;
                 });
             },
@@ -112,6 +112,36 @@ biigle.$viewModel('label-tree-import-container', function (element) {
             panelBodyClass: function () {
                 return {'text-danger': this.hasUnresolvedConflicts};
             },
+            chosenLabelTreeIds: function () {
+                return this.chosenLabelTrees.map(function (item) {
+                    return item.id;
+                });
+            },
+            chosenLabelIds: function () {
+                return this.chosenLabels.map(function (item) {
+                    return item.id;
+                });
+            },
+            nameConflictResolutions: function () {
+                var resolutions = {};
+                this.conflictingLabels.forEach(function (label) {
+                    if (this.hasLabelConflictingName(label)) {
+                        resolutions[label.id] = label.conflicting_name_resolution;
+                    }
+                }, this);
+
+                return resolutions;
+            },
+            parentConflictResolutions: function () {
+                var resolutions = {};
+                this.conflictingLabels.forEach(function (label) {
+                    if (this.hasLabelConflictingParent(label)) {
+                        resolutions[label.id] = label.conflicting_parent_resolution;
+                    }
+                }, this);
+
+                return resolutions;
+            },
         },
         methods: {
             handleChosenLabelTrees: function (items) {
@@ -163,14 +193,24 @@ biigle.$viewModel('label-tree-import-container', function (element) {
                 }
             },
             performImport: function () {
-                // this.startLoading();
-                // var payload = {};
-                // if (this.chosenCandidates.length < this.importCandidates.length) {
-                //     payload.only = this.chosenCandidateIds;
-                // }
-                // importApi.update({token: importToken}, payload)
-                //     .then(this.importSuccess, messages.handleErrorResponse)
-                //     .finally(this.finishLoading);
+                this.startLoading();
+                var payload = {};
+                if (this.chosenLabelTreeIds.length < this.labelTreeCandidates.length) {
+                    payload.only_label_trees = this.chosenLabelTreeIds;
+                }
+
+                if (this.chosenLabelIds.length < this.labelCandidates.length) {
+                    payload.only_labels = this.chosenLabelIds;
+                }
+
+                if (this.hasConflictingLabels) {
+                    payload.name_conflicts = this.nameConflictResolutions;
+                    payload.parent_conflicts = this.parentConflictResolutions;
+                }
+
+                importApi.update({token: importToken}, payload)
+                    .then(this.importSuccess, messages.handleErrorResponse)
+                    .finally(this.finishLoading);
             },
         },
     });

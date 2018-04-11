@@ -11,6 +11,7 @@ use Ramsey\Uuid\Uuid;
 use Biigle\Tests\UserTest;
 use Biigle\Modules\Sync\Support\Export\UserExport;
 use Biigle\Modules\Sync\Support\Import\UserImport;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserImportTest extends TestCase
 {
@@ -100,7 +101,7 @@ class UserImportTest extends TestCase
         try {
             $import->perform();
             $this->assertFalse(true);
-        } catch (Exception $e) {
+        } catch (UnprocessableEntityHttpException $e) {
             $this->assertContains('users exist according to their email address but the UUIDs do not match', $e->getMessage());
         }
     }
