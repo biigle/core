@@ -63,13 +63,18 @@ class LabelTreeImport extends Import
      */
     public function getLabelImportCandidates()
     {
-        $trees = $this->getImportLabelTrees();
+        $trees = $this->getImportLabelTrees()->keyBy('id');
         $existingTrees = LabelTree::whereIn('uuid', $trees->pluck('uuid'))->pluck('uuid');
 
         // Get all import labels of existing label trees.
         $labels = $this->getImportLabelTrees()
             ->whereIn('uuid', $existingTrees)
-            ->pluck('labels')
+            ->map(function ($tree) {
+                return array_map(function ($label) use ($tree) {
+                    $label['label_tree_name'] = $tree['name'];
+                    return $label;
+                }, $tree['labels']);
+            })
             ->collapse()
             ->keyBy('id');
 
@@ -82,31 +87,32 @@ class LabelTreeImport extends Import
         });
 
         // Get existing labels with the same UUID than import labels.
-        $existing = Label::whereIn('uuid', $labels->pluck('uuid'))
+        $existingLabels = Label::whereIn('uuid', $labels->pluck('uuid'))
             ->select('id', 'name', 'parent_id', 'uuid')
             ->get()
             ->keyBy('id');
 
         // Add the parent_uuid property of existing labels.
-        $existing = $existing->each(function ($label) use ($existing) {
-            $parent = $existing->get($label->parent_id);
+        $existingLabels = $existingLabels->each(function ($label) use ($existingLabels) {
+            $parent = $existingLabels->get($label->parent_id);
             $label->parent_uuid = $parent ? $parent->uuid : null;
         })->keyBy('uuid');
 
         // Add the conflicting attributes to the labels if there are any. Discard any
         // import labels that already exist and have no conflicts. Use values() to
         // discard the original keys.
-        return $labels->map(function ($label) use ($existing) {
-                $e = $existing->get($label['uuid']);
-                if ($e) {
+        return $labels->map(function ($label) use ($trees, $existingLabels) {
+                $existingLabel = $existingLabels->get($label['uuid']);
+                if ($existingLabel) {
                     $label['discard'] = true;
 
-                    if ($e->name !== $label['name']) {
-                        $label['conflicting_name'] = $e->name;
+                    if ($existingLabel->name !== $label['name']) {
+                        $label['conflicting_name'] = $existingLabel->name;
                         unset($label['discard']);
                     }
-                    if ($e->parent_uuid !== $label['parent_uuid']) {
-                        $label['conflicting_parent_id'] = $e->parent_id;
+
+                    if ($existingLabel->parent_uuid !== $label['parent_uuid']) {
+                        $label['conflicting_parent_id'] = $existingLabel->parent_id;
                         unset($label['discard']);
                     }
                 }
@@ -119,6 +125,16 @@ class LabelTreeImport extends Import
                 return array_key_exists('discard', $label);
             })
             ->values();
+    }
+
+    /**
+     * Get users that might be implicitly imported along with a label tree.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getUserImportCandidates()
+    {
+        return (new UserImport($this->path))->getUserImportCandidates();
     }
 
     /**

@@ -6,6 +6,7 @@ use File;
 use TestCase;
 use Exception;
 use ZipArchive;
+use Biigle\Role;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
@@ -23,6 +24,8 @@ class LabelTreeImportTest extends TestCase
         $this->labelTree = LabelTreeTest::create();
         $this->labelParent = LabelTest::create(['label_tree_id' => $this->labelTree->id]);
         $this->labelChild = LabelTest::create(['label_tree_id' => $this->labelTree->id, 'parent_id' => $this->labelParent->id]);
+        $this->user = UserTest::create();
+        $this->labelTree->addMember($this->user, Role::$admin);
         $export = new LabelTreeExport([$this->labelTree->id]);
         $path = $export->getArchive();
         $this->destination = tempnam(sys_get_temp_dir(), 'label_tree_import_test');
@@ -96,6 +99,7 @@ class LabelTreeImportTest extends TestCase
         $labels = $import->getLabelImportCandidates();
         $this->assertCount(1, $labels);
         $this->assertEquals($this->labelChild->name, $labels[0]['name']);
+        $this->assertEquals($this->labelTree->name, $labels[0]['label_tree_name']);
         $this->assertFalse(array_key_exists('conflicting_name', $labels[0]));
         $this->assertFalse(array_key_exists('conflicting_parent_id', $labels[0]));
         $this->assertCount(0, $import->getLabelTreeImportCandidates());
@@ -128,6 +132,14 @@ class LabelTreeImportTest extends TestCase
         $this->assertEquals($this->labelChild->id, $labels[0]['id']);
         $this->assertNull($labels[0]['conflicting_parent_id']);
         $this->assertFalse(array_key_exists('conflicting_name', $labels[0]));
+    }
+
+    public function gestGetUserImportCandidates()
+    {
+        $import = new LabelTreeImport($this->destination);
+        $this->assertCount(0, $import->getUserImportCandidates());
+        $this->user->delete();
+        $this->assertCount(1, $import->getUserImportCandidates());
     }
 
     public function testPerform()

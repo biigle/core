@@ -41,11 +41,13 @@
             <button class="btn btn-success pull-right" title="Delete the uploaded import files">Okay</button>
         </form>
     @else
-        <div class="panel panel-info">
-            <div class="panel-body text-info">
-                {{$importUsersCount - $importCandidatesCount}} of the {{$importUsersCount}} users that should be imported already exist and are excluded from the import.
+        @if ($excludedCandidatesCount > 0)
+            <div class="panel panel-info">
+                <div class="panel-body text-info">
+                    {{$excludedCandidatesCount}} of the {{$importUsersCount}} users that should be imported already exist and are excluded from the import.
+                </div>
             </div>
-        </div>
+        @endif
         <p>
             Select users to import:
         </p>
@@ -58,8 +60,10 @@
                 <form method="post" action="{{url('api/v1/import/'.$token)}}">
                     <input type="hidden" name="_method" value="DELETE">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="btn btn-default" title="Delete the uploaded import files">Discard import</button>
-                    <button type="button" class="btn btn-success" v-on:click.prevent="performImport" v-bind:disabled="loading || hasNoChosenUsers">Perform import</button>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default" title="Delete the uploaded import files">Discard import</button>
+                        <button type="button" class="btn btn-success" v-on:click.prevent="performImport" v-bind:disabled="loading || hasNoChosenUsers">Perform import</button>
+                    </div>
                 </form>
             </div>
         </div>

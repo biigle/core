@@ -8,14 +8,10 @@ biigle.$viewModel('user-import-container', function (element) {
 
     new Vue({
         el: element,
-        mixins: [biigle.$require('core.mixins.loader')],
-        components: {
-            entityChooser: biigle.$require('sync.components.entityChooser'),
-        },
+        mixins: [biigle.$require('sync.mixins.importContainer')],
         data: {
             importCandidates: biigle.$require('sync.importCandidates'),
             chosenCandidates: [],
-            success: false,
         },
         computed: {
             users: function () {
@@ -51,15 +47,6 @@ biigle.$viewModel('user-import-container', function (element) {
                     .then(this.importSuccess, messages.handleErrorResponse)
                     .finally(this.finishLoading);
             },
-            importSuccess: function () {
-                this.success = true;
-            },
-        },
-        watch: {
-            //
-        },
-        created: function () {
-            //
         },
     });
 });

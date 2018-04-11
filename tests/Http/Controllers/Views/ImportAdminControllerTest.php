@@ -42,4 +42,25 @@ class ImportAdminControllerTest extends ApiTestCase
             ->assertStatus(200)
             ->assertViewIs('sync::import.showUser');
     }
+
+    public function testShowLabelTreeImport()
+    {
+        config(['sync.import_storage' => sys_get_temp_dir()]);
+
+        $this->beAdmin();
+        $this->get('admin/import/abc123')->assertStatus(403);
+
+        $this->beGlobalAdmin();
+        $this->get('admin/import/abc123')->assertStatus(404);
+
+        $export = new LabelTreeExport([]);
+        $path = $export->getArchive();
+        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', filesize($path), 'application/zip', null, true);
+        $manager = new ArchiveManager;
+        $token = $manager->store($file);
+
+        $this->get("admin/import/{$token}")
+            ->assertStatus(200)
+            ->assertViewIs('sync::import.showLabelTree');
+    }
 }

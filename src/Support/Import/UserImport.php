@@ -78,7 +78,7 @@ class UserImport extends Import
     }
 
     /**
-     * Get IDs, firstnames and lastnames of users that can be imported.
+     * Get users that can be imported.
      *
      * @return \Illuminate\Support\Collection
      */

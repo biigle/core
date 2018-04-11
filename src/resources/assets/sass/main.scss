@@ -4,3 +4,10 @@
 .import-upload-form {
     padding: 5em 30%;
 }
+
+.choosable-information {
+    &:hover, &.chosen {
+        cursor: pointer;
+        color: $brand-success;
+    }
+}

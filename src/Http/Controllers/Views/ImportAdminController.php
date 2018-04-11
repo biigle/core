@@ -2,7 +2,9 @@
 
 namespace Biigle\Modules\Sync\Http\Controllers\Views;
 
+use Biigle\Role;
 use Biigle\User;
+use Biigle\Label;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Modules\Sync\Support\Import\UserImport;
 use Biigle\Modules\Sync\Support\Import\VolumeImport;
@@ -62,22 +64,86 @@ class ImportAdminController extends Controller
     {
         $importUsersCount = $import->getImportUsers()->count();
         $importCandidates = $import->getUserImportCandidates()
-            ->map(function ($user) {
-                // Only return relevant information here. Do NOT return the password hashes!
-                return [
-                    'id' => $user['id'],
-                    'firstname' => $user['firstname'],
-                    'lastname' => $user['lastname'],
-                    'email' => $user['email'],
-                ];
-            });
+            ->map([$this, 'hideUserCredentials']);
         $importCandidatesCount = $importCandidates->count();
+        $excludedCandidatesCount = $importUsersCount - $importCandidatesCount;
 
         return view('sync::import.showUser', compact(
             'importUsersCount',
             'importCandidates',
             'importCandidatesCount',
+            'excludedCandidatesCount',
             'token'
         ));
+    }
+
+    /**
+     * Show the view for an unfinished label tree import.
+     *
+     * @param LabelTreeImport $import
+     * @param string $token
+     *
+     * @return Illuminate\Http\Response
+     */
+    protected function showLabelTreeImport(LabelTreeImport $import, $token)
+    {
+        $importLabelTreesCount = $import->getImportLabelTrees()->count();
+
+        $labelTreeCandidates = $import->getLabelTreeImportCandidates()->map(function ($item) {
+            unset($item['labels']);
+            return $item;
+        });
+        $labelTreeCandidatesCount = $labelTreeCandidates->count();
+
+        $labelCandidates = $import->getLabelImportCandidates();
+        $labelCandidatesCount = $labelCandidates->count();
+        $conflictingParentIds = $labelCandidates
+            ->pluck('conflicting_parent_id')
+            ->reject(function ($id) {
+                return is_null($id);
+            });
+        if ($conflictingParentIds->isNotEmpty()) {
+            $conflictingParents = Label::whereIn('id', $conflictingParentIds)->get();
+        } else {
+            $conflictingParents = collect();
+        }
+
+        $userCandidates = $import->getUserImportCandidates()
+            ->map([$this, 'hideUserCredentials']);
+
+        $excludedLabelTreeCandidatesCount = $importLabelTreesCount - $labelTreeCandidatesCount;
+
+        $adminRoleId = Role::$admin->id;
+
+        return view('sync::import.showLabelTree', compact(
+            'importLabelTreesCount',
+            'labelTreeCandidates',
+            'labelTreeCandidatesCount',
+            'labelCandidates',
+            'labelCandidatesCount',
+            'conflictingParents',
+            'excludedLabelTreeCandidatesCount',
+            'userCandidates',
+            'adminRoleId',
+            'token'
+        ));
+    }
+
+    /**
+     * Hides sensitive user credentials that should not be returned to the frontend.
+     * Must be public to be used as a callable in map().
+     *
+     * @param array $user
+     *
+     * @return array
+     */
+    public function hideUserCredentials($user)
+    {
+        return [
+            'id' => $user['id'],
+            'firstname' => $user['firstname'],
+            'lastname' => $user['lastname'],
+            'email' => $user['email'],
+        ];
     }
 }
