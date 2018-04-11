@@ -31,8 +31,6 @@ class LabelTreeExportTest extends TestCase
                 'color' => $label->color,
                 'parent_id' => $label->parent_id,
                 'uuid' => $label->uuid,
-                'source_id' => $label->source_id,
-                'label_source_id' => $label->label_source_id,
             ]],
             'members' => [[
                 'id' => $user1->id,

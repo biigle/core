@@ -7,6 +7,10 @@ use TestCase;
 use Exception;
 use ZipArchive;
 use Biigle\Role;
+use Biigle\User;
+use Biigle\Label;
+use Biigle\LabelTree;
+use Biigle\Visibility;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
@@ -142,8 +146,80 @@ class LabelTreeImportTest extends TestCase
         $this->assertCount(1, $import->getUserImportCandidates());
     }
 
-    public function testPerform()
+    public function testPerformNothing()
+    {
+        $import = new LabelTreeImport($this->destination);
+        $expect = [
+            'labelTrees' => [$this->labelTree->id => $this->labelTree->id],
+            'labels' => [
+                $this->labelParent->id => $this->labelParent->id,
+                $this->labelChild->id => $this->labelChild->id,
+            ],
+            'users' => [
+                $this->user->id => $this->user->id,
+            ],
+        ];
+        $this->assertEquals($expect, $import->perform());
+    }
+
+    public function testPerformTrees()
+    {
+        $import = new LabelTreeImport($this->destination);
+        $this->labelTree->delete();
+        $map = $import->perform();
+        $newTree = LabelTree::orderByDesc('id')->first();
+        $expect = [$this->labelTree->id => $newTree->id];
+        $this->assertEquals($expect, $map['labelTrees']);
+        $this->assertEquals($this->labelTree->uuid, $newTree->uuid);
+        $this->assertEquals($this->labelTree->name, $newTree->name);
+        $this->assertEquals($this->labelTree->description, $newTree->description);
+        $this->assertEquals(Visibility::$private->id, $newTree->visibility_id);
+        $this->assertEquals(2, Label::count());
+    }
+
+    public function testPerformLabels()
     {
         $this->markTestIncomplete();
+        // $import = new LabelTreeImport($this->destination);
+        // $this->labelChild->delete();
+        // $map = $import->perform();
+        // $newLabel = Label::orderByDesc('id')->first();
+        // $expect = [$this->labelChild->id => $newLabel->id];
+        // $this->assertEquals($expect, $map['labels']);
+        // $this->assertEquals($this->labelChild->uuid, $newLabel->uuid);
+        // $this->assertEquals($this->labelChild->name, $newLabel->name);
+        // $this->assertEquals($this->labelChild->parent_id, $newLabel->parent_id);
+        // $this->assertEquals($this->labelChild->color, $newLabel->color);
+    }
+
+    public function testPerformUsers()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformOnlyTrees()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformOnlyLabels()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformNameConflicts()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformParentConflicts()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformUserConflicts()
+    {
+        $this->markTestIncomplete();
+        // Perform the user import first so it may fail before labels/trees are created.
     }
 }

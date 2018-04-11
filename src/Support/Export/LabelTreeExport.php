@@ -26,7 +26,7 @@ class LabelTreeExport extends Export
 
             $tree->labels->each(function ($label) {
                 $label->makeVisible('uuid');
-                $label->makeHidden('label_tree_id');
+                $label->makeHidden(['label_tree_id', 'source_id', 'label_source_id']);
             });
         });
 
