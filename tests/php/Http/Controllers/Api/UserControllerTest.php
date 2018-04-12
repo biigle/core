@@ -401,6 +401,7 @@ class UserControllerTest extends ApiTestCase
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new@email.me',
+            'uuid' => '',
         ])->assertStatus(200);
 
         $user = User::where('email', 'new@email.me')->first();
