@@ -95,6 +95,7 @@ class ImportAdminController extends Controller
         });
         $labelTreeCandidatesCount = $labelTreeCandidates->count();
 
+        $importLabels = $import->getImportLabelTrees()->pluck('labels')->collapse();
         $labelCandidates = $import->getLabelImportCandidates();
         $labelCandidatesCount = $labelCandidates->count();
         $conflictingParentIds = $labelCandidates
@@ -119,6 +120,7 @@ class ImportAdminController extends Controller
             'importLabelTreesCount',
             'labelTreeCandidates',
             'labelTreeCandidatesCount',
+            'importLabels',
             'labelCandidates',
             'labelCandidatesCount',
             'conflictingParents',

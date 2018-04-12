@@ -130,9 +130,9 @@ class ImportController extends Controller
             'only_label_trees.*' => 'int',
             'only_labels' => 'filled|array',
             'only_labels.*' => 'int',
-            'name_conflicts' => 'filled|array',
+            'name_conflicts' => 'array',
             'name_conflicts.*' => 'in:import,existing',
-            'parent_conflicts' => 'filled|array',
+            'parent_conflicts' => 'array',
             'parent_conflicts.*' => 'in:import,existing',
         ]);
 

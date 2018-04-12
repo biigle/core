@@ -10,6 +10,7 @@
 <script type="text/javascript">
     biigle.$declare('sync.importToken', '{{$token}}');
     biigle.$declare('sync.labelTreeCandidates', {!!$labelTreeCandidates->toJson()!!});
+    biigle.$declare('sync.importLabels', {!!$importLabels->toJson()!!});
     biigle.$declare('sync.labelCandidates', {!!$labelCandidates->toJson()!!});
     biigle.$declare('sync.conflictingParents', {!!$conflictingParents->toJson()!!});
     biigle.$declare('sync.userCandidates', {!!$userCandidates->toJson()!!});
@@ -118,7 +119,7 @@
             @endif
 
             <div v-if="success" v-cloak class="alert alert-success">
-                The import was successful. You can now request a new import.
+                The import was successful. You can now request a <a href="{{route('admin-import')}}">new import</a>.
             </div>
             <div v-else class="pull-right">
                 <form method="post" action="{{url('api/v1/import/'.$token)}}">

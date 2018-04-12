@@ -7,6 +7,7 @@
 @endpush
 
 @section('admin-content')
+<h2>Import</h2>
 <form class="import-upload-form" method="post" action="{{url('api/v1/import')}}" enctype="multipart/form-data">
     <div class="form-group{{ $errors->has('archive') ? ' has-error' : '' }}">
         <label>Select an import archive</label>

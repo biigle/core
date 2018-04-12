@@ -49,19 +49,19 @@ biigle.$viewModel('label-tree-import-container', function (element) {
             hasChosenUsers: function () {
                 return this.chosenUsers.length > 0;
             },
+            labelMap: function () {
+                var map = {};
+                biigle.$require('sync.importLabels').forEach(function (label) {
+                    map[label.id] = label;
+                });
+
+                return map;
+            },
             labels: function () {
                 return this.labelCandidates.map(function (label) {
                     label.description = 'Label tree: ' + label.label_tree_name;
                     return label;
                 });
-            },
-            labelMap: function () {
-                var map = {};
-                this.labels.forEach(function (label) {
-                    map[label.id] = label;
-                });
-
-                return map;
             },
             conflictingParentMap: function () {
                 var map = {};
