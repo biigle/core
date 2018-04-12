@@ -9,6 +9,7 @@ use ZipArchive;
 use Biigle\Role;
 use Biigle\User;
 use Biigle\Label;
+use Ramsey\Uuid\Uuid;
 use Biigle\LabelTree;
 use Biigle\Visibility;
 use Biigle\Tests\UserTest;
@@ -32,16 +33,6 @@ class LabelTreeImportTest extends TestCase
         $this->labelTree->addMember($this->user, Role::$admin);
         $this->member = UserTest::create();
         $this->labelTree->addMember($this->member, Role::$editor);
-        $export = new LabelTreeExport([$this->labelTree->id]);
-        $path = $export->getArchive();
-        $this->destination = tempnam(sys_get_temp_dir(), 'label_tree_import_test');
-        // This should be a directory, not a file.
-        File::delete($this->destination);
-
-        $zip = new ZipArchive;
-        $zip->open($path);
-        $zip->extractTo($this->destination);
-        $zip->close();
     }
 
     public function tearDown()
@@ -52,7 +43,7 @@ class LabelTreeImportTest extends TestCase
 
     public function testFilesMatch()
     {
-        $import = new LabelTreeImport($this->destination);
+        $import = $this->getDefaultImport();
 
         $this->assertTrue($import->filesMatch());
         File::move("{$this->destination}/label_trees.json", "{$this->destination}/label_trees.doge");
@@ -64,7 +55,7 @@ class LabelTreeImportTest extends TestCase
 
     public function testValidateFiles()
     {
-        $import = new LabelTreeImport($this->destination);
+        $import = $this->getDefaultImport();
         $import->validateFiles();
 
         $content = json_decode(File::get("{$this->destination}/label_trees.json"), true);
@@ -81,7 +72,7 @@ class LabelTreeImportTest extends TestCase
 
     public function testGetImportLabelTrees()
     {
-        $import = new LabelTreeImport($this->destination);
+        $import = $this->getDefaultImport();
         $trees = $import->getImportLabelTrees();
         $this->assertCount(1, $trees);
         $this->assertEquals($this->labelTree->name, $trees[0]['name']);
@@ -89,7 +80,7 @@ class LabelTreeImportTest extends TestCase
 
     public function testGetLabelTreeImportCandidates()
     {
-        $import = new LabelTreeImport($this->destination);
+        $import = $this->getDefaultImport();
         $this->assertCount(0, $import->getLabelTreeImportCandidates());
         $this->labelTree->delete();
         $trees = $import->getLabelTreeImportCandidates();
@@ -99,7 +90,7 @@ class LabelTreeImportTest extends TestCase
 
     public function testGetLabelImportCandidates()
     {
-        $import = new LabelTreeImport($this->destination);
+        $import = $this->getDefaultImport();
         $this->assertCount(0, $import->getLabelImportCandidates());
         $this->labelChild->delete();
         $labels = $import->getLabelImportCandidates();
@@ -116,7 +107,7 @@ class LabelTreeImportTest extends TestCase
 
     public function testGetLabelImportCandidatesNameConflict()
     {
-        $import = new LabelTreeImport($this->destination);
+        $import = $this->getDefaultImport();
         $this->assertCount(0, $import->getLabelImportCandidates());
         $this->labelParent->name = 'conflicting name';
         $this->labelParent->save();
@@ -129,7 +120,7 @@ class LabelTreeImportTest extends TestCase
 
     public function testGetLabelImportCandidatesParentConflict()
     {
-        $import = new LabelTreeImport($this->destination);
+        $import = $this->getDefaultImport();
         $this->assertCount(0, $import->getLabelImportCandidates());
         $this->labelChild->parent_id = null;
         $this->labelChild->save();
@@ -142,7 +133,7 @@ class LabelTreeImportTest extends TestCase
 
     public function gestGetUserImportCandidates()
     {
-        $import = new LabelTreeImport($this->destination);
+        $import = $this->getDefaultImport();
         $this->assertCount(0, $import->getUserImportCandidates());
         $this->user->delete();
         $this->assertCount(1, $import->getUserImportCandidates());
@@ -150,7 +141,7 @@ class LabelTreeImportTest extends TestCase
 
     public function testPerformNothing()
     {
-        $import = new LabelTreeImport($this->destination);
+        $import = $this->getDefaultImport();
         $expect = [
             'labelTrees' => [$this->labelTree->id => $this->labelTree->id],
             'labels' => [
@@ -167,7 +158,7 @@ class LabelTreeImportTest extends TestCase
 
     public function testPerformTrees()
     {
-        $import = new LabelTreeImport($this->destination);
+        $import = $this->getDefaultImport();
         $this->labelTree->delete();
         $map = $import->perform();
 
@@ -205,25 +196,29 @@ class LabelTreeImportTest extends TestCase
 
     public function testPerformLabels()
     {
-        $import = new LabelTreeImport($this->destination);
+        $import = $this->getDefaultImport();
         $this->labelChild->delete();
+        // Simulate different label IDs between the same import and existing label.
+        $importParentId = $this->labelParent->id;
+        $this->labelParent->id = 99999;
+        $this->labelParent->save();
         $map = $import->perform();
-        $newLabel = Label::orderByDesc('id')->first();
+        $newLabel = Label::orderBy('id', 'asc')->first();
         $expect = [
             $this->labelChild->id => $newLabel->id,
-            $this->labelParent->id => $this->labelParent->id,
+            $importParentId => $this->labelParent->id,
         ];
         $this->assertEquals($expect, $map['labels']);
         $this->assertEquals($this->labelChild->uuid, $newLabel->uuid);
         $this->assertEquals($this->labelChild->name, $newLabel->name);
-        $this->assertEquals($this->labelChild->parent_id, $newLabel->parent_id);
+        $this->assertEquals($this->labelParent->id, $newLabel->parent_id);
         $this->assertEquals($this->labelChild->color, $newLabel->color);
     }
 
     public function testPerformMembers()
     {
-        $import = new LabelTreeImport($this->destination);
-        // Do not import label tree editors if they do not exist.
+        $import = $this->getDefaultImport();
+        // Do *not* import label tree editors if they do not exist.
         $this->member->delete();
         $map = $import->perform();
         $newTree = LabelTree::orderByDesc('id')->first();
@@ -241,27 +236,155 @@ class LabelTreeImportTest extends TestCase
 
     public function testPerformOnlyTrees()
     {
-        $this->markTestIncomplete();
+        $otherTree = LabelTreeTest::create();
+        $import = $this->getImport([$this->labelTree->id, $otherTree->id]);
+        $otherTree->delete();
+        $this->labelTree->delete();
+        $map = $import->perform([$otherTree->id]);
+        $this->assertTrue(LabelTree::where('uuid', $otherTree->uuid)->exists());
+        $this->assertFalse(LabelTree::where('uuid', $this->labelTree->uuid)->exists());
+        $this->assertFalse(array_key_exists($this->labelTree->id, $map['labelTrees']));
     }
 
     public function testPerformOnlyLabels()
     {
-        $this->markTestIncomplete();
+        $import = $this->getDefaultImport();
+        $this->labelParent->delete();
+        $this->labelChild->delete();
+        $map = $import->perform(null, [$this->labelChild->id]);
+        $labels = $this->labelTree->labels;
+        $this->assertCount(1, $labels);
+        $this->assertEquals($this->labelChild->uuid, $labels[0]->uuid);
+        $this->assertNull($labels[0]->parent_id);
     }
 
-    public function testPerformNameConflicts()
+    public function testPerformNameConflictUnresoved()
     {
-        $this->markTestIncomplete();
+        $import = $this->getDefaultImport();
+        $this->labelParent->name = 'some other name';
+        $this->labelParent->save();
+
+        try {
+            $import->perform();
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertContains('Unresolved name conflict', $e->getMessage());
+        }
     }
 
-    public function testPerformParentConflicts()
+    public function testPerformNameConflictTakeImport()
     {
-        $this->markTestIncomplete();
+        $import = $this->getDefaultImport();
+        $originalName = $this->labelParent->name;
+        $this->labelParent->name = 'some other name';
+        $this->labelParent->save();
+        $import->perform(null, null, [$this->labelParent->id => 'import']);
+        $this->assertEquals($originalName, $this->labelParent->fresh()->name);
+    }
+
+    public function testPerformNameConflictTakeExisting()
+    {
+        $import = $this->getDefaultImport();
+        $this->labelParent->name = 'some other name';
+        $this->labelParent->save();
+        $import->perform(null, null, [$this->labelParent->id => 'existing']);
+        $this->assertEquals('some other name', $this->labelParent->fresh()->name);
+    }
+
+    public function testPerformParentConflictUnresolved()
+    {
+        $import = $this->getDefaultImport();
+        $this->labelChild->parent_id = null;
+        $this->labelChild->save();
+
+        try {
+            $import->perform();
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertContains('Unresolved parent conflict', $e->getMessage());
+        }
+    }
+
+    public function testPerformParentConflictTakeImport()
+    {
+        $import = $this->getDefaultImport();
+        $otherLabel = LabelTest::create(['label_tree_id' => $this->labelTree->id]);
+        $this->labelChild->parent_id = $otherLabel->id;
+        $this->labelChild->save();
+        $import->perform(null, null, [], [$this->labelChild->id => 'import']);
+        $this->assertEquals($this->labelParent->id, $this->labelChild->fresh()->parent_id);
+    }
+
+    public function testPerformParentConflictTakeImportNull()
+    {
+        $this->labelChild->parent_id = null;
+        $this->labelChild->save();
+        $import = $this->getDefaultImport();
+        $this->labelChild->parent_id = $this->labelParent->id;
+        $this->labelChild->save();
+        $import->perform(null, null, [], [$this->labelChild->id => 'import']);
+        $this->assertNull($this->labelChild->fresh()->parent_id);
+    }
+
+    public function testPerformParentConflictTakeExisting()
+    {
+        $import = $this->getDefaultImport();
+        $otherLabel = LabelTest::create(['label_tree_id' => $this->labelTree->id]);
+        $this->labelChild->parent_id = $otherLabel->id;
+        $this->labelChild->save();
+        $import->perform(null, null, [], [$this->labelChild->id => 'existing']);
+        $this->assertEquals($otherLabel->id, $this->labelChild->fresh()->parent_id);
     }
 
     public function testPerformUserConflicts()
     {
-        $this->markTestIncomplete();
-        // Perform the user import first so it may fail before labels/trees are created.
+        $import = $this->getDefaultImport();
+        $this->labelTree->delete();
+        $this->user->uuid = Uuid::uuid4();
+        $this->user->save();
+
+        try {
+            $import->perform();
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertFalse(LabelTree::where('uuid', $this->labelTree->uuid)->exists());
+        }
+    }
+
+    public function testPerformException()
+    {
+        // Construct an unresolved conflict.
+        $import = $this->getDefaultImport();
+        $this->labelParent->name = 'some other name';
+        $this->labelParent->save();
+        $this->labelChild->delete();
+
+        try {
+            $import->perform();
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertFalse(Label::where('uuid', $this->labelChild->uuid)->exists());
+        }
+    }
+
+    protected function getDefaultImport()
+    {
+        return $this->getImport([$this->labelTree->id]);
+    }
+
+    protected function getImport(array $ids)
+    {
+        $export = new LabelTreeExport($ids);
+        $path = $export->getArchive();
+        $this->destination = tempnam(sys_get_temp_dir(), 'label_tree_import_test');
+        // This should be a directory, not a file.
+        File::delete($this->destination);
+
+        $zip = new ZipArchive;
+        $zip->open($path);
+        $zip->extractTo($this->destination);
+        $zip->close();
+
+        return new LabelTreeImport($this->destination);
     }
 }

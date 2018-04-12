@@ -3,12 +3,14 @@
 namespace Biigle\Modules\Sync\Support\Import;
 
 use DB;
+use Exception;
 use Biigle\Role;
 use Biigle\Label;
 use Carbon\Carbon;
 use Biigle\LabelTree;
 use Biigle\Visibility;
 use Illuminate\Support\Collection;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class LabelTreeImport extends Import
 {
@@ -30,21 +32,39 @@ class LabelTreeImport extends Import
      */
     public function perform($onlyTrees = null, $onlyLabels = null, $nameConflictResolution = [], $parentConflictResolution = [])
     {
-        // Do this first so it may fail before any trees or labels are created.
+        try {
+            $insertTrees = $this->getInsertLabelTrees($onlyTrees);
+            $labelTreeIdMap = $this->insertLabelTrees($insertTrees);
 
-        $insertTrees = $this->getInsertLabelTrees($onlyTrees);
-        $labelTreeIdMap = $this->insertLabelTrees($insertTrees);
+            $insertUserIds = $this->getInsertUserIds($insertTrees);
+            $userIdMap = (new UserImport($this->path))->perform($insertUserIds);
+            $this->attachLabelTreeMembers($insertTrees, $labelTreeIdMap, $userIdMap);
 
-        // Catch exception and delete inserted trees if user import fails.
-        $insertUserIds = $this->getInsertUserIds($insertTrees);
-        $userIdMap = (new UserImport($this->path))->perform($insertUserIds);
-        $this->attachLabelTreeMembers($insertTrees, $labelTreeIdMap, $userIdMap);
+            $labelCandidates = $this->getInsertLabels($onlyLabels);
+            $labelHasConflict = function ($label) {
+                return array_key_exists('conflicting_name', $label) || array_key_exists('conflicting_parent_id', $label);
+            };
 
-        $insertLabels = $this->getInsertLabels($onlyLabels);
-        // Insert all labels with parent_id null first.
-        $labelIdMap = $this->insertLabels($insertLabels, $labelTreeIdMap);
-        // Then set the parent_id based on the IDs of the newly existing labels.
-        $this->updateInsertedLabelParentIds($insertLabels, $labelIdMap);
+            $insertLabels = $labelCandidates->reject($labelHasConflict);
+            // Insert all labels with parent_id null first.
+            $labelIdMap = $this->insertLabels($insertLabels, $labelTreeIdMap);
+            // Then set the parent_id based on the IDs of the newly existing labels.
+            $this->updateInsertedLabelParentIds($insertLabels, $labelIdMap);
+
+            $mergeLabels = $labelCandidates->filter($labelHasConflict);
+            $this->mergeLabels($mergeLabels, $nameConflictResolution, $parentConflictResolution, $labelIdMap);
+        } catch (Exception $e) {
+            // Attempt to delete any imported label trees and labels.
+            if (isset($labelTreeIdMap)) {
+                LabelTree::whereIn('uuid', $insertTrees->pluck('uuid'))->delete();
+            }
+
+            if (isset($labelIdMap)) {
+                Label::whereIn('uuid', $insertLabels->pluck('uuid'))->delete();
+            }
+
+            throw $e;
+        }
 
         return [
             'labelTrees' => $labelTreeIdMap,
@@ -211,6 +231,9 @@ class LabelTreeImport extends Import
         $now = Carbon::now();
 
         return $this->getLabelTreeImportCandidates()
+            ->when(is_array($onlyTrees), function ($collection) use ($onlyTrees) {
+                return $collection->whereIn('id', $onlyTrees);
+            })
             ->map(function ($tree) use ($now) {
                 return [
                     'name' => $tree['name'],
@@ -312,7 +335,10 @@ class LabelTreeImport extends Import
     {
         // As the import label trees have been imported at this point, their import
         // labels are included in the candidates now, too.
-        return $this->getLabelImportCandidates();
+        return $this->getLabelImportCandidates()
+            ->when(is_array($onlyLabels), function ($collection) use ($onlyLabels) {
+                return $collection->whereIn('id', $onlyLabels);
+            });
     }
 
     /**
@@ -364,12 +390,66 @@ class LabelTreeImport extends Import
      */
     protected function updateInsertedLabelParentIds($labels, $labelIdMap)
     {
-        $labels->reject(function ($label) {
-            return is_null($label['parent_id']);
-        })
-        ->each(function ($label) use ($labelIdMap) {
+        $labels->reject(function ($label) use ($labelIdMap) {
+                return is_null($label['parent_id']) ||
+                    // This might be the case if a user selectively imports a child label
+                    // but not its parent.
+                    !array_key_exists($label['parent_id'], $labelIdMap);
+            })
+            ->each(function ($label) use ($labelIdMap) {
+                Label::where('id', $labelIdMap[$label['id']])
+                    ->update(['parent_id' => $labelIdMap[$label['parent_id']]]);
+            });
+    }
+
+    /**
+     * Merge conflicts between import labels and existing labels.
+     *
+     * @param Collection $mergeLabels Import labels to merge.
+     * @param array $nameConflictResolution
+     * @param array $parentConflictResolution
+     * @param array $labelIdMap Map of import label IDs to existing label IDs.
+     */
+    protected function mergeLabels($mergeLabels, $nameConflictResolution, $parentConflictResolution, $labelIdMap)
+    {
+        $nameConflicts = $mergeLabels->filter(function ($label) {
+                return array_key_exists('conflicting_name', $label);
+            })
+            ->each(function ($label) use ($nameConflictResolution) {
+                if (!array_key_exists($label['id'], $nameConflictResolution)) {
+                    throw new UnprocessableEntityHttpException("Unresolved name conflict for label '{$label['name']}'.");
+                }
+            })
+            ->filter(function ($label) use ($nameConflictResolution) {
+                return $nameConflictResolution[$label['id']] === 'import';
+            });
+
+        $parentConflicts = $mergeLabels->filter(function ($label) {
+                return array_key_exists('conflicting_parent_id', $label);
+            })
+            ->each(function ($label) use ($parentConflictResolution) {
+                if (!array_key_exists($label['id'], $parentConflictResolution)) {
+                    throw new UnprocessableEntityHttpException("Unresolved parent conflict for label '{$label['name']}'.");
+                }
+            })
+            ->filter(function ($label) use ($parentConflictResolution) {
+                return $parentConflictResolution[$label['id']] === 'import';
+            });
+
+        // Resolve name and parent conflicts *after* the check if every conflict has a
+        // resolution.
+        $nameConflicts->each(function ($label) use ($labelIdMap) {
             Label::where('id', $labelIdMap[$label['id']])
-                ->update(['parent_id' => $labelIdMap[$label['parent_id']]]);
+                ->update(['name' => $label['name']]);
+        });
+
+        $parentConflicts->each(function ($label) use ($labelIdMap) {
+            $id = null;
+            if (array_key_exists($label['parent_id'], $labelIdMap)) {
+                $id = $labelIdMap[$label['parent_id']];
+            }
+            Label::where('id', $labelIdMap[$label['id']])
+                ->update(['parent_id' => $id]);
         });
     }
 }

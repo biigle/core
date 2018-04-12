@@ -28,10 +28,10 @@ class UserImport extends Import
     {
         $users = $this->getImportUsers();
         $now = Carbon::now();
-        $candidates = $this->getUserImportCandidates();
-        if (is_array($only)) {
-            $candidates = $candidates->whereIn('id', $only);
-        }
+        $candidates = $this->getUserImportCandidates()
+            ->when(is_array($only), function ($collection) use ($only) {
+                return $collection->whereIn('id', $only);
+            });
 
         $conflicts = $candidates->whereIn('id', $this->getConflicts()->pluck('id'));
         if ($conflicts->isNotEmpty()) {
