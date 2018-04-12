@@ -2,10 +2,13 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
+use DB;
+use Biigle\Role;
 use Biigle\Label;
 use Carbon\Carbon;
 use Biigle\LabelTree;
 use Biigle\Visibility;
+use Illuminate\Support\Collection;
 
 class LabelTreeImport extends Import
 {
@@ -28,56 +31,20 @@ class LabelTreeImport extends Import
     public function perform($onlyTrees = null, $onlyLabels = null, $nameConflictResolution = [], $parentConflictResolution = [])
     {
         // Do this first so it may fail before any trees or labels are created.
-        $userIdMap = (new UserImport($this->path))->perform();
 
-        $now = Carbon::now();
+        $insertTrees = $this->getInsertLabelTrees($onlyTrees);
+        $labelTreeIdMap = $this->insertLabelTrees($insertTrees);
 
-        $insertTrees = $this->getLabelTreeImportCandidates()
-            ->map(function ($tree) use ($now) {
-                return [
-                    'name' => $tree['name'],
-                    'description' => $tree['description'],
-                    'uuid' => $tree['uuid'],
-                    'visibility_id' => Visibility::$private->id,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ];
-            });
+        // Catch exception and delete inserted trees if user import fails.
+        $insertUserIds = $this->getInsertUserIds($insertTrees);
+        $userIdMap = (new UserImport($this->path))->perform($insertUserIds);
+        $this->attachLabelTreeMembers($insertTrees, $labelTreeIdMap, $userIdMap);
 
-        LabelTree::insert($insertTrees->toArray());
-
-
-        $labelTrees = $this->getImportLabelTrees()->keyBy('uuid');
-        $existingTrees = LabelTree::whereIn('uuid', $labelTrees->keys())
-            ->pluck('id', 'uuid');
-
-        $labelTreeIdMap = [];
-        foreach ($labelTrees as $tree) {
-            if ($existingTrees->has($tree['uuid'])) {
-                $labelTreeIdMap[$tree['id']] = $existingTrees[$tree['uuid']];
-            }
-        }
-
-        //TODO insert all labels that belong to imported label trees and that should
-        //be merged into existing label trees.
-        // $insertLabels = $labelTrees->whereIn('uuid', $insertTrees->pluck('uuid'))
-        //     ->pluck('labels')
-        //     ->collapse()
-        //     ->map(function ($label) {
-        //         dd($label);
-        //     });
-
-        $labels = $labelTrees->pluck('labels')->collapse()->keyBy('uuid');
-
-        $existingLabelIds = Label::whereIn('uuid', $labels->keys())
-            ->pluck('id', 'uuid');
-
-        $labelIdMap = [];
-        foreach ($labels as $label) {
-            if ($existingLabelIds->has($label['uuid'])) {
-                $labelIdMap[$label['id']] = $existingLabelIds[$label['uuid']];
-            }
-        }
+        $insertLabels = $this->getInsertLabels($onlyLabels);
+        // Insert all labels with parent_id null first.
+        $labelIdMap = $this->insertLabels($insertLabels, $labelTreeIdMap);
+        // Then set the parent_id based on the IDs of the newly existing labels.
+        $this->updateInsertedLabelParentIds($insertLabels, $labelIdMap);
 
         return [
             'labelTrees' => $labelTreeIdMap,
@@ -89,7 +56,7 @@ class LabelTreeImport extends Import
     /**
      * Get the contents of the label tree import file.
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function getImportLabelTrees()
     {
@@ -103,7 +70,7 @@ class LabelTreeImport extends Import
     /**
      * Get label trees that can be imported and don't already exist.
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function getLabelTreeImportCandidates()
     {
@@ -119,7 +86,7 @@ class LabelTreeImport extends Import
      * If an import label exists but has a conflicting name or parent_id, it will get
      * the additional conflicting_name and/or conflicting_parent_id attributes.
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function getLabelImportCandidates()
     {
@@ -131,6 +98,7 @@ class LabelTreeImport extends Import
             ->whereIn('uuid', $existingTrees)
             ->map(function ($tree) {
                 return array_map(function ($label) use ($tree) {
+                    $label['label_tree_id'] = $tree['id'];
                     $label['label_tree_name'] = $tree['name'];
                     return $label;
                 }, $tree['labels']);
@@ -190,7 +158,7 @@ class LabelTreeImport extends Import
     /**
      * Get users who might be implicitly imported along with a label tree.
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function getUserImportCandidates()
     {
@@ -229,5 +197,179 @@ class LabelTreeImport extends Import
         }
 
         return parent::validateFile($basename);
+    }
+
+    /**
+     * Get the array that can be used to insert the label trees that should be imported.
+     *
+     * @param array|null $onlyTrees IDs of the label tree import candidates to limit the import to
+     *
+     * @return Collection
+     */
+    protected function getInsertLabelTrees($onlyTrees)
+    {
+        $now = Carbon::now();
+
+        return $this->getLabelTreeImportCandidates()
+            ->map(function ($tree) use ($now) {
+                return [
+                    'name' => $tree['name'],
+                    'description' => $tree['description'],
+                    'uuid' => $tree['uuid'],
+                    'visibility_id' => Visibility::$private->id,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            });
+    }
+
+    /**
+     * Insert label trees that should be imported in the database.
+     *
+     * @param Collection $trees Label trees to insert.
+     *
+     * @return array Map of import label tree IDs to existing label tree IDs.
+     */
+    protected function insertLabelTrees($trees)
+    {
+        LabelTree::insert($trees->toArray());
+
+        $labelTrees = $this->getImportLabelTrees()->keyBy('uuid');
+        $existingTrees = LabelTree::whereIn('uuid', $labelTrees->keys())
+            ->pluck('id', 'uuid');
+
+        $labelTreeIdMap = [];
+        foreach ($labelTrees as $tree) {
+            if ($existingTrees->has($tree['uuid'])) {
+                $labelTreeIdMap[$tree['id']] = $existingTrees[$tree['uuid']];
+            }
+        }
+
+        return $labelTreeIdMap;
+    }
+
+    /**
+     * Get IDs of label tree admins that should be imported.
+     *
+     * @param Collection $trees Label trees that have been imported.
+     *
+     * @return array
+     */
+    protected function getInsertUserIds($trees)
+    {
+        return $this->getImportLabelTrees()
+            ->whereIn('uuid', $trees->pluck('uuid'))
+            ->pluck('members')
+            ->collapse()
+            ->filter(function ($user) {
+                return $user['role_id'] === Role::$admin->id;
+            })
+            ->pluck('id')
+            ->unique()
+            ->toArray();
+    }
+
+    /**
+     * Attach members to imported label trees.
+     *
+     * @param Collection $trees Imported label trees
+     * @param array $labelTreeIdMap Map of import label trees to existing label trees.
+     * @param array $userIdMap Map of import users to existing users.
+     */
+    protected function attachLabelTreeMembers($trees, $labelTreeIdMap, $userIdMap)
+    {
+        $insertMembers = $this->getImportLabelTrees()
+            ->whereIn('uuid', $trees->pluck('uuid'))
+            ->map(function ($tree) {
+                return array_map(function ($member) use ($tree) {
+                    $member['label_tree_id'] = $tree['id'];
+                    return $member;
+                }, $tree['members']);
+            })
+            ->collapse()
+            ->filter(function ($user) use ($userIdMap) {
+                return array_key_exists($user['id'], $userIdMap);
+            })
+            ->map(function ($member) use ($labelTreeIdMap, $userIdMap) {
+                return [
+                    'user_id' => $userIdMap[$member['id']],
+                    'label_tree_id' => $labelTreeIdMap[$member['label_tree_id']],
+                    'role_id' => $member['role_id'],
+                ];
+            });
+
+        DB::table('label_tree_user')->insert($insertMembers->toArray());
+    }
+
+    /**
+     * Get the array that can be used to insert the labels that should be imported.
+     *
+     * @param array|null $onlyLabels IDs of the label import candidates to limit the import to.
+     *
+     * @return Collection
+     */
+    protected function getInsertLabels($onlyLabels)
+    {
+        // As the import label trees have been imported at this point, their import
+        // labels are included in the candidates now, too.
+        return $this->getLabelImportCandidates();
+    }
+
+    /**
+     * Insert labels that should be imported in the database.
+     *
+     * @param Collection $labels The labels to insert
+     * @param array $labelTreeIdMap Map of import label tree IDs to existing label tree IDs
+     *
+     * @return array Map of import label IDs to existing label IDs.
+     */
+    protected function insertLabels($labels, $labelTreeIdMap)
+    {
+        $labels = $labels->map(function ($label) use ($labelTreeIdMap) {
+            return [
+                'name' => $label['name'],
+                'color' => $label['color'],
+                'label_tree_id' => $labelTreeIdMap[$label['label_tree_id']],
+                'uuid' => $label['uuid'],
+            ];
+        });
+
+        Label::insert($labels->toArray());
+
+        // This is not the same than $labels. It might inclide already existing labels,
+        // too because we want the ID map of all labels of the import and not only of all
+        // imported labels.
+        $importLabels = $this->getImportLabelTrees()
+            ->pluck('labels')
+            ->collapse();
+
+        $existingLabels = Label::whereIn('uuid', $importLabels->pluck('uuid'))
+            ->pluck('id', 'uuid');
+
+        $labelIdMap = [];
+        foreach ($importLabels as $label) {
+            if ($existingLabels->has($label['uuid'])) {
+                $labelIdMap[$label['id']] = $existingLabels[$label['uuid']];
+            }
+        }
+
+        return $labelIdMap;
+    }
+
+    /**
+     * Update/set the parent_id of imported labels.
+     *
+     * @param Collection $labels Labels to update the parent_id of.
+     * @param array $labelIdMap Map of import label IDs to existing label IDs.
+     */
+    protected function updateInsertedLabelParentIds($labels, $labelIdMap)
+    {
+        $labels->reject(function ($label) {
+            return is_null($label['parent_id']);
+        })
+        ->each(function ($label) use ($labelIdMap) {
+            Label::where('id', $labelIdMap[$label['id']])
+                ->update(['parent_id' => $labelIdMap[$label['parent_id']]]);
+        });
     }
 }

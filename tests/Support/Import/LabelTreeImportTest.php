@@ -30,6 +30,8 @@ class LabelTreeImportTest extends TestCase
         $this->labelChild = LabelTest::create(['label_tree_id' => $this->labelTree->id, 'parent_id' => $this->labelParent->id]);
         $this->user = UserTest::create();
         $this->labelTree->addMember($this->user, Role::$admin);
+        $this->member = UserTest::create();
+        $this->labelTree->addMember($this->member, Role::$editor);
         $export = new LabelTreeExport([$this->labelTree->id]);
         $path = $export->getArchive();
         $this->destination = tempnam(sys_get_temp_dir(), 'label_tree_import_test');
@@ -157,6 +159,7 @@ class LabelTreeImportTest extends TestCase
             ],
             'users' => [
                 $this->user->id => $this->user->id,
+                $this->member->id => $this->member->id,
             ],
         ];
         $this->assertEquals($expect, $import->perform());
@@ -167,6 +170,7 @@ class LabelTreeImportTest extends TestCase
         $import = new LabelTreeImport($this->destination);
         $this->labelTree->delete();
         $map = $import->perform();
+
         $newTree = LabelTree::orderByDesc('id')->first();
         $expect = [$this->labelTree->id => $newTree->id];
         $this->assertEquals($expect, $map['labelTrees']);
@@ -174,27 +178,65 @@ class LabelTreeImportTest extends TestCase
         $this->assertEquals($this->labelTree->name, $newTree->name);
         $this->assertEquals($this->labelTree->description, $newTree->description);
         $this->assertEquals(Visibility::$private->id, $newTree->visibility_id);
-        $this->assertEquals(2, Label::count());
+
+        $parent = $newTree->labels()->whereNull('parent_id')->first();
+        $child = $newTree->labels()->whereNotNull('parent_id')->first();
+        $this->assertEquals($parent->id, $child->parent_id);
+        $expect = [
+            $this->labelParent->id => $parent->id,
+            $this->labelChild->id => $child->id,
+        ];
+        $this->assertEquals($expect, $map['labels']);
+
+        $members = $newTree->members()
+            ->addSelect('uuid')
+            ->get()
+            // Pluck after get to get the correct role_id.
+            ->pluck('role_id', 'uuid')
+            ->toArray();
+
+        $expect = [
+            $this->user->uuid => Role::$admin->id,
+            $this->member->uuid => Role::$editor->id,
+        ];
+        $this->assertEquals($expect, $members);
+        $this->assertCount(2, $map['users']);
     }
 
     public function testPerformLabels()
     {
-        $this->markTestIncomplete();
-        // $import = new LabelTreeImport($this->destination);
-        // $this->labelChild->delete();
-        // $map = $import->perform();
-        // $newLabel = Label::orderByDesc('id')->first();
-        // $expect = [$this->labelChild->id => $newLabel->id];
-        // $this->assertEquals($expect, $map['labels']);
-        // $this->assertEquals($this->labelChild->uuid, $newLabel->uuid);
-        // $this->assertEquals($this->labelChild->name, $newLabel->name);
-        // $this->assertEquals($this->labelChild->parent_id, $newLabel->parent_id);
-        // $this->assertEquals($this->labelChild->color, $newLabel->color);
+        $import = new LabelTreeImport($this->destination);
+        $this->labelChild->delete();
+        $map = $import->perform();
+        $newLabel = Label::orderByDesc('id')->first();
+        $expect = [
+            $this->labelChild->id => $newLabel->id,
+            $this->labelParent->id => $this->labelParent->id,
+        ];
+        $this->assertEquals($expect, $map['labels']);
+        $this->assertEquals($this->labelChild->uuid, $newLabel->uuid);
+        $this->assertEquals($this->labelChild->name, $newLabel->name);
+        $this->assertEquals($this->labelChild->parent_id, $newLabel->parent_id);
+        $this->assertEquals($this->labelChild->color, $newLabel->color);
     }
 
-    public function testPerformUsers()
+    public function testPerformMembers()
     {
-        $this->markTestIncomplete();
+        $import = new LabelTreeImport($this->destination);
+        // Do not import label tree editors if they do not exist.
+        $this->member->delete();
+        $map = $import->perform();
+        $newTree = LabelTree::orderByDesc('id')->first();
+        $this->assertEquals(1, $newTree->members()->count());
+        $this->assertFalse(User::where('uuid', $this->member->uuid)->exists());
+
+        $newTree->delete();
+        // *Do* import label tree admins if they do not exist.
+        $this->user->delete();
+        $map = $import->perform();
+        $newTree = LabelTree::orderByDesc('id')->first();
+        $this->assertEquals(1, $newTree->members()->count());
+        $this->assertTrue(User::where('uuid', $this->user->uuid)->exists());
     }
 
     public function testPerformOnlyTrees()
