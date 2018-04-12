@@ -360,7 +360,11 @@ class UserController extends Controller
         $user->lastname = $request->input('lastname');
         $user->email = $request->input('email');
         $user->password = bcrypt($request->input('password'));
-        $user->uuid = $request->input('uuid', Uuid::uuid4());
+        if ($request->has('uuid')) {
+            $user->uuid = $request->input('uuid');
+        } else {
+            $user->uuid = Uuid::uuid4();
+        }
         $user->save();
 
         if (static::isAutomatedRequest($request)) {
