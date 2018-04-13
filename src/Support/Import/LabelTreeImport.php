@@ -17,7 +17,7 @@ class LabelTreeImport extends Import
     /**
      * Caches the decoded label tree import file.
      *
-     * @var Illuminate\Support\Collection
+     * @var Collection
      */
     protected $importLabelTrees;
 
