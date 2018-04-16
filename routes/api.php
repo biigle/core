@@ -94,9 +94,8 @@ $router->resource('notifications', 'NotificationController', [
     'only' => ['update', 'destroy'],
 ]);
 
-$router->get('projects/my', 'ProjectController@index');
 $router->resource('projects', 'ProjectController', [
-    'only' => ['show', 'update', 'store', 'destroy'],
+    'only' => ['index', 'show', 'update', 'store', 'destroy'],
     'parameters' => ['projects' => 'id'],
 ]);
 
