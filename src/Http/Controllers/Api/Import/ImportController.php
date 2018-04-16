@@ -170,6 +170,7 @@ class ImportController extends Controller
 
         $import->perform(
             $project,
+            auth()->user(),
             $request->input('only'),
             $request->input('new_urls', []),
             $request->input('name_conflicts', []),

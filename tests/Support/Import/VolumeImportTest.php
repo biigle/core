@@ -7,10 +7,12 @@ use TestCase;
 use Exception;
 use ZipArchive;
 use Biigle\Role;
+use Biigle\Volume;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
+use Biigle\Tests\ProjectTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\AnnotationTest;
@@ -293,6 +295,103 @@ class VolumeImportTest extends TestCase
         $labels = $import->getLabelImportCandidates();
         $this->assertCount(1, $labels);
         $this->assertEquals('conflicting name', $labels[0]['conflicting_name']);
+    }
+
+    public function testPerform()
+    {
+        $creator = UserTest::create();
+        $annotation = AnnotationTest::create(['image_id' => $this->image->id]);
+        $annotationLabel = AnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+        ]);
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $volume2 = VolumeTest::create();
+        $import = $this->getImport([$this->volume->id, $volume2->id]);
+        $project = ProjectTest::create();
+
+        $map = $import->perform($project, $creator);
+
+        $this->assertArrayHasKey('volumes', $map);
+        $this->assertCount(2, $map['volumes']);
+        $this->assertArrayHasKey($this->volume->id, $map['volumes']);
+        $this->assertArrayHasKey($volume2->id, $map['volumes']);
+        $this->assertEquals(2, $project->volumes()->count());
+
+        $newVolume = Volume::find($map['volumes'][$this->volume->id]);
+        $this->assertEquals($this->volume->name, $newVolume->name);
+        $this->assertEquals($this->volume->url, $newVolume->url);
+        $this->assertEquals($creator->id, $newVolume->creator_id);
+
+        $newImages = $newVolume->images;
+        $this->assertCount(1, $newImages);
+        $this->assertEquals($this->image->filename, $newImages[0]->filename);
+
+        $newImageLabels = $newImages[0]->labels;
+        $this->assertCount(1, $newImageLabels);
+        $this->assertEquals($imageLabel->label->name, $newImageLabels[0]->label->name);
+
+        $newAnnotations = $newImages[0]->annotations;
+        $this->assertCount(1, $newAnnotations);
+        $this->assertEquals($annotation->points, $newAnnotations[0]->points);
+
+        $newAnnotationLabels = $newAnnotations[0]->labels;
+        $this->assertCount(1, $newAnnotationLabels);
+        $this->assertEquals($annotationLabel->label->name, $newAnnotationLabels[0]->label->name);
+    }
+
+    public function testPerformOnly()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformLabelTree()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformLabel()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformUrls()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformInvalidUrls()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformNameConflictUnresolved()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformParentConflictUnresolved()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformUserAnnotationLabel()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformUserImageLabel()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformUserConflicts()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testPerformException()
+    {
+        $this->markTestIncomplete();
     }
 
     protected function getDefaultImport()

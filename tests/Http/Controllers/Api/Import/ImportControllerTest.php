@@ -5,6 +5,7 @@ namespace Biigle\Tests\Modules\Sync\Http\Controllers\Api\Import;
 use Mockery;
 use Exception;
 use ApiTestCase;
+use Biigle\User;
 use Biigle\Project;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\ProjectTest;
@@ -216,7 +217,7 @@ class ImportControllerTest extends ApiTestCase
         $this->makeImportMock(VolumeImport::class)
             ->shouldReceive('perform')
             ->once()
-            ->with(Mockery::type(Project::class), [1, 2, 3], [], [], []);
+            ->with(Mockery::type(Project::class), Mockery::type(User::class), [1, 2, 3], [], [], []);
 
         $this->beGlobalAdmin();
         $p = ProjectTest::create();
@@ -242,7 +243,7 @@ class ImportControllerTest extends ApiTestCase
         $this->makeImportMock(VolumeImport::class)
             ->shouldReceive('perform')
             ->once()
-            ->with(Mockery::type(Project::class), null, [], [1 => 'existing'], []);
+            ->with(Mockery::type(Project::class), Mockery::type(User::class), null, [], [1 => 'existing'], []);
 
         $this->beGlobalAdmin();
         $p = ProjectTest::create();
@@ -268,7 +269,7 @@ class ImportControllerTest extends ApiTestCase
         $this->makeImportMock(VolumeImport::class)
             ->shouldReceive('perform')
             ->once()
-            ->with(Mockery::type(Project::class), null, [], [], [1 => 'existing']);
+            ->with(Mockery::type(Project::class), Mockery::type(User::class), null, [], [], [1 => 'existing']);
 
         $this->beGlobalAdmin();
         $p = ProjectTest::create();
@@ -294,7 +295,7 @@ class ImportControllerTest extends ApiTestCase
         $this->makeImportMock(VolumeImport::class)
             ->shouldReceive('perform')
             ->once()
-            ->with(Mockery::type(Project::class), null, [0 => 'a'], [], []);
+            ->with(Mockery::type(Project::class), Mockery::type(User::class), null, [0 => 'a'], [], []);
 
         $this->beGlobalAdmin();
         $p = ProjectTest::create();
