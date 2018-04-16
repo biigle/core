@@ -3,6 +3,8 @@
 namespace Biigle\Modules\Sync\Http\Controllers\Api\Import;
 
 use Exception;
+use Biigle\Volume;
+use Biigle\Project;
 use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Modules\Sync\Support\Import\UserImport;
@@ -152,6 +154,26 @@ class ImportController extends Controller
      */
     protected function updateVolumeImport(VolumeImport $import, Request $request)
     {
-        // validate new volume URLs
+        $this->validate($request, [
+            'project_id' => 'required|int|exists:projects,id',
+            'only' => 'filled|array',
+            'only.*' => 'int',
+            'new_urls' => 'array',
+            'new_urls.*' => 'string',
+            'name_conflicts' => 'array',
+            'name_conflicts.*' => 'in:import,existing',
+            'parent_conflicts' => 'array',
+            'parent_conflicts.*' => 'in:import,existing',
+        ]);
+
+        $project = Project::findOrFail($request->input('project_id'));
+
+        $import->perform(
+            $project,
+            $request->input('only'),
+            $request->input('new_urls', []),
+            $request->input('name_conflicts', []),
+            $request->input('parent_conflicts', [])
+        );
     }
 }

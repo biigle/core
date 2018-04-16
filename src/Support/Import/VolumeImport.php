@@ -4,6 +4,7 @@ namespace Biigle\Modules\Sync\Support\Import;
 
 use Biigle\Role;
 use SplFileObject;
+use Biigle\Project;
 use Illuminate\Support\Collection;
 
 class VolumeImport extends Import
@@ -28,6 +29,33 @@ class VolumeImport extends Import
      * @var LabelTreeImport
      */
     protected $labelTreeImport;
+
+    /**
+     * Perform the import
+     *
+     * @param Project $project Project to attach the imported volumes to
+     * @param array|null $only IDs of the volume import candidates to limit the import to.
+     * @param array $newUrls New URLs of imported volumes.
+     * @param array $nameConflictResolution Array mapping label IDs to 'import' or 'existing' for how to resolve name conflicts.
+     * @param array $parentConflictResolution Array mapping label IDs to 'import' or 'existing' for how to resolve parent conflicts.
+     * @return array Array containing 'volumes', 'labelTrees', 'labels' and 'users', mapping external IDs (from the import file) to IDs of the database.
+     */
+    public function perform(Project $project, $only = null, $newUrls = [], $nameConflictResolution = [], $parentConflictResolution = [])
+    {
+        // Validate volume URLs before creating anything.
+        // if ($request->has('new_urls')) {
+        //     foreach ($request->input('new_urls') as $url) {
+        //         $volume = new Volume;
+        //         $volume->url = $url;
+        //         try {
+        //             $volume->validateUrl();
+        //         } catch (Exception $e) {
+        //             $message = "Invalid volume URL '{$url}': ".$e->getMessage();
+        //             throw new UnprocessableEntityHttpException($message);
+        //         }
+        //     }
+        // }
+    }
 
     /**
      * Get the contents of the volume import file.

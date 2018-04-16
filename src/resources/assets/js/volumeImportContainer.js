@@ -190,7 +190,7 @@ biigle.$viewModel('volume-import-container', function (element) {
                 };
 
                 if (this.chosenVolumeIds.length < this.volumes.length) {
-                    payload.only_volumes = this.chosenVolumeIds;
+                    payload.only = this.chosenVolumeIds;
                 }
 
                 if (this.hasNewVolumeUrls) {

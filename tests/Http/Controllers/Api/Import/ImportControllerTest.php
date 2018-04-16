@@ -5,7 +5,9 @@ namespace Biigle\Tests\Modules\Sync\Http\Controllers\Api\Import;
 use Mockery;
 use Exception;
 use ApiTestCase;
+use Biigle\Project;
 use Biigle\Tests\UserTest;
+use Biigle\Tests\ProjectTest;
 use Illuminate\Http\UploadedFile;
 use Biigle\Modules\Sync\Support\Export\UserExport;
 use Biigle\Modules\Sync\Support\Import\UserImport;
@@ -92,29 +94,17 @@ class ImportControllerTest extends ApiTestCase
 
     public function testUpdateUserImport()
     {
-        $importMock = Mockery::mock(UserImport::class);
-        $importMock->shouldReceive('perform')->once();
-        $managerMock = Mockery::mock(ArchiveManager::class);
-        $managerMock->shouldReceive('get')->with('abc123')->andReturn($importMock);
-        $managerMock->shouldReceive('delete')->once();
-        $this->app->bind(ArchiveManager::class, function () use ($managerMock) {
-            return $managerMock;
-        });
-
+        $this->makeImportMock(UserImport::class)->shouldReceive('perform')->once();
         $this->beGlobalAdmin();
         $this->put('/api/v1/import/abc123')->assertStatus(200);
     }
 
     public function testUpdateUserImportOnly()
     {
-        $importMock = Mockery::mock(UserImport::class);
-        $importMock->shouldReceive('perform')->once()->with([1, 2, 3]);
-        $managerMock = Mockery::mock(ArchiveManager::class);
-        $managerMock->shouldReceive('get')->with('abc123')->andReturn($importMock);
-        $managerMock->shouldReceive('delete')->once();
-        $this->app->bind(ArchiveManager::class, function () use ($managerMock) {
-            return $managerMock;
-        });
+        $this->makeImportMock(UserImport::class)
+            ->shouldReceive('perform')
+            ->once()
+            ->with([1, 2, 3]);
 
         $this->beGlobalAdmin();
         $this->putJson('/api/v1/import/abc123', ['only' => 'abc'])->assertStatus(422);
@@ -124,14 +114,10 @@ class ImportControllerTest extends ApiTestCase
 
     public function testUpdateUserImportConflicts()
     {
-        $importMock = Mockery::mock(UserImport::class);
-        $importMock->shouldReceive('perform')->once()->andThrow(new UnprocessableEntityHttpException);
-        $managerMock = Mockery::mock(ArchiveManager::class);
-        $managerMock->shouldReceive('get')->with('abc123')->andReturn($importMock);
-        $managerMock->shouldReceive('delete')->never();
-        $this->app->bind(ArchiveManager::class, function () use ($managerMock) {
-            return $managerMock;
-        });
+        $this->makeImportMock(UserImport::class, 'abc123', false)
+            ->shouldReceive('perform')
+            ->once()
+            ->andThrow(new UnprocessableEntityHttpException);
 
         $this->beGlobalAdmin();
         $this->putJson('/api/v1/import/abc123')->assertStatus(422);
@@ -139,14 +125,7 @@ class ImportControllerTest extends ApiTestCase
 
     public function testUpdateLabelTreeImport()
     {
-        $importMock = Mockery::mock(LabelTreeImport::class);
-        $importMock->shouldReceive('perform')->once();
-        $managerMock = Mockery::mock(ArchiveManager::class);
-        $managerMock->shouldReceive('get')->with('abc123')->andReturn($importMock);
-        $managerMock->shouldReceive('delete')->once();
-        $this->app->bind(ArchiveManager::class, function () use ($managerMock) {
-            return $managerMock;
-        });
+        $this->makeImportMock(LabelTreeImport::class)->shouldReceive('perform')->once();
 
         $this->beGlobalAdmin();
         $this->put('/api/v1/import/abc123')->assertStatus(200);
@@ -154,14 +133,10 @@ class ImportControllerTest extends ApiTestCase
 
     public function testUpdateLabelTreeImportOnlyLabelTrees()
     {
-        $importMock = Mockery::mock(LabelTreeImport::class);
-        $importMock->shouldReceive('perform')->once()->with([1, 2, 3], null, [], []);
-        $managerMock = Mockery::mock(ArchiveManager::class);
-        $managerMock->shouldReceive('get')->with('abc123')->andReturn($importMock);
-        $managerMock->shouldReceive('delete')->once();
-        $this->app->bind(ArchiveManager::class, function () use ($managerMock) {
-            return $managerMock;
-        });
+        $this->makeImportMock(LabelTreeImport::class)
+            ->shouldReceive('perform')
+            ->once()
+            ->with([1, 2, 3], null, [], []);
 
         $this->beGlobalAdmin();
         $this->putJson('/api/v1/import/abc123', ['only_label_trees' => 'abc'])
@@ -174,14 +149,10 @@ class ImportControllerTest extends ApiTestCase
 
     public function testUpdateLabelTreeImportOnlyLabels()
     {
-        $importMock = Mockery::mock(LabelTreeImport::class);
-        $importMock->shouldReceive('perform')->once()->with(null, [1, 2, 3], [], []);
-        $managerMock = Mockery::mock(ArchiveManager::class);
-        $managerMock->shouldReceive('get')->with('abc123')->andReturn($importMock);
-        $managerMock->shouldReceive('delete')->once();
-        $this->app->bind(ArchiveManager::class, function () use ($managerMock) {
-            return $managerMock;
-        });
+        $this->makeImportMock(LabelTreeImport::class)
+            ->shouldReceive('perform')
+            ->once()
+            ->with(null, [1, 2, 3], [], []);
 
         $this->beGlobalAdmin();
         $this->putJson('/api/v1/import/abc123', ['only_labels' => 'abc'])
@@ -194,16 +165,10 @@ class ImportControllerTest extends ApiTestCase
 
     public function testUpdateLabelTreeImportConflictingNames()
     {
-        $importMock = Mockery::mock(LabelTreeImport::class);
-        $importMock->shouldReceive('perform')
+        $this->makeImportMock(LabelTreeImport::class)
+            ->shouldReceive('perform')
             ->once()
             ->with(null, null, [1 => 'import', 2 => 'existing'], []);
-        $managerMock = Mockery::mock(ArchiveManager::class);
-        $managerMock->shouldReceive('get')->with('abc123')->andReturn($importMock);
-        $managerMock->shouldReceive('delete')->once();
-        $this->app->bind(ArchiveManager::class, function () use ($managerMock) {
-            return $managerMock;
-        });
 
         $this->beGlobalAdmin();
         $this->putJson('/api/v1/import/abc123', ['name_conflicts' => 'abc'])
@@ -218,16 +183,10 @@ class ImportControllerTest extends ApiTestCase
 
     public function testUpdateLabelTreeImportConflictingParents()
     {
-        $importMock = Mockery::mock(LabelTreeImport::class);
-        $importMock->shouldReceive('perform')
+        $this->makeImportMock(LabelTreeImport::class)
+            ->shouldReceive('perform')
             ->once()
             ->with(null, null, [], [1 => 'import', 2 => 'existing']);
-        $managerMock = Mockery::mock(ArchiveManager::class);
-        $managerMock->shouldReceive('get')->with('abc123')->andReturn($importMock);
-        $managerMock->shouldReceive('delete')->once();
-        $this->app->bind(ArchiveManager::class, function () use ($managerMock) {
-            return $managerMock;
-        });
 
         $this->beGlobalAdmin();
         $this->putJson('/api/v1/import/abc123', ['parent_conflicts' => 'abc'])
@@ -236,6 +195,117 @@ class ImportControllerTest extends ApiTestCase
             ->assertStatus(422);
         $this->putJson('/api/v1/import/abc123', [
                 'parent_conflicts' => [1 => 'import', 2 => 'existing'],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testUpdateVolumeImport()
+    {
+        $this->makeImportMock(VolumeImport::class)->shouldReceive('perform')->once();
+        $this->beGlobalAdmin();
+        $this->putJson('/api/v1/import/abc123')->assertStatus(422);
+        $this->putJson('/api/v1/import/abc123', ['project_id' => 99])
+            ->assertStatus(422);
+        $p = ProjectTest::create();
+        $this->putJson('/api/v1/import/abc123', ['project_id' => $p->id])
+            ->assertStatus(200);
+    }
+
+    public function testUpdateVolumeImportOnlyVolumes()
+    {
+        $this->makeImportMock(VolumeImport::class)
+            ->shouldReceive('perform')
+            ->once()
+            ->with(Mockery::type(Project::class), [1, 2, 3], [], [], []);
+
+        $this->beGlobalAdmin();
+        $p = ProjectTest::create();
+        $this->putJson('/api/v1/import/abc123', [
+                'project_id' => $p->id,
+                'only' => 'abc',
+            ])
+            ->assertStatus(422);
+        $this->putJson('/api/v1/import/abc123', [
+                'project_id' => $p->id,
+                'only' => ['a'],
+            ])
+            ->assertStatus(422);
+        $this->putJson('/api/v1/import/abc123', [
+                'project_id' => $p->id,
+                'only' => [1, 2, 3],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testUpdateVolumeImportConflictingNames()
+    {
+        $this->makeImportMock(VolumeImport::class)
+            ->shouldReceive('perform')
+            ->once()
+            ->with(Mockery::type(Project::class), null, [], [1 => 'existing'], []);
+
+        $this->beGlobalAdmin();
+        $p = ProjectTest::create();
+        $this->putJson('/api/v1/import/abc123', [
+                'project_id' => $p->id,
+                'name_conflicts' => 'abc',
+            ])
+            ->assertStatus(422);
+        $this->putJson('/api/v1/import/abc123', [
+                'project_id' => $p->id,
+                'name_conflicts' => ['a'],
+            ])
+            ->assertStatus(422);
+        $this->putJson('/api/v1/import/abc123', [
+                'project_id' => $p->id,
+                'name_conflicts' => [1 => 'existing'],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testUpdateVolumeImportConflictingParents()
+    {
+        $this->makeImportMock(VolumeImport::class)
+            ->shouldReceive('perform')
+            ->once()
+            ->with(Mockery::type(Project::class), null, [], [], [1 => 'existing']);
+
+        $this->beGlobalAdmin();
+        $p = ProjectTest::create();
+        $this->putJson('/api/v1/import/abc123', [
+                'project_id' => $p->id,
+                'parent_conflicts' => 'abc',
+            ])
+            ->assertStatus(422);
+        $this->putJson('/api/v1/import/abc123', [
+                'project_id' => $p->id,
+                'parent_conflicts' => ['a'],
+            ])
+            ->assertStatus(422);
+        $this->putJson('/api/v1/import/abc123', [
+                'project_id' => $p->id,
+                'parent_conflicts' => [1 => 'existing'],
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testUpdateVolumeImportNewVolumeUrls()
+    {
+        $this->makeImportMock(VolumeImport::class)
+            ->shouldReceive('perform')
+            ->once()
+            ->with(Mockery::type(Project::class), null, [0 => 'a'], [], []);
+
+        $this->beGlobalAdmin();
+        $p = ProjectTest::create();
+        $this->putJson('/api/v1/import/abc123', [
+                'project_id' => $p->id,
+                'new_urls' => 'abc',
+            ])
+            ->assertStatus(422);
+        $this->putJson('/api/v1/import/abc123', [
+                'project_id' => $p->id,
+                'new_urls' => ['a'],
             ])
             ->assertStatus(200);
     }
@@ -260,5 +330,20 @@ class ImportControllerTest extends ApiTestCase
         $this->delete('/api/v1/import/abc123')
             ->assertStatus(302)
             ->assertRedirect('admin/import');
+    }
+
+    protected function makeImportMock($class, $token = 'abc123', $delete = true)
+    {
+        $importMock = Mockery::mock($class);
+        $managerMock = Mockery::mock(ArchiveManager::class);
+        $managerMock->shouldReceive('get')->with($token)->andReturn($importMock);
+        if ($delete) {
+            $managerMock->shouldReceive('delete')->once();
+        }
+        $this->app->bind(ArchiveManager::class, function () use ($managerMock) {
+            return $managerMock;
+        });
+
+        return $importMock;
     }
 }
