@@ -16,6 +16,20 @@ class VolumeImport extends Import
     protected $importVolumes;
 
     /**
+     * The user import instance that belongs to this import.
+     *
+     * @var UserImport
+     */
+    protected $userImport;
+
+    /**
+     * The label tree import instance that belongs to this import.
+     *
+     * @var LabelTreeImport
+     */
+    protected $labelTreeImport;
+
+    /**
      * Get the contents of the label tree import file.
      *
      * @return Collection
@@ -30,32 +44,16 @@ class VolumeImport extends Import
     }
 
     /**
-     * Get the users who have to be imported for each volume.
-     * These may be creators of annotation/image labels or admins of required label trees.
+     * Get all volumes of this import augmented by the IDs of the users, label trees and
+     * labels that they require.
      *
-     * @return Collection Map of volume ID to an array of users who need to be imported for this volume.
+     * @return Collection
      */
-    public function getUserImportCandidates()
+    public function getVolumeImportCandidates()
     {
-        $candidates = (new UserImport($this->path))
-            ->getUserImportCandidates()
-            ->keyBy('id');
-
-        $entities = $this->getRequiredEntities();
-        // Map of volume IDs to a list of user IDs who would need to be imported based on
-        // annotation and image labels.
-        $requiredLabelUsers = collect($entities['users'])->map(function ($userIds) use ($candidates) {
-                return array_filter($userIds, function ($id) use ($candidates) {
-                    return $candidates->has($id);
-                });
-            });
-
-        // Now determine the users who have to be imported because they are admins of
-        // required label trees.
-        $trees = (new LabelTreeImport($this->path))->getImportLabelTrees();
-
-        // Maps label IDs to the ID of their label tree.
-        $labelToLabelTreeMap = $trees->map(function ($tree) {
+        $labelToTreeMap = $this->getLabelTreeImport()
+            ->getImportLabelTrees()
+            ->map(function ($tree) {
                 $tree['labels'] = array_map(function ($label) use ($tree) {
                     $label['label_tree_id'] = $tree['id'];
                     return $label;
@@ -66,69 +64,60 @@ class VolumeImport extends Import
             ->collapse()
             ->pluck('label_tree_id', 'id');
 
-        $labels = collect($entities['labels']);
-        // Maps volume IDs to a list of label trees that are required for the volume.
-        $requiredLabelTrees = $labels->map(function ($ids) use ($labelToLabelTreeMap) {
-            $ids = array_map(function ($id) use ($labelToLabelTreeMap) {
-                return $labelToLabelTreeMap->get($id);
-            }, $ids);
+        $volumes = $this->getImportVolumes();
+        $entities = $this->getRequiredEntities();
 
-            return array_unique($ids);
-        });
-
-        // Maps label tree IDs to the list of their admin IDs who don't already exist.
-        $labelTreeAdmins = $trees->map(function ($tree) use ($candidates) {
-                $tree['members'] = array_filter($tree['members'], function ($member) use ($candidates) {
-                    return $candidates->has($member['id']) &&
-                        $member['role_id'] === Role::$admin->id;
-                });
-
-                $tree['members'] = array_values(array_map(function ($member) {
-                    return $member['id'];
-                }, $tree['members']));
-
-                return $tree;
-            })
-            ->pluck('members', 'id');
-
-        // Map of volume IDs to a list of user IDs who would need to be imported because
-        // they are admins of required label trees.
-        $requiredLabelTreeUsers = $requiredLabelTrees->map(function ($labelTreeIds) use ($labelTreeAdmins) {
-            $userIds = [];
-            foreach ($labelTreeIds as $id) {
-                $userIds = array_merge($userIds, $labelTreeAdmins->get($id));
-            }
-
-            return $userIds;
-        });
-
-        $requiredUsers = $requiredLabelUsers;
-
-        foreach ($requiredLabelTreeUsers as $id => $users) {
-            if ($requiredUsers->has($id)) {
-                $requiredUsers[$id] = array_merge($requiredUsers[$id], $users);
+        return $volumes->map(function ($volume) use ($entities, $labelToTreeMap) {
+            if (array_key_exists($volume['id'], $entities['users'])) {
+                $volume['users'] = $entities['users'][$volume['id']];
             } else {
-                $requiredUsers[$id] = $users;
+                $volume['users'] = [];
             }
-        }
 
-        $requiredUsers = $requiredUsers->map(function ($ids) use ($candidates) {
-                return $candidates->whereIn('id', $ids)->values();
-            })
-            ->reject(function ($users) {
-                return $users->isEmpty();
-            });
+            if (array_key_exists($volume['id'], $entities['labels'])) {
+                $volume['labels'] = $entities['labels'][$volume['id']];
+            } else {
+                $volume['labels'] = [];
+            }
 
-        return $requiredUsers;
+            $volume['label_trees'] = array_unique(array_map(function ($id) use ($labelToTreeMap) {
+                return $labelToTreeMap[$id];
+            }, $volume['labels']));
+
+            return $volume;
+        });
     }
 
-    // Get the label trees which have to be imported for each volume.
-    // These are the ones that don't exist yet but contain labels that are used for
-    // annotation/image labels.
+    /**
+     * Get all label trees that might have to be imported for the volumes.
+     *
+     * @return Collection
+     */
+    public function getLabelTreeImportCandidates()
+    {
+        return $this->getLabelTreeImport()->getLabelTreeImportCandidates();
+    }
 
-    // Get the single labels which habe to be imported/merged for each volume.
-    // These are the ones of label trees which already exist but the labels themselves
-    // don't (or have conflicts).
+    /**
+     * Get all labels that might have to be imported for the volumes.
+     *
+     * @return Collection
+     */
+    public function getLabelImportCandidates()
+    {
+        return $this->getLabelTreeImport()->getLabelImportCandidates();
+    }
+
+    /**
+     * Get the users who might have to be imported for the volumes.
+     * These may be creators of annotation/image labels or admins of required label trees.
+     *
+     * @return Collection
+     */
+    public function getUserImportCandidates()
+    {
+        return $this->getUserImport()->getUserImportCandidates();
+    }
 
     /**
      * @{inheritdoc}
@@ -154,7 +143,7 @@ class VolumeImport extends Import
         switch ($basename) {
             case 'users.json':
             case 'label_trees.json':
-                return (new LabelTreeImport($this->path))->validateFile($basename);
+                return $this->getLabelTreeImport()->validateFile($basename);
             case 'volumes.json':
                 return $this->expectKeysInJson('volumes.json', [
                     'id',
@@ -198,6 +187,34 @@ class VolumeImport extends Import
         }
 
         return parent::validateFile($basename);
+    }
+
+    /**
+     * Get the user import instance that belongs to this import.
+     *
+     * @return UserImport
+     */
+    protected function getUserImport()
+    {
+        if (!$this->userImport) {
+            $this->userImport = new UserImport($this->path);
+        }
+
+        return $this->userImport;
+    }
+
+    /**
+     * Get the label tree import instance that belongs to this import.
+     *
+     * @return LabelTreeImport
+     */
+    protected function getLabelTreeImport()
+    {
+        if (!$this->labelTreeImport) {
+            $this->labelTreeImport = new LabelTreeImport($this->path);
+        }
+
+        return $this->labelTreeImport;
     }
 
     /**
@@ -267,7 +284,6 @@ class VolumeImport extends Import
         $users = array_map(function ($ids) {
             return array_unique($ids);
         }, $users);
-
 
         return compact('labels', 'users');
     }

@@ -87,24 +87,97 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($this->volume->name, $volumes[0]['name']);
     }
 
+    public function testGetVolumeImportCandidates()
+    {
+        $import = $this->getDefaultImport();
+        $volumes = $import->getVolumeImportCandidates();
+        $this->assertCount(1, $volumes);
+        $this->assertEquals($this->volume->name, $volumes[0]['name']);
+        $this->assertEquals([], $volumes[0]['users']);
+        $this->assertEquals([], $volumes[0]['label_trees']);
+        $this->assertEquals([], $volumes[0]['labels']);
+    }
+
+    public function testGetVolumeImportCandidatesAnnotationLabelTree()
+    {
+        $annotationLabel = AnnotationLabelTest::create([
+            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        ]);
+        $tree = $annotationLabel->label->tree;
+        $import = $this->getDefaultImport();
+        $volumes = $import->getVolumeImportCandidates();
+        $this->assertEquals($tree->id, $volumes[0]['label_trees'][0]);
+    }
+
+    public function testGetVolumeImportCandidatesAnnotationLabelLabel()
+    {
+        $annotationLabel = AnnotationLabelTest::create([
+            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        ]);
+        $label = $annotationLabel->label;
+        $import = $this->getDefaultImport();
+        $volumes = $import->getVolumeImportCandidates();
+        $this->assertEquals($label->id, $volumes[0]['labels'][0]);
+    }
+
+    public function testGetVolumeImportCandidatesAnnotationLabelUser()
+    {
+        $annotationLabel = AnnotationLabelTest::create([
+            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        ]);
+        $user = $annotationLabel->user;
+        $import = $this->getDefaultImport();
+        $volumes = $import->getVolumeImportCandidates();
+        $this->assertEquals($user->id, $volumes[0]['users'][0]);
+    }
+
+    public function testGetVolumeImportCandidatesImageLabelTree()
+    {
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $tree = $imageLabel->label->tree;
+        $import = $this->getDefaultImport();
+        $volumes = $import->getVolumeImportCandidates();
+        $this->assertEquals($tree->id, $volumes[0]['label_trees'][0]);
+    }
+
+    public function testGetVolumeImportCandidatesImageLabelLabel()
+    {
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $label = $imageLabel->label;
+        $import = $this->getDefaultImport();
+        $volumes = $import->getVolumeImportCandidates();
+        $this->assertEquals($label->id, $volumes[0]['labels'][0]);
+    }
+
+    public function testGetVolumeImportCandidatesImageLabelUser()
+    {
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $user = $imageLabel->user;
+        $import = $this->getDefaultImport();
+        $volumes = $import->getVolumeImportCandidates();
+        $this->assertEquals($user->id, $volumes[0]['users'][0]);
+    }
+
     public function testGetUserImportCandidatesLabelTree()
     {
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
         $tree = $imageLabel->label->tree;
         $admin = UserTest::create();
         $tree->addMember($admin, Role::$admin);
-        $admin2 = UserTest::create();
-        $tree->addMember($admin2, Role::$admin);
         $editor = UserTest::create();
         $tree->addMember($editor, Role::$editor);
 
         $import = $this->getDefaultImport();
-        $admin2->delete();
+        $imageLabel->delete();
+        $tree->delete();
 
         $users = $import->getUserImportCandidates();
+        $this->assertCount(0, $users);
+
+        $admin->delete();
+        $users = $import->getUserImportCandidates();
         $this->assertCount(1, $users);
-        $volumeUsers = $users->get($this->volume->id);
-        $this->assertEquals($admin2->uuid, $volumeUsers[0]['uuid']);
+        $this->assertEquals($admin->uuid, $users[0]['uuid']);
     }
 
     public function testGetUserImportCandidatesAnnotationLabel()
@@ -119,7 +192,7 @@ class VolumeImportTest extends TestCase
         $annotationLabel->user->delete();
         $users = $import->getUserImportCandidates();
         $this->assertCount(1, $users);
-        $this->assertEquals($uuid, $users->get($this->volume->id)[0]['uuid']);
+        $this->assertEquals($uuid, $users[0]['uuid']);
     }
 
     public function testGetUserImportCandidatesImageLabel()
@@ -132,7 +205,85 @@ class VolumeImportTest extends TestCase
         $imageLabel->user->delete();
         $users = $import->getUserImportCandidates();
         $this->assertCount(1, $users);
-        $this->assertEquals($uuid, $users->get($this->volume->id)[0]['uuid']);
+        $this->assertEquals($uuid, $users[0]['uuid']);
+    }
+
+    public function testGetLabelTreeImportCandidatesNothing()
+    {
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $import = $this->getDefaultImport();
+        $this->assertCount(0, $import->getLabelTreeImportCandidates());
+    }
+
+    public function testGetLabelTreeImportCandidatesAnnotationLabel()
+    {
+        $annotationLabel = AnnotationLabelTest::create([
+            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        ]);
+        $import = $this->getDefaultImport();
+        $tree = $annotationLabel->label->tree;
+        $annotationLabel->delete();
+        $tree->delete();
+        $trees = $import->getLabelTreeImportCandidates();
+        $this->assertCount(1, $trees);
+        $this->assertEquals($tree->uuid, $trees[0]['uuid']);
+    }
+
+    public function testGetLabelTreeImportCandidatesImageLabel()
+    {
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $import = $this->getDefaultImport();
+        $tree = $imageLabel->label->tree;
+        $imageLabel->delete();
+        $tree->delete();
+        $trees = $import->getLabelTreeImportCandidates();
+        $this->assertCount(1, $trees);
+        $this->assertEquals($tree->uuid, $trees[0]['uuid']);
+    }
+
+    public function testGetLabelImportCandidatesNothing()
+    {
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $import = $this->getDefaultImport();
+        $this->assertCount(0, $import->getLabelImportCandidates());
+    }
+
+    public function testGetLabelImportCandidatesAnnotationLabel()
+    {
+        $annotationLabel = AnnotationLabelTest::create([
+            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        ]);
+        $import = $this->getDefaultImport();
+        $label = $annotationLabel->label;
+        $annotationLabel->delete();
+        $label->delete();
+        $labels = $import->getLabelImportCandidates();
+        $this->assertCount(1, $labels);
+        $this->assertEquals($label->uuid, $labels[0]['uuid']);
+    }
+
+    public function testGetLabelImportCandidatesImageLabel()
+    {
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $import = $this->getDefaultImport();
+        $label = $imageLabel->label;
+        $imageLabel->delete();
+        $label->delete();
+        $labels = $import->getLabelImportCandidates();
+        $this->assertCount(1, $labels);
+        $this->assertEquals($label->uuid, $labels[0]['uuid']);
+    }
+
+    public function testGetLabelImportCandidatesConflict()
+    {
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $import = $this->getDefaultImport();
+        $label = $imageLabel->label;
+        $label->name = 'conflicting name';
+        $label->save();
+        $labels = $import->getLabelImportCandidates();
+        $this->assertCount(1, $labels);
+        $this->assertEquals('conflicting name', $labels[0]['conflicting_name']);
     }
 
     protected function getDefaultImport()

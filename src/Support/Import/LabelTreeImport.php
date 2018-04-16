@@ -22,6 +22,13 @@ class LabelTreeImport extends Import
     protected $importLabelTrees;
 
     /**
+     * The user import instance that belongs to this import.
+     *
+     * @var UserImport
+     */
+    protected $userImport;
+
+    /**
      * Perform the import
      *
      * @param array|null $onlyTrees IDs of the label tree import candidates to limit the import to.
@@ -37,7 +44,7 @@ class LabelTreeImport extends Import
             $labelTreeIdMap = $this->insertLabelTrees($insertTrees);
 
             $insertUserIds = $this->getInsertUserIds($insertTrees);
-            $userIdMap = (new UserImport($this->path))->perform($insertUserIds);
+            $userIdMap = $this->getUserImport()->perform($insertUserIds);
             $this->attachLabelTreeMembers($insertTrees, $labelTreeIdMap, $userIdMap);
 
             $labelCandidates = $this->getInsertLabels($onlyLabels);
@@ -182,7 +189,7 @@ class LabelTreeImport extends Import
      */
     public function getUserImportCandidates()
     {
-        return (new UserImport($this->path))->getUserImportCandidates();
+        return $this->getUserImport()->getUserImportCandidates();
     }
 
     /**
@@ -203,7 +210,7 @@ class LabelTreeImport extends Import
     {
         switch ($basename) {
             case 'users.json':
-                return (new UserImport($this->path))->validateFile($basename);
+                return $this->getUserImport()->validateFile($basename);
 
             case 'label_trees.json':
                 return $this->expectKeysInJson('label_trees.json', [
@@ -217,6 +224,20 @@ class LabelTreeImport extends Import
         }
 
         return parent::validateFile($basename);
+    }
+
+    /**
+     * Get the user import instance that belongs to this import.
+     *
+     * @return UserImport
+     */
+    protected function getUserImport()
+    {
+        if (!$this->userImport) {
+            $this->userImport = new UserImport($this->path);
+        }
+
+        return $this->userImport;
     }
 
     /**
