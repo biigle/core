@@ -31,6 +31,11 @@ $router->resource('annotation-sessions', 'AnnotationSessionController', [
     'parameters' => ['annotation-sessions' => 'id'],
 ]);
 
+$router->resource('api-tokens', 'ApiTokenController', [
+    'only' => ['index', 'store', 'destroy'],
+    'parameters' => ['api-tokens' => 'id'],
+]);
+
 $router->get('images/{id}/thumb', 'ImageController@showThumb');
 $router->get('images/{id}/file', 'ImageController@showFile');
 $router->resource('images', 'ImageController', [
@@ -89,9 +94,8 @@ $router->resource('notifications', 'NotificationController', [
     'only' => ['update', 'destroy'],
 ]);
 
-$router->get('projects/my', 'ProjectController@index');
 $router->resource('projects', 'ProjectController', [
-    'only' => ['show', 'update', 'store', 'destroy'],
+    'only' => ['index', 'show', 'update', 'store', 'destroy'],
     'parameters' => ['projects' => 'id'],
 ]);
 
@@ -137,8 +141,13 @@ $router->resource('system-messages', 'SystemMessageController', [
     'parameters' => ['system-messages' => 'id'],
 ]);
 
+$router->resource('visibilities', 'VisibilityController', [
+    'only' => ['index', 'show'],
+    'parameters' => ['visibilities' => 'id'],
+]);
+
 $router->resource('volumes', 'VolumeController', [
-    'only' => ['show', 'update'],
+    'only' => ['index', 'show', 'update'],
     'parameters' => ['volumes' => 'id'],
 ]);
 
@@ -158,17 +167,7 @@ $router->get('users/my', 'UserController@showOwn');
 $router->put('users/my', 'UserController@updateOwn');
 $router->delete('users/my', 'UserController@destroyOwn');
 
-$router->resource('api-tokens', 'ApiTokenController', [
-    'only' => ['index', 'store', 'destroy'],
-    'parameters' => ['api-tokens' => 'id'],
-]);
-
 $router->resource('users', 'UserController', [
     'only' => ['index', 'show', 'update', 'store', 'destroy'],
     'parameters' => ['users' => 'id'],
-]);
-
-$router->resource('visibilities', 'VisibilityController', [
-    'only' => ['index', 'show'],
-    'parameters' => ['visibilities' => 'id'],
 ]);

@@ -105,6 +105,29 @@ class Volume extends Model
     }
 
     /**
+     * Scope a query to all volumes that are accessible by a user.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param User $user
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeAccessibleBy($query, User $user)
+    {
+        if ($user->isAdmin) {
+            return $query;
+        }
+
+        return $query->whereIn('id', function ($query) use ($user) {
+            return $query->select('project_volume.volume_id')
+                ->from('project_volume')
+                ->join('project_user', 'project_user.project_id', '=', 'project_volume.project_id')
+                ->where('project_user.user_id', $user->id)
+                ->distinct();
+        });
+    }
+
+    /**
      * The user that created the volume.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

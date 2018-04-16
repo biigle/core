@@ -7,6 +7,7 @@ use Biigle\Annotation;
 use Biigle\AnnotationLabel;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Database\QueryException;
 
 class AnnotationLabelController extends Controller
 {
@@ -109,16 +110,24 @@ class AnnotationLabelController extends Controller
             ->where('annotation_id', $annotationLabel->annotation_id)
             ->exists();
 
-        if ($exists) {
-            abort(400, 'The user already attached this label to the annotation.');
-        } else {
-            $annotationLabel->save();
+        if (!$exists) {
+            try {
+                $annotationLabel->save();
+                // should not be returned
+                unset($annotationLabel->annotation);
+
+                return response($annotationLabel, 201);
+
+            } catch (QueryException $e) {
+                // Although we check for existence above, this error happened some time.
+                // I suspect some kind of race condition between PHP FPM workers.
+                if (!str_contains($e->getMessage(), 'Unique violation')) {
+                    throw $e;
+                }
+            }
         }
 
-        // should not be returned
-        unset($annotationLabel->annotation);
-
-        return response($annotationLabel, 201);
+        abort(400, 'The user already attached this label to the annotation.');
     }
 
     /**

@@ -56,10 +56,6 @@
  * @type {Vue.resource}
  */
 biigle.$declare('api.projects', Vue.resource('api/v1/projects{/id}', {}, {
-    query: {
-        // a user can only query their own projects
-        url: 'api/v1/projects/my',
-    },
     queryVolumes: {
         method: 'GET',
         url: 'api/v1/projects{/id}/volumes',

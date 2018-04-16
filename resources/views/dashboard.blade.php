@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', trans('biigle.titles.dashboard'))
+@section('title', 'Dashboard')
 
 @push('styles')
     @mixin('dashboardStyles')

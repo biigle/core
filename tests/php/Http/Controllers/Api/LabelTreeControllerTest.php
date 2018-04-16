@@ -19,7 +19,25 @@ class LabelTreeControllerTest extends ApiTestCase
 
         $this->beUser();
         $tree = $this->labelTree();
-        $response = $this->get('/api/v1/label-trees')->assertJsonFragment([
+        $this->get('/api/v1/label-trees')->assertJsonFragment([
+            'id' => $tree->id,
+            'name' => $tree->name,
+            'description' => $tree->description,
+            'created_at' => (string) $tree->created_at,
+            'updated_at' => (string) $tree->updated_at,
+        ]);
+    }
+
+    public function testIndexPrivate()
+    {
+        $tree = $this->labelTree();
+        $tree->visibility_id = Visibility::$private->id;
+        $tree->save();
+
+        $this->beUser();
+        $this->get('/api/v1/label-trees')->assertExactJson([]);
+        $this->beGlobalAdmin();
+        $this->get('/api/v1/label-trees')->assertJsonFragment([
             'id' => $tree->id,
             'name' => $tree->name,
             'description' => $tree->description,
