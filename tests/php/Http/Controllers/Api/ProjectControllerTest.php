@@ -9,19 +9,25 @@ class ProjectControllerTest extends ApiTestCase
 {
     public function testIndex()
     {
-        $response = $this->get('/api/v1/projects');
-        $response->assertStatus(405);
-
-        $this->doTestApiRoute('GET', '/api/v1/projects/my');
+        $this->doTestApiRoute('GET', '/api/v1/projects');
 
         $this->beAdmin();
-        $response = $this->get('/api/v1/projects/my');
+        $response = $this->get('/api/v1/projects');
         $content = $response->getContent();
         $response->assertStatus(200);
         $this->assertStringStartsWith('[', $content);
         $this->assertStringEndsWith(']', $content);
         $this->assertContains('"description":"', $content);
         $this->assertNotContains('pivot', $content);
+    }
+
+    public function testIndexGlobalAdmin()
+    {
+        $this->project();
+        $this->beGlobalAdmin();
+        $this->get('/api/v1/projects')
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $this->project()->id]);
     }
 
     public function testShow()

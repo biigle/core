@@ -11,13 +11,13 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class ProjectController extends Controller
 {
     /**
-     * Shows all projects the requesting user belongs to.
+     * Shows all projects that are accessible by the requesting user.
      *
-     * @api {get} projects/my Get all own projects
+     * @api {get} projects Get all accessible projects
      * @apiGroup Projects
-     * @apiName IndexOwnProjects
+     * @apiName IndexProjects
      * @apiPermission user
-     * @apiDescription Returns a list of all projects, the requesting user is a member of.
+     * @apiDescription Returns a list of all projects, the requesting user can access.
      *
      * @apiSuccessExample {json} Success response:
      * [
@@ -36,6 +36,10 @@ class ProjectController extends Controller
      */
     public function index(Guard $auth)
     {
+        if ($auth->user()->isAdmin) {
+            return Project::all();
+        }
+
         return $auth->user()->projects;
     }
 
