@@ -30,7 +30,7 @@ class VolumeImport extends Import
     protected $labelTreeImport;
 
     /**
-     * Get the contents of the label tree import file.
+     * Get the contents of the volume import file.
      *
      * @return Collection
      */
@@ -41,6 +41,16 @@ class VolumeImport extends Import
         }
 
         return $this->importVolumes;
+    }
+
+    /**
+     * Get the contents of the label tree import file.
+     *
+     * @return Collection
+     */
+    public function getImportLabelTrees()
+    {
+        return $this->getLabelTreeImport()->getImportLabelTrees();
     }
 
     /**
@@ -80,9 +90,9 @@ class VolumeImport extends Import
                 $volume['labels'] = [];
             }
 
-            $volume['label_trees'] = array_unique(array_map(function ($id) use ($labelToTreeMap) {
+            $volume['label_trees'] = array_values(array_unique(array_map(function ($id) use ($labelToTreeMap) {
                 return $labelToTreeMap[$id];
-            }, $volume['labels']));
+            }, $volume['labels'])));
 
             return $volume;
         });
@@ -278,11 +288,11 @@ class VolumeImport extends Import
         }
 
         $labels = array_map(function ($ids) {
-            return array_unique($ids);
+            return array_values(array_unique($ids));
         }, $labels);
 
         $users = array_map(function ($ids) {
-            return array_unique($ids);
+            return array_values(array_unique($ids));
         }, $users);
 
         return compact('labels', 'users');

@@ -89,17 +89,17 @@ class ImportAdminController extends Controller
     {
         $importLabelTreesCount = $import->getImportLabelTrees()->count();
 
-        $labelTreeCandidates = $import->getLabelTreeImportCandidates()->map(function ($item) {
-            unset($item['labels']);
-            return $item;
-        });
+        $labelTreeCandidates = $import->getLabelTreeImportCandidates()
+            ->map(function ($item) {
+                unset($item['labels']);
+                return $item;
+            });
         $labelTreeCandidatesCount = $labelTreeCandidates->count();
 
         $importLabels = $import->getImportLabelTrees()->pluck('labels')->collapse();
         $labelCandidates = $import->getLabelImportCandidates();
         $labelCandidatesCount = $labelCandidates->count();
-        $conflictingParentIds = $labelCandidates
-            ->pluck('conflicting_parent_id')
+        $conflictingParentIds = $labelCandidates->pluck('conflicting_parent_id')
             ->reject(function ($id) {
                 return is_null($id);
             });
@@ -125,6 +125,54 @@ class ImportAdminController extends Controller
             'labelCandidatesCount',
             'conflictingParents',
             'excludedLabelTreeCandidatesCount',
+            'userCandidates',
+            'adminRoleId',
+            'token'
+        ));
+    }
+
+    /**
+     * Show the view for an unfinished volume tree import.
+     *
+     * @param LabelTreeImport $import
+     * @param string $token
+     *
+     * @return Illuminate\Http\Response
+     */
+    protected function showVolumeImport(VolumeImport $import, $token)
+    {
+        $volumeCandidates = $import->getVolumeImportCandidates();
+
+        $labelTreeCandidates = $import->getLabelTreeImportCandidates()
+            ->map(function ($item) {
+                unset($item['labels']);
+                return $item;
+            });
+
+        $importLabels = $import->getImportLabelTrees()->pluck('labels')->collapse();
+
+        $labelCandidates = $import->getLabelImportCandidates();
+        $conflictingParentIds = $labelCandidates->pluck('conflicting_parent_id')
+            ->reject(function ($id) {
+                return is_null($id);
+            });
+        if ($conflictingParentIds->isNotEmpty()) {
+            $conflictingParents = Label::whereIn('id', $conflictingParentIds)->get();
+        } else {
+            $conflictingParents = collect();
+        }
+
+        $userCandidates = $import->getUserImportCandidates()
+            ->map([$this, 'hideUserCredentials']);
+
+        $adminRoleId = Role::$admin->id;
+
+        return view('sync::import.showVolume', compact(
+            'volumeCandidates',
+            'labelTreeCandidates',
+            'importLabels',
+            'labelCandidates',
+            'conflictingParents',
             'userCandidates',
             'adminRoleId',
             'token'

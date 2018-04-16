@@ -52,7 +52,7 @@
             Select users to import:
         </p>
         <div id="user-import-container">
-            <entity-chooser v-bind:entities="users" v-on:select="handleChosenUsers"></entity-chooser>
+            <entity-chooser v-bind:entities="users" v-bind:disabled="success" v-on:select="handleChosenUsers"></entity-chooser>
             <div v-if="success" v-cloak class="alert alert-success">
                 The import was successful. You can now request a new import.
             </div>

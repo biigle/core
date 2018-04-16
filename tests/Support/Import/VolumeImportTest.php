@@ -87,6 +87,15 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($this->volume->name, $volumes[0]['name']);
     }
 
+    public function testGetImportLabelTrees()
+    {
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $import = $this->getDefaultImport();
+        $trees = $import->getImportLabelTrees();
+        $this->assertCount(1, $trees);
+        $this->assertEquals($imageLabel->label->tree->uuid, $trees[0]['uuid']);
+    }
+
     public function testGetVolumeImportCandidates()
     {
         $import = $this->getDefaultImport();

@@ -1,6 +1,6 @@
 .entity-chooser {
     display: flex;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 
     .entity-chooser-buttons {
         width: 100px;
@@ -18,24 +18,10 @@
 
         &.entity-chooser-list--left li {
             padding-right: 30px;
-
-            &:hover:after {
-                content: '>';
-                position: absolute;
-                top: 5px;
-                right: 10px;
-            }
         }
 
         &.entity-chooser-list--right li {
             padding-left: 30px;
-
-            &:hover:before {
-                content: '<';
-                position: absolute;
-                top: 5px;
-                left: 10px;
-            }
         }
 
         ul {
@@ -49,8 +35,27 @@
         li {
             border-radius: $list-group-border-radius;
             padding: 5px 10px;
-            cursor: pointer;
             position: relative;
+        }
+    }
+
+    .entity-chooser-list:not(.entity-chooser-list--disabled) {
+        &.entity-chooser-list--left li:hover:after {
+            content: '>';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+        }
+
+        &.entity-chooser-list--right li:hover:before {
+            content: '<';
+            position: absolute;
+            top: 5px;
+            left: 10px;
+        }
+
+        li {
+            cursor: pointer;
 
             &:hover {
                 background-color: $list-group-hover-bg;

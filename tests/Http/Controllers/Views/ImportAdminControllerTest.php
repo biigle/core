@@ -63,4 +63,25 @@ class ImportAdminControllerTest extends ApiTestCase
             ->assertStatus(200)
             ->assertViewIs('sync::import.showLabelTree');
     }
+
+    public function testShowVolumeImport()
+    {
+        config(['sync.import_storage' => sys_get_temp_dir()]);
+
+        $this->beAdmin();
+        $this->get('admin/import/abc123')->assertStatus(403);
+
+        $this->beGlobalAdmin();
+        $this->get('admin/import/abc123')->assertStatus(404);
+
+        $export = new VolumeExport([]);
+        $path = $export->getArchive();
+        $file = new UploadedFile($path, 'biigle_volume_export.zip', filesize($path), 'application/zip', null, true);
+        $manager = new ArchiveManager;
+        $token = $manager->store($file);
+
+        $this->get("admin/import/{$token}")
+            ->assertStatus(200)
+            ->assertViewIs('sync::import.showVolume');
+    }
 }

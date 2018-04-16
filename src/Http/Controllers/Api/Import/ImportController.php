@@ -143,4 +143,15 @@ class ImportController extends Controller
             $request->input('parent_conflicts', [])
         );
     }
+
+    /**
+     * Perform a volume import
+     *
+     * @param VolumeImport $import
+     * @param Request $request
+     */
+    protected function updateVolumeImport(VolumeImport $import, Request $request)
+    {
+        // validate new volume URLs
+    }
 }

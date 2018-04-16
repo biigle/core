@@ -4,8 +4,8 @@
  * @type {Object}
  */
 biigle.$component('sync.components.entityChooserList', {
-    template: '<div class="entity-chooser-list">' +
-        '<input type="text" class="form-control entity-chooser-list-search" placeholder="Filter..." v-model="filterQuery" v-if="filtering">' +
+    template: '<div class="entity-chooser-list" :class="classObject">' +
+        '<input type="text" class="form-control entity-chooser-list-search" placeholder="Filter..." v-model="filterQuery" v-if="filtering" :disabled="disabled">' +
         '<ul>' +
             '<li v-for="e in entities" @click="select(e)">' +
                 '<span v-text="e.name"></span>' +
@@ -22,15 +22,28 @@ biigle.$component('sync.components.entityChooserList', {
             type: Boolean,
             default: false,
         },
+        disabled: {
+            type: Boolean,
+            default: false,
+        },
     },
     data: function () {
         return {
             filterQuery: '',
         };
     },
+    computed: {
+        classObject: function () {
+            return {
+                'entity-chooser-list--disabled': this.disabled,
+            };
+        },
+    },
     methods: {
         select: function (entity) {
-            this.$emit('select', entity);
+            if (!this.disabled) {
+                this.$emit('select', entity);
+            }
         },
     },
     watch: {

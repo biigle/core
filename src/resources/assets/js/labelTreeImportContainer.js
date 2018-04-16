@@ -9,7 +9,10 @@ biigle.$viewModel('label-tree-import-container', function (element) {
 
     new Vue({
         el: element,
-        mixins: [biigle.$require('sync.mixins.importContainer')],
+        mixins: [
+            biigle.$require('sync.mixins.importContainer'),
+            biigle.$require('sync.mixins.labelTreeImportContainer'),
+        ],
         data: {
             labelTreeCandidates: biigle.$require('sync.labelTreeCandidates'),
             labelCandidates: biigle.$require('sync.labelCandidates'),
@@ -19,15 +22,6 @@ biigle.$viewModel('label-tree-import-container', function (element) {
             chosenLabels: [],
         },
         computed: {
-            userMap: function () {
-                var map = {};
-                this.userCandidates.forEach(function (user) {
-                    user.name = user.firstname + ' ' + user.lastname;
-                    map[user.id] = user;
-                });
-
-                return map;
-            },
             chosenUsers: function () {
                 var self = this;
                 var chosenIds = [];
@@ -49,53 +43,14 @@ biigle.$viewModel('label-tree-import-container', function (element) {
             hasChosenUsers: function () {
                 return this.chosenUsers.length > 0;
             },
-            labelMap: function () {
-                var map = {};
-                biigle.$require('sync.importLabels').forEach(function (label) {
-                    map[label.id] = label;
-                });
-
-                return map;
-            },
             labels: function () {
                 return this.labelCandidates.map(function (label) {
                     label.description = 'Label tree: ' + label.label_tree_name;
                     return label;
                 });
             },
-            conflictingParentMap: function () {
-                var map = {};
-                this.conflictingParents.forEach(function (label) {
-                    map[label.id] = label;
-                });
-
-                return map;
-            },
-            conflictingLabels: function () {
-                return this.chosenLabels
-                    .filter(function (label) {
-                        return label.hasOwnProperty('conflicting_name') || label.hasOwnProperty('conflicting_parent_id');
-                    })
-                    .map(function (label) {
-                        if (label.hasOwnProperty('conflicting_parent_id')) {
-                            label.parent = this.labelMap[label.parent_id];
-                            label.conflicting_parent = this.conflictingParentMap[label.conflicting_parent_id];
-                        }
-
-                        return label;
-                    }, this);
-            },
-            hasConflictingLabels: function () {
-                return this.conflictingLabels.length > 0;
-            },
             hasNoChosenItems: function () {
                 return this.chosenLabelTrees.length === 0 && this.chosenLabels.length === 0;
-            },
-            hasUnresolvedConflicts: function () {
-                var self = this;
-                return !this.conflictingLabels.reduce(function (carry, label) {
-                    return carry && self.isLabelConflictResolved(label);
-                }, true);
             },
             submitTitle: function () {
                 if (this.hasNoChosenItems) {
@@ -105,12 +60,6 @@ biigle.$viewModel('label-tree-import-container', function (element) {
                 }
 
                 return 'Perform the import';
-            },
-            panelClass: function () {
-                return {'panel-danger': this.hasUnresolvedConflicts};
-            },
-            panelBodyClass: function () {
-                return {'text-danger': this.hasUnresolvedConflicts};
             },
             chosenLabelTreeIds: function () {
                 return this.chosenLabelTrees.map(function (item) {
@@ -122,26 +71,6 @@ biigle.$viewModel('label-tree-import-container', function (element) {
                     return item.id;
                 });
             },
-            nameConflictResolutions: function () {
-                var resolutions = {};
-                this.conflictingLabels.forEach(function (label) {
-                    if (this.hasLabelConflictingName(label)) {
-                        resolutions[label.id] = label.conflicting_name_resolution;
-                    }
-                }, this);
-
-                return resolutions;
-            },
-            parentConflictResolutions: function () {
-                var resolutions = {};
-                this.conflictingLabels.forEach(function (label) {
-                    if (this.hasLabelConflictingParent(label)) {
-                        resolutions[label.id] = label.conflicting_parent_resolution;
-                    }
-                }, this);
-
-                return resolutions;
-            },
         },
         methods: {
             handleChosenLabelTrees: function (items) {
@@ -149,48 +78,6 @@ biigle.$viewModel('label-tree-import-container', function (element) {
             },
             handleChosenLabels: function (items) {
                 this.chosenLabels = items;
-            },
-            hasLabelConflictingName: function (label) {
-                return label.hasOwnProperty('conflicting_name');
-            },
-            hasLabelConflictingParent: function (label) {
-                return label.hasOwnProperty('conflicting_parent_id');
-            },
-            isLabelConflictResolved: function (label) {
-                return (!this.hasLabelConflictingName(label) || label.conflicting_name_resolution) &&
-                    (!this.hasLabelConflictingParent(label) || label.conflicting_parent_resolution);
-            },
-            chooseAllImportInformation: function () {
-                this.conflictingLabels.forEach(function (label) {
-                    this.chooseImportParent(label);
-                    this.chooseImportName(label);
-                }, this);
-            },
-            chooseAllExistingInformation: function () {
-                this.conflictingLabels.forEach(function (label) {
-                    this.chooseExistingParent(label);
-                    this.chooseExistingName(label);
-                }, this);
-            },
-            chooseImportParent: function (label) {
-                if (this.hasLabelConflictingParent(label)) {
-                    Vue.set(label, 'conflicting_parent_resolution', 'import');
-                }
-            },
-            chooseImportName: function (label) {
-                if (this.hasLabelConflictingName(label)) {
-                    Vue.set(label, 'conflicting_name_resolution', 'import');
-                }
-            },
-            chooseExistingParent: function (label) {
-                if (this.hasLabelConflictingParent(label)) {
-                    Vue.set(label, 'conflicting_parent_resolution', 'existing');
-                }
-            },
-            chooseExistingName: function (label) {
-                if (this.hasLabelConflictingName(label)) {
-                    Vue.set(label, 'conflicting_name_resolution', 'existing');
-                }
             },
             performImport: function () {
                 this.startLoading();
