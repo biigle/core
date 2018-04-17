@@ -38,7 +38,7 @@ class LabelTreeImport extends Import
      * @param array $parentConflictResolution Array mapping label IDs to 'import' or 'existing' for how to resolve parent conflicts.
      * @return array Array containing 'labelTrees', 'labels' and 'users', mapping external IDs (from the import file) to IDs of the database.
      */
-    public function perform($onlyTrees = null, $onlyLabels = null, $nameConflictResolution = [], $parentConflictResolution = [])
+    public function perform(array $onlyTrees = null, array $onlyLabels = null, array $nameConflictResolution = [], array $parentConflictResolution = [])
     {
         try {
             $insertTrees = $this->getInsertLabelTrees($onlyTrees);
@@ -48,7 +48,7 @@ class LabelTreeImport extends Import
             $userIdMap = $this->getUserImport()->perform($insertUserIds);
             $this->attachLabelTreeMembers($insertTrees, $labelTreeIdMap, $userIdMap);
 
-            $labelCandidates = $this->getInsertLabels($onlyLabels);
+            $labelCandidates = $this->getInsertLabels($onlyLabels, $labelTreeIdMap);
             $labelHasConflict = function ($label) {
                 return array_key_exists('conflicting_name', $label) || array_key_exists('conflicting_parent_id', $label);
             };
@@ -355,17 +355,29 @@ class LabelTreeImport extends Import
      * Get the array that can be used to insert the labels that should be imported.
      *
      * @param array|null $onlyLabels IDs of the label import candidates to limit the import to.
+     * @param array $labelTreeIdMap Map of import label tree IDs to existing label tree IDs.
      *
      * @return Collection
      */
-    protected function getInsertLabels($onlyLabels)
+    protected function getInsertLabels($onlyLabels, $labelTreeIdMap)
     {
+        $importedTrees = array_keys(array_filter($labelTreeIdMap, function ($value, $key) {
+            return $key !== $value;
+        }, ARRAY_FILTER_USE_BOTH));
+
         // As the import label trees have been imported at this point, their import
         // labels are included in the candidates now, too.
-        return $this->getLabelImportCandidates()
-            ->when(is_array($onlyLabels), function ($collection) use ($onlyLabels) {
-                return $collection->whereIn('id', $onlyLabels);
+        $candidates = $this->getLabelImportCandidates();
+
+        if (is_array($onlyLabels)) {
+            return $candidates->filter(function ($label) use ($onlyLabels, $importedTrees) {
+                // Labels which belong to imported label trees are not affected by
+                // $onlyLabels.
+                return in_array($label['label_tree_id'], $importedTrees) || in_array($label['id'], $onlyLabels);
             });
+        }
+
+        return $candidates;
     }
 
     /**

@@ -218,20 +218,14 @@ class LabelTreeImportTest extends TestCase
     public function testPerformMembers()
     {
         $import = $this->getDefaultImport();
-        // Do *not* import label tree editors if they do not exist.
+        $this->labelTree->delete();
+        // Do not import label tree editors if they do not exist.
         $this->member->delete();
-        $map = $import->perform();
-        $newTree = LabelTree::orderByDesc('id')->first();
-        $this->assertEquals(1, $newTree->members()->count());
-        $this->assertFalse(User::where('uuid', $this->member->uuid)->exists());
-
-        $newTree->delete();
-        // *Do* import label tree admins if they do not exist.
         $this->user->delete();
         $map = $import->perform();
         $newTree = LabelTree::orderByDesc('id')->first();
         $this->assertEquals(1, $newTree->members()->count());
-        $this->assertTrue(User::where('uuid', $this->user->uuid)->exists());
+        $this->assertFalse(User::where('uuid', $this->member->uuid)->exists());
     }
 
     public function testPerformOnlyTrees()
@@ -256,6 +250,17 @@ class LabelTreeImportTest extends TestCase
         $this->assertCount(1, $labels);
         $this->assertEquals($this->labelChild->uuid, $labels[0]->uuid);
         $this->assertNull($labels[0]->parent_id);
+    }
+
+    public function testPerformOnlyLabelsAlthoughBelongsToTree()
+    {
+        $import = $this->getDefaultImport();
+        $this->labelTree->delete();
+        // Labels specified in $onlyLabels are ignored if they belong to a label tree
+        // that should be imported completely.
+        $map = $import->perform(null, [$this->labelChild->id]);
+        $newTree = LabelTree::orderByDesc('id')->first();
+        $this->assertEquals(2, $newTree->labels()->count());
     }
 
     public function testPerformNameConflictUnresoved()

@@ -24,7 +24,7 @@ class UserImport extends Import
      * @throws UnprocessableEntityHttpException If there are conflicts with the users that should be imported.
      * @return array Maps external user IDs (from the import file) to user IDs of the database.
      */
-    public function perform($only = null)
+    public function perform(array $only = null)
     {
         $users = $this->getImportUsers();
         $now = Carbon::now();

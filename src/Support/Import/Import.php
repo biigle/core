@@ -152,12 +152,9 @@ class Import
      */
     protected function rollBack($class, $map)
     {
-        $ids = [];
-        foreach ($map as $key => $value) {
-            if ($key !== $value) {
-                $ids[] = $value;
-            }
-        }
+        $ids = array_values(array_filter($map, function ($value, $key) {
+            return $key !== $value;
+        }, ARRAY_FILTER_USE_BOTH));
 
         $class::whereIn('id', $ids)->delete();
     }

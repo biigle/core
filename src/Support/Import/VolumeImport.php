@@ -56,7 +56,7 @@ class VolumeImport extends Import
      * @param array $parentConflictResolution Array mapping label IDs to 'import' or 'existing' for how to resolve parent conflicts.
      * @return array Array containing 'volumes', 'labelTrees', 'labels' and 'users', mapping external IDs (from the import file) to IDs of the database.
      */
-    public function perform(Project $project, User $creator, $only = null, $newUrls = [], $nameConflictResolution = [], $parentConflictResolution = [])
+    public function perform(Project $project, User $creator, array $only = null, array $newUrls = [], array $nameConflictResolution = [], array $parentConflictResolution = [])
     {
         $volumeCandidates = $this->getVolumeImportCandidates()
             ->when(is_array($only), function ($collection) use ($only) {
@@ -447,7 +447,8 @@ class VolumeImport extends Import
     {
         $requiredUserIds = $volumeCandidates->pluck('users')
             ->collapse()
-            ->unique();
+            ->unique()
+            ->toArray();
 
         return $this->getUserImport()->perform($requiredUserIds);
     }
@@ -465,10 +466,12 @@ class VolumeImport extends Import
     {
         $requiredLabelTreeIds = $volumeCandidates->pluck('label_trees')
             ->collapse()
-            ->unique();
+            ->unique()
+            ->toArray();
         $requiredLabelIds = $volumeCandidates->pluck('labels')
             ->collapse()
-            ->unique();
+            ->unique()
+            ->toArray();
 
         return $this->getLabelTreeImport()->perform(
             $requiredLabelTreeIds,

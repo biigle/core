@@ -363,6 +363,9 @@ class VolumeImportTest extends TestCase
         $project = ProjectTest::create();
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
         $tree = $imageLabel->label->tree;
+        $parent = LabelTest::create(['label_tree_id' => $tree->id]);
+        $imageLabel->label->parent_id = $parent->id;
+        $imageLabel->label->save();
         $import = $this->getDefaultImport();
         $imageLabel->delete();
         $tree->delete();
@@ -371,6 +374,7 @@ class VolumeImportTest extends TestCase
         $newTree = LabelTree::where('uuid', $tree->uuid)->first();
         $this->assertNotNull($tree);
         $this->assertEquals($newTree->id, $map['labelTrees'][$tree->id]);
+        $this->assertEquals(2, $newTree->labels()->count());
     }
 
     public function testPerformLabel()
@@ -383,9 +387,9 @@ class VolumeImportTest extends TestCase
         $label->delete();
         $map = $import->perform($project, $project->creator);
         $this->assertCount(1, $map['labels']);
-        $newTree = Label::where('uuid', $label->uuid)->first();
+        $newLabel = Label::where('uuid', $label->uuid)->first();
         $this->assertNotNull($label);
-        $this->assertEquals($newTree->id, $map['labels'][$label->id]);
+        $this->assertEquals($newLabel->id, $map['labels'][$label->id]);
     }
 
     public function testPerformUrls()
