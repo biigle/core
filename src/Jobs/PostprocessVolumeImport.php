@@ -54,7 +54,7 @@ class PostprocessVolumeImport extends Job implements ShouldQueue
                     foreach ($annotations as $annotation) {
                         $this->dispatch(new GenerateAnnotationPatch($annotation));
                     }
-                }, 'annotations.id');
+                }, 'annotations.id', 'id');
         }
     }
 }

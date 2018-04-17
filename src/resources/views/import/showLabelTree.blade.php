@@ -87,7 +87,7 @@
                     <input type="hidden" name="_method" value="DELETE">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <div class="form-group">
-                        <button type="submit" class="btn btn-default" title="Delete the uploaded import files">Discard import</button>
+                        <button type="submit" class="btn btn-default" title="Delete the uploaded import files" v-bind:disabled="loading">Discard import</button>
                         <button type="button" class="btn btn-success" v-on:click.prevent="performImport" v-bind:disabled="loading || hasNoChosenItems || hasUnresolvedConflicts" v-bind:title="submitTitle">Perform import</button>
                     </div>
                 </form>

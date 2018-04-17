@@ -567,6 +567,9 @@ class VolumeImport extends Import
      */
     protected function insertAnnotations($volumeIdMap, $imageIdMap, $labelIdMap, $userIdMap)
     {
+        $chunkSize = 1000;
+        $currentIndex = 0;
+
         $annotations = [];
         $oldIds = [];
         $csv = new SplFileObject("{$this->path}/annotations.csv");
@@ -581,6 +584,14 @@ class VolumeImport extends Import
                     'updated_at' => $line[4],
                     'points' => $line[5],
                 ];
+
+                $currentIndex += 1;
+
+                if ($currentIndex >= $chunkSize) {
+                    Annotation::insert($annotations);
+                    $annotations = [];
+                    $currentIndex = 0;
+                }
             }
         }
 
@@ -589,20 +600,29 @@ class VolumeImport extends Import
         // huge.
         unset($annotations);
 
-        $newIds = Annotation::join('images', 'images.id', '=', 'annotations.image_id')
-            ->whereIn('images.volume_id', array_values($volumeIdMap))
-            ->orderBy('annotations.id', 'asc')
-            ->pluck('annotations.id')
-            ->toArray();
-
         // As we cannot use any attribute of the annotations to establish a connection
         // between import IDs and existing IDs, we just assume that the IDs of the newly
         // created annotations match the ordering of the $oldIds array (i.e. the
         // ordering in which the annotations have been inserted).
-        $annotationIdMap = array_combine($oldIds, $newIds);
-        unset($oldIds);
-        unset($newIds);
+        // $annotationIdMap = array_combine($oldIds, $newIds);
+        $annotationIdMap = [];
+        reset($oldIds);
+        $handleChunk = function ($annotations) use (&$oldIds, &$annotationIdMap) {
+            foreach ($annotations as $annotation) {
+                $annotationIdMap[current($oldIds)] = $annotation->id;
+                next($oldIds);
+            }
+        };
 
+        Annotation::join('images', 'images.id', '=', 'annotations.image_id')
+            ->whereIn('images.volume_id', array_values($volumeIdMap))
+            ->orderBy('annotations.id', 'asc')
+            ->select('annotations.id')
+            ->chunkById(10000, $handleChunk, 'annotations.id', 'id');
+
+        unset($oldIds);
+
+        $currentIndex = 0;
         $annotationLabels = [];
         $csv = new SplFileObject("{$this->path}/annotation_labels.csv");
         $csv->fgetcsv();
@@ -616,6 +636,14 @@ class VolumeImport extends Import
                     'created_at' => $line[4],
                     'updated_at' => $line[5],
                 ];
+
+                $currentIndex += 1;
+
+                if ($currentIndex >= $chunkSize) {
+                    AnnotationLabel::insert($annotationLabels);
+                    $annotationLabels = [];
+                    $currentIndex = 0;
+                }
             }
         }
 
