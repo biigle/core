@@ -5,6 +5,7 @@ namespace Biigle\Modules\Sync\Support\Import;
 use DB;
 use Exception;
 use Biigle\Role;
+use Biigle\User;
 use Biigle\Label;
 use Carbon\Carbon;
 use Biigle\LabelTree;
@@ -61,13 +62,17 @@ class LabelTreeImport extends Import
             $mergeLabels = $labelCandidates->filter($labelHasConflict);
             $this->mergeLabels($mergeLabels, $nameConflictResolution, $parentConflictResolution, $labelIdMap);
         } catch (Exception $e) {
-            // Attempt to delete any imported label trees and labels.
+            // Attempt to delete any imported entities.
+            if (isset($userIdMap)) {
+                $this->rollBack(User::class, $userIdMap);
+            }
+
             if (isset($labelTreeIdMap)) {
-                LabelTree::whereIn('uuid', $insertTrees->pluck('uuid'))->delete();
+                $this->rollBack(LabelTree::class, $labelTreeIdMap);
             }
 
             if (isset($labelIdMap)) {
-                Label::whereIn('uuid', $insertLabels->pluck('uuid'))->delete();
+                $this->rollBack(Label::class, $labelIdMap);
             }
 
             throw $e;
@@ -118,11 +123,12 @@ class LabelTreeImport extends Import
     public function getLabelImportCandidates()
     {
         $trees = $this->getImportLabelTrees()->keyBy('id');
-        $existingTrees = LabelTree::whereIn('uuid', $trees->pluck('uuid'))->pluck('uuid');
+        $existingTrees = LabelTree::whereIn('uuid', $trees->pluck('uuid'))
+            ->pluck('uuid', 'id');
 
         // Get all import labels of existing label trees.
         $labels = $this->getImportLabelTrees()
-            ->whereIn('uuid', $existingTrees)
+            ->whereIn('uuid', $existingTrees->values())
             ->map(function ($tree) {
                 return array_map(function ($label) use ($tree) {
                     $label['label_tree_id'] = $tree['id'];
@@ -141,8 +147,8 @@ class LabelTreeImport extends Import
             return $label;
         });
 
-        // Get existing labels with the same UUID than import labels.
-        $existingLabels = Label::whereIn('uuid', $labels->pluck('uuid'))
+        // Get existing labels of existing label trees.
+        $existingLabels = Label::whereIn('label_tree_id', $trees->keys())
             ->select('id', 'name', 'parent_id', 'uuid')
             ->get()
             ->keyBy('id');

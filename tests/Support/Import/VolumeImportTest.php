@@ -3,11 +3,17 @@
 namespace Biigle\Tests\Modules\Sync\Support\Import;
 
 use File;
+use Queue;
+use Storage;
 use TestCase;
 use Exception;
 use ZipArchive;
+use Biigle\User;
 use Biigle\Role;
+use Biigle\Label;
 use Biigle\Volume;
+use Ramsey\Uuid\Uuid;
+use Biigle\LabelTree;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
@@ -19,6 +25,8 @@ use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Modules\Sync\Support\Export\VolumeExport;
 use Biigle\Modules\Sync\Support\Import\VolumeImport;
+use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class VolumeImportTest extends TestCase
 {
@@ -299,7 +307,6 @@ class VolumeImportTest extends TestCase
 
     public function testPerform()
     {
-        $creator = UserTest::create();
         $annotation = AnnotationTest::create(['image_id' => $this->image->id]);
         $annotationLabel = AnnotationLabelTest::create([
             'annotation_id' => $annotation->id,
@@ -309,7 +316,7 @@ class VolumeImportTest extends TestCase
         $import = $this->getImport([$this->volume->id, $volume2->id]);
         $project = ProjectTest::create();
 
-        $map = $import->perform($project, $creator);
+        $map = $import->perform($project, $project->creator);
 
         $this->assertArrayHasKey('volumes', $map);
         $this->assertCount(2, $map['volumes']);
@@ -320,7 +327,7 @@ class VolumeImportTest extends TestCase
         $newVolume = Volume::find($map['volumes'][$this->volume->id]);
         $this->assertEquals($this->volume->name, $newVolume->name);
         $this->assertEquals($this->volume->url, $newVolume->url);
-        $this->assertEquals($creator->id, $newVolume->creator_id);
+        $this->assertEquals($project->creator->id, $newVolume->creator_id);
 
         $newImages = $newVolume->images;
         $this->assertCount(1, $newImages);
@@ -341,57 +348,243 @@ class VolumeImportTest extends TestCase
 
     public function testPerformOnly()
     {
-        $this->markTestIncomplete();
+        $project = ProjectTest::create();
+        $volume2 = VolumeTest::create();
+        $import = $this->getImport([$this->volume->id, $volume2->id]);
+        $map = $import->perform($project, $project->creator, [$this->volume->id]);
+        $this->assertCount(1, $map['volumes']);
+        $this->assertEquals(1, $project->volumes()->count());
+        $this->assertEquals($this->volume->name, $project->volumes()->first()->name);
+        $this->assertEquals($project->volumes()->first()->id, $map['volumes'][$this->volume->id]);
     }
 
     public function testPerformLabelTree()
     {
-        $this->markTestIncomplete();
+        $project = ProjectTest::create();
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $tree = $imageLabel->label->tree;
+        $import = $this->getDefaultImport();
+        $imageLabel->delete();
+        $tree->delete();
+        $map = $import->perform($project, $project->creator);
+        $this->assertCount(1, $map['labelTrees']);
+        $newTree = LabelTree::where('uuid', $tree->uuid)->first();
+        $this->assertNotNull($tree);
+        $this->assertEquals($newTree->id, $map['labelTrees'][$tree->id]);
     }
 
     public function testPerformLabel()
     {
-        $this->markTestIncomplete();
+        $project = ProjectTest::create();
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $label = $imageLabel->label;
+        $import = $this->getDefaultImport();
+        $imageLabel->delete();
+        $label->delete();
+        $map = $import->perform($project, $project->creator);
+        $this->assertCount(1, $map['labels']);
+        $newTree = Label::where('uuid', $label->uuid)->first();
+        $this->assertNotNull($label);
+        $this->assertEquals($newTree->id, $map['labels'][$label->id]);
     }
 
     public function testPerformUrls()
     {
-        $this->markTestIncomplete();
+        Storage::fake('test');
+        Storage::disk('test')->makeDirectory('new-url');
+        // Existence of a directory is checked via its contents so we need to create a
+        // file here.
+        Storage::disk('test')->put('new-url/fakeimage.jpg', '');
+        $project = ProjectTest::create();
+        $import = $this->getDefaultImport();
+        $map = $import->perform($project, $project->creator, null, [
+            $this->volume->id => 'test://new-url',
+        ]);
+        $newVolume = $project->volumes()->first();
+        $this->assertEquals('test://new-url', $newVolume->url);
     }
 
     public function testPerformInvalidUrls()
     {
-        $this->markTestIncomplete();
+        $project = ProjectTest::create();
+        $volume2 = VolumeTest::create();
+        $import = $this->getImport([$this->volume->id, $volume2->id]);
+        try {
+            $map = $import->perform($project, $project->creator, null, [
+                $volume2->id => 'test://not/existing',
+            ]);
+            $this->assertFalse(true);
+        } catch (UnprocessableEntityHttpException $e) {
+            $this->assertEquals(0, $project->volumes()->count());
+        }
     }
 
     public function testPerformNameConflictUnresolved()
     {
-        $this->markTestIncomplete();
+        $project = ProjectTest::create();
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $label = $imageLabel->label;
+        $import = $this->getDefaultImport();
+        $label->name = 'new name';
+        $label->save();
+        try {
+            $map = $import->perform($project, $project->creator);
+            $this->assertFalse(true);
+        } catch (UnprocessableEntityHttpException $e) {
+            $this->assertContains('Unresolved name conflict', $e->getMessage());
+        }
     }
 
     public function testPerformParentConflictUnresolved()
     {
-        $this->markTestIncomplete();
+        $project = ProjectTest::create();
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $label = $imageLabel->label;
+        $import = $this->getDefaultImport();
+        $label->parent_id = LabelTest::create(['label_tree_id' => $label->label_tree_id])->id;
+        $label->save();
+        try {
+            $map = $import->perform($project, $project->creator);
+            $this->assertFalse(true);
+        } catch (UnprocessableEntityHttpException $e) {
+            $this->assertContains('Unresolved parent conflict', $e->getMessage());
+        }
     }
 
     public function testPerformUserAnnotationLabel()
     {
-        $this->markTestIncomplete();
+        $project = ProjectTest::create();
+        $annotationLabel = AnnotationLabelTest::create([
+            'annotation_id' => AnnotationTest::create(['image_id' => $this->image->id])->id,
+        ]);
+        $user = $annotationLabel->user->fresh();
+        $import = $this->getDefaultImport();
+        $user->delete();
+
+        $map = $import->perform($project, $project->creator);
+        $newUser = User::where('uuid', $user->uuid)->first();
+        $this->assertNotNull($newUser);
+        $this->assertEquals($newUser->id, $map['users'][$user->id]);
     }
 
     public function testPerformUserImageLabel()
     {
-        $this->markTestIncomplete();
+        $project = ProjectTest::create();
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $user = $imageLabel->user->fresh();
+        $import = $this->getDefaultImport();
+        $user->delete();
+
+        $map = $import->perform($project, $project->creator);
+        $newUser = User::where('uuid', $user->uuid)->first();
+        $this->assertNotNull($newUser);
+        $this->assertEquals($newUser->id, $map['users'][$user->id]);
     }
 
     public function testPerformUserConflicts()
     {
-        $this->markTestIncomplete();
+        $project = ProjectTest::create();
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $user = $imageLabel->user->fresh();
+        $import = $this->getDefaultImport();
+        $user->uuid = Uuid::uuid4();
+        $user->save();
+
+        try {
+            $map = $import->perform($project, $project->creator);
+            $this->assertFalse(true);
+        } catch (UnprocessableEntityHttpException $e) {
+            $this->assertContains('UUIDs do not match', $e->getMessage());
+        }
+
+        $this->assertEquals(0, $project->volumes()->count());
+        $this->assertEquals(1, Volume::count());
     }
 
-    public function testPerformException()
+    public function testPerformExceptionVolumes()
     {
-        $this->markTestIncomplete();
+        $project = ProjectTest::create();
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $import = $this->getDefaultImport();
+        $import->throw = true;
+
+        try {
+            $map = $import->perform($project, $project->creator);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            //
+        }
+
+        $this->assertEquals(0, $project->volumes()->count());
+        $this->assertEquals(1, Volume::count());
+    }
+
+    public function testPerformExceptionLabelTrees()
+    {
+        $project = ProjectTest::create();
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $import = $this->getDefaultImport();
+        $import->throw = true;
+        $tree = $imageLabel->label->tree;
+        $imageLabel->delete();
+        $tree->delete();
+
+        try {
+            $map = $import->perform($project, $project->creator);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            //
+        }
+
+        $this->assertEquals(0, LabelTree::count());
+    }
+
+    public function testPerformExceptionLabels()
+    {
+        $project = ProjectTest::create();
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $import = $this->getDefaultImport();
+        $import->throw = true;
+        $label = $imageLabel->label;
+        $imageLabel->delete();
+        $label->delete();
+
+        try {
+            $map = $import->perform($project, $project->creator);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            //
+        }
+
+        $this->assertEquals(0, Label::count());
+    }
+
+    public function testPerformExceptionUsers()
+    {
+        $project = ProjectTest::create();
+        $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
+        $import = $this->getDefaultImport();
+        $import->throw = true;
+        $user = $imageLabel->user->fresh();
+        $imageLabel->delete();
+        $user->delete();
+
+        try {
+            $map = $import->perform($project, $project->creator);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            //
+        }
+
+        $this->assertFalse(User::where('uuid', $user->uuid)->exists());
+    }
+
+    public function testPerformPostprocessJob()
+    {
+        $project = ProjectTest::create();
+        $import = $this->getDefaultImport();
+        $map = $import->perform($project, $project->creator);
+        Queue::assertPushed(PostprocessVolumeImport::class);
     }
 
     protected function getDefaultImport()
@@ -412,6 +605,20 @@ class VolumeImportTest extends TestCase
         $zip->extractTo($this->destination);
         $zip->close();
 
-        return new VolumeImport($this->destination);
+        return new VolumeImportStub($this->destination);
+    }
+}
+
+class VolumeImportStub extends VolumeImport
+{
+    public $throw;
+
+    protected function insertImages($volumeIdMap)
+    {
+        if ($this->throw) {
+            throw new Exception('I threw up');
+        }
+
+        return parent::insertImages($volumeIdMap);
     }
 }

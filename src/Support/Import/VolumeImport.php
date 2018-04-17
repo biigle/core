@@ -2,21 +2,28 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
+use Exception;
 use Biigle\Role;
 use Biigle\User;
+use Biigle\Label;
 use Biigle\Image;
 use SplFileObject;
 use Biigle\Volume;
 use Biigle\Project;
+use Biigle\LabelTree;
 use Ramsey\Uuid\Uuid;
 use Biigle\ImageLabel;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
 use Illuminate\Support\Collection;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class VolumeImport extends Import
 {
+    use DispatchesJobs;
+
     /**
      * Caches the decoded volume import file.
      *
@@ -51,74 +58,61 @@ class VolumeImport extends Import
      */
     public function perform(Project $project, User $creator, $only = null, $newUrls = [], $nameConflictResolution = [], $parentConflictResolution = [])
     {
-        // Validate volume URLs before creating anything.
-        // if ($request->has('new_urls')) {
-        //     foreach ($request->input('new_urls') as $url) {
-        //         $volume = new Volume;
-        //         $volume->url = $url;
-        //         try {
-        //             $volume->validateUrl();
-        //         } catch (Exception $e) {
-        //             $message = "Invalid volume URL '{$url}': ".$e->getMessage();
-        //             throw new UnprocessableEntityHttpException($message);
-        //         }
-        //     }
-        // }
-
         $volumeCandidates = $this->getVolumeImportCandidates()
+            ->when(is_array($only), function ($collection) use ($only) {
+                return $collection->whereIn('id', $only);
+            })
             ->keyBy('id');
 
-        $volumes = $volumeCandidates->map(function ($candidate) use ($creator) {
-            $volume = new Volume;
-            $volume->name = $candidate['name'];
-            $volume->url = $candidate['url'];
-            $volume->media_type_id = $candidate['media_type_id'];
-            $volume->attrs = $candidate['attrs'];
-            $volume->creator_id = $creator->id;
-            $volume->save();
-            $volume->old_id = $candidate['id'];
+        try {
+            $volumes = $this->insertVolumes($volumeCandidates, $creator, $newUrls);
 
-            return $volume;
-        });
+            $userIdMap = $this->insertUsers($volumeCandidates);
 
-        $requiredUserIds = $volumeCandidates->pluck('users')
-            ->collapse()
-            ->unique();
-        $userIdMap = $this->getUserImport()->perform($requiredUserIds);
+            $labelTreeIdMap = $this->insertLabelTreesAndLabels($volumeCandidates, $nameConflictResolution, $parentConflictResolution);
+            foreach ($labelTreeIdMap['users'] as $key => $value) {
+                $userIdMap[$key] = $value;
+            }
+            $labelIdMap = $labelTreeIdMap['labels'];
+            $labelTreeIdMap = $labelTreeIdMap['labelTrees'];
 
-        $requiredLabelTreeIds = $volumeCandidates->pluck('label_trees')
-            ->collapse()
-            ->unique();
-        $requiredLabelIds = $volumeCandidates->pluck('labels')
-            ->collapse()
-            ->unique();
-        $labelTreeIdMap = $this->getLabelTreeImport()->perform(
-            $requiredLabelTreeIds,
-            $requiredLabelIds,
-            $nameConflictResolution,
-            $parentConflictResolution
-        );
+            $volumeIdMap = [];
+            foreach ($volumes as $volume) {
+                $project->volumes()->attach($volume);
+                $volumeIdMap[$volume->old_id] = $volume->id;
+            }
 
-        foreach ($labelTreeIdMap['users'] as $key => $value) {
-            $userIdMap[$key] = $value;
+            $imageIdMap = $this->insertImages($volumeIdMap);
+            $this->insertImageLabels($imageIdMap, $labelIdMap, $userIdMap);
+            $this->insertAnnotations($volumeIdMap, $imageIdMap, $labelIdMap, $userIdMap);
+
+            $this->dispatch(new PostprocessVolumeImport($volumes));
+        } catch (Exception $e) {
+            // Attempt to delete any imported entities.
+            if (isset($volumes)) {
+                // Do this in an inefficient loop to fire all the appropriate events.
+                // This will delete any associated images, image labels and annotations
+                // as well.
+                $volumes->each(function ($volume) {
+                    $volume->delete();
+                });
+            }
+
+            if (isset($userIdMap)) {
+                $this->rollBack(User::class, $userIdMap);
+            }
+
+            if (isset($labelTreeIdMap)) {
+                $this->rollBack(LabelTree::class, $labelTreeIdMap);
+            }
+
+            if (isset($labelIdMap)) {
+                $this->rollBack(Label::class, $labelIdMap);
+            }
+
+            throw $e;
         }
-        $labelIdMap = $labelTreeIdMap['labels'];
-        $labelTreeIdMap = $labelTreeIdMap['labelTrees'];
 
-        $volumeIdMap = [];
-        foreach ($volumes as $volume) {
-            $project->volumes()->attach($volume);
-            $volumeIdMap[$volume->old_id] = $volume->id;
-        }
-
-        $imageIdMap = $this->insertImages($volumeIdMap);
-        $this->insertImageLabels($imageIdMap, $labelIdMap, $userIdMap);
-        $this->insertAnnotations($imageIdMap, $labelIdMap, $userIdMap);
-
-        // dd($imageIdMap);
-
-        // Submit process new thumbnail jobs
-        // Submit generate annotation patch jobs
 
         return [
             'volumes' => $volumeIdMap,
@@ -398,6 +392,93 @@ class VolumeImport extends Import
     }
 
     /**
+     * Insert import volumes into the database.
+     *
+     * @param Collection $candidates The import volumes to insert.
+     * @param User $creator The creator of the new volumes.
+     * @param array $newUrls Array mapping a volume ID to a new volume URL (optional).
+     * @throws  UnprocessableEntityHttpException If a volume URL is invalid.
+     * @return Collection
+     */
+    protected function insertVolumes(Collection $candidates, User $creator, array $newUrls)
+    {
+        return $candidates->map(function ($candidate) use ($creator, $newUrls) {
+                $volume = new Volume;
+                $volume->old_id = $candidate['id'];
+                $volume->name = $candidate['name'];
+                if (array_key_exists($volume->old_id, $newUrls)) {
+                    $volume->url = $newUrls[$volume->old_id];
+                } else {
+                    $volume->url = $candidate['url'];
+                }
+
+                try {
+                    $volume->validateUrl();
+                } catch (Exception $e) {
+                    $message = "Volume '{$volume->name}' has an invalid URL: ".$e->getMessage();
+                    throw new UnprocessableEntityHttpException($message);
+                }
+
+                $volume->media_type_id = $candidate['media_type_id'];
+                $volume->attrs = $candidate['attrs'];
+                $volume->creator_id = $creator->id;
+
+                return $volume;
+            })
+            ->map(function ($volume) {
+                // Save volumes only after all of them have validated their URLs.
+                $oldId = $volume->old_id;
+                unset($volume->old_id);
+                $volume->save();
+                $volume->old_id = $oldId;
+
+                return $volume;
+            });
+    }
+
+    /**
+     * Insert import users into the database.
+     *
+     * @param Collection $volumeCandidates The import volumes to insert.
+     *
+     * @return array Map of import user IDs to existing user IDs.
+     */
+    protected function insertUsers(Collection $volumeCandidates)
+    {
+        $requiredUserIds = $volumeCandidates->pluck('users')
+            ->collapse()
+            ->unique();
+
+        return $this->getUserImport()->perform($requiredUserIds);
+    }
+
+    /**
+     * Insert import label trees and labels into the database.
+     *
+     * @param Collection $volumeCandidates The import volumes to insert.
+     * @param array $nameConflictResolution Array mapping label IDs to 'import' or 'existing' for how to resolve name conflicts.
+     * @param array $parentConflictResolution Array mapping label IDs to 'import' or 'existing' for how to resolve parent conflicts.
+     *
+     * @return array Map of import IDs to existing IDs of 'users' (who belong to imported label trees), 'labelTrees', and 'labels'.
+     */
+    protected function insertLabelTreesAndLabels(Collection $volumeCandidates, $nameConflictResolution, $parentConflictResolution)
+    {
+        $requiredLabelTreeIds = $volumeCandidates->pluck('label_trees')
+            ->collapse()
+            ->unique();
+        $requiredLabelIds = $volumeCandidates->pluck('labels')
+            ->collapse()
+            ->unique();
+
+        return $this->getLabelTreeImport()->perform(
+            $requiredLabelTreeIds,
+            $requiredLabelIds,
+            $nameConflictResolution,
+            $parentConflictResolution
+        );
+    }
+
+    /**
      * Insert import images into the database.
      *
      * @param array $volumeIdMap Map of import volume IDs to existing volume IDs.
@@ -477,22 +558,25 @@ class VolumeImport extends Import
     }
 
     /**
-     * Insert import annotations and annotation labels into the database.
+     * Insert import annotations into the database.
      *
+     * @param array $volumeIdMap Map of import volume IDs to existing volume IDs.
      * @param array $imageIdMap Map of import image IDs to existing image IDs.
      * @param array $labelIdMap Map of import label IDs to existing label IDs.
      * @param array $userIdMap Map of import user IDs to existing user IDs.
      */
-    protected function insertAnnotations($imageIdMap, $labelIdMap, $userIdMap)
+    protected function insertAnnotations($volumeIdMap, $imageIdMap, $labelIdMap, $userIdMap)
     {
         $annotations = [];
+        $oldIds = [];
         $csv = new SplFileObject("{$this->path}/annotations.csv");
         $csv->fgetcsv();
         while ($line = $csv->fgetcsv()) {
             if (!is_null($line[0]) && array_key_exists($line[1], $imageIdMap)) {
+                $oldIds[] = (int) $line[0];
                 $annotations[] = [
                     'image_id' => $imageIdMap[$line[1]],
-                    'shape_id' => $line[2],
+                    'shape_id' => (int) $line[2],
                     'created_at' => $line[3],
                     'updated_at' => $line[4],
                     'points' => $line[5],
@@ -501,7 +585,40 @@ class VolumeImport extends Import
         }
 
         Annotation::insert($annotations);
+        // Try to save memory where we can here. The annotation(labels) arrays can get
+        // huge.
         unset($annotations);
-        // TODO How to map old annotation IDs to new annotation IDs??
+
+        $newIds = Annotation::join('images', 'images.id', '=', 'annotations.image_id')
+            ->whereIn('images.volume_id', array_values($volumeIdMap))
+            ->orderBy('annotations.id', 'asc')
+            ->pluck('annotations.id')
+            ->toArray();
+
+        // As we cannot use any attribute of the annotations to establish a connection
+        // between import IDs and existing IDs, we just assume that the IDs of the newly
+        // created annotations match the ordering of the $oldIds array (i.e. the
+        // ordering in which the annotations have been inserted).
+        $annotationIdMap = array_combine($oldIds, $newIds);
+        unset($oldIds);
+        unset($newIds);
+
+        $annotationLabels = [];
+        $csv = new SplFileObject("{$this->path}/annotation_labels.csv");
+        $csv->fgetcsv();
+        while ($line = $csv->fgetcsv()) {
+            if (!is_null($line[0]) && array_key_exists($line[0], $annotationIdMap)) {
+                $annotationLabels[] = [
+                    'annotation_id' => $annotationIdMap[$line[0]],
+                    'label_id' => $labelIdMap[$line[1]],
+                    'user_id' => $userIdMap[$line[2]],
+                    'confidence' => (float) $line[3],
+                    'created_at' => $line[4],
+                    'updated_at' => $line[5],
+                ];
+            }
+        }
+
+        AnnotationLabel::insert($annotationLabels);
     }
 }

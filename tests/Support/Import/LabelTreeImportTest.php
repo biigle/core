@@ -296,6 +296,22 @@ class LabelTreeImportTest extends TestCase
         $import = $this->getDefaultImport();
         $this->labelChild->parent_id = null;
         $this->labelChild->save();
+        $this->labelParent->delete();
+
+        try {
+            $import->perform();
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertContains('Unresolved parent conflict', $e->getMessage());
+        }
+    }
+
+    public function testPerformParentConflictUnresolvedNewExisting()
+    {
+        $import = $this->getDefaultImport();
+        $otherLabel = LabelTest::create(['label_tree_id' => $this->labelTree->id]);
+        $this->labelParent->parent_id = $otherLabel->id;
+        $this->labelParent->save();
 
         try {
             $import->perform();
@@ -351,12 +367,10 @@ class LabelTreeImportTest extends TestCase
         }
     }
 
-    public function testPerformException()
+    public function testPerformExceptionLabels()
     {
-        // Construct an unresolved conflict.
         $import = $this->getDefaultImport();
-        $this->labelParent->name = 'some other name';
-        $this->labelParent->save();
+        $import->throw = true;
         $this->labelChild->delete();
 
         try {
@@ -364,6 +378,35 @@ class LabelTreeImportTest extends TestCase
             $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertFalse(Label::where('uuid', $this->labelChild->uuid)->exists());
+        }
+    }
+
+    public function testPerformExceptionLabelTrees()
+    {
+        $import = $this->getDefaultImport();
+        $import->throw = true;
+        $this->labelTree->delete();
+
+        try {
+            $import->perform();
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertFalse(LabelTree::where('uuid', $this->labelTree->uuid)->exists());
+        }
+    }
+
+    public function testPerformExceptionUsers()
+    {
+        $import = $this->getDefaultImport();
+        $import->throw = true;
+        $this->labelTree->members()->delete();
+        $this->labelTree->delete();
+
+        try {
+            $import->perform();
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertFalse(User::where('uuid', $this->user->uuid)->exists());
         }
     }
 
@@ -385,6 +428,19 @@ class LabelTreeImportTest extends TestCase
         $zip->extractTo($this->destination);
         $zip->close();
 
-        return new LabelTreeImport($this->destination);
+        return new LabelTreeImportStub($this->destination);
+    }
+}
+
+class LabelTreeImportStub extends LabelTreeImport
+{
+    public $throw;
+    protected function mergeLabels($mergeLabels, $nameConflictResolution, $parentConflictResolution, $labelIdMap)
+    {
+        if ($this->throw) {
+            throw new Exception('Throwing up');
+        }
+
+        return parent::mergeLabels($mergeLabels, $nameConflictResolution, $parentConflictResolution, $labelIdMap);
     }
 }
