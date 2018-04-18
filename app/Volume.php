@@ -28,6 +28,13 @@ class Volume extends Model
     use DispatchesJobs, HasJsonAttributes;
 
     /**
+     * Regular expression that matches the supported image file extensions.
+     *
+     * @var string
+     */
+    const FILE_REGEX = '/\.(jpe?g|png|tif?f)$/i';
+
+    /**
      * Validation rules for creating a new volume.
      *
      * @var array
@@ -95,6 +102,29 @@ class Volume extends Model
     public static function parseImagesQueryString($string)
     {
         return preg_split('/\s*,\s*/', trim($string), null, PREG_SPLIT_NO_EMPTY);
+    }
+
+    /**
+     * Scope a query to all volumes that are accessible by a user.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param User $user
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeAccessibleBy($query, User $user)
+    {
+        if ($user->isAdmin) {
+            return $query;
+        }
+
+        return $query->whereIn('id', function ($query) use ($user) {
+            return $query->select('project_volume.volume_id')
+                ->from('project_volume')
+                ->join('project_user', 'project_user.project_id', '=', 'project_volume.project_id')
+                ->where('project_user.user_id', $user->id)
+                ->distinct();
+        });
     }
 
     /**
@@ -190,7 +220,7 @@ class Volume extends Model
      */
     public function validateUrl()
     {
-        if ($this->isRemote()) {
+        if ($this->isRemote() && !config('biigle.offline_mode')) {
             $client = App::make(Client::class);
             try {
                 $response = $client->head($this->url);
@@ -244,7 +274,7 @@ class Volume extends Model
             throw new Exception('A volume must not have the same image twice.');
         }
 
-        $matches = preg_grep('/\.(jpe?g|png|tif?f)$/i', $filenames);
+        $matches = preg_grep(self::FILE_REGEX, $filenames);
 
         if ($count !== count($matches)) {
             throw new Exception('Only JPEG, PNG or TIFF image formats are supported.');

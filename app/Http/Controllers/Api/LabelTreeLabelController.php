@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Label;
+use Ramsey\Uuid\Uuid;
 use Biigle\LabelTree;
 use Biigle\LabelSource;
 use Illuminate\Http\Request;
@@ -77,6 +78,7 @@ class LabelTreeLabelController extends Controller
             $label->color = $request->input('color');
             $label->parent_id = $request->input('parent_id');
             $label->label_tree_id = (int) $id;
+            $label->uuid = Uuid::uuid4();
             $label->save();
 
             $labels = [$label];

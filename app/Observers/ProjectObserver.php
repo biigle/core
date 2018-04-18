@@ -16,7 +16,7 @@ class ProjectObserver
      */
     public function creating($project)
     {
-        if ($project->creator === null) {
+        if ($project->creator_id === null) {
             throw new Exception('Project creator must not be null when creating a new project.');
         }
 
@@ -33,7 +33,7 @@ class ProjectObserver
     {
         // set creator as project admin
         // this must be done *after* the project is saved so it already has an id
-        $project->addUserId($project->creator->id, Role::$admin->id);
+        $project->addUserId($project->creator_id, Role::$admin->id);
 
         // add global label trees (used by default)
         $ids = LabelTree::whereDoesntHave('members')

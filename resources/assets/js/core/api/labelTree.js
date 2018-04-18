@@ -3,7 +3,7 @@
  *
  * var resource = biigle.$require('api.labelTree');
  *
- * Get all public label trees:
+ * Get all label trees accessible by the current user:
  * resource.query().then(...);
  *
  * Create a new label tree:

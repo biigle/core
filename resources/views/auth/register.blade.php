@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', trans('biigle.titles.register'))
+@section('title', 'Sign up')
 @section('show-navbar', false)
 
 @section('content')
@@ -71,7 +71,7 @@
                 </div>
 
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="submit" class="btn btn-success btn-block" value="{{ trans('form.register') }}">
+                <input type="submit" class="btn btn-success btn-block" value="Sign up">
             </form>
             <p class="clearfix">
                 <a href="{{ route('home') }}" class="">{{ trans('biigle.back') }}</a>

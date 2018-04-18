@@ -69,8 +69,10 @@ class LabelTreeLabelControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertEquals(3, $tree->labels()->count());
 
+        $label = $tree->labels()->where('name', 'new label 2')->first();
+
         $expect = [
-            'id' => (int) $tree->labels()->max('id'),
+            'id' => $label->id,
             'name' => 'new label 2',
             'color' => 'bada55',
             'parent_id' => null,
@@ -78,6 +80,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
         ];
 
         $response->assertExactJson([$expect]);
+        $this->assertNotNull($label->uuid);
     }
 
     public function testStoreFormRequest()

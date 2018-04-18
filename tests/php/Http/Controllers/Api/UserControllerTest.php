@@ -32,12 +32,17 @@ class UserControllerTest extends ApiTestCase
         $this->doTestApiRoute('GET', '/api/v1/users');
 
         // everybody can do this
-        $this->beGuest();
-        $response = $this->get('/api/v1/users');
-        $content = $response->getContent();
-        $response->assertStatus(200);
-        $this->assertStringStartsWith('[', $content);
-        $this->assertStringEndsWith(']', $content);
+        $user = UserTest::create();
+        $this->be($user);
+        $this->get('/api/v1/users')
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $user->id])
+            ->assertJsonMissing(['email' => $user->email]);
+
+        // Global admins also see the email address of the users.
+        $user->role_id = Role::$admin->id;
+        $user->save();
+        $this->get('/api/v1/users')->assertJsonFragment(['email' => $user->email]);
     }
 
     public function testShow()
@@ -390,6 +395,44 @@ class UserControllerTest extends ApiTestCase
             'email' => 'new3@email.me',
         ]);
         $response->assertRedirect('/');
+    }
+
+    public function testStoreUuid()
+    {
+        $this->beGlobalAdmin();
+        $this->json('POST', '/api/v1/users', [
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'firstname' => 'jack',
+            'lastname' => 'jackson',
+            'email' => 'new@email.me',
+            'uuid' => '',
+        ])->assertStatus(200);
+
+        $user = User::where('email', 'new@email.me')->first();
+        $this->assertNotNull($user->uuid);
+
+        $this->json('POST', '/api/v1/users', [
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'firstname' => 'jack',
+            'lastname' => 'jackson',
+            'email' => 'new2@email.me',
+            'uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62',
+        ])->assertStatus(200);
+
+        $user = User::where('email', 'new2@email.me')->first();
+        $this->assertEquals('c796ccec-c746-308f-8009-9f1f68e2aa62', $user->uuid);
+
+        $this->json('POST', '/api/v1/users', [
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'firstname' => 'jack',
+            'lastname' => 'jackson',
+            'email' => 'new2@email.me',
+            // Invalid UUID
+            'uuid' => 'c796ccec-zzzz-308f-8009-9f1f68e2aa62',
+        ])->assertStatus(422);
     }
 
     public function testStoreEmailCaseInsensitive()

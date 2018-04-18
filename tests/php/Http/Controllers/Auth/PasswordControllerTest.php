@@ -43,6 +43,17 @@ class PasswordControllerTest extends TestCase
         $this->assertNotNull(DB::table('password_resets')->where('email', $user->email)->first());
     }
 
+    public function testPostEmailOfflineMode()
+    {
+        config(['biigle.offline_mode' => true]);
+        Notification::fake();
+        $user = UserTest::create(['email' => 'test@test.com']);
+
+        $this->post('password/email', ['email' => 'test@test.com'])
+            ->assertStatus(404);
+        Notification::assertNotSentTo($user, ResetPassword::class);
+    }
+
     public function testGetReset()
     {
         // token must be provided

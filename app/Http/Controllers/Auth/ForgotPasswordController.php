@@ -41,6 +41,10 @@ class ForgotPasswordController extends Controller
      */
     public function sendResetLinkEmail(Request $request)
     {
+        if (config('biigle.offline_mode')) {
+            abort(404);
+        }
+
         // Transform the username/email to lowercase because we want this to be case
         // insensitive.
         $request->merge(['email' => strtolower($request->input('email'))]);

@@ -8,6 +8,23 @@ use Biigle\MediaType;
 
 class VolumeControllerTest extends ApiTestCase
 {
+    public function testIndex()
+    {
+        // Create the volume.
+        $this->volume();
+        $this->doTestApiRoute('GET', '/api/v1/volumes/');
+
+        $this->beUser();
+        $this->get('/api/v1/volumes/')
+            ->assertStatus(200)
+            ->assertExactJson([]);
+
+        $this->beGuest();
+        $this->get('/api/v1/volumes/')
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $this->volume()->id]);
+    }
+
     public function testShow()
     {
         $id = $this->volume()->id;

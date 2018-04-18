@@ -2,8 +2,9 @@
 
 namespace Biigle\Http\Controllers\Auth;
 
-use Biigle\User;
 use Validator;
+use Biigle\User;
+use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -21,7 +22,10 @@ class RegisterController extends Controller
     |
     */
 
-    use RegistersUsers;
+    use RegistersUsers {
+        showRegistrationForm as protected baseShowRegistrationForm;
+        register as baseRegister;
+    }
 
     /**
      * Where to redirect users after login / registration.
@@ -49,7 +53,9 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         // Email should be case insensitive
-        $data['email'] = strtolower($data['email']);
+        if (array_key_exists('email', $data)) {
+            $data['email'] = strtolower($data['email']);
+        }
 
         return Validator::make($data, User::$createRules);
     }
@@ -67,6 +73,7 @@ class RegisterController extends Controller
         $user->lastname = $data['lastname'];
         $user->email = $data['email'];
         $user->password = bcrypt($data['password']);
+        $user->uuid = Uuid::uuid4();
         $user->save();
 
         return $user;
@@ -79,8 +86,11 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm()
     {
-        // registration is disabled for now
-        abort(404);
+        if ($this->isRegistrationDisabled()) {
+            abort(404);
+        }
+
+        return $this->baseShowRegistrationForm();
     }
 
     /**
@@ -91,7 +101,20 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        // registration is disabled for now
-        abort(404);
+        if ($this->isRegistrationDisabled()) {
+            abort(404);
+        }
+
+        return $this->baseRegister($request);
+    }
+
+    /**
+     * Determines if the user registration mechansim is disabled.
+     *
+     * @return boolean
+     */
+    protected function isRegistrationDisabled()
+    {
+        return !config('biigle.user_registration');
     }
 }

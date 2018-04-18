@@ -4,6 +4,7 @@ namespace Biigle\Console\Commands;
 
 use Biigle\User;
 use Biigle\Role;
+use Ramsey\Uuid\Uuid;
 use Illuminate\Console\Command;
 
 class NewUser extends Command
@@ -33,6 +34,7 @@ class NewUser extends Command
         $u->firstname = $this->ask('What is the user\'s first name?');
         $u->lastname = $this->ask('What is the user\'s last name?');
         $u->email = $this->ask('What is the user\'s email address?');
+        $u->uuid = Uuid::uuid4();
 
         if ($this->confirm('Should the user be global admin? [y|N]')) {
             $u->role_id = Role::$admin->id;

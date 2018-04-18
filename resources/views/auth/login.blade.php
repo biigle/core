@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', trans('biigle.titles.login'))
+@section('title', 'Login')
 @section('show-navbar', false)
 
 @section('content')
@@ -39,7 +39,9 @@
             </form>
             <p class="clearfix">
                 <a href="{{ url('password/reset') }}" class="">{{ trans('auth.forgotpw') }}</a>
-                {{--<a href="{{ url('auth/register') }}" class="pull-right">{{ trans('auth.register') }}</a>--}}
+                @if (config('biigle.user_registration'))
+                    <a href="{{ url('register') }}" class="pull-right" title="Create a new BIIGLE account">Sign up</a>
+                @endif
             </p>
         </div>
     </div>

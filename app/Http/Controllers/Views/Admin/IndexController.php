@@ -15,12 +15,19 @@ class IndexController extends Controller
      */
     public function get()
     {
-        $allUsers = User::count();
-        $activeUsers = User::where('login_at', '>', Carbon::now()->subMonth())->count();
+        $users = User::select('login_at')->get();
+        $allUsers = $users->count();
+        $loginUsers = $users->where('login_at', '!=', null)->count();
+        $activeUsersLastMonth = $users->where('login_at', '>', Carbon::now()->subMonth())->count();
+        $activeUsersLastWeek = $users->where('login_at', '>', Carbon::now()->subWeek())->count();
+        $activeUsersLastDay = $users->where('login_at', '>', Carbon::now()->subDay())->count();
 
-        return view('admin.index', [
-            'allUsers' => $allUsers,
-            'activeUsers' => $activeUsers,
-        ]);
+        return view('admin.index', compact(
+            'allUsers',
+            'loginUsers',
+            'activeUsersLastMonth',
+            'activeUsersLastWeek',
+            'activeUsersLastDay'
+        ));
     }
 }
