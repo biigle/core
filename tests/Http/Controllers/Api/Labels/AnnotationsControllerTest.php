@@ -32,11 +32,12 @@ class AnnotationsControllerTest extends ApiTestCase
 
         $this->beGuest();
         $response = $this->get("/api/v1/labels/{$label->id}/annotations")
-            ->assertExactJson([$a1->id, $a2->id]);
+            ->assertExactJson([$a2->id, $a1->id]);
         $response->assertStatus(200);
 
         $response = $this->get("/api/v1/labels/{$label->id}/annotations?take=1")
-            ->assertExactJson([$a1->id]);
+            // Show the newest annotation first.
+            ->assertExactJson([$a2->id]);
         $response->assertStatus(200);
     }
 

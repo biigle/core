@@ -37,6 +37,7 @@ class AnnotationsController extends Controller
             })
             ->select('annotations.id')
             ->distinct()
+            ->orderBy('annotations.id', 'desc')
             ->pluck('id');
     }
 }
