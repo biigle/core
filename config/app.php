@@ -200,7 +200,7 @@ return [
         Biigle\Modules\Geo\GeoServiceProvider::class,
         Biigle\Modules\Largo\LargoServiceProvider::class,
         Biigle\Modules\Laserpoints\LaserpointsServiceProvider::class,
-        Biigle\Modules\Export\ExportServiceProvider::class,
+        Biigle\Modules\Reports\ReportsServiceProvider::class,
         Biigle\Modules\Ananas\AnanasServiceProvider::class,
         Biigle\Modules\Sync\SyncServiceProvider::class,
 

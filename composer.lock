@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b0864d2a3a9709ece44625792bf72f21",
+    "content-hash": "8dc99b723a9b10ecae3950c100e9b999",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -103,36 +103,6 @@
                 "issues": "https://github.com/BiodataMiningGroup/biigle-color-sort/issues"
             },
             "time": "2018-02-19T12:40:43+00:00"
-        },
-        {
-            "name": "biigle/export",
-            "version": "v3.0.1",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:BiodataMiningGroup/biigle-export.git",
-                "reference": "324e68fdc849a17cab118a877e701b201e32aad9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-export/zipball/324e68fdc849a17cab118a877e701b201e32aad9",
-                "reference": "324e68fdc849a17cab118a877e701b201e32aad9",
-                "shasum": ""
-            },
-            "require": {
-                "biigle/projects": "~1.4",
-                "ext-zip": "*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Biigle\\Modules\\Export\\": "src"
-                }
-            },
-            "support": {
-                "source": "https://github.com/BiodataMiningGroup/biigle-export/tree/master",
-                "issues": "https://github.com/BiodataMiningGroup/biigle-export/issues"
-            },
-            "time": "2018-02-21T15:13:53+00:00"
         },
         {
             "name": "biigle/geo",
@@ -290,6 +260,36 @@
                 "issues": "https://github.com/BiodataMiningGroup/biigle-projects/issues"
             },
             "time": "2018-01-22T11:24:58+00:00"
+        },
+        {
+            "name": "biigle/reports",
+            "version": "v4.0.0-beta",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:BiodataMiningGroup/biigle-reports.git",
+                "reference": "c8a4a849667835617597f169e68375862fd8c241"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-reports/zipball/c8a4a849667835617597f169e68375862fd8c241",
+                "reference": "c8a4a849667835617597f169e68375862fd8c241",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/projects": "~1.4",
+                "ext-zip": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Reports\\": "src"
+                }
+            },
+            "support": {
+                "source": "https://github.com/BiodataMiningGroup/biigle-reports/tree/v4.0.0-beta",
+                "issues": "https://github.com/BiodataMiningGroup/biigle-reports/issues"
+            },
+            "time": "2018-04-18T08:22:10+00:00"
         },
         {
             "name": "biigle/sync",
@@ -5216,12 +5216,12 @@
         "biigle/ananas": 20,
         "biigle/annotations": 20,
         "biigle/color-sort": 20,
-        "biigle/export": 20,
         "biigle/geo": 20,
         "biigle/label-trees": 20,
         "biigle/largo": 20,
         "biigle/laserpoints": 20,
         "biigle/projects": 20,
+        "biigle/reports": 20,
         "biigle/sync": 20,
         "biigle/volumes": 20,
         "mockery/mockery": 20

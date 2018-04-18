@@ -13,12 +13,12 @@
         "biigle/ananas": "@dev",
         "biigle/annotations": "@dev",
         "biigle/color-sort": "@dev",
-        "biigle/export": "@dev",
         "biigle/geo": "@dev",
         "biigle/label-trees": "@dev",
         "biigle/largo": "@dev",
         "biigle/laserpoints": "@dev",
         "biigle/projects": "@dev",
+        "biigle/reports": "@dev",
         "biigle/sync": "@dev",
         "biigle/volumes": "@dev",
         "doctrine/annotations": "1.4.0",
@@ -126,7 +126,7 @@
         },
         {
             "type": "vcs",
-            "url": "git@github.com:BiodataMiningGroup/biigle-export.git"
+            "url": "git@github.com:BiodataMiningGroup/biigle-reports.git"
         },
         {
             "type": "vcs",
