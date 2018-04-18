@@ -397,6 +397,44 @@ class UserControllerTest extends ApiTestCase
         $response->assertRedirect('/');
     }
 
+    public function testStoreUuid()
+    {
+        $this->beGlobalAdmin();
+        $this->json('POST', '/api/v1/users', [
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'firstname' => 'jack',
+            'lastname' => 'jackson',
+            'email' => 'new@email.me',
+            'uuid' => '',
+        ])->assertStatus(200);
+
+        $user = User::where('email', 'new@email.me')->first();
+        $this->assertNotNull($user->uuid);
+
+        $this->json('POST', '/api/v1/users', [
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'firstname' => 'jack',
+            'lastname' => 'jackson',
+            'email' => 'new2@email.me',
+            'uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62',
+        ])->assertStatus(200);
+
+        $user = User::where('email', 'new2@email.me')->first();
+        $this->assertEquals('c796ccec-c746-308f-8009-9f1f68e2aa62', $user->uuid);
+
+        $this->json('POST', '/api/v1/users', [
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'firstname' => 'jack',
+            'lastname' => 'jackson',
+            'email' => 'new2@email.me',
+            // Invalid UUID
+            'uuid' => 'c796ccec-zzzz-308f-8009-9f1f68e2aa62',
+        ])->assertStatus(422);
+    }
+
     public function testStoreEmailCaseInsensitive()
     {
         $this->beGlobalAdmin();

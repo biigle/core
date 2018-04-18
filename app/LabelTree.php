@@ -71,6 +71,7 @@ class LabelTree extends Model
      */
     protected $hidden = [
         'pivot',
+        'uuid',
     ];
 
     /**

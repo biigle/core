@@ -42,6 +42,7 @@ class User extends Authenticatable
         'firstname' => 'required|string|max:127',
         'lastname' => 'required|string|max:127',
         'role_id' => 'exists:roles,id',
+        'uuid' => 'nullable|regex:/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/',
     ];
 
     /**
@@ -62,6 +63,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'pivot',
+        'uuid',
     ];
 
     /**

@@ -18,6 +18,7 @@ class LabelTest extends ModelTestCase
         $this->assertNotNull($this->model->color);
         $this->assertNull($this->model->created_at);
         $this->assertNull($this->model->updated_at);
+        $this->assertNotNull($this->model->uuid);
     }
 
     public function testNameRequired()
@@ -32,6 +33,20 @@ class LabelTest extends ModelTestCase
         $this->model->color = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
         $this->model->save();
+    }
+
+    public function testUuidRequired()
+    {
+        $this->model->uuid = null;
+        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->model->save();
+    }
+
+    public function testUuidUnique()
+    {
+        self::create(['uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62']);
+        $this->setExpectedException('Illuminate\Database\QueryException');
+        self::create(['uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62']);
     }
 
     public function testParent()

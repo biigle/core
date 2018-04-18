@@ -245,6 +245,7 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->assertEquals(2, LabelTree::count());
 
         $tree = LabelTree::orderBy('id', 'desc')->first();
+        $this->assertNotNull($tree->uuid);
         $response->assertExactJson($tree->toArray());
 
         // creator gets first label tree admin
