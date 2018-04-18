@@ -7,10 +7,16 @@
     <div class="col-sm-6">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <a href="{{route('admin-users')}}" title="Users"><h3 class="panel-title">Users</h3></a>
+                <h3 class="panel-title">
+                    <span class="pull-right">
+                        <span title="Users who have been logged in once">{{ $loginUsers }}</span> <span title="All users" class="text-muted">/ {{$allUsers}}</span>
+                    </span>
+                    <a href="{{route('admin-users')}}" title="Users">Users</a>
+                </h3>
             </div>
             <div class="panel-body">
-                <p class="h1 text-center"><span title="All users">{{ $allUsers }}</span> <span class="text-muted" title="Users active in the past month">({{ $activeUsers }})</span></p>
+                <p class="h1 text-center">
+                    <span title="Active users in the last 24 hours">{{$activeUsersLastDay}}</span> <span class="text-muted">/</span> <span title="Active users in the last week">{{$activeUsersLastWeek}}</span> <span class="text-muted">/</span> <span title="Active users in the last month">{{$activeUsersLastMonth}}</span>
             </div>
         </div>
     </div>

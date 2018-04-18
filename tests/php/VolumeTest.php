@@ -210,11 +210,23 @@ class VolumeTest extends ModelTestCase
             return $client;
         });
         $this->assertTrue($this->model->validateUrl());
-        $this->assertTrue($this->model->validateUrl());
 
         $request = $container[0]['request'];
         $this->assertEquals('HEAD', $request->getMethod());
         $this->assertEquals('http://localhost', (string) $request->getUri());
+    }
+
+    public function testValidateUrlRemoteOfflineMode()
+    {
+        config(['biigle.offline_mode' => true]);
+        $this->model->url = 'http://localhost';
+
+        try {
+            $this->model->validateUrl();
+            $this->assertTrue(false);
+        } catch (Exception $e) {
+            $this->assertContains("disk 'http' does not exist", $e->getMessage());
+        }
     }
 
     public function testValidateImagesFormatOk()
@@ -541,5 +553,20 @@ class VolumeTest extends ModelTestCase
         $this->model->doi = 'http://doi.org/10.3389/fmars.2017.00083';
         $this->model->save();
         $this->assertEquals('10.3389/fmars.2017.00083', $this->model->fresh()->doi);
+    }
+
+    public function testScopeAccessibleBy()
+    {
+        $user = UserTest::create();
+        $project = ProjectTest::create();
+        $project->addUserId($user->id, Role::$guest->id);
+
+        $ids = Volume::accessibleBy($user)->pluck('id');
+        $this->assertEmpty($ids);
+
+        $project->addVolumeId($this->model->id);
+
+        $ids = Volume::accessibleBy($user)->pluck('id');
+        $this->assertContains($this->model->id, $ids);
     }
 }

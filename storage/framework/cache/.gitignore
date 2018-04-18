@@ -1,2 +1,7 @@
-*
+/*
 !.gitignore
+# Tiles must be included so the public/tiles link is not broken when the repo is cloned.
+# Docker Compose won't build the images if broken links are present.
+!tiles/
+tiles/*
+!tiles/.gitkeep

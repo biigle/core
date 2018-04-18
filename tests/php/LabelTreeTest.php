@@ -20,6 +20,7 @@ class LabelTreeTest extends ModelTestCase
         $this->assertNotNull($this->model->description);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
+        $this->assertNotNull($this->model->uuid);
     }
 
     public function testNameRequired()
@@ -27,6 +28,20 @@ class LabelTreeTest extends ModelTestCase
         $this->model->name = null;
         $this->setExpectedException('Illuminate\Database\QueryException');
         $this->model->save();
+    }
+
+    public function testUuidRequired()
+    {
+        $this->model->uuid = null;
+        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->model->save();
+    }
+
+    public function testUuidUnique()
+    {
+        self::create(['uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62']);
+        $this->setExpectedException('Illuminate\Database\QueryException');
+        self::create(['uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62']);
     }
 
     public function testVisibilityOnDeleteRestrict()
@@ -191,5 +206,37 @@ class LabelTreeTest extends ModelTestCase
         ]);
 
         $this->assertEquals('a', $this->model->labels()->first()->name);
+    }
+
+    public function testScopeAccessibleBy()
+    {
+        $this->model->delete();
+        $user = UserTest::create();
+        $tree = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
+        $tree2 = LabelTreeTest::create(['visibility_id' => Visibility::$private->id]);
+        $tree3 = LabelTreeTest::create(['visibility_id' => Visibility::$private->id]);
+
+        $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
+        $this->assertEquals([$tree->id], $ids);
+
+        $tree2->addMember($user, Role::$editor);
+
+        $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
+        $this->assertEquals([$tree->id, $tree2->id], $ids);
+
+        $project = ProjectTest::create(['creator_id' => $user->id]);
+        $project->labelTrees()->attach($tree3);
+
+        $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
+        $this->assertEquals([$tree->id, $tree2->id, $tree3->id], $ids);
+    }
+
+    public function testScopeAccessibleByAdmin()
+    {
+        $user = UserTest::create(['role_id' => Role::$admin->id]);
+        $tree = LabelTreeTest::create(['visibility_id' => Visibility::$private->id]);
+
+        $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
+        $this->assertContains($tree->id, $ids);
     }
 }

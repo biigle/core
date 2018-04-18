@@ -14,7 +14,7 @@ class LogsController extends Controller
      */
     public function index()
     {
-        if (!config('biigle.admin-logs')) {
+        if (!config('biigle.admin_logs')) {
             abort(404);
         }
 
@@ -33,7 +33,7 @@ class LogsController extends Controller
      */
     public function show($file)
     {
-        if (!config('biigle.admin-logs')) {
+        if (!config('biigle.admin_logs')) {
             abort(404);
         }
 

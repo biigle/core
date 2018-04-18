@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Api;
 
 use Hash;
 use Biigle\User;
+use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -80,6 +81,7 @@ class UserController extends Controller
      * @apiGroup Users
      * @apiName IndexUsers
      * @apiPermission user
+     * @apiDescription Global admins also see the email addresses of the users.
      *
      * @apiSuccessExample {json} Success response:
      * [
@@ -97,11 +99,17 @@ class UserController extends Controller
      *    }
      * ]
      *
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Guard $auth)
     {
-        return User::select('id', 'firstname', 'lastname', 'role_id')->get();
+        return User::select('id', 'firstname', 'lastname', 'role_id')
+            ->when($auth->user()->isAdmin, function ($query) {
+                $query->addSelect('email');
+            })
+            ->orderByDesc('id')
+            ->get();
     }
 
     /**
@@ -309,12 +317,15 @@ class UserController extends Controller
      * @apiParam (Required parameters) {String} firstname The firstname of the new user.
      * @apiParam (Required parameters) {String} lastname The lastname of the new user.
      *
+     * @apiParam (Optional parameters) {String} uuid The BIIGLE UUID of this user (if they already got one from another BIIGLE instance). If no UUID is given, a new one will be generated.
+     *
      * @apiParamExample {String} Request example:
      * email: 'new@example.com'
      * password: 'TotallySecure'
      * password_confirmation: 'TotallySecure'
      * firstname: 'New'
      * lastname: 'User'
+     * uuid: 'c796ccec-c746-408f-8009-9f1f68e2aa62'
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -324,7 +335,8 @@ class UserController extends Controller
      *    "email": "joe@user.com",
      *    "role_id": 2,
      *    "created_at": "2016-04-29 07:38:51",
-     *    "updated_at"; "2016-04-29 07:38:51"
+     *    "updated_at"; "2016-04-29 07:38:51",
+     *    "uuid": "c796ccec-c746-408f-8009-9f1f68e2aa62"
      * }
      *
      * @param Request $request
@@ -348,6 +360,11 @@ class UserController extends Controller
         $user->lastname = $request->input('lastname');
         $user->email = $request->input('email');
         $user->password = bcrypt($request->input('password'));
+        if ($request->has('uuid')) {
+            $user->uuid = $request->input('uuid');
+        } else {
+            $user->uuid = Uuid::uuid4();
+        }
         $user->save();
 
         if (static::isAutomatedRequest($request)) {

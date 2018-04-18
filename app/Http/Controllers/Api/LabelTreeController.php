@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Route;
 use Biigle\Role;
 use Biigle\Project;
+use Ramsey\Uuid\Uuid;
 use Biigle\LabelTree;
 use Biigle\Visibility;
 use Illuminate\Http\Request;
@@ -14,9 +15,9 @@ use Illuminate\Auth\Access\AuthorizationException;
 class LabelTreeController extends Controller
 {
     /**
-     * Shows all public label trees.
+     * Shows all label trees the user has access to.
      *
-     * @api {get} label-trees Get all public label trees
+     * @api {get} label-trees Get accessible label trees
      * @apiGroup Label Trees
      * @apiName IndexLabelTrees
      * @apiPermission user
@@ -32,17 +33,15 @@ class LabelTreeController extends Controller
      *    }
      * ]
      *
+     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Guard $auth)
     {
-        return LabelTree::publicTrees()->select(
-            'id',
-            'name',
-            'description',
-            'created_at',
-            'updated_at'
-        )->get();
+        return LabelTree::accessibleBy($auth->user())
+            ->orderByDesc('id')
+            ->select('id', 'name', 'description', 'created_at', 'updated_at')
+            ->get();
     }
 
     /**
@@ -202,6 +201,7 @@ class LabelTreeController extends Controller
         $tree->name = $request->input('name');
         $tree->visibility_id = (int) $request->input('visibility_id');
         $tree->description = $request->input('description');
+        $tree->uuid = Uuid::uuid4();
         $tree->save();
 
         $tree->addMember($user, Role::$admin);
