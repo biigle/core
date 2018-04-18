@@ -28,8 +28,7 @@ class ImportControllerTest extends ApiTestCase
         });
 
         $user = UserTest::create();
-        $export = new UserExport([$user->id]);
-        $path = $export->getArchive();
+        $path = (new UserExport([$user->id]))->getArchive();
 
         $wrongFile = new UploadedFile($path, 'file.txt', 0, 'text/plain', null, true);
         $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
@@ -59,8 +58,7 @@ class ImportControllerTest extends ApiTestCase
             return $mock;
         });
 
-        $user = UserTest::create();
-        $export = new UserExport([$user->id]);
+        $export = new UserExport([$this->user()->id]);
         $path = $export->getArchive();
         $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
 

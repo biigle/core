@@ -31,15 +31,31 @@ class ArchiveManagerTest extends TestCase
         $path = $export->getArchive();
 
         $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
-        $manager = new ArchiveManager;
 
-        $token = $manager->store($file);
+        $token = (new ArchiveManager)->store($file);
         $path = config('sync.import_storage')."/{$token}";
         try {
             $this->assertTrue(File::isDirectory($path));
             $this->assertTrue(File::exists($path.'/users.json'));
         } finally {
             File::deleteDirectory($path);
+        }
+    }
+
+    public function testStoreUserExportNotAllowed()
+    {
+        config(['sync.allowed_imports' => ['volumes', 'labelTrees']]);
+        $user = UserTest::create();
+        $export = new UserExport([$user->id]);
+        $path = $export->getArchive();
+
+        $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
+
+        try {
+            $token = (new ArchiveManager)->store($file);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertContains('User imports are not allowed', $e->getMessage());
         }
     }
 
@@ -50,15 +66,31 @@ class ArchiveManagerTest extends TestCase
         $path = $export->getArchive();
 
         $file = new UploadedFile($path, 'biigle_label_tree_export.zip', filesize($path), 'application/zip', null, true);
-        $manager = new ArchiveManager;
 
-        $token = $manager->store($file);
+        $token = (new ArchiveManager)->store($file);
         $path = config('sync.import_storage')."/{$token}";
         try {
             $this->assertTrue(File::isDirectory($path));
             $this->assertTrue(File::exists($path.'/label_trees.json'));
         } finally {
             File::deleteDirectory($path);
+        }
+    }
+
+    public function testStoreLabelTreeExportNotAllowed()
+    {
+        config(['sync.allowed_imports' => ['volumes', 'users']]);
+        $tree = LabelTreeTest::create();
+        $export = new LabelTreeExport([$tree->id]);
+        $path = $export->getArchive();
+
+        $file = new UploadedFile($path, 'biigle_label_tree_export.zip', filesize($path), 'application/zip', null, true);
+
+        try {
+            $token = (new ArchiveManager)->store($file);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertContains('Label tree imports are not allowed', $e->getMessage());
         }
     }
 
@@ -69,9 +101,8 @@ class ArchiveManagerTest extends TestCase
         $path = $export->getArchive();
 
         $file = new UploadedFile($path, 'biigle_volume_export.zip', filesize($path), 'application/zip', null, true);
-        $manager = new ArchiveManager;
 
-        $token = $manager->store($file);
+        $token = (new ArchiveManager)->store($file);
         $path = config('sync.import_storage')."/{$token}";
         try {
             $this->assertTrue(File::isDirectory($path));
@@ -81,15 +112,31 @@ class ArchiveManagerTest extends TestCase
         }
     }
 
+    public function testStoreVolumeExportNotAllowed()
+    {
+        config(['sync.allowed_imports' => ['labelTrees', 'users']]);
+        $volume = VolumeTest::create();
+        $export = new VolumeExport([$volume->id]);
+        $path = $export->getArchive();
+
+        $file = new UploadedFile($path, 'biigle_volume_export.zip', filesize($path), 'application/zip', null, true);
+
+        try {
+            $token = (new ArchiveManager)->store($file);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertContains('Volume imports are not allowed', $e->getMessage());
+        }
+    }
+
     public function testStoreInvalidArchive()
     {
         $path = tempnam(sys_get_temp_dir(), 'corrupt_zip');
         File::put($path, 'abc123');
         $file = new UploadedFile($path, 'biigle_volume_export.zip', filesize($path), 'application/zip', null, true);
-        $manager = new ArchiveManager;
 
         try {
-            $manager->store($file);
+            (new ArchiveManager)->store($file);
             $this->assertFalse(true);
         } catch (Exception $e) {
             $this->assertContains('Could not open import archive', $e->getMessage());
@@ -109,10 +156,9 @@ class ArchiveManagerTest extends TestCase
         $zip->close();
 
         $file = new UploadedFile($path, 'biigle_label_tree_export.zip', filesize($path), 'application/zip', null, true);
-        $manager = new ArchiveManager;
 
         try {
-            $token = $manager->store($file);
+            $token = (new ArchiveManager)->store($file);
             $this->assertTrue(false);
         } catch (Exception $e) {
             $this->assertContains('not a valid import archive', $e->getMessage());
@@ -126,8 +172,8 @@ class ArchiveManagerTest extends TestCase
         $path = $export->getArchive();
 
         $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
-        $manager = new ArchiveManager;
 
+        $manager = new ArchiveManager;
         $token = $manager->store($file);
         $path = config('sync.import_storage')."/{$token}";
 
@@ -145,8 +191,8 @@ class ArchiveManagerTest extends TestCase
         $path = $export->getArchive();
 
         $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
-        $manager = new ArchiveManager;
 
+        $manager = new ArchiveManager;
         $token = $manager->store($file);
         $this->assertTrue($manager->has($token));
         $this->assertFalse($manager->has('abc123'));
@@ -159,8 +205,8 @@ class ArchiveManagerTest extends TestCase
         $path = $export->getArchive();
 
         $file = new UploadedFile($path, 'biigle_user_export.zip', filesize($path), 'application/zip', null, true);
-        $manager = new ArchiveManager;
 
+        $manager = new ArchiveManager;
         $token = $manager->store($file);
         $this->assertTrue($manager->has($token));
         $manager->delete($token);

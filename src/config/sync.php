@@ -16,7 +16,16 @@ return [
     ],
 
     /*
-    | Path to the directory to store import files to while the import is being performed.
+    | Directory to store import files to while the import is being performed.
     */
     'import_storage' => storage_path('imports'),
+
+    /*
+    | Set which imports should be allowed for this instance.
+    */
+    'allowed_imports' => [
+        'volumes',
+        'labelTrees',
+        'users',
+    ],
 ];

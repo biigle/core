@@ -60,9 +60,11 @@ class ArchiveManager
         }
         $zip->close();
 
-        if ($this->get($token) === null) {
+        try {
+            $this->validate($token);
+        } catch (Exception $e) {
             File::deleteDirectory($destination);
-            throw new Exception('The file is not a valid import archive.');
+            throw $e;
         }
 
         return $token;
@@ -137,6 +139,35 @@ class ArchiveManager
     protected function generateToken()
     {
         return hash_hmac('sha256', str_random(40), config('app.key'));
+    }
+
+    /**
+     * Validate the uploaded import archive.
+     *
+     * @param string $token
+     * @throws  Exception If the import archive is invalid.
+     */
+    protected function validate($token)
+    {
+        $type = $this->get($token);
+
+        if (is_null($type)) {
+            throw new Exception('The file is not a valid import archive.');
+        }
+
+        if ($type instanceof UserImport) {
+            if (!in_array('users', config('sync.allowed_imports'))) {
+                throw new Exception('User imports are not allowed for this instance.');
+            }
+        } elseif ($type instanceof LabelTreeImport) {
+            if (!in_array('labelTrees', config('sync.allowed_imports'))) {
+                throw new Exception('Label tree imports are not allowed for this instance.');
+            }
+        } elseif ($type instanceof VolumeImport) {
+            if (!in_array('volumes', config('sync.allowed_imports'))) {
+                throw new Exception('Volume imports are not allowed for this instance.');
+            }
+        }
     }
 }
 
