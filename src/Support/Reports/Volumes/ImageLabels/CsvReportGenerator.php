@@ -1,12 +1,12 @@
 <?php
 
-namespace Biigle\Modules\Export\Support\Reports\Volumes\ImageLabels;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels;
 
 use DB;
 use Biigle\LabelTree;
-use Biigle\Modules\Export\Support\CsvFile;
-use Biigle\Modules\Export\Support\Reports\MakesZipArchives;
-use Biigle\Modules\Export\Support\Reports\Volumes\VolumeReportGenerator;
+use Biigle\Modules\Reports\Support\CsvFile;
+use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
+use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
 
 class CsvReportGenerator extends VolumeReportGenerator
 {

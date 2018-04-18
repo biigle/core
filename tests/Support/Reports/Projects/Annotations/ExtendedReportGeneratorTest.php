@@ -1,10 +1,10 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Support\Reports\Projects\Annotations;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects\Annotations;
 
 use TestCase;
 use Biigle\Tests\ProjectTest;
-use Biigle\Modules\Export\Support\Reports\Projects\Annotations\ExtendedReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Projects\Annotations\ExtendedReportGenerator;
 
 class ExtendedReportGeneratorTest extends TestCase
 {

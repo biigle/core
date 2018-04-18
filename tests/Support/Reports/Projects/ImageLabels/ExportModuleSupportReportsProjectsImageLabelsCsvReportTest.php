@@ -1,10 +1,10 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Support\Reports\Projects\ImageLabels;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects\ImageLabels;
 
 use TestCase;
 use Biigle\Tests\ProjectTest;
-use Biigle\Modules\Export\Support\Reports\Projects\ImageLabels\CsvReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Projects\ImageLabels\CsvReportGenerator;
 
 class CsvReportGeneratorTest extends TestCase
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Export;
+namespace Biigle\Modules\Reports;
 
 use Illuminate\Database\Eloquent\Model;
 

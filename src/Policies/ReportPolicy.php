@@ -1,9 +1,9 @@
 <?php
 
-namespace Biigle\Modules\Export\Policies;
+namespace Biigle\Modules\Reports\Policies;
 
 use Biigle\User;
-use Biigle\Modules\Export\Report;
+use Biigle\Modules\Reports\Report;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ReportPolicy

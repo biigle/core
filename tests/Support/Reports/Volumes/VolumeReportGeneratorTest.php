@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Support\Reports\Volumes;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes;
 
 use App;
 use File;
@@ -9,8 +9,8 @@ use TestCase;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Modules\Export\Support\Exec;
-use Biigle\Modules\Export\Support\Reports\Volumes\VolumeReportGenerator;
+use Biigle\Modules\Reports\Support\Exec;
+use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
 
 class VolumeReportGeneratorTest extends TestCase
 {

@@ -3,7 +3,7 @@
  *
  * @type {Object}
  */
-biigle.$component('export.mixins.reportForm', {
+biigle.$component('reports.mixins.reportForm', {
     mixins: [biigle.$require('core.mixins.loader')],
     data: {
         variants: {
@@ -33,7 +33,7 @@ biigle.$component('export.mixins.reportForm', {
     computed: {
         availableReportTypes: function () {
             var types = {};
-            biigle.$require('export.reportTypes').forEach(function (type) {
+            biigle.$require('reports.reportTypes').forEach(function (type) {
                 types[type.name] = type.id;
             });
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Support\Reports\Volumes\Annotations;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Annotations;
 
 use App;
 use Mockery;
@@ -10,10 +10,10 @@ use Biigle\Tests\LabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\AnnotationTest;
-use Biigle\Modules\Export\Volume;
+use Biigle\Modules\Reports\Volume;
 use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Modules\Export\Support\CsvFile;
-use Biigle\Modules\Export\Support\Reports\Volumes\Annotations\FullReportGenerator;
+use Biigle\Modules\Reports\Support\CsvFile;
+use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\FullReportGenerator;
 
 class FullReportGeneratorTest extends TestCase
 {

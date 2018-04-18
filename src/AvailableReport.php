@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Export;
+namespace Biigle\Modules\Reports;
 
 use File;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -36,12 +36,12 @@ class AvailableReport
     public function __construct($basename = null)
     {
         if ($basename) {
-            $this->path = config('export.reports_storage').'/'.$basename;
+            $this->path = config('reports.reports_storage').'/'.$basename;
         } else {
             do {
                 // use str_random to generate a cryptographically secure random string
                 // because it will be used to retrieve the file via a public url
-                $path = config('export.reports_storage').'/'.str_random();
+                $path = config('reports.reports_storage').'/'.str_random();
             } while (File::exists($path));
 
             $this->path = $path;

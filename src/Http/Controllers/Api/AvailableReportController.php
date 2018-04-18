@@ -1,8 +1,8 @@
 <?php
 
-namespace Biigle\Modules\Export\Http\Controllers\Api;
+namespace Biigle\Modules\Reports\Http\Controllers\Api;
 
-use Biigle\Modules\Export\AvailableReport;
+use Biigle\Modules\Reports\AvailableReport;
 use Biigle\Http\Controllers\Api\Controller;
 
 /**

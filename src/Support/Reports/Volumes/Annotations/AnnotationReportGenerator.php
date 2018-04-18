@@ -1,12 +1,12 @@
 <?php
 
-namespace Biigle\Modules\Export\Support\Reports\Volumes\Annotations;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes\Annotations;
 
 use DB;
 use Illuminate\Support\Str;
 use Biigle\AnnotationSession;
-use Biigle\Modules\Export\Volume;
-use Biigle\Modules\Export\Support\Reports\Volumes\VolumeReportGenerator;
+use Biigle\Modules\Reports\Volume;
+use Biigle\Modules\Reports\Support\Reports\Volumes\VolumeReportGenerator;
 
 class AnnotationReportGenerator extends VolumeReportGenerator
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Biigle\Modules\Export\Http\Controllers\Views;
+namespace Biigle\Modules\Reports\Http\Controllers\Views;
 
 use Biigle\Project;
-use Biigle\Modules\Export\ReportType;
+use Biigle\Modules\Reports\ReportType;
 use Biigle\Http\Controllers\Views\Controller;
 
 class ProjectReportsController extends Controller
@@ -20,7 +20,7 @@ class ProjectReportsController extends Controller
         $this->authorize('access', $project);
         $types = ReportType::all();
 
-        return view('export::projectReports', [
+        return view('reports::projectReports', [
             'project' => $project,
             'reportTypes' => $types,
         ]);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Support\Reports\Volumes\ImageLabels;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\ImageLabels;
 
 use App;
 use Mockery;
@@ -11,8 +11,8 @@ use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\ImageLabelTest;
-use Biigle\Modules\Export\Support\CsvFile;
-use Biigle\Modules\Export\Support\Reports\Volumes\ImageLabels\CsvReportGenerator;
+use Biigle\Modules\Reports\Support\CsvFile;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels\CsvReportGenerator;
 
 class CsvReportGeneratorTest extends TestCase
 {

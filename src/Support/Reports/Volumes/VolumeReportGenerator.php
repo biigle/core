@@ -1,14 +1,14 @@
 <?php
 
-namespace Biigle\Modules\Export\Support\Reports\Volumes;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes;
 
 use App;
 use File;
 use Exception;
 use Biigle\Label;
 use Biigle\Volume;
-use Biigle\Modules\Export\Support\Exec;
-use Biigle\Modules\Export\Support\Reports\ReportGenerator;
+use Biigle\Modules\Reports\Support\Exec;
+use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 
 class VolumeReportGenerator extends ReportGenerator
 {
@@ -80,7 +80,7 @@ class VolumeReportGenerator extends ReportGenerator
     /**
      * Execute the external report parsing Python script.
      *
-     * @param string $scriptName Name of the script to execute (in the `export.scripts` config namespace)
+     * @param string $scriptName Name of the script to execute (in the `reports.scripts` config namespace)
      * @param string $path Path to the file to store the generated report to
      * @throws Exception If the script returned an error code.
      */

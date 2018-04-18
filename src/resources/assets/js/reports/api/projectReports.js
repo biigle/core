@@ -1,7 +1,7 @@
 /**
  * Resource for requesting reports for projects
  *
- * var resource = biigle.$require('export.api.projectReports');
+ * var resource = biigle.$require('reports.api.projectReports');
  *
  * Request a basic annotation report:
  *
@@ -12,4 +12,4 @@
  * }).then(...)
  *
  */
-biigle.$declare('export.api.projectReports', Vue.resource('/api/v1/projects{/id}/reports'));
+biigle.$declare('reports.api.projectReports', Vue.resource('/api/v1/projects{/id}/reports'));

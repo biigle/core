@@ -1,15 +1,15 @@
 <?php
 
-namespace Biigle\Modules\Export\Jobs;
+namespace Biigle\Modules\Reports\Jobs;
 
 use Biigle\User;
 use Carbon\Carbon;
 use Biigle\Jobs\Job;
-use Biigle\Modules\Export\Report;
+use Biigle\Modules\Reports\Report;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Biigle\Modules\Export\Notifications\ReportReady;
+use Biigle\Modules\Reports\Notifications\ReportReady;
 
 class GenerateReportJob extends Job implements ShouldQueue
 {

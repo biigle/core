@@ -1,10 +1,10 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Http\Controllers\Api;
+namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api;
 
 use Response;
 use ApiTestCase;
-use Biigle\Tests\Modules\Export\ReportTest;
+use Biigle\Tests\Modules\Reports\ReportTest;
 
 class ReportsControllerTest extends ApiTestCase
 {

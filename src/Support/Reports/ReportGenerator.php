@@ -1,12 +1,12 @@
 <?php
 
-namespace Biigle\Modules\Export\Support\Reports;
+namespace Biigle\Modules\Reports\Support\Reports;
 
 use File;
 use Exception;
 use Biigle\Label;
 use ReflectionClass;
-use Biigle\Modules\Export\ReportType;
+use Biigle\Modules\Reports\ReportType;
 
 class ReportGenerator
 {

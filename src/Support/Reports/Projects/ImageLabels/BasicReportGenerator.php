@@ -1,9 +1,9 @@
 <?php
 
-namespace Biigle\Modules\Export\Support\Reports\Projects\ImageLabels;
+namespace Biigle\Modules\Reports\Support\Reports\Projects\ImageLabels;
 
-use Biigle\Modules\Export\Support\Reports\Projects\ProjectReportGenerator;
-use Biigle\Modules\Export\Support\Reports\Volumes\ImageLabels\BasicReportGenerator as ReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Projects\ProjectReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\ImageLabels\BasicReportGenerator as ReportGenerator;
 
 class BasicReportGenerator extends ProjectReportGenerator
 {

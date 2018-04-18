@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Export\Support;
+namespace Biigle\Modules\Reports\Support;
 
 class CsvFile extends File
 {

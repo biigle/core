@@ -1,13 +1,13 @@
 <?php
 
-namespace Biigle\Modules\Export\Support\Reports\Volumes\Annotations;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes\Annotations;
 
 use DB;
 use StdClass;
 use Biigle\Image;
 use Biigle\Shape;
 use Biigle\LabelTree;
-use Biigle\Modules\Export\Support\CsvFile;
+use Biigle\Modules\Reports\Support\CsvFile;
 use Biigle\Modules\Laserpoints\Image as LImage;
 
 class AreaReportGenerator extends AnnotationReportGenerator
@@ -85,7 +85,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 'annotations.points',
             ])
             ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
-            // We can only compute the area from annotations that have and area.
+            // We can only compute the area from annotations that have an area.
             ->whereIn('shapes.id', [
                 Shape::$circleId,
                 Shape::$rectangleId,

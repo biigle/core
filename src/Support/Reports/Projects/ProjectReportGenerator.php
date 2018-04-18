@@ -1,14 +1,14 @@
 <?php
 
-namespace Biigle\Modules\Export\Support\Reports\Projects;
+namespace Biigle\Modules\Reports\Support\Reports\Projects;
 
 use App;
 use Exception;
 use Biigle\Volume;
 use Biigle\Project;
-use Biigle\Modules\Export\Support\File;
-use Biigle\Modules\Export\Support\Reports\ReportGenerator;
-use Biigle\Modules\Export\Support\Reports\MakesZipArchives;
+use Biigle\Modules\Reports\Support\File;
+use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\MakesZipArchives;
 
 class ProjectReportGenerator extends ReportGenerator
 {
@@ -55,7 +55,7 @@ class ProjectReportGenerator extends ReportGenerator
      *
      * @param Volume $volume
      *
-     * @return \Biigle\Modules\Export\Support\Reports\ReportGenerator
+     * @return \Biigle\Modules\Reports\Support\Reports\ReportGenerator
      */
     protected function getReportGenerator(Volume $volume)
     {

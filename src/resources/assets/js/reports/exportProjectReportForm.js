@@ -1,12 +1,12 @@
 /**
  * The form for requesting a project report
  */
-biigle.$viewModel('export-project-report-form', function (element) {
-    var projectId = biigle.$require('export.projectId');
+biigle.$viewModel('project-report-form', function (element) {
+    var projectId = biigle.$require('reports.projectId');
 
     new Vue({
         el: element,
-        mixins: [biigle.$require('export.mixins.reportForm')],
+        mixins: [biigle.$require('reports.mixins.reportForm')],
         data: {
             allowedOptions: {
                 'Annotations': [
@@ -21,7 +21,7 @@ biigle.$viewModel('export-project-report-form', function (element) {
         },
         methods: {
             submit: function () {
-                this.request(projectId, biigle.$require('export.api.projectReports'));
+                this.request(projectId, biigle.$require('reports.api.projectReports'));
             }
         },
     });

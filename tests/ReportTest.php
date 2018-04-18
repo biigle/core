@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export;
+namespace Biigle\Tests\Modules\Reports;
 
 use File;
 use Mockery;
@@ -8,8 +8,8 @@ use ModelTestCase;
 use Carbon\Carbon;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Modules\Export\Report;
-use Biigle\Modules\Export\Support\Reports\ReportGenerator;
+use Biigle\Modules\Reports\Report;
+use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 
 class ReportTest extends ModelTestCase
 {
@@ -40,7 +40,7 @@ class ReportTest extends ModelTestCase
     public function testGenerate()
     {
         $id = $this->model->id;
-        $path = config('export.reports_storage');
+        $path = config('reports.reports_storage');
 
         $mock = Mockery::mock(ReportGenerator::class);
         $mock->shouldReceive('generate')->once()->with($this->model->source, "{$path}/{$id}");

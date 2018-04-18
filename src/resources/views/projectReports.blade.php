@@ -3,10 +3,10 @@
 @section('title', "Reports for {$project->name}")
 
 @push('scripts')
-    <script src="{{ cachebust_asset('vendor/export/scripts/main.js') }}"></script>
+    <script src="{{ cachebust_asset('vendor/reports/scripts/main.js') }}"></script>
     <script type="text/javascript">
-        biigle.$declare('export.projectId', {!! $project->id !!});
-        biigle.$declare('export.reportTypes', {!! $reportTypes !!});
+        biigle.$declare('reports.projectId', {!! $project->id !!});
+        biigle.$declare('reports.reportTypes', {!! $reportTypes !!});
     </script>
 @endpush
 
@@ -21,7 +21,7 @@
 @endsection
 
 @section('content')
-<div id="export-project-report-form" class="container">
+<div id="project-report-form" class="container">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
             <h2>Request report for {{$project->name}}</h2>
@@ -50,7 +50,7 @@
                         </div>
                     </div>
                     <div class="col-sm-5">
-                        @include('export::partials.reportTypeInfo')
+                        @include('reports::partials.reportTypeInfo')
                     </div>
                 </div>
                 <div class="row" v-if="wantsType('Annotations')" v-cloak>

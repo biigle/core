@@ -1,9 +1,9 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Http\Controllers\Api\Volumes;
+namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
-use Biigle\Modules\Export\Volume;
+use Biigle\Modules\Reports\Volume;
 
 class ExportAreaControllerTest extends ApiTestCase
 {

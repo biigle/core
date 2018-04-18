@@ -20,7 +20,7 @@ class CreateReportsTable extends Migration
         });
 
         // Must be compatible with the namespaces of the report generators in
-        // \Biigle\Modules\Export\Support\Reports.
+        // \Biigle\Modules\Reports\Support\Reports.
         DB::table('report_types')->insert([
             ['name' => 'Annotations\Area'],
             ['name' => 'Annotations\Basic'],

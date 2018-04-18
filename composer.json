@@ -1,5 +1,5 @@
 {
-    "name": "biigle/export",
+    "name": "biigle/reports",
     "require": {
         "ext-zip": "*",
         "biigle/projects": "~1.4"
@@ -8,7 +8,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Biigle\\Modules\\Export\\": "src"
+            "Biigle\\Modules\\Reports\\": "src"
         }
     }
 }

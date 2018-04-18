@@ -35,7 +35,7 @@ $router->group([
         'as' => 'show-reports',
     ]);
 
-    $router->post('users/my/settings/export', [
+    $router->post('users/my/settings/reports', [
         'uses' => 'SettingsController@store',
     ]);
 });

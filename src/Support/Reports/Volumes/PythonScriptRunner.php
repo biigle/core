@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Export\Support\Reports\Volumes;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes;
 
 use Exception;
 
@@ -32,7 +32,7 @@ class PythonScriptRunner
     /**
      * Execute the external report parsing Python script.
      *
-     * @param string $scriptName Name of the script to execute (in the `export.scripts` config namespace)
+     * @param string $scriptName Name of the script to execute (in the `reports.scripts` config namespace)
      * @param string $volumeName Name of the volume that belongs to the data
      * @param string $path Path to the file to store the generated report to
      * @param array $csvs Array of CSV files that should be passed along to the script
@@ -41,8 +41,8 @@ class PythonScriptRunner
      */
     public function run($scriptName, $volumeName, $path, $csvs = [])
     {
-        $python = config('export.python');
-        $script = config("export.scripts.{$scriptName}");
+        $python = config('reports.python');
+        $script = config("reports.scripts.{$scriptName}");
 
         $csvs = implode(' ', array_map(function ($csv) {
             return $csv->getPath();

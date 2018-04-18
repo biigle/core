@@ -1,10 +1,10 @@
 <?php
 
-namespace Biigle\Modules\Export\Support\Reports\Volumes\Annotations;
+namespace Biigle\Modules\Reports\Support\Reports\Volumes\Annotations;
 
 use DB;
 use Biigle\LabelTree;
-use Biigle\Modules\Export\Support\CsvFile;
+use Biigle\Modules\Reports\Support\CsvFile;
 
 class FullReportGenerator extends AnnotationReportGenerator
 {

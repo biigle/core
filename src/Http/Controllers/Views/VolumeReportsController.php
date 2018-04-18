@@ -1,9 +1,9 @@
 <?php
 
-namespace Biigle\Modules\Export\Http\Controllers\Views;
+namespace Biigle\Modules\Reports\Http\Controllers\Views;
 
 use Biigle\Volume;
-use Biigle\Modules\Export\ReportType;
+use Biigle\Modules\Reports\ReportType;
 use Biigle\Http\Controllers\Views\Controller;
 
 class VolumeReportsController extends Controller
@@ -21,7 +21,7 @@ class VolumeReportsController extends Controller
         $sessions = $volume->annotationSessions()->orderBy('starts_at', 'desc')->get();
         $types = ReportType::all();
 
-        return view('export::volumeReports', [
+        return view('reports::volumeReports', [
             'projects' => $volume->projects,
             'volume' => $volume,
             'annotationSessions' => $sessions,

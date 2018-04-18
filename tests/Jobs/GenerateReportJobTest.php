@@ -1,14 +1,14 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Jobs;
+namespace Biigle\Tests\Modules\Reports\Jobs;
 
 use Mockery;
 use TestCase;
 use Biigle\User;
 use Carbon\Carbon;
-use Biigle\Modules\Export\Report;
-use Biigle\Modules\Export\Jobs\GenerateReportJob;
-use Biigle\Modules\Export\Notifications\ReportReady;
+use Biigle\Modules\Reports\Report;
+use Biigle\Modules\Reports\Jobs\GenerateReportJob;
+use Biigle\Modules\Reports\Notifications\ReportReady;
 
 class GenerateReportJobTest extends TestCase
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Biigle\Modules\Export\Notifications;
+namespace Biigle\Modules\Reports\Notifications;
 
-use Biigle\Modules\Export\Report;
+use Biigle\Modules\Reports\Report;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 
@@ -34,9 +34,9 @@ class ReportReady extends Notification
      */
     public function via($notifiable)
     {
-        $settings = config('export.notifications.default_settings');
+        $settings = config('reports.notifications.default_settings');
 
-        if (config('export.notifications.allow_user_settings') === true) {
+        if (config('reports.notifications.allow_user_settings') === true) {
             $settings = $notifiable->getSettings('report_notifications', $settings);
         }
 

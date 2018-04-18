@@ -1,9 +1,9 @@
 <?php
 
-namespace Biigle\Modules\Export\Http\Controllers\Api;
+namespace Biigle\Modules\Reports\Http\Controllers\Api;
 
 use Response;
-use Biigle\Modules\Export\Report;
+use Biigle\Modules\Reports\Report;
 use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Api\Controller;
 

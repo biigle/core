@@ -3,10 +3,10 @@
 @section('title', "Reports for {$volume->name}")
 
 @push('scripts')
-    <script src="{{ cachebust_asset('vendor/export/scripts/main.js') }}"></script>
+    <script src="{{ cachebust_asset('vendor/reports/scripts/main.js') }}"></script>
     <script type="text/javascript">
-        biigle.$declare('export.volumeId', {!! $volume->id !!});
-        biigle.$declare('export.reportTypes', {!! $reportTypes !!});
+        biigle.$declare('reports.volumeId', {!! $volume->id !!});
+        biigle.$declare('reports.reportTypes', {!! $reportTypes !!});
     </script>
 @endpush
 
@@ -21,7 +21,7 @@
 @endsection
 
 @section('content')
-<div id="export-volume-report-form" class="container">
+<div id="volume-report-form" class="container">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
             <h2>Request report for {{$volume->name}}</h2>
@@ -50,7 +50,7 @@
                         </div>
                     </div>
                     <div class="col-sm-5">
-                        @include('export::partials.reportTypeInfo')
+                        @include('reports::partials.reportTypeInfo')
                     </div>
                 </div>
                 @if ($annotationSessions->count() > 0)

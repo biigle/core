@@ -32,7 +32,7 @@ biigle.$require('annotations.components.settingsTabPlugins').exportArea = {
             return this.exportArea !== null;
         },
         exportAreaApi: function () {
-            return biigle.$require('export.api.volumes');
+            return biigle.$require('reports.api.volumes');
         },
         volumeId: function () {
             return biigle.$require('annotations.volumeId');

@@ -27,7 +27,7 @@
             el: element,
             mixins: [biigle.$require('core.mixins.loader')],
             data: {
-                settings: '{!! $user->getSettings('report_notifications', config('export.notifications.default_settings')) !!}',
+                settings: '{!! $user->getSettings('report_notifications', config('reports.notifications.default_settings')) !!}',
                 saved: false,
                 error: false,
             },
@@ -45,7 +45,7 @@
             watch: {
                 settings: function (settings) {
                     this.startLoading();
-                    this.$http.post('api/v1/users/my/settings/export', {
+                    this.$http.post('api/v1/users/my/settings/reports', {
                             report_notifications: this.settings,
                         })
                         .then(this.handleSuccess, this.handleError)

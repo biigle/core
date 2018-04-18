@@ -1,12 +1,12 @@
 <?php
 
-$factory->define(Biigle\Modules\Export\ReportType::class, function ($faker) {
+$factory->define(Biigle\Modules\Reports\ReportType::class, function ($faker) {
     return [
         'name' => $faker->username(),
     ];
 });
 
-$factory->define(Biigle\Modules\Export\Report::class, function ($faker) {
+$factory->define(Biigle\Modules\Reports\Report::class, function ($faker) {
     if (rand(0, 1) > 0) {
         $sourceType = Biigle\Volume::class;
     } else {
@@ -18,7 +18,7 @@ $factory->define(Biigle\Modules\Export\Report::class, function ($faker) {
             return factory(Biigle\User::class)->create()->id;
         },
         'type_id' => function () {
-            return Biigle\Modules\Export\ReportType::inRandomOrder()->first()->id;
+            return Biigle\Modules\Reports\ReportType::inRandomOrder()->first()->id;
         },
         'source_id' => function () use ($sourceType) {
             return factory($sourceType)->create()->id;

@@ -1,14 +1,14 @@
 <?php
 
-namespace Biigle\Modules\Export;
+namespace Biigle\Modules\Reports;
 
 use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
-use Biigle\Modules\Export\Http\Controllers\Mixins\Views\SearchControllerMixin;
+use Biigle\Modules\Reports\Http\Controllers\Mixins\Views\SearchControllerMixin;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
-class ExportServiceProvider extends ServiceProvider
+class ReportsServiceProvider extends ServiceProvider
 {
     /**
      * The policy mappings for the application.
@@ -29,25 +29,25 @@ class ExportServiceProvider extends ServiceProvider
      */
     public function boot(Modules $modules, Router $router)
     {
-        $this->loadViewsFrom(__DIR__.'/resources/views', 'export');
+        $this->loadViewsFrom(__DIR__.'/resources/views', 'reports');
         $this->loadMigrationsFrom(__DIR__.'/database/migrations');
 
         $router->group([
-            'namespace' => 'Biigle\Modules\Export\Http\Controllers',
+            'namespace' => 'Biigle\Modules\Reports\Http\Controllers',
             'middleware' => 'web',
         ], function ($router) {
             require __DIR__.'/Http/routes.php';
         });
 
         $this->publishes([
-            __DIR__.'/public/assets' => public_path('vendor/export'),
+            __DIR__.'/public/assets' => public_path('vendor/reports'),
         ], 'public');
 
         $this->publishes([
-            __DIR__.'/config/export.php' => config_path('export.php'),
+            __DIR__.'/config/reports.php' => config_path('reports.php'),
         ], 'config');
 
-        $modules->register('export', [
+        $modules->register('reports', [
             'viewMixins' => [
                 'projectsShowToolbar',
                 'annotationsSettingsTab',
@@ -64,8 +64,8 @@ class ExportServiceProvider extends ServiceProvider
             ],
         ]);
 
-        if (config('export.notifications.allow_user_settings')) {
-            $modules->registerViewMixin('export', 'settings.notifications');
+        if (config('reports.notifications.allow_user_settings')) {
+            $modules->registerViewMixin('reports', 'settings.notifications');
         }
 
         $this->registerPolicies();
@@ -82,14 +82,14 @@ class ExportServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/config/export.php', 'export');
+        $this->mergeConfigFrom(__DIR__.'/config/reports.php', 'reports');
 
-        $this->app->singleton('command.export.publish', function ($app) {
-            return new \Biigle\Modules\Export\Console\Commands\Publish();
+        $this->app->singleton('command.reports.publish', function ($app) {
+            return new \Biigle\Modules\Reports\Console\Commands\Publish();
         });
 
         $this->commands([
-            'command.export.publish',
+            'command.reports.publish',
         ]);
 
         if (config('app.env') === 'testing') {
@@ -105,7 +105,7 @@ class ExportServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            'command.export.publish',
+            'command.reports.publish',
         ];
     }
 

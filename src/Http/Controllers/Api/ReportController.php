@@ -1,13 +1,13 @@
 <?php
 
-namespace Biigle\Modules\Export\Http\Controllers\Api;
+namespace Biigle\Modules\Reports\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Biigle\Modules\Export\Report;
+use Biigle\Modules\Reports\Report;
 use Illuminate\Contracts\Auth\Guard;
-use Biigle\Modules\Export\ReportType;
+use Biigle\Modules\Reports\ReportType;
 use Biigle\Http\Controllers\Api\Controller;
-use Biigle\Modules\Export\Jobs\GenerateReportJob;
+use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 
 abstract class ReportController extends Controller
 {

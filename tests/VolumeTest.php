@@ -1,9 +1,9 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export;
+namespace Biigle\Tests\Modules\Reports;
 
 use TestCase;
-use Biigle\Modules\Export\Volume;
+use Biigle\Modules\Reports\Volume;
 use Biigle\Tests\VolumeTest as BaseVolumeTest;
 
 class VolumeTest extends TestCase
@@ -18,10 +18,10 @@ class VolumeTest extends TestCase
         $volume = BaseVolumeTest::create([
             'attrs' => [Volume::EXPORT_AREA_ATTRIBUTE => [1, 2, 3, 4]],
         ]);
-        $exportVolume = Volume::convert($volume);
-        $this->assertEquals($volume->id, $exportVolume->id);
-        $this->assertTrue($exportVolume instanceof Volume);
-        $this->assertEquals(3, $exportVolume->exportArea[2]);
+        $reportsVolume = Volume::convert($volume);
+        $this->assertEquals($volume->id, $reportsVolume->id);
+        $this->assertTrue($reportsVolume instanceof Volume);
+        $this->assertEquals(3, $reportsVolume->exportArea[2]);
     }
 
     public function testExportArea()

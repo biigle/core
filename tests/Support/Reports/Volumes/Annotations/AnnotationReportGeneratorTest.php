@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Support\Reports\Volumes\Annotations;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Volumes\Annotations;
 
 use TestCase;
 use Biigle\Shape;
@@ -10,10 +10,10 @@ use Biigle\AnnotationLabel;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\AnnotationTest;
-use Biigle\Modules\Export\Volume;
+use Biigle\Modules\Reports\Volume;
 use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
-use Biigle\Modules\Export\Support\Reports\Volumes\Annotations\AnnotationReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\AnnotationReportGenerator;
 
 class AnnotationReportGeneratorTest extends TestCase
 {

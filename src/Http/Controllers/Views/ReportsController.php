@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Export\Http\Controllers\Views;
+namespace Biigle\Modules\Reports\Http\Controllers\Views;
 
 use Biigle\Http\Controllers\Views\Controller;
 

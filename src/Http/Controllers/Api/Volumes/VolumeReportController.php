@@ -1,10 +1,10 @@
 <?php
 
-namespace Biigle\Modules\Export\Http\Controllers\Api\Volumes;
+namespace Biigle\Modules\Reports\Http\Controllers\Api\Volumes;
 
 use Biigle\Volume;
 use Illuminate\Http\Request;
-use Biigle\Modules\Export\Http\Controllers\Api\ReportController;
+use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
 
 class VolumeReportController extends ReportController
 {

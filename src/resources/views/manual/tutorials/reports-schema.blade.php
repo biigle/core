@@ -23,8 +23,8 @@
         <p>
             Example plot:
             <figure>
-                <a href="{{asset('vendor/export/images/demo_basic_plot.png')}}">
-                    <img src="{{asset('vendor/export/images/demo_basic_plot.png')}}" style="max-width: 100%;">
+                <a href="{{asset('vendor/reports/images/demo_basic_plot.png')}}">
+                    <img src="{{asset('vendor/reports/images/demo_basic_plot.png')}}" style="max-width: 100%;">
                 </a>
             </figure>
         </p>

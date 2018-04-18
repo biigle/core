@@ -1,10 +1,10 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Http\Controllers\Api\Projects;
+namespace Biigle\Tests\Modules\Reports\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
-use Biigle\Modules\Export\ReportType;
-use Biigle\Modules\Export\Jobs\GenerateReportJob;
+use Biigle\Modules\Reports\ReportType;
+use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 
 class ProjectReportControllerTest extends ApiTestCase
 {

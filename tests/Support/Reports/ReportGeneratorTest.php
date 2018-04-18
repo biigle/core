@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Support\Reports;
+namespace Biigle\Tests\Modules\Reports\Support\Reports;
 
 use File;
 use Mockery;
@@ -10,9 +10,9 @@ use Biigle\Volume;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Modules\Export\ReportType;
-use Biigle\Modules\Export\Support\Reports\ReportGenerator;
-use Biigle\Modules\Export\Support\Reports\Volumes\Annotations\BasicReportGenerator;
+use Biigle\Modules\Reports\ReportType;
+use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\BasicReportGenerator;
 
 class ReportGeneratorTest extends TestCase
 {

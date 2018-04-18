@@ -1,9 +1,9 @@
 <?php
 
-namespace Biigle\Modules\Export\Observers;
+namespace Biigle\Modules\Reports\Observers;
 
 use Biigle\Project;
-use Biigle\Modules\Export\Report;
+use Biigle\Modules\Reports\Report;
 
 class ProjectObserver
 {

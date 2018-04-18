@@ -1,11 +1,11 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Policies;
+namespace Biigle\Tests\Modules\Reports\Policies;
 
 use TestCase;
 use Biigle\Tests\UserTest;
-use Biigle\Modules\Export\Report;
-use Biigle\Tests\Modules\Export\ReportTest;
+use Biigle\Modules\Reports\Report;
+use Biigle\Tests\Modules\Reports\ReportTest;
 
 class ReportPolicyTest extends TestCase
 {

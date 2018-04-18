@@ -1,12 +1,12 @@
 /**
  * The form for requesting a volume report
  */
-biigle.$viewModel('export-volume-report-form', function (element) {
-    var volumeId = biigle.$require('export.volumeId');
+biigle.$viewModel('volume-report-form', function (element) {
+    var volumeId = biigle.$require('reports.volumeId');
 
     new Vue({
         el: element,
-        mixins: [biigle.$require('export.mixins.reportForm')],
+        mixins: [biigle.$require('reports.mixins.reportForm')],
         data: {
             allowedOptions: {
                 'Annotations': [
@@ -26,7 +26,7 @@ biigle.$viewModel('export-volume-report-form', function (element) {
         },
         methods: {
             submit: function () {
-                this.request(volumeId, biigle.$require('export.api.volumeReports'));
+                this.request(volumeId, biigle.$require('reports.api.volumeReports'));
             },
         },
     });

@@ -1,12 +1,12 @@
 <?php
 
-namespace Biigle\Modules\Export;
+namespace Biigle\Modules\Reports;
 
 use File;
 use Exception;
 use ReflectionClass;
 use Illuminate\Database\Eloquent\Model;
-use Biigle\Modules\Export\Support\Reports\ReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 
 class Report extends Model
 {
@@ -113,7 +113,7 @@ class Report extends Model
      */
     public function getPath()
     {
-        return config('export.reports_storage').'/'.$this->id;
+        return config('reports.reports_storage').'/'.$this->id;
     }
 
     /**

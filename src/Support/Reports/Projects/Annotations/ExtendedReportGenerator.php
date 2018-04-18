@@ -1,8 +1,8 @@
 <?php
 
-namespace Biigle\Modules\Export\Support\Reports\Projects\Annotations;
+namespace Biigle\Modules\Reports\Support\Reports\Projects\Annotations;
 
-use Biigle\Modules\Export\Support\Reports\Volumes\Annotations\ExtendedReportGenerator as ReportGenerator;
+use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\ExtendedReportGenerator as ReportGenerator;
 
 class ExtendedReportGenerator extends AnnotationReportGenerator
 {

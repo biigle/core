@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Support\Reports\Projects;
+namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects;
 
 use App;
 use Mockery;
@@ -10,8 +10,8 @@ use Biigle\Volume;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Modules\Export\Support\File;
-use Biigle\Modules\Export\Support\Reports\Projects\ProjectReportGenerator;
+use Biigle\Modules\Reports\Support\File;
+use Biigle\Modules\Reports\Support\Reports\Projects\ProjectReportGenerator;
 
 class ProjectReportGeneratorTest extends TestCase
 {

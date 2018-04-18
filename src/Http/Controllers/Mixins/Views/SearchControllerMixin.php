@@ -1,12 +1,12 @@
 <?php
 
-namespace Biigle\Modules\Export\Http\Controllers\Mixins\Views;
+namespace Biigle\Modules\Reports\Http\Controllers\Mixins\Views;
 
 use DB;
 use Biigle\User;
 use Biigle\Volume;
 use Biigle\Project;
-use Biigle\Modules\Export\Report;
+use Biigle\Modules\Reports\Report;
 
 class SearchControllerMixin
 {

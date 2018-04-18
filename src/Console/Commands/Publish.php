@@ -1,9 +1,9 @@
 <?php
 
-namespace Biigle\Modules\Export\Console\Commands;
+namespace Biigle\Modules\Reports\Console\Commands;
 
 use Illuminate\Console\Command;
-use Biigle\Modules\Export\ExportServiceProvider as ServiceProvider;
+use Biigle\Modules\Reports\ReportsServiceProvider as ServiceProvider;
 
 class Publish extends Command
 {
@@ -12,7 +12,7 @@ class Publish extends Command
      *
      * @var string
      */
-    protected $name = 'export:publish';
+    protected $name = 'reports:publish';
 
     /**
      * The console command description.

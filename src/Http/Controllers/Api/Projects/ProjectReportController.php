@@ -1,9 +1,9 @@
 <?php
 
-namespace Biigle\Modules\Export\Http\Controllers\Api\Projects;
+namespace Biigle\Modules\Reports\Http\Controllers\Api\Projects;
 
 use Biigle\Project;
-use Biigle\Modules\Export\Http\Controllers\Api\ReportController;
+use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
 
 class ProjectReportController extends ReportController
 {

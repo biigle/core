@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Export\Support;
+namespace Biigle\Modules\Reports\Support;
 
 use App;
 use File as FS;
@@ -39,7 +39,7 @@ class File
     public function __construct($path = null)
     {
         if (is_null($path)) {
-            $this->path = tempnam(config('export.tmp_storage').'/', 'biigle-export-csv-');
+            $this->path = tempnam(config('reports.tmp_storage').'/', 'biigle-reports-csv-');
         } else {
             $this->path = $path;
         }

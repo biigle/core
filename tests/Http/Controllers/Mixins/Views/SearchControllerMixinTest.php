@@ -1,13 +1,13 @@
 <?php
 
-namespace Biigle\Tests\Modules\Export\Http\Controllers\Mixins\Views;
+namespace Biigle\Tests\Modules\Reports\Http\Controllers\Mixins\Views;
 
 use TestCase;
 use Biigle\Volume;
 use Biigle\Project;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Tests\Modules\Export\ReportTest;
+use Biigle\Tests\Modules\Reports\ReportTest;
 
 class SearchControllerMixinTest extends TestCase
 {

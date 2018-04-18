@@ -1,7 +1,7 @@
 /**
  * Resource for requesting reports for volumes
  *
- * var resource = biigle.$require('export.api.volumeReports');
+ * var resource = biigle.$require('reports.api.volumeReports');
  *
  * Request a basic annotation report:
  *
@@ -13,4 +13,4 @@
  * }).then(...)
  *
  */
-biigle.$declare('export.api.volumeReports', Vue.resource('/api/v1/volumes{/id}/reports'));
+biigle.$declare('reports.api.volumeReports', Vue.resource('/api/v1/volumes{/id}/reports'));

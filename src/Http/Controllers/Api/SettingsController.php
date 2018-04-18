@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Export\Http\Controllers\Api;
+namespace Biigle\Modules\Reports\Http\Controllers\Api;
 
 use Biigle\User;
 use Illuminate\Http\Request;
@@ -23,9 +23,9 @@ class SettingsController extends Controller
     /**
      * Update the user settings for reports
      *
-     * @api {post} users/my/settings/export Update the user settings for reports
+     * @api {post} users/my/settings/reports Update the user settings for reports
      * @apiGroup Users
-     * @apiName StoreUsersExportSettings
+     * @apiName StoreUsersReportsSettings
      * @apiPermission user
      *
      * @apiParam (Optional arguments) {String} report_notifications Set to `'email'` or `'web'` to receive notifications for finished reports either via email or the BIIGLE notification center.
@@ -39,7 +39,7 @@ class SettingsController extends Controller
     {
         $this->validate($request, self::VALIDATION_RULES);
         $settings = $request->only(array_keys(self::VALIDATION_RULES));
-        if (config('export.notifications.allow_user_settings') === false) {
+        if (config('reports.notifications.allow_user_settings') === false) {
             unset($settings['report_notifications']);
         }
         $auth->user()->setSettings($settings);

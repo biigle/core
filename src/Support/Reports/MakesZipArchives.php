@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Export\Support\Reports;
+namespace Biigle\Modules\Reports\Support\Reports;
 
 use App;
 use Exception;
