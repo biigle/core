@@ -20,7 +20,7 @@ class ImagesCleanupListenerTest extends TestCase
 
     public function testHandleMalformed()
     {
-        $this->setExpectedException(QueryException::class);
+        $this->expectException(QueryException::class);
         with(new ImagesCleanupListener)->handle(['abc']);
     }
 
