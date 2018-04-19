@@ -50,7 +50,7 @@ class AnnotationSessionController extends Controller
         $this->authorize('update', $session->volume);
         $this->validate($request, AnnotationSession::$updateRules);
 
-        if ($request->has('starts_at')) {
+        if ($request->filled('starts_at')) {
             $newStartsAt = Carbon::parse($request->input('starts_at'))
                 ->tz(config('app.timezone'));
 
@@ -61,7 +61,7 @@ class AnnotationSessionController extends Controller
             $session->starts_at = $newStartsAt;
         }
 
-        if ($request->has('ends_at')) {
+        if ($request->filled('ends_at')) {
             $newEndsAt = Carbon::parse($request->input('ends_at'))
                 ->tz(config('app.timezone'));
 
@@ -86,7 +86,7 @@ class AnnotationSessionController extends Controller
             ]);
         }
 
-        if ($request->has('users')) {
+        if ($request->filled('users')) {
             $users = $request->input('users');
 
             if (!$request->input('force')) {

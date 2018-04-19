@@ -219,7 +219,7 @@ class ProjectVolumeController extends Controller
         $volume = $project->volumes()->findOrFail($volumeId);
         $this->authorize('destroy', $volume);
 
-        $project->removeVolume($volume, $request->has('force'));
+        $project->removeVolume($volume, $request->filled('force'));
 
         return response('Removed.', 200);
     }

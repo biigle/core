@@ -7,6 +7,7 @@ use Biigle\User;
 use Notification;
 use ModelTestCase;
 use Biigle\SystemMessage;
+use Illuminate\Database\QueryException;
 use Biigle\Notifications\NewSystemMessageNotification;
 
 class SystemMessageTest extends ModelTestCase
@@ -28,14 +29,14 @@ class SystemMessageTest extends ModelTestCase
     public function testTitleRequired()
     {
         $this->model->title = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testBodyRequired()
     {
         $this->model->body = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 

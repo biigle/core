@@ -1,12 +1,13 @@
 <?php
 
+use Biigle\Tests\CreatesApplication;
 use Illuminate\Support\Facades\Queue;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
 {
-    use MockeryPHPUnitIntegration;
+    use CreatesApplication, MockeryPHPUnitIntegration;
 
     protected static $pdo;
 
@@ -46,19 +47,5 @@ class TestCase extends BaseTestCase
         $database = $this->app->make('db');
         $database->connection(null)->rollBack();
         parent::tearDown();
-    }
-
-    /**
-     * Creates the application.
-     *
-     * @return \Illuminate\Foundation\Application
-     */
-    public function createApplication()
-    {
-        $app = require __DIR__.'/../bootstrap/app.php';
-
-        $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
-
-        return $app;
     }
 }

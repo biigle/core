@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use Biigle\Label;
 use ModelTestCase;
+use Illuminate\Database\QueryException;
 
 class LabelTest extends ModelTestCase
 {
@@ -24,28 +25,28 @@ class LabelTest extends ModelTestCase
     public function testNameRequired()
     {
         $this->model->name = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testColorRequired()
     {
         $this->model->color = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testUuidRequired()
     {
         $this->model->uuid = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testUuidUnique()
     {
         self::create(['uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62']);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         self::create(['uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62']);
     }
 

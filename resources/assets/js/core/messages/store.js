@@ -59,8 +59,9 @@ biigle.$declare('messages.store', new Vue({
 
             if (response.status === 422) {
                 // validation response
-                for (var key in data) {
-                    this.danger(data[key][0]);
+                var errors = data.errors;
+                for (var key in errors) {
+                    this.danger(errors[key][0]);
                 }
             } else if (response.status === 403) {
                 this.danger("You have no permission to do that.");

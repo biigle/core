@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use TestCase;
 use Biigle\Role;
+use Illuminate\Database\QueryException;
 
 class ProjectUserIntegrityTest extends TestCase
 {
@@ -12,7 +13,7 @@ class ProjectUserIntegrityTest extends TestCase
         $project = ProjectTest::create();
         $role = RoleTest::create();
         $project->addUserId(UserTest::create()->id, $role->id);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $role->delete();
     }
 
@@ -45,7 +46,7 @@ class ProjectUserIntegrityTest extends TestCase
         $user = UserTest::create();
         $role = RoleTest::create();
         $project->addUserId($user->id, $role->id);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         // attach manually so the error-check in addUserId is circumvented
         $project->users()->attach($user->id, ['project_role_id' => $role->id]);
     }

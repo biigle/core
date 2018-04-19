@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use ModelTestCase;
 use Biigle\ApiToken;
+use Illuminate\Database\QueryException;
 
 class ApiTokenTest extends ModelTestCase
 {
@@ -24,21 +25,21 @@ class ApiTokenTest extends ModelTestCase
     public function testOwnerRequired()
     {
         $this->model->owner_id = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testPurposeRequired()
     {
         $this->model->purpose = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testHashRequired()
     {
         $this->model->hash = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 

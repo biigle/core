@@ -19,6 +19,7 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Handler\MockHandler;
 use Illuminate\Database\QueryException;
 use GuzzleHttp\Exception\RequestException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class VolumeTest extends ModelTestCase
 {
@@ -40,27 +41,27 @@ class VolumeTest extends ModelTestCase
     public function testNameRequired()
     {
         $this->model->name = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testUrlRequired()
     {
         $this->model->url = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testMediaTypeRequired()
     {
         $this->model->mediaType()->dissociate();
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testMediaTypeOnDeleteRestrict()
     {
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->mediaType()->delete();
     }
 
@@ -100,7 +101,7 @@ class VolumeTest extends ModelTestCase
         $this->assertEquals($type->id, $this->model->mediaType->id);
 
         // media type does not exist
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->expectException(HttpException::class);
         $this->model->setMediaTypeId(99999);
     }
 
@@ -116,7 +117,7 @@ class VolumeTest extends ModelTestCase
 
     public function testCreateImagesDuplicateInsert()
     {
-        $this->setExpectedException(QueryException::class);
+        $this->expectException(QueryException::class);
         $return = $this->model->createImages(['1.jpg', '1.jpg']);
     }
 
@@ -174,7 +175,7 @@ class VolumeTest extends ModelTestCase
         app()->bind(Client::class, function () use ($client) {
             return $client;
         });
-        $this->setExpectedException(Exception::class);
+        $this->expectException(Exception::class);
         $this->model->validateUrl();
     }
 
@@ -188,7 +189,7 @@ class VolumeTest extends ModelTestCase
         app()->bind(Client::class, function () use ($client) {
             return $client;
         });
-        $this->setExpectedException(Exception::class);
+        $this->expectException(Exception::class);
         $this->model->validateUrl();
     }
 
@@ -238,19 +239,19 @@ class VolumeTest extends ModelTestCase
 
     public function testValidateImagesFormatNotOk()
     {
-        $this->setExpectedException(Exception::class);
+        $this->expectException(Exception::class);
         $this->model->validateImages(['1.jpg', '2.bmp']);
     }
 
     public function testValidateImagesDupes()
     {
-        $this->setExpectedException(Exception::class);
+        $this->expectException(Exception::class);
         $this->model->validateImages(['1.jpg', '1.jpg']);
     }
 
     public function testValidateImagesEmpty()
     {
-        $this->setExpectedException(Exception::class);
+        $this->expectException(Exception::class);
         $this->model->validateImages([]);
     }
 

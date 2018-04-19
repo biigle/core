@@ -34,7 +34,7 @@ class LabelController extends Controller
         $this->validate($request, Label::$updateRules);
 
         // parent must be of the same tree
-        if ($request->has('parent_id')) {
+        if ($request->filled('parent_id')) {
             $exists = Label::where('id', $request->input('parent_id'))
                 ->where('label_tree_id', $label->label_tree_id)
                 ->exists();
@@ -83,7 +83,7 @@ class LabelController extends Controller
             return;
         }
 
-        if ($request->has('_redirect')) {
+        if ($request->filled('_redirect')) {
             return redirect($request->input('_redirect'))
                 ->with('deleted', true);
         }
