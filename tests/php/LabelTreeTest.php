@@ -6,6 +6,8 @@ use Biigle\Role;
 use ModelTestCase;
 use Biigle\LabelTree;
 use Biigle\Visibility;
+use Illuminate\Database\QueryException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class LabelTreeTest extends ModelTestCase
 {
@@ -26,27 +28,27 @@ class LabelTreeTest extends ModelTestCase
     public function testNameRequired()
     {
         $this->model->name = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testUuidRequired()
     {
         $this->model->uuid = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testUuidUnique()
     {
         self::create(['uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62']);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         self::create(['uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62']);
     }
 
     public function testVisibilityOnDeleteRestrict()
     {
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->visibility()->delete();
     }
 
@@ -100,7 +102,7 @@ class LabelTreeTest extends ModelTestCase
     {
         $this->assertFalse($this->model->members()->exists());
         // label trees can't have guests
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->expectException(HttpException::class);
         $this->model->addMember(UserTest::create(), Role::$guest);
     }
 
@@ -108,7 +110,7 @@ class LabelTreeTest extends ModelTestCase
     {
         $user = UserTest::create();
         $this->model->addMember($user, Role::$admin);
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->expectException(HttpException::class);
         $this->model->addMember($user, Role::$admin);
     }
 
@@ -137,7 +139,7 @@ class LabelTreeTest extends ModelTestCase
     {
         $user = UserTest::create();
         $this->model->addMember($user, Role::$admin);
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->expectException(HttpException::class);
         $this->model->updateMember($user, Role::$editor);
     }
 

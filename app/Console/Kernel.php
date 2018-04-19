@@ -15,11 +15,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\NewUser::class,
-        Commands\UpdateThumbnailStorageScheme::class,
-        Commands\UpdateVolumeUrls::class,
-        Commands\UpdateImageMetadata::class,
-        // Insert console commands here.
+        //
     ];
 
     /**
@@ -48,6 +44,8 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
+        $this->load(__DIR__.'/Commands');
+
         require base_path('routes/console.php');
     }
 }

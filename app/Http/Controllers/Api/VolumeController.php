@@ -98,7 +98,7 @@ class VolumeController extends Controller
 
         $this->validate($request, Volume::$updateRules);
 
-        if ($request->has('url')) {
+        if ($request->filled('url')) {
             $volume->url = $request->input('url');
             try {
                 $volume->validateUrl();

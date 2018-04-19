@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use ModelTestCase;
 use Biigle\ImageLabel;
+use Illuminate\Database\QueryException;
 
 class ImageLabelTest extends ModelTestCase
 {
@@ -31,7 +32,7 @@ class ImageLabelTest extends ModelTestCase
     public function testLabelOnDeleteRestrict()
     {
         $this->assertNotNull($this->model->fresh());
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->label()->delete();
     }
 
@@ -44,7 +45,7 @@ class ImageLabelTest extends ModelTestCase
 
     public function testUniqueProperties()
     {
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         self::create([
             'image_id' => $this->model->image_id,
             'label_id' => $this->model->label_id,

@@ -5,12 +5,8 @@ namespace Biigle\Exceptions;
 use Exception;
 use ErrorException;
 use Biigle\Http\Controllers\Controller;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Symfony\Component\Debug\Exception\FlattenException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
@@ -19,16 +15,22 @@ use Illuminate\Session\TokenMismatchException as BaseTokenMismatchException;
 class Handler extends ExceptionHandler
 {
     /**
-     * A list of the exception types that should not be reported.
+     * A list of the exception types that are not reported.
      *
      * @var array
      */
     protected $dontReport = [
-        HttpException::class,
-        ValidationException::class,
-        AuthorizationException::class,
-        ModelNotFoundException::class,
-        AuthenticationException::class,
+        //
+    ];
+
+    /**
+     * A list of the inputs that are never flashed for validation exceptions.
+     *
+     * @var array
+     */
+    protected $dontFlash = [
+        'password',
+        'password_confirmation',
     ];
 
     /**
@@ -59,30 +61,11 @@ class Handler extends ExceptionHandler
             $exception = new TokenMismatchException('Your user session expired. Please refresh the page.');
         }
 
-        // use JsonResponse if this was an automated request
-        if (Controller::isAutomatedRequest($request)) {
-            return $this->renderJsonResponse($request, $exception);
-        } elseif ($exception instanceof ErrorException && view()->exists('errors.500')) {
+        if ($exception instanceof ErrorException && view()->exists('errors.500')) {
             return $this->renderCustomErrorPage($exception);
         } else {
             return parent::render($request, $exception);
         }
-    }
-
-    /**
-     * Convert an authentication exception into an unauthenticated response.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Auth\AuthenticationException  $exception
-     * @return \Illuminate\Http\Response
-     */
-    protected function unauthenticated($request, AuthenticationException $exception)
-    {
-        if (Controller::isAutomatedRequest($request)) {
-            return response()->json(['message' => 'Unauthenticated.'], 401);
-        }
-
-        return redirect()->guest(route('login'));
     }
 
     /**
@@ -125,37 +108,5 @@ class Handler extends ExceptionHandler
             $status,
             $e->getHeaders()
         );
-    }
-
-    private function renderJsonResponse($request, Exception $e)
-    {
-        if ($e instanceof HttpResponseException) {
-            return $e->getResponse();
-        } elseif ($e instanceof AuthenticationException) {
-            return $this->unauthenticated($request, $e);
-        } elseif ($e instanceof ModelNotFoundException) {
-            $e = new HttpException(404, $e->getMessage());
-        } elseif ($e instanceof AuthorizationException) {
-            $e = new HttpException(403, $e->getMessage());
-        } elseif ($e instanceof ValidationException && $e->getResponse()) {
-            return $e->getResponse();
-        }
-
-        $status = $this->isHttpException($e) ? $e->getStatusCode() : 500;
-        $type = explode('\\', get_class($e));
-
-        $response = [
-            'message' => $e->getMessage(),
-            'type' => end($type),
-        ];
-
-        if (config('app.debug')) {
-            $response['trace'] = $e->getTraceAsString();
-        } elseif ($status >= 500) {
-            // don't disclose server errors if not in debug mode
-            $response['message'] = 'Whoops, looks like something went wrong.';
-        }
-
-        return response()->json($response, $status);
     }
 }

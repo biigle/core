@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use ModelTestCase;
 use Biigle\Visibility;
+use Illuminate\Database\QueryException;
 
 class VisibilityTest extends ModelTestCase
 {
@@ -20,14 +21,14 @@ class VisibilityTest extends ModelTestCase
     public function testNameRequired()
     {
         $this->model->name = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testNameUnique()
     {
         self::create(['name' => 'xyz']);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         self::create(['name' => 'xyz']);
     }
 

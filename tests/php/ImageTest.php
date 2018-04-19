@@ -9,6 +9,8 @@ use ImageCache;
 use Biigle\Image;
 use Carbon\Carbon;
 use ModelTestCase;
+use Illuminate\Database\QueryException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ImageTest extends ModelTestCase
 {
@@ -47,14 +49,14 @@ class ImageTest extends ModelTestCase
     public function testFilenameRequired()
     {
         $this->model->filename = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testVolumeRequired()
     {
         $this->model->volume_id = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
@@ -68,7 +70,7 @@ class ImageTest extends ModelTestCase
     {
         $volume = VolumeTest::create();
         $this->model = self::create(['filename' => 'test', 'volume_id' => $volume->id]);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model = self::create(['filename' => 'test', 'volume_id' => $volume->id]);
     }
 
@@ -106,8 +108,7 @@ class ImageTest extends ModelTestCase
         // error handling when the original file is not readable
         $this->model->filename = '';
         $this->model->volume->url = 'test://abc';
-
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\NotFoundHttpException');
+        $this->expectException(NotFoundHttpException::class);
         $this->model->getFile();
     }
 
