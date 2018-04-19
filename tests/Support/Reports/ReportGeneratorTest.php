@@ -45,13 +45,13 @@ class ReportGeneratorTest extends TestCase
         File::shouldReceive('exists')->with('somepath')->andReturn(true);
         File::shouldReceive('delete')->with('somepath')->once();
 
-        $this->setExpectedException(Exception::class);
+        $this->expectException(Exception::class);
         with(new GeneratorStub(['throw' => true]))->generate(VolumeTest::make(), 'somepath');
     }
 
     public function testHandleSourceEmpty()
     {
-        $this->setExpectedException(Exception::class);
+        $this->expectException(Exception::class);
         with(new GeneratorStub)->generate(null, 'somepath');
     }
 

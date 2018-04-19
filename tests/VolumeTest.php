@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Modules\Reports;
 
 use TestCase;
+use Exception;
 use Biigle\Modules\Reports\Volume;
 use Biigle\Tests\VolumeTest as BaseVolumeTest;
 
@@ -48,21 +49,21 @@ class VolumeTest extends TestCase
     public function testExportAreaTooShort()
     {
         $volume = static::create();
-        $this->setExpectedException('Exception');
+        $this->expectException(Exception::class);
         $volume->exportArea = [10];
     }
 
     public function testExportInvalidType()
     {
         $volume = static::create();
-        $this->setExpectedException('Exception');
+        $this->expectException(Exception::class);
         $volume->exportArea = 'abc';
     }
 
     public function testExportAreaNoInteger()
     {
         $volume = static::create();
-        $this->setExpectedException('Exception');
+        $this->expectException(Exception::class);
         $volume->exportArea = ['10', 20, 30, 40];
     }
 }

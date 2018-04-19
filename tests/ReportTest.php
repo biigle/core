@@ -52,7 +52,7 @@ class ReportTest extends ModelTestCase
     public function testGenerateSourceDeleted()
     {
         $this->model->source()->delete();
-        $this->setExpectedException(\Exception::class);
+        $this->expectException(\Exception::class);
         $this->model->fresh()->generate();
     }
 
