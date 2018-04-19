@@ -5,12 +5,12 @@ namespace Biigle\Exceptions;
 use Exception;
 use ErrorException;
 use Biigle\Http\Controllers\Controller;
+use Illuminate\Session\TokenMismatchException;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
-use Illuminate\Session\TokenMismatchException as BaseTokenMismatchException;
 
 class Handler extends ExceptionHandler
 {
@@ -57,7 +57,7 @@ class Handler extends ExceptionHandler
     {
         // Convert the exception here because we want to throw a 403 and not a 500.
         // Also set a helpful error message for the user.
-        if ($exception instanceof BaseTokenMismatchException) {
+        if ($exception instanceof TokenMismatchException) {
             $exception = new TokenMismatchException('Your user session expired. Please refresh the page.');
         }
 
