@@ -5,6 +5,7 @@
     left: 15px;
     z-index: 1;
     display: block;
+    pointer-events: none;
 }
 
 .annotation-tooltip__annotations, .annotation-tooltip__labels {
