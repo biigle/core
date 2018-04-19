@@ -78,10 +78,6 @@ biigle.$component('annotations.components.annotationModesTab', {
     watch: {
         mode: function (mode, oldMode) {
             switch (oldMode) {
-                case 'default':
-                    // ESC key.
-                    this.keyboard.on(27, this.resetMode);
-                    break;
                 case 'volare':
                     // Enter key.
                     this.keyboard.off(13, this.emitAttachLabel);
@@ -94,10 +90,6 @@ biigle.$component('annotations.components.annotationModesTab', {
             }
 
             switch (mode) {
-                case 'default':
-                    // ESC key.
-                    this.keyboard.off(27, this.resetMode);
-                    break;
                 case 'volare':
                     // Enter key.
                     this.keyboard.on(13, this.emitAttachLabel);

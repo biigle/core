@@ -111,10 +111,6 @@
                     <td><code>Enter</code></td>
                     <td>Attach the currently selected label<br>to the current annotation</td>
                 </tr>
-                <tr>
-                    <td><code>Esc</code></td>
-                    <td>Exit Volare</td>
-                </tr>
             </tbody>
         </table>
 
@@ -137,10 +133,6 @@
                 <tr>
                     <td><code>Arrow right</code>, <code>Space</code></td>
                     <td>Next section</td>
-                </tr>
-                <tr>
-                    <td><code>Esc</code></td>
-                    <td>Exit Lawnmower Mode</td>
                 </tr>
             </tbody>
         </table>
@@ -168,10 +160,6 @@
                 <tr>
                     <td><code>Enter</code></td>
                     <td>Create an annotation with the currently selected<br>label at the current sample location</td>
-                </tr>
-                <tr>
-                    <td><code>Esc</code></td>
-                    <td>Exit random/regular sampling mode</td>
                 </tr>
             </tbody>
         </table>
