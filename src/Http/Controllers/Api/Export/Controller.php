@@ -22,9 +22,9 @@ class Controller extends BaseController
         $this->validate($request, ['except' => 'filled', 'only' => 'filled']);
         $query = $this->getQuery();
 
-        if ($request->has('except')) {
+        if ($request->filled('except')) {
             $query = $query->whereNotIn('id', explode(',', $request->input('except')));
-        } elseif ($request->has('only')) {
+        } elseif ($request->filled('only')) {
             $query = $query->whereIn('id', explode(',', $request->input('only')));
         }
 
