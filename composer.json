@@ -6,11 +6,16 @@
         "biigle/label-trees": "~1.3",
         "biigle/volumes": "^2.0"
     },
-    "require-dev": {
-    },
     "autoload": {
         "psr-4": {
             "Biigle\\Modules\\Largo\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Biigle\\Modules\\Largo\\LargoServiceProvider"
+            ]
         }
     }
 }
