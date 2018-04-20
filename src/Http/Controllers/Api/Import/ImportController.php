@@ -7,6 +7,7 @@ use Biigle\Volume;
 use Biigle\Project;
 use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
+use Illuminate\Validation\ValidationException;
 use Biigle\Modules\Sync\Support\Import\UserImport;
 use Biigle\Modules\Sync\Support\Import\VolumeImport;
 use Biigle\Modules\Sync\Support\Import\ArchiveManager;
@@ -37,9 +38,7 @@ class ImportController extends Controller
         try {
             $token = $manager->store($request->file('archive'));
         } catch (Exception $e) {
-            return $this->buildFailedValidationResponse($request, [
-                'archive' => [$e->getMessage()],
-            ]);
+            throw ValidationException::withMessages(['archive' => [$e->getMessage()]]);
         }
 
         return redirect()->route('admin-import-show', $token);
@@ -76,9 +75,7 @@ class ImportController extends Controller
 
             $manager->delete($token);
         } catch (UnprocessableEntityHttpException $e) {
-            return $this->buildFailedValidationResponse($request, [
-                'import' => [$e->getMessage()],
-            ]);
+            throw ValidationException::withMessages(['import' => [$e->getMessage()]]);
         }
     }
 
