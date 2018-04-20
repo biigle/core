@@ -8,6 +8,7 @@ use Biigle\Image;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
+use Illuminate\Validation\ValidationException;
 
 class VolumeImageMetadataController extends Controller
 {
@@ -76,13 +77,13 @@ class VolumeImageMetadataController extends Controller
         $columns = $csv->fgetcsv();
 
         if (!is_array($columns)) {
-            return $this->buildFailedValidationResponse($request, [
+            throw ValidationException::withMessages([
                 'file' => 'CSV file could not be read or is empty.',
             ]);
         }
 
         if (!in_array('filename', $columns)) {
-            return $this->buildFailedValidationResponse($request, [
+            throw ValidationException::withMessages([
                 'file' => 'The filename column is required.',
             ]);
         }
@@ -90,13 +91,13 @@ class VolumeImageMetadataController extends Controller
         $colCount = count($columns);
 
         if ($colCount === 1) {
-            return $this->buildFailedValidationResponse($request, [
+            throw ValidationException::withMessages([
                 'file' => 'No metadata columns given.',
             ]);
         }
 
         if ($colCount !== count(array_unique($columns))) {
-            return $this->buildFailedValidationResponse($request, [
+            throw ValidationException::withMessages([
                 'file' => 'Each column may occur only once.',
             ]);
         }
@@ -105,7 +106,7 @@ class VolumeImageMetadataController extends Controller
         $diff = array_diff($columns, $allowedColumns);
 
         if (count($diff) > 0) {
-            return $this->buildFailedValidationResponse($request, [
+            throw ValidationException::withMessages([
                 'file' => 'The columns array may contain only values of: '.implode(', ', $allowedColumns).'.',
             ]);
         }
@@ -113,7 +114,7 @@ class VolumeImageMetadataController extends Controller
         $lng = in_array('lng', $columns);
         $lat = in_array('lat', $columns);
         if ($lng && !$lat || !$lng && $lat) {
-            return $this->buildFailedValidationResponse($request, [
+            throw ValidationException::withMessages([
                 'file' => "If the 'lng' column is present, the 'lat' column must be present, too (and vice versa).",
             ]);
         }
@@ -122,7 +123,7 @@ class VolumeImageMetadataController extends Controller
 
         // isset($data[0]) skips a possible empty last line which returns [0 => null]
         if (!(is_array($data) && isset($data[0]))) {
-            return $this->buildFailedValidationResponse($request, [
+            throw ValidationException::withMessages([
                 'file' => 'The CSV file has no data rows.',
             ]);
         }
@@ -135,7 +136,7 @@ class VolumeImageMetadataController extends Controller
         // Read all rows of the CSV and update the image models.
         while (is_array($data) && isset($data[0])) {
             if (count($data) !== $colCount) {
-                return $this->buildFailedValidationResponse($request, [
+                throw ValidationException::withMessages([
                     'file' => 'Column count in the CSV file does not match the given columns: '.implode(', ', $columns).'.',
                 ]);
             }
@@ -144,7 +145,7 @@ class VolumeImageMetadataController extends Controller
             $filename = $toFill['filename'];
 
             if (!$images->has($filename)) {
-                return $this->buildFailedValidationResponse($request, [
+                throw ValidationException::withMessages([
                     'file' => "There is no image with filename {$filename}.",
                 ]);
             }
@@ -155,9 +156,7 @@ class VolumeImageMetadataController extends Controller
                 $this->fillImageAttributes($image, $toFill);
                 $this->fillImageMetadata($image, $toFill);
             } catch (Exception $e) {
-                return $this->buildFailedValidationResponse($request, [
-                    'file' => $e->getMessage(),
-                ]);
+                throw ValidationException::withMessages(['file' => $e->getMessage()]);
             }
 
             $data = $csv->fgetcsv();
