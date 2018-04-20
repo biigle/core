@@ -19,7 +19,7 @@
         "laravel": {
             "providers": [
                 "Biigle\\Modules\\LabelTrees\\LabelTreesServiceProvider"
-            ]
+            ],
         }
     }
 }
