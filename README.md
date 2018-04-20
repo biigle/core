@@ -11,4 +11,5 @@ Add the following to the repositories array of your `composer.json`:
 ```
 
 1. Run `php composer.phar require biigle/label-trees`.
-2. Run `php artisan vendor:publish --tag=public` to refresh the public assets of this package. Do this for every update of the package.
+2. Add `'Biigle\Modules\LabelTrees\LabelTreesServiceProvider'` to the `providers` array in `config/app.php`.
+3. Run `php artisan label-trees:publish` to refresh the public assets of this package. Do this for every update of the package.
