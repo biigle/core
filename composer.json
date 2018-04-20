@@ -15,12 +15,5 @@
         "fix": [
             "php-cs-fixer --config-file='.php_cs' fix"
         ]
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Biigle\\Modules\\Annotations\\AnnotationsServiceProvider"
-            ]
-        }
     }
 }
