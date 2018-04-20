@@ -119,6 +119,16 @@ class UserControllerTest extends ApiTestCase
         // changing the email requires the admin password
         $response->assertStatus(422);
 
+        $response = $this->put('/api/v1/users/'.$this->guest()->id, [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+            'auth_password' => 'wrongpassword',
+        ])->assertStatus(302);
+        // Check disabled flashing of passwords.
+        $this->assertNull(old('password'));
+        $this->assertNull(old('password_confirmation'));
+        $this->assertNull(old('auth_password'));
+
         $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'password' => 'newpassword',
             'password_confirmation' => 'newpassword',

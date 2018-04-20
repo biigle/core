@@ -7,6 +7,7 @@ use Biigle\User;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UserController extends Controller
@@ -212,9 +213,9 @@ class UserController extends Controller
 
         if ($request->filled('role_id') || $request->filled('email') || $request->filled('password')) {
             if (!Hash::check($request->input('auth_password'), $auth->user()->password)) {
-                $errors = ['auth_password' => [trans('validation.custom.password')]];
-
-                return $this->buildFailedValidationResponse($request, $errors);
+                throw ValidationException::withMessages([
+                    'auth_password' => [trans('validation.custom.password')],
+                ]);
             }
         }
 
@@ -280,9 +281,9 @@ class UserController extends Controller
         if ($request->filled('password') || $request->filled('email')) {
             // the user has to provide their old password to set a new one
             if (!Hash::check($request->input('auth_password'), $user->password)) {
-                $errors = ['auth_password' => [trans('validation.custom.password')]];
-
-                return $this->buildFailedValidationResponse($request, $errors);
+                throw ValidationException::withMessages([
+                    'auth_password' => [trans('validation.custom.password')],
+                ]);
             }
         }
 
@@ -406,9 +407,9 @@ class UserController extends Controller
         $this->validate($request, User::$deleteRules);
 
         if (!Hash::check($request->input('password'), $auth->user()->password)) {
-            $errors = ['password' => [trans('validation.custom.password')]];
-
-            return $this->buildFailedValidationResponse($request, $errors);
+            throw ValidationException::withMessages([
+                'password' => [trans('validation.custom.password')],
+            ]);
         }
 
         $user = User::findOrFail($id);
@@ -416,10 +417,7 @@ class UserController extends Controller
         try {
             $user->checkCanBeDeleted();
         } catch (HttpException $e) {
-            return $this->buildFailedValidationResponse(
-                $request,
-                ['password' => [$e->getMessage()]]
-            );
+            throw ValidationException::withMessages(['password' => [$e->getMessage()]]);
         }
 
         $user->delete();
@@ -458,18 +456,15 @@ class UserController extends Controller
         $this->validate($request, User::$deleteRules);
 
         if (!Hash::check($request->input('password'), $user->password)) {
-            $errors = ['password' => [trans('validation.custom.password')]];
-
-            return $this->buildFailedValidationResponse($request, $errors);
+            throw ValidationException::withMessages([
+                'password' => [trans('validation.custom.password')],
+            ]);
         }
 
         try {
             $user->checkCanBeDeleted();
         } catch (HttpException $e) {
-            return $this->buildFailedValidationResponse(
-                $request,
-                ['submit' => [$e->getMessage()]]
-            );
+            throw ValidationException::withMessages(['submit' => [$e->getMessage()]]);
         }
 
         auth()->logout();

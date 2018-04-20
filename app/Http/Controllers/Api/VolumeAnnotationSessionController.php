@@ -3,8 +3,9 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Volume;
-use Biigle\AnnotationSession;
 use Illuminate\Http\Request;
+use Biigle\AnnotationSession;
+use Illuminate\Validation\ValidationException;
 
 class VolumeAnnotationSessionController extends Controller
 {
@@ -133,7 +134,7 @@ class VolumeAnnotationSessionController extends Controller
         // Previous validation ensures that the user IDs are distinct so we can validate
         // the volume users using the count.
         if ($count !== count($users)) {
-            return $this->buildFailedValidationResponse($request, [
+            throw ValidationException::withMessages([
                 'users' => ['All users must belong to one of the projects, this volume is attached to.'],
             ]);
         }
@@ -146,7 +147,7 @@ class VolumeAnnotationSessionController extends Controller
         $session->ends_at = $request->input('ends_at');
 
         if ($volume->hasConflictingAnnotationSession($session)) {
-            return $this->buildFailedValidationResponse($request, [
+            throw ValidationException::withMessages([
                 'starts_at' => ['There already is an annotation session in this time period.'],
             ]);
         }

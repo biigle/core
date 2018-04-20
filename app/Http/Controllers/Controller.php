@@ -24,23 +24,4 @@ class Controller extends BaseController
     {
         return $request->ajax() || $request->wantsJson() || $request->getUser();
     }
-
-    /**
-     * Create the response for when a request fails validation.
-     * Overrides the default behavior to except passwords in the error response.
-     *
-     * @param  Request  $request
-     * @param  array  $errors
-     * @return \Illuminate\Http\Response
-     */
-    protected function buildFailedValidationResponse(Request $request, array $errors)
-    {
-        if (static::isAutomatedRequest($request)) {
-            return new JsonResponse($errors, 422);
-        }
-
-        return redirect()->back()
-            ->withInput($request->except('password', 'password_confirmation', 'auth_password'))
-            ->withErrors($errors);
-    }
 }
