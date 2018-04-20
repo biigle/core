@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Biigle\Volume;
 use Biigle\AnnotationSession;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class AnnotationSessionController extends Controller
 {
@@ -75,13 +76,13 @@ class AnnotationSessionController extends Controller
         // can't do this with validate() because starts_at and ends_at may not both be
         // present in the request
         if ($session->ends_at <= $session->starts_at) {
-            return $this->buildFailedValidationResponse($request, [
+            throw ValidationException::withMessages([
                 'ends_at' => ['The end of an annotation session must be after its start.'],
             ]);
         }
 
         if ($session->volume->hasConflictingAnnotationSession($session)) {
-            return $this->buildFailedValidationResponse($request, [
+            throw ValidationException::withMessages([
                 'starts_at' => ['There already is an annotation session in this time period.'],
             ]);
         }
@@ -118,7 +119,7 @@ class AnnotationSessionController extends Controller
             // Previous validation ensures that the user IDs are distinct so we can
             // validate the volume users using the count.
             if ($count !== count($users)) {
-                return $this->buildFailedValidationResponse($request, [
+                throw ValidationException::withMessages([
                     'users' => ['All users must belong to one of the projects, this volume is attached to.'],
                 ]);
             }

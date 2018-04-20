@@ -6,6 +6,7 @@ use Exception;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Validation\ValidationException;
 
 class VolumeController extends Controller
 {
@@ -103,9 +104,7 @@ class VolumeController extends Controller
             try {
                 $volume->validateUrl();
             } catch (Exception $e) {
-                return $this->buildFailedValidationResponse($request, [
-                    'url' => $e->getMessage(),
-                ]);
+                throw ValidationException::withMessages(['url' => $e->getMessage()]);
             }
         }
 

@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Exception;
 use Biigle\Volume;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class VolumeImageController extends Controller
 {
@@ -81,9 +82,7 @@ class VolumeImageController extends Controller
         try {
             $volume->validateImages($images);
         } catch (Exception $e) {
-            return $this->buildFailedValidationResponse($request, [
-                'images' => $e->getMessage(),
-            ]);
+            throw ValidationException::withMessages(['images' => $e->getMessage()]);
         }
 
         try {

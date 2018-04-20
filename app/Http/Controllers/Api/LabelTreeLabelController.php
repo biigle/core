@@ -59,7 +59,7 @@ class LabelTreeLabelController extends Controller
                 ->where('label_tree_id', $id)
                 ->exists();
             if (!$exists) {
-                return $this->buildFailedValidationResponse($request, [
+                throw ValidationException::withMessages([
                     'parent_id' => ['The parent label must belong to the same label tree than the new label.'],
                 ]);
             }
@@ -67,11 +67,7 @@ class LabelTreeLabelController extends Controller
 
         if ($request->filled('label_source_id')) {
             $source = LabelSource::findOrFail($request->input('label_source_id'));
-            try {
-                $labels = $source->getAdapter()->create((int) $id, $request);
-            } catch (ValidationException $e) {
-                return $this->buildFailedValidationResponse($request, $e->response);
-            }
+            $labels = $source->getAdapter()->create((int) $id, $request);
         } else {
             $label = new Label;
             $label->name = $request->input('name');

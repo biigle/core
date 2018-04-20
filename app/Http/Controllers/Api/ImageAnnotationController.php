@@ -10,6 +10,7 @@ use Biigle\Annotation;
 use Biigle\AnnotationLabel;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Validation\ValidationException;
 
 class ImageAnnotationController extends Controller
 {
@@ -166,9 +167,7 @@ class ImageAnnotationController extends Controller
         try {
             $annotation->validatePoints($points);
         } catch (Exception $e) {
-            return $this->buildFailedValidationResponse($request, [
-                'points' => [$e->getMessage()],
-            ]);
+            throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
         }
 
         $annotation->points = $points;

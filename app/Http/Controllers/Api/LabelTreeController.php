@@ -10,6 +10,7 @@ use Biigle\LabelTree;
 use Biigle\Visibility;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class LabelTreeController extends Controller
@@ -191,7 +192,7 @@ class LabelTreeController extends Controller
         if ($request->filled('project_id')) {
             $project = Project::findOrFail($request->input('project_id'));
             if (!$user->can('update', $project)) {
-                return $this->buildFailedValidationResponse($request, [
+                throw ValidationException::withMessages([
                     'project_id' => ['You have no permission to create a label tree for this project.'],
                 ]);
             }

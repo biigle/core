@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Label;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class LabelController extends Controller
@@ -39,7 +40,7 @@ class LabelController extends Controller
                 ->where('label_tree_id', $label->label_tree_id)
                 ->exists();
             if (!$exists) {
-                return $this->buildFailedValidationResponse($request, [
+                throw ValidationException::withMessages([
                     'parent_id' => ['The parent label must belong to the same label tree than the updated label.'],
                 ]);
             }
