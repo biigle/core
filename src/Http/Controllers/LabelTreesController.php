@@ -122,7 +122,7 @@ class LabelTreesController extends Controller
             Visibility::$public,
         ];
 
-        if ($request->has('project')) {
+        if ($request->filled('project')) {
             $project = Project::findOrFail($request->input('project'));
             $this->authorize('update', $project);
         } else {

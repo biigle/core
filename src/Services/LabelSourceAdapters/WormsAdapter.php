@@ -138,7 +138,7 @@ class WormsAdapter implements LabelSourceAdapterContract
         $recursive = $request->input('recursive', 'false');
 
         if ($recursive === 'true') {
-            if ($request->has('parent_id')) {
+            if ($request->filled('parent_id')) {
                 throw new ValidationException(null, [
                     'parent_id' => ['The label must not have a parent if it should be created recursively.'],
                 ]);
