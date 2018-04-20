@@ -4,11 +4,16 @@
         "ext-zip": "*",
         "biigle/projects": "~1.4"
     },
-    "require-dev": {
-    },
     "autoload": {
         "psr-4": {
             "Biigle\\Modules\\Reports\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Biigle\\Modules\\Reports\\ReportsServiceProvider"
+            ]
         }
     }
 }
