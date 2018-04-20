@@ -4,9 +4,10 @@ namespace Biigle\Modules\Reports\Http\Controllers\Api\Volumes;
 
 use Exception;
 use Illuminate\Http\Request;
-use Biigle\Modules\Reports\Volume;
 use Biigle\Volume as BaseVolume;
+use Biigle\Modules\Reports\Volume;
 use Biigle\Http\Controllers\Api\Controller;
+use Illuminate\Validation\ValidationException;
 
 class ExportAreaController extends Controller
 {
@@ -60,9 +61,7 @@ class ExportAreaController extends Controller
             $volume->exportArea = $request->input('coordinates');
             $volume->save();
         } catch (Exception $e) {
-            return $this->buildFailedValidationResponse($request, [
-                'coordinates' => $e->getMessage(),
-            ]);
+            throw ValidationException::withMessages(['coordinates' => $e->getMessage()]);
         }
     }
 
