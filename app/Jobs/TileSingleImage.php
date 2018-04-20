@@ -32,6 +32,13 @@ class TileSingleImage extends Job implements ShouldQueue
     public $tempPath;
 
     /**
+     * Ignore this job if the image does not exist any more.
+     *
+     * @var boolean
+     */
+    protected $deleteWhenMissingModels = true;
+
+    /**
      * Create a new job instance.
      *
      * @param Image $image The image to generate tiles for.
