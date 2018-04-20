@@ -32,7 +32,7 @@ class AnnotationsController extends Controller
 
         return Annotation::visibleFor($auth->user())
             ->withLabel($label)
-            ->when($request->has('take'), function ($query) use ($request) {
+            ->when($request->filled('take'), function ($query) use ($request) {
                 return $query->take($request->input('take'));
             })
             ->select('annotations.id')
