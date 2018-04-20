@@ -39,8 +39,7 @@ class Controller extends BaseController
             return new JsonResponse($errors, 422);
         }
 
-        return redirect()
-            ->to($this->getRedirectUrl())
+        return redirect()->back()
             ->withInput($request->except('password', 'password_confirmation', 'auth_password'))
             ->withErrors($errors);
     }
