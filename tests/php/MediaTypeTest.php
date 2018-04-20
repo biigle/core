@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use ModelTestCase;
 use Biigle\MediaType;
+use Illuminate\Database\QueryException;
 
 class MediaTypeTest extends ModelTestCase
 {
@@ -22,14 +23,14 @@ class MediaTypeTest extends ModelTestCase
     public function testNameRequired()
     {
         $this->model->name = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testNameUnique()
     {
         self::create(['name' => 'images']);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         self::create(['name' => 'images']);
     }
 

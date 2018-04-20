@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use ModelTestCase;
 use Biigle\SystemMessageType;
+use Illuminate\Database\QueryException;
 
 class SystemMessageTypeTest extends ModelTestCase
 {
@@ -20,21 +21,21 @@ class SystemMessageTypeTest extends ModelTestCase
     public function testNameRequired()
     {
         $this->model->name = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testNameUnique()
     {
         self::create(['name' => 'xyz']);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         self::create(['name' => 'xyz']);
     }
 
     public function testOnDeleteRestrict()
     {
         $message = SystemMessageTest::create();
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $message->type()->delete();
     }
 

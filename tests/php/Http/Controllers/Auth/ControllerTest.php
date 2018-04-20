@@ -94,8 +94,8 @@ class ControllerTest extends TestCase
     public function testLogout()
     {
         $this->be(UserTest::create());
-        $this->seeIsAuthenticated();
+        $this->assertAuthenticated();
         $response = $this->post('/logout');
-        $this->dontSeeIsAuthenticated();
+        $this->assertGuest();
     }
 }

@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use Biigle\Role;
 use ModelTestCase;
+use Illuminate\Database\QueryException;
 
 class RoleTest extends ModelTestCase
 {
@@ -20,14 +21,14 @@ class RoleTest extends ModelTestCase
     public function testNameRequired()
     {
         $this->model->name = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testNameUnique()
     {
         self::create(['name' => 'xyz']);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         self::create(['name' => 'xyz']);
     }
 
@@ -36,7 +37,7 @@ class RoleTest extends ModelTestCase
         $project = ProjectTest::create();
         $user = UserTest::create();
         $project->addUserId($user->id, $this->model->id);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->delete();
     }
 

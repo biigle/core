@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use ModelTestCase;
 use Biigle\AnnotationLabel;
+use Illuminate\Database\QueryException;
 
 class AnnotationLabelTest extends ModelTestCase
 {
@@ -39,7 +40,7 @@ class AnnotationLabelTest extends ModelTestCase
     public function testLabelOnDeleteRestrict()
     {
         $this->assertNotNull(AnnotationLabel::find($this->model->id));
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->label()->delete();
     }
 
@@ -52,7 +53,7 @@ class AnnotationLabelTest extends ModelTestCase
 
     public function testUniqueProperties()
     {
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         self::create([
             'annotation_id' => $this->model->annotation_id,
             'label_id' => $this->model->label_id,

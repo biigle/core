@@ -19,6 +19,7 @@ class Kernel extends HttpKernel
         \Biigle\Http\Middleware\TrimStrings::class,
         \Biigle\Http\Middleware\UpdateUserActivity::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \Biigle\Http\Middleware\TrustProxies::class,
     ];
 
     /**

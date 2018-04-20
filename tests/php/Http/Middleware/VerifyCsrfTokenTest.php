@@ -31,7 +31,7 @@ class VerifyCsrfTokenTest extends ApiTestCase
                 'PHP_AUTH_USER' => $this->globalAdmin()->email,
                 'PHP_AUTH_PW' => 'wrong_token',
             ])
-            ->assertStatus(403);
+            ->assertStatus(419);
     }
 
     public function testHandleWrongEmail()
@@ -40,7 +40,7 @@ class VerifyCsrfTokenTest extends ApiTestCase
                 'PHP_AUTH_USER' => 'wrong@email.com',
                 'PHP_AUTH_PW' => 'test_token',
             ])
-            ->assertStatus(403);
+            ->assertStatus(419);
     }
 
     public function testHandleCorrect()
@@ -66,7 +66,7 @@ class VerifyCsrfTokenStub extends VerifyCsrfToken
             return parent::handle($request, $next);
         } catch (TokenMismatchException $e) {
             // Ignore the exceptions so they are not logged.
-            abort(403);
+            abort(419);
         }
     }
 }

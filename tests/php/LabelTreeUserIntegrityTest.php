@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use TestCase;
 use Biigle\Role;
+use Illuminate\Database\QueryException;
 
 class LabelTreeUserIntegrityTest extends TestCase
 {
@@ -11,7 +12,7 @@ class LabelTreeUserIntegrityTest extends TestCase
     {
         $tree = LabelTreeTest::create();
         $tree->addMember(UserTest::create(), Role::$editor);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         Role::$editor->delete();
     }
 
@@ -43,7 +44,7 @@ class LabelTreeUserIntegrityTest extends TestCase
         $user = UserTest::create();
         $tree->addMember($user, Role::$editor);
 
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $tree->members()->attach($user->id, ['role_id' => Role::$editor->id]);
     }
 }

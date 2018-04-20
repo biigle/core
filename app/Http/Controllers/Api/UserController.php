@@ -210,7 +210,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $this->validate($request, $user->updateRules());
 
-        if ($request->has('role_id') || $request->has('email') || $request->has('password')) {
+        if ($request->filled('role_id') || $request->filled('email') || $request->filled('password')) {
             if (!Hash::check($request->input('auth_password'), $auth->user()->password)) {
                 $errors = ['auth_password' => [trans('validation.custom.password')]];
 
@@ -218,7 +218,7 @@ class UserController extends Controller
             }
         }
 
-        if ($request->has('password')) {
+        if ($request->filled('password')) {
             // global admins do not need to provide the old password to set a new one
             $user->password = bcrypt($request->input('password'));
         }
@@ -277,7 +277,7 @@ class UserController extends Controller
         $this->validate($request, $user->updateRules());
 
         // confirm change of credentials with old password
-        if ($request->has('password') || $request->has('email')) {
+        if ($request->filled('password') || $request->filled('email')) {
             // the user has to provide their old password to set a new one
             if (!Hash::check($request->input('auth_password'), $user->password)) {
                 $errors = ['auth_password' => [trans('validation.custom.password')]];
@@ -286,7 +286,7 @@ class UserController extends Controller
             }
         }
 
-        if ($request->has('password')) {
+        if ($request->filled('password')) {
             $user->password = bcrypt($request->input('password'));
         }
 
@@ -360,7 +360,7 @@ class UserController extends Controller
         $user->lastname = $request->input('lastname');
         $user->email = $request->input('email');
         $user->password = bcrypt($request->input('password'));
-        if ($request->has('uuid')) {
+        if ($request->filled('uuid')) {
             $user->uuid = $request->input('uuid');
         } else {
             $user->uuid = Uuid::uuid4();
@@ -493,7 +493,7 @@ class UserController extends Controller
      */
     protected function emailToLowercase(Request $request)
     {
-        if ($request->has('email')) {
+        if ($request->filled('email')) {
             $request->merge(['email' => strtolower($request->input('email'))]);
         }
 

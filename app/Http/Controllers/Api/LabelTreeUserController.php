@@ -39,7 +39,7 @@ class LabelTreeUserController extends Controller
 
         $this->validate($request, LabelTree::$updateMemberRules);
 
-        if ($request->has('role_id')) {
+        if ($request->filled('role_id')) {
             $tree->updateMember($user, Role::findOrFail($request->input('role_id')));
         }
 

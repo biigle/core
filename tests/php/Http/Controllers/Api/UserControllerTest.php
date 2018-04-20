@@ -21,7 +21,7 @@ class UserControllerTest extends ApiTestCase
             'owner_id' => $user->id,
         ]);
 
-        return $this->call($verb, $route, [], [], [], [
+        return $this->json($verb, $route, [], [
             'PHP_AUTH_USER' => $user->email,
             'PHP_AUTH_PW' => 'test_token',
         ]);
@@ -326,8 +326,8 @@ class UserControllerTest extends ApiTestCase
     public function testStoreWithToken()
     {
         // api key authentication **is** allowed for this route
-        $response = $this->callToken('POST', '/api/v1/users', $this->globalAdmin());
-        $response->assertStatus(422);
+        $this->callToken('POST', '/api/v1/users', $this->globalAdmin())
+            ->assertStatus(422);
     }
 
     public function testStore()
