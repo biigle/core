@@ -152,7 +152,7 @@ class WormsAdapterTest extends TestCase
             $labels = $adapter->create($tree->id, $request);
             $this->assertTrue(false);
         } catch (ValidationException $e) {
-            $this->assertEquals(['source_id' => ['The AphiaID does not exist.']], $e->response);
+            $this->assertEquals(['source_id' => ['The AphiaID does not exist.']], $e->errors());
         }
 
         $request->merge([
@@ -168,6 +168,33 @@ class WormsAdapterTest extends TestCase
         $this->assertEquals($label->id, $labels[0]->parent_id);
         $this->assertEquals($tree->id, $labels[0]->label_tree_id);
         $this->assertNotNull($labels[0]->uuid);
+    }
+
+    public function testCreateRoot()
+    {
+        $tree = LabelTreeTest::create();
+        $label = LabelTest::create(['label_tree_id' => $tree->id]);
+
+        // checks if the aphia id exists
+        $mock = Mockery::mock(SoapClient::class);
+        $mock->shouldReceive('getAphiaNameByID')
+            ->once()
+            ->with(124731)
+            ->andReturn('Kolga hyalina');
+
+        $adapter = new WormsAdapter;
+        $adapter->setSoapClient($mock);
+
+        $request = new Request;
+        $request->merge([
+            'name' => 'My Kolga',
+            'color' => 'bada55',
+            'source_id' => 124731,
+            'label_source_id' => 1,
+        ]);
+
+        $labels = $adapter->create($tree->id, $request);
+        $this->assertTrue($tree->labels()->where('id', $labels[0]->id)->exists());
     }
 
     public function testCreateParentRecursiveError()
@@ -192,7 +219,7 @@ class WormsAdapterTest extends TestCase
             $labels = $adapter->create(1, $request);
             $this->assertTrue(false);
         } catch (ValidationException $e) {
-            $this->assertEquals(['parent_id' => ['The label must not have a parent if it should be created recursively.']], $e->response);
+            $this->assertEquals(['parent_id' => ['The label must not have a parent if it should be created recursively.']], $e->errors());
         }
     }
 

@@ -122,15 +122,15 @@ class WormsAdapter implements LabelSourceAdapterContract
         $attributes = $request->only([
             'name',
             'color',
-            'parent_id',
             'source_id',
             'label_source_id',
         ]);
 
+        $attributes['parent_id'] = $request->input('parent_id');
         $attributes['label_tree_id'] = $id;
 
         if ($this->client->getAphiaNameByID($attributes['source_id']) === null) {
-            throw new ValidationException(null, [
+            throw ValidationException::withMessages([
                 'source_id' => ['The AphiaID does not exist.'],
             ]);
         }
@@ -138,8 +138,8 @@ class WormsAdapter implements LabelSourceAdapterContract
         $recursive = $request->input('recursive', 'false');
 
         if ($recursive === 'true') {
-            if ($request->filled('parent_id')) {
-                throw new ValidationException(null, [
+            if ($request->has('parent_id')) {
+                throw ValidationException::withMessages([
                     'parent_id' => ['The label must not have a parent if it should be created recursively.'],
                 ]);
             }
