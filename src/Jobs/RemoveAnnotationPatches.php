@@ -5,13 +5,12 @@ namespace Biigle\Modules\Largo\Jobs;
 use File;
 use Biigle\Jobs\Job;
 use FilesystemIterator;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class RemoveAnnotationPatches extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue;
 
     /**
      * The volume ID of which the annotation patches should be removed.
