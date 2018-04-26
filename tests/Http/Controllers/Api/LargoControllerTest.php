@@ -2,17 +2,18 @@
 
 namespace Biigle\Tests\Modules\Largo\Http\Controllers\Api;
 
+use Exception;
 use ApiTestCase;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;
+use Biigle\Modules\Largo\Http\Controllers\Api\LargoController;
 
 class LargoControllerTest extends ApiTestCase
 {
     public function testSaveChangedAlreadyExists()
     {
-        $id = $this->volume()->id;
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
         $a1 = AnnotationTest::create(['image_id' => $image->id]);
 
@@ -28,7 +29,7 @@ class LargoControllerTest extends ApiTestCase
         ]);
 
         $this->beEditor();
-        $response = $this->post("/api/v1/volumes/{$id}/largo", [
+        (new LargoControllerStub)->save($this->editor(), [
             'dismissed' => [
                 $l1->label_id => [$a1->id],
             ],
@@ -36,7 +37,6 @@ class LargoControllerTest extends ApiTestCase
                 $a1->id => $l2->label_id, // but this already exists from the same user!
             ],
         ]);
-        $response->assertStatus(200);
 
         $this->assertEquals(1, $a1->labels()->count());
         $this->assertEquals($l2->id, $a1->labels()->first()->id);
@@ -44,7 +44,6 @@ class LargoControllerTest extends ApiTestCase
 
     public function testAnnotationMeanwhileDeleted()
     {
-        $id = $this->volume()->id;
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
         $a1 = AnnotationTest::create(['image_id' => $image->id]);
         $a2 = AnnotationTest::create(['image_id' => $image->id]);
@@ -74,15 +73,12 @@ class LargoControllerTest extends ApiTestCase
         // annotation was deleted during the Largo session but saving should still work
         $a2->delete();
 
-        $this->beEditor();
-        $response = $this->post("/api/v1/volumes/{$id}/largo", $request);
-        $response->assertStatus(200);
+        (new LargoControllerStub)->save($this->editor(), $request);
         $this->assertEquals($this->labelChild()->id, $a1->labels()->first()->label_id);
     }
 
     public function testLabelMeanwhileDeleted()
     {
-        $id = $this->volume()->id;
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
         $a1 = AnnotationTest::create(['image_id' => $image->id]);
         $a2 = AnnotationTest::create(['image_id' => $image->id]);
@@ -112,9 +108,55 @@ class LargoControllerTest extends ApiTestCase
 
         $otherLabel->delete();
 
-        $this->beEditor();
-        $this->post("/api/v1/volumes/{$id}/largo", $request)->assertStatus(200);
+        (new LargoControllerStub)->save($this->editor(), $request);
         $this->assertEquals($this->labelRoot()->id, $a1->labels()->first()->label_id);
         $this->assertEquals($this->labelChild()->id, $a2->labels()->first()->label_id);
+    }
+
+    public function testErrorRollback()
+    {
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
+        $a1 = AnnotationTest::create(['image_id' => $image->id]);
+        $l1 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $this->editor()->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+
+        $request = [
+            'dismissed' => [
+                $l1->label_id => [$a1->id],
+            ],
+            'changed' => [],
+        ];
+
+        $controller = new LargoControllerStub;
+        $controller->throw = true;
+
+        try {
+            $controller->save($this->editor(), $request);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertEquals(1, $a1->labels()->count());
+            $this->assertEquals($l1->label_id, $a1->labels()->first()->label_id);
+        }
+    }
+}
+
+class LargoControllerStub extends LargoController
+{
+    public $throw;
+    public function save($user, $request)
+    {
+        $this->applySave($user, $request['dismissed'], $request['changed']);
+    }
+
+    protected function applyChangedLabels($user, $changed)
+    {
+        if ($this->throw) {
+            throw new Exception('Throwing up');
+        }
+
+        return parent::applyChangedLabels($user, $changed);
     }
 }

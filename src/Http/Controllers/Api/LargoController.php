@@ -2,7 +2,9 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api;
 
+use Exception;
 use Biigle\Label;
+use Carbon\Carbon;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
 use Illuminate\Http\Request;
@@ -116,18 +118,40 @@ class LargoController extends Controller
     protected function applySave($user, $dismissed, $changed)
     {
         $filtered = $this->ignoreDeletedLabels($dismissed, $changed);
-        $dismissed = $filtered['dismissed'];
-        $changed = $filtered['changed'];
 
-        $userId = $user->id;
-        // remove dismissed annotation labels
+        try {
+            $this->applyDismissedLabels($user, $filtered['dismissed']);
+            $this->applyChangedLabels($user, $filtered['changed']);
+        } catch (Exception $e) {
+            $this->rollbackDismissedLabels($user, $filtered['dismissed']);
+            throw $e;
+        }
+    }
+
+    /**
+     * Detach annotation labels that were dismissed in a Largo session.
+     *
+     * @param \Biigle\User $user
+     * @param array $dismissed
+     */
+    protected function applyDismissedLabels($user, $dismissed)
+    {
         foreach ($dismissed as $labelId => $annotationIds) {
             AnnotationLabel::whereIn('annotation_id', $annotationIds)
                 ->where('label_id', $labelId)
-                ->where('user_id', $userId)
+                ->where('user_id', $user->id)
                 ->delete();
         }
+    }
 
+    /**
+     * Attach annotation labels that were chosen in a Largo session.
+     *
+     * @param \Biigle\User $user
+     * @param array $changed
+     */
+    protected function applyChangedLabels($user, $changed)
+    {
         // Skip the rest if no annotations have been changed.
         // The alreadyThereQuery below would FETCH ALL annotation labels if $changed were
         // empty! This almost certainly results in memory exhaustion.
@@ -135,35 +159,26 @@ class LargoController extends Controller
             return;
         }
 
-        // create new 'changed' annotation labels
-        $newAnnotationLabels = [];
-        $now = \Carbon\Carbon::now();
-
         // Get all labels that are already there exactly like they should be created
         // in the next step.
-        $alreadyThereQuery = AnnotationLabel::select('id', 'annotation_id', 'label_id', 'user_id');
-        $first = true;
-
-        foreach ($changed as $annotationId => $labelId) {
-            $callback = function ($query) use ($annotationId, $labelId, $userId) {
-                $query->where('annotation_id', $annotationId)
-                    ->where('label_id', $labelId)
-                    ->where('user_id', $userId);
-            };
-
-            if ($first) {
-                $first = false;
-                $alreadyThereQuery->where($callback);
-            } else {
-                $alreadyThereQuery->orWhere($callback);
-            }
-        }
-
-        $alreadyThere = $alreadyThereQuery->get();
+        $alreadyThere = AnnotationLabel::select('annotation_id', 'label_id')
+            ->where('user_id', $user->id)
+            ->where(function ($query) use ($changed) {
+                foreach ($changed as $annotationId => $labelId) {
+                    $query->orWhere(function ($query) use ($annotationId, $labelId) {
+                        $query->where('annotation_id', $annotationId)
+                            ->where('label_id', $labelId);
+                    });
+                }
+            })
+            ->get();
 
         $existingAnnotations = Annotation::whereIn('id', array_keys($changed))
             ->pluck('id')
             ->toArray();
+
+        $newAnnotationLabels = [];
+        $now = Carbon::now();
 
         foreach ($changed as $annotationId => $labelId) {
             // Skip all new annotation labels if their annotation no longer exists
@@ -173,20 +188,65 @@ class LargoController extends Controller
                     ->where('label_id', $labelId)
                     ->isEmpty();
 
-            if ($skip) {
-                continue;
+            if (!$skip) {
+                $newAnnotationLabels[] = [
+                    'annotation_id' => $annotationId,
+                    'label_id' => $labelId,
+                    'user_id' => $user->id,
+                    'confidence' => 1,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
             }
 
-            $newAnnotationLabels[] = [
-                'annotation_id' => $annotationId,
-                'label_id' => $labelId,
-                'user_id' => $userId,
-                'confidence' => 1,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
         }
 
         AnnotationLabel::insert($newAnnotationLabels);
+    }
+
+    /**
+     * Recreate deleted annotation labels in case of an error.
+     *
+     * @param \Biigle\user $user
+     * @param array $dismissed
+     */
+    protected function rollbackDismissedLabels($user, $dismissed)
+    {
+        $existing = AnnotationLabel::select('annotation_id', 'label_id')
+            ->where('user_id', $user->id)
+            ->where(function ($query) use ($dismissed) {
+                foreach ($dismissed as $labelId => $annotationIds) {
+                    $query->orWhere(function ($query) use ($labelId, $annotationIds) {
+                        $query->whereIn('annotation_id', $annotationIds)
+                            ->where('label_id', $labelId);
+                    });
+                }
+            })
+            ->get();
+
+
+        $insert = [];
+        $now = Carbon::now();
+
+        // Do not attempt to rectreate annotation labels that were not deleted.
+        foreach ($dismissed as $labelId => $annotationIds) {
+            foreach ($annotationIds as $id) {
+                $skip = $existing->where('label_id', $labelId)
+                    ->where('annotation_id', $id)
+                    ->isNotEmpty();
+                if (!$skip) {
+                    $insert[] = [
+                        'annotation_id' => $id,
+                        'label_id' => $labelId,
+                        'user_id' => $user->id,
+                        'confidence' => 1,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
+            }
+        }
+
+        AnnotationLabel::insert($insert);
     }
 }
