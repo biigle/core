@@ -71,6 +71,40 @@ class LargoController extends Controller
     }
 
     /**
+     * Removes changes to annotations that should get a new label which no longer exists.
+     *
+     * @param array $dismissed
+     * @param array $changed
+     *
+     * @return array Containing 'dismissed' and 'changed'
+     */
+    protected function ignoreDeletedLabels($dismissed, $changed)
+    {
+        $existingIds = Label::whereIn('id', array_values($changed))->pluck('id');
+
+        // Get IDs of annotations to which a label should be attached that no longer
+        // exists.
+        $toIgnore = array_keys(array_filter($changed, function ($id) use ($existingIds) {
+            return !$existingIds->contains($id);
+        }));
+
+        // Remove all annotations from the dismissed array that should be ignored.
+        // Use outermost array_filter to remove now empty elements.
+        $dismissed = array_filter(array_map(function ($ids) use ($toIgnore) {
+            return array_filter($ids, function ($id) use ($toIgnore) {
+                return !in_array($id, $toIgnore);
+            });
+        }, $dismissed));
+
+        // Remove all annotations from the changed array that should be ignored.
+        $changed = array_filter($changed, function ($id) use ($toIgnore) {
+            return !in_array($id, $toIgnore);
+        }, ARRAY_FILTER_USE_KEY);
+
+        return compact('dismissed', 'changed');
+    }
+
+    /**
      * Apply the changes of an Largo session.
      *
      * Removes the dismissed annotation labels and creates the changed annotation labels.
@@ -81,6 +115,10 @@ class LargoController extends Controller
      */
     protected function applySave($user, $dismissed, $changed)
     {
+        $filtered = $this->ignoreDeletedLabels($dismissed, $changed);
+        $dismissed = $filtered['dismissed'];
+        $changed = $filtered['changed'];
+
         $userId = $user->id;
         // remove dismissed annotation labels
         foreach ($dismissed as $labelId => $annotationIds) {
