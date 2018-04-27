@@ -6,7 +6,7 @@ Add the following to the repositories array of your `composer.json`:
 ```
 {
   "type": "vcs",
-  "url": "https://github.com/BiodataMiningGroup/biigle-reports.git"
+  "url": "https://github.com/biigle/reports.git"
 }
 ```
 
