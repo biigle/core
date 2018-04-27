@@ -17,7 +17,7 @@
 
         <div class=" col-sm-6 form-group{{ $errors->has('uuid') ? ' has-error' : '' }}">
             <label for="uuid">UUID <span class="text-muted">(leave blank to generate new one)</span></label>
-            <input type="text" class="form-control" name="uuid" id="uuid" value="{{ old('uuid') }}" required>
+            <input type="text" class="form-control" name="uuid" id="uuid" value="{{ old('uuid') }}">
             @if($errors->has('uuid'))
                 <span class="help-block">{{ $errors->first('uuid') }}</span>
             @endif
