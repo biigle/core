@@ -106,7 +106,7 @@ biigle.$declare('annotations.stores.images', function () {
                 }
 
                 // Check supported drawing buffer size.
-                // see: https://github.com/BiodataMiningGroup/biigle-annotations/issues/44
+                // see: https://github.com/biigle/annotations/issues/44
                 fxCanvas.width = image.width;
                 fxCanvas.height = image.height;
                 if (image.width !== fxCanvas._.gl.drawingBufferWidth || image.height !== fxCanvas._.gl.drawingBufferHeight) {

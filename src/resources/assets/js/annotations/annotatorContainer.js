@@ -321,7 +321,7 @@ biigle.$viewModel('annotator-container', function (element) {
                 }
 
                 // Mark for deletion so the annotation is immediately removed from
-                // the canvas. See https://github.com/BiodataMiningGroup/biigle-annotations/issues/70
+                // the canvas. See https://github.com/biigle/annotations/issues/70
                 Vue.set(annotation, 'markedForDeletion', true);
                 annotationsStore.delete(annotation)
                     .catch(function (response) {

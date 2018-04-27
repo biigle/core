@@ -134,7 +134,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 // The view can't calculate the extent if the resolution is not set.
                 // Also use this.initialized so this property is recomputed when the
                 // map is set (because the map is no reactive object). See:
-                // https://github.com/BiodataMiningGroup/biigle-annotations/issues/69
+                // https://github.com/biigle/annotations/issues/69
                 if (this.initialized && this.resolution && map) {
                     return map.getView().calculateExtent(this.mapSize);
                 }
@@ -630,7 +630,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     // changed features. But don't remove the temporary annotations with
                     // undefined ID here. These will be removed asynchronously through
                     // their removeCallback when they were saved (or failed to be).
-                    // see: https://github.com/BiodataMiningGroup/biigle-annotations/issues/82
+                    // see: https://github.com/biigle/annotations/issues/82
                     removedFeatures.filter(function (feature) {
                             return feature.getId() !== undefined;
                         }).forEach(function (feature) {
