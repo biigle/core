@@ -56,7 +56,8 @@ for path in data_csvs:
     ax.bar(ind, counts, width, color=np.core.defchararray.add(hashes, rows[:, 1]), log=counts.max() > 100)
 
     ax.set_xticks(ind + width / 2)
-    ax.set_xticklabels(rows[:, 0], rotation=45, fontsize=8, ha = 'right')
+    labels = [label.decode('UTF-8') for label in rows[:, 0]]
+    ax.set_xticklabels(labels, rotation=45, fontsize=8, ha = 'right')
     if plot_title:
         plt.title(plot_title[0].decode('UTF-8'))
     plt.xlim([0, ind.size])
