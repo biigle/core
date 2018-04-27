@@ -4,19 +4,19 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "91d2c74e301a7a83e2e424692684320f",
+    "content-hash": "3bc48a6f7a178582a3fc7d4294c35ce5",
     "packages": [
         {
             "name": "biigle/ananas",
             "version": "v1.0.6",
             "source": {
                 "type": "git",
-                "url": "git@github.com:BiodataMiningGroup/biigle-ananas.git",
+                "url": "git@github.com:biigle/ananas.git",
                 "reference": "fc37650f99cf71d97ddfdb60c16679ccb7fef4ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-ananas/zipball/fc37650f99cf71d97ddfdb60c16679ccb7fef4ee",
+                "url": "https://api.github.com/repos/biigle/ananas/zipball/fc37650f99cf71d97ddfdb60c16679ccb7fef4ee",
                 "reference": "fc37650f99cf71d97ddfdb60c16679ccb7fef4ee",
                 "shasum": ""
             },
@@ -40,12 +40,12 @@
             "version": "v3.3.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:BiodataMiningGroup/biigle-annotations.git",
+                "url": "git@github.com:biigle/annotations.git",
                 "reference": "32b9ed2bbec90c25aecca1c81547bd1561d186a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-annotations/zipball/32b9ed2bbec90c25aecca1c81547bd1561d186a0",
+                "url": "https://api.github.com/repos/biigle/annotations/zipball/32b9ed2bbec90c25aecca1c81547bd1561d186a0",
                 "reference": "32b9ed2bbec90c25aecca1c81547bd1561d186a0",
                 "shasum": ""
             },
@@ -75,12 +75,12 @@
             "version": "v2.0.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:BiodataMiningGroup/biigle-color-sort.git",
+                "url": "git@github.com:biigle/color-sort.git",
                 "reference": "2de3b1af3f70943342f83c3d0e453dd885f2b447"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-color-sort/zipball/2de3b1af3f70943342f83c3d0e453dd885f2b447",
+                "url": "https://api.github.com/repos/biigle/color-sort/zipball/2de3b1af3f70943342f83c3d0e453dd885f2b447",
                 "reference": "2de3b1af3f70943342f83c3d0e453dd885f2b447",
                 "shasum": ""
             },
@@ -109,12 +109,12 @@
             "version": "v1.8.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:BiodataMiningGroup/biigle-geo.git",
+                "url": "git@github.com:biigle/geo.git",
                 "reference": "d2ecc31ce1d9d764a57a0ab5d2fb47fc96eb6cc3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-geo/zipball/d2ecc31ce1d9d764a57a0ab5d2fb47fc96eb6cc3",
+                "url": "https://api.github.com/repos/biigle/geo/zipball/d2ecc31ce1d9d764a57a0ab5d2fb47fc96eb6cc3",
                 "reference": "d2ecc31ce1d9d764a57a0ab5d2fb47fc96eb6cc3",
                 "shasum": ""
             },
@@ -139,12 +139,12 @@
             "version": "v1.15.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:BiodataMiningGroup/biigle-label-trees.git",
+                "url": "git@github.com:biigle/label-trees.git",
                 "reference": "cbf7f2fa9d8fe2b1837a7c64101164f483b5a4f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-label-trees/zipball/cbf7f2fa9d8fe2b1837a7c64101164f483b5a4f5",
+                "url": "https://api.github.com/repos/biigle/label-trees/zipball/cbf7f2fa9d8fe2b1837a7c64101164f483b5a4f5",
                 "reference": "cbf7f2fa9d8fe2b1837a7c64101164f483b5a4f5",
                 "shasum": ""
             },
@@ -173,12 +173,12 @@
             "version": "v2.1.3",
             "source": {
                 "type": "git",
-                "url": "git@github.com:BiodataMiningGroup/biigle-largo.git",
+                "url": "git@github.com:biigle/largo.git",
                 "reference": "35ad0891026ebebdf40cad1117e2a316adaadb02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-largo/zipball/35ad0891026ebebdf40cad1117e2a316adaadb02",
+                "url": "https://api.github.com/repos/biigle/largo/zipball/35ad0891026ebebdf40cad1117e2a316adaadb02",
                 "reference": "35ad0891026ebebdf40cad1117e2a316adaadb02",
                 "shasum": ""
             },
@@ -205,12 +205,12 @@
             "version": "v2.0.3",
             "source": {
                 "type": "git",
-                "url": "git@github.com:BiodataMiningGroup/biigle-laserpoints.git",
+                "url": "git@github.com:biigle/laserpoints.git",
                 "reference": "59e9b332343bf55108c9a4507e8b17dc544a506c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-laserpoints/zipball/59e9b332343bf55108c9a4507e8b17dc544a506c",
+                "url": "https://api.github.com/repos/biigle/laserpoints/zipball/59e9b332343bf55108c9a4507e8b17dc544a506c",
                 "reference": "59e9b332343bf55108c9a4507e8b17dc544a506c",
                 "shasum": ""
             },
@@ -235,12 +235,12 @@
             "version": "v1.9.2",
             "source": {
                 "type": "git",
-                "url": "git@github.com:BiodataMiningGroup/biigle-projects.git",
+                "url": "git@github.com:biigle/projects.git",
                 "reference": "9c03df09ceb1823e6bf4cb9e2aaed85786daad26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-projects/zipball/9c03df09ceb1823e6bf4cb9e2aaed85786daad26",
+                "url": "https://api.github.com/repos/biigle/projects/zipball/9c03df09ceb1823e6bf4cb9e2aaed85786daad26",
                 "reference": "9c03df09ceb1823e6bf4cb9e2aaed85786daad26",
                 "shasum": ""
             },
@@ -266,12 +266,12 @@
             "version": "v4.0.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:BiodataMiningGroup/biigle-reports.git",
+                "url": "git@github.com:biigle/reports.git",
                 "reference": "f292a1d9954e567bdc5bf2c2732af4f0c9cb7c15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-reports/zipball/f292a1d9954e567bdc5bf2c2732af4f0c9cb7c15",
+                "url": "https://api.github.com/repos/biigle/reports/zipball/f292a1d9954e567bdc5bf2c2732af4f0c9cb7c15",
                 "reference": "f292a1d9954e567bdc5bf2c2732af4f0c9cb7c15",
                 "shasum": ""
             },
@@ -296,12 +296,12 @@
             "version": "v1.0.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:BiodataMiningGroup/biigle-sync.git",
+                "url": "git@github.com:biigle/sync.git",
                 "reference": "73371fcd4c2d9d7e8dde3bfe19da1d9077a414e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-sync/zipball/73371fcd4c2d9d7e8dde3bfe19da1d9077a414e3",
+                "url": "https://api.github.com/repos/biigle/sync/zipball/73371fcd4c2d9d7e8dde3bfe19da1d9077a414e3",
                 "reference": "73371fcd4c2d9d7e8dde3bfe19da1d9077a414e3",
                 "shasum": ""
             },
@@ -322,12 +322,12 @@
             "version": "v2.2.2",
             "source": {
                 "type": "git",
-                "url": "git@github.com:BiodataMiningGroup/biigle-volumes.git",
+                "url": "git@github.com:biigle/volumes.git",
                 "reference": "492f24e9cf97e381a553aa9168768f7a6c4c7fa3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BiodataMiningGroup/biigle-volumes/zipball/492f24e9cf97e381a553aa9168768f7a6c4c7fa3",
+                "url": "https://api.github.com/repos/biigle/volumes/zipball/492f24e9cf97e381a553aa9168768f7a6c4c7fa3",
                 "reference": "492f24e9cf97e381a553aa9168768f7a6c4c7fa3",
                 "shasum": ""
             },

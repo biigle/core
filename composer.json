@@ -103,47 +103,47 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "git@github.com:BiodataMiningGroup/biigle-projects.git"
+            "url": "git@github.com:biigle/projects.git"
         },
         {
             "type": "vcs",
-            "url": "git@github.com:BiodataMiningGroup/biigle-volumes.git"
+            "url": "git@github.com:biigle/volumes.git"
         },
         {
             "type": "vcs",
-            "url": "git@github.com:BiodataMiningGroup/biigle-annotations.git"
+            "url": "git@github.com:biigle/annotations.git"
         },
         {
             "type": "vcs",
-            "url": "git@github.com:BiodataMiningGroup/biigle-color-sort.git"
+            "url": "git@github.com:biigle/color-sort.git"
         },
         {
             "type": "vcs",
-            "url": "git@github.com:BiodataMiningGroup/biigle-label-trees.git"
+            "url": "git@github.com:biigle/label-trees.git"
         },
         {
             "type": "vcs",
-            "url": "git@github.com:BiodataMiningGroup/biigle-largo.git"
+            "url": "git@github.com:biigle/largo.git"
         },
         {
             "type": "vcs",
-            "url": "git@github.com:BiodataMiningGroup/biigle-laserpoints.git"
+            "url": "git@github.com:biigle/laserpoints.git"
         },
         {
             "type": "vcs",
-            "url": "git@github.com:BiodataMiningGroup/biigle-reports.git"
+            "url": "git@github.com:biigle/reports.git"
         },
         {
             "type": "vcs",
-            "url": "git@github.com:BiodataMiningGroup/biigle-geo.git"
+            "url": "git@github.com:biigle/geo.git"
         },
         {
             "type": "vcs",
-            "url": "git@github.com:BiodataMiningGroup/biigle-ananas.git"
+            "url": "git@github.com:biigle/ananas.git"
         },
         {
             "type": "vcs",
-            "url": "git@github.com:BiodataMiningGroup/biigle-sync.git"
+            "url": "git@github.com:biigle/sync.git"
         }
     ]
 }
