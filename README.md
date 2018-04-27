@@ -13,7 +13,7 @@ Benthic Image Indexing, Graphical Labeling and Exploration
 
 Run `docker-compose build` to build the `biigle/app`, `biigle/web` and `biigle/worker` Docker images.
 
-Now head over to [biigle-distribution](https://github.com/BiodataMiningGroup/biigle-distribution) to configure and build your production setup.
+Now head over to [biigle/distribution](https://github.com/biigle/distribution) to configure and build your production setup.
 
 ### For Development
 
@@ -24,7 +24,7 @@ To develop BIIGLE on your local machine you may use Docker containers, too. This
 Set up the project in the `biigle` directory (using [Composer](https://getcomposer.org/doc/00-intro.md)):
 
 ```
-composer create-project biigle/core:dev-dev-modules --repository='{"type":"vcs","url":"git@github.com:BiodataMiningGroup/biigle-core.git"}' --keep-vcs --ignore-platform-reqs --prefer-source biigle
+composer create-project biigle/core:dev-dev-modules --repository='{"type":"vcs","url":"git@github.com:biigle/core.git"}' --keep-vcs --ignore-platform-reqs --prefer-source biigle
 ```
 
 Note the `--ignore-platform-reqs` flag to keep Composer from complaining about missing requirements. These requirements will be met by the Docker containers.
