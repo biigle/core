@@ -10,6 +10,7 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-vips": "*",
+        "biigle/about": "@dev",
         "biigle/ananas": "@dev",
         "biigle/annotations": "@dev",
         "biigle/color-sort": "@dev",
@@ -23,9 +24,9 @@
         "biigle/volumes": "@dev",
         "doctrine/annotations": "1.4.0",
         "doctrine/dbal": "^2.5",
+        "fideloper/proxy": "~3.3",
         "guzzlehttp/guzzle": "~6.0",
         "jcupitt/vips": "^1.0",
-        "fideloper/proxy": "~3.3",
         "laravel/framework": "5.5.*",
         "laravel/tinker": "^1.0",
         "mzur/laravel-openstack-swift": "^1.0",
@@ -144,6 +145,10 @@
         {
             "type": "vcs",
             "url": "git@github.com:biigle/sync.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:biigle/about.git"
         }
     ]
 }

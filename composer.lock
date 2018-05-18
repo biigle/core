@@ -4,8 +4,34 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "3bc48a6f7a178582a3fc7d4294c35ce5",
+    "content-hash": "730de6cb09e62a44f571ee5dd87eb7d2",
     "packages": [
+        {
+            "name": "biigle/about",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:biigle/about.git",
+                "reference": "a71d5e5f1212374265e3ecb1f71a1a5eddf3e517"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/about/zipball/a71d5e5f1212374265e3ecb1f71a1a5eddf3e517",
+                "reference": "a71d5e5f1212374265e3ecb1f71a1a5eddf3e517",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\About\\": "src"
+                }
+            },
+            "support": {
+                "source": "https://github.com/biigle/about/tree/v0.1.0",
+                "issues": "https://github.com/biigle/about/issues"
+            },
+            "time": "2018-05-18T07:53:21+00:00"
+        },
         {
             "name": "biigle/ananas",
             "version": "v1.0.6",
@@ -5370,6 +5396,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "biigle/about": 20,
         "biigle/ananas": 20,
         "biigle/annotations": 20,
         "biigle/color-sort": 20,

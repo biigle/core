@@ -203,6 +203,7 @@ return [
         Biigle\Modules\Reports\ReportsServiceProvider::class,
         Biigle\Modules\Ananas\AnanasServiceProvider::class,
         Biigle\Modules\Sync\SyncServiceProvider::class,
+        Biigle\Modules\About\AboutServiceProvider::class,
 
     ],
 
