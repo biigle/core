@@ -1,0 +1,34 @@
+.footer {
+    padding: 1em;
+    margin-top: 1em;
+    text-align: right;
+    position: relative;
+    border-top: 1px solid $gray-lighter;
+
+    &.footer--absolute {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    a {
+        color: $navbar-default-link-color;
+        margin-left: 1em;
+
+        &:hover {
+            color: $navbar-default-link-hover-color;
+        }
+    }
+
+    // &:before {
+    //     content: '';
+    //     position: absolute;
+    //     top: 0;
+    //     left: 50%;
+    //     transform: translateX(-50%);
+    //     width: 20%;
+    //     height: 1px;
+    //     background-color: $gray-lighter;
+    // }
+}

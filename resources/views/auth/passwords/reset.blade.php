@@ -50,5 +50,6 @@
             </form>
         </div>
     </div>
+    @include('partials.footer', ['positionAbsolute' => true])
 </div>
 @endsection
