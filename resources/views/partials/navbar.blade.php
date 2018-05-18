@@ -44,6 +44,7 @@
                             <li>
                                 <a href="{{ route('settings') }}" title="{{ trans('biigle.titles.settings') }}">{{ trans('biigle.titles.settings') }}</a>
                             </li>
+                            @mixin('navbarMenuItemBottom')
                             <li>
                                 <a href="{{ url('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();" title="{{ trans('biigle.titles.logout') }}">
                                     {{ trans('biigle.titles.logout') }}
