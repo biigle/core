@@ -12,6 +12,9 @@
             </h2>
         </div>
         @yield('manual-content')
+        <div class="row">
+            @include('partials.footer')
+        </div>
     </div>
 </div>
 @endsection

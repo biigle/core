@@ -6,9 +6,9 @@
 @import "font-awesome";
 
 .center-form {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 	height: 100vh;
 }
 
@@ -33,6 +33,7 @@
 @import "notifications";
 @import "search";
 @import "admin";
+@import "footer";
 @import "components/loader";
 @import "components/loaderBlock";
 @import "components/typeahead";

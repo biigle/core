@@ -53,6 +53,9 @@
 
             @mixin('manualDocumentation')
         </div>
+        <div class="row">
+            @include('partials.footer')
+        </div>
     </div>
 </div>
 @endsection
