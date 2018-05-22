@@ -37,14 +37,10 @@
                                     <a href="{{ route('admin') }}" title="Admin area">Admin area</a>
                                 </li>
                             @endif
-                            <li>
-                                <a href="{{ route('manual') }}" title="{{ trans('biigle.titles.manual') }}">{{ trans('biigle.titles.manual') }}</a>
-                            </li>
                             <li role="separator" class="divider"></li>
                             <li>
                                 <a href="{{ route('settings') }}" title="{{ trans('biigle.titles.settings') }}">{{ trans('biigle.titles.settings') }}</a>
                             </li>
-                            @mixin('navbarMenuItemBottom')
                             <li>
                                 <a href="{{ url('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();" title="{{ trans('biigle.titles.logout') }}">
                                     {{ trans('biigle.titles.logout') }}
@@ -53,6 +49,15 @@
                                 <form id="logout-form" action="{{ url('logout') }}" method="POST" style="display: none;">
                                     {{ csrf_field() }}
                                 </form>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li class="dropdown-footer">
+                                <ul>
+                                    <li>
+                                        <a href="{{ route('manual') }}" title="Manual">Manual</a>
+                                    </li>
+                                    @mixin('navbarMenuItemFooter')
+                                </ul>
                             </li>
                         </ul>
                     </li>
