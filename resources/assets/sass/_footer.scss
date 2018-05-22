@@ -12,9 +12,25 @@
         width: 100%;
     }
 
+    .footer-menu {
+        display: inline-block;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        color: $dropdown-header-color;
+
+        li {
+            display: inline-block;
+
+            &:not(:first-child):before {
+                content: '\B7';
+                margin-right: 5px;
+            }
+        }
+    }
+
     a {
-        color: $navbar-default-link-color;
-        margin-left: 1em;
+        color: $dropdown-header-color;
 
         &:hover {
             color: $navbar-default-link-hover-color;
