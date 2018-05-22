@@ -24,6 +24,7 @@
 
         &:not(:first-child):before {
             content: '\B7';
+            margin-right: 3px;
         }
     }
 
