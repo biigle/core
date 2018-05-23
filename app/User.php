@@ -95,8 +95,8 @@ class User extends Authenticatable
             // ignore the email of this user
             'email' => "filled|email|unique:users,email,{$this->id}|max:255",
             'password' => 'min:8|confirmed',
-            'firstname' => 'max:127',
-            'lastname' => 'max:127',
+            'firstname' => 'filled|max:127',
+            'lastname' => 'filled|max:127',
             'role_id' => 'exists:roles,id',
             'auth_password' => 'required_with:role_id,password,email',
             'affiliation' => 'nullable|max:255',

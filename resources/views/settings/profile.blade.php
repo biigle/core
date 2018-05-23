@@ -8,18 +8,26 @@
     <div class="panel-body">
         <form class="" role="form" method="POST" action="{{ url('api/v1/users/my') }}">
             <div class="form-group{{ $errors->has('firstname') ? ' has-error' : '' }}">
-                <label for="firstname">Firstname</label>
-                <input type="text" class="form-control" name="firstname" id="firstname" value="{{ $user->firstname }}">
+                <label for="firstname">First name</label>
+                <input type="text" class="form-control" name="firstname" id="firstname" value="{{ $user->firstname }}" required>
                 @if($errors->has('firstname'))
                     <span class="help-block">{{ $errors->first('firstname') }}</span>
                 @endif
             </div>
 
             <div class="form-group{{ $errors->has('lastname') ? ' has-error' : '' }}">
-                <label for="lastname">Lastname</label>
-                <input type="text" class="form-control" name="lastname" id="lastname" value="{{ $user->lastname }}">
+                <label for="lastname">Last name</label>
+                <input type="text" class="form-control" name="lastname" id="lastname" value="{{ $user->lastname }}" required>
                 @if($errors->has('lastname'))
                     <span class="help-block">{{ $errors->first('lastname') }}</span>
+                @endif
+            </div>
+
+            <div class="form-group{{ $errors->has('affiliation') ? ' has-error' : '' }}">
+                <label for="affiliation">Affiliation</label>
+                <input type="text" class="form-control" name="affiliation" id="affiliation" value="{{ $user->affiliation }}">
+                @if($errors->has('affiliation'))
+                    <span class="help-block">{{ $errors->first('affiliation') }}</span>
                 @endif
             </div>
 

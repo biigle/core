@@ -16,7 +16,7 @@ class UsersController extends Controller
      */
     public function get()
     {
-        $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at', 'role_id')
+        $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at', 'role_id', 'affiliation')
             ->orderBy('login_at', 'desc')
             ->orderBy('created_at', 'desc')
             ->with('role')
