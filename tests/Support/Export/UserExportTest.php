@@ -22,6 +22,7 @@ class UserExportTest extends TestCase
             'email' => $user1->email,
             'settings' => $user1->settings,
             'uuid' => $user1->uuid,
+            'affiliation' => $user1->affiliation,
         ];
 
         $content = $export->getContent();
