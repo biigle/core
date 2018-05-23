@@ -5,7 +5,7 @@
  */
 biigle.$component('volumes.components.filterSelectComponent', {
     template: '<div class="filter-select">' +
-        '<typeahead :items="items" :value="value" :placeholder="placeholder" @select="select"></typeahead>' +
+        '<typeahead :items="items" :value="value" :placeholder="placeholder" @select="select" :template="typeaheadTemplate"></typeahead>' +
         '<button type="submit" class="btn btn-default" @click="submit" :disabled="!selectedItem">Add rule</button>' +
     '</div>',
     components: {
@@ -22,6 +22,7 @@ biigle.$component('volumes.components.filterSelectComponent', {
             items: [],
             placeholder: '',
             selectedItem: null,
+            typeaheadTemplate: undefined,
         };
     },
     computed: {

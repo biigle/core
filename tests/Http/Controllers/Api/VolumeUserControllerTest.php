@@ -21,7 +21,7 @@ class VolumeUserControllerTest extends ApiTestCase
             ->assertStatus(200);
         $response->assertExactJson(
             $this->project()->users()
-                ->select('id', 'firstname', 'lastname', 'email')
+                ->select('id', 'firstname', 'lastname', 'email', 'affiliation')
                 ->get()
                 ->map(function ($item) {
                     unset($item->project_role_id);

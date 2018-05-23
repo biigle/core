@@ -77,6 +77,7 @@ biigle.$viewModel('annotation-session-panel', function (element) {
             editedSession: emptySession(),
             users: [],
             errors: {},
+            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.affiliation"></small>',
         },
         components: {
             typeahead: biigle.$require('core.components.typeahead'),

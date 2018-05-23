@@ -36,7 +36,7 @@
             <div class="row">
                 <div class="form-group col-xs-6" :class="{'has-error':hasError('users')}">
                     <label class="control-label" for="new-user">New user</label>
-                    <typeahead class="typeahead--block" :items="availableUsers" title="Add a new user to the session" placeholder="Joe User" v-on:select="selectUser" :clear-on-select="true"></typeahead>
+                    <typeahead class="typeahead--block" :items="availableUsers" title="Add a new user to the session" placeholder="Joe User" v-on:select="selectUser" :clear-on-select="true" :template="typeaheadTemplate"></typeahead>
                 </div>
                 <div class="form-group col-xs-6" :class="{'has-error':hasError('users')}">
                     <label class="control-label" for="users">Users</label>
