@@ -16,6 +16,7 @@ biigle.$require('volumes.stores.filters').push({
         data: function () {
             return {
                 placeholder: 'User name',
+                typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.affiliation"></small>',
             };
         },
         created: function () {
