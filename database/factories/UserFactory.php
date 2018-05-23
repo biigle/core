@@ -22,5 +22,6 @@ $factory->define(Biigle\User::class, function (Faker $faker) {
         'email' => $faker->unique()->email(),
         'remember_token' => str_random(10),
         'uuid' => $faker->unique()->uuid(),
+        'affiliation' => $faker->company(),
     ];
 });
