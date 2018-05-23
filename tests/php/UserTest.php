@@ -25,6 +25,7 @@ class UserTest extends ModelTestCase
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
         $this->assertNotNull($this->model->uuid);
+        $this->assertNotNull($this->model->affiliation);
     }
 
     public function testEmailToLowercase()

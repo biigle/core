@@ -43,6 +43,7 @@ class User extends Authenticatable
         'lastname' => 'required|string|max:127',
         'role_id' => 'exists:roles,id',
         'uuid' => 'nullable|regex:/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/',
+        'affiliation' => 'nullable|max:255',
     ];
 
     /**
@@ -98,6 +99,7 @@ class User extends Authenticatable
             'lastname' => 'max:127',
             'role_id' => 'exists:roles,id',
             'auth_password' => 'required_with:role_id,password,email',
+            'affiliation' => 'nullable|max:255',
         ];
     }
 
