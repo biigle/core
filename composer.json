@@ -10,7 +10,7 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-vips": "*",
-        "biigle/about": "@dev",
+        "biigle/legal": "@dev",
         "biigle/ananas": "@dev",
         "biigle/annotations": "@dev",
         "biigle/color-sort": "@dev",
@@ -148,7 +148,7 @@
         },
         {
             "type": "vcs",
-            "url": "git@github.com:biigle/about.git"
+            "url": "git@github.com:biigle/legal.git"
         }
     ]
 }
