@@ -33,14 +33,14 @@ class ProjectTest extends ModelTestCase
     public function testNameRequired()
     {
         $this->model->name = null;
-        $this->setExpectedException(QueryException::class);
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testDescriptionRequired()
     {
         $this->model->description = null;
-        $this->setExpectedException(QueryException::class);
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
@@ -139,7 +139,7 @@ class ProjectTest extends ModelTestCase
         $this->assertEquals(Role::$editor->id, $user->project_role_id);
 
         // a user can only be added once regardless the role
-        $this->setExpectedException(HttpException::class);
+        $this->expectException(HttpException::class);
         $this->model->addUserId($user->id, Role::$admin->id);
     }
 
@@ -152,7 +152,7 @@ class ProjectTest extends ModelTestCase
         $this->assertNull($this->model->users()->find($admin->id));
 
         // the last admin mustn't be removed
-        $this->setExpectedException(HttpException::class);
+        $this->expectException(HttpException::class);
         $this->model->removeUserId($this->model->creator->id);
     }
 
@@ -162,7 +162,7 @@ class ProjectTest extends ModelTestCase
         $this->model->addUserId($user->id, Role::$editor->id);
         $this->model->checkUserCanBeRemoved($user->id);
         // the last admin mustn't be removed
-        $this->setExpectedException(HttpException::class);
+        $this->expectException(HttpException::class);
         $this->model->checkUserCanBeRemoved($this->model->creator->id);
     }
 
@@ -185,7 +185,7 @@ class ProjectTest extends ModelTestCase
         $this->assertEquals(Role::$editor->id, $this->model->users()->find($user->id)->project_role_id);
 
         // attempt to change the last admin to an editor
-        $this->setExpectedException(HttpException::class);
+        $this->expectException(HttpException::class);
         $this->model->changeRole($admin->id, Role::$editor->id);
     }
 

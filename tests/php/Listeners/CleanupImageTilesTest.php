@@ -14,7 +14,7 @@ class ListenersCleanupImageTilesTest extends TestCase
         $image = ImageTest::create();
         $fragment = fragment_uuid_path($image->uuid);
         Storage::fake('local-tiles');
-        Storage::disk('local-tiles')->put("{$fragment}/a/b.txt", 'test');
+        Storage::disk('local-tiles')->put($fragment, 'test');
 
         with(new CleanupImageTiles)->handle([$image->uuid]);
 

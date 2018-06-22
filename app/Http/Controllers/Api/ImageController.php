@@ -10,7 +10,6 @@ class ImageController extends Controller
      * Shows the specified image.
      *
      * @api {get} images/:id Get image information
-     * data as well as the volume, the image belongs to.
      * @apiGroup Images
      * @apiName ShowImages
      * @apiPermission projectMember

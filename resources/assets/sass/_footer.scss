@@ -1,0 +1,50 @@
+.footer {
+    padding: 1em;
+    margin-top: 1em;
+    text-align: right;
+    position: relative;
+    border-top: 1px solid $gray-lighter;
+
+    &.footer--absolute {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    .footer-menu {
+        display: inline-block;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        color: $dropdown-header-color;
+
+        li {
+            display: inline-block;
+
+            &:not(:first-child):before {
+                content: '\B7';
+                margin-right: 5px;
+            }
+        }
+    }
+
+    a {
+        color: $dropdown-header-color;
+
+        &:hover {
+            color: $navbar-default-link-hover-color;
+        }
+    }
+
+    // &:before {
+    //     content: '';
+    //     position: absolute;
+    //     top: 0;
+    //     left: 50%;
+    //     transform: translateX(-50%);
+    //     width: 20%;
+    //     height: 1px;
+    //     background-color: $gray-lighter;
+    // }
+}

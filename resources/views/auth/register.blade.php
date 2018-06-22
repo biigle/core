@@ -46,6 +46,18 @@
                     @endif
                 </div>
 
+                <div class="form-group{{ $errors->has('affiliation') ? ' has-error' : '' }}">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="glyphicon glyphicon-user"></i>
+                        </div>
+                        <input type="text" placeholder="Affiliation" class="form-control" name="affiliation" value="{{ old('affiliation') }}">
+                    </div>
+                    @if($errors->has('affiliation'))
+                        <span class="help-block">{{ $errors->first('affiliation') }}</span>
+                    @endif
+                </div>
+
                 <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
                     <div class="input-group">
                         <div class="input-group-addon">

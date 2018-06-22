@@ -5,6 +5,7 @@ namespace Biigle\Tests;
 use ModelTestCase;
 use Carbon\Carbon;
 use Biigle\AnnotationSession;
+use Illuminate\Database\QueryException;
 
 class AnnotationSessionTest extends ModelTestCase
 {
@@ -29,21 +30,21 @@ class AnnotationSessionTest extends ModelTestCase
     public function testNameRequired()
     {
         $this->model->name = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testStartsAtRequired()
     {
         $this->model->starts_at = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testEndsAtRequired()
     {
         $this->model->ends_at = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 

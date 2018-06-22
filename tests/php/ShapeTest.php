@@ -4,6 +4,7 @@ namespace Biigle\Tests;
 
 use Biigle\Shape;
 use ModelTestCase;
+use Illuminate\Database\QueryException;
 
 class ShapeTest extends ModelTestCase
 {
@@ -22,7 +23,7 @@ class ShapeTest extends ModelTestCase
     public function testNameRequired()
     {
         $this->model->name = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 

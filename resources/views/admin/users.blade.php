@@ -8,30 +8,32 @@
         The user was deleted.
     </div>
 @endif
-<a href="{{route('admin-users-new')}}" class="btn btn-default" title="Create a new user"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> New user</a>
+<a href="{{route('admin-users-new')}}" class="btn btn-default" title="Create a new user">New user</a>
 <table class="table table-hover">
     <thead>
         <tr>
             <th>Name</th>
             <th>Email</th>
-            <th>Role</th>
+            <th>Affiliation</th>
             <th>Activity</th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach ($activeUsers as $u)
             <tr>
-                <td><a href="{{route('admin-users-show', $u->id)}}">{{$u->firstname}} {{$u->lastname}}</a></td>
-                <td><a href="mailto:{{$u->email}}">{{$u->email}}</a></td>
-                <td>{{ucfirst($u->role->name)}}</td>
                 <td>
-                    <time datetime="{{$u->login_at->toAtomString()}}" title="{{$u->login_at->toDateTimeString()}}">{{$u->login_at->diffForHumans()}}</time>
+                    <a href="{{route('admin-users-show', $u->id)}}">{{$u->firstname}} {{$u->lastname}}</a>
+                </td>
+                <td><a href="mailto:{{$u->email}}">{{$u->email}}</a></td>
+                <td>
+                    @if ($u->affiliation)
+                        {{$u->affiliation}}
+                    @else
+                        <span class="text-muted">none</span>
+                    @endif
                 </td>
                 <td>
-                    @if ($user->id !== $u->id)
-                        <a class="btn btn-default btn-xs pull-right" href="{{route('admin-users-edit', $u->id)}}" title="Edit {{$u->firstname}} {{$u->lastname}}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
-                    @endif
+                    <time datetime="{{$u->login_at->toAtomString()}}" title="{{$u->login_at->toDateTimeString()}}">{{$u->login_at->diffForHumans()}}</time>
                 </td>
             </tr>
         @endforeach
@@ -47,8 +49,7 @@
             <tr>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Role</th>
-                <th></th>
+                <th>Affiliation</th>
             </tr>
         </thead>
         <tbody>
@@ -56,10 +57,7 @@
                 <tr @if (session('newUser') && session('newUser')->id === $u->id) class="bg-success" @endif>
                     <td><a href="{{route('admin-users-show', $u->id)}}">{{$u->firstname}} {{$u->lastname}}</a></td>
                     <td><a href="mailto:{{$u->email}}">{{$u->email}}</a></td>
-                    <td>{{ucfirst($u->role->name)}}</td>
-                    <td>
-                        <a class="btn btn-default btn-xs pull-right" href="{{route('admin-users-edit', $u->id)}}" title="Edit {{$u->firstname}} {{$u->lastname}}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
-                    </td>
+                    <td>{{$u->affiliation}}</td>
                 </tr>
             @endforeach
         </tbody>

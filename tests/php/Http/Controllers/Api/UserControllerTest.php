@@ -21,7 +21,7 @@ class UserControllerTest extends ApiTestCase
             'owner_id' => $user->id,
         ]);
 
-        return $this->call($verb, $route, [], [], [], [
+        return $this->json($verb, $route, [], [
             'PHP_AUTH_USER' => $user->email,
             'PHP_AUTH_PW' => 'test_token',
         ]);
@@ -36,8 +36,13 @@ class UserControllerTest extends ApiTestCase
         $this->be($user);
         $this->get('/api/v1/users')
             ->assertStatus(200)
-            ->assertJsonFragment(['id' => $user->id])
-            ->assertJsonMissing(['email' => $user->email]);
+            ->assertExactJson([[
+                'id' => $user->id,
+                'role_id' => $user->role_id,
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
+                'affiliation' => $user->affiliation,
+            ]]);
 
         // Global admins also see the email address of the users.
         $user->role_id = Role::$admin->id;
@@ -54,11 +59,16 @@ class UserControllerTest extends ApiTestCase
         $response->assertStatus(200);
 
         $this->beGlobalAdmin();
-        $response = $this->get('/api/v1/users/'.$this->guest()->id);
-        $content = $response->getContent();
-        $response->assertStatus(200);
-        $this->assertStringStartsWith('{', $content);
-        $this->assertStringEndsWith('}', $content);
+        $user = $this->guest();
+        $this->get('/api/v1/users/'.$user->id)
+            ->assertStatus(200)
+            ->assertExactJson([
+                'id' => $user->id,
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
+                'role_id' => $user->role_id,
+                'affiliation' => $user->affiliation,
+            ]);
     }
 
     public function testShowOwn()
@@ -118,6 +128,16 @@ class UserControllerTest extends ApiTestCase
         ]);
         // changing the email requires the admin password
         $response->assertStatus(422);
+
+        $response = $this->put('/api/v1/users/'.$this->guest()->id, [
+            'password' => 'newpassword',
+            'password_confirmation' => 'newpassword',
+            'auth_password' => 'wrongpassword',
+        ])->assertStatus(302);
+        // Check disabled flashing of passwords.
+        $this->assertNull(old('password'));
+        $this->assertNull(old('password_confirmation'));
+        $this->assertNull(old('auth_password'));
 
         $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
             'password' => 'newpassword',
@@ -235,6 +255,21 @@ class UserControllerTest extends ApiTestCase
         $this->assertEquals('test2@test.com', $this->guest()->fresh()->email);
     }
 
+    public function testUpdateAffiliation()
+    {
+        $user = $this->guest();
+        $this->beGlobalAdmin();
+        $this->putJson("api/v1/users/{$user->id}", ['affiliation' => 'My Company'])
+            ->assertStatus(200);
+
+        $this->assertEquals('My Company', $user->fresh()->affiliation);
+
+        $this->putJson("api/v1/users/{$user->id}", ['affiliation' => ''])
+            ->assertStatus(200);
+
+        $this->assertNull($user->fresh()->affiliation);
+    }
+
     public function testUpdateOwnWithToken()
     {
         // api key authentication is not allowed for this route
@@ -323,11 +358,25 @@ class UserControllerTest extends ApiTestCase
         $this->assertEquals('test2@test.com', $this->guest()->fresh()->email);
     }
 
+    public function testUpdateOwnAffiliation()
+    {
+        $this->beGuest();
+        $this->putJson("api/v1/users/my", ['affiliation' => 'My Company'])
+            ->assertStatus(200);
+
+        $this->assertEquals('My Company', $this->guest()->fresh()->affiliation);
+
+        $this->putJson("api/v1/users/my", ['affiliation' => ''])
+            ->assertStatus(200);
+
+        $this->assertNull($this->guest()->fresh()->affiliation);
+    }
+
     public function testStoreWithToken()
     {
         // api key authentication **is** allowed for this route
-        $response = $this->callToken('POST', '/api/v1/users', $this->globalAdmin());
-        $response->assertStatus(422);
+        $this->callToken('POST', '/api/v1/users', $this->globalAdmin())
+            ->assertStatus(422);
     }
 
     public function testStore()
@@ -357,6 +406,7 @@ class UserControllerTest extends ApiTestCase
             'firstname' => 'jack',
             'lastname' => 'jackson',
             'email' => 'new@email.me',
+            'affiliation' => 'My Company',
         ]);
         $response->assertStatus(200);
 
@@ -364,6 +414,7 @@ class UserControllerTest extends ApiTestCase
         $this->assertEquals('jack', $newUser->firstname);
         $this->assertEquals('jackson', $newUser->lastname);
         $this->assertEquals('new@email.me', $newUser->email);
+        $this->assertEquals('My Company', $newUser->affiliation);
         $this->assertEquals(Role::$editor->id, $newUser->role_id);
 
         $response = $this->json('POST', '/api/v1/users', [
@@ -385,6 +436,8 @@ class UserControllerTest extends ApiTestCase
             '_redirect' => 'settings/profile',
         ]);
         $response->assertRedirect('settings/profile');
+        $newUser = User::find(User::max('id'));
+        $this->assertNull($newUser->affiliation);
 
         $this->get('/');
         $response = $this->post('/api/v1/users', [
@@ -593,26 +646,27 @@ class UserControllerTest extends ApiTestCase
 
     public function testFind()
     {
-        $user = UserTest::create(['firstname' => 'abc', 'lastname' => 'def']);
+        $user = UserTest::create([
+            'firstname' => 'abc',
+            'lastname' => 'def',
+            'affiliation' => 'Company',
+        ]);
         UserTest::create(['firstname' => 'abc', 'lastname' => 'ghi']);
 
         $this->doTestApiRoute('GET', '/api/v1/users/find/a');
 
         $this->beGuest();
-        $response = $this->get('/api/v1/users/find/a');
-        $content = $response->getContent();
-        $response->assertStatus(200);
+        $this->get('/api/v1/users/find/a')
+            ->assertStatus(200)
+            ->assertJsonFragment(['firstname' => 'abc'])
+            ->assertJsonFragment(['affiliation' => 'Company'])
+            ->assertJsonFragment(['lastname' => 'def'])
+            ->assertJsonFragment(['lastname' => 'ghi']);
 
-        $this->assertContains('"firstname":"abc"', $content);
-        $this->assertContains('"lastname":"def"', $content);
-        $this->assertContains('"lastname":"ghi"', $content);
-
-        $response = $this->get('/api/v1/users/find/d');
-        $content = $response->getContent();
-        $response->assertStatus(200);
-
-        $this->assertContains('"firstname":"abc"', $content);
-        $this->assertContains('"lastname":"def"', $content);
-        $this->assertNotContains('"lastname":"ghi"', $content);
+        $response = $this->get('/api/v1/users/find/d')
+            ->assertStatus(200)
+            ->assertJsonFragment(['firstname' => 'abc'])
+            ->assertJsonFragment(['lastname' => 'def'])
+            ->assertJsonMissing(['lastname' => 'ghi']);;
     }
 }

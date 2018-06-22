@@ -54,24 +54,20 @@ class LabelTreeLabelController extends Controller
         $this->validate($request, Label::$createRules);
 
         // parent must be of the same tree
-        if ($request->has('parent_id')) {
+        if ($request->filled('parent_id')) {
             $exists = Label::where('id', $request->input('parent_id'))
                 ->where('label_tree_id', $id)
                 ->exists();
             if (!$exists) {
-                return $this->buildFailedValidationResponse($request, [
+                throw ValidationException::withMessages([
                     'parent_id' => ['The parent label must belong to the same label tree than the new label.'],
                 ]);
             }
         }
 
-        if ($request->has('label_source_id')) {
+        if ($request->filled('label_source_id')) {
             $source = LabelSource::findOrFail($request->input('label_source_id'));
-            try {
-                $labels = $source->getAdapter()->create((int) $id, $request);
-            } catch (ValidationException $e) {
-                return $this->buildFailedValidationResponse($request, $e->response);
-            }
+            $labels = $source->getAdapter()->create((int) $id, $request);
         } else {
             $label = new Label;
             $label->name = $request->input('name');

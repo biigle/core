@@ -67,11 +67,11 @@ class ProjectUserControllerTest extends ApiTestCase
         $response->assertStatus(400);
 
         // last admin cannot be removed
-        $response = $this->json('PUT', "/api/v1/projects/{$id}/users/".$this->admin()->id, [
-            'project_role_id' => Role::$guest->id,
-        ]);
-        $response->assertStatus(400);
-        $this->assertStringStartsWith('{"message":"The last admin of '.$this->project()->name.' cannot be removed.', $response->getContent());
+        $this->json('PUT', "/api/v1/projects/{$id}/users/".$this->admin()->id, [
+                'project_role_id' => Role::$guest->id,
+            ])
+            ->assertStatus(400)
+            ->assertJsonFragment(['message' => 'The last admin of '.$this->project()->name.' cannot be removed. The admin status must be passed on to another user first.']);
 
         $this->assertEquals(2, $this->project()->users()->find($this->editor()->id)->project_role_id);
 

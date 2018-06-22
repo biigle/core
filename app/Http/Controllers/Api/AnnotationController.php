@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Exception;
 use Biigle\Annotation;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class AnnotationController extends Controller
 {
@@ -74,9 +75,7 @@ class AnnotationController extends Controller
         try {
             $annotation->validatePoints($points);
         } catch (Exception $e) {
-            return $this->buildFailedValidationResponse($request, [
-                'points' => [$e->getMessage()],
-            ]);
+            throw ValidationException::withMessages(['points' => [$e->getMessage()]]);
         }
 
         $annotation->points = $points;

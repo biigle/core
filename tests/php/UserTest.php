@@ -5,6 +5,8 @@ namespace Biigle\Tests;
 use Biigle\User;
 use Biigle\Role;
 use ModelTestCase;
+use Illuminate\Database\QueryException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UserTest extends ModelTestCase
 {
@@ -23,6 +25,7 @@ class UserTest extends ModelTestCase
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
         $this->assertNotNull($this->model->uuid);
+        $this->assertNotNull($this->model->affiliation);
     }
 
     public function testEmailToLowercase()
@@ -43,49 +46,49 @@ class UserTest extends ModelTestCase
     public function testFirstnameRequired()
     {
         $this->model->firstname = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testLastnameRequired()
     {
         $this->model->lastname = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testPasswordRequired()
     {
         $this->model->password = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testEmailRequired()
     {
         $this->model->email = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testEmailUnique()
     {
         self::create(['email' => 'test@test.com']);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         self::create(['email' => 'test@test.com']);
     }
 
     public function testUuidRequired()
     {
         $this->model->uuid = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testUuidUnique()
     {
         self::create(['uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62']);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         self::create(['uuid' => 'c796ccec-c746-308f-8009-9f1f68e2aa62']);
     }
 
@@ -140,7 +143,7 @@ class UserTest extends ModelTestCase
         $project->addUserId($this->model->id, Role::$guest->id);
 
         $this->model->checkCanBeDeleted();
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->expectException(HttpException::class);
         $project->creator->checkCanBeDeleted();
     }
 
@@ -152,7 +155,7 @@ class UserTest extends ModelTestCase
         $tree->addMember($this->model, Role::$admin);
 
         $editor->checkCanBeDeleted();
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException');
+        $this->expectException(HttpException::class);
         $this->model->checkCanBeDeleted();
     }
 
