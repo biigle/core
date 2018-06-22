@@ -148,7 +148,7 @@ class LabelTreeImport extends Import
         });
 
         // Get existing labels of existing label trees.
-        $existingLabels = Label::whereIn('label_tree_id', $trees->keys())
+        $existingLabels = Label::whereIn('label_tree_id', $existingTrees->keys())
             ->select('id', 'name', 'parent_id', 'uuid')
             ->get()
             ->keyBy('id');
