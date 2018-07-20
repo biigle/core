@@ -181,7 +181,7 @@ biigle.$viewModel('annotation-session-panel', function (element) {
             },
             handleErrorResponse: function (response) {
                 if (response.status === 422) {
-                    this.errors = response.data;
+                    this.errors = response.data.errors;
                 } else {
                     messages.handleErrorResponse(response);
                 }
