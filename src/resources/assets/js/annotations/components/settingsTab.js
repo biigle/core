@@ -14,7 +14,8 @@ biigle.$component('annotations.components.settingsTab', {
             mousePosition: false,
             zoomLevel: false,
             scaleLine: false,
-            annotationTooltip: false,
+            labelTooltip: false,
+            measureTooltip: false,
             minimap: true,
         };
     },
@@ -45,11 +46,19 @@ biigle.$component('annotations.components.settingsTab', {
         hideScaleLine: function () {
             this.scaleLine = false;
         },
-        showAnnotationTooltip: function () {
-            this.annotationTooltip = true;
+        showLabelTooltip: function () {
+            this.labelTooltip = true;
+            this.measureTooltip = false;
         },
-        hideAnnotationTooltip: function () {
-            this.annotationTooltip = false;
+        hideLabelTooltip: function () {
+            this.labelTooltip = false;
+        },
+        showMeasureTooltip: function () {
+            this.measureTooltip = true;
+            this.labelTooltip = false;
+        },
+        hideMeasureTooltip: function () {
+            this.measureTooltip = false;
         },
         showMinimap: function () {
             this.minimap = true;
@@ -92,13 +101,21 @@ biigle.$component('annotations.components.settingsTab', {
             }
             this.$emit('change', 'scaleLine', show);
         },
-        annotationTooltip: function (show) {
+        labelTooltip: function (show) {
             if (show) {
-                this.settings.set('annotationTooltip', true);
+                this.settings.set('labelTooltip', true);
             } else {
-                this.settings.delete('annotationTooltip');
+                this.settings.delete('labelTooltip');
             }
-            this.$emit('change', 'annotationTooltip', show);
+            this.$emit('change', 'labelTooltip', show);
+        },
+        measureTooltip: function (show) {
+            if (show) {
+                this.settings.set('measureTooltip', true);
+            } else {
+                this.settings.delete('measureTooltip');
+            }
+            this.$emit('change', 'measureTooltip', show);
         },
         minimap: function (show) {
             if (show) {
@@ -117,7 +134,8 @@ biigle.$component('annotations.components.settingsTab', {
             'mousePosition',
             'zoomLevel',
             'scaleLine',
-            'annotationTooltip',
+            'labelTooltip',
+            'measureTooltip',
             'minimap',
         ], true);
     },

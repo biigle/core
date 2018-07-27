@@ -8,12 +8,22 @@ biigle.$component('annotations.components.annotationCanvas.annotationTooltip', f
 
     return {
         components: {
-            annotationTooltip: biigle.$require('annotations.components.annotationTooltip'),
+            labelTooltip: biigle.$require('annotations.components.labelTooltip'),
+            measureTooltip: biigle.$require('annotations.components.measureTooltip'),
         },
         props: {
-            showAnnotationTooltip: {
+            showLabelTooltip: {
                 type: Boolean,
                 default: false,
+            },
+            showMeasureTooltip: {
+                type: Boolean,
+                default: false,
+            },
+        },
+        computed: {
+            showAnnotationTooltip: function () {
+                return this.showLabelTooltip || this.showMeasureTooltip;
             },
         },
         data: function () {
@@ -28,18 +38,18 @@ biigle.$component('annotations.components.annotationCanvas.annotationTooltip', f
                 var annotations = [];
                 map.forEachFeatureAtPixel(e.pixel,
                     function (feature) {
-                        if (feature.get('annotation')) {
-                            annotations.push(feature.get('annotation'));
-                        }
+                        annotations.push(feature);
                     },
                     {
                         layerFilter: function (layer) {
                             return layer.get('name') === 'annotations';
-                        }
+                        },
                     }
                 );
 
-                var hash = annotations.map(function (a) {return a.id;}).sort().join('');
+                var hash = annotations.map(function (a) {return a.getId();})
+                    .sort()
+                    .join('');
 
                 if (this.hoveredAnnotationHash !== hash) {
                     this.hoveredAnnotationHash = hash;

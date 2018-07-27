@@ -20,17 +20,24 @@
             <div class="label-indicator" title="Currently selected label" v-text="label.name"></div>
         </label-indicator>
     </div>
-    <annotation-tooltip :annotations="hoveredAnnotations" :position="mouseDomPosition" inline-template>
-        <div v-if="shown" class="annotation-tooltip" :style="styleObject">
+    <label-tooltip v-if="showLabelTooltip" :annotations="hoveredAnnotations" :position="mouseDomPosition" inline-template>
+        <div v-if="hasAnnotations" class="annotation-tooltip" :style="styleObject">
             <ul class="annotation-tooltip__annotations">
-                <li v-for="annotation in annotations">
+                <li v-for="annotationLabel in annotationLabels">
                     <ul class="annotation-tooltip__labels">
-                        <li v-for="label in annotation.labels" v-text="label.label.name"></li>
+                        <li v-for="label in annotationLabel" v-text="label.label.name"></li>
                     </ul>
                 </li>
             </ul>
         </div>
-    </annotation-tooltip>
+    </label-tooltip>
+    <measure-tooltip v-if="showMeasureTooltip" :annotations="hoveredAnnotations" :position="mouseDomPosition" :image="image" :areas="imagesArea" inline-template>
+        <div v-if="hasAnnotations" class="annotation-tooltip" :style="styleObject">
+            <ul class="annotation-tooltip__annotations">
+                <li v-for="measure in measuredGeometries" v-text="measure"></li>
+            </ul>
+        </div>
+    </measure-tooltip>
     <div class="annotation-canvas__toolbar">
         <div class="btn-group">
             <control-button icon="fa-step-backward" :title="previousButtonTitle + ' 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'" v-on:click="handlePrevious"></control-button>

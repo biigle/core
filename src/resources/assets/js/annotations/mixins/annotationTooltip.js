@@ -3,7 +3,7 @@
  *
  * @type {Object}
  */
-biigle.$component('annotations.components.annotationTooltip', {
+biigle.$component('annotations.mixins.annotationTooltip', {
     props: {
         annotations: {
             required: true,
@@ -14,13 +14,8 @@ biigle.$component('annotations.components.annotationTooltip', {
             type: Array,
         },
     },
-    data: function () {
-        return {
-            delayPast: false,
-        };
-    },
     computed: {
-        shown: function () {
+        hasAnnotations: function () {
             return this.annotations.length > 0;
         },
         styleObject: function () {

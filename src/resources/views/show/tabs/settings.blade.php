@@ -29,7 +29,11 @@
             </div>
 
             <div class="sidebar-tab__section">
-                <power-button :active="annotationTooltip" title-off="Show annotation tooltip" title-on="Hide annotation tooltip" v-on:on="showAnnotationTooltip" v-on:off="hideAnnotationTooltip">Annotation Tooltip</power-button>
+                <power-button :active="labelTooltip" title-off="Show label tooltip" title-on="Hide label tooltip" v-on:on="showLabelTooltip" v-on:off="hideLabelTooltip">Label Tooltip</power-button>
+            </div>
+
+            <div class="sidebar-tab__section">
+                <power-button :active="measureTooltip" title-off="Show measure tooltip" title-on="Hide measure tooltip" v-on:on="showMeasureTooltip" v-on:off="hideMeasureTooltip">Measure Tooltip</power-button>
             </div>
 
             @mixin('annotationsSettingsTab')

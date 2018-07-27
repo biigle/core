@@ -124,8 +124,18 @@
         </p>
 
         <p>
-            The annotation tooltip switch controls the display of a tooltip that appears when you hover your cursor over annotations. The tooltip shows the names of the labels that are attached to these annotations.
+            The label tooltip switch controls the display of a tooltip that appears when you hover your cursor over annotations. The tooltip shows the names of the labels that are attached to these annotations.
         </p>
+
+        <p>
+            The measure tooltip switch controls the display of a tooltip that appears when you hover your cursor over annotations. The tooltip shows the length of line string or the area of rectangle, circle or polygon annotations. If image area information is available (via <a href="{{route('manual-tutorials', ['volumes', 'image-metadata'])}}">image metadata</a> or <a href="{{route('manual-tutorials', ['laserpoints', 'laserpoint-detection'])}}">laser point detection</a>), the length/area is shown in meters.
+        </p>
+
+        <div class="panel panel-warning">
+            <div class="panel-body text-warning">
+                Only one of the label or measure tooltips can be activated at the same time.
+            </div>
+        </div>
 
         @mixin('annotationsManualSidebarSettings')
     </div>

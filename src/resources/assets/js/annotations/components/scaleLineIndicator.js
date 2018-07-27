@@ -4,14 +4,9 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.scaleLineIndicator', {
+    mixins: [biigle.$require('annotations.mixins.measureComponent')],
     props: {
-        image: {
-            required: true,
-        },
         resolution: {
-            required: true,
-        },
-        areas: {
             required: true,
         },
     },
@@ -19,23 +14,14 @@ biigle.$component('annotations.components.scaleLineIndicator', {
         return {
             targetWidth: 100,
             leadingDigits: [1, 2, 5],
-            unitMultipliers: [1e+3, 1, 1e-2, 1e-3, 1e-6, 1e-9],
-            unitNames: ['km', 'm', 'cm', 'mm', 'µm', 'nm'],
         };
     },
     computed: {
-        area: function () {
-            if (this.areas && this.image && this.areas.hasOwnProperty(this.image.id)) {
-                return this.areas[this.image.id];
-            }
-
-            return -1;
+        scale: function () {
+            return this.targetWidth * this.scaleMultiplier;
         },
-        hasArea: function () {
-            return this.area !== -1;
-        },
-        pxWidthInMeter: function () {
-            return Math.sqrt(this.area / (this.image.width * this.image.height));
+        scalePowerOfTen: function () {
+            return this.powerOfTen(this.scale);
         },
         scaleMultiplier: function () {
             if (this.hasArea) {
@@ -44,32 +30,26 @@ biigle.$component('annotations.components.scaleLineIndicator', {
 
             return this.resolution || 0;
         },
-        scale: function () {
-            return this.targetWidth * this.scaleMultiplier;
-        },
-        powerOfTen: function () {
-            return Math.pow(10, Math.floor(Math.log10(this.scale)));
-        },
         scaleNearest: function () {
             var smallestIndex = 0;
             var smallestDistance = Infinity;
             for (var i = this.leadingDigits.length - 1; i >= 0; i--) {
-                var check = this.leadingDigits[i] * this.powerOfTen;
+                var check = this.leadingDigits[i] * this.scalePowerOfTen;
                 if (Math.abs(this.scale - check) < smallestDistance) {
                     smallestIndex = i;
                     smallestDistance = Math.abs(this.scale - check);
                 }
             }
 
-            return this.leadingDigits[smallestIndex] * this.powerOfTen;
+            return this.leadingDigits[smallestIndex] * this.scalePowerOfTen;
         },
         unitNearest: function () {
             var smallestIndex = 0;
             var smallestDistance = Infinity;
             for (var i = this.unitMultipliers.length - 1; i >= 0; i--) {
-                if (Math.abs(this.unitMultipliers[i] - this.powerOfTen) < smallestDistance) {
+                if (Math.abs(this.unitMultipliers[i] - this.scalePowerOfTen) < smallestDistance) {
                     smallestIndex = i;
-                    smallestDistance = Math.abs(this.unitMultipliers[i] - this.powerOfTen);
+                    smallestDistance = Math.abs(this.unitMultipliers[i] - this.scalePowerOfTen);
                 }
             }
 

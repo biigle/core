@@ -47,7 +47,8 @@ biigle.$viewModel('annotator-container', function (element) {
             annotationModeCarry: null,
             showMousePosition: false,
             showZoomLevel: false,
-            showAnnotationTooltip: false,
+            showLabelTooltip: false,
+            showMeasureTooltip: false,
             showMinimap: true,
             showScaleLine: false,
             imagesArea: null,
@@ -426,8 +427,11 @@ biigle.$viewModel('annotator-container', function (element) {
                     case 'scaleLine':
                         this.showScaleLine = value;
                         break;
-                    case 'annotationTooltip':
-                        this.showAnnotationTooltip = value;
+                    case 'labelTooltip':
+                        this.showLabelTooltip = value;
+                        break;
+                    case 'measureTooltip':
+                        this.showMeasureTooltip = value;
                         break;
                     case 'minimap':
                         this.showMinimap = value;
