@@ -302,8 +302,5 @@ class QuotesServiceProvider extends ServiceProvider {
    <p>
       If you have any questions or are looking for examples, take a look at the <a href="http://laravel.com/docs/5.4/packages">Laravel documentation</a> on package development or the existing BIIGLE modules of your installation.
    </p>
-   <p>
-      <a href="{{ route('manual-documentation') }}" class="btn btn-default" title="Back to the core documentation"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> back</a>
-   </p>
 </div>
 @endsection

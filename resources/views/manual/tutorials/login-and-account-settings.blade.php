@@ -11,7 +11,7 @@
             There are several ways that allow you to customize BIIGLE to your personal preferences. Some of these settings are valid only for the duration of a browser session. These settings are reset when you use another browser or when you clear your browser cache. Other settings are remembered permanently. This tutorial is about these permanent settings.
         </p>
         <p>
-            Permanent user settings are set in the <a href="/settings">settings menu</a>. You can reach the menu with a click on "Settings" in the main menu <i class="glyphicon glyphicon-menu-hamburger"></i>. There are four categories of settings:
+            Permanent user settings are set in the <a href="/settings">settings menu</a>. You can reach the menu with a click on "Settings" in the main menu <i class="fa fa-bars"></i>. There are four categories of settings:
         </p>
         <h3><a href="/settings/profile">Profile</a></h3>
         <p>

@@ -16,13 +16,13 @@
             <div class="navbar-right">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a href="{{route('search')}}" title="Search BIIGLE"><i class="glyphicon glyphicon-search"></i></a>
+                        <a href="{{route('search')}}" title="Search BIIGLE"><i class="fa fa-search"></i></a>
                     </li>
                     <li id="notifications-navbar-indicator" unread="{{$user->unreadNotifications()->count()}}">
-                        <a href="{{route('notifications')}}" class="notifications-icon" v-bind:title="title"><i class="glyphicon glyphicon-bell"></i><span class="notifications-icon__count badge" v-if="hasUnread" v-cloak v-text="unread"></span></a>
+                        <a href="{{route('notifications')}}" class="notifications-icon" v-bind:title="title"><i class="fa fa-bell"></i><span class="notifications-icon__count badge" v-if="hasUnread" v-cloak v-text="unread"></span></a>
                     </li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-menu-hamburger"></i> <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i> <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li class="dropdown-header">
                                 Signed in as <strong>{{ $user->firstname }} {{ $user->lastname }}</strong>

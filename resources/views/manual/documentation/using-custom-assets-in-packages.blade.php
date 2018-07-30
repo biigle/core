@@ -232,9 +232,5 @@ blockquote {
     <p>
         Congratulations! Now you know (almost) anything there is to know about developing custom packages for BIIGLE. What's still left is how you can implement your views so they can be extended yet by others. You have done it yourself, implementing the dashboard view mixin. There are a few things to keep in mind when registering your own areas for view mixins but we'll cover that in another tutorial.
     </p>
-
-    <p>
-        <a href="{{ route('manual-documentation') }}" class="btn btn-default" title="Back to the core documentation"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> back</a>
-    </p>
 </div>
 @endsection
