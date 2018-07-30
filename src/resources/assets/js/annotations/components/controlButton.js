@@ -39,9 +39,7 @@ biigle.$component('annotations.components.controlButton', {
             };
         },
         iconClass: function () {
-            if (this.icon.startsWith('glyphicon-')) {
-                return 'glyphicon ' + this.icon;
-            } else if (this.icon.startsWith('fa-')) {
+            if (this.icon.startsWith('fa-')) {
                 return 'fa ' + this.icon;
             }
 

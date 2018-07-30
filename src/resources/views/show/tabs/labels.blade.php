@@ -1,4 +1,4 @@
-<sidebar-tab name="labels" icon="fa-tags" title="Label trees">
+<sidebar-tab name="labels" icon="tags" title="Label trees">
     <labels-tab v-on:select="handleSelectedLabel" v-cloak inline-template>
         <div class="labels-tab">
             <div class="labels-tab__trees">

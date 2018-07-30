@@ -1,9 +1,9 @@
-<sidebar-tab name="settings" icon="fa-cog" title="Settings">
+<sidebar-tab name="settings" icon="cog" title="Settings">
     <settings-tab v-cloak v-on:change="handleSettingsChange" inline-template>
         <div class="annotator-tab">
             <div class="sidebar-tab__section">
                 <screenshot-button inline-template>
-                    <button class="btn btn-default" :title="screenshotTitle" :disabled="!screenshotSupported" v-on:click="capture"><span class="glyphicon glyphicon-camera" aria-hidden="true"></span> Capture screenshot</button>
+                    <button class="btn btn-default" :title="screenshotTitle" :disabled="!screenshotSupported" v-on:click="capture"><span class="fa fa-camera" aria-hidden="true"></span> Capture screenshot</button>
                 </screenshot-button>
             </div>
 

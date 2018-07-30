@@ -1,4 +1,4 @@
-<sidebar-tab name="annotations" icon="fa-map-marker-alt" title="Annotations" class="sidebar__tab--nopad" :highlight="hasAnnotationFilter">
+<sidebar-tab name="annotations" icon="map-marker-alt" title="Annotations" class="sidebar__tab--nopad" :highlight="hasAnnotationFilter">
     <annotations-tab :annotations="annotations" :filtered-annotations="filteredAnnotations" v-on:filter="handleFilter" ref="annotationsTab" v-cloak inline-template>
         <div class="annotations-tab">
             <annotations-filter :annotations="annotations" v-on:filter="bubbleFilter" inline-template>
@@ -7,8 +7,8 @@
                         <option v-for="filter in availableFilters" :value="filter" v-text="filter"></option>
                     </select>
                     <component :is="typeaheadComponent" :items="data" :value="selectedDataName" :placeholder="placeholder" v-on:select="selectData"></component>
-                    <button class="btn btn-info active" title="Clear annotation filter" v-if="active" v-on:click.prevent="deactivateFilter"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
-                    <button type="submit" class="btn btn-default" title="Filter annotations" v-else><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
+                    <button class="btn btn-info active" title="Clear annotation filter" v-if="active" v-on:click.prevent="deactivateFilter"><span class="fa fa-times" aria-hidden="true"></span></button>
+                    <button type="submit" class="btn btn-default" title="Filter annotations" v-else><span class="fa fa-filter" aria-hidden="true"></span></button>
                 </form>
             </annotations-filter>
             <ul class="annotations-tab__list list-unstyled" ref="scrollList">

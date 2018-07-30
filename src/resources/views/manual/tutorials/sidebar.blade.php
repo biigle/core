@@ -58,7 +58,7 @@
         <h4>Brightness/Contrast</h4>
 
         <p>
-            These are arguably the most important properties that can be adjusted on an image. Choose a brightness value larger than 0 to increase the brightness of the image. A value lower than 0 decreases the brightness. Adjusting the contrast works just the same. You can also adjust the brightness individually for each color channel of the image. Click on the <i class="glyphicon glyphicon-tasks"></i> button and the slider for the brightness will expand into three sliders for the red, green and blue color channels. Press the button again to get back to adjusting the brightness for all color channels at once.
+            These are arguably the most important properties that can be adjusted on an image. Choose a brightness value larger than 0 to increase the brightness of the image. A value lower than 0 decreases the brightness. Adjusting the contrast works just the same. You can also adjust the brightness individually for each color channel of the image. Click on the <i class="fa fa-sliders-h"></i> button and the slider for the brightness will expand into three sliders for the red, green and blue color channels. Press the button again to get back to adjusting the brightness for all color channels at once.
         </p>
 
         <h4>Hue</h4>
@@ -94,7 +94,7 @@
             The settings tab allows you to customize the annotation tool and provides some advanced features.
         </p>
         <p>
-            Click the <i class="glyphicon glyphicon-camera"></i> capture screenshot button to get a screenshot of the currently visible area as a downloadable image. Note that the screenshot does not include the whole image but only the visible area of your current viewport.
+            Click the <i class="fa fa-camera"></i> capture screenshot button to get a screenshot of the currently visible area as a downloadable image. Note that the screenshot does not include the whole image but only the visible area of your current viewport.
         </p>
 
         <div class="panel panel-warning">
