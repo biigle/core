@@ -1,8 +1,8 @@
 {
   "private": true,
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.2.0",
     "bootstrap-sass": "^3.3.7",
-    "font-awesome": "^4.7.0",
     "gulp": "^3.9.1",
     "gulp-apidoc": "~0.1.2",
     "gulp-helpers": "git+https://github.com/mzur/gulp-helpers.git#v1.1.0",

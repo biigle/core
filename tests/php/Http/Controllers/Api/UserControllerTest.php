@@ -224,11 +224,14 @@ class UserControllerTest extends ApiTestCase
         $response = $this->put('/api/v1/users/'.$this->guest()->id, [
             'firstname' => 'jack',
             'lastname' => 'jackson',
+            // Also check if password can be nullable.
+            'password' => '',
         ]);
         $response->assertRedirect('/');
 
         $this->assertEquals('jack', $this->guest()->fresh()->firstname);
         $this->assertEquals('jackson', $this->guest()->fresh()->lastname);
+        $this->assertNotEquals('', $this->guest()->fresh()->password);
     }
 
     public function testUpdateEmailCaseInsensitive()
