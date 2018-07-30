@@ -3,8 +3,8 @@
         Annotation sessions
         <span class="pull-right">
             <loader :active="loading"></loader>
-            <a class="btn btn-default btn-xs" href="{{route('manual-tutorials', ['volumes', 'annotation-sessions'])}}" title="Learn more on annotation sessions" target="_blank"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
-            <button class="btn btn-default btn-xs" title="Edit annotation sessions" v-on:click="toggleEditing" :class="{active: editing}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+            <a class="btn btn-default btn-xs" href="{{route('manual-tutorials', ['volumes', 'annotation-sessions'])}}" title="Learn more on annotation sessions" target="_blank"><span class="fa fa-info-circle" aria-hidden="true"></span></a>
+            <button class="btn btn-default btn-xs" title="Edit annotation sessions" v-on:click="toggleEditing" :class="{active: editing}"><span class="fa fa-pencil-alt" aria-hidden="true"></span></button>
         </span>
     </div>
     <div class="panel-body" v-cloak v-if="editing">

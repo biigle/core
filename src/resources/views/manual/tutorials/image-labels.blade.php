@@ -14,7 +14,7 @@
         <h3>Attach image labels</h3>
 
         <p>
-            Image labels are attached and modified in the volume overview. To activate the image labelling mode, click the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-tags"></i></button> button in the sidebar on the left. This expands the label trees tab that you may already know from the annotation tool. You might also notice, that you can no longer click on the images to get to the annotation tool. This is not possible in the image labelling mode.
+            Image labels are attached and modified in the volume overview. To activate the image labelling mode, click the <button class="btn btn-default btn-xs"><i class="fa fa-tags"></i></button> button in the sidebar on the left. This expands the label trees tab that you may already know from the annotation tool. You might also notice, that you can no longer click on the images to get to the annotation tool. This is not possible in the image labelling mode.
         </p>
 
         <p>
@@ -29,7 +29,7 @@
         <h3>View image labels</h3>
 
         <p>
-            To view the labels attached to an image, click the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-tag"></i></button> button that appears when you hover your cursor over the image. This will show the list of all attached labels. Click the <button class="close" style="float: none;">×</button> button next to an image label to detach it.
+            To view the labels attached to an image, click the <button class="btn btn-default btn-xs"><i class="fa fa-tag"></i></button> button that appears when you hover your cursor over the image. This will show the list of all attached labels. Click the <button class="close" style="float: none;">×</button> button next to an image label to detach it.
         </p>
 
         <p class="text-center">
@@ -39,7 +39,7 @@
         <h3>Filter by image label</h3>
 
         <p>
-            Images can be filtered by image label in the volume overview. This can help you to quickly find, explore and annotate those images of a large volume that are relevant to you. To filter images by label, open the filter tab in the volume overview with a click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-filter"></i></button> button in the sidebar. Now select the "image label" filter from the dropdown menu and enter the name of the image label in the field below. Finally, click <button class="btn btn-default btn-xs">Add rule</button> to activate the new filter rule. Of course you can combine this with other filter rules, too.
+            Images can be filtered by image label in the volume overview. This can help you to quickly find, explore and annotate those images of a large volume that are relevant to you. To filter images by label, open the filter tab in the volume overview with a click on the <button class="btn btn-default btn-xs"><i class="fa fa-filter"></i></button> button in the sidebar. Now select the "image label" filter from the dropdown menu and enter the name of the image label in the field below. Finally, click <button class="btn btn-default btn-xs">Add rule</button> to activate the new filter rule. Of course you can combine this with other filter rules, too.
         </p>
 
         @mixin('volumesManualImageLabels')

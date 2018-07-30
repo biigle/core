@@ -2,15 +2,15 @@
     <div class="filter-tab">
         <div class="filter-tab__buttons">
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" title="Show only images matching the filter rules" :class="{active: inFilterMode}" v-on:click="activateFilterMode"><span class="glyphicon glyphicon-filter" aria-hidden="true"></span></button>
-                <button type="button" class="btn btn-default" title="Show all images but flag those matching the filter rules" :class="{active: inFlagMode}" v-on:click="activateFlagMode"><span class="glyphicon glyphicon-flag" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" title="Show only images matching the filter rules" :class="{active: inFilterMode}" v-on:click="activateFilterMode"><span class="fa fa-filter" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" title="Show all images but flag those matching the filter rules" :class="{active: inFlagMode}" v-on:click="activateFlagMode"><span class="fa fa-flag" aria-hidden="true"></span></button>
             </div>
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-default" title="Use the 'and' operator for filter rules" :class="{active: usesAndOperator}" v-on:click="activateAndOperator">and</button>
                 <button type="button" class="btn btn-default" title="Use the 'or' operator for filter rules" :class="{active: usesOrOperator}" v-on:click="activateOrOperator">or</button>
             </div>
             <div class="btn-group pull-right" role="group">
-                <button type="button" class="btn btn-default" title="Clear all filter rules" v-on:click="reset"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" title="Clear all filter rules" v-on:click="reset"><span class="fa fa-times" aria-hidden="true"></span></button>
             </div>
         </div>
 

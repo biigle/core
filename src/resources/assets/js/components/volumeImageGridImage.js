@@ -15,11 +15,11 @@ biigle.$component('volumes.components.volumeImageGridImage', {
         '<img v-else @click="handleClick" :src="url || emptyUrl" @error="showEmptyImage">' +
         '<div class="image-buttons">' +
             '<a v-if="image.imageUrl" :href="image.imageUrl" class="image-button" title="View image information">' +
-                '<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>' +
+                '<span class="fa fa-info-circle" aria-hidden="true"></span>' +
             '</a>' +
             '<button @click="toggleImageLabels" class="image-button" title="Show image labels">' +
                 '<loader v-if="!imageLabelsLoaded" :active="loading"></loader>' +
-                '<span v-if="!loading" class="glyphicon glyphicon-tag" aria-hidden="true"></span>' +
+                '<span v-if="!loading" class="fa fa-tag" aria-hidden="true"></span>' +
             '</button>' +
         '</div>' +
         '<div v-if="imageLabelsLoaded && showImageLabels" class="image-labels" @wheel.stop>' +

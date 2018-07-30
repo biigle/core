@@ -54,13 +54,13 @@
             Moving a "page" up/down means that you advance as many rows in the grid backward/forward as are currently displayed.
         </p>
         <p>
-            As you might have noticed, there is a progress bar at the right of the volume overview. This bar works similar to a scroll bar and shows your current position in the volume. You can click or drag the bar to instantly jump to another position in the volume. You can also use the buttons to scroll rows (<i class="glyphicon glyphicon-triangle-left"></i>, <i class="glyphicon glyphicon-triangle-right"></i>), pages (<i class="glyphicon glyphicon-step-backward"></i>, <i class="glyphicon glyphicon-step-forward"></i>), or jump to the first (<i class="glyphicon glyphicon-fast-backward"></i>) or last (<i class="glyphicon glyphicon-fast-forward"></i>) row.
+            As you might have noticed, there is a progress bar at the right of the volume overview. This bar works similar to a scroll bar and shows your current position in the volume. You can click or drag the bar to instantly jump to another position in the volume. You can also use the buttons to scroll rows (<i class="fa fa-chevron-up"></i>, <i class="fa fa-chevron-down"></i>), pages (<i class="fa fa-step-backward fa-rotate-90"></i>, <i class="fa fa-step-forward fa-rotate-90"></i>), or jump to the first (<i class="fa fa-fast-backward fa-rotate-90"></i>) or last (<i class="fa fa-fast-forward fa-rotate-90"></i>) row.
         </p>
 
         <h3>Filter the images</h3>
 
         <p>
-            If you are looking for images with special properties (like a certain filename or containing a certain annotation), chances are that you can use a filter to find them. Image filtering can be done in the filter tab <i class="glyphicon glyphicon-filter"></i> of the sidebar at the left of the volume overview. An image filter consists of one or more filter rules. Most of the time you only need one filter rule but you can create more complex filters, too. Follow these steps to create a filter rule:
+            If you are looking for images with special properties (like a certain filename or containing a certain annotation), chances are that you can use a filter to find them. Image filtering can be done in the filter tab <i class="fa fa-filter"></i> of the sidebar at the left of the volume overview. An image filter consists of one or more filter rules. Most of the time you only need one filter rule but you can create more complex filters, too. Follow these steps to create a filter rule:
         </p>
         <ol>
             <li>Choose whether you are looking for an image which "has" or "has no" property that you want to filter by. You can look for an image which "has" a certain filename or one that "has no" image labels attached to it, for example.</li>
@@ -69,16 +69,16 @@
             <li>Last, click <button class="btn btn-default btn-xs">Add rule</button> to activate the filter rule. It will be added to the list of filter rules that define your image filter.</li>
         </ol>
         <p>
-            Whenever a new rule is added to the image filter, the images displayed in the image grid are instantly updated. Only images matching <em>all</em> filter rules are displayed. Alternatively, you can switch to the <button class="btn btn-default btn-xs">or</button> mode, where images are displayed which match only <em>one or more</em> of the filter rules. You can remove a filter rule with a click on the <button type="button" class="close" style="float:none;"><span aria-hidden="true">&times;</span></button> button next to it. Reset all filters with a click on <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>.
+            Whenever a new rule is added to the image filter, the images displayed in the image grid are instantly updated. Only images matching <em>all</em> filter rules are displayed. Alternatively, you can switch to the <button class="btn btn-default btn-xs">or</button> mode, where images are displayed which match only <em>one or more</em> of the filter rules. You can remove a filter rule with a click on the <button type="button" class="close" style="float:none;"><span aria-hidden="true">&times;</span></button> button next to it. Reset all filters with a click on <button class="btn btn-default btn-xs"><span class="fa fa-times" aria-hidden="true"></span></button>.
         </p>
         <p>
-            As an alternative to the image filter mode (<button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-filter"></i></button>), where only images are shown that match the image filter, there is the image flagging mode (<button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-flag"></i></button>). In this mode all images are shown but those matching the image filter will get flagged with a blue dot.
+            As an alternative to the image filter mode (<button class="btn btn-default btn-xs"><i class="fa fa-filter"></i></button>), where only images are shown that match the image filter, there is the image flagging mode (<button class="btn btn-default btn-xs"><i class="fa fa-flag"></i></button>). In this mode all images are shown but those matching the image filter will get flagged with a blue dot.
         </p>
 
         <h3>Sort the images</h3>
 
         <p>
-            You can sort the images in the sorting tab <i class="glyphicon glyphicon-sort"></i> of the sidebar at the left of the volume overview. The sorting tab shows a list of available properties to sort by. Click on an item in the list to sort by this property. By default, the images are sorted by their filename in ascending order. You can switch between sorting in ascending (<button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-sort-by-attributes"></i></button>) and descending (<button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-sort-by-attributes-alt"></i></button>) order with a click on the respective buttons. Reset sorting with a click on <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>.
+            You can sort the images in the sorting tab <i class="fa fa-exchange-alt fa-rotate-90"></i> of the sidebar at the left of the volume overview. The sorting tab shows a list of available properties to sort by. Click on an item in the list to sort by this property. By default, the images are sorted by their filename in ascending order. You can switch between sorting in ascending (<button class="btn btn-default btn-xs"><i class="fa fa-sort-amount-up"></i></button>) and descending (<button class="btn btn-default btn-xs"><i class="fa fa-sort-amount-down"></i></button>) order with a click on the respective buttons. Reset sorting with a click on <button class="btn btn-default btn-xs"><span class="fa fa-times" aria-hidden="true"></span></button>.
         </p>
 
         <div class="panel panel-info">

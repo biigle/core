@@ -23,7 +23,7 @@
 @if($project->volumes()->count() > 3)
     <div class="col-xs-12 col-sm-6 col-md-3 dashboard__more-volumes">
         <a href="{{route('project', $project->id)}}" class="" title="Show all volumes">
-            <span class="glyphicon glyphicon-option-horizontal" aria-hidden="true"></span>
+            <span class="fa fa-ellipsis-h" aria-hidden="true"></span>
         </a>
     </div>
 @endif

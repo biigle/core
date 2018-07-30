@@ -40,7 +40,7 @@
 <div id="volume-container" class="volume-container">
     <sidebar direction="left" v-on:toggle="handleSidebarToggle" v-on:open="handleSidebarOpen" v-on:close="handleSidebarClose">
         @can ('update', $volume)
-            <sidebar-tab name="edit" icon="pencil" title="Edit this volume" href="{{ route('volume-edit', $volume->id) }}"></sidebar-tab>
+            <sidebar-tab name="edit" icon="pencil-alt" title="Edit this volume" href="{{ route('volume-edit', $volume->id) }}"></sidebar-tab>
         @endcan
         @can ('edit-in', $volume)
             <sidebar-tab name="labels" icon="tags" title="Toggle image label mode">
@@ -50,7 +50,7 @@
         <sidebar-tab name="filter" icon="filter" title="Filter images" :highlight="filterActive">
             @include('volumes::show.filters')
         </sidebar-tab>
-        <sidebar-tab name="sorting" icon="sort" title="Sort images" :highlight="sortingActive">
+        <sidebar-tab name="sorting" icon="exchange-alt fa-rotate-90" title="Sort images" :highlight="sortingActive">
             @include('volumes::show.sorting')
         </sidebar-tab>
         @mixin('volumesSidebar')

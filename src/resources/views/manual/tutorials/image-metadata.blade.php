@@ -96,7 +96,7 @@ image_1.png,2016-12-19 17:09:00,52.112,28.001,-1500.5,30.25,2.6
 image_2.png,2016-12-19 17:09:31,52.215,28.501,-1502.5,28.25,2.1
 </pre>
         <p>
-            The image metadata CSV file can be uploaded by volume admins on the volume edit page that you can reach with the <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button> button of the volume overview.
+            The image metadata CSV file can be uploaded by volume admins on the volume edit page that you can reach with the <button class="btn btn-default btn-xs"><span class="fa fa-pencil-alt" aria-hidden="true"></span></button> button of the volume overview.
         </p>
     </div>
 @endsection

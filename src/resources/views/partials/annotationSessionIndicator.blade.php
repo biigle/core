@@ -1,6 +1,6 @@
 @if ($session = $volume->getActiveAnnotationSession(auth()->user()))
     <popover id="annotation-session-indicator" placement="bottom" title="Active annotation session">
-        <button class="btn btn-info btn-xs" title="Active annotation session '{{$session->name}}'"><span class="glyphicon glyphicon-time" aria-hidden="true" ></span></button>
+        <button class="btn btn-info btn-xs" title="Active annotation session '{{$session->name}}'"><span class="fa fa-clock" aria-hidden="true" ></span></button>
         <div slot="content" v-cloak>
             <div>
                 <strong>{{$session->name}}</strong><br>

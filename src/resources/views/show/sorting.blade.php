@@ -2,11 +2,11 @@
     <div class="sorting-tab">
         <div class="sorting-tab__buttons">
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" title="Sort ascending" :class="{active: isSortedAscending}" v-on:click="sortAscending"><span class="glyphicon glyphicon-sort-by-attributes" aria-hidden="true"></span></button>
-                <button type="button" class="btn btn-default" title="Sort descending" :class="{active: isSortedDescending}" v-on:click="sortDescending"><span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" title="Sort ascending" :class="{active: isSortedAscending}" v-on:click="sortAscending"><span class="fa fa-sort-amount-up" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" title="Sort descending" :class="{active: isSortedDescending}" v-on:click="sortDescending"><span class="fa fa-sort-amount-down" aria-hidden="true"></span></button>
             </div>
             <div class="btn-group pull-right" role="group">
-                <button type="button" class="btn btn-default" title="Reset sorting" v-on:click="reset"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-default" title="Reset sorting" v-on:click="reset"><span class="fa fa-times" aria-hidden="true"></span></button>
             </div>
         </div>
 

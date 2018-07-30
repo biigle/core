@@ -4,7 +4,7 @@
         <span class="pull-right">
             {{-- put image filter toggle here --}}
             <loader :active="loading"></loader>
-            <button class="btn btn-default btn-xs" title="Add new images" v-on:click="toggleEditing" :class="{active: editing}"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+            <button class="btn btn-default btn-xs" title="Add new images" v-on:click="toggleEditing" :class="{active: editing}"><span class="fa fa-plus" aria-hidden="true"></span></button>
         </span>
     </div>
     <div class="panel-body" v-if="editing" v-cloak>
