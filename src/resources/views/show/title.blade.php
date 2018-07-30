@@ -23,7 +23,7 @@
             </div>
         </form>
         <h2 v-else>
-            <small class="text-muted glyphicon glyphicon-lock" @if(!$private) v-cloak @endif aria-hidden="true" title="This label tree is private" v-if="isPrivate"></small>
+            <span class="text-muted fa fa-lock" @if(!$private) v-cloak @endif aria-hidden="true" title="This label tree is private" v-if="isPrivate"></span>
             <span v-text="name">{{$tree->name}}</span>
             <span v-if="hasDescription" @if(!$tree->description) v-cloak @endif>
                 <br><small v-text="description">{{$tree->description}}</small>
@@ -37,7 +37,7 @@
                 </span>
             @endcan
             @if($private)
-                <small class="text-muted glyphicon glyphicon-lock" aria-hidden="true" title="This label tree is private"></small>
+                <span class="text-muted fa fa-lock" aria-hidden="true" title="This label tree is private"></span>
             @endif
             {{$tree->name}}
             @if($tree->description)

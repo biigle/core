@@ -3,7 +3,7 @@
         Authorized Projects
         <span class="pull-right">
             <loader :active="loading"></loader>
-            <button class="btn btn-default btn-xs" title="Edit authorized projects" v-on:click="toggleEditing" :class="{active: editing}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+            <button class="btn btn-default btn-xs" title="Edit authorized projects" v-on:click="toggleEditing" :class="{active: editing}"><span class="fa fa-pencil-alt" aria-hidden="true"></span></button>
         </span>
     </div>
     <div v-if="editing" v-cloak class="panel-body">

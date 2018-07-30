@@ -6,7 +6,7 @@
             <small class="pull-right text-muted">Updated on {{$tree->updated_at->toFormattedDateString()}}</small>
             <span class="search-results__name">
                 @if ($tree->visibility_id === Biigle\Visibility::$private->id)
-                    <small class="text-muted glyphicon glyphicon-lock" title="This label tree is private"></small>
+                    <span class="text-muted fa fa-lock" title="This label tree is private"></span>
                 @endif
                 <a href="{{route('label-trees', $tree->id)}}">{{$tree->name}}</a>
             </span><br>

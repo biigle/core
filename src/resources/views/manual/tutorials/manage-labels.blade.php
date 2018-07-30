@@ -11,7 +11,7 @@
         </p>
 
         <p>
-            The labels of a label tree can only be modified by label tree <a href="{{route('manual-tutorials', ['label-trees', 'about'])}}#members">members</a>. To create labels, click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the labels panel. This will show you two tabs which are the two ways to create new labels: manually and by WoRMS import.
+            The labels of a label tree can only be modified by label tree <a href="{{route('manual-tutorials', ['label-trees', 'about'])}}#members">members</a>. To create labels, click on the <button class="btn btn-default btn-xs"><i class="fa fa-pencil-alt"></i></button> button of the labels panel. This will show you two tabs which are the two ways to create new labels: manually and by WoRMS import.
         </p>
 
         <h3><a name="manually"></a>Create labels manually</h3>
@@ -21,7 +21,7 @@
         </p>
 
         <p>
-            The "Manual" tab shows three controls: the color chooser, the label parent chooser and the field to enter the new label name. To create your first label, choose a color with the color picker (click on the colored rectangle) or get a random color with a click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-refresh"></i></button> button. Next, enter the new label name and hit enter.
+            The "Manual" tab shows three controls: the color chooser, the label parent chooser and the field to enter the new label name. To create your first label, choose a color with the color picker (click on the colored rectangle) or get a random color with a click on the <button class="btn btn-default btn-xs"><i class="fa fa-sync-alt"></i></button> button. Next, enter the new label name and hit enter.
         </p>
         <p>
             Once there is a label in the tree, you can (but don't have to) create child labels for it. To do this, select the label in the tree. Its name will appear in the label parent chooser. Alternatively you can enter the name of the parent label in the parent label chooser, too. This is particularly useful for large label trees. When you select a parent label, the selected color will automatically change to the one of the selected label. You can either re-use the same color for child labels or select a new color at this point. Finally, enter the name of the child label and hit enter.
@@ -55,13 +55,13 @@
         </p>
 
         <p>
-            Now you have three options to import the found species as new labels. The simplest is to click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-plus"></i></button> button of the species you want to import. This will add the species as a new root label to the label tree.
+            Now you have three options to import the found species as new labels. The simplest is to click on the <button class="btn btn-default btn-xs"><i class="fa fa-plus"></i></button> button of the species you want to import. This will add the species as a new root label to the label tree.
         </p>
         <p>
-            The next option is to add a found species as a child label. Similar to creating labels manually, you first select an existing label from the label tree as parent and then click the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-plus"></i></button> button of the species you want to import.
+            The next option is to add a found species as a child label. Similar to creating labels manually, you first select an existing label from the label tree as parent and then click the <button class="btn btn-default btn-xs"><i class="fa fa-plus"></i></button> button of the species you want to import.
         </p>
         <p>
-            The last and most powerful option is the recursive import. This will import the found species and the <em>whole hierarchy</em> of parent labels from WoRMS. If you take the genus "Kolga" from the image above, for example, this would include the labels Biota, Animalia, Echinodermata, Holothuroidea, Elasipodida, Elpidiidae and Kolga! To perform a recursive import, click the <button class="btn btn-default btn-xs">recursive</button> button first and then the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-plus"></i></button> button of the species you want to import.
+            The last and most powerful option is the recursive import. This will import the found species and the <em>whole hierarchy</em> of parent labels from WoRMS. If you take the genus "Kolga" from the image above, for example, this would include the labels Biota, Animalia, Echinodermata, Holothuroidea, Elasipodida, Elpidiidae and Kolga! To perform a recursive import, click the <button class="btn btn-default btn-xs">recursive</button> button first and then the <button class="btn btn-default btn-xs"><i class="fa fa-plus"></i></button> button of the species you want to import.
         </p>
         <p>
             The recursive import respects previously imported labels, too. Just keep the <button class="btn btn-default btn-xs">recursive</button> button activated, import labels and they will be placed at their appropriate position in the tree.
@@ -81,11 +81,11 @@
         </div>
 
         <p>
-            To modify an existing label, first click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the labels panel. This will make a <i class="glyphicon glyphicon-pencil"></i> symbol appear on the right of each label in the tree. Click this symbol to switch a label into edit mode.
+            To modify an existing label, first click on the <button class="btn btn-default btn-xs"><i class="fa fa-pencil-alt"></i></button> button of the labels panel. This will make a <i class="fa fa-pencil-alt"></i> symbol appear on the right of each label in the tree. Click this symbol to switch a label into edit mode.
         </p>
 
         <p>
-            In edit mode, the color and name of the label are editable. Choose a new color or name and click the <i class="glyphicon glyphicon-ok text-success"></i> symbol to save the changes. To revert unsaved changes and exit edit mode, click <i class="glyphicon glyphicon-remove"></i>. To delete a label from the label tree, click the <i class="glyphicon glyphicon-trash text-danger"></i> symbol. Only labels that have no child labels and that are not attached to an image or an annotation can be deleted.
+            In edit mode, the color and name of the label are editable. Choose a new color or name and click the <i class="fa fa-check text-success"></i> symbol to save the changes. To revert unsaved changes and exit edit mode, click <i class="fa fa-times"></i>. To delete a label from the label tree, click the <i class="fa fa-trash text-danger"></i> symbol. Only labels that have no child labels and that are not attached to an image or an annotation can be deleted.
         </p>
 
         <p>

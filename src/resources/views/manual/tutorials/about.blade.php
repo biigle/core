@@ -31,7 +31,7 @@
         <h3><a name="members"></a>Members</h3>
 
         <p>
-            The labels of a label tree can only be modified by label tree members. Each member has one of two roles: admin or editor. To modify label tree members you must be admin for the label tree. Click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the members panel to modify members. Enter a username and choose a role to add a new member. Choose a new user role for existing members to modify them. Click the <strong>&times;</strong> button to remove a member.
+            The labels of a label tree can only be modified by label tree members. Each member has one of two roles: admin or editor. To modify label tree members you must be admin for the label tree. Click on the <button class="btn btn-default btn-xs"><i class="fa fa-pencil-alt"></i></button> button of the members panel to modify members. Enter a username and choose a role to add a new member. Choose a new user role for existing members to modify them. Click the <strong>&times;</strong> button to remove a member.
         </p>
         <p>
             A label tree <strong>editor</strong> can view the label tree even if it is private. Also, they can create and modify labels of the tree.
@@ -49,7 +49,7 @@
             A label tree can be attached to one or more projects. The label tree overview shows a list of all projects to which the label tree is attached <em>and</em> where you are a member of. Note that this list might not show you all projects that use the label tree, even if you are admin of the label tree.
         </p>
         <p>
-            If a label tree is private only authorized projects may attach it. Label tree admins can control which projects are authorized and which aren't. To add an authorized project, click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the authorized projects panel, enter the project name and hit enter. You can only authorize a project where you are a member of. Click the <strong>&times;</strong> button to remove authorization of a project. If a label tree is attached to a project of which the authorization is removed, the label tree will be automatically detached as well.
+            If a label tree is private only authorized projects may attach it. Label tree admins can control which projects are authorized and which aren't. To add an authorized project, click on the <button class="btn btn-default btn-xs"><i class="fa fa-pencil-alt"></i></button> button of the authorized projects panel, enter the project name and hit enter. You can only authorize a project where you are a member of. Click the <strong>&times;</strong> button to remove authorization of a project. If a label tree is attached to a project of which the authorization is removed, the label tree will be automatically detached as well.
         </p>
 
         <h3><a name="modify-a-label-tree"></a>Modify a label tree</h3>

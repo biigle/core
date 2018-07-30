@@ -7,7 +7,7 @@
             <div class="input-group">
                 <input type="color" class="form-control" title="Label color" v-model="selectedColor" />
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" title="Get a random color" v-on:click="refreshColor"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+                    <button class="btn btn-default" type="button" title="Get a random color" v-on:click="refreshColor"><span class="fa fa-sync-alt" aria-hidden="true"></span></button>
                 </span>
             </div>
         </div>
@@ -15,7 +15,7 @@
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Label name" title="WoRMS label name" v-model="selectedName" />
                 <span class="input-group-btn">
-                    <button class="btn btn-success" type="submit" title="Find a label from WoRMS" :disabled="hasNoName"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                    <button class="btn btn-success" type="submit" title="Find a label from WoRMS" :disabled="hasNoName"><span class="fa fa-search fa-fw" aria-hidden="true"></span></button>
                 </span>
             </div>
         </div>
@@ -33,7 +33,7 @@
             <div class="input-group">
                 <typeahead class="typeahead--block" placeholder="Label parent" :disabled="hasNoLabels" title="Parent label" :items="labels" :value="selectedParent" v-on:select="selectLabel" ></typeahead>
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" title="Reset parent" v-on:click="resetParent" v-bind:disabled="hasNoParent"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                    <button class="btn btn-default" type="button" title="Reset parent" v-on:click="resetParent" v-bind:disabled="hasNoParent"><span class="fa fa-times fa-fw" aria-hidden="true"></span></button>
                 </span>
             </div>
         </div>
@@ -44,7 +44,7 @@
                         <small class="text-muted" v-text="classification"></small>
                         <div class="clearfix">
                             <span class="pull-right">
-                                <button class="btn btn-default btn-xs" v-on:click.prevent="select" :title="buttonTitle" :disabled="selected"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                                <button class="btn btn-default btn-xs" v-on:click.prevent="select" :title="buttonTitle" :disabled="selected"><span class="fa fa-plus" aria-hidden="true"></span></button>
                             </span>
                             <span v-text="item.rank"></span>:
                             <a :href="item.url" target="_blank" title="Show WoRMS page">
