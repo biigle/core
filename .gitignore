@@ -8,6 +8,7 @@ tmp
 storage/largo_patches
 
 npm-debug.log
+package-lock.json
 .env
 *.sublime-*
 *.phar
