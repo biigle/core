@@ -59,6 +59,10 @@
             color: white;
             cursor: pointer;
             background-color: $gray-lighter;
+
+            .label-tree-label__favourite {
+                display: inline-block;
+            }
         }
     }
 
@@ -87,4 +91,15 @@
             }
         }
     }
+
+    .label-tree-label__favourite {
+        color: $gray-light;
+        display: none;
+
+        &:hover, &.selected {
+            color: inherit;
+            display: inline-block;
+        }
+    }
+
 }

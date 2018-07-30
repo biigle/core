@@ -18,8 +18,8 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
                 '<span v-text="label.name" @click.stop="toggleSelect" @mouseenter="dontHover"></span>' +
             '</span>' +
             '<span class="label-tree-label__buttons">' +
-                '<button v-if="showFavourites" type="button" class="label-tree-label__favourite" @click.stop="toggleFavourite" :title="favouriteTitle">' +
-                    '<span class="glyphicon" :class="favouriteClass" aria-hidden="true" title=""></span>' +
+                '<button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle">' +
+                    '<span class="fa fa-star" aria-hidden="true" title=""></span>' +
                 '</button>' +
                 '<button v-if="editable && !editing" :title="editTitle" @click.stop="editThis"><span aria-hidden="true" class="glyphicon glyphicon-pencil"></span></button>' +
                 '<button v-if="editing" class="text-danger" :title="deleteTitle" @click.stop="deleteThis"><span aria-hidden="true" class="glyphicon glyphicon-trash"></span></button>' +
@@ -88,8 +88,7 @@ biigle.$component('labelTrees.components.labelTreeLabel', {
         },
         favouriteClass: function () {
             return {
-                'glyphicon-star-empty': !this.label.favourite,
-                'glyphicon-star': this.label.favourite,
+                'selected': this.label.favourite,
             };
         },
         favouriteTitle: function () {
