@@ -1,4 +1,4 @@
-<sidebar-tab name="settings" icon="cog" title="Settings">
+<sidebar-tab name="settings" icon="fa-cog" title="Settings">
     <settings-tab v-cloak v-on:change="handleSettingsChange" inline-template>
         <div class="annotator-tab">
             <div class="sidebar-tab__section">

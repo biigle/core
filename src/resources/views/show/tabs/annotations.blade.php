@@ -1,4 +1,4 @@
-<sidebar-tab name="annotations" icon="map-marker" title="Annotations" class="sidebar__tab--nopad" :highlight="hasAnnotationFilter">
+<sidebar-tab name="annotations" icon="fa-map-marker-alt" title="Annotations" class="sidebar__tab--nopad" :highlight="hasAnnotationFilter">
     <annotations-tab :annotations="annotations" :filtered-annotations="filteredAnnotations" v-on:filter="handleFilter" ref="annotationsTab" v-cloak inline-template>
         <div class="annotations-tab">
             <annotations-filter :annotations="annotations" v-on:filter="bubbleFilter" inline-template>

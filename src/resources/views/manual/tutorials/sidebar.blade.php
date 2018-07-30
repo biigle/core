@@ -8,7 +8,7 @@
             All sidebar tabs of the annotation tool explained.
         </p>
 
-        <h3><a name="annotations-tab"></a> <i class="fa fa-map-marker"></i> Annotations</h3>
+        <h3><a name="annotations-tab"></a> <i class="fa fa-map-marker-alt"></i> Annotations</h3>
 
         <p>
             The annotations tab shows a list of all annotations on the current image, grouped by their label. A click on a label expands the list item to show all annotations that have this label attached. Each annotation is represented by the icon of the shape of the annotation and the user who attached the label to the annotation. A click on an annotation list item selects the annotation. A selected annotation is highlighted both on the image an in the annotations list. A double click on an annotation in the list will make the viewport pan and zoom to show the annotation on the image.
@@ -29,7 +29,7 @@
         <h3><a name="label-trees-tab"></a> <i class="fa fa-tags"></i> Label Trees</h3>
 
         <p>
-            The label trees tab shows all label trees that are available for the image. Here you can find and choose the labels you want to attach to new or existing annotations. Use the search field at the top to quickly find labels of deeply nested label trees. Mark up to ten labels as favorites to quickly select them with the <code>0</code>-<code>9</code> keys of your keyboard. To select a label as favorite, click the <i class="fa fa-star-o"></i> icon next to the label in the label tree. Now it will appear in the "Favorites" label tree at the top and can be selected with a shortcut key. Click the <i class="fa fa-star"></i> icon of a favorite label to remove it from the favorites.
+            The label trees tab shows all label trees that are available for the image. Here you can find and choose the labels you want to attach to new or existing annotations. Use the search field at the top to quickly find labels of deeply nested label trees. Mark up to ten labels as favorites to quickly select them with the <code>0</code>-<code>9</code> keys of your keyboard. To select a label as favorite, click the <i class="fa fa-star"></i> icon next to the label in the label tree. Now it will appear in the "Favorites" label tree at the top and can be selected with a shortcut key. Click the <i class="fa fa-star"></i> icon of a favorite label again to remove it from the favorites.
         </p>
 
         @mixin('annotationsManualSidebarLabelTrees')

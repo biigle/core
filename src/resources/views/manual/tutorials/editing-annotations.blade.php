@@ -26,7 +26,7 @@
             <a href="{{asset('vendor/annotations/images/manual/editing_annotations_modify_3.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/editing_annotations_modify_3.jpg')}}" width="32%"></a>
         </p>
 
-        <h3><a name="move-annotations"></a><i class="fa fa-arrows"></i> Move Annotations</h3>
+        <h3><a name="move-annotations"></a><i class="fa fa-arrows-alt"></i> Move Annotations</h3>
 
         <p>
             To move an annotation as a whole, activate the move annotations tool in the toolbar. Next, select the annotation to move with a click. Now you are able to drag this annotation as a whole to a new position.
@@ -47,14 +47,14 @@
         <h3><a name="detach-labels"></a>Detach Labels</h3>
 
         <p>
-            You can see all labels attached to an annotation if you select the annotation (click on it) and open the <i class="fa fa-map-marker"></i> annotations tab in the sidebar. To detach a label from an annotation, click on the "&times;" symbol next to your name. Note that the whole annotation will be deleted if you detach its last label.
+            You can see all labels attached to an annotation if you select the annotation (click on it) and open the <i class="fa fa-map-marker-alt"></i> annotations tab in the sidebar. To detach a label from an annotation, click on the "&times;" symbol next to your name. Note that the whole annotation will be deleted if you detach its last label.
         </p>
 
         <p class="text-center">
             <a href="{{asset('vendor/annotations/images/manual/editing_annotations_2.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/editing_annotations_detach_1.jpg')}}" width="75%"></a>
         </p>
 
-        <h3><a name="delete-annotations"></a><i class="fa fa-trash-o"></i> Delete Annotations</h3>
+        <h3><a name="delete-annotations"></a><i class="fa fa-trash"></i> Delete Annotations</h3>
 
         <p>
             To delete an annotation, select it and press the delete annotations button in the toolbar. You can also delete multiple annotations in one go. You might have noticed that the delete annotations button changes to the <i class="fa fa-undo"></i> undo button if you have drawn a new annotation. Press this button to delete the annotation you've just created even if you didn't select it first.

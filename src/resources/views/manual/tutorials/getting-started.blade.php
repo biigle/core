@@ -22,7 +22,7 @@
             The main element of the annotation tool is the image which you can navigate similar to an interactive map (like Google Maps). You can grab and move the image with the mouse or zoom in and out using the mouse wheel.
         </p>
         <p>
-            On the right there is the annotation tool sidebar with different tabs like <i class="glyphicon glyphicon-map-marker"></i> annotations, <i class="fa fa-tags"></i> label trees, <i class="glyphicon glyphicon-adjust"></i> color adjustment or the <i class="glyphicon glyphicon-cog"></i> settings. Open a tab by clicking on an icon.
+            On the right there is the annotation tool sidebar with different tabs like <i class="fa fa-map-marker-alt"></i> annotations, <i class="fa fa-tags"></i> label trees, <i class="fa fa-adjust"></i> color adjustment or the <i class="fa fa-cog"></i> settings. Open a tab by clicking on an icon.
         </p>
         <p>
             On the top right over the image there is the minimap. It always shows the entire image and highlights your current viewport depending on the zoom level and position.

@@ -8,8 +8,8 @@ biigle.$declare('annotations.stores.map', function () {
             new ol.control.Zoom(),
             new ol.control.ZoomToExtent({
                 tipLabel: 'Zoom to show whole image',
-                // bootstrap glyphicons resize-small icon
-                label: '\ue097'
+                // fontawesome compress icon
+                label: '\uf066'
             }),
         ],
         interactions: ol.interaction.defaults({
@@ -24,8 +24,8 @@ biigle.$declare('annotations.stores.map', function () {
 
     var ZoomToNativeControl = biigle.$require('annotations.ol.ZoomToNativeControl');
     map.addControl(new ZoomToNativeControl({
-        // bootstrap glyphicons resize-full icon
-        label: '\ue096'
+        // fontawesome expand icon
+        label: '\uf065'
     }));
 
     return map;
