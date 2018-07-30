@@ -19,7 +19,7 @@
         <h3><a name="members"></a>Members</h3>
 
         <p>
-            Each project is only visible to project members. Each member has one of three roles: admin, editor or guest. To modify project members you must be admin in the project. Click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the members panel to modify members. Enter a username and choose a role to add a new member. Choose a new user role for existing members to modify them. Click the <strong>&times;</strong> button to remove a member.
+            Each project is only visible to project members. Each member has one of three roles: admin, editor or guest. To modify project members you must be admin in the project. Click on the <button class="btn btn-default btn-xs"><i class="fa fa-pencil-alt"></i></button> button of the members panel to modify members. Enter a username and choose a role to add a new member. Choose a new user role for existing members to modify them. Click the <strong>&times;</strong> button to remove a member.
         </p>
         <p>
             A <strong>guest</strong> is only able to <em>read</em> from the project. They can see all volumes, label trees and users that belong to the project. But they cannot modify anything related to the project and particularly cannot create or modify annotations in the volumes that belong to the project. Although users with this role can see all label trees that are attached to the project, they cannot access these unless the label trees are public or the users are members of the label trees.
@@ -43,10 +43,10 @@
 
         </p>
         <p>
-             Project admins can attach or detach label trees. To do this, click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the label trees panel. Enter the name of a label tree and hit enter to attach it. You can only attach public label trees or those that authorized the project to attach them. Click the <strong>&times;</strong> button to detach a label tree.
+             Project admins can attach or detach label trees. To do this, click on the <button class="btn btn-default btn-xs"><i class="fa fa-pencil-alt"></i></button> button of the label trees panel. Enter the name of a label tree and hit enter to attach it. You can only attach public label trees or those that authorized the project to attach them. Click the <strong>&times;</strong> button to detach a label tree.
         </p>
         <p>
-            You can also create a label tree and attach it to the project at the same time. Do this with the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-plus"></i></button> button of the label trees panel. This is useful to create a new label tree specifically for the current project.
+            You can also create a label tree and attach it to the project at the same time. Do this with the <button class="btn btn-default btn-xs"><i class="fa fa-plus"></i></button> button of the label trees panel. This is useful to create a new label tree specifically for the current project.
         </p>
 
         <h3><a name="volumes"></a>Volumes</h3>
@@ -55,7 +55,7 @@
             A volume is a collection of images that belong together (like a directory in a file system). Each project can have one or more volumes attached to it. Unlike label trees, volumes always belong to at least one project. If a volume belongs to no project any more, it will be deleted.
         </p>
         <p>
-            Project admins can create or delete volumes. To create a volume, click the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-plus"></i></button> button of the volumes panel. A new volume will be automatically attached to the project it was created for. But volumes can be shared between projects, too. You can attach existing volumes of any project where you are also admin. To do this, click on the <button class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pencil"></i></button> button of the volumes panel, enter the name of the volume you want to attach and hit enter. Click the <strong>&times;</strong> button to detach or delete a volume. A volume is deleted only if this is the last project that it is attached to (there will be an additional request for confirmation in this case). Be careful when doing this since deleting a volume deletes all annotations and cannot be undone!
+            Project admins can create or delete volumes. To create a volume, click the <button class="btn btn-default btn-xs"><i class="fa fa-plus"></i></button> button of the volumes panel. A new volume will be automatically attached to the project it was created for. But volumes can be shared between projects, too. You can attach existing volumes of any project where you are also admin. To do this, click on the <button class="btn btn-default btn-xs"><i class="fa fa-pencil-alt"></i></button> button of the volumes panel, enter the name of the volume you want to attach and hit enter. Click the <strong>&times;</strong> button to detach or delete a volume. A volume is deleted only if this is the last project that it is attached to (there will be an additional request for confirmation in this case). Be careful when doing this since deleting a volume deletes all annotations and cannot be undone!
         </p>
 
         <h3><a name="modify-a-project"></a>Modify a project</h3>

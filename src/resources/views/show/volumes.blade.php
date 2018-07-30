@@ -5,9 +5,9 @@
             <span class="pull-right">
                 <loader :active="loading"></loader>
                 @if(Route::has('create-volume'))
-                    <a href="{{ route('create-volume') }}?project={{ $project->id }}" class="btn btn-default btn-xs" title="Create a new volume"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+                    <a href="{{ route('create-volume') }}?project={{ $project->id }}" class="btn btn-default btn-xs" title="Create a new volume"><span class="fa fa-plus" aria-hidden="true"></span></a>
                 @endif
-                <button class="btn btn-default btn-xs" title="Edit volumes" v-cloak v-on:click="toggleEditing"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+                <button class="btn btn-default btn-xs" title="Edit volumes" v-cloak v-on:click="toggleEditing"><span class="fa fa-pencil-alt" aria-hidden="true"></span></button>
             </span>
         @endcan
     </div>

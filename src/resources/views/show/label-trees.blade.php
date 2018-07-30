@@ -5,9 +5,9 @@
             <span class="pull-right">
                 <loader :active="loading"></loader>
                 @if(Route::has('label-trees'))
-                    <a href="{{route('label-trees-create', ['project' => $project->id])}}" class="btn btn-default btn-xs" title="Create label tree" ><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+                    <a href="{{route('label-trees-create', ['project' => $project->id])}}" class="btn btn-default btn-xs" title="Create label tree" ><span class="fa fa-plus" aria-hidden="true"></span></a>
                 @endif
-                <button class="btn btn-default btn-xs" title="Attach/detach label trees" v-on:click="toggleEditing" :class="{active: editing}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+                <button class="btn btn-default btn-xs" title="Attach/detach label trees" v-on:click="toggleEditing" :class="{active: editing}"><span class="fa fa-pencil-alt" aria-hidden="true"></span></button>
             </span>
         @endcan
     </div>
