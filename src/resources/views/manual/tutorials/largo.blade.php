@@ -19,7 +19,7 @@
         <h3>How to use Largo</h3>
 
         <p>
-            There are two ways to run Largo. To review annotations of an entire project, click on the <button class="btn btn-xs btn-default"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> Largo re-evaluation</button> button in the project overview. To review annotations of a volume, click on the <button class="btn btn-xs btn-default"><span class="glyphicon glyphicon-check" aria-hidden="true"></span></button> button in the sidebar of the volume overview. Project guests are not allowed to use Largo.
+            There are two ways to run Largo. To review annotations of an entire project, click on the <button class="btn btn-xs btn-default"><span class="fa fa-check-square" aria-hidden="true"></span> Largo re-evaluation</button> button in the project overview. To review annotations of a volume, click on the <button class="btn btn-xs btn-default"><span class="fa fa-check-square" aria-hidden="true"></span></button> button in the sidebar of the volume overview. Project guests are not allowed to use Largo.
         </p>
 
         <p class="text-center">
@@ -35,7 +35,7 @@
         </p>
 
         <p>
-            When you hover your cursor over an annotation you can see the <span class="glyphicon glyphicon-new-window" aria-hidden="true"></span> button in the upper right corner. A click on this button will open the annotation tool in a new window and focus on this annotation. Use this to review an annotation with its surroundings if you are uncertain what it may be.
+            When you hover your cursor over an annotation you can see the <span class="fa fa-external-link-square-alt" aria-hidden="true"></span> button in the upper right corner. A click on this button will open the annotation tool in a new window and focus on this annotation. Use this to review an annotation with its surroundings if you are uncertain what it may be.
         </p>
 
         <p class="text-center">
@@ -44,11 +44,11 @@
         </p>
 
         <p>
-            Also displayed on hover is the big <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> symbol. This symbol indicates the "dismissal" of an annotation. Click on an annotation in the grid to mark it as dismissed. You can dismiss annotations belonging to differen labels, too. Once there are dismissed annotations, the <button class="btn btn-success btn-xs">Continue</button> button in the sidebar becomes clickable. Click this button when you are finished marking annotations as dismissed to continue to the next step.
+            Also displayed on hover is the big <span class="fa fa-times" aria-hidden="true"></span> symbol. This symbol indicates the "dismissal" of an annotation. Click on an annotation in the grid to mark it as dismissed. You can dismiss annotations belonging to differen labels, too. Once there are dismissed annotations, the <button class="btn btn-success btn-xs">Continue</button> button in the sidebar becomes clickable. Click this button when you are finished marking annotations as dismissed to continue to the next step.
         </p>
 
         <p>
-            The second step in Largo is the re-label step. In this step all annotations that were previously marked as dismissed are displayed in the grid, no matter what their original label was. If you now hover over an annotation in the grid, the big <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> symbol appears. This symbol indicates a re-labeled annotation. To re-label an annotation, select a label from the label trees in the sidebar and then click on an annotation in the grid.
+            The second step in Largo is the re-label step. In this step all annotations that were previously marked as dismissed are displayed in the grid, no matter what their original label was. If you now hover over an annotation in the grid, the big <span class="fa fa-check" aria-hidden="true"></span> symbol appears. This symbol indicates a re-labeled annotation. To re-label an annotation, select a label from the label trees in the sidebar and then click on an annotation in the grid.
         </p>
 
         <p class="text-center">

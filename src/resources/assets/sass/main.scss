@@ -64,7 +64,8 @@
     cursor: pointer;
 
     &:before {
-        font-family: 'Glyphicons Halflings';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
         position: absolute;
         display: flex;
         align-items: center;
@@ -106,15 +107,15 @@
 
 .image-grid__image--dismiss {
     &:before {
-        // glyphicon-remove
-        content: "\e014";
+        // fa-times
+        content: "\f00d";
     }
 }
 
 .image-grid__image--relabel {
     &:before {
-        // glyphicon-ok
-        content: "\e013";
+        // fa-check
+        content: "\f00c";
     }
 
     .new-label {
