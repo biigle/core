@@ -385,16 +385,21 @@ biigle.$viewModel('annotator-container', function (element) {
             cachePreviousAndNext: function () {
                 var previousId = this.imagesIds[this.getPreviousIndex(this.imageIndex)];
                 var nextId = this.imagesIds[this.getNextIndex(this.imageIndex)];
-                Vue.Promise.all([
-                        annotationsStore.fetchAnnotations(nextId),
-                        imagesStore.fetchImage(nextId),
-                        annotationsStore.fetchAnnotations(previousId),
-                        imagesStore.fetchImage(previousId),
-                    ])
-                    // Ignore errors in this case. The application will try to reload
-                    // the data again if the user switches to the respective image and
-                    // display the error message then.
-                    .catch(function () {});
+                // If there is only one image, previousId and nextId equal this.imageId.
+                // No caching should be requested as this might deselect any selected
+                // annotations on the current image.
+                if (previousId !== this.imageId) {
+                    Vue.Promise.all([
+                            annotationsStore.fetchAnnotations(nextId),
+                            imagesStore.fetchImage(nextId),
+                            annotationsStore.fetchAnnotations(previousId),
+                            imagesStore.fetchImage(previousId),
+                        ])
+                        // Ignore errors in this case. The application will try to reload
+                        // the data again if the user switches to the respective image
+                        // and display the error message then.
+                        .catch(function () {});
+                }
             },
             setLastCreatedAnnotation: function (annotation) {
                 if (this.lastCreatedAnnotationTimeout) {
