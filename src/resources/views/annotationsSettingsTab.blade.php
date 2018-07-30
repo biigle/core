@@ -5,8 +5,8 @@
             <input type="range" min="0" max="1" step="0.1" v-model="opacityValue">
         </div>
         @can('update', $volume)
-            <button class="btn btn-default" title="Edit the export area for this volume" v-on:click="toggleEditing" :class="{active:isEditing}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</button>
-            <button class="btn btn-default" title="Delete the export area for this volume" v-on:click="deleteArea" :disabled="!hasExportArea"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button>
+            <button class="btn btn-default" title="Edit the export area for this volume" v-on:click="toggleEditing" :class="{active:isEditing}"><span class="fa fa-pencil-alt" aria-hidden="true"></span> Edit</button>
+            <button class="btn btn-default" title="Delete the export area for this volume" v-on:click="deleteArea" :disabled="!hasExportArea"><span class="fa fa-trash" aria-hidden="true"></span> Delete</button>
         @endcan
     </div>
 </component>
