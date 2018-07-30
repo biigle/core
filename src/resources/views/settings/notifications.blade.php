@@ -13,8 +13,8 @@
         <span v-cloak>
             <loader v-if="loading" :active="true"></loader>
             <span v-else>
-                <i v-if="saved" class="glyphicon glyphicon-ok text-success"></i>
-                <i v-if="error" class="glyphicon glyphicon-remove text-danger"></i>
+                <i v-if="saved" class="fa fa-check text-success"></i>
+                <i v-if="error" class="fa fa-times text-danger"></i>
             </span>
         </span>
     </div>
