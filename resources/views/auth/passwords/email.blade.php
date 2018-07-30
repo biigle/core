@@ -23,7 +23,7 @@
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                     <div class="input-group">
                         <div class="input-group-addon">
-                            <i class="glyphicon glyphicon-user"></i>
+                            <i class="fa fa-user"></i>
                         </div>
                         <input type="email" placeholder="{{ trans('form.email') }}" class="form-control" name="email" value="{{ old('email') }}" autofocus required>
                     </div>

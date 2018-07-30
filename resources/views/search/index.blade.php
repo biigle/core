@@ -8,11 +8,11 @@
         <div class="col-xs-12 col-md-offset-2 col-md-8">
             <form class="search-form" action="{{route('search')}}" method="GET">
                 <div class="input-group">
-                    <div class="input-group-addon"><i class="glyphicon glyphicon-search"></i></div>
+                    <div class="input-group-addon"><i class="fa fa-search"></i></div>
                     <input class="form-control" type="text" name="q" placeholder="Search BIIGLE" value="{{$query}}">
                     @if ($query)
                         <div class="input-group-btn">
-                            <a class="btn btn-default" href="{{route('search', ['t' => $type])}}" title="Clear search term"><i class="glyphicon glyphicon-remove"></i></a>
+                            <a class="btn btn-default" href="{{route('search', ['t' => $type])}}" title="Clear search term"><i class="fa fa-times"></i></a>
                         </div>
                     @endif
                 </div>

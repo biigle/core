@@ -151,9 +151,5 @@ $modules->addMixin('volumes', 'dashboardStyles');
     <p>
         Now we have de-mystified the mechanisms behind view mixins and you know how to register areas for view mixins, use nested mixins and in which situations asset mixins are required. You can now consider yourself a fully qualified BIIGLE package developer!
     </p>
-
-    <p>
-        <a href="{{ route('manual-documentation') }}" class="btn btn-default" title="Back to the core documentation"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> back</a>
-    </p>
 </div>
 @endsection
