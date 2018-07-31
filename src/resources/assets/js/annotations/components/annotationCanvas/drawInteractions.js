@@ -69,13 +69,18 @@ biigle.$component('annotations.components.annotationCanvas.drawInteractions', fu
             },
         },
         watch: {
+            selectedLabel: function (label) {
+                if (!label && this.isDrawing) {
+                    this.resetInteractionMode();
+                }
+            },
             interactionMode: function (mode) {
                 if (drawInteraction) {
                     this.map.removeInteraction(drawInteraction);
                     drawInteraction = undefined;
                 }
 
-                if (this.isDrawing) {
+                if (this.editable && this.isDrawing) {
                     if (this.hasSelectedLabel) {
                         drawInteraction = new ol.interaction.Draw({
                             source: this.annotationSource,

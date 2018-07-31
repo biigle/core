@@ -4,14 +4,13 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.annotationCanvas', function () {
-    var translateInteraction,
-        attachLabelInteraction;
-
     return {
         mixins: [
             // Since this component got quite huge some logic is outsourced to these
             // mixins.
             biigle.$require('annotations.components.annotationCanvas.drawInteractions'),
+            biigle.$require('annotations.components.annotationCanvas.translateInteraction'),
+            biigle.$require('annotations.components.annotationCanvas.attachLabelInteraction'),
             biigle.$require('annotations.components.annotationCanvas.lawnmower'),
             biigle.$require('annotations.components.annotationCanvas.mousePosition'),
             biigle.$require('annotations.components.annotationCanvas.zoomLevel'),
@@ -124,12 +123,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             isDefaultInteractionMode: function () {
                 return this.interactionMode === 'default';
-            },
-            isTranslating: function () {
-                return this.interactionMode === 'translate';
-            },
-            isAttaching: function () {
-                return this.interactionMode === 'attach';
             },
             hasSelectedLabel: function () {
                 return Boolean(this.selectedLabel);
@@ -417,42 +410,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     this.requireSelectedLabel();
                 }
             },
-            toggleTranslating: function () {
-                if (this.isTranslating) {
-                    this.resetInteractionMode();
-                } else {
-                    this.interactionMode = 'translate';
-                }
-            },
-            toggleAttaching: function () {
-                if (this.isAttaching) {
-                    this.resetInteractionMode();
-                } else {
-                    this.interactionMode = 'attach';
-                }
-            },
-            handleAttachLabel: function (e) {
-                this.$emit('attach', e.feature.get('annotation'), this.selectedLabel);
-            },
             requireSelectedLabel: function () {
                 biigle.$require('events').$emit('sidebar.open', 'labels');
                 biigle.$require('messages.store').info('Please select a label first.');
                 this.resetInteractionMode();
-            },
-            handleNewInteractionMode: function (mode) {
-                translateInteraction.setActive(false);
-                attachLabelInteraction.setActive(false);
-
-                if (this.isAttaching) {
-                    if (this.hasSelectedLabel) {
-                        attachLabelInteraction.setActive(true);
-                    } else {
-                        this.requireSelectedLabel();
-                    }
-                } else if (this.isTranslating) {
-                    this.selectInteraction.setActive(true);
-                    translateInteraction.setActive(true);
-                }
             },
             render: function () {
                 if (this.map) {
@@ -596,18 +557,11 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     this.initialized = true;
                 }
             },
-            selectedLabel: function (label) {
-                if (!label) {
-                    if (this.isDrawing || this.isAttaching) {
-                        this.resetInteractionMode();
-                    }
-                }
-            },
             annotationOpacity: function (opacity) {
                 this.annotationLayer.setOpacity(opacity);
             },
             isDefaultInteractionMode: function (defaultMode) {
-                this.selectInteraction.setActive(defaultMode);
+                this.selectInteraction.setActive(defaultMode || this.isTranslating);
                 this.modifyInteraction.setActive(defaultMode);
             },
         },
@@ -652,34 +606,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 this.modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
                 this.map.addInteraction(this.modifyInteraction);
 
-                var ExtendedTranslateInteraction = biigle.$require('annotations.ol.ExtendedTranslateInteraction');
-                translateInteraction = new ExtendedTranslateInteraction({
-                    features: this.selectInteraction.getFeatures(),
-                    map: this.map,
-                });
-                translateInteraction.setActive(false);
-                translateInteraction.on('translatestart', this.handleFeatureModifyStart);
-                translateInteraction.on('translateend', this.handleFeatureModifyEnd);
-                this.map.addInteraction(translateInteraction);
-
-                var AttachLabelInteraction = biigle.$require('annotations.ol.AttachLabelInteraction');
-                attachLabelInteraction = new AttachLabelInteraction({
-                    features: this.annotationFeatures,
-                    map: this.map,
-                });
-                attachLabelInteraction.setActive(false);
-                attachLabelInteraction.on('attach', this.handleAttachLabel);
-                this.map.addInteraction(attachLabelInteraction);
-
                 // Del key.
                 keyboard.on(46, this.deleteSelectedAnnotations);
                 // Backspace key.
                 keyboard.on(8, this.deleteLastCreatedAnnotation);
-
-                keyboard.on('m', this.toggleTranslating);
-                keyboard.on('l', this.toggleAttaching);
-
-                this.$watch('interactionMode', this.handleNewInteractionMode);
             }
         },
         mounted: function () {
