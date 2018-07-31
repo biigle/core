@@ -7,11 +7,9 @@ biigle.$component('annotations.components.annotationCanvas', function () {
     // Don't create these as reactive Vue properties because they should work as fast as
     // possible.
     var selectInteraction,
-        drawInteraction,
         modifyInteraction,
         translateInteraction,
-        attachLabelInteraction,
-        magicWandInteraction;
+        attachLabelInteraction;
 
     // Map to detect which features were changed between modifystart and modifyend
     // events of the modify interaction.
@@ -21,6 +19,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
         mixins: [
             // Since this component got quite huge some logic is outsourced to these
             // mixins.
+            biigle.$require('annotations.components.annotationCanvas.drawInteractions'),
             biigle.$require('annotations.components.annotationCanvas.lawnmower'),
             biigle.$require('annotations.components.annotationCanvas.mousePosition'),
             biigle.$require('annotations.components.annotationCanvas.zoomLevel'),
@@ -134,32 +133,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             isDefaultInteractionMode: function () {
                 return this.interactionMode === 'default';
             },
-            isDrawing: function () {
-                return this.interactionMode.startsWith('draw');
-            },
-            isDrawingPoint: function () {
-                return this.interactionMode === 'drawPoint';
-            },
-            isDrawingRectangle: function () {
-                return this.interactionMode === 'drawRectangle';
-            },
-            isDrawingCircle: function () {
-                return this.interactionMode === 'drawCircle';
-            },
-            isDrawingLineString: function () {
-                return this.interactionMode === 'drawLineString';
-            },
-            isDrawingPolygon: function () {
-                return this.interactionMode === 'drawPolygon';
-            },
-            isDrawingEllipse: function () {
-                return this.interactionMode === 'drawEllipse';
-            },
             isTranslating: function () {
                 return this.interactionMode === 'translate';
-            },
-            isMagicWanding: function () {
-                return this.interactionMode === 'magicWand';
             },
             isAttaching: function () {
                 return this.interactionMode === 'attach';
@@ -355,31 +330,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             resetInteractionMode: function () {
                 this.interactionMode = 'default';
             },
-            draw: function (name) {
-                if (this['isDrawing' + name]) {
-                    this.resetInteractionMode();
-                } else {
-                    this.interactionMode = 'draw' + name;
-                }
-            },
-            drawPoint: function () {
-                this.draw('Point');
-            },
-            drawRectangle: function () {
-                this.draw('Rectangle');
-            },
-            drawCircle: function () {
-                this.draw('Circle');
-            },
-            drawLineString: function () {
-                this.draw('LineString');
-            },
-            drawPolygon: function () {
-                this.draw('Polygon');
-            },
-            drawEllipse: function () {
-                this.draw('Ellipse');
-            },
             // Assembles the points array depending on the OpenLayers geometry type.
             getPoints: function (geometry) {
                 var points;
@@ -462,13 +412,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     this.interactionMode = 'attach';
                 }
             },
-            toggleMagicWand: function () {
-                if (this.isMagicWanding) {
-                    this.resetInteractionMode();
-                } else if (magicWandInteraction) {
-                    this.interactionMode = 'magicWand';
-                }
-            },
             handleAttachLabel: function (e) {
                 this.$emit('attach', e.feature.get('annotation'), this.selectedLabel);
             },
@@ -478,51 +421,18 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 this.resetInteractionMode();
             },
             handleNewInteractionMode: function (mode) {
-                if (drawInteraction) {
-                    this.map.removeInteraction(drawInteraction);
-                }
-                selectInteraction.setActive(false);
-                modifyInteraction.setActive(false);
                 translateInteraction.setActive(false);
                 attachLabelInteraction.setActive(false);
-                if (magicWandInteraction) {
-                    magicWandInteraction.setActive(false);
-                }
 
-                if (this.isDrawing) {
-                    if (this.hasSelectedLabel) {
-                        drawInteraction = new ol.interaction.Draw({
-                            source: this.annotationSource,
-                            type: mode.slice(4), // remove 'draw' prefix
-                            style: this.styles.editing,
-                        });
-                        drawInteraction.on('drawend', this.handleNewFeature);
-                        this.map.addInteraction(drawInteraction);
-                    } else {
-                        this.requireSelectedLabel();
-                    }
-                } else if (this.isAttaching) {
+                if (this.isAttaching) {
                     if (this.hasSelectedLabel) {
                         attachLabelInteraction.setActive(true);
                     } else {
                         this.requireSelectedLabel();
                     }
-                } else if (this.isMagicWanding) {
-                    if (!this.hasSelectedLabel) {
-                        this.requireSelectedLabel();
-                    } else if (magicWandInteraction) {
-                        magicWandInteraction.setActive(true);
-                    }
-                } else {
-                    switch (mode) {
-                        case 'translate':
-                            selectInteraction.setActive(true);
-                            translateInteraction.setActive(true);
-                            break;
-                        default:
-                            selectInteraction.setActive(true);
-                            modifyInteraction.setActive(true);
-                    }
+                } else if (this.isTranslating) {
+                    selectInteraction.setActive(true);
+                    translateInteraction.setActive(true);
                 }
             },
             render: function () {
@@ -545,14 +455,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                             canvasExtent: this.extent,
                             canvasSize: [image.width, image.height]
                         }));
-                    }
-
-                    // The same performance optimizations mentioned above make the magic
-                    // wand interaction unable to detect any change if the image is
-                    // switched. So if the interaction is currently active we have to
-                    // update it manually here.
-                    if (this.isMagicWanding) {
-                        magicWandInteraction.updateSnapshot();
                     }
                 }
             },
@@ -580,9 +482,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     if (!oldImage || oldImage.tiled !== true) {
                         this.map.removeLayer(this.imageLayer);
                         this.map.addLayer(this.tiledImageLayer);
-                        if (magicWandInteraction) {
-                            magicWandInteraction.setLayer(this.tiledImageLayer);
-                        }
                     }
 
                     this.handleTiledImage(image, oldImage);
@@ -590,9 +489,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     if (!oldImage || oldImage.tiled === true) {
                         this.map.removeLayer(this.tiledImageLayer);
                         this.map.addLayer(this.imageLayer);
-                        if (magicWandInteraction) {
-                            magicWandInteraction.setLayer(this.imageLayer);
-                        }
                     }
 
                     this.handleRegularImage(image, oldImage);
@@ -691,6 +587,10 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             annotationOpacity: function (opacity) {
                 this.annotationLayer.setOpacity(opacity);
             },
+            isDefaultInteractionMode: function (defaultMode) {
+                selectInteraction.setActive(defaultMode);
+                modifyInteraction.setActive(defaultMode);
+            },
         },
         created: function () {
             var self = this;
@@ -775,47 +675,11 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 attachLabelInteraction.on('attach', this.handleAttachLabel);
                 this.map.addInteraction(attachLabelInteraction);
 
-                if (this.crossOrigin) {
-                    keyboard.on('g', this.drawPolygon);
-                } else {
-                    // Magic wand interaction is not available for remote images.
-                    var MagicWandInteraction = biigle.$require('annotations.ol.MagicWandInteraction');
-                    magicWandInteraction = new MagicWandInteraction({
-                        map: this.map,
-                        source: this.annotationSource,
-                        style: this.styles.editing,
-                        indicatorPointStyle: this.styles.editing,
-                        indicatorCrossStyle: this.styles.cross,
-                        simplifyTolerant: 0.1,
-                    });
-                    magicWandInteraction.on('drawend', this.handleNewFeature);
-                    magicWandInteraction.setActive(false);
-                    this.map.addInteraction(magicWandInteraction);
-
-                    keyboard.on('g', function (e) {
-                        if (e.shiftKey) {
-                            self.toggleMagicWand();
-                        } else {
-                            self.drawPolygon();
-                        }
-                    });
-                }
-
                 // Del key.
                 keyboard.on(46, this.deleteSelectedAnnotations);
                 // Backspace key.
                 keyboard.on(8, this.deleteLastCreatedAnnotation);
 
-                keyboard.on('a', this.drawPoint);
-                keyboard.on('s', this.drawRectangle);
-                keyboard.on('d', function (e) {
-                    if (e.shiftKey) {
-                        self.drawEllipse();
-                    } else {
-                        self.drawCircle();
-                    }
-                });
-                keyboard.on('f', this.drawLineString);
                 keyboard.on('m', this.toggleTranslating);
                 keyboard.on('l', this.toggleAttaching);
 
