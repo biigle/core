@@ -5,14 +5,14 @@
  */
 biigle.$component('annotations.components.annotationCanvas.zoomLevel', function () {
     return {
+        components: {
+            zoomLevelIndicator: biigle.$require('annotations.components.zoomLevelIndicator'),
+        },
         props: {
             showZoomLevel: {
                 type: Boolean,
                 default: false,
             },
-        },
-        components: {
-            zoomLevelIndicator: biigle.$require('annotations.components.zoomLevelIndicator'),
         },
     };
 });

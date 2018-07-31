@@ -79,11 +79,14 @@ biigle.$component('annotations.components.minimap', function () {
                 // the minimap element was created. The annotationCanvas can display
                 // either a regular image or a tiled image. If the type changes we have
                 // to update the layer here, too.
-                var layers = minimap.getLayers();
-                if (layers.getLength() > 1) {
-                    layers.setAt(0, e.target.item(e.target.getLength() - 1));
-                } else {
-                    layers.insertAt(0, e.target.item(e.target.getLength() - 1));
+                var name = e.element.get('name');
+                if (name && name.startsWith('image')) {
+                    var layers = minimap.getLayers();
+                    if (layers.getLength() > 1) {
+                        layers.setAt(0, e.element);
+                    } else {
+                        layers.insertAt(0, e.element);
+                    }
                 }
             },
         },

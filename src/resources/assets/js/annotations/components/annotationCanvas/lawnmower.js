@@ -4,8 +4,6 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.annotationCanvas.lawnmower', function () {
-    var map;
-
     return {
         data: function () {
             return {
@@ -86,7 +84,7 @@ biigle.$component('annotations.components.annotationCanvas.lawnmower', function 
                     // need the old value to compute the new image section in the
                     // resolution watcher first!
                     this.imageSectionCenter = this.getImageSectionCenter(section);
-                    map.getView().setCenter(this.imageSectionCenter);
+                    this.map.getView().setCenter(this.imageSectionCenter);
                     return true;
                 }
 
@@ -148,9 +146,6 @@ biigle.$component('annotations.components.annotationCanvas.lawnmower', function 
 
                 this.showImageSection(nearestStep);
             },
-        },
-        created: function () {
-            map = biigle.$require('annotations.stores.map');
         },
     };
 });

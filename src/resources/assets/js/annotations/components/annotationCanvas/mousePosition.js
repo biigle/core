@@ -4,7 +4,7 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.annotationCanvas.mousePosition', function () {
-    var map, throttle;
+    var throttle;
 
     return {
         components: {
@@ -20,14 +20,9 @@ biigle.$component('annotations.components.annotationCanvas.mousePosition', funct
             return {
                 // Mouse position in image coordinates.
                 mousePosition: [0, 0],
-                // Mouse position in DOM element coordinates.
-                mouseDomPosition: [0, 0],
             };
         },
         methods: {
-            updateMouseDomPosition: function (e) {
-                this.mouseDomPosition = e.pixel;
-            },
             updateMousePosition: function (e) {
                 var self = this;
                 throttle(function () {
@@ -38,14 +33,13 @@ biigle.$component('annotations.components.annotationCanvas.mousePosition', funct
         watch: {
             showMousePosition: function (show) {
                 if (show) {
-                    map.on('pointermove', this.updateMousePosition);
+                    this.map.on('pointermove', this.updateMousePosition);
                 } else {
-                    map.un('pointermove', this.updateMousePosition);
+                    this.map.un('pointermove', this.updateMousePosition);
                 }
             },
         },
         created: function () {
-            map = biigle.$require('annotations.stores.map');
             throttle = biigle.$require('annotations.stores.utils').throttle;
         },
     };

@@ -524,17 +524,6 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                             modifyInteraction.setActive(true);
                     }
                 }
-
-                if (this.showAnnotationTooltip) {
-                    if (this.isDefaultInteractionMode) {
-                        map.on('pointermove', this.updateHoveredAnnotations);
-                        map.on('pointermove', this.updateMouseDomPosition);
-                    } else {
-                        map.un('pointermove', this.updateHoveredAnnotations);
-                        map.un('pointermove', this.updateMouseDomPosition);
-                        this.resetHoveredAnnotations();
-                    }
-                }
             },
             render: function () {
                 if (this.map) {
@@ -707,7 +696,13 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             var self = this;
             this.declareNonReactiveProperties();
 
+            // The name can be used for layer filters, e.g. with forEachFeatureAtPixel.
             this.annotationLayer.set('name', 'annotations');
+
+            // These names are required by the minimap component.
+            this.imageLayer.set('name', 'imageRegular');
+            this.tiledImageLayer.set('name', 'imageTile');
+
             this.annotationLayer.setStyle(this.styles.features);
             this.map.addLayer(this.annotationLayer);
 

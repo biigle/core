@@ -4,7 +4,6 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.annotationCanvas.sampling', function () {
-    var map;
     var crosshairLayer = new ol.layer.Vector({
         source: new ol.source.Vector(),
         style: [
@@ -34,7 +33,6 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
     });
     var crosshairFeature = new ol.Feature(new ol.geom.Point([0, 0]));
     crosshairLayer.getSource().addFeature(crosshairFeature);
-    crosshairLayer.setVisible(false);
 
     return {
         data: function () {
@@ -110,7 +108,7 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
             updateShownSamplingLocation: function () {
                 var index = this.currentSamplingIndex;
                 if (index !== null && index >= 0 && index < this.samplingLocations.length) {
-                    map.getView().setCenter(this.samplingLocations[index]);
+                    this.map.getView().setCenter(this.samplingLocations[index]);
                     crosshairFeature.getGeometry().setCoordinates(this.samplingLocations[index]);
                 }
             },
@@ -151,17 +149,17 @@ biigle.$component('annotations.components.annotationCanvas.sampling', function (
         },
         watch: {
             isSamplingAnnotationMode: function (is) {
-                crosshairLayer.setVisible(is);
+                if (is) {
+                    this.map.addLayer(crosshairLayer);
+                } else {
+                    this.map.removeLayer(crosshairLayer);
+                }
             },
             randomSamplingCount: function () {
                 // Clear memory if sampling count changed. Compute new locations in this
                 // case.
                 this.randomLocationMemory = {};
             },
-        },
-        created: function () {
-            map = biigle.$require('annotations.stores.map');
-            map.addLayer(crosshairLayer);
         },
     };
 });
