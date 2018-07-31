@@ -4,8 +4,6 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.annotationCanvas.annotationTooltip', function () {
-    var map;
-
     return {
         components: {
             labelTooltip: biigle.$require('annotations.components.labelTooltip'),
@@ -36,7 +34,7 @@ biigle.$component('annotations.components.annotationCanvas.annotationTooltip', f
         methods: {
             updateHoveredAnnotations: function (e) {
                 var annotations = [];
-                map.forEachFeatureAtPixel(e.pixel,
+                this.map.forEachFeatureAtPixel(e.pixel,
                     function (feature) {
                         annotations.push(feature);
                     },
@@ -64,17 +62,14 @@ biigle.$component('annotations.components.annotationCanvas.annotationTooltip', f
         watch: {
             showAnnotationTooltip: function (show) {
                 if (show) {
-                    map.on('pointermove', this.updateMouseDomPosition);
-                    map.on('pointermove', this.updateHoveredAnnotations);
+                    this.map.on('pointermove', this.updateMouseDomPosition);
+                    this.map.on('pointermove', this.updateHoveredAnnotations);
                 } else {
-                    map.un('pointermove', this.updateMouseDomPosition);
-                    map.un('pointermove', this.updateHoveredAnnotations);
+                    this.map.un('pointermove', this.updateMouseDomPosition);
+                    this.map.un('pointermove', this.updateHoveredAnnotations);
                     this.resetHoveredAnnotations();
                 }
             },
-        },
-        created: function () {
-            map = biigle.$require('annotations.stores.map');
         },
     };
 });

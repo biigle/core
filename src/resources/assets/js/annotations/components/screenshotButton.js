@@ -6,9 +6,6 @@
 biigle.$component('annotations.components.screenshotButton', {
     mixins: [biigle.$require('annotations.mixins.imageFilenameTracker')],
     computed: {
-        map: function () {
-            return biigle.$require('annotations.stores.map');
-        },
         messages: function () {
             return biigle.$require('messages.store');
         },
@@ -131,12 +128,13 @@ biigle.$component('annotations.components.screenshotButton', {
         },
         capture: function () {
             var self = this;
-            this.map.once('postcompose', function (e) {
+            var map = biigle.$require('annotations.stores.map');
+            map.once('postcompose', function (e) {
                 self.makeBlob(e.context.canvas)
                     .then(self.download)
                     .catch(self.handleError);
             });
-            this.map.renderSync();
+            map.renderSync();
         },
         handleError: function (message) {
             this.messages.danger(message);
