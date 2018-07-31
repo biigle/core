@@ -4,16 +4,8 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.annotationCanvas', function () {
-    // Don't create these as reactive Vue properties because they should work as fast as
-    // possible.
-    var selectInteraction,
-        modifyInteraction,
-        translateInteraction,
+    var translateInteraction,
         attachLabelInteraction;
-
-    // Map to detect which features were changed between modifystart and modifyend
-    // events of the modify interaction.
-    var featureRevisionMap = {};
 
     return {
         mixins: [
@@ -128,7 +120,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 });
             },
             selectedFeatures: function () {
-                return selectInteraction ? selectInteraction.getFeatures() : [];
+                return this.selectInteraction ? this.selectInteraction.getFeatures() : [];
             },
             isDefaultInteractionMode: function () {
                 return this.interactionMode === 'default';
@@ -195,6 +187,33 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                     updateWhileAnimating: true,
                     updateWhileInteracting: true,
                 });
+
+                this.selectInteraction = new ol.interaction.Select({
+                    // Use click instead of default singleclick because the latter is
+                    // delayed 250ms to ensure the event is no doubleclick. But we want
+                    // it to be as fast as possible.
+                    condition: ol.events.condition.click,
+                    style: this.styles.highlight,
+                    layers: [this.annotationLayer],
+                    // enable selecting multiple overlapping features at once
+                    multi: true
+                });
+
+                if (this.editable) {
+                    // Map to detect which features were changed between modifystart and
+                    // modifyend events of the modify interaction.
+                    this.featureRevisionMap = {};
+                    this.modifyInteraction = new ol.interaction.Modify({
+                        features: this.selectInteraction.getFeatures(),
+                        // She Shift key must be pressed to delete vertices, so that new
+                        // vertices can be drawn at the same position of existing
+                        // vertices.
+                        deleteCondition: function(event) {
+                            return ol.events.condition.shiftKeyOnly(event) &&
+                                ol.events.condition.singleClick(event);
+                        },
+                    });
+                }
             },
             updateMapSize: function () {
                 this.mapSize = this.map.getSize();
@@ -277,14 +296,14 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             },
             handleFeatureModifyStart: function (e) {
                 e.features.forEach(function (feature) {
-                    featureRevisionMap[feature.getId()] = feature.getRevision();
-                });
+                    this.featureRevisionMap[feature.getId()] = feature.getRevision();
+                }, this);
             },
             handleFeatureModifyEnd: function (e) {
                 var self = this;
                 var annotations = e.features.getArray()
                     .filter(function (feature) {
-                        return featureRevisionMap[feature.getId()] !== feature.getRevision();
+                        return self.featureRevisionMap[feature.getId()] !== feature.getRevision();
                     })
                     .map(function (feature) {
                         return {
@@ -431,7 +450,7 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                         this.requireSelectedLabel();
                     }
                 } else if (this.isTranslating) {
-                    selectInteraction.setActive(true);
+                    this.selectInteraction.setActive(true);
                     translateInteraction.setActive(true);
                 }
             },
@@ -588,8 +607,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
                 this.annotationLayer.setOpacity(opacity);
             },
             isDefaultInteractionMode: function (defaultMode) {
-                selectInteraction.setActive(defaultMode);
-                modifyInteraction.setActive(defaultMode);
+                this.selectInteraction.setActive(defaultMode);
+                this.modifyInteraction.setActive(defaultMode);
             },
         },
         created: function () {
@@ -615,22 +634,8 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             this.map.on('change:size', this.updateMapSize);
             this.map.on('moveend', this.updateMapView);
 
-            // We initialize this here because we need to make sure the styles are
-            // properly loaded and there is no setStyle() function like for the
-            // annotationLayer.
-            selectInteraction = new ol.interaction.Select({
-                // Use click instead of default singleclick because the latter is delayed
-                // 250ms to ensure the event is no doubleclick. But we want it to be as
-                // fast as possible.
-                condition: ol.events.condition.click,
-                style: this.styles.highlight,
-                layers: [this.annotationLayer],
-                // enable selecting multiple overlapping features at once
-                multi: true
-            });
-
-            selectInteraction.on('select', this.handleFeatureSelect);
-            this.map.addInteraction(selectInteraction);
+            this.selectInteraction.on('select', this.handleFeatureSelect);
+            this.map.addInteraction(this.selectInteraction);
 
             var keyboard = biigle.$require('keyboard');
             // Space bar.
@@ -643,22 +648,13 @@ biigle.$component('annotations.components.annotationCanvas', function () {
             keyboard.on(27, this.resetInteractionMode);
 
             if (this.editable) {
-                modifyInteraction = new ol.interaction.Modify({
-                    features: selectInteraction.getFeatures(),
-                    // She Shift key must be pressed to delete vertices, so that new
-                    // vertices can be drawn at the same position of existing vertices.
-                    deleteCondition: function(event) {
-                        return ol.events.condition.shiftKeyOnly(event) &&
-                            ol.events.condition.singleClick(event);
-                    },
-                });
-                modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
-                modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
-                this.map.addInteraction(modifyInteraction);
+                this.modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
+                this.modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
+                this.map.addInteraction(this.modifyInteraction);
 
                 var ExtendedTranslateInteraction = biigle.$require('annotations.ol.ExtendedTranslateInteraction');
                 translateInteraction = new ExtendedTranslateInteraction({
-                    features: selectInteraction.getFeatures(),
+                    features: this.selectInteraction.getFeatures(),
                     map: this.map,
                 });
                 translateInteraction.setActive(false);
