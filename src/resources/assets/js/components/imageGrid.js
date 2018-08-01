@@ -134,27 +134,18 @@ biigle.$component('volumes.components.imageGrid', {
     },
     created: function () {
         var keyboard = biigle.$require('keyboard');
-        // arrow up
-        keyboard.on(38, this.reverseRow);
+        keyboard.on('ArrowUp', this.reverseRow);
         keyboard.on('w', this.reverseRow);
-        // arrow down
-        keyboard.on(40, this.advanceRow);
+        keyboard.on('ArrowDown', this.advanceRow);
         keyboard.on('s', this.advanceRow);
-        // arrow left
-        keyboard.on(37, this.reversePage);
+        keyboard.on('ArrowLeft', this.reversePage);
         keyboard.on('a', this.reversePage);
-        // arrow right
-        keyboard.on(39, this.advancePage);
+        keyboard.on('ArrowRight', this.advancePage);
         keyboard.on('d', this.advancePage);
-        // page up
-        keyboard.on(33, this.reversePage);
-        // page down
-        keyboard.on(34, this.advancePage);
-        // home
-        keyboard.on(36, this.jumpToStart);
-        // end
-        keyboard.on(35, this.jumpToEnd);
-
+        keyboard.on('PageUp', this.reversePage);
+        keyboard.on('PageDown', this.advancePage);
+        keyboard.on('Home', this.jumpToStart);
+        keyboard.on('End', this.jumpToEnd);
         this.offset = this.initialOffset;
     },
     mounted: function () {
