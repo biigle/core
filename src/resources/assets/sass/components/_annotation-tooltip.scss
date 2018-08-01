@@ -1,11 +1,8 @@
 .annotation-tooltip {
-    position: absolute;
-    // Position relative to the cursor.
-    top: 0;
-    left: 15px;
     z-index: 1;
     display: block;
     pointer-events: none;
+    white-space: nowrap;
 }
 
 .annotation-tooltip__annotations, .annotation-tooltip__labels {
@@ -22,7 +19,4 @@
             margin-top: .25em;
         }
     }
-}
-
-.annotation-tooltip__labels {
 }

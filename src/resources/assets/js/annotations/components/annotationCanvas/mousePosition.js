@@ -19,24 +19,16 @@ biigle.$component('annotations.components.annotationCanvas.mousePosition', funct
         data: function () {
             return {
                 // Mouse position in image coordinates.
-                mousePosition: [0, 0],
+                mousePositionIC: [0, 0],
             };
         },
-        methods: {
-            updateMousePosition: function (e) {
+        watch: {
+            mousePosition: function (position) {
                 var self = this;
                 throttle(function () {
-                    self.mousePosition = self.invertPointsYAxis(e.coordinate).map(Math.round);
-                }, 100, 'annotations.canvas.mouse-position');
-            },
-        },
-        watch: {
-            showMousePosition: function (show) {
-                if (show) {
-                    this.map.on('pointermove', this.updateMousePosition);
-                } else {
-                    this.map.un('pointermove', this.updateMousePosition);
-                }
+                    // Make sure to copy the array with slice before inverting the axis.
+                    self.mousePositionIC = self.invertPointsYAxis(position.slice()).map(Math.round);
+                }, 100, 'annotations.canvas.mouse-position-ic');
             },
         },
         created: function () {

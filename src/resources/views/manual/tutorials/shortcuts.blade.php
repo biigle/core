@@ -53,6 +53,10 @@
                     <td>Select the line string annotation tool</td>
                 </tr>
                 <tr>
+                    <td><code>Shift</code>+<code>F</code></td>
+                    <td>Select the ruler tool</td>
+                </tr>
+                <tr>
                     <td><code>G</code></td>
                     <td>Select the polygon annotation tool</td>
                 </tr>

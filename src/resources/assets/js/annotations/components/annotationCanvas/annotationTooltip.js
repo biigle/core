@@ -29,14 +29,9 @@ biigle.$component('annotations.components.annotationCanvas.annotationTooltip', f
                 // Used to efficiently determine when to update hoveredAnnotations.
                 hoveredAnnotationHash: '',
                 hoveredAnnotations: [],
-                // Mouse position in DOM element coordinates.
-                mouseDomPosition: [0, 0],
             };
         },
         methods: {
-            updateMouseDomPosition: function (e) {
-                this.mouseDomPosition = e.pixel;
-            },
             updateHoveredAnnotations: function (e) {
                 var annotations = [];
                 this.map.forEachFeatureAtPixel(e.pixel,
@@ -65,10 +60,8 @@ biigle.$component('annotations.components.annotationCanvas.annotationTooltip', f
         watch: {
             showAnnotationTooltip: function (show) {
                 if (show) {
-                    this.map.on('pointermove', this.updateMouseDomPosition);
                     this.map.on('pointermove', this.updateHoveredAnnotations);
                 } else {
-                    this.map.un('pointermove', this.updateMouseDomPosition);
                     this.map.un('pointermove', this.updateHoveredAnnotations);
                     this.resetHoveredAnnotations();
                 }

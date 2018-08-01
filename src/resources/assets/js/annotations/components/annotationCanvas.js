@@ -10,6 +10,7 @@ biigle.$component('annotations.components.annotationCanvas', {
         biigle.$require('annotations.components.annotationCanvas.magicWandInteraction'),
         biigle.$require('annotations.components.annotationCanvas.translateInteraction'),
         biigle.$require('annotations.components.annotationCanvas.attachLabelInteraction'),
+        biigle.$require('annotations.components.annotationCanvas.measureInteraction'),
         biigle.$require('annotations.components.annotationCanvas.lawnmower'),
         biigle.$require('annotations.components.annotationCanvas.mousePosition'),
         biigle.$require('annotations.components.annotationCanvas.zoomLevel'),
@@ -69,11 +70,6 @@ biigle.$component('annotations.components.annotationCanvas', {
             type: Boolean,
             default: true,
         },
-        // Specifies whether the displayed image is cross origin.
-        crossOrigin: {
-            type: Boolean,
-            default: false,
-        },
     },
     data: function () {
         return {
@@ -89,6 +85,8 @@ biigle.$component('annotations.components.annotationCanvas', {
             interactionMode: 'default',
             // Size of the OpenLayers map in px.
             mapSize: [0, 0],
+            // Mouse position in OpenLayers coordinates.
+            mousePosition: [0, 0],
         };
     },
     computed: {
@@ -452,6 +450,9 @@ biigle.$component('annotations.components.annotationCanvas', {
                 }));
             }
         },
+        updateMousePosition: function (e) {
+            this.mousePosition = e.coordinate;
+        },
     },
     watch: {
         image: function (image, oldImage) {
@@ -562,7 +563,9 @@ biigle.$component('annotations.components.annotationCanvas', {
         },
         isDefaultInteractionMode: function (defaultMode) {
             this.selectInteraction.setActive(defaultMode || this.isTranslating);
-            this.modifyInteraction.setActive(defaultMode);
+            if (this.editable) {
+                this.modifyInteraction.setActive(defaultMode);
+            }
         },
     },
     created: function () {
@@ -586,6 +589,7 @@ biigle.$component('annotations.components.annotationCanvas', {
 
         this.map.on('change:size', this.updateMapSize);
         this.map.on('moveend', this.updateMapView);
+        this.map.on('pointermove', this.updateMousePosition);
 
         this.selectInteraction.on('select', this.handleFeatureSelect);
         this.map.addInteraction(this.selectInteraction);

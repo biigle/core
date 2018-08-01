@@ -4,6 +4,11 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.measureTooltip', {
+    template: '<div class="annotation-tooltip">' +
+        '<ul class="annotation-tooltip__annotations">' +
+            '<li v-for="measure in measuredGeometries" v-text="measure"></li>' +
+        '</ul>' +
+    '</div>',
     mixins: [
         biigle.$require('annotations.mixins.annotationTooltip'),
         biigle.$require('annotations.mixins.measureComponent'),
@@ -21,6 +26,9 @@ biigle.$component('annotations.components.measureTooltip', {
         },
         measuredGeometries: function () {
             return this.measurableGeometries.map(function (geom) {
+                // Call getRevision so Vue is able to update this when the geometry
+                // changes.
+                geom.getRevision();
                 return this.measure(geom);
             }, this);
         },
@@ -77,9 +85,13 @@ biigle.$component('annotations.components.measureTooltip', {
             return (Math.round(measurement * decimals) / decimals) + ' ' + unit;
         },
         unitNearest: function (measurement, multipliers, min) {
+            if (measurement === 0) {
+                return multipliers.length - 1;
+            }
+
             min = min || 1;
             var tmpMeasurement;
-            for (var i = multipliers.length -1; i >= 0 ; i--) {
+            for (var i = multipliers.length - 1; i >= 0 ; i--) {
                 tmpMeasurement = measurement / multipliers[i];
                 if (tmpMeasurement >= min && tmpMeasurement < 1000) {
                     break;

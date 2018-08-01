@@ -7,6 +7,13 @@ biigle.$component('annotations.components.annotationCanvas.magicWandInteraction'
     var magicWandInteraction;
 
     return {
+        props: {
+            // Specifies whether the displayed image is cross origin.
+            crossOrigin: {
+                type: Boolean,
+                default: false,
+            },
+        },
         computed: {
             isMagicWanding: function () {
                 return this.interactionMode === 'magicWand';
