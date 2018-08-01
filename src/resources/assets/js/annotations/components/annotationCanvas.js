@@ -7,6 +7,7 @@ biigle.$component('annotations.components.annotationCanvas', {
     mixins: [
         // Since this component got quite huge some logic is outsourced to these mixins.
         biigle.$require('annotations.components.annotationCanvas.drawInteractions'),
+        biigle.$require('annotations.components.annotationCanvas.magicWandInteraction'),
         biigle.$require('annotations.components.annotationCanvas.translateInteraction'),
         biigle.$require('annotations.components.annotationCanvas.attachLabelInteraction'),
         biigle.$require('annotations.components.annotationCanvas.lawnmower'),

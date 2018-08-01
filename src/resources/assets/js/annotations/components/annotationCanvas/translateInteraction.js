@@ -32,8 +32,8 @@ biigle.$component('annotations.components.annotationCanvas.translateInteraction'
             // Initialize the translate interaction here because we have to wait for
             // the non-reactive properties of annotationCanvas to be initialized.
             if (this.editable) {
-                var ExtendedTranslateInteraction = biigle.$require('annotations.ol.ExtendedTranslateInteraction');
-                translateInteraction = new ExtendedTranslateInteraction({
+                var Interaction = biigle.$require('annotations.ol.ExtendedTranslateInteraction');
+                translateInteraction = new Interaction({
                     features: this.selectInteraction.getFeatures(),
                     map: this.map,
                 });
@@ -41,7 +41,6 @@ biigle.$component('annotations.components.annotationCanvas.translateInteraction'
                 translateInteraction.on('translatestart', this.handleFeatureModifyStart);
                 translateInteraction.on('translateend', this.handleFeatureModifyEnd);
                 this.map.addInteraction(translateInteraction);
-
                 biigle.$require('keyboard').on('m', this.toggleTranslating);
             }
         },

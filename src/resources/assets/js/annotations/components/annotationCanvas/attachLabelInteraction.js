@@ -44,8 +44,8 @@ biigle.$component('annotations.components.annotationCanvas.attachLabelInteractio
             // Initialize the attach interaction here because we have to wait for
             // the non-reactive properties of annotationCanvas to be initialized.
             if (this.editable) {
-                var AttachLabelInteraction = biigle.$require('annotations.ol.AttachLabelInteraction');
-                attachLabelInteraction = new AttachLabelInteraction({
+                var Interaction = biigle.$require('annotations.ol.AttachLabelInteraction');
+                attachLabelInteraction = new Interaction({
                     features: this.annotationFeatures,
                     map: this.map,
                 });
