@@ -3,37 +3,36 @@
  */
 biigle.$declare('keyboard', new Vue({
     data: {
-        // Distinguish between char and code listeners because a key event with code
-        // 9 is not the same as one with char '9'!
-        charListeners: {},
-        codeListeners: {},
-        // Key codes that should be handled on the keydown event rather than keypress.
-        // This is because of the behavior of Chrome and IE not to fire keypress on some
-        // keys (like the arrow keys) or supply the wrong key code.
-        keyDownCodes: [
-            8, // Backspace
-            9, // Tab
-            27, // ESC
-            33, // Pg Up
-            34, // Pg Down
-            35, // End
-            36, // Pos 1
-            37, // Arrow left
-            38, // Arrow up
-            39, // Arrow right
-            40, // Arrow down
-            46, // Del
-        ],
-        keyDownListeners: {},
+        listeners: {},
+        // Some browsers fire non-standard keys. This map maps standard keys to
+        // non-standard keys so their event listeners are also added.
+        // see: https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
+        compatibilityMap: {
+            'Hyper': 'OS',
+            'Meta': 'OS',
+            'ScrollLock': 'Scroll',
+            'Super': 'OS',
+            ' ': 'Spacebar',
+            'ArrowDown': 'Down',
+            'ArrowLeft': 'Left',
+            'ArrowRight': 'Right',
+            'ArrowUp': 'Up',
+            'CrSel': 'Crsel',
+            'Delete': 'Del',
+            'ExSel': 'Exsel',
+            'ContextMenu': 'Apps',
+            'Escape': 'Esc',
+        },
         // Events that have these tags as target will be ignored.
-        ignoredTags: ['input', 'textarea', 'select'],
+        ignoredTags: [
+            'input',
+            'textarea',
+            'select'
+        ],
     },
     methods: {
-        isChar: function (key) {
+        isKeyIdentifier: function (key) {
             return typeof key === 'string' || key instanceof String;
-        },
-        isKeyDownCode: function (code) {
-            return this.keyDownCodes.indexOf(code) !== -1;
         },
         shouldIgnoreTarget: function (e) {
             return this.ignoredTags.indexOf(e.target.tagName.toLowerCase()) !== -1;
@@ -44,29 +43,8 @@ biigle.$declare('keyboard', new Vue({
                 return;
             }
 
-            var code = e.charCode || e.keyCode;
-            // On Gecko e.which is 0 e.g. for F keys. We have to explicitly check if
-            // e.which is supported and not just use 'e.which || code' here!
-            var char = String.fromCharCode(e.which !== undefined ? e.which : code).toLowerCase();
-
-            if (this.codeListeners.hasOwnProperty(code)) {
-                this.executeCallbacks(this.codeListeners[code], e);
-            }
-
-            if (this.charListeners.hasOwnProperty(char)) {
-                this.executeCallbacks(this.charListeners[char], e);
-            }
-        },
-        handleKeyDownEvents: function (e) {
-            e = e || event; // see: http://stackoverflow.com/a/5630990/1796523
-            if (this.shouldIgnoreTarget(e)) {
-                return;
-            }
-
-            var code = e.charCode || e.keyCode;
-
-            if (this.keyDownListeners.hasOwnProperty(code)) {
-                this.executeCallbacks(this.keyDownListeners[code], e);
+            if (this.listeners.hasOwnProperty(e.key)) {
+                this.executeCallbacks(this.listeners[e.key], e);
             }
         },
         executeCallbacks: function (list, e) {
@@ -76,13 +54,15 @@ biigle.$declare('keyboard', new Vue({
                 if (list[i].callback(e) === false) return;
             }
         },
-        on: function (charOrCode, callback, priority) {
-            var listeners = this.codeListeners;
-            if (this.isChar(charOrCode)) {
-                listeners = this.charListeners;
-                charOrCode = charOrCode.toLowerCase();
-            } else if (this.isKeyDownCode(charOrCode)) {
-                listeners = this.keyDownListeners;
+        on: function (key, callback, priority) {
+            if (!this.isKeyIdentifier(key)) {
+                console.error(key + ' is not a valid key.');
+                return;
+            }
+
+            // Also register the listener for the keys of the compatibility map.
+            if (this.compatibilityMap.hasOwnProperty(key)) {
+                this.on(this.compatibilityMap[key], callback, priority);
             }
 
             priority = priority || 0;
@@ -91,8 +71,8 @@ biigle.$declare('keyboard', new Vue({
                 priority: priority
             };
 
-            if (listeners.hasOwnProperty(charOrCode)) {
-                var list = listeners[charOrCode];
+            if (this.listeners.hasOwnProperty(key)) {
+                var list = this.listeners[key];
                 var i;
 
                 for (i = 0; i < list.length; i++) {
@@ -106,20 +86,12 @@ biigle.$declare('keyboard', new Vue({
                 }
 
             } else {
-                listeners[charOrCode] = [listener];
+                this.listeners[key] = [listener];
             }
         },
-        off: function (charOrCode, callback) {
-            var listeners = this.codeListeners;
-            if (this.isChar(charOrCode)) {
-                listeners = this.charListeners;
-                charOrCode = charOrCode.toLowerCase();
-            } else if (this.isKeyDownCode(charOrCode)) {
-                listeners = this.keyDownListeners;
-            }
-
-            if (listeners.hasOwnProperty(charOrCode)) {
-                var list = listeners[charOrCode];
+        off: function (key, callback) {
+            if (this.listeners.hasOwnProperty(key)) {
+                var list = this.listeners[key];
                 for (var i = list.length - 1; i >= 0; i--) {
                     if (list[i].callback === callback) {
                         list.splice(i, 1);
@@ -132,8 +104,6 @@ biigle.$declare('keyboard', new Vue({
     created: function () {
         // We use keypress because it handles the numpad keys correctly.
         document.body.addEventListener('keypress', this.handleKeyEvents);
-        // Keydown is only used in special cases where keypress doesn't fire.
-        document.body.addEventListener('keydown', this.handleKeyDownEvents);
     },
 }));
 // Legacy support of old name.
