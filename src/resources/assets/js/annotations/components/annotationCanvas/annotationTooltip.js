@@ -50,9 +50,7 @@ biigle.$component('annotations.components.annotationCanvas.annotationTooltip', f
                     }
                 );
 
-                var hash = annotations.map(function (a) {return a.getId();})
-                    .sort()
-                    .join('');
+                var hash = annotations.map(function (a) {return a.getId();}).sort().join('');
 
                 if (this.hoveredAnnotationHash !== hash) {
                     this.hoveredAnnotationHash = hash;

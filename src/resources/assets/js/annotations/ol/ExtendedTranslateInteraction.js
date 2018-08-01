@@ -35,10 +35,10 @@ biigle.$declare('annotations.ol.ExtendedTranslateInteraction', function () {
 
     ExtendedTranslateInteraction.prototype.toggleListeners = function (e) {
         if (e.oldValue) {
-            this.keyboard.off(37, this.translateLeft);
-            this.keyboard.off(38, this.translateUp);
-            this.keyboard.off(39, this.translateRight);
-            this.keyboard.off(40, this.translateDown);
+            this.keyboard.off('ArrowLeft', this.translateLeft);
+            this.keyboard.off('ArrowUp', this.translateUp);
+            this.keyboard.off('ArrowRight', this.translateRight);
+            this.keyboard.off('ArrowDown', this.translateDown);
             // The default translate interaction does not reset the cursor when
             // deactivated.
             var element = this.getMap().getTargetElement();
@@ -46,10 +46,10 @@ biigle.$declare('annotations.ol.ExtendedTranslateInteraction', function () {
                 element.style.cursor = '';
             }
         } else {
-            this.keyboard.on(37, this.translateLeft, 10);
-            this.keyboard.on(38, this.translateUp, 10);
-            this.keyboard.on(39, this.translateRight, 10);
-            this.keyboard.on(40, this.translateDown, 10);
+            this.keyboard.on('ArrowLeft', this.translateLeft, 10);
+            this.keyboard.on('ArrowUp', this.translateUp, 10);
+            this.keyboard.on('ArrowRight', this.translateRight, 10);
+            this.keyboard.on('ArrowDown', this.translateDown, 10);
         }
     };
 

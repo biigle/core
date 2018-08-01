@@ -133,28 +133,15 @@ biigle.$component('annotations.components.annotationCanvas.drawInteractions', fu
             var keyboard = biigle.$require('keyboard');
 
             if (this.editable) {
-                if (this.crossOrigin) {
-                    keyboard.on('g', this.drawPolygon);
-                } else {
-                    keyboard.on('g', function (e) {
-                        if (e.shiftKey) {
-                            self.toggleMagicWand();
-                        } else {
-                            self.drawPolygon();
-                        }
-                    });
-                }
-
                 keyboard.on('a', this.drawPoint);
                 keyboard.on('s', this.drawRectangle);
-                keyboard.on('d', function (e) {
-                    if (e.shiftKey) {
-                        self.drawEllipse();
-                    } else {
-                        self.drawCircle();
-                    }
-                });
+                keyboard.on('d', this.drawCircle);
+                keyboard.on('D', this.drawEllipse);
                 keyboard.on('f', this.drawLineString);
+                keyboard.on('g', this.drawPolygon);
+                if (!this.crossOrigin) {
+                    keyboard.on('G', this.toggleMagicWand);
+                }
             }
         },
         mounted: function () {

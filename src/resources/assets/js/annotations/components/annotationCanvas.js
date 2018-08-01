@@ -177,6 +177,7 @@ biigle.$component('annotations.components.annotationCanvas', {
                 zIndex: 100,
                 updateWhileAnimating: true,
                 updateWhileInteracting: true,
+                style: this.styles.features,
             });
 
             this.selectInteraction = new ol.interaction.Select({
@@ -569,15 +570,14 @@ biigle.$component('annotations.components.annotationCanvas', {
 
         // The name can be used for layer filters, e.g. with forEachFeatureAtPixel.
         this.annotationLayer.set('name', 'annotations');
+        this.map.addLayer(this.annotationLayer);
 
         // These names are required by the minimap component.
         this.imageLayer.set('name', 'imageRegular');
         this.tiledImageLayer.set('name', 'imageTile');
 
-        this.annotationLayer.setStyle(this.styles.features);
-        this.map.addLayer(this.annotationLayer);
-
         biigle.$require('events').$on('sidebar.toggle', function () {
+            // This needs to be wrapped in a function so it is called without arguments.
             self.$nextTick(function () {
                 self.map.updateSize();
             });
@@ -590,24 +590,18 @@ biigle.$component('annotations.components.annotationCanvas', {
         this.map.addInteraction(this.selectInteraction);
 
         var keyboard = biigle.$require('keyboard');
-        // Space bar.
-        keyboard.on(32, this.handleNext);
-        // Arrow right key.
-        keyboard.on(39, this.handleNext);
-        // Arrow left key.
-        keyboard.on(37, this.handlePrevious);
-        // Esc key.
-        keyboard.on(27, this.resetInteractionMode);
+        keyboard.on(' ', this.handleNext);
+        keyboard.on('ArrowRight', this.handleNext);
+        keyboard.on('ArrowLeft', this.handlePrevious);
+        keyboard.on('Escape', this.resetInteractionMode);
 
         if (this.editable) {
             this.modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
             this.modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
             this.map.addInteraction(this.modifyInteraction);
 
-            // Del key.
-            keyboard.on(46, this.deleteSelectedAnnotations);
-            // Backspace key.
-            keyboard.on(8, this.deleteLastCreatedAnnotation);
+            keyboard.on('Delete', this.deleteSelectedAnnotations);
+            keyboard.on('Backspace', this.deleteLastCreatedAnnotation);
         }
     },
     mounted: function () {

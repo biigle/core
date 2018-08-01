@@ -79,25 +79,21 @@ biigle.$component('annotations.components.annotationModesTab', {
         mode: function (mode, oldMode) {
             switch (oldMode) {
                 case 'volare':
-                    // Enter key.
-                    this.keyboard.off(13, this.emitAttachLabel);
+                    this.keyboard.off('Enter', this.emitAttachLabel);
                     break;
                 case 'randomSampling':
                 case 'regularSampling':
-                    // Enter key.
-                    this.keyboard.off(13, this.emitCreateSample);
+                    this.keyboard.off('Enter', this.emitCreateSample);
                     break;
             }
 
             switch (mode) {
                 case 'volare':
-                    // Enter key.
-                    this.keyboard.on(13, this.emitAttachLabel);
+                    this.keyboard.on('Enter', this.emitAttachLabel);
                     break;
                 case 'randomSampling':
                 case 'regularSampling':
-                    // Enter key.
-                    this.keyboard.on(13, this.emitCreateSample);
+                    this.keyboard.on('Enter', this.emitCreateSample);
                     break;
             }
 
