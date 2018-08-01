@@ -20,7 +20,7 @@
             <div class="label-indicator" title="Currently selected label" v-text="label.name"></div>
         </label-indicator>
     </div>
-    <label-tooltip :show="showLabelTooltip" :annotations="hoveredAnnotations" :position="mousePosition" inline-template>
+    <label-tooltip watch="hoverFeatures" :show="showLabelTooltip" :position="mousePosition" inline-template>
         <div class="annotation-tooltip">
             <ul class="annotation-tooltip__annotations">
                 <li v-for="annotationLabel in annotationLabels">
@@ -31,8 +31,8 @@
             </ul>
         </div>
     </label-tooltip>
-    <measure-tooltip :show="showMeasureTooltip" :annotations="hoveredAnnotations" :position="mousePosition" :image="image" :areas="imagesArea"></measure-tooltip>
-    <measure-tooltip :show="hasMeasureFeature" :annotations="measureFeatures" :position="measureFeaturePosition" positioning="center-left" :image="image" :areas="imagesArea"></measure-tooltip>
+    <measure-tooltip watch="hoverFeatures" :show="showMeasureTooltip" :position="mousePosition" :image="image" :areas="imagesArea"></measure-tooltip>
+    <measure-tooltip watch="changeMeasureFeature" :show="hasMeasureFeature" :position="measureFeaturePosition" positioning="center-left" :image="image" :areas="imagesArea"></measure-tooltip>
     <div class="annotation-canvas__toolbar">
         <div class="btn-group">
             <control-button icon="fa-step-backward" :title="previousButtonTitle + ' 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'" v-on:click="handlePrevious"></control-button>

@@ -10,23 +10,13 @@ biigle.$component('annotations.components.annotationCanvas.measureInteraction', 
     return {
         data: function () {
             return {
-                measureFeature: undefined,
+                hasMeasureFeature: false,
                 measureFeaturePosition: [0, 0],
             };
         },
         computed: {
             isMeasuring: function () {
                 return this.interactionMode === 'measure';
-            },
-            measureFeatures: function () {
-                if (this.measureFeature) {
-                    return [this.measureFeature];
-                }
-
-                return [];
-            },
-            hasMeasureFeature: function () {
-                return !!this.measureFeature;
             },
         },
         methods: {
@@ -39,11 +29,22 @@ biigle.$component('annotations.components.annotationCanvas.measureInteraction', 
             },
             handleMeasureDrawStart: function (e) {
                 measureLayer.getSource().clear();
-                this.measureFeature = e.feature;
+                this.setMeasureFeature(e.feature);
             },
-            updateMeasureFeaturePosition: function (e) {
-                this.measureFeaturePosition = e.target.getLastCoordinate();
+            updateMeasureFeature: function (e) {
+                this.measureFeaturePosition = e.target.getGeometry().getLastCoordinate();
+                this.$emit('changeMeasureFeature', [e.target]);
             },
+            setMeasureFeature: function (feature) {
+                this.measureFeature = feature;
+                this.hasMeasureFeature = !!feature;
+
+                if (feature) {
+                    // Set initial tooltip position.
+                    this.updateMeasureFeature({target: feature});
+                    feature.on('change', this.updateMeasureFeature);
+                }
+            }
         },
         watch: {
             isMeasuring: function (measuring) {
@@ -52,17 +53,9 @@ biigle.$component('annotations.components.annotationCanvas.measureInteraction', 
                     this.map.addInteraction(measureInteraction);
                 } else {
                     measureLayer.getSource().clear();
-                    this.measureFeature = undefined;
+                    this.setMeasureFeature(undefined);
                     this.map.removeLayer(measureLayer);
                     this.map.removeInteraction(measureInteraction);
-                }
-            },
-            measureFeature: function (feature) {
-                if (feature) {
-                    var geom = feature.getGeometry();
-                    // Set initial tooltip position.
-                    this.updateMeasureFeaturePosition({target: geom});
-                    geom.on('change', this.updateMeasureFeaturePosition);
                 }
             },
         },
@@ -81,6 +74,10 @@ biigle.$component('annotations.components.annotationCanvas.measureInteraction', 
             });
             measureInteraction.on('drawstart', this.handleMeasureDrawStart);
             biigle.$require('keyboard').on('F', this.toggleMeasuring);
+
+            // Do not make this reactive.
+            // See: https://github.com/biigle/annotations/issues/108
+            this.measureFeature = undefined;
         },
     };
 });

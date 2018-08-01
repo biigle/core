@@ -26,17 +26,16 @@ biigle.$component('annotations.components.annotationCanvas.annotationTooltip', f
         },
         data: function () {
             return {
-                // Used to efficiently determine when to update hoveredAnnotations.
-                hoveredAnnotationHash: '',
-                hoveredAnnotations: [],
+                // Used to determine when to notify watchers for hovered annotations.
+                hoveredFeaturesHash: '',
             };
         },
         methods: {
             updateHoveredAnnotations: function (e) {
-                var annotations = [];
+                var features = [];
                 this.map.forEachFeatureAtPixel(e.pixel,
                     function (feature) {
-                        annotations.push(feature);
+                        features.push(feature);
                     },
                     {
                         layerFilter: function (layer) {
@@ -45,16 +44,16 @@ biigle.$component('annotations.components.annotationCanvas.annotationTooltip', f
                     }
                 );
 
-                var hash = annotations.map(function (a) {return a.getId();}).sort().join('');
+                var hash = features.map(function (a) {return a.getId();}).join('-');
 
-                if (this.hoveredAnnotationHash !== hash) {
-                    this.hoveredAnnotationHash = hash;
-                    this.hoveredAnnotations = annotations;
+                if (this.hoveredFeaturesHash !== hash) {
+                    this.hoveredFeaturesHash = hash;
+                    this.$emit('hoverFeatures', features);
                 }
             },
             resetHoveredAnnotations: function () {
-                this.hoveredAnnotationHash = '';
-                this.hoveredAnnotations = [];
+                this.hoveredFeaturesHash = '';
+                this.$emit('hoverFeatures', []);
             },
         },
         watch: {

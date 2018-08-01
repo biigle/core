@@ -13,25 +13,12 @@ biigle.$component('annotations.components.measureTooltip', {
         biigle.$require('annotations.mixins.annotationTooltip'),
         biigle.$require('annotations.mixins.measureComponent'),
     ],
+    data: function () {
+        return {
+            measuredGeometries: [],
+        };
+    },
     computed: {
-        geometries: function () {
-            return this.annotations.map(function (annotation) {
-                return annotation.getGeometry();
-            });
-        },
-        measurableGeometries: function () {
-            return this.geometries.filter(function (geom) {
-                return this.isAeraGeometry(geom) || this.isLengthGeometry(geom);
-            }, this);
-        },
-        measuredGeometries: function () {
-            return this.measurableGeometries.map(function (geom) {
-                // Call getRevision so Vue is able to update this when the geometry
-                // changes.
-                geom.getRevision();
-                return this.measure(geom);
-            }, this);
-        },
         areaUnitMultipliers: function () {
             return this.unitMultipliers.map(function (multiplier) {
                 return Math.pow(multiplier, 2);
@@ -39,6 +26,17 @@ biigle.$component('annotations.components.measureTooltip', {
         },
     },
     methods: {
+        updateGeometries: function (features) {
+            this.measuredGeometries = features.map(function (feature) {
+                    return feature.getGeometry();
+                })
+                .filter(function (geom) {
+                    return this.isAeraGeometry(geom) || this.isLengthGeometry(geom);
+                }, this)
+                .map(function (geom) {
+                    return this.measure(geom);
+                }, this);
+        },
         measure: function (geom) {
             if (geom.getArea) {
                 return this.formatArea(geom.getArea());
@@ -101,4 +99,17 @@ biigle.$component('annotations.components.measureTooltip', {
             return i;
         },
     },
+    watch: {
+        show: function (show) {
+            // Do NOT pass the features as prop of this component because this would make
+            // them reactive. As the features store a reference back to the map,
+            // EVERYTHING would be made reactive.
+            // See: https://github.com/biigle/annotations/issues/108
+            if (show) {
+                this.$parent.$on(this.watch, this.updateGeometries);
+            } else {
+                this.$parent.$off(this.watch, this.updateGeometries);
+            }
+        },
+    }
 });

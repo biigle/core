@@ -7,8 +7,8 @@ biigle.$component('annotations.components.labelTooltip', {
     mixins: [biigle.$require('annotations.mixins.annotationTooltip')],
     computed: {
         annotationLabels: function () {
-            return this.annotations.map(function (feature) {
-                return feature.get('annotation').labels;
+            return this.annotations.map(function (annotation) {
+                return annotation.labels;
             });
         },
     },
