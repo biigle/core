@@ -44,7 +44,7 @@ biigle.$component('annotations.components.annotationCanvas.measureInteraction', 
                     this.updateMeasureFeature({target: feature});
                     feature.on('change', this.updateMeasureFeature);
                 }
-            }
+            },
         },
         watch: {
             isMeasuring: function (measuring) {
@@ -56,6 +56,16 @@ biigle.$component('annotations.components.annotationCanvas.measureInteraction', 
                     this.setMeasureFeature(undefined);
                     this.map.removeLayer(measureLayer);
                     this.map.removeInteraction(measureInteraction);
+                }
+            },
+            image: function () {
+                if (this.isMeasuring) {
+                    // Wait for the new image to be propagated down to the measureTooltip
+                    // then update it. We have to do this manually since we don't want to
+                    // process the OpenLayers features reactively (see below).
+                    this.$nextTick(function () {
+                        this.updateMeasureFeature({target: this.measureFeature});
+                    });
                 }
             },
         },
