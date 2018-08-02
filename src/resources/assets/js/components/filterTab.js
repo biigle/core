@@ -256,7 +256,7 @@ biigle.$component('volumes.components.filterTab', {
         // Load saved state from local storage
         var rules = JSON.parse(localStorage.getItem(this.rulesStorageKey));
         if (rules) {
-            Vue.set(this, 'rules', rules);
+            this.rules = rules;
         }
 
         var mode = localStorage.getItem(this.modeStorageKey);

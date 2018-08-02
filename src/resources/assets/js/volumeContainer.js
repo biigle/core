@@ -7,7 +7,6 @@ biigle.$viewModel('volume-container', function (element) {
     var thumbUri = biigle.$require('volumes.thumbUri');
     var annotateUri = biigle.$require('volumes.annotateUri');
     var imageUri = biigle.$require('volumes.imageUri');
-    var events = biigle.$require('events');
     var urlParams = biigle.$require('volumes.urlParams');
 
     /*
@@ -173,7 +172,7 @@ biigle.$viewModel('volume-container', function (element) {
                     );
                 }
 
-                events.$emit('volumes.images.count', imageIdsToShow.length);
+                biigle.$require('volumes.stores.image').count = imageIdsToShow.length;
             },
         },
         created: function () {

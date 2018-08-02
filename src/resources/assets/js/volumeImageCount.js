@@ -7,10 +7,10 @@ biigle.$viewModel('volume-image-count', function (element) {
 
     new Vue({
         el: element,
-        data: {
-            count: imageIds.length,
-        },
         computed: {
+            count: function () {
+                return biigle.$require('volumes.stores.image').count;
+            },
             text: function () {
                 if (this.count === imageIds.length) {
                     return this.count;
@@ -18,12 +18,6 @@ biigle.$viewModel('volume-image-count', function (element) {
 
                 return this.count + ' of ' + imageIds.length;
             },
-        },
-        created: function () {
-            var self = this;
-            events.$on('volumes.images.count', function (count) {
-                self.count = count;
-            });
         },
     });
 });
