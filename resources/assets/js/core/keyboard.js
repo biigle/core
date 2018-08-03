@@ -102,8 +102,9 @@ biigle.$declare('keyboard', new Vue({
         },
     },
     created: function () {
-        // We use keypress because it handles the numpad keys correctly.
-        document.body.addEventListener('keypress', this.handleKeyEvents);
+        // Use keydown because keypress dows not fire for all keys that can be used in
+        // shortcuts.
+        document.body.addEventListener('keydown', this.handleKeyEvents);
     },
 }));
 // Legacy support of old name.
