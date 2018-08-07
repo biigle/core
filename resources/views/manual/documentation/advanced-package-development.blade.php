@@ -315,8 +315,5 @@ public function index()
 	<p>
 		But there is still one step left for you to master package development: Custom assets. Besides using custom CSS to style the content beyond Bootstrap's capabilities, you need to be able to use custom JavaScript for interactive client side applications as well. In a next tutorial, we'll discuss how to include and publish custom assets and how to use the already provided functionality of the BIIGLE core client side application.
 	</p>
-	<p>
-		<a href="{{ route('manual-documentation') }}" class="btn btn-default" title="Back to the core documentation"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> back</a>
-	</p>
 </div>
 @endsection

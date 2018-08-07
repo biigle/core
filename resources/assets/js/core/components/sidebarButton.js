@@ -23,11 +23,7 @@ biigle.$component('core.components.sidebarButton', {
     },
     computed: {
         iconClass: function () {
-            if (this.tab.icon.startsWith('fa-')) {
-                return 'fa ' + this.tab.icon;
-            }
-
-            return 'glyphicon glyphicon-' + this.tab.icon;
+            return 'fa fa-' + this.tab.icon;
         },
         chevronClass: function () {
             return 'fa fa-chevron-' + this.direction;

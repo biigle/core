@@ -9,7 +9,7 @@ biigle.$component('core.components.membersPanel', {
             'Members' +
             '<span class="pull-right">' +
                 '<loader :active="loading"></loader> ' +
-                '<button class="btn btn-default btn-xs" title="Edit members" @click="toggleEditing" :class="{active: editing}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>' +
+                '<button class="btn btn-default btn-xs" title="Edit members" @click="toggleEditing" :class="{active: editing}"><span class="fa fa-pencil-alt" aria-hidden="true"></span></button>' +
             '</span>' +
         '</div>' +
         '<div class="panel-body" v-if="editing">' +

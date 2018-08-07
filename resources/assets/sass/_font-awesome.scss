@@ -1,17 +1,16 @@
-// note: bootstrap-sass/assets/stylesheets/bootstrap comes from node_modules
+$fa-font-path: '../fonts/fontawesome';
 
-$fa-font-path: '../fonts/font-awesome';
+@import "@fortawesome/fontawesome-free/scss/variables";
+@import "@fortawesome/fontawesome-free/scss/mixins";
+@import "@fortawesome/fontawesome-free/scss/core";
+// @import "@fortawesome/fontawesome-free/scss/larger";
+@import "@fortawesome/fontawesome-free/scss/fixed-width";
+// @import "@fortawesome/fontawesome-free/scss/list";
+// @import "@fortawesome/fontawesome-free/scss/bordered-pulled";
+// @import "@fortawesome/fontawesome-free/scss/animated";
+@import "@fortawesome/fontawesome-free/scss/rotated-flipped";
+// @import "@fortawesome/fontawesome-free/scss/stacked";
+@import "@fortawesome/fontawesome-free/scss/icons";
+// @import "@fortawesome/fontawesome-free/scss/screen-reader";
 
-@import "font-awesome/scss/variables";
-@import "font-awesome/scss/mixins";
-@import "font-awesome/scss/path";
-@import "font-awesome/scss/core";
-// @import "font-awesome/scss/larger";
-// @import "font-awesome/scss/fixed-width";
-// @import "font-awesome/scss/list";
-// @import "font-awesome/scss/bordered-pulled";
-// @import "font-awesome/scss/animated";
-// @import "font-awesome/scss/rotated-flipped";
-// @import "font-awesome/scss/stacked";
-@import "font-awesome/scss/icons";
-// @import "font-awesome/scss/screen-reader";
+@import "@fortawesome/fontawesome-free/scss/solid";

@@ -74,13 +74,15 @@ biigle.$component('core.components.sidebar', {
             this.events.$emit('sidebar.close.' + name);
         },
         toggleLastOpenedTab: function (e) {
-            if (this.lastOpenedTab) {
+            if (this.open) {
                 e.preventDefault();
-                if (this.open) {
-                    this.$emit('close', this.lastOpenedTab);
-                } else {
-                    this.$emit('open', this.lastOpenedTab);
-                }
+                this.$emit('close', this.lastOpenedTab);
+            } else if (this.lastOpenedTab) {
+                e.preventDefault();
+                this.$emit('open', this.lastOpenedTab);
+            } else if (this.tabs.length > 0) {
+                e.preventDefault();
+                this.$emit('open', this.tabs[0].name);
             }
         },
     },
@@ -89,7 +91,7 @@ biigle.$component('core.components.sidebar', {
         this.$on('close', this.handleCloseTab);
 
         if (this.toggleOnKeyboard) {
-            biigle.$require('keyboard').on(9, this.toggleLastOpenedTab);
+            biigle.$require('keyboard').on('Tab', this.toggleLastOpenedTab);
         }
     },
     mounted: function () {

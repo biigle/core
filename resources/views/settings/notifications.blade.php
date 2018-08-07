@@ -6,7 +6,7 @@
 @section('settings-content')
 <h2>Notifications</h2>
 <p>
-    Choose how you receive notifications. <strong>Email</strong> will send you an email for each new notification. <strong>Web</strong> will send the notification to your BIIGLE <a href="{{route('notifications')}}"><i class="glyphicon glyphicon-bell"></i> notification center</a>.
+    Choose how you receive notifications. <strong>Email</strong> will send you an email for each new notification. <strong>Web</strong> will send the notification to your BIIGLE <a href="{{route('notifications')}}"><i class="fa fa-bell"></i> notification center</a>.
 </p>
 <div class="panel panel-default">
     @forelse ($modules->getMixins('settings.notifications') as $module => $nestedMixins)
