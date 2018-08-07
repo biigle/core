@@ -9,13 +9,13 @@ biigle.$component('core.components.membersPanel', {
             'Members' +
             '<span class="pull-right">' +
                 '<loader :active="loading"></loader> ' +
-                '<button class="btn btn-default btn-xs" title="Edit members" @click="toggleEditing" :class="{active: editing}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>' +
+                '<button class="btn btn-default btn-xs" title="Edit members" @click="toggleEditing" :class="{active: editing}"><span class="fa fa-pencil-alt" aria-hidden="true"></span></button>' +
             '</span>' +
         '</div>' +
         '<div class="panel-body" v-if="editing">' +
             '<form class="form-inline" @submit.prevent="attachMember">' +
                 '<div class="form-group">' +
-                    '<typeahead :items="availableUsers" placeholder="User name" @select="selectMember" :value="selectedMemberName"></typeahead> ' +
+                    '<typeahead :items="availableUsers" placeholder="User name" @select="selectMember" :value="selectedMemberName" :template="typeaheadTemplate"></typeahead> ' +
                     '<select class="form-control" title="Role of the new user" v-model="selectedRole">' +
                         '<option v-for="role in roles" :value="role.id" v-text="role.name"></option>' +
                     '</select> ' +
@@ -43,6 +43,7 @@ biigle.$component('core.components.membersPanel', {
             selectedMember: null,
             selectedRole: null,
             users: [],
+            typeaheadTemplate: '<span v-text="item.name"></span><br><small v-text="item.affiliation"></small>',
         };
     },
     props: {

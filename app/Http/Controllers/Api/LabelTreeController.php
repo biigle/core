@@ -10,6 +10,7 @@ use Biigle\LabelTree;
 use Biigle\Visibility;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class LabelTreeController extends Controller
@@ -130,7 +131,7 @@ class LabelTreeController extends Controller
 
         // Compare the ID of the label tree attribute because it is cast to an int.
         // The request value is a string and can't be used for strict comparison.
-        if ($request->has('visibility_id') && $tree->visibility_id === Visibility::$private->id) {
+        if ($request->filled('visibility_id') && $tree->visibility_id === Visibility::$private->id) {
             $tree->detachUnauthorizedProjects();
         }
 
@@ -188,10 +189,10 @@ class LabelTreeController extends Controller
         $this->validate($request, LabelTree::$createRules);
         $user = $auth->user();
 
-        if ($request->has('project_id')) {
+        if ($request->filled('project_id')) {
             $project = Project::findOrFail($request->input('project_id'));
             if (!$user->can('update', $project)) {
-                return $this->buildFailedValidationResponse($request, [
+                throw ValidationException::withMessages([
                     'project_id' => ['You have no permission to create a label tree for this project.'],
                 ]);
             }

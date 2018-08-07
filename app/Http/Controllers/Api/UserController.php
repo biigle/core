@@ -7,6 +7,7 @@ use Biigle\User;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UserController extends Controller
@@ -46,13 +47,15 @@ class UserController extends Controller
      *       "id": 1,
      *       "firstname": "Joe",
      *       "lastname": "User",
-     *       "role_id": 2
+     *       "role_id": 2,
+     *       "affiliation": "Ocean Research Centre",
      *    },
      *    {
      *       "id": 2,
      *       "firstname": "Jane",
      *       "lastname": "User",
-     *       "role_id": 2
+     *       "role_id": 2,
+     *       "affiliation": "Biodtata Mining Group",
      *    }
      * ]
      *
@@ -67,7 +70,7 @@ class UserController extends Controller
             $operator = 'like';
         }
 
-        return User::select('id', 'firstname', 'lastname', 'role_id')
+        return User::select('id', 'firstname', 'lastname', 'role_id', 'affiliation')
             ->where('firstname', $operator, "%{$pattern}%")
             ->orWhere('lastname', $operator, "%{$pattern}%")
             ->take(10)
@@ -89,13 +92,15 @@ class UserController extends Controller
      *       "id": 1,
      *       "firstname": "Joe",
      *       "lastname": "User",
-     *       "role_id": 2
+     *       "role_id": 2,
+     *       "affiliation": "Ocean Research Centre",
      *    },
      *    {
      *       "id": 2,
      *       "firstname": "Jane",
      *       "lastname": "User",
-     *       "role_id": 2
+     *       "role_id": 2,
+     *       "affiliation": "Biodtata Mining Group",
      *    }
      * ]
      *
@@ -104,7 +109,7 @@ class UserController extends Controller
      */
     public function index(Guard $auth)
     {
-        return User::select('id', 'firstname', 'lastname', 'role_id')
+        return User::select('id', 'firstname', 'lastname', 'role_id', 'affiliation')
             ->when($auth->user()->isAdmin, function ($query) {
                 $query->addSelect('email');
             })
@@ -127,7 +132,8 @@ class UserController extends Controller
      *    "id": 1,
      *    "firstname": "Joe",
      *    "lastname": "User",
-     *    "role_id": 2
+     *    "role_id": 2,
+     *    "affiliation": "Ocean Research Centre",
      * }
      *
      * @param int $id
@@ -135,7 +141,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        return User::select('id', 'firstname', 'lastname', 'role_id')->findOrFail($id);
+        return User::select('id', 'firstname', 'lastname', 'role_id', 'affiliation')
+            ->findOrFail($id);
     }
 
     /**
@@ -153,6 +160,7 @@ class UserController extends Controller
      *    "firstname": "Joe",
      *    "lastname": "User",
      *    "email": "joe@user.com",
+     *    "affiliation": "Ocean Research Centre",
      *    "role_id": 2,
      *    "created_at": "2016-04-29 07:20:33",
      *    "updated_at": "2016-04-29 07:20:33",
@@ -183,6 +191,7 @@ class UserController extends Controller
      * @apiParam (Attributes that can be updated) {String} password The new password of the user. If this parameter is set, an additional `password_confirmation` parameter needs to be present, containing the same new password.
      * @apiParam (Attributes that can be updated) {String} firstname The new firstname of the user.
      * @apiParam (Attributes that can be updated) {String} lastname The new lastname of the user.
+     * @apiParam (Attributes that can be updated) {String} affiliation The affiliation of the user.
      * @apiParam (Attributes that can be updated) {Number} role_id Global role of the user. If the role should be changed, an additional `auth_password` field is required, containing the password of the global administrator that requests the change.
      *
      * @apiParamExample {String} Request example:
@@ -191,6 +200,7 @@ class UserController extends Controller
      * password_confirmation: 'TotallySecure'
      * firstname: 'New'
      * lastname: 'Name'
+     * affiliation: 'Biodata Mining Group'
      * role_id: 1
      * auth_password: 'password123'
      *
@@ -210,15 +220,15 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $this->validate($request, $user->updateRules());
 
-        if ($request->has('role_id') || $request->has('email') || $request->has('password')) {
+        if ($request->filled('role_id') || $request->filled('email') || $request->filled('password')) {
             if (!Hash::check($request->input('auth_password'), $auth->user()->password)) {
-                $errors = ['auth_password' => [trans('validation.custom.password')]];
-
-                return $this->buildFailedValidationResponse($request, $errors);
+                throw ValidationException::withMessages([
+                    'auth_password' => [trans('validation.custom.password')],
+                ]);
             }
         }
 
-        if ($request->has('password')) {
+        if ($request->filled('password')) {
             // global admins do not need to provide the old password to set a new one
             $user->password = bcrypt($request->input('password'));
         }
@@ -227,6 +237,7 @@ class UserController extends Controller
         $user->firstname = $request->input('firstname', $user->firstname);
         $user->lastname = $request->input('lastname', $user->lastname);
         $user->email = $request->input('email', $user->email);
+        $user->affiliation = $request->input('affiliation', $user->affiliation);
         $user->save();
 
         if (!static::isAutomatedRequest($request)) {
@@ -254,6 +265,7 @@ class UserController extends Controller
      * @apiParam (Attributes that can be updated) {String} password The new password of the user. If this parameter is set, an additional `password_confirmation` parameter needs to be present, containing the same new password, as well as an `auth_password` parameter, containing the old password.
      * @apiParam (Attributes that can be updated) {String} firstname The new firstname of the user.
      * @apiParam (Attributes that can be updated) {String} lastname The new lastname of the user.
+     * @apiParam (Attributes that can be updated) {String} affiliation The affiliation of the user.
      *
      * @apiParamExample {String} Request example:
      * email: 'new@example.com'
@@ -261,6 +273,7 @@ class UserController extends Controller
      * password_confirmation: 'TotallySecure'
      * firstname: 'New'
      * lastname: 'Name'
+     * affiliation: 'Biodata Mining Group'
      *
      * @param Request $request
      * @param Guard $auth
@@ -277,22 +290,23 @@ class UserController extends Controller
         $this->validate($request, $user->updateRules());
 
         // confirm change of credentials with old password
-        if ($request->has('password') || $request->has('email')) {
+        if ($request->filled('password') || $request->filled('email')) {
             // the user has to provide their old password to set a new one
             if (!Hash::check($request->input('auth_password'), $user->password)) {
-                $errors = ['auth_password' => [trans('validation.custom.password')]];
-
-                return $this->buildFailedValidationResponse($request, $errors);
+                throw ValidationException::withMessages([
+                    'auth_password' => [trans('validation.custom.password')],
+                ]);
             }
         }
 
-        if ($request->has('password')) {
+        if ($request->filled('password')) {
             $user->password = bcrypt($request->input('password'));
         }
 
         $user->firstname = $request->input('firstname', $user->firstname);
         $user->lastname = $request->input('lastname', $user->lastname);
         $user->email = $request->input('email', $user->email);
+        $user->affiliation = $request->input('affiliation', $user->affiliation);
         $wasDirty = $user->isDirty();
         $user->save();
 
@@ -318,6 +332,7 @@ class UserController extends Controller
      * @apiParam (Required parameters) {String} lastname The lastname of the new user.
      *
      * @apiParam (Optional parameters) {String} uuid The BIIGLE UUID of this user (if they already got one from another BIIGLE instance). If no UUID is given, a new one will be generated.
+     * @apiParam (Optional parameters) {String} affiliation The affiliation of the user.
      *
      * @apiParamExample {String} Request example:
      * email: 'new@example.com'
@@ -326,6 +341,7 @@ class UserController extends Controller
      * firstname: 'New'
      * lastname: 'User'
      * uuid: 'c796ccec-c746-408f-8009-9f1f68e2aa62'
+     * affiliation: 'Biodata Mining Group'
      *
      * @apiSuccessExample {json} Success response:
      * {
@@ -336,7 +352,8 @@ class UserController extends Controller
      *    "role_id": 2,
      *    "created_at": "2016-04-29 07:38:51",
      *    "updated_at"; "2016-04-29 07:38:51",
-     *    "uuid": "c796ccec-c746-408f-8009-9f1f68e2aa62"
+     *    "uuid": "c796ccec-c746-408f-8009-9f1f68e2aa62",
+     *    "affiliation": "Biodata Mining Group"
      * }
      *
      * @param Request $request
@@ -359,8 +376,9 @@ class UserController extends Controller
         $user->firstname = $request->input('firstname');
         $user->lastname = $request->input('lastname');
         $user->email = $request->input('email');
+        $user->affiliation = $request->input('affiliation');
         $user->password = bcrypt($request->input('password'));
-        if ($request->has('uuid')) {
+        if ($request->filled('uuid')) {
             $user->uuid = $request->input('uuid');
         } else {
             $user->uuid = Uuid::uuid4();
@@ -406,9 +424,9 @@ class UserController extends Controller
         $this->validate($request, User::$deleteRules);
 
         if (!Hash::check($request->input('password'), $auth->user()->password)) {
-            $errors = ['password' => [trans('validation.custom.password')]];
-
-            return $this->buildFailedValidationResponse($request, $errors);
+            throw ValidationException::withMessages([
+                'password' => [trans('validation.custom.password')],
+            ]);
         }
 
         $user = User::findOrFail($id);
@@ -416,10 +434,7 @@ class UserController extends Controller
         try {
             $user->checkCanBeDeleted();
         } catch (HttpException $e) {
-            return $this->buildFailedValidationResponse(
-                $request,
-                ['password' => [$e->getMessage()]]
-            );
+            throw ValidationException::withMessages(['password' => [$e->getMessage()]]);
         }
 
         $user->delete();
@@ -458,18 +473,15 @@ class UserController extends Controller
         $this->validate($request, User::$deleteRules);
 
         if (!Hash::check($request->input('password'), $user->password)) {
-            $errors = ['password' => [trans('validation.custom.password')]];
-
-            return $this->buildFailedValidationResponse($request, $errors);
+            throw ValidationException::withMessages([
+                'password' => [trans('validation.custom.password')],
+            ]);
         }
 
         try {
             $user->checkCanBeDeleted();
         } catch (HttpException $e) {
-            return $this->buildFailedValidationResponse(
-                $request,
-                ['submit' => [$e->getMessage()]]
-            );
+            throw ValidationException::withMessages(['submit' => [$e->getMessage()]]);
         }
 
         auth()->logout();
@@ -493,7 +505,7 @@ class UserController extends Controller
      */
     protected function emailToLowercase(Request $request)
     {
-        if ($request->has('email')) {
+        if ($request->filled('email')) {
             $request->merge(['email' => strtolower($request->input('email'))]);
         }
 

@@ -28,6 +28,13 @@ class ProcessNewImages extends Job implements ShouldQueue
     protected $only;
 
     /**
+     * Ignore this job if the volume does not exist any more.
+     *
+     * @var boolean
+     */
+    protected $deleteWhenMissingModels = true;
+
+    /**
      * Create a new job instance.
      *
      * @param Volume $volume The volume for which the images should be processed.
@@ -49,16 +56,13 @@ class ProcessNewImages extends Job implements ShouldQueue
      */
     public function handle()
     {
-        // Handle case where volume has been deleted in the meantime.
-        if ($this->volume) {
-            $this->volume->images()
-                ->select('id')
-                ->when($this->only, function ($query) {
-                    return $query->whereIn('id', $this->only);
-                })
-                ->chunk(100, function ($images) {
-                    $this->dispatch(new ProcessNewImageChunk($images->pluck('id')));
-                });
-        }
+        $this->volume->images()
+            ->select('id')
+            ->when($this->only, function ($query) {
+                return $query->whereIn('id', $this->only);
+            })
+            ->chunk(100, function ($images) {
+                $this->dispatch(new ProcessNewImageChunk($images->pluck('id')));
+            });
     }
 }

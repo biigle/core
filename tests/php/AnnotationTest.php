@@ -2,10 +2,12 @@
 
 namespace Biigle\Tests;
 
+use Exception;
 use Biigle\Role;
 use Biigle\Shape;
 use ModelTestCase;
 use Biigle\Annotation;
+use Illuminate\Database\QueryException;
 
 class AnnotationTest extends ModelTestCase
 {
@@ -31,7 +33,7 @@ class AnnotationTest extends ModelTestCase
 
     public function testShapeOnDeleteRestrict()
     {
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->shape()->delete();
     }
 
@@ -70,7 +72,7 @@ class AnnotationTest extends ModelTestCase
 
     public function testValidatePointsInteger()
     {
-        $this->setExpectedException('Exception');
+        $this->expectException(Exception::class);
         $this->model->validatePoints([10, 'a']);
     }
 
@@ -78,7 +80,7 @@ class AnnotationTest extends ModelTestCase
     {
         $this->model->shape_id = Shape::$pointId;
         $this->model->validatePoints([10.5, 10.5]);
-        $this->setExpectedException('Exception');
+        $this->expectException(Exception::class);
         $this->model->validatePoints([10, 10, 20, 20]);
     }
 
@@ -86,7 +88,7 @@ class AnnotationTest extends ModelTestCase
     {
         $this->model->shape_id = Shape::$circleId;
         $this->model->validatePoints([10, 10, 20]);
-        $this->setExpectedException('Exception');
+        $this->expectException(Exception::class);
         $this->model->validatePoints([10, 10]);
     }
 
@@ -94,7 +96,7 @@ class AnnotationTest extends ModelTestCase
     {
         $this->model->shape_id = Shape::$rectangleId;
         $this->model->validatePoints([10, 10, 10, 20, 20, 20, 20, 10]);
-        $this->setExpectedException('Exception');
+        $this->expectException(Exception::class);
         $this->model->validatePoints([10, 10]);
     }
 
@@ -102,7 +104,7 @@ class AnnotationTest extends ModelTestCase
     {
         $this->model->shape_id = Shape::$ellipseId;
         $this->model->validatePoints([10, 10, 10, 20, 20, 20, 20, 10]);
-        $this->setExpectedException('Exception');
+        $this->expectException(Exception::class);
         $this->model->validatePoints([10, 10]);
     }
 
@@ -110,7 +112,7 @@ class AnnotationTest extends ModelTestCase
     {
         $this->model->shape_id = Shape::$lineId;
         $this->model->validatePoints([10, 10]);
-        $this->setExpectedException('Exception');
+        $this->expectException(Exception::class);
         $this->model->validatePoints([10]);
     }
 
@@ -118,7 +120,7 @@ class AnnotationTest extends ModelTestCase
     {
         $this->model->shape_id = Shape::$polygonId;
         $this->model->validatePoints([10, 10]);
-        $this->setExpectedException('Exception');
+        $this->expectException(Exception::class);
         $this->model->validatePoints([10]);
     }
 

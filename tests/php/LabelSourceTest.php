@@ -6,6 +6,7 @@ use App;
 use Mockery;
 use ModelTestCase;
 use Biigle\LabelSource;
+use Illuminate\Database\QueryException;
 
 class LabelSourceTest extends ModelTestCase
 {
@@ -22,14 +23,14 @@ class LabelSourceTest extends ModelTestCase
     public function testNameRequired()
     {
         $this->model->name = null;
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $this->model->save();
     }
 
     public function testNameUnique()
     {
         self::create(['name' => 'xyz']);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         self::create(['name' => 'xyz']);
     }
 

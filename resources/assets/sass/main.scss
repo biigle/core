@@ -6,9 +6,9 @@
 @import "font-awesome";
 
 .center-form {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 	height: 100vh;
 }
 
@@ -18,14 +18,10 @@
 	top: 20px;
 }
 
-.dropdown:hover .dropdown-menu {
-    display: block;
-    margin-top: 0;
-}
-
 // custom imports
 
 @import "globals";
+@import "navbar";
 @import "animations";
 @import "logo";
 @import "messages";
@@ -33,6 +29,7 @@
 @import "notifications";
 @import "search";
 @import "admin";
+@import "footer";
 @import "components/loader";
 @import "components/loaderBlock";
 @import "components/typeahead";

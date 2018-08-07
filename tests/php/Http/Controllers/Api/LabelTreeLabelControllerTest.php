@@ -161,7 +161,7 @@ class LabelTreeLabelControllerTest extends ApiTestCase
 
         $mock = Mockery::mock();
 
-        $exception = new ValidationException(null, ['my_field' => ['Invalid.']]);
+        $exception = ValidationException::withMessages(['my_field' => ['Invalid.']]);
         $mock->shouldReceive('create')
             ->once()
             ->andThrow($exception);
@@ -178,6 +178,6 @@ class LabelTreeLabelControllerTest extends ApiTestCase
             'source_id' => 'affbbaa00123',
         ]);
         $response->assertStatus(422);
-        $response->assertExactJson(['my_field' => ['Invalid.']]);
+        $response->assertJsonFragment(['my_field' => ['Invalid.']]);
     }
 }

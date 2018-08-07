@@ -38,7 +38,7 @@ class ImageCache implements ImageCacheContract
      */
     public function get(Image $image, $callback)
     {
-        $file = $this->cache($image);
+        $file = $this->retrieve($image);
         try {
             $result = call_user_func($callback, $image, $file['path']);
         } finally {
@@ -53,7 +53,7 @@ class ImageCache implements ImageCacheContract
      */
     public function getOnce(Image $image, $callback)
     {
-        $file = $this->cache($image);
+        $file = $this->retrieve($image);
         try {
             $result = call_user_func($callback, $image, $file['path']);
         } finally {
@@ -186,30 +186,46 @@ class ImageCache implements ImageCacheContract
      * @return array Containing the 'path' to the file and the file 'handle'. Close the
      * handle when finished.
      */
-    protected function cache(Image $image)
+    protected function retrieve(Image $image)
     {
         $cachedPath = $this->getCachedPath($image);
 
-        // Image is already cached.
-        if (File::exists($cachedPath)) {
-            return $this->cacheExistingFile($cachedPath);
+        try {
+            // We just try to get the cached file from the cache and load it anew if this
+            // fails. It is done this way because we need to check if the file still
+            // exists even after we obtained the file handle in retrieveExistingFile.
+            return $this->retrieveExistingFile($cachedPath);
+        } catch (FileNotFoundException $e) {
+            return $this->retrieveNewFile($image, $cachedPath);
         }
-
-        return $this->cacheNewFile($image, $cachedPath);
     }
 
     /**
      * Get path and handle for a file that exists in the cache.
      *
      * @param string $cachedPath
+     * @throws FileNotFoundException If the file was not found in the cache.
      *
      * @return array
      */
-    protected function cacheExistingFile($cachedPath)
+    protected function retrieveExistingFile($cachedPath)
     {
-        $handle = fopen($cachedPath, 'r');
-        // This will block if the file is currently written (LOCK_EX below).
+        $handle = @fopen($cachedPath, 'r');
+        if (!is_resource($handle)) {
+            throw new FileNotFoundException($cachedPath);
+        }
+
+        // This will block if the file is currently written (LOCK_EX in retrieveNewFile).
         flock($handle, LOCK_SH);
+
+        // Check if the file still exists. Writing by another worker might have failed
+        // but we wouldn't know as we still hold the file handle.
+        // see: https://github.com/BiodataMiningGroup/biigle-core/issues/137
+        if (fstat($handle)['nlink'] === 0) {
+            fclose($handle);
+            throw new FileNotFoundException($cachedPath);
+        }
+
         // Update access and modification time to signal that this cached image was
         // used recently.
         touch($cachedPath);
@@ -228,7 +244,7 @@ class ImageCache implements ImageCacheContract
      *
      * @return array
      */
-    protected function cacheNewFile(Image $image, $cachedPath)
+    protected function retrieveNewFile(Image $image, $cachedPath)
     {
         $this->ensurePathExists();
         // Create and lock the file as fast as possible so concurrent workers will

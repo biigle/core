@@ -3,6 +3,7 @@
 namespace Biigle\Tests;
 
 use TestCase;
+use Illuminate\Database\QueryException;
 
 class LabelTreeAuthorizedProjectIntegrityTest extends TestCase
 {
@@ -33,7 +34,7 @@ class LabelTreeAuthorizedProjectIntegrityTest extends TestCase
         $tree = LabelTreeTest::create();
         $project = ProjectTest::create();
         $tree->authorizedProjects()->attach($project->id);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $tree->authorizedProjects()->attach($project->id);
     }
 }

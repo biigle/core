@@ -7,6 +7,7 @@ use Biigle\Project;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Validation\ValidationException;
 
 class ProjectVolumeController extends Controller
 {
@@ -109,9 +110,7 @@ class ProjectVolumeController extends Controller
         try {
             $volume->validateUrl();
         } catch (Exception $e) {
-            return $this->buildFailedValidationResponse($request, [
-                'url' => $e->getMessage(),
-            ]);
+            throw ValidationException::withMessages(['url' => $e->getMessage()]);
         }
 
         $images = Volume::parseImagesQueryString($request->input('images'));
@@ -119,9 +118,7 @@ class ProjectVolumeController extends Controller
         try {
             $volume->validateImages($images);
         } catch (Exception $e) {
-            return $this->buildFailedValidationResponse($request, [
-                'images' => $e->getMessage(),
-            ]);
+            throw ValidationException::withMessages(['images' => $e->getMessage()]);
         }
 
         // save first, so the volume gets an ID for associating with images
@@ -184,7 +181,7 @@ class ProjectVolumeController extends Controller
         $this->authorize('update', $project);
 
         if ($project->volumes()->where('id', $volumeId)->exists()) {
-            return $this->buildFailedValidationResponse($request, [
+            throw ValidationException::withMessages([
                 'tid' => 'The volume is already attached to the project.',
             ]);
         }
@@ -219,7 +216,7 @@ class ProjectVolumeController extends Controller
         $volume = $project->volumes()->findOrFail($volumeId);
         $this->authorize('destroy', $volume);
 
-        $project->removeVolume($volume, $request->has('force'));
+        $project->removeVolume($volume, $request->filled('force'));
 
         return response('Removed.', 200);
     }

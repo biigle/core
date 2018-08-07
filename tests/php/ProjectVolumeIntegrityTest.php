@@ -3,6 +3,7 @@
 namespace Biigle\Tests;
 
 use TestCase;
+use Illuminate\Database\QueryException;
 
 class ProjectVolumeIntegrityTest extends TestCase
 {
@@ -21,7 +22,7 @@ class ProjectVolumeIntegrityTest extends TestCase
         $project = ProjectTest::create();
         $volume = VolumeTest::make();
         $project->volumes()->save($volume);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $project->delete();
     }
 
@@ -30,7 +31,7 @@ class ProjectVolumeIntegrityTest extends TestCase
         $project = ProjectTest::create();
         $volume = VolumeTest::make();
         $project->volumes()->save($volume);
-        $this->setExpectedException('Illuminate\Database\QueryException');
+        $this->expectException(QueryException::class);
         $project->volumes()->save($volume);
     }
 }

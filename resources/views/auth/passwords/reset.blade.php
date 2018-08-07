@@ -14,7 +14,7 @@
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                     <div class="input-group">
                         <div class="input-group-addon">
-                            <i class="glyphicon glyphicon-user"></i>
+                            <i class="fa fa-user"></i>
                         </div>
                         <input type="email" placeholder="{{ trans('form.email') }}" class="form-control" name="email" value="{{ old('email') }}" autofocus required>
                     </div>
@@ -26,7 +26,7 @@
                 <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
                     <div class="input-group">
                         <div class="input-group-addon">
-                            <i class="glyphicon glyphicon-lock"></i>
+                            <i class="fa fa-lock"></i>
                         </div>
                         <input type="password" placeholder="{{ trans('form.password') }}" class="form-control" name="password" value="{{ old('password') }}" required>
                     </div>
@@ -38,7 +38,7 @@
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon">
-                            <i class="glyphicon glyphicon-lock"></i>
+                            <i class="fa fa-lock"></i>
                         </div>
                         <input type="password" placeholder="{{ trans('form.password_confirmation') }}" class="form-control" name="password_confirmation" value="{{ old('password_confirmation') }}" required>
                     </div>
@@ -50,5 +50,6 @@
             </form>
         </div>
     </div>
+    @include('partials.footer', ['positionAbsolute' => true])
 </div>
 @endsection

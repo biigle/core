@@ -194,7 +194,7 @@ class ProjectController extends Controller
         $this->authorize('destroy', $project);
 
         try {
-            $project->removeAllVolumes($request->has('force'));
+            $project->removeAllVolumes($request->filled('force'));
         } catch (HttpException $e) {
             if (static::isAutomatedRequest($request)) {
                 abort(400, $e->getMessage());
