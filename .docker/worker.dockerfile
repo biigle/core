@@ -3,9 +3,6 @@ FROM biigle/app:arm32v6 as intermediate
 FROM arm32v6/php:7.2-rc-alpine
 MAINTAINER Martin Zurowietz <martin@cebitec.uni-bielefeld.de>
 
-# Use edge branch for repositories.
-COPY .docker/repositories /etc/apk/repositories
-
 RUN apk add --no-cache openssl postgresql-dev libxml2-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql json fileinfo exif mbstring soap zip pcntl
@@ -51,12 +48,8 @@ RUN apk add --no-cache python freetype lapack libstdc++ \
     && apk add --no-cache --virtual .build-deps \
         build-base python-dev py-pip freetype-dev lapack-dev gfortran \
         libjpeg-turbo-dev libpng-dev zlib-dev \
-    && pip install --no-cache-dir numpy==1.8.2 \
-    && pip install --no-cache-dir scikit-learn==0.14.1 \
-    && pip install --no-cache-dir Pillow==2.6.0 \
-    && pip install --no-cache-dir scipy==0.13.3 \
-    && pip install --no-cache-dir PyExcelerate==0.6.7 \
-    && pip install --no-cache-dir matplotlib==1.5.3 \
+    && pip install --no-cache-dir numpy==1.8.2 scikit-learn==0.14.1 Pillow==2.6.0 \
+        scipy==0.13.3 PyExcelerate==0.6.7 matplotlib==1.5.3 \
     && apk del --purge .build-deps \
     && rm -rf /var/cache/apk/*
 
