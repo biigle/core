@@ -75,7 +75,11 @@ biigle.$declare('largo.mixins.largoContainer', {
             var changed = {};
 
             for (var i = annotations.length - 1; i >= 0; i--) {
-                changed[annotations[i].id] = annotations[i].newLabel.id;
+                if (changed.hasOwnProperty(annotations[i].newLabel.id)) {
+                    changed[annotations[i].newLabel.id].push(annotations[i].id);
+                } else {
+                    changed[annotations[i].newLabel.id] = [annotations[i].id];
+                }
             }
 
             return changed;

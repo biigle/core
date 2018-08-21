@@ -24,7 +24,7 @@ class LargoController extends Controller
      * @apiDescription see the 'Save Largo session' endpoint for a volume for more information
      *
      * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of annotations from which this label should be detached.
-     * @apiParam (Optional arguments) {Object} changed Map from annotation ID to a label ID that should be attached to the annotation.
+     * @apiParam (Optional arguments) {Object} changed Map from a label ID to a list of IDs of annotations to which this label should be attached.
      *
      * @param Request $request
      * @param Guard $auth

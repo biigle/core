@@ -29,17 +29,21 @@ class LargoController extends Controller
      * Get a list of unique annotation IDs that are either dismissed or changed.
      *
      * @param array $dismissed Array of all dismissed annotation IDs for each label
-     * @param array $changed Array of IDs of changed annotations
+     * @param array $changed Array of all changed annotation IDs for each label
      *
      * @return array
      */
     protected function getAffectedAnnotations($dismissed, $changed)
     {
-        $affectedAnnotations = array_reduce($dismissed, function ($carry, $item) {
-            return array_merge($carry, $item);
-        }, []);
+        if (!empty($dismissed)) {
+            $dismissed = array_merge(...$dismissed);
+        }
 
-        return array_unique(array_merge($affectedAnnotations, array_keys($changed)));
+        if (!empty($changed)) {
+            $changed = array_merge(...$changed);
+        }
+
+        return array_values(array_unique(array_merge($dismissed, $changed)));
     }
 
     /**
@@ -61,13 +65,13 @@ class LargoController extends Controller
     /**
      * Returns the IDs of all label trees that must be available to apply the changes.
      *
-     * @param array $changed Array of IDs of changed annotations
+     * @param array $changed Array of all changed annotation IDs for each label
      *
      * @return array
      */
     protected function getRequiredLabelTrees($changed)
     {
-        return Label::whereIn('id', array_unique(array_values($changed)))
+        return Label::whereIn('id', array_keys($changed))
             ->groupBy('label_tree_id')
             ->pluck('label_tree_id');
     }
@@ -82,26 +86,30 @@ class LargoController extends Controller
      */
     protected function ignoreDeletedLabels($dismissed, $changed)
     {
-        $existingIds = Label::whereIn('id', array_values($changed))->pluck('id');
+        $ids = array_keys($changed);
+        $existingIds = Label::whereIn('id', $ids)->pluck('id')->toArray();
+        $deletedIds = array_diff($ids, $existingIds);
 
-        // Get IDs of annotations to which a label should be attached that no longer
-        // exists.
-        $toIgnore = array_keys(array_filter($changed, function ($id) use ($existingIds) {
-            return !$existingIds->contains($id);
-        }));
+        if (!empty($deletedIds)) {
+            $ignoreAnnotations = [];
 
-        // Remove all annotations from the dismissed array that should be ignored.
-        // Use outermost array_filter to remove now empty elements.
-        $dismissed = array_filter(array_map(function ($ids) use ($toIgnore) {
-            return array_filter($ids, function ($id) use ($toIgnore) {
-                return !in_array($id, $toIgnore);
-            });
-        }, $dismissed));
+            // Remove all annotations from the changed array that should be changed to
+            // deleted labels.
+            foreach ($deletedIds as $id) {
+                $ignoreAnnotations[] = $changed[$id];
+                unset($changed[$id]);
+            }
 
-        // Remove all annotations from the changed array that should be ignored.
-        $changed = array_filter($changed, function ($id) use ($toIgnore) {
-            return !in_array($id, $toIgnore);
-        }, ARRAY_FILTER_USE_KEY);
+            $ignoreAnnotations = array_unique(array_merge(...$ignoreAnnotations));
+
+            // Remove all annotations from the dismissed array that should be ignored.
+            // Use outermost array_filter to remove now empty elements.
+            $dismissed = array_filter(array_map(function ($ids) use ($ignoreAnnotations) {
+                return array_filter($ids, function ($id) use ($ignoreAnnotations) {
+                    return !in_array($id, $ignoreAnnotations);
+                });
+            }, $dismissed));
+        }
 
         return compact('dismissed', 'changed');
     }
@@ -113,7 +121,7 @@ class LargoController extends Controller
      *
      * @param \Biigle\User $user
      * @param array $dismissed Array of all dismissed annotation IDs for each label
-     * @param array $changed Array of IDs of changed annotations
+     * @param array $changed Array of all changed annotation IDs for each label
      */
     protected function applySave($user, $dismissed, $changed)
     {
@@ -153,7 +161,7 @@ class LargoController extends Controller
         // Skip the rest if no annotations have been changed.
         // The alreadyThereQuery below would FETCH ALL annotation labels if $changed were
         // empty! This almost certainly results in memory exhaustion.
-        if (count($changed) === 0) {
+        if (empty($changed)) {
             return;
         }
 
@@ -162,41 +170,43 @@ class LargoController extends Controller
         $alreadyThere = AnnotationLabel::select('annotation_id', 'label_id')
             ->where('user_id', $user->id)
             ->where(function ($query) use ($changed) {
-                foreach ($changed as $annotationId => $labelId) {
-                    $query->orWhere(function ($query) use ($annotationId, $labelId) {
-                        $query->where('annotation_id', $annotationId)
-                            ->where('label_id', $labelId);
+                foreach ($changed as $labelId => $annotationIds) {
+                    $query->orWhere(function ($query) use ($labelId, $annotationIds) {
+                        $query->where('label_id', $labelId)
+                            ->whereIn('annotation_id', $annotationIds);
                     });
                 }
             })
             ->get();
 
-        $existingAnnotations = Annotation::whereIn('id', array_keys($changed))
+        $annotationIds = array_unique(array_merge(...$changed));
+        $existingAnnotations = Annotation::whereIn('id', $annotationIds)
             ->pluck('id')
             ->toArray();
 
         $newAnnotationLabels = [];
         $now = Carbon::now();
 
-        foreach ($changed as $annotationId => $labelId) {
-            // Skip all new annotation labels if their annotation no longer exists
-            // or if they already exist exactly like they should be created.
-            $skip = !in_array($annotationId, $existingAnnotations) ||
-                !$alreadyThere->where('annotation_id', $annotationId)
-                    ->where('label_id', $labelId)
-                    ->isEmpty();
+        foreach ($changed as $labelId => $annotationIds) {
+            foreach ($annotationIds as $annotationId) {
+                // Skip all new annotation labels if their annotation no longer exists
+                // or if they already exist exactly like they should be created.
+                $skip = !in_array($annotationId, $existingAnnotations) ||
+                    $alreadyThere->where('annotation_id', $annotationId)
+                        ->where('label_id', $labelId)
+                        ->isNotEmpty();
 
-            if (!$skip) {
-                $newAnnotationLabels[] = [
-                    'annotation_id' => $annotationId,
-                    'label_id' => $labelId,
-                    'user_id' => $user->id,
-                    'confidence' => 1,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ];
+                if (!$skip) {
+                    $newAnnotationLabels[] = [
+                        'annotation_id' => $annotationId,
+                        'label_id' => $labelId,
+                        'user_id' => $user->id,
+                        'confidence' => 1,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
             }
-
         }
 
         AnnotationLabel::insert($newAnnotationLabels);

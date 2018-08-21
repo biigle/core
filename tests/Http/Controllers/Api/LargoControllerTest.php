@@ -34,7 +34,7 @@ class LargoControllerTest extends ApiTestCase
                 $l1->label_id => [$a1->id],
             ],
             'changed' => [
-                $a1->id => $l2->label_id, // but this already exists from the same user!
+                $l2->label_id => [$a1->id], // This already exists from the same user!
             ],
         ]);
 
@@ -65,8 +65,7 @@ class LargoControllerTest extends ApiTestCase
                 $l1->label_id => [$a1->id, $a2->id],
             ],
             'changed' => [
-                $a1->id => $this->labelChild()->id,
-                $a2->id => $this->labelChild()->id,
+                $this->labelChild()->id => [$a1->id, $a2->id],
             ],
         ];
 
@@ -101,8 +100,8 @@ class LargoControllerTest extends ApiTestCase
                 $l1->label_id => [$a1->id, $a2->id],
             ],
             'changed' => [
-                $a1->id => $otherLabel->id,
-                $a2->id => $this->labelChild()->id,
+                $otherLabel->id => [$a1->id],
+                $this->labelChild()->id => [$a2->id],
             ],
         ];
 
@@ -157,7 +156,7 @@ class LargoControllerTest extends ApiTestCase
                 $l1->label_id => [$a1->id],
             ],
             'changed' => [
-                $a1->id => $this->labelChild()->id,
+                $this->labelChild()->id => [$a1->id],
             ],
         ];
 

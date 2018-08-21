@@ -26,7 +26,7 @@ class LargoController extends Controller
      * @apiDescription From the `dismissed` map only annotation labels that were attached by the requesting user will be detached. If the map contains annotation labels that were not attached by the user, the information will be ignored. From the `changed` map, new annotation labels will be created. If, after detaching `dismissed` annotation labels and attaching `changed` annotation labels, there is an annotation whithout any label, the annotation will be deleted. All affected annotations must belong to the same volume. If the user is not allowed to edit in this volume, the whole request will be denied.
      *
      * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of annotations from which this label should be detached.
-     * @apiParam (Optional arguments) {Object} changed Map from annotation ID to a label ID that should be attached to the annotation.
+     * @apiParam (Optional arguments) {Object} changed Map from a label ID to a list of IDs of annotations to which this label should be attached.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
@@ -35,9 +35,8 @@ class LargoController extends Controller
      *       24: [15, 2, 10]
      *    },
      *    changed: {
-     *       1: 5,
-     *       3: 5,
-     *       10: 13
+     *       5: [1, 3],
+     *       13: [10],
      *    }
      * }
      *
@@ -81,10 +80,13 @@ class LargoController extends Controller
             ->pluck('id')
             ->toArray();
 
-        Annotation::whereIn('id', $toDelete)->delete();
-        // The annotation model observer does not fire for this query so we dispatch
-        // the remove patch job manually here.
-        $this->dispatch(new RemoveAnnotationPatches($id, $toDelete));
+        if (!empty($toDelete)) {
+            Annotation::whereIn('id', $toDelete)->delete();
+            // The annotation model observer does not fire for this query so we dispatch
+            // the remove patch job manually here.
+            $this->dispatch(new RemoveAnnotationPatches($id, $toDelete));
+        }
+
     }
 
     /**
