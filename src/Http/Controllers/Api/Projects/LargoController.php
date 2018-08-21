@@ -61,7 +61,7 @@ class LargoController extends Controller
 
         $this->applySave($auth->user(), $dismissed, $changed);
 
-        // remove annotations that now have no more labels attached
+        // Remove annotations that now have no more labels attached.
         $toDelete = Annotation::join('images', 'images.id', '=', 'annotations.image_id')
             ->whereIn('annotations.id', $affectedAnnotations)
             ->whereDoesntHave('labels')
@@ -70,8 +70,8 @@ class LargoController extends Controller
 
         Annotation::whereIn('id', $toDelete->pluck('id'))->delete();
 
-        // the annotation model observer does not fire for this query so we dispatch
-        // the remove patch job manually here
+        // The annotation model observer does not fire for this query so we dispatch
+        // the remove patch job manually here.
         $toDelete->groupBy('volume_id')->each(function ($annotations, $volumeId) {
             $this->dispatch(new RemoveAnnotationPatches(
                 $volumeId,

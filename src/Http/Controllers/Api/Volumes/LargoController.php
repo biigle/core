@@ -52,8 +52,6 @@ class LargoController extends Controller
         $this->authorize('edit-in', $volume);
         $this->validateLargoInput($request);
 
-        $user = $auth->user();
-
         $dismissed = $request->input('dismissed', []);
         $changed = $request->input('changed', []);
 
@@ -67,12 +65,44 @@ class LargoController extends Controller
             abort(400, 'All annotations must belong to the specified volume.');
         }
 
+        $user = $auth->user();
+        $availableLabelTreeIds = $this->getAvailableLabelTrees($user, $volume);
+        $requiredLabelTreeIds = $this->getRequiredLabelTrees($changed);
+
+        if ($requiredLabelTreeIds->diff($availableLabelTreeIds)->count() > 0) {
+            throw new AuthorizationException('You may only attach labels that belong to one of the label trees available for the specified volume.');
+        }
+
+        $this->applySave($user, $dismissed, $changed);
+
+        // Remove annotations that now have no more labels attached.
+        $toDelete = Annotation::whereIn('id', $affectedAnnotations)
+            ->whereDoesntHave('labels')
+            ->pluck('id')
+            ->toArray();
+
+        Annotation::whereIn('id', $toDelete)->delete();
+        // The annotation model observer does not fire for this query so we dispatch
+        // the remove patch job manually here.
+        $this->dispatch(new RemoveAnnotationPatches($id, $toDelete));
+    }
+
+    /**
+     * Get label trees of projects that the user and the volume have in common.
+     *
+     * @param User $user
+     * @param Volume $volume
+     *
+     * @return Collection
+     */
+    protected function getAvailableLabelTrees($user, $volume)
+    {
         if ($user->isAdmin) {
-            // admins have no restrictions
+            // Global admins have no restrictions.
             $projects = $volume->projects()->pluck('id');
         } else {
-            // all projects that the user and the volume have in common
-            // and where the user is editor or admin
+            // All projects that the user and the volume have in common
+            // and where the user is editor or admin.
             $projects = $user->projects()
                 ->whereIn('id', function ($query) use ($volume) {
                     $query->select('project_volume.project_id')
@@ -84,28 +114,9 @@ class LargoController extends Controller
                 ->pluck('id');
         }
 
-        $availableLabelTreeIds = DB::table('label_tree_project')
+        return DB::table('label_tree_project')
             ->whereIn('project_id', $projects)
             ->distinct()
             ->pluck('label_tree_id');
-
-        $requiredLabelTreeIds = $this->getRequiredLabelTrees($changed);
-
-        if ($requiredLabelTreeIds->diff($availableLabelTreeIds)->count() > 0) {
-            throw new AuthorizationException('You may only attach labels that belong to one of the label trees available for the specified volume.');
-        }
-
-        $this->applySave($user, $dismissed, $changed);
-
-        // remove annotations that now have no more labels attached
-        $toDelete = Annotation::whereIn('id', $affectedAnnotations)
-            ->whereDoesntHave('labels')
-            ->pluck('id')
-            ->toArray();
-
-        Annotation::whereIn('id', $toDelete)->delete();
-        // the annotation model observer does not fire for this query so we dispatch
-        // the remove patch job manually here
-        $this->dispatch(new RemoveAnnotationPatches($id, $toDelete));
     }
 }
