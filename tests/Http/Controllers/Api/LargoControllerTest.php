@@ -113,7 +113,7 @@ class LargoControllerTest extends ApiTestCase
         $this->assertEquals($this->labelChild()->id, $a2->labels()->first()->label_id);
     }
 
-    public function testErrorRollback()
+    public function testErrorRollbackDismissed()
     {
         $image = ImageTest::create(['volume_id' => $this->volume()->id]);
         $a1 = AnnotationTest::create(['image_id' => $image->id]);
@@ -141,6 +141,36 @@ class LargoControllerTest extends ApiTestCase
             $this->assertEquals($l1->label_id, $a1->labels()->first()->label_id);
         }
     }
+
+    public function testErrorRollbackChanged()
+    {
+        $image = ImageTest::create(['volume_id' => $this->volume()->id]);
+        $a1 = AnnotationTest::create(['image_id' => $image->id]);
+        $l1 = AnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $this->editor()->id,
+            'label_id' => $this->labelRoot()->id,
+        ]);
+
+        $request = [
+            'dismissed' => [
+                $l1->label_id => [$a1->id],
+            ],
+            'changed' => [
+                $a1->id => $this->labelChild()->id,
+            ],
+        ];
+
+        $controller = new LargoControllerStub;
+        $controller->throw = true;
+
+        try {
+            $controller->save($this->editor(), $request);
+            $this->assertFalse(true);
+        } catch (Exception $e) {
+            $this->assertEquals($l1->label_id, $a1->labels()->first()->label_id);
+        }
+    }
 }
 
 class LargoControllerStub extends LargoController
@@ -153,10 +183,12 @@ class LargoControllerStub extends LargoController
 
     protected function applyChangedLabels($user, $changed)
     {
+        $r = parent::applyChangedLabels($user, $changed);
+
         if ($this->throw) {
             throw new Exception('Throwing up');
         }
 
-        return parent::applyChangedLabels($user, $changed);
+        return $r;
     }
 }

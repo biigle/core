@@ -2,7 +2,7 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Api;
 
-use Exception;
+use DB;
 use Biigle\Label;
 use Carbon\Carbon;
 use Biigle\Annotation;
@@ -119,13 +119,11 @@ class LargoController extends Controller
     {
         $filtered = $this->ignoreDeletedLabels($dismissed, $changed);
 
-        try {
+        // Roll back changes if any errors occur.
+        DB::transaction(function () use ($user, $filtered) {
             $this->applyDismissedLabels($user, $filtered['dismissed']);
             $this->applyChangedLabels($user, $filtered['changed']);
-        } catch (Exception $e) {
-            $this->rollbackDismissedLabels($user, $filtered['dismissed']);
-            throw $e;
-        }
+        });
     }
 
     /**
@@ -202,51 +200,5 @@ class LargoController extends Controller
         }
 
         AnnotationLabel::insert($newAnnotationLabels);
-    }
-
-    /**
-     * Recreate deleted annotation labels in case of an error.
-     *
-     * @param \Biigle\user $user
-     * @param array $dismissed
-     */
-    protected function rollbackDismissedLabels($user, $dismissed)
-    {
-        $existing = AnnotationLabel::select('annotation_id', 'label_id')
-            ->where('user_id', $user->id)
-            ->where(function ($query) use ($dismissed) {
-                foreach ($dismissed as $labelId => $annotationIds) {
-                    $query->orWhere(function ($query) use ($labelId, $annotationIds) {
-                        $query->whereIn('annotation_id', $annotationIds)
-                            ->where('label_id', $labelId);
-                    });
-                }
-            })
-            ->get();
-
-
-        $insert = [];
-        $now = Carbon::now();
-
-        // Do not attempt to rectreate annotation labels that were not deleted.
-        foreach ($dismissed as $labelId => $annotationIds) {
-            foreach ($annotationIds as $id) {
-                $skip = $existing->where('label_id', $labelId)
-                    ->where('annotation_id', $id)
-                    ->isNotEmpty();
-                if (!$skip) {
-                    $insert[] = [
-                        'annotation_id' => $id,
-                        'label_id' => $labelId,
-                        'user_id' => $user->id,
-                        'confidence' => 1,
-                        'created_at' => $now,
-                        'updated_at' => $now,
-                    ];
-                }
-            }
-        }
-
-        AnnotationLabel::insert($insert);
     }
 }
