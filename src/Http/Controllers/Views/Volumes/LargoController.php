@@ -23,8 +23,8 @@ class LargoController extends Controller
         $this->authorize('edit-in', $volume);
         $user = $auth->user();
 
-        if ($user->isAdmin) {
-            // admins have no restrictions
+        if ($user->can('sudo')) {
+            // Global admins have no restrictions.
             $projects = $volume->projects;
         } else {
             // all projects that the user and the volume have in common

@@ -106,7 +106,7 @@ class LargoController extends Controller
      */
     protected function getAvailableLabelTrees($user, $volume)
     {
-        if ($user->isAdmin) {
+        if ($user->can('sudo')) {
             // Global admins have no restrictions.
             $projects = $volume->projects()->pluck('id');
         } else {
