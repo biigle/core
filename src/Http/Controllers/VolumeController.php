@@ -113,19 +113,8 @@ class VolumeController extends Controller
             return $volume->projects;
         }
 
-        // All projects that the user and the volume have in common.
-        return $user->projects()
-            ->whereIn('id', function ($query) use ($volume) {
-                $query->select('project_volume.project_id')
-                    ->from('project_volume')
-                    ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
-                    ->where('project_volume.volume_id', $volume->id)
-                    ->whereIn('project_user.project_role_id', [
-                        Role::$editor->id,
-                        Role::$expert->id,
-                        Role::$admin->id,
-                    ]);
-            })
-            ->get();
+        // All projects that the user and the volume have in common
+        // and where the user is editor, expert or admin.
+        return Project::inCommon($user, $volume->id)->get();
     }
 }
