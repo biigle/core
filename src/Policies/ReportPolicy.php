@@ -8,8 +8,6 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ReportPolicy
 {
-    const TABLE = 'reports';
-
     use HandlesAuthorization;
 
     /**
@@ -21,7 +19,7 @@ class ReportPolicy
      */
     public function before($user, $ability)
     {
-        if ($user->isAdmin) {
+        if ($user->can('sudo')) {
             return true;
         }
     }
