@@ -65,7 +65,7 @@ class ProjectPolicy extends CachedPolicy
      */
     public function forceEditIn(User $user, Project $project)
     {
-        return $this->remember("project-can-edit-in-{$user->id}-{$project->id}", function () use ($user, $project) {
+        return $this->remember("project-can-force-edit-in-{$user->id}-{$project->id}", function () use ($user, $project) {
             return $this->getBaseQuery($user, $project)
                 ->where('project_role_id', Role::$admin->id)
                 ->exists();
