@@ -27,16 +27,6 @@ class Image extends Model
     ];
 
     /**
-     * Validation rules for creating a new annotation in an image.
-     *
-     * @var array
-     */
-    public static $createAnnotationRules = [
-        'shape_id' => 'required|exists:shapes,id',
-        'points'   => 'required',
-    ];
-
-    /**
      * Don't maintain timestamps for this model.
      *
      * @var bool
