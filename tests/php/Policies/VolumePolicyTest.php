@@ -52,6 +52,15 @@ class VolumePolicyTest extends TestCase
         $this->assertTrue($this->globalAdmin->can('edit-in', $this->volume));
     }
 
+    public function testForceEditIn()
+    {
+        $this->assertFalse($this->user->can('force-edit-in', $this->volume));
+        $this->assertFalse($this->guest->can('force-edit-in', $this->volume));
+        $this->assertFalse($this->editor->can('force-edit-in', $this->volume));
+        $this->assertTrue($this->admin->can('force-edit-in', $this->volume));
+        $this->assertTrue($this->globalAdmin->can('force-edit-in', $this->volume));
+    }
+
     public function testUpdate()
     {
         $this->assertFalse($this->user->can('update', $this->volume));
