@@ -51,7 +51,11 @@ class ProjectPolicy extends CachedPolicy
     {
         return $this->remember("project-can-edit-in-{$user->id}-{$project->id}", function () use ($user, $project) {
             return $this->getBaseQuery($user, $project)
-                ->whereIn('project_role_id', [Role::$admin->id, Role::$editor->id])
+                ->whereIn('project_role_id', [
+                    Role::$editor->id,
+                    Role::$expert->id,
+                    Role::$admin->id,
+                ])
                 ->exists();
         });
     }
@@ -67,7 +71,7 @@ class ProjectPolicy extends CachedPolicy
     {
         return $this->remember("project-can-force-edit-in-{$user->id}-{$project->id}", function () use ($user, $project) {
             return $this->getBaseQuery($user, $project)
-                ->where('project_role_id', Role::$admin->id)
+                ->whereIn('project_role_id', [Role::$expert->id, Role::$admin->id])
                 ->exists();
         });
     }

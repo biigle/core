@@ -41,29 +41,19 @@ class RoleTest extends ModelTestCase
         $this->model->delete();
     }
 
-    public function testAdminId()
-    {
-        $this->assertNotNull(Role::$admin->id);
-    }
-
     public function testAdmin()
     {
         $this->assertEquals('admin', Role::$admin->name);
     }
 
-    public function testEditorId()
+    public function testExpert()
     {
-        $this->assertNotNull(Role::$editor->id);
+        $this->assertEquals('expert', Role::$expert->name);
     }
 
     public function testEditor()
     {
         $this->assertEquals('editor', Role::$editor->name);
-    }
-
-    public function testGuestId()
-    {
-        $this->assertNotNull(Role::$guest->id);
     }
 
     public function testGuest()

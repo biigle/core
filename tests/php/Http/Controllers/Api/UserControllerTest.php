@@ -273,6 +273,37 @@ class UserControllerTest extends ApiTestCase
         $this->assertNull($user->fresh()->affiliation);
     }
 
+    public function testUpdateRole()
+    {
+        $user = $this->guest();
+        // 'adminpassword'
+        $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
+        $this->globalAdmin()->save();
+        $this->beGlobalAdmin();
+        $this->putJson("api/v1/users/{$user->id}", [
+                'role_id' => Role::$guest->id,
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(422);
+        $this->putJson("api/v1/users/{$user->id}", [
+                'role_id' => Role::$editor->id,
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+        $this->assertEquals(Role::$editor->id, $user->fresh()->role_id);
+        $this->putJson("api/v1/users/{$user->id}", [
+                'role_id' => Role::$expert->id,
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(422);
+        $this->putJson("api/v1/users/{$user->id}", [
+                'role_id' => Role::$admin->id,
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+        $this->assertEquals(Role::$admin->id, $user->fresh()->role_id);
+    }
+
     public function testUpdateOwnWithToken()
     {
         // api key authentication is not allowed for this route
