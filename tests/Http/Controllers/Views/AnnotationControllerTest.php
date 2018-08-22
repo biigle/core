@@ -1,44 +1,15 @@
 <?php
 
-namespace Biigle\Tests\Modules\Annotations\Http\Controllers;
+namespace Biigle\Tests\Modules\Annotations\Http\Controllers\Views;
 
 use ApiTestCase;
 use Carbon\Carbon;
-use Biigle\Tests\UserTest;
-use Biigle\Tests\ImageTest;
-use Biigle\Tests\ProjectTest;
-use Biigle\Tests\VolumeTest;
 use Biigle\Tests\AnnotationTest;
+use Biigle\Tests\AnnotationLabelTest;
 use Biigle\Tests\AnnotationSessionTest;
 
 class AnnotationControllerTest extends ApiTestCase
 {
-    public function testIndex()
-    {
-        $project = ProjectTest::create();
-        $volume = VolumeTest::create();
-        $image = ImageTest::create(['volume_id' => $volume->id]);
-        $project->addVolumeId($volume->id);
-        // not logged in
-        $response = $this->get('annotate/'.$image->id);
-        $response->assertStatus(302);
-
-        // doesn't belong to project
-        $this->be(UserTest::create());
-        $response = $this->get('annotate/'.$image->id);
-        $response->assertStatus(403);
-
-        $this->be($project->creator);
-        $response = $this->get('annotate/'.$image->id);
-        $response->assertStatus(200);
-        $response->assertViewHas('user');
-        $response->assertViewHas('image');
-
-        // doesn't exist
-        $response = $this->get('annotate/-1');
-        $response->assertStatus(404);
-    }
-
     public function testShow()
     {
         $annotation = AnnotationTest::create();
@@ -58,7 +29,20 @@ class AnnotationControllerTest extends ApiTestCase
         $annotation = AnnotationTest::create([
             'created_at' => Carbon::yesterday(),
         ]);
+        AnnotationLabelTest::create([
+            'annotation_id' => $annotation->id,
+            'user_id' => $this->admin()->id,
+        ]);
         $this->project()->addVolumeId($annotation->image->volume_id);
+
+        $annotation2 = AnnotationTest::create([
+            'image_id' => $annotation->image_id,
+            'created_at' => Carbon::today(),
+        ]);
+        AnnotationLabelTest::create([
+            'annotation_id' => $annotation2->id,
+            'user_id' => $this->admin()->id,
+        ]);
 
         $session = AnnotationSessionTest::create([
             'volume_id' => $annotation->image->volume_id,
@@ -73,5 +57,8 @@ class AnnotationControllerTest extends ApiTestCase
         $this->beAdmin();
         $response = $this->get("annotations/{$annotation->id}");
         $response->assertStatus(403);
+
+        $response = $this->get("annotations/{$annotation2->id}");
+        $response->assertStatus(302);
     }
 }

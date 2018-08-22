@@ -1,6 +1,6 @@
 <?php
 
-namespace Biigle\Modules\Annotations\Http\Controllers;
+namespace Biigle\Modules\Annotations\Http\Controllers\Views;
 
 use DB;
 use Biigle\Role;
@@ -11,7 +11,7 @@ use Biigle\Annotation;
 use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Views\Controller;
 
-class AnnotationController extends Controller
+class AnnotationToolController extends Controller
 {
     /**
      * Shows the annotation tool.
@@ -77,37 +77,5 @@ class AnnotationController extends Controller
             'shapes' => $shapes,
             'annotationSessions' => $annotationSessions,
         ]);
-    }
-
-    /**
-     * Redirect to the annotator link that shows a specified annotation.
-     *
-     * @param int $id Annotation ID
-     * @return \Illuminate\Http\Response
-     */
-    public function showAnnotation($id)
-    {
-        $annotation = Annotation::select('id', 'image_id')->findOrFail($id);
-        $this->authorize('access', $annotation);
-
-        return redirect()->route('annotate', [
-            'id' => $annotation->image_id,
-            'annotation' => $annotation->id,
-        ]);
-    }
-
-    /**
-     * Show a tutorials article.
-     *
-     * @param string $name Article name
-     * @return \Illuminate\Http\Response
-     */
-    public function tutorial($name)
-    {
-        if (view()->exists('annotations::manual.tutorials.'.$name)) {
-            return view('annotations::manual.tutorials.'.$name);
-        } else {
-            abort(404);
-        }
     }
 }

@@ -1,17 +1,20 @@
 <?php
 
-
-$router->get('annotate/{id}', [
+$router->group([
     'middleware' => 'auth',
-    'as'   => 'annotate',
-    'uses' => 'AnnotationController@show',
-]);
+    'namespace' => 'Views',
+    ], function ($router) {
+        $router->get('annotate/{id}', [
+            'as'   => 'annotate',
+            'uses' => 'AnnotationToolController@show',
+        ]);
 
-$router->get('annotations/{id}', [
-    'middleware' => 'auth',
-    'as'   => 'show-annotation',
-    'uses' => 'AnnotationController@showAnnotation',
-]);
+        $router->get('annotations/{id}', [
+            'as'   => 'show-annotation',
+            'uses' => 'AnnotationController@show',
+        ]);
+    });
+
 
 $router->group([
     'middleware' => 'auth:web,api',
