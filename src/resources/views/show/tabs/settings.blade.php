@@ -13,27 +13,27 @@
             </div>
 
             <div class="sidebar-tab__section">
-                <power-button :active="minimap" title-off="Show minimap" title-on="Hide minimap" v-on:on="showMinimap" v-on:off="hideMinimap">Minimap</power-button>
+                <power-toggle :active="minimap" title-off="Show minimap" title-on="Hide minimap" v-on:on="showMinimap" v-on:off="hideMinimap">Minimap</power-toggle>
             </div>
 
             <div class="sidebar-tab__section">
-                <power-button :active="mousePosition" title-off="Show mouse position" title-on="Hide mouse position" v-on:on="showMousePosition" v-on:off="hideMousePosition">Mouse Position</power-button>
+                <power-toggle :active="mousePosition" title-off="Show mouse position" title-on="Hide mouse position" v-on:on="showMousePosition" v-on:off="hideMousePosition">Mouse Position</power-toggle>
             </div>
 
             <div class="sidebar-tab__section">
-                <power-button :active="zoomLevel" title-off="Show zoom level" title-on="Hide zoom level" v-on:on="showZoomLevel" v-on:off="hideZoomLevel">Zoom Level</power-button>
+                <power-toggle :active="zoomLevel" title-off="Show zoom level" title-on="Hide zoom level" v-on:on="showZoomLevel" v-on:off="hideZoomLevel">Zoom Level</power-toggle>
             </div>
 
             <div class="sidebar-tab__section">
-                <power-button :active="scaleLine" title-off="Show scale line" title-on="Hide scale line" v-on:on="showScaleLine" v-on:off="hideScaleLine">Scale Line</power-button>
+                <power-toggle :active="scaleLine" title-off="Show scale line" title-on="Hide scale line" v-on:on="showScaleLine" v-on:off="hideScaleLine">Scale Line</power-toggle>
             </div>
 
             <div class="sidebar-tab__section">
-                <power-button :active="labelTooltip" title-off="Show label tooltip" title-on="Hide label tooltip" v-on:on="showLabelTooltip" v-on:off="hideLabelTooltip">Label Tooltip</power-button>
+                <power-toggle :active="labelTooltip" title-off="Show label tooltip" title-on="Hide label tooltip" v-on:on="showLabelTooltip" v-on:off="hideLabelTooltip">Label Tooltip</power-toggle>
             </div>
 
             <div class="sidebar-tab__section">
-                <power-button :active="measureTooltip" title-off="Show measure tooltip" title-on="Hide measure tooltip" v-on:on="showMeasureTooltip" v-on:off="hideMeasureTooltip">Measure Tooltip</power-button>
+                <power-toggle :active="measureTooltip" title-off="Show measure tooltip" title-on="Hide measure tooltip" v-on:on="showMeasureTooltip" v-on:off="hideMeasureTooltip">Measure Tooltip</power-toggle>
             </div>
 
             @mixin('annotationsSettingsTab')

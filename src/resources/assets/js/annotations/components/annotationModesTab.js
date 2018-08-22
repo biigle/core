@@ -5,7 +5,7 @@
  */
 biigle.$component('annotations.components.annotationModesTab', {
     components: {
-        powerButton: biigle.$require('annotations.components.powerButton'),
+        powerToggle: biigle.$require('core.components.powerToggle'),
     },
     data: function () {
         return {
