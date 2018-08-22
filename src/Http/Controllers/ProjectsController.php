@@ -31,7 +31,12 @@ class ProjectsController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
 
-        $roles = collect([Role::$admin, Role::$editor, Role::$guest]);
+        $roles = collect([
+            Role::$admin,
+            Role::$expert,
+            Role::$editor,
+            Role::$guest,
+        ]);
 
         $labelTrees = $project->labelTrees()
             ->select('id', 'name', 'description')

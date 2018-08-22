@@ -19,10 +19,10 @@
         <h3><a name="members"></a>Members</h3>
 
         <p>
-            Each project is only visible to project members. Each member has one of three roles: admin, editor or guest. To modify project members you must be admin in the project. Click on the <button class="btn btn-default btn-xs"><i class="fa fa-pencil-alt"></i></button> button of the members panel to modify members. Enter a username and choose a role to add a new member. Choose a new user role for existing members to modify them. Click the <strong>&times;</strong> button to remove a member.
+            Each project is only visible to project members. Each member has one of four roles: admin, expert, editor or guest. To modify project members you must be admin in the project. Click on the <button class="btn btn-default btn-xs"><i class="fa fa-pencil-alt"></i></button> button of the members panel to modify members. Enter a username and choose a role to add a new member. Choose a new user role for existing members to modify them. Click the <strong>&times;</strong> button to remove a member.
         </p>
         <p>
-            A <strong>guest</strong> is only able to <em>read</em> from the project. They can see all volumes, label trees and users that belong to the project. But they cannot modify anything related to the project and particularly cannot create or modify annotations in the volumes that belong to the project. Although users with this role can see all label trees that are attached to the project, they cannot access these unless the label trees are public or the users are members of the label trees.
+            A <strong>guest</strong> is not allowed to modify anything in project. They can see all volumes, label trees and users that belong to the project. But they cannot modify anything related to the project and particularly cannot create or modify annotations in the volumes that belong to the project. A guest is able to access all label trees that are attached to the project, even if a label tree is private and the gurest is no member of the tree.
         </p>
         <p>
             In addition to everything that a guest can do, <strong>editors</strong> can create and modify annotations, annotation labels and image labels. However, they cannot delete annotation labels or image labels that were created by other users. Editors should be the default choice for new project members.
@@ -33,7 +33,10 @@
             </div>
         </div>
         <p>
-            A project <strong>admin</strong> has no restrictions in what they can do. They can create and modify annotations, annotation labels and image labels, <em>including</em> those of other users. Also, they can add or modify project members, <a href="#label-trees">attach or detach label trees</a> and <a href="#volumes">manage volumes</a>. Finally, project admins are able to <a href="#modify-a-project">edit the project name and description or delete the entire project</a>.
+            An <strong>expert</strong> can do everything that an editor can do. In addition to that, they can modify or delete annotations or image labels <em>of other users</em> as well. Choose this role if a user should be able to "supervise" other editors but should not be a full project admin.
+        </p>
+        <p>
+            A project <strong>admin</strong> has no restrictions in what they can do. They can create and modify annotations, annotation labels and image labels, including those of other users. Also, they can add or modify project members, <a href="#label-trees">attach or detach label trees</a> and <a href="#volumes">manage volumes</a>. Finally, project admins are able to <a href="#modify-a-project">edit the project name and description or delete the entire project</a>.
         </p>
 
         <h3><a name="label-trees"></a>Label trees</h3>
