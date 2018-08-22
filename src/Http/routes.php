@@ -25,7 +25,7 @@ $router->group([
 
         $router->get('admin/volumes', [
             'as' => 'admin-volumes',
-            'middleware' => 'can:admin',
+            'middleware' => 'can:sudo',
             'uses' => 'AdminController@index',
         ]);
     });

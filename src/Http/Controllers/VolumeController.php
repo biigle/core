@@ -108,8 +108,8 @@ class VolumeController extends Controller
      */
     protected function getProjects(User $user, Volume $volume)
     {
-        if ($user->isAdmin) {
-            // admins have no restrictions
+        if ($user->can('sudo')) {
+            // Global admins have no restrictions.
             return $volume->projects;
         }
 
