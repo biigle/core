@@ -6,7 +6,7 @@
 biigle.$component('labelTrees.components.labelTrees', {
     template: '<div class="label-trees">' +
         '<div v-if="typeahead || clearable" class="label-trees__head">' +
-            '<button v-if="clearable" @click="clear" class="btn btn-default" title="Clear selected labels" type="button"><span class="fa fa-times" aria-hidden="true"></span></button>' +
+            '<button v-if="clearable" @click="clear" class="btn btn-default" title="Clear selected labels" type="button"><span class="fa fa-times fa-fw" aria-hidden="true"></span></button>' +
             '<typeahead v-if="typeahead" :items="labels" @select="handleSelect" placeholder="Label name"></typeahead>' +
         '</div>' +
         '<div class="label-trees__body">' +
