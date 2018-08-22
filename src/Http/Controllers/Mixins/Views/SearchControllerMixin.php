@@ -18,7 +18,7 @@ class SearchControllerMixin
      */
     public function index(User $user, $query, $type)
     {
-        if ($user->isAdmin) {
+        if ($user->can('sudo')) {
             $imageQuery = Image::query();
         } else {
             $imageQuery = Image::join('project_volume', 'images.volume_id', '=', 'project_volume.volume_id')
