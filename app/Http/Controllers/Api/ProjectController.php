@@ -36,7 +36,7 @@ class ProjectController extends Controller
      */
     public function index(Guard $auth)
     {
-        if ($auth->user()->isAdmin) {
+        if ($auth->user()->can('sudo')) {
             return Project::all();
         }
 

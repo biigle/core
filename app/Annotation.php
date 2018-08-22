@@ -51,7 +51,7 @@ class Annotation extends Model
      */
     public function scopeVisibleFor($query, User $user)
     {
-        if ($user->isAdmin) {
+        if ($user->can('sudo')) {
             return $query;
         }
 
