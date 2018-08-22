@@ -18,7 +18,7 @@ class SystemMessagePolicy
      */
     public function create(User $user)
     {
-        return $user->isAdmin;
+        return $user->can('sudo');
     }
 
     /**
@@ -30,7 +30,7 @@ class SystemMessagePolicy
      */
     public function update(User $user, SystemMessage $systemMessage)
     {
-        return $user->isAdmin;
+        return $user->can('sudo');
     }
 
     /**
@@ -46,6 +46,6 @@ class SystemMessagePolicy
             $this->deny('Published system messages cannot be deleted.');
         }
 
-        return $user->isAdmin;
+        return $user->can('sudo');
     }
 }

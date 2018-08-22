@@ -113,11 +113,11 @@ class UserTest extends ModelTestCase
         $this->assertEquals(Role::$editor->id, $this->model->role->id);
     }
 
-    public function testIsAdmin()
+    public function testIsGlobalAdminAttribute()
     {
-        $this->assertFalse($this->model->isAdmin);
+        $this->assertFalse($this->model->isGlobalAdmin);
         $this->model->role()->associate(Role::$admin);
-        $this->assertTrue($this->model->isAdmin);
+        $this->assertTrue($this->model->isGlobalAdmin);
     }
 
     public function testHiddenAttributes()
@@ -186,5 +186,39 @@ class UserTest extends ModelTestCase
         $this->assertEquals('a', $this->model->getSettings('mysetting', 'a'));
         $this->model->setSettings(['mysetting' => 'b']);
         $this->assertEquals('b', $this->model->getSettings('mysetting', 'a'));
+    }
+
+    public function testGetIsInSuperUserModeAttribute()
+    {
+        $this->assertFalse($this->model->isInSuperUserMode);
+        $this->model->role_id = Role::$admin->id;
+        $this->model->save();
+        $this->assertTrue($this->model->isInSuperUserMode);
+        $this->model->setSettings(['super_user_mode' => false]);
+        $this->assertFalse($this->model->isInSuperUserMode);
+        $this->model->setSettings(['super_user_mode' => true]);
+        $this->assertTrue($this->model->isInSuperUserMode);
+    }
+
+    public function testSetIsInSuperUserModeAttribute()
+    {
+        $this->model->isInSuperUserMode = true;
+        $this->assertFalse($this->model->isInSuperUserMode);
+        $this->model->role_id = Role::$admin->id;
+        $this->model->save();
+        $this->model->isInSuperUserMode = true;
+        $this->assertTrue($this->model->isInSuperUserMode);
+        $this->model->isInSuperUserMode = false;
+        $this->assertFalse($this->model->isInSuperUserMode);
+    }
+
+    public function testSudoAbility()
+    {
+        $this->assertFalse($this->model->can('sudo'));
+        $this->model->role_id = Role::$admin->id;
+        $this->model->save();
+        $this->assertTrue($this->model->can('sudo'));
+        $this->model->isInSuperUserMode = false;
+        $this->assertFalse($this->model->can('sudo'));
     }
 }

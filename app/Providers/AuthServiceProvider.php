@@ -35,9 +35,9 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        // ability of a global admin
-        Gate::define('admin', function ($user) {
-            return $user->isAdmin;
+        // Ability of a global admin.
+        Gate::define('sudo', function ($user) {
+            return $user->isInSuperUserMode;
         });
 
         Auth::extend('api', function ($app, $name, array $config) {
