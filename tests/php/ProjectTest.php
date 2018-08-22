@@ -293,4 +293,21 @@ class ProjectTest extends ModelTestCase
         $this->model->flushGeoInfoCache();
         $this->assertTrue($this->model->hasGeoInfo());
     }
+
+    public function testScopeInCommon()
+    {
+        $v = VolumeTest::create();
+        $user = UserTest::create();
+        $this->model->volumes()->attach($v);
+        $this->model->addUserId($user->id, Role::$editor->id);
+        $p = self::create();
+        $p->volumes()->attach($v);
+
+        $projects = Project::inCommon($user, $v->id)->pluck('id');
+        $this->assertEquals(1, $projects->count());
+        $this->assertEquals($this->model->id, $projects[0]);
+
+        $projects = Project::inCommon($user, $v->id, [Role::$admin->id])->pluck('id');
+        $this->assertEmpty($projects);
+    }
 }

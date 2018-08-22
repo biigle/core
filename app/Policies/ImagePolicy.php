@@ -8,6 +8,7 @@ use Biigle\User;
 use Biigle\Role;
 use Biigle\Image;
 use Biigle\Label;
+use Biigle\Project;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ImagePolicy extends CachedPolicy
@@ -121,20 +122,7 @@ class ImagePolicy extends CachedPolicy
         return $this->remember("image-can-attach-label-{$user->id}-{$image->id}-{$label->id}", function () use ($user, $image, $label) {
             // Projects, the image belongs to *and* the user is editor, expert or admin
             // of.
-            $projectIds = DB::table('project_user')
-                ->where('user_id', $user->id)
-                ->whereIn('project_id', function ($query) use ($image) {
-                    // the projects, the image belongs to
-                    $query->select('project_id')
-                        ->from('project_volume')
-                        ->where('volume_id', $image->volume_id);
-                })
-                ->whereIn('project_role_id', [
-                    Role::$editor->id,
-                    Role::$expert->id,
-                    Role::$admin->id,
-                ])
-                ->pluck('project_id');
+            $projectIds = Project::inCommon($user, $image->volume_id)->pluck('id');
 
             // User must be editor, expert or admin in one of the projects.
             return !empty($projectIds)
