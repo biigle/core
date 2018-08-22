@@ -10,8 +10,6 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LabelPolicy extends CachedPolicy
 {
-    const TABLE = 'label_tree_user';
-
     use HandlesAuthorization;
 
     /**
@@ -38,7 +36,7 @@ class LabelPolicy extends CachedPolicy
     public function update(User $user, Label $label)
     {
         return $this->remember("label-can-update-{$user->id}-{$label->id}", function () use ($user, $label) {
-            return DB::table(self::TABLE)
+            return DB::table('label_tree_user')
                 ->where('label_tree_id', $label->label_tree_id)
                 ->where('user_id', $user->id)
                 ->whereIn('role_id', [Role::$admin->id, Role::$editor->id])

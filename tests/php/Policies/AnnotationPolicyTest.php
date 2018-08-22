@@ -17,14 +17,6 @@ use Biigle\Tests\AnnotationSessionTest;
 
 class AnnotationPolicyTest extends TestCase
 {
-    private $user;
-    private $guest;
-    private $admin;
-    private $editor;
-    private $project;
-    private $annotation;
-    private $globalAdmin;
-
     public function setUp()
     {
         parent::setUp();
@@ -34,11 +26,13 @@ class AnnotationPolicyTest extends TestCase
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
         $this->editor = UserTest::create();
+        $this->expert = UserTest::create();
         $this->admin = UserTest::create();
         $this->globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
 
         $this->project->addUserId($this->guest->id, Role::$guest->id);
         $this->project->addUserId($this->editor->id, Role::$editor->id);
+        $this->project->addUserId($this->expert->id, Role::$expert->id);
         $this->project->addUserId($this->admin->id, Role::$admin->id);
     }
 
@@ -47,6 +41,7 @@ class AnnotationPolicyTest extends TestCase
         $this->assertFalse($this->user->can('access', $this->annotation));
         $this->assertTrue($this->guest->can('access', $this->annotation));
         $this->assertTrue($this->editor->can('access', $this->annotation));
+        $this->assertTrue($this->expert->can('access', $this->annotation));
         $this->assertTrue($this->admin->can('access', $this->annotation));
         $this->assertTrue($this->globalAdmin->can('access', $this->annotation));
     }
@@ -67,6 +62,7 @@ class AnnotationPolicyTest extends TestCase
         $this->assertFalse($this->user->can('access', $this->annotation));
         $this->assertTrue($this->guest->can('access', $this->annotation));
         $this->assertTrue($this->editor->can('access', $this->annotation));
+        $this->assertTrue($this->expert->can('access', $this->annotation));
         $this->assertTrue($this->admin->can('access', $this->annotation));
         $this->assertTrue($this->globalAdmin->can('access', $this->annotation));
 
@@ -74,6 +70,7 @@ class AnnotationPolicyTest extends TestCase
             $this->user->id,
             $this->guest->id,
             $this->editor->id,
+            $this->expert->id,
             $this->admin->id,
             $this->globalAdmin->id,
         ]);
@@ -82,6 +79,7 @@ class AnnotationPolicyTest extends TestCase
         $this->assertFalse($this->user->can('access', $this->annotation));
         $this->assertFalse($this->guest->can('access', $this->annotation));
         $this->assertFalse($this->editor->can('access', $this->annotation));
+        $this->assertFalse($this->expert->can('access', $this->annotation));
         $this->assertFalse($this->admin->can('access', $this->annotation));
         $this->assertTrue($this->globalAdmin->can('access', $this->annotation));
     }
@@ -91,6 +89,7 @@ class AnnotationPolicyTest extends TestCase
         $this->assertFalse($this->user->can('update', $this->annotation));
         $this->assertFalse($this->guest->can('update', $this->annotation));
         $this->assertTrue($this->editor->can('update', $this->annotation));
+        $this->assertTrue($this->expert->can('update', $this->annotation));
         $this->assertTrue($this->admin->can('update', $this->annotation));
         $this->assertTrue($this->globalAdmin->can('update', $this->annotation));
     }
@@ -120,6 +119,10 @@ class AnnotationPolicyTest extends TestCase
         $this->assertTrue($this->editor->can('attach-label', [$this->annotation, $allowedLabel]));
         $this->assertFalse($this->editor->can('attach-label', [$this->annotation, $disallowedLabel]));
         $this->assertFalse($this->editor->can('attach-label', [$this->annotation, $otherDisallowedLabel]));
+
+        $this->assertTrue($this->expert->can('attach-label', [$this->annotation, $allowedLabel]));
+        $this->assertFalse($this->expert->can('attach-label', [$this->annotation, $disallowedLabel]));
+        $this->assertFalse($this->expert->can('attach-label', [$this->annotation, $otherDisallowedLabel]));
 
         $this->assertTrue($this->admin->can('attach-label', [$this->annotation, $allowedLabel]));
         $this->assertFalse($this->admin->can('attach-label', [$this->annotation, $disallowedLabel]));
@@ -179,8 +182,13 @@ class AnnotationPolicyTest extends TestCase
         $this->assertFalse($this->editor->can('destroy', $a1));
         $this->assertFalse($this->editor->can('destroy', $a2));
         $this->assertTrue($this->editor->can('destroy', $a3));
-        // there is a label of another user attached
+        // There is a label of another user attached.
         $this->assertFalse($this->editor->can('destroy', $a4));
+
+        $this->assertTrue($this->expert->can('destroy', $a1));
+        $this->assertTrue($this->expert->can('destroy', $a2));
+        $this->assertTrue($this->expert->can('destroy', $a3));
+        $this->assertTrue($this->expert->can('destroy', $a4));
 
         $this->assertTrue($this->admin->can('destroy', $a1));
         $this->assertTrue($this->admin->can('destroy', $a2));
