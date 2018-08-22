@@ -25,7 +25,7 @@ class LargoController extends Controller
      *
      * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of annotations from which this label should be detached.
      * @apiParam (Optional arguments) {Object} changed Map from a label ID to a list of IDs of annotations to which this label should be attached.
-     * @apiParam (Optional arguments) {Object} force If set to `true`, project admins can replace annotation labels attached by other users.
+     * @apiParam (Optional arguments) {Object} force If set to `true`, project experts and admins can replace annotation labels attached by other users.
      *
      * @param Request $request
      * @param Guard $auth

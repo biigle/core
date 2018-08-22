@@ -27,7 +27,7 @@ class LargoController extends Controller
      *
      * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of annotations from which this label should be detached.
      * @apiParam (Optional arguments) {Object} changed Map from a label ID to a list of IDs of annotations to which this label should be attached.
-     * @apiParam (Optional arguments) {Object} force If set to `true`, project admins can replace annotation labels attached by other users.
+     * @apiParam (Optional arguments) {Object} force If set to `true`, project experts and admins can replace annotation labels attached by other users.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
@@ -111,14 +111,18 @@ class LargoController extends Controller
             $projects = $volume->projects()->pluck('id');
         } else {
             // All projects that the user and the volume have in common
-            // and where the user is editor or admin.
+            // and where the user is editor, expert or admin.
             $projects = $user->projects()
                 ->whereIn('id', function ($query) use ($volume) {
                     $query->select('project_volume.project_id')
                         ->from('project_volume')
                         ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
                         ->where('project_volume.volume_id', $volume->id)
-                        ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id]);
+                        ->whereIn('project_user.project_role_id', [
+                            Role::$editor->id,
+                            Role::$expert->id,
+                            Role::$admin->id,
+                        ]);
                 })
                 ->pluck('id');
         }

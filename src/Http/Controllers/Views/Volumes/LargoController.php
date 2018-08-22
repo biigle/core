@@ -27,15 +27,19 @@ class LargoController extends Controller
             // Global admins have no restrictions.
             $projects = $volume->projects;
         } else {
-            // all projects that the user and the volume have in common
-            // and where the user is editor or admin
+            // All projects that the user and the volume have in common
+            // and where the user is editor, expert or admin.
             $projects = $user->projects()
                 ->whereIn('id', function ($query) use ($volume) {
                     $query->select('project_volume.project_id')
                         ->from('project_volume')
                         ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
                         ->where('project_volume.volume_id', $volume->id)
-                        ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id]);
+                        ->whereIn('project_user.project_role_id', [
+                            Role::$editor->id,
+                            Role::$expert->id,
+                            Role::$admin->id,
+                        ]);
                 })
                 ->get();
         }

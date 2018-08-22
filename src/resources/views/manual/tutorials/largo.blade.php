@@ -73,7 +73,7 @@
         </ul>
 
         <p>
-            Project admins can choose to enable the "Force delete/re-label" switch. If a Largo session is saved with this switch enabled, the behavior described above changes as follows:
+            Project experts and admins can choose to enable the "Force delete/re-label" switch. If a Largo session is saved with this switch enabled, the behavior described above changes as follows:
         </p>
 
         <ul>

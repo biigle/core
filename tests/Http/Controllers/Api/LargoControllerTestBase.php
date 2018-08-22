@@ -105,7 +105,7 @@ class LargoControllerTestBase extends ApiTestCase
     public function testDismissForce()
     {
         $this->expectsJobs(RemoveAnnotationPatches::class);
-        $this->beAdmin();
+        $this->beExpert();
         $response = $this->post($this->url, [
             'dismissed' => [
                 $this->label->label_id => [$this->annotation->id],
@@ -161,7 +161,7 @@ class LargoControllerTestBase extends ApiTestCase
     public function testChangeOtherForce()
     {
         $this->doesntExpectJobs(RemoveAnnotationPatches::class);
-        $this->beAdmin();
+        $this->beExpert();
         $response = $this->post($this->url, [
             'dismissed' => [
                 $this->label->label_id => [$this->annotation->id],
