@@ -33,8 +33,8 @@ class AnnotationToolController extends Controller
                 ->where('volume_id', $image->volume_id)
                 ->pluck('project_id');
         } else {
-            // array of all project IDs that the user and the image have in common
-            // and where the user is editor or admin
+            // Array of all project IDs that the user and the image have in common
+            // and where the user is editor, expert or admin.
             $projectIds = DB::table('project_user')
                 ->where('user_id', $user->id)
                 ->whereIn('project_id', function ($query) use ($image) {
@@ -42,7 +42,11 @@ class AnnotationToolController extends Controller
                         ->from('project_volume')
                         ->join('project_user', 'project_volume.project_id', '=', 'project_user.project_id')
                         ->where('project_volume.volume_id', $image->volume_id)
-                        ->whereIn('project_user.project_role_id', [Role::$editor->id, Role::$admin->id]);
+                        ->whereIn('project_user.project_role_id', [
+                            Role::$editor->id,
+                            Role::$expert->id,
+                            Role::$admin->id,
+                        ]);
                 })
                 ->pluck('project_id');
         }

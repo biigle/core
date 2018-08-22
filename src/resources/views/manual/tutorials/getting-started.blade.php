@@ -9,7 +9,7 @@
         </p>
 
         <p>
-            The annotation tool can be used to navigate and explore images and their annotations. Project editors can also create new annotations as well as modify or delete existing ones.
+            The annotation tool can be used to navigate and explore images and their annotations. Project editors, experts or admins can also create new annotations as well as modify or delete existing ones.
         </p>
 
         <p>
