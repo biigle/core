@@ -58,7 +58,7 @@
 
         <div class="panel panel-info">
             <div class="panel-body text-info">
-                To quickly dismiss or re-label consecutive annotations, press the <code>shift</code> key when you click on an annotation. This will dismiss/re-label all annotations between the current one and the last one you have selected.
+                To quickly dismiss or re-label consecutive annotations, press the <code>Shift</code> key when you click on an annotation. This will dismiss/re-label all annotations between the current one and the last one you have selected.
             </div>
         </div>
 
@@ -67,9 +67,18 @@
         </p>
 
         <ul>
-            <li>If the annotation was dismissed but <em>not</em> re-labeled, the label will be detached from the annotation (if you attached the label). If this was the only label of the annotation, the annotation will be deleted.</li>
-            <li>If the annotation was re-labeled and the previous label was created by you, the previous label will be replaced by the new label.</li>
-            <li>If the annotation was re-labeled and the previous label was <em>not</em> created by you, the new label will be attached to the annotation in addition to the previous label.</li>
+            <li>If the annotation was dismissed but not re-labeled and if the label that should be detached was attached by you, the label is detached from the annotation. If this was the only label of the annotation, the annotation is deleted.</li>
+            <li>If the annotation was re-labeled and the previous label was attached by you, the previous label is replaced by the new label.</li>
+            <li>If the annotation was re-labeled and the previous label was not attached by you, the new label is attached to the annotation in addition to the previous label.</li>
+        </ul>
+
+        <p>
+            Project admins can choose to enable the "Force delete/re-label" switch. If a Largo session is saved with this switch enabled, the behavior described above changes as follows:
+        </p>
+
+        <ul>
+            <li>If the annotation was dismissed and not re-labeled, <em>all</em> instances of the dismissed label are detached from the annotation. If these were the only labels of the annotation, the annotation is deleted.</li>
+            <li>If the annotation was re-labeled, <em>all</em> instances of the dismissed label are replaced by (one instance of) the new label.</li>
         </ul>
 
         <p>
@@ -92,13 +101,17 @@
         <h4>Confirm annotations of others</h4>
 
         <p>
-            BIIGLE allows users to attach multiple labels to a single annotation. This way users can confirm labels of other users or suggest a different label. In Largo you can display, "dismiss" and re-label all annotations where you want to confirm or suggest a different label. Don't worry if you forgot to re-label an annotation. If the label attached to the annotation was not created by you, it won't be deleted.
+            BIIGLE allows users to attach multiple labels to a single annotation. This way users can confirm labels of other users or suggest a different label. In Largo you can display, "dismiss" and re-label all annotations where you want to confirm or suggest a different label. Don't worry if you forgot to re-label an annotation. If the label attached to the annotation was not created by you, it won't be deleted. Take care not to enable the "Force delete/re-label" switch in this case.
         </p>
 
         <h4>Two step annotation process</h4>
 
         <p>
             The first step of a two step annotation process is to find objects of interest in the images you annotate. You don't care what kinds of objects you see but just mark all with the same label (maybe "Interesting"). In the second step you sort these interesting objects into their specific label categories. For this step you can use Largo. Select the "Interesting" label and all of your annotations will be displayed. Now you pick one label (e.g. "Starfish") and dismiss all starfishes that you see. In the re-label step, you simply re-label all dismissed annotations as starfish and save. Then continue with the next label.
+        </p>
+
+        <p>
+            You can perform the two step annotation process with multiple users, too. One user is responsible of finding objects of interest in the images. The other user (e.g. an expert) then assigns specific labels to the annotations using Largo. With the "Force delete/re-label" switch enabled, the expert can replace the generic "Interesting" labels with the specific ones.
         </p>
 
         <h4>Annotation examples</h4>

@@ -15,11 +15,8 @@ biigle.$viewModel('project-largo-container', function (element) {
             queryAnnotations: function (label) {
                 return projectsApi.queryAnnotations({id: projectId, label_id: label.id});
             },
-            performSave: function (dismissed, changed) {
-                return projectsApi.save({id: projectId}, {
-                    dismissed: dismissed,
-                    changed: changed,
-                });
+            performSave: function (payload) {
+                return projectsApi.save({id: projectId}, payload);
             },
         },
     });

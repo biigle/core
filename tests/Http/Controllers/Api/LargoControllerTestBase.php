@@ -86,6 +86,38 @@ class LargoControllerTestBase extends ApiTestCase
         $this->assertNull($this->annotation->fresh());
     }
 
+    public function testDismissForceDeny()
+    {
+        $this->doesntExpectJobs(RemoveAnnotationPatches::class);
+        $this->label->user_id = $this->admin()->id;
+        $this->label->save();
+        $this->beEditor();
+        $response = $this->post($this->url, [
+            'dismissed' => [
+                $this->label->label_id => [$this->annotation->id],
+            ],
+            'changed' => [],
+            'force' => true,
+        ]);
+        $response->assertStatus(403);
+    }
+
+    public function testDismissForce()
+    {
+        $this->expectsJobs(RemoveAnnotationPatches::class);
+        $this->beAdmin();
+        $response = $this->post($this->url, [
+            'dismissed' => [
+                $this->label->label_id => [$this->annotation->id],
+            ],
+            'changed' => [],
+            'force' => true,
+        ]);
+        $response->assertStatus(200);
+        $this->assertNull($this->label->fresh());
+        $this->assertNull($this->annotation->fresh());
+    }
+
     public function testChangeOwn()
     {
         $this->doesntExpectJobs(RemoveAnnotationPatches::class);
@@ -124,6 +156,26 @@ class LargoControllerTestBase extends ApiTestCase
         $this->assertNotNull($this->label->fresh());
         $this->assertNotNull($this->annotation->fresh());
         $this->assertEquals(2, $this->annotation->labels()->count());
+    }
+
+    public function testChangeOtherForce()
+    {
+        $this->doesntExpectJobs(RemoveAnnotationPatches::class);
+        $this->beAdmin();
+        $response = $this->post($this->url, [
+            'dismissed' => [
+                $this->label->label_id => [$this->annotation->id],
+            ],
+            'changed' => [
+                $this->labelRoot()->id => [$this->annotation->id],
+            ],
+            'force' => true,
+        ]);
+        $response->assertStatus(200);
+
+        $this->assertNull($this->label->fresh());
+        $this->assertNotNull($this->annotation->fresh());
+        $this->assertEquals($this->labelRoot()->id, $this->annotation->labels()->first()->label_id);
     }
 
     public function testChangeMultiple()

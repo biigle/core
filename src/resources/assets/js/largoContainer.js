@@ -15,11 +15,8 @@ biigle.$viewModel('largo-container', function (element) {
             queryAnnotations: function (label) {
                 return volumesApi.queryAnnotations({id: volumeId, label_id: label.id});
             },
-            performSave: function (dismissed, changed) {
-                return volumesApi.save({id: volumeId}, {
-                    dismissed: dismissed,
-                    changed: changed,
-                });
+            performSave: function (payload) {
+                return volumesApi.save({id: volumeId}, payload);
             },
         },
     });

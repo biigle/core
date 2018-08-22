@@ -7,6 +7,7 @@ biigle.$declare('largo.mixins.largoContainer', {
         labelTrees: biigle.$require('labelTrees.components.labelTrees'),
         sidebar: biigle.$require('core.components.sidebar'),
         sidebarTab: biigle.$require('core.components.sidebarTab'),
+        powerToggle: biigle.$require('core.components.powerToggle'),
         dismissImageGrid: biigle.$require('largo.components.dismissImageGrid'),
         relabelImageGrid: biigle.$require('largo.components.relabelImageGrid'),
     },
@@ -16,6 +17,7 @@ biigle.$declare('largo.mixins.largoContainer', {
         selectedLabel: null,
         annotationsCache: {},
         lastSelectedImage: null,
+        forceChange: false,
     },
     computed: {
         isInDismissStep: function () {
@@ -89,6 +91,9 @@ biigle.$declare('largo.mixins.largoContainer', {
         },
         events: function () {
             return biigle.$require('events');
+        },
+        saveButtonClass: function () {
+            return this.forceChange ? 'btn-danger' : 'btn-success';
         },
     },
     methods: {
@@ -172,13 +177,16 @@ biigle.$declare('largo.mixins.largoContainer', {
             }
         },
         save: function () {
-            if (this.loading || (this.toDeleteCount > 0 && !confirm('This will attempt to delete ' + this.toDeleteCount + ' annotations. Continue?'))) {
+            if (this.loading || (this.toDeleteCount > 0 && !confirm('This might delete ' + this.toDeleteCount + ' annotation(s). Continue?'))) {
                 return;
             }
 
             this.startLoading();
-
-            this.performSave(this.dismissedToSave, this.changedToSave)
+            this.performSave({
+                    dismissed: this.dismissedToSave,
+                    changed: this.changedToSave,
+                    force: this.forceChange,
+                })
                 .then(this.saved, biigle.$require('messages.store').handleErrorResponse)
                 .finally(this.finishLoading);
         },
@@ -217,6 +225,12 @@ biigle.$declare('largo.mixins.largoContainer', {
                     image.newLabel = label;
                 }
             });
+        },
+        enableForceChange: function () {
+            this.forceChange = true;
+        },
+        disableForceChange: function () {
+            this.forceChange = false;
         },
     },
     watch: {

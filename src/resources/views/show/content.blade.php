@@ -22,10 +22,17 @@
                     <button class="btn btn-default col-xs-6" title="Go back to dismissing annotations" :disabled="loading" v-on:click="goToDismiss">Back</button>
                 </div>
                 <div class="btn-group">
-                    <button class="btn btn-success col-xs-6" title="Save the changes" :disabled="loading" v-on:click="save">Save</button>
+                    <button class="btn col-xs-6" :class="saveButtonClass" title="Save the changes" :disabled="loading" v-on:click="save">Save</button>
                 </div>
             </div>
+            <div >
+            </div>
         </div>
+        @can('force-edit-in', $target)
+            <div v-cloak v-if="isInRelabelStep" class="largo-tab__button">
+                <power-toggle :active="forceChange" type="danger" title="Delete or replace annotation labels created by other users" v-on:on="enableForceChange" v-on:off="disableForceChange">Force delete/re-label</power-toggle>
+            </div>
+        @endcan
         <label-trees class="largo-tab__label-trees" :trees="labelTrees" :show-favourites="true" v-on:select="handleSelectedLabel" v-on:deselect="handleDeselectedLabel" v-on:clear="handleDeselectedLabel"></label-trees>
     </sidebar-tab>
 </sidebar>

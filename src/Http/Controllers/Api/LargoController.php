@@ -22,6 +22,7 @@ class LargoController extends Controller
         $this->validate($request, [
             'dismissed' => 'array',
             'changed' => 'array',
+            'force' => 'bool',
         ]);
     }
 
@@ -122,14 +123,15 @@ class LargoController extends Controller
      * @param \Biigle\User $user
      * @param array $dismissed Array of all dismissed annotation IDs for each label
      * @param array $changed Array of all changed annotation IDs for each label
+     * @param bool $force Dismiss labels even if they were created by other users
      */
-    protected function applySave($user, $dismissed, $changed)
+    protected function applySave($user, $dismissed, $changed, $force = false)
     {
         $filtered = $this->ignoreDeletedLabels($dismissed, $changed);
 
         // Roll back changes if any errors occur.
-        DB::transaction(function () use ($user, $filtered) {
-            $this->applyDismissedLabels($user, $filtered['dismissed']);
+        DB::transaction(function () use ($user, $filtered, $force) {
+            $this->applyDismissedLabels($user, $filtered['dismissed'], $force);
             $this->applyChangedLabels($user, $filtered['changed']);
         });
     }
@@ -139,13 +141,16 @@ class LargoController extends Controller
      *
      * @param \Biigle\User $user
      * @param array $dismissed
+     * @param bool $force
      */
-    protected function applyDismissedLabels($user, $dismissed)
+    protected function applyDismissedLabels($user, $dismissed, $force)
     {
         foreach ($dismissed as $labelId => $annotationIds) {
             AnnotationLabel::whereIn('annotation_id', $annotationIds)
+                ->when(!$force, function ($query) use ($user) {
+                    return $query->where('user_id', $user->id);
+                })
                 ->where('label_id', $labelId)
-                ->where('user_id', $user->id)
                 ->delete();
         }
     }

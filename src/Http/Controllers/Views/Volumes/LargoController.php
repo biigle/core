@@ -55,6 +55,7 @@ class LargoController extends Controller
             'volume' => $volume,
             'projects' => $projects,
             'labelTrees' => $labelTrees,
+            'target' => $volume,
         ]);
     }
 }

@@ -25,6 +25,7 @@ class LargoController extends Controller
      *
      * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of annotations from which this label should be detached.
      * @apiParam (Optional arguments) {Object} changed Map from a label ID to a list of IDs of annotations to which this label should be attached.
+     * @apiParam (Optional arguments) {Object} force If set to `true`, project admins can replace annotation labels attached by other users.
      *
      * @param Request $request
      * @param Guard $auth
@@ -36,6 +37,12 @@ class LargoController extends Controller
         $project = Project::findOrFail($id);
         $this->authorize('edit-in', $project);
         $this->validateLargoInput($request);
+
+        $force = $request->input('force', false);
+
+        if ($force) {
+            $this->authorize('force-edit-in', $project);
+        }
 
         $volumeIds = $project->volumes()->pluck('id');
 
@@ -59,7 +66,7 @@ class LargoController extends Controller
             throw new AuthorizationException('You may only attach labels that belong to one of the label trees available for the project.');
         }
 
-        $this->applySave($auth->user(), $dismissed, $changed);
+        $this->applySave($auth->user(), $dismissed, $changed, $force);
 
         // Remove annotations that now have no more labels attached.
         $toDelete = Annotation::join('images', 'images.id', '=', 'annotations.image_id')

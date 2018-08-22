@@ -30,6 +30,7 @@ class LargoController extends Controller
             'user' => $user,
             'project' => $project,
             'labelTrees' => $labelTrees,
+            'target' => $project,
         ]);
     }
 }
