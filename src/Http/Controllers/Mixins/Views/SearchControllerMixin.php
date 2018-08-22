@@ -19,7 +19,7 @@ class SearchControllerMixin
     public function index(User $user, $query, $type)
     {
 
-        if ($user->isAdmin) {
+        if ($user->can('sudo')) {
             $queryBuilder = Project::query();
         } else {
             $queryBuilder = $user->projects();
