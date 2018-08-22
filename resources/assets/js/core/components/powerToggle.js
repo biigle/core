@@ -4,7 +4,7 @@
  * @type {Object}
  */
 biigle.$component('core.components.powerToggle', {
-    template: '<span class="power-toggle"><button type="button" class="btn btn-default" :class="objectClass" @click="handleClick" :title="currentTitle"><i class="fa fa-power-off"></i></button><span v-if="label" class="power-toggle__label" v-text="label"></span></span>',
+    template: '<span class="power-toggle"><button type="button" class="btn btn-default" :class="objectClass" @click="handleClick" :title="currentTitle"><i class="fa fa-fw" :class="iconClass"></i></button><span v-if="label" class="power-toggle__label" v-text="label"></span></span>',
     props: {
         active: {
             type: Boolean,
@@ -26,6 +26,10 @@ biigle.$component('core.components.powerToggle', {
             type: String,
             default: 'info',
         },
+        icon: {
+            type: String,
+            default: 'power-off',
+        },
     },
     computed: {
         currentTitle: function () {
@@ -43,6 +47,9 @@ biigle.$component('core.components.powerToggle', {
             obj['btn-' + this.type] = this.active;
 
             return obj;
+        },
+        iconClass: function () {
+            return 'fa-' + this.icon;
         },
     },
     methods: {
