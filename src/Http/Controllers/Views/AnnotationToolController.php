@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Annotations\Http\Controllers\Views;
 
+use DB;
 use Biigle\Shape;
 use Biigle\Image;
 use Biigle\Project;
