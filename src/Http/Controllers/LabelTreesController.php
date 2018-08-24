@@ -8,7 +8,6 @@ use Biigle\LabelTree;
 use Biigle\Visibility;
 use Biigle\LabelSource;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Views\Controller;
 
 class LabelTreesController extends Controller
@@ -16,16 +15,16 @@ class LabelTreesController extends Controller
     /**
      * Show the label tree page.
      *
-     * @param Guard $auth
+     * @param Request $request
      * @param int $id Label tree ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function show(Guard $auth, $id)
+    public function show(Request $request, $id)
     {
         $tree = LabelTree::findOrFail($id);
         $this->authorize('access', $tree);
-        $user = $auth->user();
+        $user = $request->user();
 
         $labels = $tree->labels()
             ->select('id', 'name', 'parent_id', 'color', 'source_id')
