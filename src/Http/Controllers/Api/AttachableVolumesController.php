@@ -5,7 +5,7 @@ namespace Biigle\Modules\Projects\Http\Controllers\Api;
 use Biigle\Role;
 use Biigle\Volume;
 use Biigle\Project;
-use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
 
 class AttachableVolumesController extends Controller
@@ -33,25 +33,25 @@ class AttachableVolumesController extends Controller
      *    }
      * ]
      *
-     * @param Guard $auth
+     * @param Request $request
      * @param id $id Project ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth, $id)
+    public function index(Request $request, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
 
         $volumes = Volume::select('id', 'name')
             // All volumes of other projects where the user has admin rights on.
-            ->whereIn('id', function ($query) use ($auth, $id) {
+            ->whereIn('id', function ($query) use ($request, $id) {
                 return $query->select('volume_id')
                     ->from('project_volume')
-                    ->whereIn('project_id', function ($query) use ($auth, $id) {
+                    ->whereIn('project_id', function ($query) use ($request, $id) {
                         return $query->select('project_id')
                             ->from('project_user')
-                            ->where('user_id', $auth->user()->id)
+                            ->where('user_id', $request->user()->id)
                             ->where('project_role_id', Role::$admin->id)
                             ->where('project_id', '!=', $id);
                     });

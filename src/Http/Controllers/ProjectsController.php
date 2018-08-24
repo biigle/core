@@ -4,7 +4,6 @@ namespace Biigle\Modules\Projects\Http\Controllers;
 
 use Biigle\Role;
 use Biigle\Project;
-use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Views\Controller;
 
 class ProjectsController extends Controller
@@ -22,11 +21,10 @@ class ProjectsController extends Controller
     /**
      * Shows the project show page.
      *
-     * @param Guard $auth
      * @param int $id project ID
      * @return \Illuminate\Http\Response
      */
-    public function show(Guard $auth, $id)
+    public function show($id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
@@ -58,7 +56,6 @@ class ProjectsController extends Controller
 
         return view('projects::show', [
             'project' => $project,
-            'user' => $auth->user(),
             'roles' => $roles,
             'labelTrees' => $labelTrees,
             'volumes' => $volumes,
