@@ -4,7 +4,6 @@ namespace Biigle\Modules\LabelTrees\Http\Controllers\Mixins\Views;
 
 use Biigle\User;
 use Biigle\LabelTree;
-use Biigle\Visibility;
 
 class SearchControllerMixin
 {
