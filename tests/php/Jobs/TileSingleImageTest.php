@@ -6,7 +6,6 @@ use File;
 use Storage;
 use Mockery;
 use TestCase;
-use ZipArchive;
 use Jcupitt\Vips\Image;
 use Biigle\Tests\ImageTest;
 use Biigle\Jobs\TileSingleImage;

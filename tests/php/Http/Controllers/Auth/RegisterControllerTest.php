@@ -2,12 +2,10 @@
 
 namespace Biigle\Tests\Http\Controllers\Auth;
 
-use Auth;
 use Session;
 use TestCase;
 use Biigle\User;
 use Biigle\Tests\UserTest;
-use Illuminate\Auth\Notifications\ResetPassword;
 
 class RegisterControllerTest extends TestCase
 {

@@ -185,6 +185,7 @@ class Image extends Model
             if (!is_resource($stream)) {
                 abort(404);
             }
+
             return response()->stream(function () use ($stream) {
                 fpassthru($stream);
             }, 200, [

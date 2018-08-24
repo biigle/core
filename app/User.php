@@ -209,7 +209,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Determines if the user is currently in Super User Mode
+     * Determines if the user is currently in Super User Mode.
      *
      * @return bool
      */
