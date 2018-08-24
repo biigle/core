@@ -3,7 +3,6 @@
 namespace Biigle\Modules\Sync\Support\Import;
 
 use Exception;
-use Biigle\Role;
 use Biigle\User;
 use Biigle\Label;
 use Biigle\Image;
@@ -46,7 +45,7 @@ class VolumeImport extends Import
     protected $labelTreeImport;
 
     /**
-     * Perform the import
+     * Perform the import.
      *
      * @param Project $project Project to attach the imported volumes to
      * @param User $creator Creator of the new projects.
@@ -113,7 +112,6 @@ class VolumeImport extends Import
             throw $e;
         }
 
-
         return [
             'volumes' => $volumeIdMap,
             'labelTrees' => $labelTreeIdMap,
@@ -159,8 +157,10 @@ class VolumeImport extends Import
             ->map(function ($tree) {
                 $tree['labels'] = array_map(function ($label) use ($tree) {
                     $label['label_tree_id'] = $tree['id'];
+
                     return $label;
                 }, $tree['labels']);
+
                 return $tree;
             })
             ->pluck('labels')
@@ -223,7 +223,7 @@ class VolumeImport extends Import
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     protected function expectedFiles()
     {
@@ -505,6 +505,7 @@ class VolumeImport extends Import
 
         $images = array_map(function ($image) {
             $image['uuid'] = (string) Uuid::uuid4();
+
             return $image;
         }, $images);
 

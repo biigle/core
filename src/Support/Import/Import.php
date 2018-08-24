@@ -20,7 +20,7 @@ class Import
      *
      * @param string $path Path to the directory with the import files.
      */
-    function __construct($path)
+    public function __construct($path)
     {
         $this->path = $path;
     }
@@ -28,7 +28,7 @@ class Import
     /**
      * Check if this import matches to the given import files.
      *
-     * @return boolean
+     * @return bool
      */
     public function filesMatch()
     {

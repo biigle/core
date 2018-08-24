@@ -57,7 +57,7 @@ class SyncServiceProvider extends ServiceProvider
 
         $this->commands([
             'command.sync.publish',
-            'command.sync.prune'
+            'command.sync.prune',
         ]);
     }
 

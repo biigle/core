@@ -9,7 +9,6 @@ use Biigle\Modules\Sync\Support\Export\VolumeExport;
 use Biigle\Modules\Sync\Support\Import\ArchiveManager;
 use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
 
-
 class ImportAdminControllerTest extends ApiTestCase
 {
     public function testIndex()

@@ -18,7 +18,7 @@ class Export
      *
      * @param array $ids Model IDs
      */
-    function __construct(array $ids)
+    public function __construct(array $ids)
     {
         $this->ids = $ids;
     }
@@ -50,7 +50,6 @@ class Export
 
         return $path;
     }
-
 
     /**
      * Get the content of the export file. If a string, it is the path to the temporary
@@ -94,7 +93,7 @@ class Export
     }
 
     /**
-     * Add the file of this report to a zip
+     * Add the file of this report to a zip.
      *
      * @param ZipArchive $zip
      */

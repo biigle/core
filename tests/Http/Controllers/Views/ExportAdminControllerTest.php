@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Modules\Sync\Http\Controllers\Views;
 
 use ApiTestCase;
-use Biigle\Tests\UserTest;
 
 class ExportAdminControllerTest extends ApiTestCase
 {

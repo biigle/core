@@ -42,22 +42,22 @@ class Controller extends BaseController
      */
     protected function getQuery()
     {
-        return null;
+        return;
     }
 
     /**
-     * Get the new export instance
+     * Get the new export instance.
      *
      * @param array $ids
      * @return Biigle\Modules\Sync\Support\Export
      */
     protected function getExport(array $ids)
     {
-        return null;
+        return;
     }
 
     /**
-     * Get the filename of the export archive
+     * Get the filename of the export archive.
      *
      * @return string
      */

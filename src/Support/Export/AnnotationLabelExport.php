@@ -45,7 +45,7 @@ class AnnotationLabelExport extends Export
                 'annotation_labels.user_id',
                 'annotation_labels.confidence',
                 'annotation_labels.created_at',
-                'annotation_labels.updated_at'
+                'annotation_labels.updated_at',
             ])
             ->chunkById(1E+5, function ($rows) use ($csv) {
                 foreach ($rows as $row) {

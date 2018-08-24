@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 class ImportController extends Controller
 {
     /**
-     * Initiate a new import
+     * Initiate a new import.
      *
      * @api {post} import Initiate a new import
      * @apiGroup Import
@@ -101,7 +101,7 @@ class ImportController extends Controller
     }
 
     /**
-     * Perform a user import
+     * Perform a user import.
      *
      * @param UserImport $import
      * @param Request $request
@@ -117,7 +117,7 @@ class ImportController extends Controller
     }
 
     /**
-     * Perform a label tree import
+     * Perform a label tree import.
      *
      * @param LabelTreeImport $import
      * @param Request $request
@@ -144,7 +144,7 @@ class ImportController extends Controller
     }
 
     /**
-     * Perform a volume import
+     * Perform a volume import.
      *
      * @param VolumeImport $import
      * @param Request $request

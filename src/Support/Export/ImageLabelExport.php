@@ -42,7 +42,7 @@ class ImageLabelExport extends Export
                 'image_labels.label_id',
                 'image_labels.user_id',
                 'image_labels.created_at',
-                'image_labels.updated_at'
+                'image_labels.updated_at',
             ])
             ->chunkById(1E+5, function ($rows) use ($csv) {
                 foreach ($rows as $row) {

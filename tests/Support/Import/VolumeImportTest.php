@@ -19,7 +19,6 @@ use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Tests\ProjectTest;
-use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\AnnotationTest;
 use Biigle\Tests\AnnotationLabelTest;

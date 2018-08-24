@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
-use Exception;
 use Biigle\User;
 use Biigle\Role;
 use Carbon\Carbon;
@@ -18,7 +17,7 @@ class UserImport extends Import
     protected $importUsers;
 
     /**
-     * Perform the import
+     * Perform the import.
      *
      * @param array|null $only IDs of the import candidates to limit the import to.
      * @throws UnprocessableEntityHttpException If there are conflicts with the users that should be imported.
@@ -94,7 +93,7 @@ class UserImport extends Import
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     protected function expectedFiles()
     {

@@ -5,7 +5,6 @@ namespace Biigle\Tests\Modules\Sync\Http\Controllers\Api\Export;
 use ZipArchive;
 use Biigle\User;
 use ApiTestCase;
-use Biigle\Tests\UserTest;
 
 class UserExportControllerTest extends ApiTestCase
 {

@@ -30,7 +30,7 @@ class LabelTreeImport extends Import
     protected $userImport;
 
     /**
-     * Perform the import
+     * Perform the import.
      *
      * @param array|null $onlyTrees IDs of the label tree import candidates to limit the import to.
      * @param array|null $onlyLabels IDs of the label import candidates to limit the import to.
@@ -133,6 +133,7 @@ class LabelTreeImport extends Import
                 return array_map(function ($label) use ($tree) {
                     $label['label_tree_id'] = $tree['id'];
                     $label['label_tree_name'] = $tree['name'];
+
                     return $label;
                 }, $tree['labels']);
             })
@@ -199,7 +200,7 @@ class LabelTreeImport extends Import
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
      */
     protected function expectedFiles()
     {
@@ -333,6 +334,7 @@ class LabelTreeImport extends Import
             ->map(function ($tree) {
                 return array_map(function ($member) use ($tree) {
                     $member['label_tree_id'] = $tree['id'];
+
                     return $member;
                 }, $tree['members']);
             })

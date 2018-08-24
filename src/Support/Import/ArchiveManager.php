@@ -75,7 +75,7 @@ class ArchiveManager
      *
      * @param string $token Import token.
      *
-     * @return boolean
+     * @return bool
      */
     public function has($token)
     {
@@ -102,7 +102,7 @@ class ArchiveManager
             }
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -170,4 +170,3 @@ class ArchiveManager
         }
     }
 }
-

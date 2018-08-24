@@ -92,6 +92,7 @@ class ImportAdminController extends Controller
         $labelTreeCandidates = $import->getLabelTreeImportCandidates()
             ->map(function ($item) {
                 unset($item['labels']);
+
                 return $item;
             });
         $labelTreeCandidatesCount = $labelTreeCandidates->count();
@@ -146,6 +147,7 @@ class ImportAdminController extends Controller
         $labelTreeCandidates = $import->getLabelTreeImportCandidates()
             ->map(function ($item) {
                 unset($item['labels']);
+
                 return $item;
             });
 
