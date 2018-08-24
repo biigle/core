@@ -39,7 +39,7 @@ class LabelTreesController extends Controller
             ->select('id', 'name')
             ->get();
 
-        if ($user->isAdmin) {
+        if ($user->can('sudo')) {
             $projects = $tree->projects;
             $authorizedOwnProjects = $authorizedProjects->pluck('id');
         } else {
