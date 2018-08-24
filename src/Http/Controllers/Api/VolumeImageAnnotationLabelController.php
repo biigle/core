@@ -4,7 +4,7 @@ namespace Biigle\Modules\Volumes\Http\Controllers\Api;
 
 use Biigle\Volume;
 use Biigle\Annotation;
-use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
 
 class VolumeImageAnnotationLabelController extends Controller
@@ -24,21 +24,20 @@ class VolumeImageAnnotationLabelController extends Controller
      * @apiSuccessExample {json} Success response:
      * [1, 5, 6]
      *
-     * @param Guard $auth
+     * @param Request $request
      * @param  int  $tid
      * @param  int  $lid
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth, $tid, $lid)
+    public function index(Request $request, $tid, $lid)
     {
         $volume = Volume::findOrFail($tid);
         $this->authorize('access', $volume);
 
-        $user = $auth->user();
-        $session = $volume->getActiveAnnotationSession($user);
+        $session = $volume->getActiveAnnotationSession($request->user());
 
         if ($session) {
-            $query = Annotation::allowedBySession($session, $user);
+            $query = Annotation::allowedBySession($session, $request->user());
         } else {
             $query = Annotation::getQuery();
         }

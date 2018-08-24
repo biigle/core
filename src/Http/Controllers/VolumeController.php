@@ -10,7 +10,6 @@ use Biigle\Project;
 use Biigle\LabelTree;
 use Biigle\MediaType;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Views\Controller;
 
 class VolumeController extends Controller
@@ -38,18 +37,17 @@ class VolumeController extends Controller
     /**
      * Shows the volume index page.
      *
-     * @param Guard $auth
+     * @param Request $request
      * @param int $id volume ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth, $id)
+    public function index(Request $request, $id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
-        $user = $auth->user();
 
-        $projects = $this->getProjects($user, $volume);
+        $projects = $this->getProjects($request->user(), $volume);
 
         // all label trees that are used by all projects which are visible to the user
         $labelTrees = LabelTree::with('labels')
@@ -65,7 +63,6 @@ class VolumeController extends Controller
             ->pluck('uuid', 'id');
 
         return view('volumes::show')
-            ->with('user', $user)
             ->with('volume', $volume)
             ->with('labelTrees', $labelTrees)
             ->with('projects', $projects)
@@ -75,18 +72,17 @@ class VolumeController extends Controller
     /**
      * Shows the volume edit page.
      *
-     * @param Guard $auth
+     * @param Request $request
      * @param int $id volume ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit(Guard $auth, $id)
+    public function edit(Request $request, $id)
     {
         $volume = Volume::with('projects')->findOrFail($id);
         $this->authorize('update', $volume);
         $sessions = $volume->annotationSessions()->with('users')->get();
-        $user = $auth->user();
-        $projects = $this->getProjects($user, $volume);
+        $projects = $this->getProjects($request->user(), $volume);
 
         return view('volumes::edit', [
             'projects' => $projects,
