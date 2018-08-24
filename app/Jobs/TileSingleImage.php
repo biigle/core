@@ -6,7 +6,6 @@ use File;
 use Storage;
 use VipsImage;
 use ImageCache;
-use ZipArchive;
 use SplFileInfo;
 use Biigle\Image;
 use Illuminate\Queue\SerializesModels;
@@ -34,7 +33,7 @@ class TileSingleImage extends Job implements ShouldQueue
     /**
      * Ignore this job if the image does not exist any more.
      *
-     * @var boolean
+     * @var bool
      */
     protected $deleteWhenMissingModels = true;
 

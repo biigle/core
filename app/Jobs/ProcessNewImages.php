@@ -30,7 +30,7 @@ class ProcessNewImages extends Job implements ShouldQueue
     /**
      * Ignore this job if the volume does not exist any more.
      *
-     * @var boolean
+     * @var bool
      */
     protected $deleteWhenMissingModels = true;
 
