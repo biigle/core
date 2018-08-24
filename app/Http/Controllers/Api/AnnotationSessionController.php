@@ -6,8 +6,9 @@ use DB;
 use Carbon\Carbon;
 use Biigle\Volume;
 use Biigle\AnnotationSession;
-use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Biigle\Http\Requests\UpdateAnnotationSession;
+use Biigle\Http\Requests\DestroyAnnotationSession;
 
 class AnnotationSessionController extends Controller
 {
@@ -41,15 +42,12 @@ class AnnotationSessionController extends Controller
      *    "users": [84, 2054]
      * }
      *
-     * @param Request $request
-     * @param  int  $id
+     * @param UpdateAnnotationSession $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateAnnotationSession $request)
     {
-        $session = AnnotationSession::with('volume')->findOrFail($id);
-        $this->authorize('update', $session->volume);
-        $this->validate($request, AnnotationSession::$updateRules);
+        $session = $request->session;
 
         if ($request->filled('starts_at')) {
             $newStartsAt = Carbon::parse($request->input('starts_at'))
@@ -152,20 +150,16 @@ class AnnotationSessionController extends Controller
      *    "force": true
      * }
      *
-     * @param Request $request
+     * @param DestroyAnnotationSession $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(DestroyAnnotationSession $request, $id)
     {
-        $session = AnnotationSession::with('volume')->findOrFail($id);
-        $this->authorize('update', $session->volume);
-        $this->validate($request, AnnotationSession::$destroyRules);
-
-        if (!$request->input('force') && $session->annotations()->exists()) {
+        if (!$request->input('force') && $request->session->annotations()->exists()) {
             abort(400, 'There are annotations belonging to this annotation session. Use the force attribute to delete it anyway (the annotations will not be deleted).');
         }
 
-        $session->delete();
+        $request->session->delete();
     }
 }

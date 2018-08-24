@@ -13,31 +13,6 @@ use Illuminate\Database\Eloquent\Model;
 class AnnotationSession extends Model
 {
     /**
-     * Validation rules for updating an annotation session.
-     *
-     * @var array
-     */
-    public static $updateRules = [
-        'name' => 'filled',
-        'starts_at' => 'filled|date',
-        'ends_at' => 'filled|date',
-        'hide_other_users_annotations' => 'filled|boolean',
-        'hide_own_annotations' => 'filled|boolean',
-        'users' => 'filled|array',
-        'users.*' => 'distinct|exists:users,id',
-        'force' => 'filled|boolean',
-    ];
-
-    /**
-     * Validation rules for destroying an annotation session.
-     *
-     * @var array
-     */
-    public static $destroyRules = [
-        'force' => 'filled|boolean',
-    ];
-
-    /**
      * The attributes that should be casted to native types.
      *
      * @var array
