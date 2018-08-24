@@ -4,7 +4,7 @@ namespace Biigle\Modules\Annotations\Http\Controllers\Api;
 
 use Biigle\Volume;
 use Biigle\Annotation;
-use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Api\Controller;
 
 class VolumeImageController extends Controller
@@ -23,16 +23,16 @@ class VolumeImageController extends Controller
      * @apiSuccessExample {json} Success response:
      * [1, 5, 6]
      *
-     * @param Guard $auth
+     * @param Request $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function hasAnnotation(Guard $auth, $id)
+    public function hasAnnotation(Request $request, $id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
 
-        $user = $auth->user();
+        $user = $request->user();
         $session = $volume->getActiveAnnotationSession($user);
 
         if ($session) {
@@ -62,17 +62,17 @@ class VolumeImageController extends Controller
      * @apiSuccessExample {json} Success response:
      * [1, 5, 6]
      *
-     * @param Guard $auth
+     * @param Request $request
      * @param  int  $tid
      * @param  int  $uid
      * @return \Illuminate\Http\Response
      */
-    public function hasAnnotationUser(Guard $auth, $tid, $uid)
+    public function hasAnnotationUser(Request $request, $tid, $uid)
     {
         $volume = Volume::findOrFail($tid);
         $this->authorize('access', $volume);
 
-        $user = $auth->user();
+        $user = $request->user();
         $session = $volume->getActiveAnnotationSession($user);
 
         if ($session) {

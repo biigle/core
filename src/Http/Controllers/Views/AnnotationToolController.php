@@ -8,7 +8,7 @@ use Biigle\Image;
 use Biigle\Project;
 use Biigle\LabelTree;
 use Biigle\Annotation;
-use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
 use Biigle\Http\Controllers\Views\Controller;
 
 class AnnotationToolController extends Controller
@@ -16,16 +16,16 @@ class AnnotationToolController extends Controller
     /**
      * Shows the annotation tool.
      *
-     * @param Guard $auth
+     * @param Request $request
      * @param int $id the image ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function show(Guard $auth, $id)
+    public function show(Request $request, $id)
     {
         $image = Image::with('volume')->findOrFail($id);
         $this->authorize('access', $image);
-        $user = $auth->user();
+        $user = $request->user();
 
         if ($user->can('sudo')) {
             // Global admins have no restrictions.
