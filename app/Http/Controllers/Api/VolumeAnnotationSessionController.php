@@ -3,9 +3,9 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Volume;
-use Illuminate\Http\Request;
 use Biigle\AnnotationSession;
 use Illuminate\Validation\ValidationException;
+use Biigle\Http\Requests\StoreAnnotationSession;
 
 class VolumeAnnotationSessionController extends Controller
 {
@@ -115,19 +115,14 @@ class VolumeAnnotationSessionController extends Controller
      *     ]
      * }
      *
-     * @param Request $request
-     * @param int $id volume ID
-     * @return Annotation
+     * @param StoreAnnotationSession $request
+     * @return AnnotationSession
      */
-    public function store(Request $request, $id)
+    public function store(StoreAnnotationSession $request)
     {
-        $volume = Volume::findOrFail($id);
-        $this->authorize('update', $volume);
-        $this->validate($request, AnnotationSession::$storeRules);
-
         $users = $request->input('users');
         // count users of all attached projects that match the given user IDs
-        $count = $volume->users()
+        $count = $request->volume->users()
             ->whereIn('id', $users)
             ->count();
 
@@ -142,20 +137,18 @@ class VolumeAnnotationSessionController extends Controller
         $session = new AnnotationSession;
         $session->name = $request->input('name');
         $session->description = $request->input('description');
-
         $session->starts_at = $request->input('starts_at');
         $session->ends_at = $request->input('ends_at');
+        $session->hide_other_users_annotations = $request->input('hide_other_users_annotations', false);
+        $session->hide_own_annotations = $request->input('hide_own_annotations', false);
 
-        if ($volume->hasConflictingAnnotationSession($session)) {
+        if ($request->volume->hasConflictingAnnotationSession($session)) {
             throw ValidationException::withMessages([
                 'starts_at' => ['There already is an annotation session in this time period.'],
             ]);
         }
 
-        $session->hide_other_users_annotations = $request->input('hide_other_users_annotations', false);
-        $session->hide_own_annotations = $request->input('hide_own_annotations', false);
-
-        $volume->annotationSessions()->save($session);
+        $request->volume->annotationSessions()->save($session);
         $session->users()->attach($users);
 
         return $session->load('users');

@@ -17,21 +17,6 @@ class AnnotationSession extends Model
      *
      * @var array
      */
-    public static $storeRules = [
-        'name' => 'required',
-        'starts_at' => 'required|date',
-        'ends_at' => 'required|date|after:starts_at',
-        'hide_other_users_annotations' => 'filled|boolean',
-        'hide_own_annotations' => 'filled|boolean',
-        'users' => 'required|array',
-        'users.*' => 'distinct|exists:users,id',
-    ];
-
-    /**
-     * Validation rules for updating an annotation session.
-     *
-     * @var array
-     */
     public static $updateRules = [
         'name' => 'filled',
         'starts_at' => 'filled|date',
