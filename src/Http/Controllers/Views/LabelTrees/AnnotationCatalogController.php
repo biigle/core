@@ -3,7 +3,6 @@
 namespace Biigle\Modules\Largo\Http\Controllers\Views\LabelTrees;
 
 use Biigle\LabelTree;
-use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Views\Controller;
 
 class AnnotationCatalogController extends Controller

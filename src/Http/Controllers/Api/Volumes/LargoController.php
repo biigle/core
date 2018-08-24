@@ -8,7 +8,6 @@ use Biigle\Volume;
 use Biigle\Project;
 use Biigle\Annotation;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Auth\Access\AuthorizationException;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\Modules\Largo\Http\Controllers\Api\LargoController as Controller;
@@ -42,11 +41,10 @@ class LargoController extends Controller
      * }
      *
      * @param Request $request
-     * @param Guard $auth
      * @param int $id Volume ID
      * @return \Illuminate\Http\Response
      */
-    public function save(Request $request, Guard $auth, $id)
+    public function save(Request $request, $id)
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('edit-in', $volume);
@@ -71,7 +69,7 @@ class LargoController extends Controller
             abort(400, 'All annotations must belong to the specified volume.');
         }
 
-        $user = $auth->user();
+        $user = $request->user();
         $availableLabelTreeIds = $this->getAvailableLabelTrees($user, $volume);
         $requiredLabelTreeIds = $this->getRequiredLabelTrees($changed);
 

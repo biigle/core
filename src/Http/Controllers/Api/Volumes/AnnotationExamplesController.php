@@ -6,7 +6,6 @@ use Biigle\Label;
 use Biigle\Volume;
 use Biigle\Annotation;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Api\Controller;
 
 class AnnotationExamplesController extends Controller
@@ -23,12 +22,11 @@ class AnnotationExamplesController extends Controller
      * @apiDescription The similarity is based on the Levenshtein distance between the label names. Only the sibling labels and the parent label are considered. This endpoint returns the annotations of the specified label or of the most similar sibling/parent label if no annotations exist.
      *
      * @param Request $request
-     * @param Guard $auth
      * @param  int  $vid Volume ID
      * @param int $lid Label ID
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, Guard $auth, $vid, $lid)
+    public function index(Request $request, $vid, $lid)
     {
         $volume = Volume::findOrFail($vid);
         $this->authorize('access', $volume);
@@ -37,7 +35,7 @@ class AnnotationExamplesController extends Controller
 
         $label = Label::findOrFail($lid);
 
-        $user = $auth->user();
+        $user = $request->user();
         $session = $volume->getActiveAnnotationSession($user);
 
         // Get same, sibling or parent labels that have annotations in the volume.

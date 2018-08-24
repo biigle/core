@@ -6,7 +6,6 @@ use Biigle\Label;
 use Biigle\Project;
 use Biigle\Annotation;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Auth\Access\AuthorizationException;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\Modules\Largo\Http\Controllers\Api\LargoController as Controller;
@@ -28,11 +27,10 @@ class LargoController extends Controller
      * @apiParam (Optional arguments) {Object} force If set to `true`, project experts and admins can replace annotation labels attached by other users.
      *
      * @param Request $request
-     * @param Guard $auth
      * @param int $id Project ID
      * @return \Illuminate\Http\Response
      */
-    public function save(Request $request, Guard $auth, $id)
+    public function save(Request $request, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('edit-in', $project);
@@ -66,7 +64,7 @@ class LargoController extends Controller
             throw new AuthorizationException('You may only attach labels that belong to one of the label trees available for the project.');
         }
 
-        $this->applySave($auth->user(), $dismissed, $changed, $force);
+        $this->applySave($request->user(), $dismissed, $changed, $force);
 
         // Remove annotations that now have no more labels attached.
         $toDelete = Annotation::join('images', 'images.id', '=', 'annotations.image_id')

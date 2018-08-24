@@ -5,7 +5,6 @@ namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 use Biigle\Volume;
 use Biigle\Annotation;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Api\Controller;
 
 class FilterAnnotationsByLabelController extends Controller
@@ -23,23 +22,21 @@ class FilterAnnotationsByLabelController extends Controller
      * @apiDescription Returns a list of annotation IDs. If there is an active annotation session, annotations hidden by the session are not returned. The annotations are ordered by newest to oldest.
      *
      * @param Request $request
-     * @param Guard $auth
      * @param  int  $vid Volume ID
      * @param int $lid Label ID
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, Guard $auth, $vid, $lid)
+    public function index(Request $request, $vid, $lid)
     {
         $volume = Volume::findOrFail($vid);
         $this->authorize('access', $volume);
         $this->validate($request, ['take' => 'integer']);
         $take = $request->input('take');
 
-        $user = $auth->user();
-        $session = $volume->getActiveAnnotationSession($user);
+        $session = $volume->getActiveAnnotationSession($request->user());
 
         if ($session) {
-            $query = Annotation::allowedBySession($session, $user);
+            $query = Annotation::allowedBySession($session, $request->user());
         } else {
             $query = Annotation::query();
         }
