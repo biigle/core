@@ -47,7 +47,7 @@ class GenerateMissing extends Command
      */
     protected $count;
 
-     /**
+    /**
      * Create a new command instance.
      */
     public function __construct()

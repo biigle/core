@@ -5,7 +5,6 @@ namespace Biigle\Tests\Modules\Largo\Jobs;
 use File;
 use Mockery;
 use TestCase;
-use VipsImage;
 use Biigle\Shape;
 use Biigle\Annotation;
 use Biigle\Tests\AnnotationTest;
@@ -167,7 +166,6 @@ class GenerateAnnotationPatchTest extends TestCase
     }
 }
 
-
 class GenerateAnnotationPatchStub extends GenerateAnnotationPatch
 {
     public function __construct(Annotation $annotation)
@@ -176,7 +174,7 @@ class GenerateAnnotationPatchStub extends GenerateAnnotationPatch
         $this->annotation = $annotation;
     }
 
-    function getVipsImage($path)
+    public function getVipsImage($path)
     {
         return $this->mock;
     }

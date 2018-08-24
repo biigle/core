@@ -91,7 +91,6 @@ class LargoController extends Controller
             // the remove patch job manually here.
             $this->dispatch(new RemoveAnnotationPatches($id, $toDelete));
         }
-
     }
 
     /**

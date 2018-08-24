@@ -66,7 +66,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
     }
 
     /**
-     * Handle a single image
+     * Handle a single image.
      *
      * @param Image $image
      * @param string $path Path to the cached image file.

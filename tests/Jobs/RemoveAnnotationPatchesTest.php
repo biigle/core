@@ -3,9 +3,7 @@
 namespace Biigle\Tests\Modules\Largo\Jobs;
 
 use File;
-use Mockery;
 use TestCase;
-use FilesystemIterator;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 
 class RemoveAnnotationPatchesTest extends TestCase
@@ -91,6 +89,7 @@ class RemoveAnnotationPatchesStub extends RemoveAnnotationPatches
     protected function dirIsEmpty($path)
     {
         $this->path = $path;
+
         return $this->returnValue;
     }
 }
