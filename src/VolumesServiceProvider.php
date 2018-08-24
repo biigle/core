@@ -51,7 +51,6 @@ class VolumesServiceProvider extends ServiceProvider
                 'search' => SearchControllerMixin::class.'@index',
             ],
         ]);
-
     }
 
     /**

@@ -10,7 +10,7 @@ use Biigle\Http\Controllers\Api\Controller;
 class VolumeImageLabelController extends Controller
 {
     /**
-     * Get all image labels that were used in a volume
+     * Get all image labels that were used in a volume.
      *
      * @api {get} volumes/:id/image-labels Get all image labels that were used in a volume
      * @apiGroup Volumes

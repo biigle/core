@@ -75,5 +75,4 @@ $router->group([
             $router->get('directories/{disk}', 'BrowserController@indexDirectories');
             $router->get('images/{disk}', 'BrowserController@indexImages');
         });
-
     });

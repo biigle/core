@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Volumes\Http\Controllers\Api;
 
-use DB;
 use Biigle\Volume;
 use Biigle\Http\Controllers\Api\Controller;
 

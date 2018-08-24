@@ -109,7 +109,6 @@ class BrowserController extends Controller
             in_array($disk, array_keys(config('filesystems.disks')));
     }
 
-
     /**
      * Removes a prefix from all strings in an array.
      *
@@ -121,6 +120,7 @@ class BrowserController extends Controller
     protected function removePrefix($prefix, $list)
     {
         $regex = "!^{$prefix}/?!";
+
         return array_map(function ($item) use ($regex) {
             return preg_replace($regex, '', $item);
         }, $list);

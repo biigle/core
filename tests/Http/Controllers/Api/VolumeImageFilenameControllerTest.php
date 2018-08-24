@@ -7,7 +7,7 @@ use Biigle\Tests\ImageTest;
 
 class VolumeImageFilenameControllerTest extends ApiTestCase
 {
-        public function testIndex()
+    public function testIndex()
     {
         $vid = $this->volume()->id;
 

@@ -71,7 +71,7 @@ class VolumeImageMetadataControllerTest extends ApiTestCase
             'volume_id' => $id,
             'attrs' => ['metadata' => [
                 'water_depth' => 4000,
-                'distance_to_ground' => 20
+                'distance_to_ground' => 20,
             ]],
         ]);
 

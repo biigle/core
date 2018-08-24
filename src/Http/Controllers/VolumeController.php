@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Volumes\Http\Controllers;
 
-use Biigle\Role;
 use Biigle\User;
 use Biigle\Volume;
 use Carbon\Carbon;
@@ -95,7 +94,7 @@ class VolumeController extends Controller
     }
 
     /**
-     * Get all projects that belong to a volume and that the user can access
+     * Get all projects that belong to a volume and that the user can access.
      *
      * @param User $user
      * @param Volume $volume

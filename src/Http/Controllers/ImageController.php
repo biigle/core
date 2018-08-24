@@ -2,7 +2,6 @@
 
 namespace Biigle\Modules\Volumes\Http\Controllers;
 
-use File;
 use Biigle\Image;
 use Biigle\Http\Controllers\Views\Controller;
 
