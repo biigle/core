@@ -29,7 +29,6 @@ class SearchControllerMixin
                 ->select('images.id', 'images.filename', 'images.uuid', 'images.volume_id');
         }
 
-
         if ($query) {
             if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
                 $operator = 'ilike';

@@ -9,7 +9,7 @@ use Biigle\Http\Controllers\Api\Controller;
 class VolumeImageAreaController extends Controller
 {
     /**
-     * Get the area of the images of a volume in m²
+     * Get the area of the images of a volume in m².
      *
      * @api {get} volumes/:id/images/area Get the area of the images of a volume in m²
      * @apiGroup Volumes
@@ -36,7 +36,7 @@ class VolumeImageAreaController extends Controller
         return $images->map(function ($attrs) {
             if (array_has($attrs, 'metadata.area')) {
                 return $attrs['metadata']['area'];
-            } else if (array_has($attrs, 'laserpoints.area')) {
+            } elseif (array_has($attrs, 'laserpoints.area')) {
                 return $attrs['laserpoints']['area'];
             }
 

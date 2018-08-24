@@ -15,7 +15,6 @@ $router->group([
         ]);
     });
 
-
 $router->group([
     'middleware' => 'auth:web,api',
     'namespace' => 'Api',

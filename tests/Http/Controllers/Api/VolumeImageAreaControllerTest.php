@@ -3,11 +3,7 @@
 namespace Biigle\Tests\Modules\Annotations\Http\Controllers\Api;
 
 use ApiTestCase;
-use Carbon\Carbon;
 use Biigle\Tests\ImageTest;
-use Biigle\Tests\AnnotationTest;
-use Biigle\Tests\AnnotationLabelTest;
-use Biigle\Tests\AnnotationSessionTest;
 
 class VolumeImageAreaControllerTest extends ApiTestCase
 {
