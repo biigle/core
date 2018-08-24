@@ -111,7 +111,7 @@ class RegisterController extends Controller
     /**
      * Determines if the user registration mechansim is disabled.
      *
-     * @return boolean
+     * @return bool
      */
     protected function isRegistrationDisabled()
     {

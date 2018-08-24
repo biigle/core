@@ -7,7 +7,6 @@ use Storage;
 use Exception;
 use SplFileInfo;
 use Biigle\Image;
-use GuzzleHttp\Client;
 use League\Flysystem\Adapter\Local;
 use Symfony\Component\Finder\Finder;
 use League\Flysystem\FileNotFoundException;
@@ -352,7 +351,7 @@ class ImageCache implements ImageCacheContract
     protected function cacheFromResource(Image $image, $source, $target)
     {
         if (!is_resource($source)) {
-            throw new Exception("The source resource could not be established.");
+            throw new Exception('The source resource could not be established.');
         }
 
         $cachedPath = $this->getCachedPath($image);
@@ -368,7 +367,7 @@ class ImageCache implements ImageCacheContract
         }
 
         if (stream_get_meta_data($source)['timed_out']) {
-            throw new Exception("The source stream timed out while reading data.");
+            throw new Exception('The source stream timed out while reading data.');
         }
 
         return $cachedPath;

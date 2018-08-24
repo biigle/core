@@ -133,7 +133,7 @@ class TileCache
     }
 
     /**
-     * Returns the size of the directory and all contents in bytes
+     * Returns the size of the directory and all contents in bytes.
      *
      * @param string $dir
      *

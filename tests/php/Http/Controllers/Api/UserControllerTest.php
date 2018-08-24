@@ -395,12 +395,12 @@ class UserControllerTest extends ApiTestCase
     public function testUpdateOwnAffiliation()
     {
         $this->beGuest();
-        $this->putJson("api/v1/users/my", ['affiliation' => 'My Company'])
+        $this->putJson('api/v1/users/my', ['affiliation' => 'My Company'])
             ->assertStatus(200);
 
         $this->assertEquals('My Company', $this->guest()->fresh()->affiliation);
 
-        $this->putJson("api/v1/users/my", ['affiliation' => ''])
+        $this->putJson('api/v1/users/my', ['affiliation' => ''])
             ->assertStatus(200);
 
         $this->assertNull($this->guest()->fresh()->affiliation);
@@ -409,12 +409,12 @@ class UserControllerTest extends ApiTestCase
     public function testUpdateOwnSuperUserMode()
     {
         $this->beAdmin();
-        $this->putJson("api/v1/users/my", ['super_user_mode' => true])
+        $this->putJson('api/v1/users/my', ['super_user_mode' => true])
             ->assertStatus(403);
 
         $this->assertTrue($this->globalAdmin()->can('sudo'));
         $this->beGlobalAdmin();
-        $this->putJson("api/v1/users/my", ['super_user_mode' => false])
+        $this->putJson('api/v1/users/my', ['super_user_mode' => false])
             ->assertStatus(200);
         $this->assertFalse($this->globalAdmin()->can('sudo'));
     }
@@ -714,6 +714,6 @@ class UserControllerTest extends ApiTestCase
             ->assertStatus(200)
             ->assertJsonFragment(['firstname' => 'abc'])
             ->assertJsonFragment(['lastname' => 'def'])
-            ->assertJsonMissing(['lastname' => 'ghi']);;
+            ->assertJsonMissing(['lastname' => 'ghi']);
     }
 }

@@ -117,7 +117,6 @@ class AnnotationLabelController extends Controller
                 unset($annotationLabel->annotation);
 
                 return response($annotationLabel, 201);
-
             } catch (QueryException $e) {
                 // Although we check for existence above, this error happened some time.
                 // I suspect some kind of race condition between PHP FPM workers.
