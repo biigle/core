@@ -4,7 +4,6 @@ namespace Biigle\Modules\Reports\Http\Controllers\Api;
 
 use Response;
 use Biigle\Modules\Reports\Report;
-use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Controllers\Api\Controller;
 
 class ReportsController extends Controller

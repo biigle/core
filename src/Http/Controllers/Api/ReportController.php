@@ -4,7 +4,6 @@ namespace Biigle\Modules\Reports\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Biigle\Modules\Reports\Report;
-use Illuminate\Contracts\Auth\Guard;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
@@ -22,12 +21,11 @@ abstract class ReportController extends Controller
      * Generate a report.
      *
      * @param Request $request
-     * @param Guard $auth
      * @param int $id Source ID
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Guard $auth, $id)
+    public function store(Request $request, $id)
     {
         $this->source = $this->getSource($id);
         $this->authorize('access', $this->source);
@@ -36,7 +34,7 @@ abstract class ReportController extends Controller
         $report = new Report;
         $report->source()->associate($this->source);
         $report->type_id = $request->input('type_id');
-        $report->user()->associate($auth->user());
+        $report->user()->associate($request->user());
         $report->options = $this->getOptions($request);
         $report->save();
 
