@@ -16,12 +16,12 @@ class ImageControllerTest extends TestCase
         $image = ImageTest::create();
         $project->addVolumeId($image->volume->id);
 
-      // not logged in
-      $response = $this->get('images/'.$image->id);
+        // not logged in
+        $response = $this->get('images/'.$image->id);
         $response->assertStatus(302);
 
-      // doesn't belong to project
-      $this->be($user);
+        // doesn't belong to project
+        $this->be($user);
         $response = $this->get('images/'.$image->id);
         $response->assertStatus(403);
 
@@ -29,8 +29,8 @@ class ImageControllerTest extends TestCase
         $response = $this->get('images/'.$image->id);
         $response->assertStatus(200);
 
-      // doesn't exist
-      $response = $this->get('images/-1');
+        // doesn't exist
+        $response = $this->get('images/-1');
         $response->assertStatus(404);
     }
 }
