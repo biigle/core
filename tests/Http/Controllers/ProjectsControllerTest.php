@@ -16,23 +16,23 @@ class ProjectsControllerTest extends TestCase
         $id = $project->id;
         $user = UserTest::create();
 
-      // not logged in
-      $response = $this->get("projects/{$id}");
+        // not logged in
+        $response = $this->get("projects/{$id}");
         $response->assertStatus(302);
 
-      // doesn't belong to project
-      $this->be($user);
+        // doesn't belong to project
+        $this->be($user);
         $response = $this->get("projects/{$id}");
         $response->assertStatus(403);
 
-      // can't admin the project
-      $project->addUserId($user->id, Role::$editor->id);
+        // can't admin the project
+        $project->addUserId($user->id, Role::$editor->id);
         Cache::flush();
         $response = $this->get("projects/{$id}");
         $response->assertStatus(200);
 
-      // diesn't exist
-      $response = $this->get('projects/-1');
+        // diesn't exist
+        $response = $this->get('projects/-1');
         $response->assertStatus(404);
     }
 
@@ -40,8 +40,8 @@ class ProjectsControllerTest extends TestCase
     {
         $user = UserTest::create();
 
-      // not logged in
-      $response = $this->get('projects/create');
+        // not logged in
+        $response = $this->get('projects/create');
         $response->assertStatus(302);
 
         $this->be($user);
