@@ -5,7 +5,6 @@ namespace Biigle\Http\Controllers\Api;
 use Exception;
 use Biigle\Volume;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Validation\ValidationException;
 
 class VolumeController extends Controller
@@ -28,12 +27,12 @@ class VolumeController extends Controller
      *    }
      * ]
      *
-     * @param Guard $auth
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth)
+    public function index(Request $request)
     {
-        return Volume::accessibleBy($auth->user())
+        return Volume::accessibleBy($request->user())
             ->orderByDesc('id')
             ->select('id', 'name', 'created_at', 'updated_at')
             ->get();

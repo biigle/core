@@ -4,7 +4,6 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\ApiToken;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 
 class ApiTokenController extends Controller
 {
@@ -38,12 +37,12 @@ class ApiTokenController extends Controller
      *    }
      * ]
      *
-     * @param Guard $auth
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth)
+    public function index(Request $request)
     {
-        return $auth->user()->apiTokens;
+        return $request->user()->apiTokens;
     }
 
     /**
@@ -71,15 +70,16 @@ class ApiTokenController extends Controller
      * }
      *
      * @param Request $request
-     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Guard $auth)
+    public function store(Request $request)
     {
-        $this->validate($request, ApiToken::$createRules);
+        $this->validate($request, [
+            'purpose' => 'required',
+        ]);
 
         $token = new ApiToken;
-        $token->owner_id = $auth->user()->id;
+        $token->owner_id = $request->user()->id;
         $token->purpose = $request->input('purpose');
         $secret = str_random(32);
         $token->hash = bcrypt($secret);
@@ -106,16 +106,15 @@ class ApiTokenController extends Controller
      * @apiParam {Number} id The API token ID
      *
      * @param Request $request
-     * @param Guard $auth
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, Guard $auth, $id)
+    public function destroy(Request $request, $id)
     {
         $token = ApiToken::findOrFail($id);
 
         // IDs are automatically casted to ints by Eloquent
-        if ((int) $token->owner_id === $auth->user()->id) {
+        if ((int) $token->owner_id === $request->user()->id) {
             $token->delete();
 
             if (!static::isAutomatedRequest($request)) {

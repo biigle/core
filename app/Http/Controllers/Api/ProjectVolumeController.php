@@ -6,7 +6,6 @@ use Exception;
 use Biigle\Project;
 use Biigle\Volume;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Validation\ValidationException;
 
 class ProjectVolumeController extends Controller
@@ -88,11 +87,10 @@ class ProjectVolumeController extends Controller
      * }
      *
      * @param Request $request
-     * @param Guard $auth
      * @param int $id Project ID
      * @return Volume
      */
-    public function store(Request $request, Guard $auth, $id)
+    public function store(Request $request, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('update', $project);
@@ -105,7 +103,7 @@ class ProjectVolumeController extends Controller
         $volume->video_link = $request->input('video_link');
         $volume->gis_link = $request->input('gis_link');
         $volume->doi = $request->input('doi');
-        $volume->creator()->associate($auth->user());
+        $volume->creator()->associate($request->user());
 
         try {
             $volume->validateUrl();

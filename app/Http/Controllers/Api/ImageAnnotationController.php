@@ -9,7 +9,6 @@ use Biigle\Label;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Biigle\Http\Requests\StoreAnnotation;
 use Illuminate\Validation\ValidationException;
 
@@ -57,15 +56,15 @@ class ImageAnnotationController extends Controller
      *    }
      * ]
      *
+     * @param Request $request
      * @param int $id image id
-     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index($id, Guard $auth)
+    public function index(Request $request, $id)
     {
         $image = Image::findOrFail($id);
         $this->authorize('access', $image);
-        $user = $auth->user();
+        $user = $request->user();
         $session = $image->volume->getActiveAnnotationSession($user);
 
         if ($session) {
@@ -142,8 +141,6 @@ class ImageAnnotationController extends Controller
      * }
      *
      * @param StoreAnnotation $request
-     * @param Guard $auth
-     * @param int $id image ID
      * @return Annotation
      */
     public function store(StoreAnnotation $request)

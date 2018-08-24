@@ -6,7 +6,6 @@ use Hash;
 use Biigle\User;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -104,13 +103,13 @@ class UserController extends Controller
      *    }
      * ]
      *
-     * @param Guard $auth
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth)
+    public function index(Request $request)
     {
         return User::select('id', 'firstname', 'lastname', 'role_id', 'affiliation')
-            ->when($auth->user()->can('sudo'), function ($query) {
+            ->when($request->user()->can('sudo'), function ($query) {
                 $query->addSelect('email');
             })
             ->orderByDesc('id')
@@ -170,11 +169,12 @@ class UserController extends Controller
      *    }
      * }
      *
+     * @param Request $request
      * @return User
      */
-    public function showOwn(Guard $auth)
+    public function showOwn(Request $request)
     {
-        return $auth->user();
+        return $request->user();
     }
 
     /**
@@ -205,13 +205,12 @@ class UserController extends Controller
      * auth_password: 'password123'
      *
      * @param Request $request
-     * @param Guard $auth
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Guard $auth, $id)
+    public function update(Request $request, $id)
     {
-        if ($id == $auth->user()->id) {
+        if ($id == $request->user()->id) {
             abort(400, 'The own user cannot be updated using this endpoint.');
         }
 
@@ -221,7 +220,7 @@ class UserController extends Controller
         $this->validate($request, $user->updateRules());
 
         if ($request->filled('role_id') || $request->filled('email') || $request->filled('password')) {
-            if (!Hash::check($request->input('auth_password'), $auth->user()->password)) {
+            if (!Hash::check($request->input('auth_password'), $request->user()->password)) {
                 throw ValidationException::withMessages([
                     'auth_password' => [trans('validation.custom.password')],
                 ]);
@@ -278,17 +277,16 @@ class UserController extends Controller
      * super_user_mode: 0
      *
      * @param Request $request
-     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function updateOwn(Request $request, Guard $auth)
+    public function updateOwn(Request $request)
     {
         // save origin so the settings view can highlight the right form fields
         $request->session()->flash('origin', $request->input('_origin'));
 
         $request = $this->emailToLowercase($request);
 
-        $user = $auth->user();
+        $user = $request->user();
         $this->validate($request, $user->updateRules());
 
         if ($request->filled('super_user_mode')) {
@@ -421,19 +419,18 @@ class UserController extends Controller
      * @apiParam {Number} id The user ID.
      *
      * @param Request $request
-     * @param Guard $auth
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, Guard $auth, $id)
+    public function destroy(Request $request, $id)
     {
-        if ($id == $auth->user()->id) {
+        if ($id == $request->user()->id) {
             abort(400, 'The own user cannot be deleted using this endpoint.');
         }
 
         $this->validate($request, User::$deleteRules);
 
-        if (!Hash::check($request->input('password'), $auth->user()->password)) {
+        if (!Hash::check($request->input('password'), $request->user()->password)) {
             throw ValidationException::withMessages([
                 'password' => [trans('validation.custom.password')],
             ]);
@@ -473,12 +470,11 @@ class UserController extends Controller
      * @apiDescription This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.
      *
      * @param Request $request
-     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function destroyOwn(Request $request, Guard $auth)
+    public function destroyOwn(Request $request)
     {
-        $user = $auth->user();
+        $user = $request->user();
 
         $this->validate($request, User::$deleteRules);
 

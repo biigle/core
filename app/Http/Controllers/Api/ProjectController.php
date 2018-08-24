@@ -5,7 +5,6 @@ namespace Biigle\Http\Controllers\Api;
 use Route;
 use Biigle\Project;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectController extends Controller
@@ -31,16 +30,16 @@ class ProjectController extends Controller
      *    }
      * ]
      *
-     * @param Guard $auth
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth)
+    public function index(Request $request)
     {
-        if ($auth->user()->can('sudo')) {
+        if ($request->user()->can('sudo')) {
             return Project::all();
         }
 
-        return $auth->user()->projects;
+        return $request->user()->projects;
     }
 
     /**
@@ -132,17 +131,16 @@ class ProjectController extends Controller
      * @apiParam (Required attributes) {String} description Description of the new project.
      *
      * @param Request $request
-     * @param Guard $auth
      * @return Project
      */
-    public function store(Request $request, Guard $auth)
+    public function store(Request $request)
     {
         $this->validate($request, Project::$createRules);
 
         $project = new Project;
         $project->name = $request->input('name');
         $project->description = $request->input('description');
-        $project->setCreator($auth->user());
+        $project->setCreator($request->user());
         $project->save();
 
         if (static::isAutomatedRequest($request)) {

@@ -6,7 +6,6 @@ use Biigle\User;
 use Biigle\Role;
 use Biigle\LabelTree;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class LabelTreeUserController extends Controller
@@ -112,12 +111,11 @@ class LabelTreeUserController extends Controller
      * @apiParam {Number} uid User ID of the member.
      *
      * @param Request $request
-     * @param Guard $auth
      * @param  int  $lid
      * @param  int  $uid
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, Guard $auth, $lid, $uid)
+    public function destroy(Request $request, $lid, $uid)
     {
         $tree = LabelTree::findOrFail($lid);
         $member = $tree->members()->findOrFail($uid);
@@ -125,7 +123,7 @@ class LabelTreeUserController extends Controller
 
         // Global admins can remove the last label tree admin so they can convert
         // ordinary label trees to global ones.
-        if (!$auth->user()->can('sudo') && !$tree->memberCanBeRemoved($member)) {
+        if (!$request->user()->can('sudo') && !$tree->memberCanBeRemoved($member)) {
             throw new AuthorizationException('The only admin cannot be removed from a label tree.');
         }
 

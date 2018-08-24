@@ -6,7 +6,6 @@ use Biigle\Image;
 use Biigle\Label;
 use Biigle\ImageLabel;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 
 class ImageLabelController extends Controller
 {
@@ -87,11 +86,10 @@ class ImageLabelController extends Controller
      * }
      *
      * @param Request $request
-     * @param Guard $auth
      * @param int $id Image ID
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Guard $auth, $id)
+    public function store(Request $request, $id)
     {
         $this->validate($request, Image::$attachLabelRules);
         $image = Image::findOrFail($id);
@@ -99,7 +97,7 @@ class ImageLabelController extends Controller
         $this->authorize('attach-label', [$image, $label]);
 
         $imageLabel = new ImageLabel;
-        $imageLabel->user()->associate($auth->user());
+        $imageLabel->user()->associate($request->user());
         $imageLabel->label()->associate($label);
         $imageLabel->image()->associate($image);
 

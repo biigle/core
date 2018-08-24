@@ -9,7 +9,6 @@ use Ramsey\Uuid\Uuid;
 use Biigle\LabelTree;
 use Biigle\Visibility;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 
@@ -34,12 +33,12 @@ class LabelTreeController extends Controller
      *    }
      * ]
      *
-     * @param Guard $auth
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth)
+    public function index(Request $request)
     {
-        return LabelTree::accessibleBy($auth->user())
+        return LabelTree::accessibleBy($request->user())
             ->orderByDesc('id')
             ->select('id', 'name', 'description', 'created_at', 'updated_at')
             ->get();
@@ -181,13 +180,12 @@ class LabelTreeController extends Controller
      * }
      *
      * @param Request $request
-     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Guard $auth)
+    public function store(Request $request)
     {
         $this->validate($request, LabelTree::$createRules);
-        $user = $auth->user();
+        $user = $request->user();
 
         if ($request->filled('project_id')) {
             $project = Project::findOrFail($request->input('project_id'));
