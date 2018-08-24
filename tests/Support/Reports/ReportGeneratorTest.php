@@ -9,7 +9,6 @@ use Exception;
 use Biigle\Volume;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\VolumeTest;
-use Biigle\Tests\ProjectTest;
 use Biigle\Modules\Reports\ReportType;
 use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
 use Biigle\Modules\Reports\Support\Reports\Volumes\Annotations\BasicReportGenerator;

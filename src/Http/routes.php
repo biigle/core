@@ -60,7 +60,7 @@ $router->group([
     ]);
 });
 
-/**
+/*
  * @deprecated Will be deleted after a grace period that still allows downloading of old
  * reports.
  *

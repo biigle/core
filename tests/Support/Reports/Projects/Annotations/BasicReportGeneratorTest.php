@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects\Annotations;
 
 use TestCase;
-use Biigle\Tests\ProjectTest;
 use Biigle\Modules\Reports\Support\Reports\Projects\Annotations\BasicReportGenerator;
 
 class BasicReportGeneratorTest extends TestCase

@@ -18,7 +18,7 @@ class ReportGenerator
     public $options;
 
     /**
-     * Source this report belongs to (e.g. a volume)
+     * Source this report belongs to (e.g. a volume).
      *
      * @var mixed
      */
@@ -80,7 +80,7 @@ class ReportGenerator
             }
         }
 
-        return null;
+        return;
     }
 
     /**

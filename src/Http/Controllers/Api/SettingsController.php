@@ -20,7 +20,7 @@ class SettingsController extends Controller
     ];
 
     /**
-     * Update the user settings for reports
+     * Update the user settings for reports.
      *
      * @api {post} users/my/settings/reports Update the user settings for reports
      * @apiGroup Users

@@ -20,7 +20,7 @@ class AddReportsReadyAtColumn extends Migration
         // Set ready_at of existing reports to equal updated_at.
         DB::table('reports')
             ->whereNull('ready_at')
-            ->update(['ready_at' => DB::raw("updated_at")]);
+            ->update(['ready_at' => DB::raw('updated_at')]);
     }
 
     /**

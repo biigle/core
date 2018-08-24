@@ -44,7 +44,6 @@ class GenerateReportJob extends Job implements ShouldQueue
      */
     public function handle()
     {
-
         try {
             $memoryLimit = ini_get('memory_limit');
             // increase memory limit for generating large reports

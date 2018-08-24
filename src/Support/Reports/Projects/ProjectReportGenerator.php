@@ -2,8 +2,6 @@
 
 namespace Biigle\Modules\Reports\Support\Reports\Projects;
 
-use App;
-use Exception;
 use Biigle\Volume;
 use Biigle\Project;
 use Biigle\Modules\Reports\Support\File;

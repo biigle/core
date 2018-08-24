@@ -3,7 +3,6 @@
 namespace Biigle\Modules\Reports;
 
 use File;
-use Exception;
 use ReflectionClass;
 use Illuminate\Database\Eloquent\Model;
 use Biigle\Modules\Reports\Support\Reports\ReportGenerator;
@@ -41,7 +40,7 @@ class Report extends Model
     }
 
     /**
-     * Type of the report
+     * Type of the report.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -51,7 +50,7 @@ class Report extends Model
     }
 
     /**
-     * Source of the report (\Biigle\Volume or \Biigle\Project)
+     * Source of the report (\Biigle\Volume or \Biigle\Project).
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphTo
      */
@@ -85,7 +84,7 @@ class Report extends Model
     }
 
     /**
-     * Get the report generator for this report;
+     * Get the report generator for this report;.
      *
      * @return ReportGenerator
      */

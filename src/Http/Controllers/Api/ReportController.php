@@ -4,7 +4,6 @@ namespace Biigle\Modules\Reports\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Biigle\Modules\Reports\Report;
-use Biigle\Modules\Reports\ReportType;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Modules\Reports\Jobs\GenerateReportJob;
 

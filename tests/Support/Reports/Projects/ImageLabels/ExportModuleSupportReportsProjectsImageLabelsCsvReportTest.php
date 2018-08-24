@@ -3,7 +3,6 @@
 namespace Biigle\Tests\Modules\Reports\Support\Reports\Projects\ImageLabels;
 
 use TestCase;
-use Biigle\Tests\ProjectTest;
 use Biigle\Modules\Reports\Support\Reports\Projects\ImageLabels\CsvReportGenerator;
 
 class CsvReportGeneratorTest extends TestCase

@@ -28,6 +28,7 @@ class AvailableReportController extends Controller
     public function show($uid, $filename)
     {
         $report = AvailableReport::findOrFail($uid);
+
         return response()
             ->download($report->path, $filename)
             ->deleteFileAfterSend(true);
