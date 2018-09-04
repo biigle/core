@@ -25,7 +25,7 @@ class LabelSourceController extends Controller
     public function find(Request $request, $id)
     {
         $source = LabelSource::findOrFail($id);
-        $this->validate($request, LabelSource::$findRules);
+        $this->validate($request, ['query' => 'required']);
 
         return $source->getAdapter()->find($request);
     }
