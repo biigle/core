@@ -18,15 +18,6 @@ class Image extends Model
     use HasJsonAttributes;
 
     /**
-     * Validation rules for attaching a label to an image.
-     *
-     * @var array
-     */
-    public static $attachLabelRules = [
-        'label_id'    => 'required|exists:labels,id',
-    ];
-
-    /**
      * Don't maintain timestamps for this model.
      *
      * @var bool
