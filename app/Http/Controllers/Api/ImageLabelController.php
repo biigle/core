@@ -86,7 +86,6 @@ class ImageLabelController extends Controller
      * }
      *
      * @param StoreImageLabel $request
-     * @param int $id Image ID
      * @return \Illuminate\Http\Response
      */
     public function store(StoreImageLabel $request)

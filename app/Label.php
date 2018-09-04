@@ -15,30 +15,6 @@ use Illuminate\Database\Eloquent\Model;
 class Label extends Model
 {
     /**
-     * Validation rules for creating a new label.
-     *
-     * @var array
-     */
-    public static $createRules = [
-        'name' => 'required',
-        'color' => 'required|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
-        'parent_id' => 'integer|exists:labels,id',
-        'label_source_id' => 'integer|exists:label_sources,id',
-        'source_id' => 'required_with:label_source_id|filled',
-    ];
-
-    /**
-     * Validation rules for updating a label.
-     *
-     * @var array
-     */
-    public static $updateRules = [
-        'name' => 'filled',
-        'color' => 'filled|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
-        'parent_id' => 'filled|integer|exists:labels,id',
-    ];
-
-    /**
      * The attributes hidden from the model's JSON form.
      *
      * @var array

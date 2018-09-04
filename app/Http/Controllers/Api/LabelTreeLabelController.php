@@ -4,10 +4,8 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Label;
 use Ramsey\Uuid\Uuid;
-use Biigle\LabelTree;
 use Biigle\LabelSource;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
+use Biigle\Http\Requests\StoreLabel;
 
 class LabelTreeLabelController extends Controller
 {
@@ -42,38 +40,20 @@ class LabelTreeLabelController extends Controller
      *    }
      * ]
      *
-     * @param Request $request
-     * @param int $id
+     * @param StoreLabel $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $id)
+    public function store(StoreLabel $request)
     {
-        $tree = LabelTree::findOrFail($id);
-        $this->authorize('create-label', $tree);
-
-        $this->validate($request, Label::$createRules);
-
-        // parent must be of the same tree
-        if ($request->filled('parent_id')) {
-            $exists = Label::where('id', $request->input('parent_id'))
-                ->where('label_tree_id', $id)
-                ->exists();
-            if (!$exists) {
-                throw ValidationException::withMessages([
-                    'parent_id' => ['The parent label must belong to the same label tree than the new label.'],
-                ]);
-            }
-        }
-
         if ($request->filled('label_source_id')) {
             $source = LabelSource::findOrFail($request->input('label_source_id'));
-            $labels = $source->getAdapter()->create((int) $id, $request);
+            $labels = $source->getAdapter()->create($request->tree->id, $request);
         } else {
             $label = new Label;
             $label->name = $request->input('name');
             $label->color = $request->input('color');
             $label->parent_id = $request->input('parent_id');
-            $label->label_tree_id = (int) $id;
+            $label->label_tree_id = $request->tree->id;
             $label->uuid = Uuid::uuid4();
             $label->save();
 
