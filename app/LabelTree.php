@@ -16,27 +16,6 @@ use Illuminate\Database\Eloquent\Model;
 class LabelTree extends Model
 {
     /**
-     * Validation rules for creating a new label tree.
-     *
-     * @var array
-     */
-    public static $createRules = [
-        'name' => 'required|max:256',
-        'visibility_id' => 'required|integer|exists:visibilities,id',
-        'project_id' => 'filled|integer|exists:projects,id',
-    ];
-
-    /**
-     * Validation rules for updating a label tree.
-     *
-     * @var array
-     */
-    public static $updateRules = [
-        'name' => 'filled|max:256',
-        'visibility_id' => 'integer|exists:visibilities,id',
-    ];
-
-    /**
      * Validation rules for adding a label tree member.
      *
      * @var array
