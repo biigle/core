@@ -22,7 +22,7 @@ class UserController extends Controller
             'destroyOwn',
         ]]);
 
-        $this->middleware('can:admin', ['only' => [
+        $this->middleware('can:sudo', ['only' => [
             'update',
             'store',
             'destroy',
@@ -110,7 +110,7 @@ class UserController extends Controller
     public function index(Guard $auth)
     {
         return User::select('id', 'firstname', 'lastname', 'role_id', 'affiliation')
-            ->when($auth->user()->isAdmin, function ($query) {
+            ->when($auth->user()->can('sudo'), function ($query) {
                 $query->addSelect('email');
             })
             ->orderByDesc('id')
@@ -266,6 +266,7 @@ class UserController extends Controller
      * @apiParam (Attributes that can be updated) {String} firstname The new firstname of the user.
      * @apiParam (Attributes that can be updated) {String} lastname The new lastname of the user.
      * @apiParam (Attributes that can be updated) {String} affiliation The affiliation of the user.
+     * @apiParam (Attributes that can be updated) {Bool} super_user_mode Global admins can toggle this attribute to act as normal user or as "super user".
      *
      * @apiParamExample {String} Request example:
      * email: 'new@example.com'
@@ -274,6 +275,7 @@ class UserController extends Controller
      * firstname: 'New'
      * lastname: 'Name'
      * affiliation: 'Biodata Mining Group'
+     * super_user_mode: 0
      *
      * @param Request $request
      * @param Guard $auth
@@ -289,9 +291,17 @@ class UserController extends Controller
         $user = $auth->user();
         $this->validate($request, $user->updateRules());
 
-        // confirm change of credentials with old password
+        if ($request->filled('super_user_mode')) {
+            if ($user->isGlobalAdmin) {
+                $user->isInSuperUserMode = (bool) $request->input('super_user_mode');
+            } else {
+                abort(403);
+            }
+        }
+
+        // Confirm change of credentials with old password.
         if ($request->filled('password') || $request->filled('email')) {
-            // the user has to provide their old password to set a new one
+            // The user has to provide their old password to set a new one.
             if (!Hash::check($request->input('auth_password'), $user->password)) {
                 throw ValidationException::withMessages([
                     'auth_password' => [trans('validation.custom.password')],

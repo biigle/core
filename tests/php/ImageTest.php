@@ -5,7 +5,6 @@ namespace Biigle\Tests;
 use Event;
 use Response;
 use TileCache;
-use ImageCache;
 use Biigle\Image;
 use Carbon\Carbon;
 use ModelTestCase;

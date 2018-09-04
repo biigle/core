@@ -97,9 +97,10 @@ class User extends Authenticatable
             'password' => 'nullable|min:8|confirmed',
             'firstname' => 'filled|max:127',
             'lastname' => 'filled|max:127',
-            'role_id' => 'exists:roles,id',
+            'role_id' => 'filled|in:'.Role::$admin->id.','.Role::$editor->id,
             'auth_password' => 'required_with:role_id,password,email',
             'affiliation' => 'nullable|max:255',
+            'super_user_mode' => 'filled|bool',
         ];
     }
 
@@ -154,12 +155,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Adds the `isAdmin` attribute to the user which determines if the user
-     * has the global admin role.
+     * Determines if the user has the global admin role.
      *
      * @return bool
      */
-    public function getIsAdminAttribute()
+    public function getIsGlobalAdminAttribute()
     {
         return $this->role_id === Role::$admin->id;
     }
@@ -206,5 +206,26 @@ class User extends Authenticatable
     public function getSettings($key, $default = null)
     {
         return $this->getJsonAttr($key, $default, 'settings');
+    }
+
+    /**
+     * Determines if the user is currently in Super User Mode.
+     *
+     * @return bool
+     */
+    public function getIsInSuperUserModeAttribute()
+    {
+        return $this->isGlobalAdmin && $this->getSettings('super_user_mode', true);
+    }
+
+    /**
+     * Enables or disables Super User Mode if the user is a global admin.
+     * @param bool $value
+     */
+    public function setIsInSuperUserModeAttribute($value)
+    {
+        if ($this->isGlobalAdmin) {
+            $this->setSettings(['super_user_mode' => (bool) $value]);
+        }
     }
 }

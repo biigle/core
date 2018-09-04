@@ -129,7 +129,7 @@ class LabelTree extends Model
      */
     public function scopeAccessibleBy($query, User $user)
     {
-        if ($user->isAdmin) {
+        if ($user->can('sudo')) {
             return $query;
         }
 

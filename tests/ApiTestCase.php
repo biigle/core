@@ -15,6 +15,7 @@ class ApiTestCase extends TestCase
     private $volume;
     private $admin;
     private $editor;
+    private $expert;
     private $guest;
     private $user;
 
@@ -74,6 +75,20 @@ class ApiTestCase extends TestCase
     protected function beAdmin()
     {
         $this->be($this->admin());
+    }
+
+    protected function expert()
+    {
+        if ($this->expert) {
+            return $this->expert;
+        }
+
+        return $this->expert = $this->newProjectUser(Role::$expert);
+    }
+
+    protected function beExpert()
+    {
+        $this->be($this->expert());
     }
 
     protected function editor()

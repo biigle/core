@@ -273,6 +273,37 @@ class UserControllerTest extends ApiTestCase
         $this->assertNull($user->fresh()->affiliation);
     }
 
+    public function testUpdateRole()
+    {
+        $user = $this->guest();
+        // 'adminpassword'
+        $this->globalAdmin()->password = '$2y$10$O/OuPUHuswXD.6LRVUeHueY5hbiFkHVFaPLcdOd.sp3U9C8H9dcJS';
+        $this->globalAdmin()->save();
+        $this->beGlobalAdmin();
+        $this->putJson("api/v1/users/{$user->id}", [
+                'role_id' => Role::$guest->id,
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(422);
+        $this->putJson("api/v1/users/{$user->id}", [
+                'role_id' => Role::$editor->id,
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+        $this->assertEquals(Role::$editor->id, $user->fresh()->role_id);
+        $this->putJson("api/v1/users/{$user->id}", [
+                'role_id' => Role::$expert->id,
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(422);
+        $this->putJson("api/v1/users/{$user->id}", [
+                'role_id' => Role::$admin->id,
+                'auth_password' => 'adminpassword',
+            ])
+            ->assertStatus(200);
+        $this->assertEquals(Role::$admin->id, $user->fresh()->role_id);
+    }
+
     public function testUpdateOwnWithToken()
     {
         // api key authentication is not allowed for this route
@@ -364,15 +395,28 @@ class UserControllerTest extends ApiTestCase
     public function testUpdateOwnAffiliation()
     {
         $this->beGuest();
-        $this->putJson("api/v1/users/my", ['affiliation' => 'My Company'])
+        $this->putJson('api/v1/users/my', ['affiliation' => 'My Company'])
             ->assertStatus(200);
 
         $this->assertEquals('My Company', $this->guest()->fresh()->affiliation);
 
-        $this->putJson("api/v1/users/my", ['affiliation' => ''])
+        $this->putJson('api/v1/users/my', ['affiliation' => ''])
             ->assertStatus(200);
 
         $this->assertNull($this->guest()->fresh()->affiliation);
+    }
+
+    public function testUpdateOwnSuperUserMode()
+    {
+        $this->beAdmin();
+        $this->putJson('api/v1/users/my', ['super_user_mode' => true])
+            ->assertStatus(403);
+
+        $this->assertTrue($this->globalAdmin()->can('sudo'));
+        $this->beGlobalAdmin();
+        $this->putJson('api/v1/users/my', ['super_user_mode' => false])
+            ->assertStatus(200);
+        $this->assertFalse($this->globalAdmin()->can('sudo'));
     }
 
     public function testStoreWithToken()
@@ -670,6 +714,6 @@ class UserControllerTest extends ApiTestCase
             ->assertStatus(200)
             ->assertJsonFragment(['firstname' => 'abc'])
             ->assertJsonFragment(['lastname' => 'def'])
-            ->assertJsonMissing(['lastname' => 'ghi']);;
+            ->assertJsonMissing(['lastname' => 'ghi']);
     }
 }

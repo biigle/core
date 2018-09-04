@@ -26,6 +26,13 @@ class Role extends Model
     public static $admin;
 
     /**
+     * The expert role.
+     *
+     * @var Role
+     */
+    public static $expert;
+
+    /**
      * The editor role.
      *
      * @var Role
@@ -42,6 +49,10 @@ class Role extends Model
 
 Role::$admin = Cache::rememberForever('role-admin', function () {
     return Role::whereName('admin')->first();
+});
+
+Role::$expert = Cache::rememberForever('role-expert', function () {
+    return Role::whereName('expert')->first();
 });
 
 Role::$editor = Cache::rememberForever('role-editor', function () {

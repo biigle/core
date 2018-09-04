@@ -12,14 +12,6 @@ use Biigle\Tests\ImageLabelTest;
 
 class ImageLabelPolicyTest extends TestCase
 {
-    private $image;
-    private $project;
-    private $user;
-    private $guest;
-    private $editor;
-    private $admin;
-    private $globalAdmin;
-
     public function setUp()
     {
         parent::setUp();
@@ -29,11 +21,13 @@ class ImageLabelPolicyTest extends TestCase
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
         $this->editor = UserTest::create();
+        $this->expert = UserTest::create();
         $this->admin = UserTest::create();
         $this->globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
 
         $this->project->addUserId($this->guest->id, Role::$guest->id);
         $this->project->addUserId($this->editor->id, Role::$editor->id);
+        $this->project->addUserId($this->expert->id, Role::$expert->id);
         $this->project->addUserId($this->admin->id, Role::$admin->id);
     }
 
@@ -68,6 +62,10 @@ class ImageLabelPolicyTest extends TestCase
         $this->assertFalse($this->editor->can('destroy', $il1));
         $this->assertFalse($this->editor->can('destroy', $il2));
         $this->assertTrue($this->editor->can('destroy', $il3));
+
+        $this->assertTrue($this->expert->can('destroy', $il1));
+        $this->assertTrue($this->expert->can('destroy', $il2));
+        $this->assertTrue($this->expert->can('destroy', $il3));
 
         $this->assertTrue($this->admin->can('destroy', $il1));
         $this->assertTrue($this->admin->can('destroy', $il2));

@@ -92,7 +92,7 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
         ]);
     });
 
-    $router->group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'can:admin'], function ($router) {
+    $router->group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'can:sudo'], function ($router) {
 
         $router->get('/', [
             'as' => 'admin',
