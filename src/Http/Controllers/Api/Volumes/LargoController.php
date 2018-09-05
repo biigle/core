@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Largo\Http\Controllers\Api\Volumes;
 
 use DB;
+use Biigle\Role;
 use Biigle\Label;
 use Biigle\Volume;
 use Biigle\Project;
@@ -109,7 +110,11 @@ class LargoController extends Controller
         } else {
             // All projects that the user and the volume have in common
             // and where the user is editor, expert or admin.
-            $projects = Project::inCommon($user, $volume->id)->pluck('id');
+            $projects = Project::inCommon($user, $volume->id, [
+                Role::$editor->id,
+                Role::$expert->id,
+                Role::$admin->id,
+            ])->pluck('id');
         }
 
         return DB::table('label_tree_project')

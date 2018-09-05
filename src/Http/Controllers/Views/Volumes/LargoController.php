@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Largo\Http\Controllers\Views\Volumes;
 
+use Biigle\Role;
 use Biigle\Volume;
 use Biigle\Project;
 use Biigle\LabelTree;
@@ -28,7 +29,11 @@ class LargoController extends Controller
         } else {
             // All projects that the user and the volume have in common
             // and where the user is editor, expert or admin.
-            $projects = Project::inCommon($request->user(), $volume->id)->get();
+            $projects = Project::inCommon($request->user(), $volume->id, [
+                Role::$editor->id,
+                Role::$expert->id,
+                Role::$admin->id,
+            ])->get();
         }
 
         // All label trees that are used by all projects which are visible to the user.
