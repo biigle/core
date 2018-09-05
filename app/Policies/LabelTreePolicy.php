@@ -30,6 +30,17 @@ class LabelTreePolicy extends CachedPolicy
     }
 
     /**
+     * Determine if the given user can create label trees.
+     *
+     * @param  User  $user
+     * @return bool
+     */
+    public function create(User $user)
+    {
+        return $user->role_id === Role::$editor->id || $user->role_id === Role::$admin->id;
+    }
+
+    /**
      * Determine if the given label tree can be accessed by the user.
      *
      * @param  User  $user

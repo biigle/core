@@ -83,6 +83,11 @@ class ProjectUserControllerTest extends ApiTestCase
         $this->assertEquals(3, $this->project()->users()->find($this->editor()->id)->project_role_id);
     }
 
+    public function testUpdateGlobalGuest()
+    {
+        $this->markTestIncomplete('Implement check that global guests bay not become project admins.');
+    }
+
     public function testAttach()
     {
         $pid = $this->project()->id;
@@ -118,6 +123,11 @@ class ProjectUserControllerTest extends ApiTestCase
         $newUser = $this->project()->users()->find($id);
         $this->assertEquals($id, $newUser->id);
         $this->assertEquals(Role::$editor->id, $newUser->project_role_id);
+    }
+
+    public function testAttachGlobalGuest()
+    {
+        $this->markTestIncomplete('Implement check that global guests bay not become project admins.');
     }
 
     public function testDestroy()

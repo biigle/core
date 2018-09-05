@@ -4,6 +4,7 @@ namespace Biigle\Tests\Policies;
 
 use TestCase;
 use Biigle\Role;
+use Biigle\Project;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\ProjectTest;
 
@@ -18,12 +19,21 @@ class ProjectPolicyTest extends TestCase
         $this->editor = UserTest::create();
         $this->expert = UserTest::create();
         $this->admin = UserTest::create();
+        $this->globalGuest = UserTest::create(['role_id' => Role::$guest->id]);
+        $this->globalEditor = UserTest::create(['role_id' => Role::$editor->id]);
         $this->globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
 
         $this->project->addUserId($this->guest->id, Role::$guest->id);
         $this->project->addUserId($this->editor->id, Role::$editor->id);
         $this->project->addUserId($this->expert->id, Role::$expert->id);
         $this->project->addUserId($this->admin->id, Role::$admin->id);
+    }
+
+    public function testCreate()
+    {
+        $this->assertFalse($this->globalGuest->can('create', Project::class));
+        $this->assertTrue($this->globalEditor->can('create', Project::class));
+        $this->assertTrue($this->globalAdmin->can('create', Project::class));
     }
 
     public function testAccess()

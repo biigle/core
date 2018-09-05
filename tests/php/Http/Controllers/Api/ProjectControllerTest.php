@@ -117,6 +117,27 @@ class ProjectControllerTest extends ApiTestCase
         $this->assertEquals(2, Project::count());
     }
 
+    public function testStoreAuthorization()
+    {
+        $this->beGlobalGuest();
+        $this->json('POST', '/api/v1/projects', [
+            'name' => 'test project',
+            'description' => 'my test project',
+        ])->assertStatus(403);
+
+        $this->beUser();
+        $this->json('POST', '/api/v1/projects', [
+            'name' => 'test project',
+            'description' => 'my test project',
+        ])->assertStatus(200);
+
+        $this->beGlobalAdmin();
+        $this->json('POST', '/api/v1/projects', [
+            'name' => 'test project',
+            'description' => 'my test project',
+        ])->assertStatus(200);
+    }
+
     public function testDestroy()
     {
         $id = $this->project()->id;

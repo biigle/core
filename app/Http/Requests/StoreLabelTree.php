@@ -3,6 +3,7 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\Project;
+use Biigle\LabelTree;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreLabelTree extends FormRequest
@@ -21,7 +22,7 @@ class StoreLabelTree extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return $this->user()->can('create', LabelTree::class);
     }
 
     /**

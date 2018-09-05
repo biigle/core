@@ -74,6 +74,58 @@ class ProjectController extends Controller
     }
 
     /**
+     * Creates a new project.
+     *
+     * @api {post} projects Create a new project
+     * @apiGroup Projects
+     * @apiName StoreProjects
+     * @apiPermission user
+     * @apiDescription The user creating a new project will automatically become project admin.
+     *
+     * @apiParam (Required attributes) {String} name Name of the new project.
+     * @apiParam (Required attributes) {String} description Description of the new project.
+     *
+     * @param Request $request
+     * @return Project
+     */
+    public function store(Request $request)
+    {
+        $this->validate($request, Project::$createRules);
+        $this->authorize('create', Project::class);
+
+        $project = new Project;
+        $project->name = $request->input('name');
+        $project->description = $request->input('description');
+        $project->setCreator($request->user());
+        $project->save();
+
+        if (static::isAutomatedRequest($request)) {
+            // creator shouldn't be returned
+            unset($project->creator);
+
+            return $project;
+        }
+
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
+                ->with('newProject', $project)
+                ->with('message', 'Project created.')
+                ->with('messageType', 'success');
+        }
+
+        if (Route::has('project')) {
+            return redirect()->route('project', $project->id)
+                ->with('message', 'Project created.')
+                ->with('messageType', 'success');
+        }
+
+        return redirect()->back()
+            ->with('newProject', $project)
+            ->with('message', 'Project created.')
+            ->with('messageType', 'success');
+    }
+
+    /**
      * Updates the attributes of the specified project.
      *
      * @api {put} projects/:id Update a project
@@ -119,57 +171,6 @@ class ProjectController extends Controller
     }
 
     /**
-     * Creates a new project.
-     *
-     * @api {post} projects Create a new project
-     * @apiGroup Projects
-     * @apiName StoreProjects
-     * @apiPermission user
-     * @apiDescription The user creating a new project will automatically become project admin.
-     *
-     * @apiParam (Required attributes) {String} name Name of the new project.
-     * @apiParam (Required attributes) {String} description Description of the new project.
-     *
-     * @param Request $request
-     * @return Project
-     */
-    public function store(Request $request)
-    {
-        $this->validate($request, Project::$createRules);
-
-        $project = new Project;
-        $project->name = $request->input('name');
-        $project->description = $request->input('description');
-        $project->setCreator($request->user());
-        $project->save();
-
-        if (static::isAutomatedRequest($request)) {
-            // creator shouldn't be returned
-            unset($project->creator);
-
-            return $project;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('newProject', $project)
-                ->with('message', 'Project created.')
-                ->with('messageType', 'success');
-        }
-
-        if (Route::has('project')) {
-            return redirect()->route('project', $project->id)
-                ->with('message', 'Project created.')
-                ->with('messageType', 'success');
-        }
-
-        return redirect()->back()
-            ->with('newProject', $project)
-            ->with('message', 'Project created.')
-            ->with('messageType', 'success');
-    }
-
-    /**
      * Removes the specified project.
      *
      * @api {delete} projects/:id Delete a project
@@ -202,6 +203,7 @@ class ProjectController extends Controller
                 ->with('message', $e->getMessage())
                 ->with('messageType', 'danger');
         }
+
         $project->delete();
 
         if (static::isAutomatedRequest($request)) {

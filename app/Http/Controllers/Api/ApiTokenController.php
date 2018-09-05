@@ -74,9 +74,8 @@ class ApiTokenController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'purpose' => 'required',
-        ]);
+        $this->authorize('create', ApiToken::class);
+        $this->validate($request, ['purpose' => 'required']);
 
         $token = new ApiToken;
         $token->owner_id = $request->user()->id;
@@ -113,15 +112,14 @@ class ApiTokenController extends Controller
     {
         $token = ApiToken::findOrFail($id);
 
-        // IDs are automatically casted to ints by Eloquent
-        if ((int) $token->owner_id === $request->user()->id) {
+        if ($request->user()->can('destroy', $token)) {
             $token->delete();
 
             if (!static::isAutomatedRequest($request)) {
                 return redirect()->back()->with('deleted', true);
             }
         } else {
-            // dont't disclose existing token IDs to other users
+            // Dont't disclose existing token IDs to other users.
             abort(404);
         }
     }

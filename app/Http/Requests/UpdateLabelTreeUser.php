@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\User;
 use Biigle\Role;
 use Biigle\LabelTree;
 use Illuminate\Foundation\Http\FormRequest;
@@ -23,6 +24,13 @@ class UpdateLabelTreeUser extends FormRequest
     public $member;
 
     /**
+     * Determines whether the user to be attached is a global guest.
+     *
+     * @var bool
+     */
+    protected $isGlobalGuest;
+
+    /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
@@ -42,7 +50,15 @@ class UpdateLabelTreeUser extends FormRequest
      */
     public function rules()
     {
-        $roles = implode(',', [Role::$admin->id, Role::$editor->id]);
+        $this->isGlobalGuest = User::where('id', $this->route('id2'))
+            ->where('role_id', Role::$guest->id)
+            ->exists();
+
+        if ($this->isGlobalGuest) {
+            $roles = Role::$editor->id;
+        } else {
+            $roles = implode(',', [Role::$admin->id, Role::$editor->id]);
+        }
 
         return [
             'role_id' => "integer|in:{$roles}",
@@ -72,6 +88,12 @@ class UpdateLabelTreeUser extends FormRequest
      */
     public function messages()
     {
+        if ($this->isGlobalGuest) {
+            return [
+                'role_id.in' => 'Guest users may only be label tree editors.',
+            ];
+        }
+
         return [
             'role_id.in' => 'Label tree members may only be either admins or editors.',
         ];
