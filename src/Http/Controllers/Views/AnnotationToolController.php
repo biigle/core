@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Annotations\Http\Controllers\Views;
 
 use DB;
+use Biigle\Role;
 use Biigle\Shape;
 use Biigle\Image;
 use Biigle\Project;
@@ -35,14 +36,18 @@ class AnnotationToolController extends Controller
         } else {
             // Array of all project IDs that the user and the image have in common
             // and where the user is editor, expert or admin.
-            $projectIds = Project::inCommon($user, $image->volume_id)->pluck('id');
+            $projectIds = Project::inCommon($user, $image->volume_id, [
+                Role::$editor->id,
+                Role::$expert->id,
+                Role::$admin->id,
+            ])->pluck('id');
         }
 
         $images = Image::where('volume_id', $image->volume_id)
             ->orderBy('filename', 'asc')
             ->pluck('filename', 'id');
 
-        // all label trees that are used by all projects which are visible to the user
+        // All label trees that are used by all projects which are visible to the user.
         $trees = LabelTree::with('labels')
             ->select('id', 'name')
             ->whereIn('id', function ($query) use ($projectIds) {
