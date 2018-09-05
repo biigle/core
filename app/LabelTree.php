@@ -17,15 +17,6 @@ use Illuminate\Database\Eloquent\Model;
 class LabelTree extends Model
 {
     /**
-     * Validation rules for adding a new authorized project.
-     *
-     * @var array
-     */
-    public static $authorizeProjectRules = [
-        'id' => 'required|integer|exists:projects,id',
-    ];
-
-    /**
      * The attributes hidden from the model's JSON form.
      *
      * @var array
