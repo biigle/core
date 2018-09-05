@@ -53,27 +53,21 @@ class Project extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param User $user
      * @param int $volumeId
-     * @param array $roles Array of role IDs to restrict the project membership to. Default is editor, expert and admin.
+     * @param array $roles Array of role IDs to restrict the project membership to. Default is any role.
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeInCommon($query, User $user, $volumeId, $roles = null)
     {
-        if (!is_array($roles)) {
-            $roles = [
-                Role::$editor->id,
-                Role::$expert->id,
-                Role::$admin->id,
-            ];
-        }
-
         return $query->whereExists(function ($query) use ($user, $volumeId, $roles) {
             $query->select(DB::raw(1))
                 ->from('project_user')
                 ->join('project_volume', 'project_user.project_id', '=', 'project_volume.project_id')
                 ->whereRaw('project_user.project_id = projects.id')
                 ->where('project_user.user_id', $user->id)
-                ->whereIn('project_user.project_role_id', $roles)
+                ->when(is_array($roles), function ($query) use ($roles) {
+                    return $query->whereIn('project_user.project_role_id', $roles);
+                })
                 ->where('project_volume.volume_id', $volumeId);
         });
     }
