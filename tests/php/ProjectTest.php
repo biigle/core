@@ -299,7 +299,7 @@ class ProjectTest extends ModelTestCase
         $v = VolumeTest::create();
         $user = UserTest::create();
         $this->model->volumes()->attach($v);
-        $this->model->addUserId($user->id, Role::$editor->id);
+        $this->model->addUserId($user->id, Role::$guest->id);
         $p = self::create();
         $p->volumes()->attach($v);
 

@@ -122,7 +122,11 @@ class ImagePolicy extends CachedPolicy
         return $this->remember("image-can-attach-label-{$user->id}-{$image->id}-{$label->id}", function () use ($user, $image, $label) {
             // Projects, the image belongs to *and* the user is editor, expert or admin
             // of.
-            $projectIds = Project::inCommon($user, $image->volume_id)->pluck('id');
+            $projectIds = Project::inCommon($user, $image->volume_id, [
+                Role::$editor->id,
+                Role::$expert->id,
+                Role::$admin->id,
+            ])->pluck('id');
 
             // User must be editor, expert or admin in one of the projects.
             return !empty($projectIds)
