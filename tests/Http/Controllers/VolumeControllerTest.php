@@ -19,7 +19,15 @@ class VolumeControllerTest extends ApiTestCase
         $response = $this->get("volumes/{$id}");
         $response->assertStatus(403);
 
+        $this->beGuest();
+        $response = $this->get("volumes/{$id}");
+        $response->assertStatus(200);
+
         $this->beEditor();
+        $response = $this->get("volumes/{$id}");
+        $response->assertStatus(200);
+
+        $this->beExpert();
         $response = $this->get("volumes/{$id}");
         $response->assertStatus(200);
 
@@ -67,6 +75,10 @@ class VolumeControllerTest extends ApiTestCase
         $response->assertStatus(403);
 
         $this->beEditor();
+        $response = $this->get("volumes/edit/{$id}");
+        $response->assertStatus(403);
+
+        $this->beExpert();
         $response = $this->get("volumes/edit/{$id}");
         $response->assertStatus(403);
 

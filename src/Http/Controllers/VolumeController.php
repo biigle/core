@@ -108,8 +108,7 @@ class VolumeController extends Controller
             return $volume->projects;
         }
 
-        // All projects that the user and the volume have in common
-        // and where the user is editor, expert or admin.
+        // All projects that the user and the volume have in common.
         return Project::inCommon($user, $volume->id)->get();
     }
 }
