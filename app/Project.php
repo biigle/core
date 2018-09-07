@@ -153,11 +153,7 @@ class Project extends Model
      */
     public function addUserId($userId, $roleId)
     {
-        try {
-            $this->users()->attach($userId, ['project_role_id' => $roleId]);
-        } catch (QueryException $e) {
-            abort(400, 'The user already exists in this project.');
-        }
+        $this->users()->attach($userId, ['project_role_id' => $roleId]);
     }
 
     /**
@@ -169,33 +165,18 @@ class Project extends Model
      */
     public function changeRole($userId, $roleId)
     {
-        if ($this->users()->find($userId) === null) {
-            abort(400, "User doesn't exist in this project.");
-        }
-
-        // removeUserId prevents changing the last remaining admin to anything
-        // else, too!
-        if ($this->removeUserId($userId)) {
-            // only re-attach if detach was successful
-            $this->users()->attach($userId, ['project_role_id' => $roleId]);
-        } else {
-            abort(500, "The user couldn't be modified.");
-        }
+        $this->users()->updateExistingPivot($userId, ['project_role_id' => $roleId]);
     }
 
     /**
-     * Checks if the user can be removed from the project.
-     * Throws an exception if not.
+     * Determines if the user can be removed from the project.
      *
      * @param int $userId
+     * @return  bool
      */
-    public function checkUserCanBeRemoved($userId)
+    public function userCanBeRemoved($userId)
     {
-        $admins = $this->admins();
-        // is this an attempt to remove the last remaining admin?
-        if ($admins->count() === 1 && $admins->find($userId) !== null) {
-            abort(400, "The last admin of {$this->name} cannot be removed. The admin status must be passed on to another user first.");
-        }
+        return $this->admins()->where('id', '!=', $userId)->exists();
     }
 
     /**
@@ -206,9 +187,11 @@ class Project extends Model
      */
     public function removeUserId($userId)
     {
-        $this->checkUserCanBeRemoved($userId);
+        if ($this->userCanBeRemoved($userId)) {
+            return (boolean) $this->users()->detach($userId);
+        }
 
-        return (boolean) $this->users()->detach($userId);
+        return false;
     }
 
     /**

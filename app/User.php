@@ -171,7 +171,9 @@ class User extends Authenticatable
     public function checkCanBeDeleted()
     {
         foreach ($this->projects as $project) {
-            $project->checkUserCanBeRemoved($this->id);
+            if (!$project->userCanBeRemoved($this->id)) {
+                abort(400, "The user can't be removed from project '{$project->name}'. The project needs at least one other admin.");
+            }
         }
 
         foreach ($this->labelTrees as $tree) {
