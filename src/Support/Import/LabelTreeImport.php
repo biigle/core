@@ -40,7 +40,8 @@ class LabelTreeImport extends Import
      */
     public function perform(array $onlyTrees = null, array $onlyLabels = null, array $nameConflictResolution = [], array $parentConflictResolution = [])
     {
-        try {
+        return DB::transaction(function () use ($onlyTrees, $onlyLabels, $nameConflictResolution, $parentConflictResolution) {
+
             $insertTrees = $this->getInsertLabelTrees($onlyTrees);
             $labelTreeIdMap = $this->insertLabelTrees($insertTrees);
 
@@ -61,28 +62,13 @@ class LabelTreeImport extends Import
 
             $mergeLabels = $labelCandidates->filter($labelHasConflict);
             $this->mergeLabels($mergeLabels, $nameConflictResolution, $parentConflictResolution, $labelIdMap);
-        } catch (Exception $e) {
-            // Attempt to delete any imported entities.
-            if (isset($userIdMap)) {
-                $this->rollBack(User::class, $userIdMap);
-            }
 
-            if (isset($labelTreeIdMap)) {
-                $this->rollBack(LabelTree::class, $labelTreeIdMap);
-            }
-
-            if (isset($labelIdMap)) {
-                $this->rollBack(Label::class, $labelIdMap);
-            }
-
-            throw $e;
-        }
-
-        return [
-            'labelTrees' => $labelTreeIdMap,
-            'labels' => $labelIdMap,
-            'users' => $userIdMap,
-        ];
+            return [
+                'labelTrees' => $labelTreeIdMap,
+                'labels' => $labelIdMap,
+                'users' => $userIdMap,
+            ];
+        });
     }
 
     /**

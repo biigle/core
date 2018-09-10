@@ -143,19 +143,4 @@ class Import
     {
         return collect(json_decode(File::get("{$this->path}/{$file}"), true));
     }
-
-    /**
-     * Delete imported entities based on their ID map.
-     *
-     * @param string $class Model class name
-     * @param array $map Entity ID map
-     */
-    protected function rollBack($class, $map)
-    {
-        $ids = array_values(array_filter($map, function ($value, $key) {
-            return $key !== $value;
-        }, ARRAY_FILTER_USE_BOTH));
-
-        $class::whereIn('id', $ids)->delete();
-    }
 }

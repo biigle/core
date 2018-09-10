@@ -50,6 +50,7 @@ class UserImport extends Import
 
             return $u;
         });
+
         User::insert($insert->toArray());
 
         $ids = User::whereIn('uuid', $users->pluck('uuid'))->pluck('id', 'uuid');

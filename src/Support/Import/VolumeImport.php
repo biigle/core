@@ -2,6 +2,7 @@
 
 namespace Biigle\Modules\Sync\Support\Import;
 
+use DB;
 use Exception;
 use Biigle\User;
 use Biigle\Label;
@@ -58,13 +59,14 @@ class VolumeImport extends Import
      */
     public function perform(Project $project, User $creator, array $only = null, array $newUrls = [], array $nameConflictResolution = [], array $parentConflictResolution = [])
     {
-        $volumeCandidates = $this->getVolumeImportCandidates()
-            ->when(is_array($only), function ($collection) use ($only) {
-                return $collection->whereIn('id', $only);
-            })
-            ->keyBy('id');
+        return DB::transaction(function () use ($project, $creator, $only, $newUrls, $nameConflictResolution, $parentConflictResolution) {
 
-        try {
+            $volumeCandidates = $this->getVolumeImportCandidates()
+                ->when(is_array($only), function ($collection) use ($only) {
+                    return $collection->whereIn('id', $only);
+                })
+                ->keyBy('id');
+
             $volumes = $this->insertVolumes($volumeCandidates, $creator, $newUrls);
 
             $userIdMap = $this->insertUsers($volumeCandidates);
@@ -87,38 +89,15 @@ class VolumeImport extends Import
             $this->insertAnnotations($volumeIdMap, $imageIdMap, $labelIdMap, $userIdMap);
 
             $this->dispatch(new PostprocessVolumeImport($volumes));
-        } catch (Exception $e) {
-            // Attempt to delete any imported entities.
-            if (isset($volumes)) {
-                // Do this in an inefficient loop to fire all the appropriate events.
-                // This will delete any associated images, image labels and annotations
-                // as well.
-                $volumes->each(function ($volume) {
-                    $volume->delete();
-                });
-            }
 
-            if (isset($userIdMap)) {
-                $this->rollBack(User::class, $userIdMap);
-            }
+            return [
+                'volumes' => $volumeIdMap,
+                'labelTrees' => $labelTreeIdMap,
+                'labels' => $labelIdMap,
+                'users' => $userIdMap,
+            ];
+        });
 
-            if (isset($labelTreeIdMap)) {
-                $this->rollBack(LabelTree::class, $labelTreeIdMap);
-            }
-
-            if (isset($labelIdMap)) {
-                $this->rollBack(Label::class, $labelIdMap);
-            }
-
-            throw $e;
-        }
-
-        return [
-            'volumes' => $volumeIdMap,
-            'labelTrees' => $labelTreeIdMap,
-            'labels' => $labelIdMap,
-            'users' => $userIdMap,
-        ];
     }
 
     /**
