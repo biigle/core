@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Exception;
-use Biigle\Project;
+use DB;
 use Biigle\Volume;
+use Biigle\Project;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
+use Biigle\Http\Requests\StoreVolume;
 
 class ProjectVolumeController extends Controller
 {
@@ -86,16 +86,11 @@ class ProjectVolumeController extends Controller
      *    "doi": "10.3389/fmars.2017.00083"
      * }
      *
-     * @param Request $request
-     * @param int $id Project ID
+     * @param StoreVolume $request
      * @return Volume
      */
-    public function store(Request $request, $id)
+    public function store(StoreVolume $request)
     {
-        $project = Project::findOrFail($id);
-        $this->authorize('update', $project);
-        $this->validate($request, Volume::$createRules);
-
         $volume = new Volume;
         $volume->name = $request->input('name');
         $volume->url = $request->input('url');
@@ -105,35 +100,17 @@ class ProjectVolumeController extends Controller
         $volume->doi = $request->input('doi');
         $volume->creator()->associate($request->user());
 
-        try {
-            $volume->validateUrl();
-        } catch (Exception $e) {
-            throw ValidationException::withMessages(['url' => $e->getMessage()]);
-        }
+        // Use a transaction to roll back creation of the volume or images if any error
+        // occurs.
+        DB::transaction(function () use ($request, $volume) {
+            // Save first, so the volume gets an ID for associating with images.
+            $volume->save();
+            $volume->createImages($request->input('images'));
+        });
 
-        $images = Volume::parseImagesQueryString($request->input('images'));
-
-        try {
-            $volume->validateImages($images);
-        } catch (Exception $e) {
-            throw ValidationException::withMessages(['images' => $e->getMessage()]);
-        }
-
-        // save first, so the volume gets an ID for associating with images
-        $volume->save();
-
-        try {
-            $volume->createImages($images);
-        } catch (\Exception $e) {
-            $volume->delete();
-
-            return response($e->getMessage(), 400);
-        }
-
-        // it's important that this is done *after* all images were added
+        // It's important that this is done *after* all images were added.
         $volume->handleNewImages();
-
-        $project->volumes()->attach($volume);
+        $request->project->volumes()->attach($volume);
 
         if (static::isAutomatedRequest($request)) {
             // media type shouldn't be returned
@@ -173,18 +150,11 @@ class ProjectVolumeController extends Controller
     {
         // user must be able to admin the volume *and* the project it should
         // be attached to
-        $volume = Volume::findOrFail($volumeId);
-        $this->authorize('update', $volume);
         $project = Project::findOrFail($projectId);
         $this->authorize('update', $project);
-
-        if ($project->volumes()->where('id', $volumeId)->exists()) {
-            throw ValidationException::withMessages([
-                'tid' => 'The volume is already attached to the project.',
-            ]);
-        }
-
-        $project->volumes()->attach($volume);
+        $volume = Volume::findOrFail($volumeId);
+        $this->authorize('update', $volume);
+        $project->volumes()->syncWithoutDetaching([$volume->id]);
     }
 
     /**
@@ -211,11 +181,9 @@ class ProjectVolumeController extends Controller
     public function destroy(Request $request, $projectId, $volumeId)
     {
         $project = Project::findOrFail($projectId);
+        $this->authorize('update', $project);
         $volume = $project->volumes()->findOrFail($volumeId);
         $this->authorize('destroy', $volume);
-
         $project->removeVolume($volume, $request->filled('force'));
-
-        return response('Removed.', 200);
     }
 }

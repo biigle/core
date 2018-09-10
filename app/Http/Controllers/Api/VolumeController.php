@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Exception;
 use Biigle\Volume;
 use Illuminate\Http\Request;
+use Biigle\Http\Requests\UpdateVolume;
 use Illuminate\Validation\ValidationException;
 
 class VolumeController extends Controller
@@ -87,27 +88,14 @@ class VolumeController extends Controller
      * @apiParam (Attributes that can be updated) {String} gis_link Link to a GIS that belongs to this volume.
      * @apiParam (Attributes that can be updated) {String} doi The DOI of the dataset that is represented by the new volume.
      *
-     * @param Request $request
-     * @param  int  $id
+     * @param UpdateVolume $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateVolume $request)
     {
-        $volume = Volume::findOrFail($id);
-        $this->authorize('update', $volume);
-
-        $this->validate($request, Volume::$updateRules);
-
-        if ($request->filled('url')) {
-            $volume->url = $request->input('url');
-            try {
-                $volume->validateUrl();
-            } catch (Exception $e) {
-                throw ValidationException::withMessages(['url' => $e->getMessage()]);
-            }
-        }
-
+        $volume = $request->volume;
         $volume->name = $request->input('name', $volume->name);
+        $volume->url = $request->input('url', $volume->url);
         $volume->media_type_id = $request->input('media_type_id', $volume->media_type_id);
         $volume->video_link = $request->input('video_link', $volume->video_link);
         $volume->gis_link = $request->input('gis_link', $volume->gis_link);
@@ -117,7 +105,7 @@ class VolumeController extends Controller
         $newUrl = $volume->isDirty('url');
         $volume->save();
 
-        // do this *after* saving
+        // Do this *after* saving.
         if ($newUrl) {
             $volume->handleNewImages();
         }

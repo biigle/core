@@ -5,20 +5,12 @@ namespace Biigle\Tests;
 use File;
 use Event;
 use Cache;
-use Storage;
 use Exception;
 use Biigle\Role;
 use ModelTestCase;
 use Biigle\Volume;
 use Carbon\Carbon;
-use GuzzleHttp\Client;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Handler\MockHandler;
 use Illuminate\Database\QueryException;
-use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class VolumeTest extends ModelTestCase
@@ -119,140 +111,6 @@ class VolumeTest extends ModelTestCase
     {
         $this->expectException(QueryException::class);
         $return = $this->model->createImages(['1.jpg', '1.jpg']);
-    }
-
-    public function testValidateUrlNoDisk()
-    {
-        $this->model->url = 'test';
-        try {
-            $this->model->validateUrl();
-            $this->assertFalse(true);
-        } catch (Exception $e) {
-            $this->assertContains('Unable to identify storage disk', $e->getMessage());
-        }
-    }
-
-    public function testValidateUrlUnknownDisk()
-    {
-        $this->model->url = 'abc://dir';
-        try {
-            $this->model->validateUrl();
-            $this->assertFalse(true);
-        } catch (Exception $e) {
-            $this->assertContains("Storage disk 'abc' does not exist", $e->getMessage());
-        }
-    }
-
-    public function testValidateUrlNotThere()
-    {
-        Storage::fake('test');
-        $this->model->url = 'test://dir';
-        try {
-            $this->model->validateUrl();
-            $this->assertFalse(true);
-        } catch (Exception $e) {
-            $this->assertContains("Unable to access 'dir'", $e->getMessage());
-        }
-    }
-
-    public function testValidateUrlOk()
-    {
-        Storage::fake('test');
-        Storage::disk('test')->makeDirectory('dir');
-        Storage::disk('test')->put('dir/file.txt', 'abc');
-        $this->model->url = 'test://dir';
-        $this->assertTrue($this->model->validateUrl());
-    }
-
-    public function testValidateUrlRemoteError()
-    {
-        $this->model->url = 'http://localhost';
-        $mock = new MockHandler([new RequestException('Error Communicating with Server', new Request('HEAD', 'test'))]);
-
-        $handler = HandlerStack::create($mock);
-
-        $client = new Client(['handler' => $handler]);
-        app()->bind(Client::class, function () use ($client) {
-            return $client;
-        });
-        $this->expectException(Exception::class);
-        $this->model->validateUrl();
-    }
-
-    public function testValidateUrlRemoteNotReadable()
-    {
-        $this->model->url = 'http://localhost';
-        $mock = new MockHandler([new Response(500)]);
-
-        $handler = HandlerStack::create($mock);
-        $client = new Client(['handler' => $handler]);
-        app()->bind(Client::class, function () use ($client) {
-            return $client;
-        });
-        $this->expectException(Exception::class);
-        $this->model->validateUrl();
-    }
-
-    public function testValidateUrlRemoteOk()
-    {
-        $this->model->url = 'http://localhost';
-        $mock = new MockHandler([
-            new Response(404),
-            new Response(200),
-        ]);
-
-        $container = [];
-        $history = Middleware::history($container);
-
-        $handler = HandlerStack::create($mock);
-        $handler->push($history);
-        $client = new Client(['handler' => $handler]);
-        app()->bind(Client::class, function () use ($client) {
-            return $client;
-        });
-        $this->assertTrue($this->model->validateUrl());
-
-        $request = $container[0]['request'];
-        $this->assertEquals('HEAD', $request->getMethod());
-        $this->assertEquals('http://localhost', (string) $request->getUri());
-    }
-
-    public function testValidateUrlRemoteOfflineMode()
-    {
-        config(['biigle.offline_mode' => true]);
-        $this->model->url = 'http://localhost';
-
-        try {
-            $this->model->validateUrl();
-            $this->assertTrue(false);
-        } catch (Exception $e) {
-            $this->assertContains("disk 'http' does not exist", $e->getMessage());
-        }
-    }
-
-    public function testValidateImagesFormatOk()
-    {
-        $this->assertTrue($this->model->validateImages(['1.jpg', '2.jpeg', '1.JPG', '2.JPEG']));
-        $this->assertTrue($this->model->validateImages(['1.png', '2.PNG']));
-        $this->assertTrue($this->model->validateImages(['1.tif', '2.tiff', '2.TIF', '3.TIFF']));
-    }
-
-    public function testValidateImagesFormatNotOk()
-    {
-        $this->expectException(Exception::class);
-        $this->model->validateImages(['1.jpg', '2.bmp']);
-    }
-
-    public function testValidateImagesDupes()
-    {
-        $this->expectException(Exception::class);
-        $this->model->validateImages(['1.jpg', '1.jpg']);
-    }
-
-    public function testValidateImagesEmpty()
-    {
-        $this->expectException(Exception::class);
-        $this->model->validateImages([]);
     }
 
     public function testHandleNewImages()
@@ -441,12 +299,8 @@ class VolumeTest extends ModelTestCase
         $t = static::create(['url' => '/local/path']);
         $this->assertFalse($t->isRemote());
         $t->url = 'http://remote.path';
-        // result was cached
-        $this->assertFalse($t->isRemote());
-        Cache::flush();
         $this->assertTrue($t->isRemote());
         $t->url = 'https://remote.path';
-        Cache::flush();
         $this->assertTrue($t->isRemote());
     }
 
