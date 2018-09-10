@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Views;
 
 use TestCase;
+use Biigle\Role;
 use Biigle\Tests\UserTest;
 
 class SettingsControllerTest extends TestCase
@@ -34,5 +35,11 @@ class SettingsControllerTest extends TestCase
         foreach (['profile', 'account', 'tokens'] as $page) {
             $this->get("settings/$page")->assertStatus(200);
         }
+    }
+
+    public function testTokensGlobalGuest()
+    {
+        $this->be(UserTest::create(['role_id' => Role::$guest->id]));
+        $this->get("settings/tokens")->assertStatus(403);
     }
 }

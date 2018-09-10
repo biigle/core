@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Views;
 
+use Biigle\ApiToken;
 use Illuminate\Contracts\Auth\Guard;
 
 class SettingsController extends Controller
@@ -51,6 +52,8 @@ class SettingsController extends Controller
      */
     public function tokens(Guard $auth)
     {
+        $this->authorize('create', ApiToken::class);
+
         return view('settings.tokens')
             ->withUser($auth->user())
             ->withTokens($auth->user()->apiTokens()->orderBy('updated_at', 'desc')->get())
