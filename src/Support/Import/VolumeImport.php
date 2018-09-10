@@ -14,6 +14,7 @@ use Ramsey\Uuid\Uuid;
 use Biigle\ImageLabel;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
+use Biigle\Rules\VolumeUrl;
 use Illuminate\Support\Collection;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
@@ -412,11 +413,11 @@ class VolumeImport extends Import
                     $volume->url = $candidate['url'];
                 }
 
-                try {
-                    $volume->validateUrl();
-                } catch (Exception $e) {
-                    $message = "Volume '{$volume->name}' has an invalid URL: ".$e->getMessage();
+                $validator = new VolumeUrl;
+                if (!$validator->passes(null, $volume->url)) {
+                    $message = "Volume '{$volume->name}' has an invalid URL: ".$validator->message();
                     throw new UnprocessableEntityHttpException($message);
+
                 }
 
                 $volume->media_type_id = $candidate['media_type_id'];
