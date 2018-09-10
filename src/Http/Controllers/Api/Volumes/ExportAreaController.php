@@ -53,7 +53,7 @@ class ExportAreaController extends Controller
     {
         $volume = BaseVolume::findOrFail($id);
         $this->authorize('update', $volume);
-        $this->validate($request, Volume::$storeRules);
+        $this->validate($request, ['coordinates' => 'required|array']);
 
         $volume = Volume::convert($volume);
 

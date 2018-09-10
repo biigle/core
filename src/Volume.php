@@ -18,15 +18,6 @@ class Volume extends BaseVolume
     const EXPORT_AREA_ATTRIBUTE = 'export_area';
 
     /**
-     * Validation rules for setting the export area.
-     *
-     * @var array
-     */
-    public static $storeRules = [
-        'coordinates' => 'required|array',
-    ];
-
-    /**
      * Converts a regular Biigle volume to an export volume.
      *
      * @param BaseVolume $volume Regular Biigle volume instance
