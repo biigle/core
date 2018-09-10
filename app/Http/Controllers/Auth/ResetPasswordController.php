@@ -57,6 +57,10 @@ class ResetPasswordController extends Controller
      */
     protected function rules()
     {
-        return User::$resetRules;
+        return [
+            'email' => 'required|email|max:255',
+            'password' => 'required|confirmed|min:8',
+            'token' => 'required',
+        ];
     }
 }

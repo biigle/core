@@ -24,6 +24,7 @@ class AuthServiceProvider extends ServiceProvider
         \Biigle\LabelTree::class => \Biigle\Policies\LabelTreePolicy::class,
         \Biigle\Project::class => \Biigle\Policies\ProjectPolicy::class,
         \Biigle\SystemMessage::class => \Biigle\Policies\SystemMessagePolicy::class,
+        \Biigle\User::class => \Biigle\Policies\UserPolicy::class,
         \Biigle\Volume::class => \Biigle\Policies\VolumePolicy::class,
     ];
 

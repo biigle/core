@@ -6,8 +6,12 @@ use Hash;
 use Biigle\User;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
+use Biigle\Http\Requests\StoreUser;
+use Biigle\Http\Requests\UpdateUser;
+use Biigle\Http\Requests\DestroyUser;
+use Biigle\Http\Requests\UpdateOwnUser;
+use Biigle\Http\Requests\DestroyOwnUser;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UserController extends Controller
 {
@@ -19,12 +23,6 @@ class UserController extends Controller
         $this->middleware('session', ['only' => [
             'updateOwn',
             'destroyOwn',
-        ]]);
-
-        $this->middleware('can:sudo', ['only' => [
-            'update',
-            'store',
-            'destroy',
         ]]);
     }
 
@@ -63,15 +61,9 @@ class UserController extends Controller
      */
     public function find($pattern)
     {
-        if (\DB::connection() instanceof \Illuminate\Database\PostgresConnection) {
-            $operator = 'ilike';
-        } else {
-            $operator = 'like';
-        }
-
         return User::select('id', 'firstname', 'lastname', 'role_id', 'affiliation')
-            ->where('firstname', $operator, "%{$pattern}%")
-            ->orWhere('lastname', $operator, "%{$pattern}%")
+            ->where('firstname', 'ilike', "%{$pattern}%")
+            ->orWhere('lastname', 'ilike', "%{$pattern}%")
             ->take(10)
             ->get();
     }
@@ -204,27 +196,17 @@ class UserController extends Controller
      * role_id: 1
      * auth_password: 'password123'
      *
-     * @param Request $request
-     * @param  int  $id
+     * @param UpdateUser $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateUser $request)
     {
-        if ($id == $request->user()->id) {
-            abort(400, 'The own user cannot be updated using this endpoint.');
-        }
+        $user = $request->user;
 
-        $request = $this->emailToLowercase($request);
-
-        $user = User::findOrFail($id);
-        $this->validate($request, $user->updateRules());
-
-        if ($request->filled('role_id') || $request->filled('email') || $request->filled('password')) {
-            if (!Hash::check($request->input('auth_password'), $request->user()->password)) {
-                throw ValidationException::withMessages([
-                    'auth_password' => [trans('validation.custom.password')],
-                ]);
-            }
+        if ($user->id === $request->user()->id) {
+            throw ValidationException::withMessages([
+                'id' => ['The own user cannot be updated using this endpoint.'],
+            ]);
         }
 
         if ($request->filled('password')) {
@@ -241,12 +223,10 @@ class UserController extends Controller
 
         if (!static::isAutomatedRequest($request)) {
             if ($request->has('_redirect')) {
-                return redirect($request->input('_redirect'))
-                    ->with('saved', true);
+                return redirect($request->input('_redirect'))->with('saved', true);
             }
 
-            return redirect()->back()
-                ->with('saved', true);
+            return redirect()->back()->with('saved', true);
         }
     }
 
@@ -276,35 +256,15 @@ class UserController extends Controller
      * affiliation: 'Biodata Mining Group'
      * super_user_mode: 0
      *
-     * @param Request $request
+     * @param UpdateOwnUser $request
      * @return \Illuminate\Http\Response
      */
-    public function updateOwn(Request $request)
+    public function updateOwn(UpdateOwnUser $request)
     {
-        // save origin so the settings view can highlight the right form fields
-        $request->session()->flash('origin', $request->input('_origin'));
-
-        $request = $this->emailToLowercase($request);
-
-        $user = $request->user();
-        $this->validate($request, $user->updateRules());
+        $user = $request->user;
 
         if ($request->filled('super_user_mode')) {
-            if ($user->isGlobalAdmin) {
-                $user->isInSuperUserMode = (bool) $request->input('super_user_mode');
-            } else {
-                abort(403);
-            }
-        }
-
-        // Confirm change of credentials with old password.
-        if ($request->filled('password') || $request->filled('email')) {
-            // The user has to provide their old password to set a new one.
-            if (!Hash::check($request->input('auth_password'), $user->password)) {
-                throw ValidationException::withMessages([
-                    'auth_password' => [trans('validation.custom.password')],
-                ]);
-            }
+            $user->isInSuperUserMode = (bool) $request->input('super_user_mode');
         }
 
         if ($request->filled('password')) {
@@ -319,8 +279,7 @@ class UserController extends Controller
         $user->save();
 
         if (!static::isAutomatedRequest($request)) {
-            return redirect()->back()
-                ->with('saved', $wasDirty);
+            return redirect()->back()->with('saved', $wasDirty);
         }
     }
 
@@ -364,10 +323,10 @@ class UserController extends Controller
      *    "affiliation": "Biodata Mining Group"
      * }
      *
-     * @param Request $request
+     * @param StoreUser $request
      * @return User
      */
-    public function store(Request $request)
+    public function store(StoreUser $request)
     {
         /*
          * DON'T allow setting the role through this route. The role may only be changed
@@ -377,9 +336,6 @@ class UserController extends Controller
          * can wreak havoc.
          */
 
-        $request = $this->emailToLowercase($request);
-
-        $this->validate($request, User::$createRules);
         $user = new User;
         $user->firstname = $request->input('firstname');
         $user->lastname = $request->input('lastname');
@@ -391,6 +347,7 @@ class UserController extends Controller
         } else {
             $user->uuid = Uuid::uuid4();
         }
+
         $user->save();
 
         if (static::isAutomatedRequest($request)) {
@@ -418,30 +375,16 @@ class UserController extends Controller
      *
      * @apiParam {Number} id The user ID.
      *
-     * @param Request $request
-     * @param  int  $id
+     * @param DestroyUser $request
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(DestroyUser $request)
     {
-        if ($id == $request->user()->id) {
-            abort(400, 'The own user cannot be deleted using this endpoint.');
-        }
-
-        $this->validate($request, User::$deleteRules);
-
-        if (!Hash::check($request->input('password'), $request->user()->password)) {
+        $user = $request->user;
+        if ($user->id === $request->user()->id) {
             throw ValidationException::withMessages([
-                'password' => [trans('validation.custom.password')],
+                'id' => ['The own user cannot be updated using this endpoint.'],
             ]);
-        }
-
-        $user = User::findOrFail($id);
-
-        try {
-            $user->checkCanBeDeleted();
-        } catch (HttpException $e) {
-            throw ValidationException::withMessages(['password' => [$e->getMessage()]]);
         }
 
         $user->delete();
@@ -469,52 +412,20 @@ class UserController extends Controller
      * @apiParam (Required parameters) {String} password The password of the user.
      * @apiDescription This action is allowed only by session cookie authentication. If the user is the last admin of a project, they cannot be deleted. The admin role needs to be passed on to another member of the project first.
      *
-     * @param Request $request
+     * @param DestroyOwnUser $request
      * @return \Illuminate\Http\Response
      */
-    public function destroyOwn(Request $request)
+    public function destroyOwn(DestroyOwnUser $request)
     {
-        $user = $request->user();
-
-        $this->validate($request, User::$deleteRules);
-
-        if (!Hash::check($request->input('password'), $user->password)) {
-            throw ValidationException::withMessages([
-                'password' => [trans('validation.custom.password')],
-            ]);
-        }
-
-        try {
-            $user->checkCanBeDeleted();
-        } catch (HttpException $e) {
-            throw ValidationException::withMessages(['submit' => [$e->getMessage()]]);
-        }
-
         auth()->logout();
         // delete the user AFTER logging them out, otherwise logout would save
         // them again
-        $user->delete();
+        $request->user->delete();
 
         if (static::isAutomatedRequest($request)) {
             return response('Deleted.', 200);
         }
 
         return redirect('login');
-    }
-
-    /**
-     * Transform the input email to lowercase.
-     *
-     * @param Request $request
-     *
-     * @return Request
-     */
-    protected function emailToLowercase(Request $request)
-    {
-        if ($request->filled('email')) {
-            $request->merge(['email' => strtolower($request->input('email'))]);
-        }
-
-        return $request;
     }
 }
