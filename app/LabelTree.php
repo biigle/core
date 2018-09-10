@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use DB;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -15,55 +16,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class LabelTree extends Model
 {
-    /**
-     * Validation rules for creating a new label tree.
-     *
-     * @var array
-     */
-    public static $createRules = [
-        'name' => 'required|max:256',
-        'visibility_id' => 'required|integer|exists:visibilities,id',
-        'project_id' => 'filled|integer|exists:projects,id',
-    ];
-
-    /**
-     * Validation rules for updating a label tree.
-     *
-     * @var array
-     */
-    public static $updateRules = [
-        'name' => 'filled|max:256',
-        'visibility_id' => 'integer|exists:visibilities,id',
-    ];
-
-    /**
-     * Validation rules for adding a label tree member.
-     *
-     * @var array
-     */
-    public static $addMemberRules = [
-        'id' => 'required|integer|exists:users,id',
-        'role_id' => 'required|integer|exists:roles,id',
-    ];
-
-    /**
-     * Validation rules for updating a label tree member.
-     *
-     * @var array
-     */
-    public static $updateMemberRules = [
-        'role_id' => 'integer|exists:roles,id',
-    ];
-
-    /**
-     * Validation rules for adding a new authorized project.
-     *
-     * @var array
-     */
-    public static $authorizeProjectRules = [
-        'id' => 'required|integer|exists:projects,id',
-    ];
-
     /**
      * The attributes hidden from the model's JSON form.
      *
@@ -89,12 +41,11 @@ class LabelTree extends Model
      * @param User $member
      * @return bool
      */
-    private function memberCanLooseAdminStatus(User $member)
+    public function memberCanLooseAdminStatus(User $member)
     {
-        return DB::table('label_tree_user')
-            ->where('label_tree_id', $this->id)
-            ->where('role_id', Role::$admin->id)
-            ->where('user_id', '!=', $member->id)
+        return $this->members()
+            ->wherePivot('role_id', Role::$admin->id)
+            ->where('id', '!=', $member->id)
             ->exists();
     }
 
@@ -208,52 +159,41 @@ class LabelTree extends Model
     }
 
     /**
-     * Checks is a role can be used for a member of a label tree.
+     * Add a new member with a certain role.
      *
-     * @param Role $role
-     * @return bool
+     * @param User|id $user
+     * @param Role|int $role
      */
-    public function isRoleValid(Role $role)
+    public function addMember($user, $role)
     {
-        return $role->id === Role::$admin->id || $role->id === Role::$editor->id;
-    }
-
-    /**
-     * Add a new member with a certain role (either admin or editor).
-     *
-     * @param User $user
-     * @param Role $role
-     */
-    public function addMember(User $user, Role $role)
-    {
-        if (!$this->isRoleValid($role)) {
-            abort(422, 'Invalid label tree member role.');
+        if ($user instanceof User) {
+            $user = $user->id;
         }
 
-        if ($this->members()->where('id', $user->id)->exists()) {
-            abort(422, 'The user is already member of this label tree.');
-        } else {
-            $this->members()->attach($user->id, ['role_id' => $role->id]);
+        if ($role instanceof Role) {
+            $role = $role->id;
         }
+
+        $this->members()->attach($user, ['role_id' => $role]);
     }
 
     /**
      * Update a member (role).
      *
-     * @param User $user
-     * @param Role $role
+     * @param User|int $user
+     * @param Role|int $role
      */
-    public function updateMember(User $user, Role $role)
+    public function updateMember($user, $role)
     {
-        if (!$this->isRoleValid($role)) {
-            abort(422, 'Invalid label tree member role.');
+        if ($user instanceof User) {
+            $user = $user->id;
         }
 
-        if ($role->id !== Role::$admin->id && !$this->memberCanLooseAdminStatus($user)) {
-            abort(403, 'The last label tree admin cannot be demoted.');
+        if ($role instanceof Role) {
+            $role = $role->id;
         }
 
-        $this->members()->updateExistingPivot($user->id, ['role_id' => $role->id]);
+        $this->members()->updateExistingPivot($user, ['role_id' => $role]);
     }
 
     /**

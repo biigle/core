@@ -5,6 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Biigle\LabelTree;
 use Biigle\Visibility;
 use Illuminate\Http\Request;
+use Biigle\Http\Requests\StoreLabelTreeAuthorizedProject;
 
 class LabelTreeAuthorizedProjectController extends Controller
 {
@@ -20,21 +21,15 @@ class LabelTreeAuthorizedProjectController extends Controller
      *
      * @apiParam (Required attributes) {Number} id ID of the project to authorize
      *
-     * @param Request $request
-     * @param int $id
+     * @param StoreLabelTreeAuthorizedProject $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $id)
+    public function store(StoreLabelTreeAuthorizedProject $request)
     {
-        $tree = LabelTree::findOrFail($id);
-        $this->authorize('update', $tree);
+        $id = $request->input('id');
 
-        $this->validate($request, LabelTree::$authorizeProjectRules);
-
-        $pid = $request->input('id');
-
-        if (!$tree->authorizedProjects()->where('id', $pid)->exists()) {
-            $tree->authorizedProjects()->attach($pid);
+        if (!$request->tree->authorizedProjects()->where('id', $id)->exists()) {
+            $request->tree->authorizedProjects()->attach($id);
         }
 
         if (static::isAutomatedRequest($request)) {

@@ -2,10 +2,8 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\Label;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Auth\Access\AuthorizationException;
+use Biigle\Http\Requests\UpdateLabel;
+use Biigle\Http\Requests\DestroyLabel;
 
 class LabelController extends Controller
 {
@@ -23,29 +21,12 @@ class LabelController extends Controller
      * @apiParam (Attributes that can be updated) {String} color Color of the label as hexadecimal string (like `bada55`). May have an optional `#` prefix.
      * @apiParam (Attributes that can be updated) {Number} parent_id ID of the parent label for ordering in a tree-like structure.
      *
-     * @param Request $request
-     * @param int $id
+     * @param UpdateLabel $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateLabel $request)
     {
-        $label = Label::findOrFail($id);
-        $this->authorize('update', $label);
-
-        $this->validate($request, Label::$updateRules);
-
-        // parent must be of the same tree
-        if ($request->filled('parent_id')) {
-            $exists = Label::where('id', $request->input('parent_id'))
-                ->where('label_tree_id', $label->label_tree_id)
-                ->exists();
-            if (!$exists) {
-                throw ValidationException::withMessages([
-                    'parent_id' => ['The parent label must belong to the same label tree than the updated label.'],
-                ]);
-            }
-        }
-
+        $label = $request->label;
         $label->name = $request->input('name', $label->name);
         $label->color = $request->input('color', $label->color);
         $label->parent_id = $request->input('parent_id', $label->parent_id);
@@ -65,20 +46,12 @@ class LabelController extends Controller
      *
      * @apiParam {Number} id The label ID
      *
-     * @param Request $request
-     * @param int $id
+     * @param DestroyLabel $request
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(DestroyLabel $request)
     {
-        $label = Label::findOrFail($id);
-        $this->authorize('destroy', $label);
-
-        if (!$label->canBeDeleted()) {
-            throw new AuthorizationException('A label can only be deleted if it has no children and is not in use.');
-        }
-
-        $label->delete();
+        $request->label->delete();
 
         if (static::isAutomatedRequest($request)) {
             return;

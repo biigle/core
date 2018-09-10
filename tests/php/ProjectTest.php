@@ -63,20 +63,6 @@ class ProjectTest extends ModelTestCase
         $this->assertEquals($this->model->creator->id, $this->model->users()->first()->id);
     }
 
-    public function testSetCreator()
-    {
-        $user = UserTest::create();
-        // remove real creator to mock a new project
-        $this->model->creator()->dissociate();
-
-        $this->assertNull($this->model->creator);
-        $this->assertTrue($this->model->setCreator($user));
-        // creator can only be set once
-        $this->assertFalse($this->model->setCreator($user));
-        $this->model->save();
-        $this->assertEquals($user->id, $this->model->fresh()->creator->id);
-    }
-
     public function testUsers()
     {
         $user = UserTest::create();
@@ -139,7 +125,7 @@ class ProjectTest extends ModelTestCase
         $this->assertEquals(Role::$editor->id, $user->project_role_id);
 
         // a user can only be added once regardless the role
-        $this->expectException(HttpException::class);
+        $this->expectException(QueryException::class);
         $this->model->addUserId($user->id, Role::$admin->id);
     }
 
@@ -150,43 +136,24 @@ class ProjectTest extends ModelTestCase
         $this->assertNotNull($this->model->users()->find($admin->id));
         $this->assertTrue($this->model->removeUserId($admin->id));
         $this->assertNull($this->model->users()->find($admin->id));
-
-        // the last admin mustn't be removed
-        $this->expectException(HttpException::class);
-        $this->model->removeUserId($this->model->creator->id);
+        $this->assertFalse($this->model->removeUserId($this->model->creator->id));
     }
 
     public function testCheckUserCanBeRemoved()
     {
         $user = UserTest::create();
         $this->model->addUserId($user->id, Role::$editor->id);
-        $this->model->checkUserCanBeRemoved($user->id);
-        // the last admin mustn't be removed
-        $this->expectException(HttpException::class);
-        $this->model->checkUserCanBeRemoved($this->model->creator->id);
+        $this->assertTrue($this->model->userCanBeRemoved($user->id));
+        $this->assertFalse($this->model->userCanBeRemoved($this->model->creator->id));
     }
 
     public function testChangeRole()
     {
-        $admin = $this->model->creator;
         $user = UserTest::create();
-
-        try {
-            $this->model->changeRole($user->id, Role::$admin->id);
-            // this shouldn't be reached
-            $this->assertTrue(false);
-        } catch (HttpException $e) {
-            $this->assertNotNull($e);
-        }
-
         $this->model->addUserId($user->id, Role::$admin->id);
         $this->assertEquals(Role::$admin->id, $this->model->users()->find($user->id)->project_role_id);
         $this->model->changeRole($user->id, Role::$editor->id);
         $this->assertEquals(Role::$editor->id, $this->model->users()->find($user->id)->project_role_id);
-
-        // attempt to change the last admin to an editor
-        $this->expectException(HttpException::class);
-        $this->model->changeRole($admin->id, Role::$editor->id);
     }
 
     public function testRemoveVolume()

@@ -6,6 +6,7 @@ use Biigle\Project;
 use Biigle\LabelTree;
 use Biigle\Visibility;
 use Illuminate\Http\Request;
+use Biigle\Http\Requests\StoreProjectLabelTree;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class ProjectLabelTreeController extends Controller
@@ -116,29 +117,12 @@ class ProjectLabelTreeController extends Controller
      * @apiParamExample {String} Request example:
      * id: 3
      *
-     * @param Request $request
-     * @param int $id Project ID
+     * @param StoreProjectLabelTree $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $id)
+    public function store(StoreProjectLabelTree $request)
     {
-        $project = Project::findOrFail($id);
-        $this->authorize('update', $project);
-        $this->validate($request, Project::$attachLabelTreeRules);
-
-        $treeId = $request->input('id');
-
-        // only do anything if the tree is not already attached
-        if (!$project->labelTrees()->where('id', $treeId)->exists()) {
-            $tree = LabelTree::findOrFail($request->input('id'));
-
-            // only attach if the project is allowed to
-            if ((int) $tree->visibility_id === Visibility::$public->id || $tree->authorizedProjects()->where('label_tree_authorized_project.project_id', $id)->exists()) {
-                $project->labelTrees()->attach($tree->id);
-            } else {
-                throw new AuthorizationException('The project is not authorized to use this label tree.');
-            }
-        }
+        $request->project->labelTrees()->syncWithoutDetaching([$request->input('id')]);
 
         if (static::isAutomatedRequest($request)) {
             return;

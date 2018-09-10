@@ -18,25 +18,6 @@ class Image extends Model
     use HasJsonAttributes;
 
     /**
-     * Validation rules for attaching a label to an image.
-     *
-     * @var array
-     */
-    public static $attachLabelRules = [
-        'label_id'    => 'required|exists:labels,id',
-    ];
-
-    /**
-     * Validation rules for creating a new annotation in an image.
-     *
-     * @var array
-     */
-    public static $createAnnotationRules = [
-        'shape_id' => 'required|exists:shapes,id',
-        'points'   => 'required',
-    ];
-
-    /**
      * Don't maintain timestamps for this model.
      *
      * @var bool

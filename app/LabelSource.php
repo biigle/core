@@ -10,15 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 class LabelSource extends Model
 {
     /**
-     * Validation rules for finding a label from a label source.
-     *
-     * @var array
-     */
-    public static $findRules = [
-        'query' => 'required',
-    ];
-
-    /**
      * Don't maintain timestamps for this model.
      *
      * @var bool
