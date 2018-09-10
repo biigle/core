@@ -105,7 +105,7 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
             'id' => $private->id,
         ]);
         // project is not authorized
-        $response->assertStatus(403);
+        $response->assertStatus(422);
 
         $count = $p->labelTrees()->count();
         $response = $this->json('POST', "/api/v1/projects/{$p->id}/label-trees", [

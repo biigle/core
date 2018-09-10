@@ -5,39 +5,9 @@ namespace Biigle;
 use DB;
 use Cache;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\QueryException;
 
 class Project extends Model
 {
-    /**
-     * Validation rules for creating a new project.
-     *
-     * @var array
-     */
-    public static $createRules = [
-        'name'        => 'required|min:2|max:512',
-        'description' => 'required|min:2',
-    ];
-
-    /**
-     * Validation rules for updating a project.
-     *
-     * @var array
-     */
-    public static $updateRules = [
-        'name'        => 'filled|min:2|max:512',
-        'description' => 'filled|min:2',
-    ];
-
-    /**
-     * Validation rules for attaching a label tree.
-     *
-     * @var array
-     */
-    public static $attachLabelTreeRules = [
-        'id'        => 'required|exists:label_trees,id',
-    ];
-
     /**
      * The attributes hidden from the model's JSON form.
      *
@@ -127,24 +97,6 @@ class Project extends Model
     }
 
     /**
-     * Sets the creator if it isn't already set.
-     *
-     * @param User $user
-     * @return bool
-     */
-    public function setCreator($user)
-    {
-        // user must exist and creator mustn't
-        if (!$this->creator && $user) {
-            $this->creator()->associate($user);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Adds the user with the given role to this project.
      *
      * @param int $userId
@@ -213,13 +165,9 @@ class Project extends Model
      */
     public function addVolumeId($id)
     {
-        try {
-            $this->volumes()->attach($id);
-            // Maybe we get a new thumbnail now.
-            Cache::forget("project-thumbnail-{$this->id}");
-        } catch (QueryException $e) {
-            // volume already exists for this project, so everything is fine
-        }
+        $this->volumes()->syncWithoutDetaching($id);
+        // Maybe we get a new thumbnail now.
+        Cache::forget("project-thumbnail-{$this->id}");
     }
 
     /**

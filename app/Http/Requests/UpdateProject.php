@@ -5,8 +5,15 @@ namespace Biigle\Http\Requests;
 use Biigle\Project;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreProject extends FormRequest
+class UpdateProject extends FormRequest
 {
+    /**
+     * The project to update.
+     *
+     * @var Project
+     */
+    public $project;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -14,7 +21,9 @@ class StoreProject extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('create', Project::class);
+        $this->project = Project::findOrFail($this->route('id'));
+
+        return $this->user()->can('update', $this->project);
     }
 
     /**
@@ -25,8 +34,8 @@ class StoreProject extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|min:2|max:512',
-            'description' => 'required|min:2',
+            'name' => 'filled|min:2|max:512',
+            'description' => 'filled|min:2',
         ];
     }
 }

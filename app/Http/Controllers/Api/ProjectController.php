@@ -5,6 +5,8 @@ namespace Biigle\Http\Controllers\Api;
 use Route;
 use Biigle\Project;
 use Illuminate\Http\Request;
+use Biigle\Http\Requests\StoreProject;
+use Biigle\Http\Requests\UpdateProject;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectController extends Controller
@@ -85,24 +87,18 @@ class ProjectController extends Controller
      * @apiParam (Required attributes) {String} name Name of the new project.
      * @apiParam (Required attributes) {String} description Description of the new project.
      *
-     * @param Request $request
+     * @param StoreProject $request
      * @return Project
      */
-    public function store(Request $request)
+    public function store(StoreProject $request)
     {
-        $this->validate($request, Project::$createRules);
-        $this->authorize('create', Project::class);
-
         $project = new Project;
         $project->name = $request->input('name');
         $project->description = $request->input('description');
-        $project->setCreator($request->user());
+        $project->creator_id = $request->user()->id;
         $project->save();
 
         if (static::isAutomatedRequest($request)) {
-            // creator shouldn't be returned
-            unset($project->creator);
-
             return $project;
         }
 
@@ -138,17 +134,12 @@ class ProjectController extends Controller
      * @apiParam (Attributes that can be updated) {String} name Name of the project.
      * @apiParam (Attributes that can be updated) {String} description Description of the project.
      *
-     * @param Request $request
-     * @param  int  $id
+     * @param UpdateProject $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateProject $request)
     {
-        $project = Project::findOrFail($id);
-        $this->authorize('update', $project);
-
-        $this->validate($request, Project::$updateRules);
-
+        $project = $request->project;
         $project->name = $request->input('name', $project->name);
         $project->description = $request->input('description', $project->description);
         $project->save();

@@ -63,20 +63,6 @@ class ProjectTest extends ModelTestCase
         $this->assertEquals($this->model->creator->id, $this->model->users()->first()->id);
     }
 
-    public function testSetCreator()
-    {
-        $user = UserTest::create();
-        // remove real creator to mock a new project
-        $this->model->creator()->dissociate();
-
-        $this->assertNull($this->model->creator);
-        $this->assertTrue($this->model->setCreator($user));
-        // creator can only be set once
-        $this->assertFalse($this->model->setCreator($user));
-        $this->model->save();
-        $this->assertEquals($user->id, $this->model->fresh()->creator->id);
-    }
-
     public function testUsers()
     {
         $user = UserTest::create();
