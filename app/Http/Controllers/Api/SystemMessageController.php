@@ -3,8 +3,10 @@
 namespace Biigle\Http\Controllers\Api;
 
 use Biigle\SystemMessage;
-use Biigle\SystemMessageType;
 use Illuminate\Http\Request;
+use Biigle\SystemMessageType;
+use Biigle\Http\Requests\StoreSystemMessage;
+use Biigle\Http\Requests\UpdateSystemMessage;
 
 class SystemMessageController extends Controller
 {
@@ -38,14 +40,11 @@ class SystemMessageController extends Controller
      *    "published_at"; "2016-04-29 07:38:51"
      * }
      *
-     * @param Request $request
+     * @param StoreSystemMessage $request
      * @return SystemMessage
      */
-    public function store(Request $request)
+    public function store(StoreSystemMessage $request)
     {
-        $this->authorize('create', SystemMessage::class);
-        $this->validate($request, SystemMessage::$createRules);
-
         $message = SystemMessage::create([
             'title' => $request->input('title'),
             'body' => $request->input('body'),
@@ -83,16 +82,12 @@ class SystemMessageController extends Controller
      * title: 'My new system message title'
      * publish: 1
      *
-     * @param Request $request
-     * @param  int  $id
+     * @param UpdateSystemMessage $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateSystemMessage $request)
     {
-        $message = SystemMessage::findOrFail($id);
-        $this->authorize('update', $message);
-        $this->validate($request, SystemMessage::$createRules);
-
+        $message = $request->message;
         $message->title = $request->input('title', $message->title);
         $message->body = $request->input('body', $message->body);
         $message->type_id = $request->input('type_id', $message->type_id);
