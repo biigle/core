@@ -3,7 +3,7 @@
     <i class="fa fa-users"></i> Create Project
 </a>
 @else
-<button class="btn btn-default btn-block" title="Guests are not allowed to create new projects." disabled>
+<button class="btn btn-default btn-block" title="Guests are not allowed to create new projects" disabled>
     <i class="fa fa-users"></i> Create Project
 </button>
 @endcan
