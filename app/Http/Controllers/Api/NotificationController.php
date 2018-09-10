@@ -2,7 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
@@ -18,13 +18,13 @@ class NotificationController extends Controller
      * @apiParamExample {String} Request example:
      * id: "0972569c-2d3e-444d-8e7d-2054e7ab20e9"
      *
-     * @param Guard $auth
+     * @param Request $request
      * @param int $id Image ID
      * @return \Illuminate\Http\Response
      */
-    public function update(Guard $auth, $id)
+    public function update(Request $request, $id)
     {
-        $notification = $auth->user()->unreadNotifications()->findOrFail($id);
+        $notification = $request->user()->unreadNotifications()->findOrFail($id);
         $notification->markAsRead();
     }
 
@@ -40,13 +40,13 @@ class NotificationController extends Controller
      * @apiParamExample {String} Request example:
      * id: "0972569c-2d3e-444d-8e7d-2054e7ab20e9"
      *
-     * @param Guard $auth
+     * @param Request $request
      * @param int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Guard $auth, $id)
+    public function destroy(Request $request, $id)
     {
-        $notification = $auth->user()->notifications()->findOrFail($id);
+        $notification = $request->user()->notifications()->findOrFail($id);
         $notification->delete();
     }
 }

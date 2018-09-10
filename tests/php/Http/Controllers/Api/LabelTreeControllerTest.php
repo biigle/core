@@ -254,6 +254,27 @@ class LabelTreeControllerTest extends ApiTestCase
         $this->assertEquals(Role::$admin->id, $member->role_id);
     }
 
+    public function testStoreAuthorization()
+    {
+        $this->beGlobalGuest();
+        $this->json('POST', '/api/v1/label-trees', [
+            'name' => 'abc',
+            'visibility_id' => Visibility::$public->id,
+        ])->assertStatus(403);
+
+        $this->beUser();
+        $this->json('POST', '/api/v1/label-trees', [
+            'name' => 'abc',
+            'visibility_id' => Visibility::$public->id,
+        ])->assertStatus(200);
+
+        $this->beGlobalAdmin();
+        $this->json('POST', '/api/v1/label-trees', [
+            'name' => 'abc',
+            'visibility_id' => Visibility::$public->id,
+        ])->assertStatus(200);
+    }
+
     public function testStoreTargetProject()
     {
         $this->beEditor();

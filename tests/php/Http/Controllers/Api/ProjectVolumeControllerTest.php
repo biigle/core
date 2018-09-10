@@ -216,8 +216,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $pid = $this->project()->id;
 
         $this->beAdmin();
-        $response = $this->json('POST', "/api/v1/projects/{$pid}/volumes/{$tid}");
-        $response->assertStatus(422);
+        $this->json('POST', "/api/v1/projects/{$pid}/volumes/{$tid}")->assertStatus(200);
     }
 
     public function testDestroy()

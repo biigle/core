@@ -68,6 +68,21 @@ class ApiTokenControllerTest extends ApiTestCase
             ->assertSessionHas('token');
     }
 
+    public function testStoreAuthorization()
+    {
+        $this->beGlobalGuest();
+        $this->json('POST', '/api/v1/api-tokens', ['purpose' => 'abc'])
+            ->assertStatus(403);
+
+        $this->beUser();
+        $this->json('POST', '/api/v1/api-tokens', ['purpose' => 'abc'])
+            ->assertStatus(200);
+
+        $this->beGlobalAdmin();
+        $this->json('POST', '/api/v1/api-tokens', ['purpose' => 'abc'])
+            ->assertStatus(200);
+    }
+
     public function testDestroy()
     {
         $token = ApiTokenTest::create();

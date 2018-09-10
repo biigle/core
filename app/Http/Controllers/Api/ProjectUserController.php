@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\User;
-use Biigle\Role;
 use Biigle\Project;
-use Illuminate\Http\Request;
+use Biigle\Http\Requests\AttachProjectUser;
+use Biigle\Http\Requests\UpdateProjectUser;
+use Biigle\Http\Requests\DestroyProjectUser;
 
 class ProjectUserController extends Controller
 {
@@ -35,12 +35,12 @@ class ProjectUserController extends Controller
      *    }
      * ]
      *
-     * @param int $projectId
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function index($projectId)
+    public function index($id)
     {
-        $project = Project::findOrFail($projectId);
+        $project = Project::findOrFail($id);
         $this->authorize('access', $project);
 
         return $project->users()->select('id', 'firstname', 'lastname')->get();
@@ -59,25 +59,12 @@ class ProjectUserController extends Controller
      *
      * @apiParam (Attributes that can be updated) {Number} project_role_id The project role of the member.
      *
-     * @param Request $request
-     * @param  int  $projectId
-     * @param  int  $userId
+     * @param UpdateProjectUser $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $projectId, $userId)
+    public function update(UpdateProjectUser $request)
     {
-        $project = Project::findOrFail($projectId);
-        $this->authorize('update', $project);
-
-        $role = Role::find($request->input('project_role_id'));
-
-        if (!$role) {
-            abort(400, 'Role does not exist.');
-        }
-
-        $project->changeRole($userId, $role->id);
-
-        return response('Ok.', 200);
+        $request->project->changeRole($request->user->id, $request->input('project_role_id'));
     }
 
     /**
@@ -96,26 +83,12 @@ class ProjectUserController extends Controller
      * @apiParamExample {String} Request example:
      * project_role_id: 3
      *
-     * @param Request $request
-     * @param int $projectId
-     * @param int $userId
+     * @param AttachProjectUser $request
      * @return \Illuminate\Http\Response
      */
-    public function attach(Request $request, $projectId, $userId)
+    public function attach(AttachProjectUser $request)
     {
-        $project = Project::findOrFail($projectId);
-        $this->authorize('update', $project);
-
-        $user = User::find($userId);
-        $role = Role::find($request->input('project_role_id'));
-
-        if (!$user || !$role) {
-            abort(400, 'Bad arguments.');
-        }
-
-        $project->addUserId($user->id, $role->id);
-
-        return response('Ok.', 200);
+        $request->project->addUserId($request->user->id, $request->input('project_role_id'));
     }
 
     /**
@@ -132,17 +105,11 @@ class ProjectUserController extends Controller
      * @apiParam {Number} pid The project ID.
      * @apiParam {Number} uid The user ID of the member.
      *
-     * @param  int  $projectId
-     * @param  int  $userId
+     * @param DestroyProjectUser $request
      * @return \Illuminate\Http\Response
      */
-    public function destroy($projectId, $userId)
+    public function destroy(DestroyProjectUser $request)
     {
-        $project = Project::findOrFail($projectId);
-        $member = $project->users()->findOrFail($userId);
-
-        $this->authorize('remove-member', [$project, $member]);
-
-        $project->removeUserId($userId);
+        $request->project->removeUserId($request->user->id);
     }
 }

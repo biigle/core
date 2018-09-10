@@ -50,6 +50,18 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $this->assertEquals(1, $t->members()->where('label_tree_user.role_id', Role::$admin->id)->count());
     }
 
+    public function testUpdateGlobalGuest()
+    {
+        $t = LabelTreeTest::create();
+        $u = $this->globalGuest();
+        $t->addMember($this->user(), Role::$admin);
+        $t->addMember($u, Role::$editor);
+        $this->beUser();
+        $this->json('PUT', "/api/v1/label-trees/{$t->id}/users/{$u->id}", [
+            'role_id' => Role::$admin->id,
+        ])->assertStatus(422);
+    }
+
     public function testUpdateFormRequest()
     {
         $t = LabelTreeTest::create();
@@ -128,6 +140,22 @@ class LabelTreeUserControllerTest extends ApiTestCase
         $user = $tree->members()->find($this->user()->id);
         $this->assertNotNull($user);
         $this->assertEquals(Role::$editor->id, $user->role_id);
+    }
+
+    public function testStoreGlobalGuest()
+    {
+        $t = LabelTreeTest::create();
+        $t->addMember($this->user(), Role::$admin);
+        $this->beUser();
+        $this->json('POST', "/api/v1/label-trees/{$t->id}/users", [
+            'id' => $this->globalGuest()->id,
+            'role_id' => Role::$admin->id,
+        ])->assertStatus(422);
+
+        $this->json('POST', "/api/v1/label-trees/{$t->id}/users", [
+            'id' => $this->globalGuest()->id,
+            'role_id' => Role::$editor->id,
+        ])->assertStatus(200);
     }
 
     public function testStoreFormRequest()
