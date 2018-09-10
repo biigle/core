@@ -55,8 +55,12 @@ class LabelTreeControllerTest extends TestCase
     public function testCreate()
     {
         $this->get('label-trees/create')->assertRedirect('login');
-        $user = UserTest::create();
+        $user = UserTest::create(['role_id' => Role::$guest->id]);
         $this->be($user);
+        $this->get('label-trees/create')->assertStatus(403);
+
+        $user->role_id = Role::$editor->id;
+        $user->save();
         $this->get('label-trees/create')->assertStatus(200);
 
         $project = ProjectTest::create();

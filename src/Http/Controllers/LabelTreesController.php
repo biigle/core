@@ -116,6 +116,8 @@ class LabelTreesController extends Controller
      */
     public function create(Request $request)
     {
+        $this->authorize('create', LabelTree::class);
+
         $visibilities = [
             Visibility::$private,
             Visibility::$public,
