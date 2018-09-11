@@ -2,8 +2,9 @@
 
 namespace Biigle\Observers;
 
-use Event;
 use Biigle\Image;
+use Biigle\Events\ImagesDeleted;
+use Biigle\Events\TiledImagesDeleted;
 
 class ImageObserver
 {
@@ -15,7 +16,10 @@ class ImageObserver
      */
     public function deleting(Image $image)
     {
-        Event::fire('images.cleanup', [[$image->uuid]]);
+        event(new ImagesDeleted($image->uuid));
+        if ($image->tiled) {
+            event(new TiledImagesDeleted($image->uuid));
+        }
 
         return true;
     }

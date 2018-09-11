@@ -13,8 +13,10 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'images.cleanup' => [
+        \Biigle\Events\ImagesDeleted::class => [
             \Biigle\Listeners\CleanupThumbnails::class,
+        ],
+        \Biigle\Events\TiledImagesDeleted::class => [
             \Biigle\Listeners\CleanupImageTiles::class,
         ],
         'cache:clearing' => [

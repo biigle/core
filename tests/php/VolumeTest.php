@@ -10,6 +10,8 @@ use Biigle\Role;
 use ModelTestCase;
 use Biigle\Volume;
 use Carbon\Carbon;
+use Biigle\Events\ImagesDeleted;
+use Biigle\Events\TiledImagesDeleted;
 use Illuminate\Database\QueryException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -138,14 +140,31 @@ class VolumeTest extends ModelTestCase
         $this->assertEquals(['1.jpg'], $return);
     }
 
-    public function testImageCleanupEventOnDelete()
+    public function testImagesDeletedEventOnDelete()
     {
-        Event::shouldReceive('fire')
-            ->once()
-            ->with('images.cleanup', [[]]);
-        Event::shouldReceive('fire'); // catch other events
+        Event::fake([ImagesDeleted::class]);
 
+        $image = ImageTest::create(['volume_id' => $this->model->id]);
         $this->model->delete();
+
+        Event::assertDispatched(ImagesDeleted::class, function ($event) use ($image) {
+            return $event->uuids[0] === $image->uuid;
+        });
+    }
+
+    public function testTiledImagesDeletedEventOnDelete()
+    {
+        Event::fake([ImagesDeleted::class, TiledImagesDeleted::class]);
+
+        $image = ImageTest::create(['volume_id' => $this->model->id, 'tiled' => true]);
+        $this->model->delete();
+
+        Event::assertDispatched(ImagesDeleted::class, function ($event) use ($image) {
+            return $event->uuids[0] === $image->uuid;
+        });
+        Event::assertDispatched(TiledImagesDeleted::class, function ($event) use ($image) {
+            return $event->uuids[0] === $image->uuid;
+        });
     }
 
     public function testCreateImagesCreatesUuids()
