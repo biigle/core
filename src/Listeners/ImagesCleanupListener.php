@@ -4,6 +4,7 @@ namespace Biigle\Modules\Largo\Listeners;
 
 use Biigle\Image;
 use Biigle\Annotation;
+use Biigle\Events\ImagesDeleted;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 
@@ -18,16 +19,16 @@ class ImagesCleanupListener
      * The job will be queued and when it is run, the volume, images and annotations
      * may no longer exist in the DB.
      *
-     * @param  array  $uuids  The volume image uuids
+     * @param  ImagesDeleted  $event
      * @return void
      */
-    public function handle(array $uuids)
+    public function handle(ImagesDeleted $event)
     {
-        if (empty($uuids)) {
+        if (empty($event->uuids)) {
             return;
         }
 
-        $images = Image::whereIn('uuid', $uuids)->select('id', 'volume_id')->get();
+        $images = Image::whereIn('uuid', $event->uuids)->select('id', 'volume_id')->get();
 
         if ($images->isEmpty()) {
             return;

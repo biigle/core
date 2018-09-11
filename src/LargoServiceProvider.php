@@ -2,9 +2,13 @@
 
 namespace Biigle\Modules\Largo;
 
+use Event;
+use Biigle\Annotation;
 use Biigle\Services\Modules;
 use Illuminate\Routing\Router;
+use Biigle\Events\ImagesDeleted;
 use Illuminate\Support\ServiceProvider;
+use Biigle\Modules\Largo\Observers\AnnotationObserver;
 use Biigle\Modules\Largo\Listeners\ImagesCleanupListener;
 
 class LargoServiceProvider extends ServiceProvider
@@ -36,9 +40,8 @@ class LargoServiceProvider extends ServiceProvider
             require __DIR__.'/Http/routes.php';
         });
 
-        \Biigle\Annotation::observe(new \Biigle\Modules\Largo\Observers\AnnotationObserver);
-
-        \Event::listen('images.cleanup', ImagesCleanupListener::class);
+        Annotation::observe(new AnnotationObserver);
+        Event::listen(ImagesDeleted::class, ImagesCleanupListener::class);
 
         $modules->register('largo', [
             'viewMixins' => [
@@ -67,17 +70,17 @@ class LargoServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/config/largo.php', 'largo');
 
         $this->app->singleton('command.largo.publish', function ($app) {
-            return new \Biigle\Modules\Largo\Console\Commands\Publish();
+            return new \Biigle\Modules\Largo\Console\Commands\Publish;
         });
         $this->commands('command.largo.publish');
 
         $this->app->singleton('command.largo.config', function ($app) {
-            return new \Biigle\Modules\Largo\Console\Commands\Config();
+            return new \Biigle\Modules\Largo\Console\Commands\Config;
         });
         $this->commands('command.largo.config');
 
         $this->app->singleton('command.largo.generate-missing', function ($app) {
-            return new \Biigle\Modules\Largo\Console\Commands\GenerateMissing();
+            return new \Biigle\Modules\Largo\Console\Commands\GenerateMissing;
         });
         $this->commands('command.largo.generate-missing');
     }
