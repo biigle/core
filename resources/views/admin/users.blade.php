@@ -31,7 +31,7 @@
                 </td>
                 <td>
                     @if ($u->affiliation)
-                        {{$u->affiliation}}
+                        <span title="{{$u->affiliation}}">{{str_limit($u->affiliation, 20)}}</span>
                     @else
                         <span class="text-muted">none</span>
                     @endif
