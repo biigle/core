@@ -112,27 +112,43 @@ class ImageCache implements ImageCacheContract
             return;
         }
 
+        // Prune images by age.
+        $now = time();
+        // Allowed age in seconds.
+        $allowedAge = config('image.cache.max_age') * 60;
         $totalSize = 0;
-        $allowedSize = config('image.cache.max_size');
 
         $files = Finder::create()
             ->files()
             ->ignoreDotFiles(true)
-            // This will return the least recently accessed images first.
-            ->sortByAccessedTime()
             ->in($this->path)
             ->getIterator();
 
         foreach ($files as $file) {
-            $totalSize += $file->getSize();
+            if ($now - $file->getATime() > $allowedAge) {
+                $this->delete($file);
+            } else {
+                $totalSize += $file->getSize();
+            }
         }
 
-        $files->rewind();
+        // Prune images by cache size.
+        $allowedSize = config('image.cache.max_size');
 
-        while ($totalSize > $allowedSize && ($file = $files->current())) {
-            $totalSize -= $file->getSize();
-            $this->delete($file);
-            $files->next();
+        if ($totalSize > $allowedSize) {
+            $files = Finder::create()
+                ->files()
+                ->ignoreDotFiles(true)
+                // This will return the least recently accessed images first.
+                ->sortByAccessedTime()
+                ->in($this->path)
+                ->getIterator();
+
+            while ($totalSize > $allowedSize && ($file = $files->current())) {
+                $totalSize -= $file->getSize();
+                $this->delete($file);
+                $files->next();
+            }
         }
     }
 
