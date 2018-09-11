@@ -66,6 +66,13 @@ biigle.$component('annotations.components.settingsTab', {
         hideMinimap: function () {
             this.minimap = false;
         },
+        toggleAnnotationOpacity: function () {
+            if (this.annotationOpacity > 0) {
+                this.annotationOpacity = 0;
+            } else {
+                this.annotationOpacity = 1;
+            }
+        },
     },
     watch: {
         annotationOpacity: function (opacity) {
@@ -138,6 +145,8 @@ biigle.$component('annotations.components.settingsTab', {
             'measureTooltip',
             'minimap',
         ], true);
+
+        biigle.$require('keyboard').on('o', this.toggleAnnotationOpacity);
     },
 });
 

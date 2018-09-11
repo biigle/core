@@ -33,43 +33,47 @@
                     <td>Show/hide the current sidebar tab</td>
                 </tr>
                 <tr>
-                    <td><code>A</code></td>
+                    <td><code>o</code></td>
+                    <td>Toggle the annotation opactiy between 0.0 and 1.0</td>
+                </tr>
+                <tr>
+                    <td><code>a</code></td>
                     <td>Select the point annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>S</code></td>
+                    <td><code>s</code></td>
                     <td>Select the rectangle annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>D</code></td>
+                    <td><code>d</code></td>
                     <td>Select the circle annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>Shift</code>+<code>D</code></td>
+                    <td><code>Shift</code>+<code>d</code></td>
                     <td>Select the ellipse annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>F</code></td>
+                    <td><code>f</code></td>
                     <td>Select the line string annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>Shift</code>+<code>F</code></td>
+                    <td><code>Shift</code>+<code>f</code></td>
                     <td>Select the ruler tool</td>
                 </tr>
                 <tr>
-                    <td><code>G</code></td>
+                    <td><code>g</code></td>
                     <td>Select the polygon annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>Shift</code>+<code>G</code></td>
+                    <td><code>Shift</code>+<code>g</code></td>
                     <td>Select the magic wand annotation tool</td>
                 </tr>
                 <tr>
-                    <td><code>M</code></td>
+                    <td><code>m</code></td>
                     <td>Select the tool to move selected annotations</td>
                 </tr>
                 <tr>
-                    <td><code>L</code></td>
+                    <td><code>l</code></td>
                     <td>Select tool to attach labels to existing annotations</td>
                 </tr>
                 <tr>
