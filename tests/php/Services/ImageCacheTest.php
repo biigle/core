@@ -207,6 +207,18 @@ class ImageCacheTest extends TestCase
         $this->assertFalse(File::exists("{$this->cachePath}/def"));
     }
 
+    public function testPruneAge()
+    {
+        File::put("{$this->cachePath}/abc", 'abc');
+        touch("{$this->cachePath}/abc", time() - 61);
+        File::put("{$this->cachePath}/def", 'def');
+        config(['image.cache.max_age' => 1]);
+
+        ImageCache::prune();
+        $this->assertFalse(File::exists("{$this->cachePath}/abc"));
+        $this->assertTrue(File::exists("{$this->cachePath}/def"));
+    }
+
     public function testFake()
     {
         ImageCache::fake();
