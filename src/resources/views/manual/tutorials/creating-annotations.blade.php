@@ -159,7 +159,7 @@
             <a href="{{asset('vendor/annotations/images/manual/creating_annotations_magic_wand_5.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_magic_wand_5.jpg')}}" width="24%"></a>
         </p>
         <p>
-            To abort the process move the cursor back to the point where you initially pressed the mouse button and an "&times;" symbol will appear. If you release the mouse button here the detected region will be discarded.
+            To abort the process, move the cursor back to the point where you initially pressed the mouse button and an "&times;" symbol will appear. If you release the mouse button here, the detected region will be discarded. If you hold the <code>Shift</code> key while you move the cursor, the "&times;" symbol will not appear and the region will not be discarded no matter how close the cursor is to the initial point.
         </p>
         <p class="text-center">
             <a href="{{asset('vendor/annotations/images/manual/creating_annotations_magic_wand_2.jpg')}}"><img src="{{asset('vendor/annotations/images/manual/creating_annotations_magic_wand_2.jpg')}}" width="24%"></a>
