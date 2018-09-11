@@ -240,7 +240,7 @@ biigle.$declare('annotations.ol.MagicWandInteraction', function () {
             var len = Math.sqrt(dx * dx + dy * dy);
             // Ignore the discard radius if the shift key is pressed.
             // see: https://github.com/biigle/annotations/issues/116
-            if (len <= this.discardRadius && !e.pointerEvent.shiftKey) {
+            if (len <= this.discardRadius && !e.originalEvent.shiftKey) {
                 if (!this.isShowingCross) {
                     this.indicatorSource.clear();
                     this.indicatorSource.addFeature(this.indicatorCross);
