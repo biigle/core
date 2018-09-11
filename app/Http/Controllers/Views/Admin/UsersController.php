@@ -17,22 +17,22 @@ class UsersController extends Controller
     public function get()
     {
         $users = User::select('id', 'firstname', 'lastname', 'email', 'login_at', 'role_id', 'affiliation')
-            ->orderBy('login_at', 'desc')
+            // Orders by login_at in descending order (most recent first) but puts
+            // users with login_at=NULL at the end.
+            ->orderByRaw('login_at IS NULL, login_at DESC')
             ->orderBy('created_at', 'desc')
-            ->with('role')
             ->get();
 
-        $activeUsers = $users->filter(function ($user) {
-            return $user->login_at !== null;
-        });
-
-        $inactiveUsers = $users->filter(function ($user) {
-            return $user->login_at === null;
-        });
+        $roleNames = [
+            Role::$admin->id => 'Admin',
+            Role::$editor->id => 'Editor',
+            Role::$guest->id => 'Guest',
+        ];
 
         return view('admin.users', [
-            'activeUsers' => $activeUsers,
-            'inactiveUsers' => $inactiveUsers,
+            'users' => $users,
+            'roleClass' => $this->roleClassMap(),
+            'roleNames' => $roleNames,
         ]);
     }
 
@@ -55,7 +55,11 @@ class UsersController extends Controller
     {
         return view('admin.users.edit')
             ->with('affectedUser', User::findOrFail($id))
-            ->with('roles', Role::all());
+            ->with('roles', [
+                Role::$admin,
+                Role::$editor,
+                Role::$guest,
+            ]);
     }
 
     /**
@@ -79,19 +83,34 @@ class UsersController extends Controller
     public function show(Modules $modules, $id)
     {
         $user = User::findOrFail($id);
-        if ($user->role_id === Role::$admin->id) {
-            $roleClass = 'danger';
-        } elseif ($user->role_id === Role::$editor->id) {
-            $roleClass = 'primary';
-        } else {
-            $roleClass = 'default';
-        }
-
+        $roleClass = $this->roleClassMap($user->role_id);
         $values = $modules->callControllerMixins('adminShowUser', ['user' => $user]);
 
         return view('admin.users.show', array_merge([
             'shownUser' => $user,
             'roleClass' => $roleClass,
         ], $values));
+    }
+
+    /**
+     * Determines the Boostrap label class for a role label.
+     *
+     * @param int $id
+     *
+     * @return string|array
+     */
+    protected function roleClassMap($id = null)
+    {
+        $map = [
+            Role::$admin->id => 'danger',
+            Role::$editor->id => 'primary',
+            Role::$guest->id => 'default',
+        ];
+
+        if (!is_null($id)) {
+            return $map[$id];
+        }
+
+        return $map;
     }
 }
