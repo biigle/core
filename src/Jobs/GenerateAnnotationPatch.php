@@ -75,8 +75,9 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
     {
         $prefix = config('largo.patch_storage').'/'.$image->volume_id;
         if (!File::exists($prefix)) {
-            // make recursive
-            File::makeDirectory($prefix, 0755, true);
+            // Make recursive. With force to ignore errors due to race conditions.
+            // see: https://github.com/biigle/largo/issues/47
+            File::makeDirectory($prefix, 0755, true, true);
         }
 
         $format = config('largo.patch_format');
