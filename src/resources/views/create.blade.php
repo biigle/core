@@ -6,7 +6,7 @@
    <script src="{{ cachebust_asset('vendor/volumes/scripts/main.js') }}"></script>
    <script type="text/javascript">
       biigle.$declare('volumes.url', '{!! old('url') !!}');
-      biigle.$declare('volumes.filenames', '{!! old('images') !!}');
+      biigle.$declare('volumes.filenames', '{!! str_replace(["\r", "\n"], '', old('images')) !!}');
       @if ($hasBrowser)
          biigle.$declare('volumes.disks', {!! json_encode($disks) !!});
       @endif
