@@ -10,7 +10,7 @@ class UserExportTest extends TestCase
 {
     public function testGetContent()
     {
-        $user1 = UserTest::create();
+        $user1 = UserTest::create(['settings' => ['a' => 'b']]);
         $user2 = UserTest::create();
 
         $export = new UserExport([$user1->id, $user2->id]);
@@ -20,7 +20,7 @@ class UserExportTest extends TestCase
             'lastname' => $user1->lastname,
             'password' => $user1->password,
             'email' => $user1->email,
-            'settings' => $user1->settings,
+            'settings' => ['a' => 'b'],
             'uuid' => $user1->uuid,
             'affiliation' => $user1->affiliation,
         ];

@@ -34,7 +34,7 @@ class VolumeImportTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->volume = VolumeTest::create();
+        $this->volume = VolumeTest::create(['attrs' => ['ab' => 'cd']]);
         $this->image = ImageTest::create(['volume_id' => $this->volume->id]);
     }
 
@@ -327,6 +327,7 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($this->volume->name, $newVolume->name);
         $this->assertEquals($this->volume->url, $newVolume->url);
         $this->assertEquals($project->creator->id, $newVolume->creator_id);
+        $this->assertEquals(['ab' => 'cd'], $newVolume->attrs);
 
         $newImages = $newVolume->images;
         $this->assertCount(1, $newImages);

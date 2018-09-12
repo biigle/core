@@ -3,6 +3,7 @@
 namespace Biigle\Modules\Sync\Support\Export;
 
 use DB;
+use Biigle\Volume;
 
 class VolumeExport extends Export
 {
@@ -11,8 +12,7 @@ class VolumeExport extends Export
      */
     public function getContent()
     {
-        $volumes = DB::table('volumes')
-            ->whereIn('id', $this->ids)
+        $volumes = Volume::whereIn('id', $this->ids)
             ->select([
                 'id',
                 'name',
@@ -21,8 +21,9 @@ class VolumeExport extends Export
                 'attrs',
             ])
             ->get()
-            ->map(function ($volume) {
-                return (array) $volume;
+            ->each(function ($volume) {
+                $volume->setHidden([]);
+                $volume->setAppends([]);
             });
 
         return $volumes->toArray();

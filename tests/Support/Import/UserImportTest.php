@@ -7,6 +7,7 @@ use File;
 use TestCase;
 use Exception;
 use ZipArchive;
+use Biigle\User;
 use Ramsey\Uuid\Uuid;
 use Biigle\Tests\UserTest;
 use Biigle\Modules\Sync\Support\Export\UserExport;
@@ -86,10 +87,11 @@ class UserImportTest extends TestCase
         DB::table('users')->delete();
         $map = $import->perform();
         $this->assertEquals(2, DB::table('users')->count());
-        $user = DB::table('users')->first();
+        $user = User::first();
         $this->assertEquals($user->id, $map[$this->user->id]);
         $this->assertNotNull($user->created_at);
         $this->assertNotNull($user->updated_at);
+        $this->assertEquals(['ab' => 'cd'], $user->settings);
     }
 
     public function testPerformConflicts()

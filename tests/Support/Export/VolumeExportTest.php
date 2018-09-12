@@ -16,6 +16,8 @@ class VolumeExportTest extends TestCase
         $annotation = $annotationLabel->annotation;
         $image = $annotation->image;
         $volume = $image->volume;
+        $volume->attrs = ['doi' => 'my-doi'];
+        $volume->save();
 
         $export = new VolumeExport([$volume->id]);
         $expect = [[
@@ -23,7 +25,7 @@ class VolumeExportTest extends TestCase
             'name' => $volume->name,
             'media_type_id' => $volume->media_type_id,
             'url' => $volume->url,
-            'attrs' => $volume->attrs,
+            'attrs' => ['doi' => 'my-doi'],
         ]];
 
         $this->assertEquals($expect, $export->getContent());
