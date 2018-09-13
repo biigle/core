@@ -37,7 +37,7 @@ biigle.$viewModel('export-container', function (element) {
         },
         computed: {
             indexMap: function () {
-                // Do it like this because the ordering in allowerExports may be
+                // Do it like this because the ordering in allowedExports may be
                 // arbitrary but the ordering in indexMap must match the tabs in the
                 // view.
                 return ['volumes', 'labelTrees', 'users'].filter(function (item) {
@@ -45,7 +45,15 @@ biigle.$viewModel('export-container', function (element) {
                 });
             },
             volumes: function () {
-                return this.entities.volumes;
+                return this.entities.volumes.map(function (volume) {
+                    volume.description = volume.projects
+                        .map(function (project) {
+                            return project.name;
+                        })
+                        .join(', ');
+
+                    return volume;
+                });
             },
             labelTrees: function () {
                 return this.entities.labelTrees;
