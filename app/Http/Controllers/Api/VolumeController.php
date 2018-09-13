@@ -24,7 +24,14 @@ class VolumeController extends Controller
      *       "id": 1,
      *       "name": "My Volume",
      *       "created_at": "2015-02-10 09:45:30",
-     *       "updated_at": "2015-02-10 09:45:30"
+     *       "updated_at": "2015-02-10 09:45:30",
+     *       "projects": [
+     *           {
+     *               "id": 11,
+     *               "name": "Example project",
+     *               "description": "This is an example project"
+     *           }
+     *       ]
      *    }
      * ]
      *
@@ -34,6 +41,9 @@ class VolumeController extends Controller
     public function index(Request $request)
     {
         return Volume::accessibleBy($request->user())
+            ->with(['projects' => function ($query) {
+                $query->select('id', 'name', 'description');
+            }])
             ->orderByDesc('id')
             ->select('id', 'name', 'created_at', 'updated_at')
             ->get();

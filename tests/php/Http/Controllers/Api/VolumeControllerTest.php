@@ -22,7 +22,8 @@ class VolumeControllerTest extends ApiTestCase
         $this->beGuest();
         $this->get('/api/v1/volumes/')
             ->assertStatus(200)
-            ->assertJsonFragment(['id' => $this->volume()->id]);
+            ->assertJsonFragment(['id' => $this->volume()->id])
+            ->assertJsonFragment(['name' => $this->project()->name]);
     }
 
     public function testShow()
