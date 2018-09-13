@@ -308,7 +308,7 @@ biigle.$component('annotations.components.annotationCanvas', {
                 this.$emit('update', annotations);
             }
         },
-        focusAnnotation: function (annotation, fast) {
+        focusAnnotation: function (annotation, fast, keepResolution) {
             var feature = this.annotationSource.getFeatureById(annotation.id);
             if (feature) {
                 if (fast) {
@@ -316,6 +316,13 @@ biigle.$component('annotations.components.annotationCanvas', {
                 } else {
                     this.viewFitOptions.duration = 250;
                 }
+
+                if (keepResolution) {
+                    this.viewFitOptions.minResolution = this.resolution;
+                } else {
+                    this.viewFitOptions.minResolution = 1;
+                }
+
                 this.map.getView().fit(feature.getGeometry(), this.viewFitOptions);
             }
         },

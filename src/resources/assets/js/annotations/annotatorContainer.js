@@ -53,6 +53,7 @@ biigle.$viewModel('annotator-container', function (element) {
             showScaleLine: false,
             imagesArea: null,
             openTab: null,
+            userUpdatedVolareResolution: false,
         },
         computed: {
             imageId: function () {
@@ -305,8 +306,8 @@ biigle.$viewModel('annotator-container', function (element) {
                     a.selected = false;
                 });
             },
-            focusAnnotation: function (annotation, fast) {
-                this.$refs.canvas.focusAnnotation(annotation, fast);
+            focusAnnotation: function (annotation, fast, keepResolution) {
+                this.$refs.canvas.focusAnnotation(annotation, fast, keepResolution);
             },
             handleDetachAnnotationLabel: function (annotation, label) {
                 if (this.isEditor) {
@@ -339,12 +340,12 @@ biigle.$viewModel('annotator-container', function (element) {
                         .catch(messages.handleErrorResponse);
                 }
             },
-            selectAndFocusAnnotation: function (annotation) {
+            selectAndFocusAnnotation: function (annotation, keepResolution) {
                 this.selectedAnnotations.forEach(function (a) {
                     a.selected = false;
                 });
                 annotation.selected = true;
-                this.focusAnnotation(annotation, true);
+                this.focusAnnotation(annotation, true, keepResolution);
             },
             handleFilter: function (filter) {
                 this.annotationFilter = filter;
@@ -482,7 +483,7 @@ biigle.$viewModel('annotator-container', function (element) {
             },
             focussedAnnotation: function (annotation) {
                 if (annotation) {
-                    this.selectAndFocusAnnotation(annotation);
+                    this.selectAndFocusAnnotation(annotation, this.userUpdatedVolareResolution);
                 }
             },
             annotationFilter: function () {
@@ -496,6 +497,16 @@ biigle.$viewModel('annotator-container', function (element) {
                         .then(this.setImagesArea, messages.handleErrorResponse);
                 }
             },
+            isVolareAnnotationMode: function (enabled) {
+                if (!enabled) {
+                    this.userUpdatedVolareResolution = false;
+                }
+            },
+            mapResolution: function (resolution) {
+                if (this.isVolareAnnotationMode) {
+                    this.userUpdatedVolareResolution = true;
+                }
+            }
         },
         created: function () {
             this.startLoading();
