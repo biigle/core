@@ -327,6 +327,14 @@ class Volume extends Model
     }
 
     /**
+     * Flush the cache that stores the volume thumbnail.
+     */
+    public function flushThumbnailCache()
+    {
+        Cache::forget("volume-thumbnail-{$this->id}");
+    }
+
+    /**
      * Check if the volume has some images with GPS coordinates.
      *
      * @return bool

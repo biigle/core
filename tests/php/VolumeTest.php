@@ -356,8 +356,12 @@ class VolumeTest extends ModelTestCase
             'volume_id' => $this->model->id,
         ]);
 
-        // should be the middle image ordered by name
+        // Should be the middle image ordered by name.
         $this->assertEquals($i2->uuid, $this->model->thumbnail->uuid);
+
+        // If the thumbnail is deleted, purge the cache so a new thumbnail is selected.
+        $i2->delete();
+        $this->assertEquals($i1->uuid, $this->model->thumbnail->uuid);
     }
 
     public function testHasGeoInfo()
