@@ -1,5 +1,5 @@
 /**
- * Resource for volumes.
+ * Resource for volumes. This overrides api.volumes provided by biigle/core.
  *
  * var resource = biigle.$require('api.volumes');
  *
