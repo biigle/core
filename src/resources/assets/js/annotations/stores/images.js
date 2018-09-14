@@ -59,9 +59,6 @@ biigle.$declare('annotations.stores.images', function () {
 
                 return 0;
             },
-            isRemoteVolume: function () {
-                return biigle.$require('annotations.volumeIsRemote');
-            },
             hasColorAdjustment: function () {
                 for (var type in this.colorAdjustment) {
                     if (this.colorAdjustment.hasOwnProperty(type) && this.isAdjustmentActive(type)) {
@@ -82,7 +79,7 @@ biigle.$declare('annotations.stores.images', function () {
                 }) !== 0;
             },
             checkSupportsColorAdjustment: function (image) {
-                if (!fxCanvas || this.isRemoteVolume) {
+                if (!fxCanvas || image.crossOrigin) {
                     return false;
                 }
 
@@ -120,21 +117,27 @@ biigle.$declare('annotations.stores.images', function () {
             createImage: function (id) {
                 var self = this;
                 var img = document.createElement('img');
+
                 // We want to use the same canvas element for drawing and to
                 // apply the color adjustments for better performance. But we
                 // also want Vue to detect switched images which would not work
                 // if we simply passed on the canvas element as a prop to a
-                // component. We therefore create this new object for each image.
-                // And pass it as a prop instead.
+                // component. We therefore create this wrapper object for each image
+                // and pass it as a prop instead.
+                var imageWrapper = {
+                    id: id,
+                    source: img,
+                    width: 0,
+                    height: 0,
+                    canvas: canvas,
+                    crossOrigin: false,
+                };
+
                 var promise = new Vue.Promise(function (resolve, reject) {
                     img.onload = function () {
-                        resolve({
-                            id: id,
-                            source: img,
-                            width: img.width,
-                            height: img.height,
-                            canvas: canvas,
-                        });
+                        imageWrapper.width = img.width;
+                        imageWrapper.height = img.height;
+                        resolve(imageWrapper);
                     };
 
                     img.onerror = function () {
@@ -142,34 +145,38 @@ biigle.$declare('annotations.stores.images', function () {
                     };
                 });
 
-                if (this.isRemoteVolume) {
-                    // Images of remote volumes *must* be loaded as src of an image
-                    // element because of cross origin restrictions!
-                    img.src = this.imageFileUri.replace('{id}', id);
+                // The image may be tiled, so we request the data from the endpoint and
+                // check if it's an image or a JSON. If this is a cross origin request,
+                // the preflight request is automatically performed. If CORS is blocked,
+                // the catch() block below handles fallback loading of images.
+                return Vue.http.get(this.imageFileUri.replace('{id}', id))
+                    .then(function (response) {
+                        if (response.bodyBlob.type === 'application/json') {
+                            var uuid = response.body.uuid;
+                            response.body.url = self.tilesUri.replace('{uuid}', uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid);
 
-                    return promise;
+                            return response.body;
+                        }
 
-                } else {
-                    // If the volume is not remote the image may be tiled. So we request
-                    // the data from the endpoint and check if it's an image or a JSON.
-                    return Vue.http.get(this.imageFileUri.replace('{id}', id))
-                        .catch(function () {
-                            return Vue.Promise.reject('Failed to load image ' + id + '!');
-                        })
-                        .then(function (response) {
-                            if (response.bodyBlob.type === 'application/json') {
-                                var uuid = response.body.uuid;
-                                response.body.url = self.tilesUri.replace('{uuid}', uuid[0] + uuid[1] + '/' + uuid[2] + uuid[3] + '/' + uuid);
+                        var urlCreator = window.URL || window.webkitURL;
+                        img.src = urlCreator.createObjectURL(response.bodyBlob);
 
-                                return response.body;
-                            }
-
-                            var urlCreator = window.URL || window.webkitURL;
-                            img.src = urlCreator.createObjectURL(response.bodyBlob);
+                        return promise;
+                    })
+                    .catch(function (response) {
+                        // I could not find any reliable way to detect a failure due to
+                        // blocking of CORS. But the status seemed to be always 0.
+                        // If CORS is blocked, we can still display the image but have to
+                        // disable a few features that require reading the image data.
+                        if (response.status === 0) {
+                            imageWrapper.crossOrigin = true;
+                            img.src = response.url;
 
                             return promise;
-                        });
-                }
+                        }
+
+                        return Vue.Promise.reject('Failed to load image ' + id + '!');
+                    });
             },
             drawSimpleImage: function (image) {
                 image.canvas.width = image.width;

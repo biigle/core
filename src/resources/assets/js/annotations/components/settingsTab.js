@@ -19,12 +19,21 @@ biigle.$component('annotations.components.settingsTab', {
             minimap: true,
         };
     },
+    props: {
+        image: {
+            type: Object,
+            default: null,
+        },
+    },
     computed: {
         settings: function () {
             return biigle.$require('annotations.stores.settings');
         },
         plugins: function () {
             return biigle.$require('annotations.components.settingsTabPlugins');
+        },
+        crossOrigin: function () {
+            return this.image && this.image.crossOrigin;
         },
     },
     methods: {

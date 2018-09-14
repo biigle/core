@@ -169,7 +169,7 @@
         </p>
         <div class="panel panel-warning">
             <div class="panel-body text-warning">
-                The magic wand tool is not available for remote images.
+                The magic wand tool is not available for remote images without <a href="/manual/tutorials/volumes/remote-volumes#cors">cross-origin resource sharing</a>.
             </div>
         </div>
         <p>

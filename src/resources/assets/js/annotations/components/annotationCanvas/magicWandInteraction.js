@@ -7,16 +7,12 @@ biigle.$component('annotations.components.annotationCanvas.magicWandInteraction'
     var magicWandInteraction;
 
     return {
-        props: {
-            // Specifies whether the displayed image is cross origin.
-            crossOrigin: {
-                type: Boolean,
-                default: false,
-            },
-        },
         computed: {
+            crossOrigin: function () {
+                return this.image && this.image.crossOrigin;
+            },
             isMagicWanding: function () {
-                return this.interactionMode === 'magicWand';
+                return this.interactionMode === 'magicWand' && !this.crossOrigin;
             },
         },
         methods: {
@@ -38,7 +34,7 @@ biigle.$component('annotations.components.annotationCanvas.magicWandInteraction'
             maybeSetMagicWandLayer: function (image, oldImage) {
                 // Swap source layers for the magic wand interaction if image types
                 // change.
-                if (image) {
+                if (image && !this.crossOrigin) {
                     if (image.tiled === true) {
                         if (!oldImage || oldImage.tiled !== true) {
                             magicWandInteraction.setLayer(this.tiledImageLayer);
@@ -61,7 +57,7 @@ biigle.$component('annotations.components.annotationCanvas.magicWandInteraction'
             }
         },
         created: function () {
-            if (this.editable && !this.crossOrigin) {
+            if (this.editable) {
                 biigle.$require('keyboard').on('G', this.toggleMagicWand);
                 this.$watch('image', this.maybeUpdateMagicWandSnapshot);
                 this.$watch('image', this.maybeSetMagicWandLayer);
@@ -72,7 +68,7 @@ biigle.$component('annotations.components.annotationCanvas.magicWandInteraction'
             // Initialize the magic wand interaction here because we have to wait for
             // the non-reactive properties of annotationCanvas to be initialized.
             // The magic wand interaction is not available for remote images.
-            if (this.editable && !this.crossOrigin) {
+            if (this.editable) {
                 var Interaction = biigle.$require('annotations.ol.MagicWandInteraction');
                 magicWandInteraction = new Interaction({
                     map: this.map,

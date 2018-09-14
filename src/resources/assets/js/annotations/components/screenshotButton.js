@@ -9,16 +9,6 @@ biigle.$component('annotations.components.screenshotButton', {
         messages: function () {
             return biigle.$require('messages.store');
         },
-        screenshotSupported: function () {
-            return !biigle.$require('annotations.volumeIsRemote');
-        },
-        screenshotTitle: function () {
-            if (this.screenshotSupported) {
-                return 'Get a screenshot of the visible area';
-            }
-
-            return 'Screenshots are not available for remote images';
-        },
         filename: function () {
             if (this.currentImageFilename) {
                 var name = this.currentImageFilename.split('.');

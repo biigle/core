@@ -75,7 +75,7 @@
 
         <div class="panel panel-warning">
             <div class="panel-body text-warning">
-                Color adjustment is unavailable for remote images and images that are too large to be handled by the graphics processing unit of your machine (<span id="texture-size-remark">your machine can handle images up to <span id="texture-size"></span> px</span>).
+                Color adjustment is unavailable for remote images without <a href="/manual/tutorials/volumes/remote-volumes#cors">cross-origin resource sharing</a> and images that are too large to be handled by the graphics processing unit of your machine (<span id="texture-size-remark">your machine can handle images up to <span id="texture-size"></span> px</span>).
             </div>
         </div>
         <script type="text/javascript">
@@ -99,7 +99,7 @@
 
         <div class="panel panel-warning">
             <div class="panel-body text-warning">
-                Capturing screenshots is not available for remote images due to security reasons. You can use the usual way of capturing a screenshot of your whole screen in this case.
+                Capturing screenshots is not available for remote images without <a href="/manual/tutorials/volumes/remote-volumes#cors">cross-origin resource sharing</a>. You can use the usual way of capturing a screenshot of your whole screen in this case.
             </div>
         </div>
 

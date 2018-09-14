@@ -26,7 +26,6 @@
     biigle.$declare('annotations.imageFileUri', '{!! url('api/v1/images/{id}/file') !!}');
     biigle.$declare('annotations.tilesUri', '{{ asset(config('image.tiles.uri')) }}/{uuid}/');
     biigle.$declare('annotations.sessions', {!!$annotationSessions!!});
-    biigle.$declare('annotations.volumeIsRemote', @if($volume->isRemote()) true @else false @endif);
     biigle.$declare('annotations.isEditor', @can('add-annotation', $image) true @else false @endcan);
     biigle.$declare('annotations.userId', {!! $user->id !!});
     biigle.$declare('annotations.isAdmin', @can('update', $volume) true @else false @endcan);
@@ -72,7 +71,6 @@
             :show-label-tooltip="showLabelTooltip"
             :show-measure-tooltip="showMeasureTooltip"
             :show-minimap="showMinimap"
-            :cross-origin="@if($volume->isRemote()) true @else false @endif"
             v-on:moveend="handleMapMoveend"
             v-on:previous="handlePrevious"
             v-on:next="handleNext"
