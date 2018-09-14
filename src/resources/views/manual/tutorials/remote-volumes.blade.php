@@ -24,7 +24,7 @@
         <p>
             This is where remote volumes come in. When you request an image in BIIGLE, your browser doesn't care where this image comes from. So it actually doesn't have to be served from the same machine that runs the BIIGLE application. Instead, BIIGLE only has to know the "remote" location from where the image is served to redirect your request there. And this remote location can be under your control. In addition to that, a remote image location may speed up loading times of the images if your internet connection to the BIIGLE server is rather slow but the connection to the remote location is fast.
         </p>
-        <h3>How to set up a remote location for images</h3>
+        <h3><a name="how-to-set-up"></a>How to set up a remote location for images</h3>
         <p>
             Images from a remote location must be accessible both by the BIIGLE application and your browser. The simplest setup is to make the images publicly available through a web server. After a successful setup you should be able to access the images in your browser via a URL like this <code>https://your-institute.com/subdirectory/image_001.jpg</code>. The domain, directory and image file names are just examples and can be completely arbitrary (<code>http(s)://&lt;domain>/&lt;subdirectories>/&lt;image file></code>).
         </p>
@@ -34,7 +34,26 @@
         <p>
             If you want to revoke access to the images of your remote location, just turn your webserver off. Although BIIGLE will keep all information of the volume (annotations, etc.) BIIGLE users won't be able to access the original images any more.
         </p>
-        <h3>How to secure a remote location</h3>
+
+        <h3><a name="cors"></a>Cross-Origin Resource Sharing</h3>
+        <p>
+            The cross-origin policy is a security mechanism of web browsers that prevents malicious third parties from extracting sensitive information from your web pages. This includes cases like loading images from remote sources in BIIGLE. Although those images can be displayed, BIIGLE cannot access the raw image data in the browser which is required for some images. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing</a> (CORS) is a mechanism to manually configure exceptions for the cross-origin policy. With a correct CORS configuration, BIIGLE can process images from remote sources just like regular images.
+        </p>
+        <p>
+            To set up CORS for the images of your remote source, you have to update the configuration of the webserver that provides the images. Some cloud storage providers specifically provide configuration options for CORS. The webserver has to add the following HTTP headers to any <code>GET</code> or <code>OPTIONS</code> HTTP request for an image:
+        </p>
+<pre>
+Access-Control-Allow-Origin "https://biigle.de, https://www.biigle.de"
+Access-Control-Allow-Headers "x-csrf-token, x-requested-with"
+</pre>
+        <p>
+            That's all. BIIGLE detects if CORS is properly configured for remote images and automatically enables or disables the respective features. The features that are disabled for remote images without CORS are:
+        </p>
+        <ul>
+            @mixin('volumesManualRemoteVolumes')
+        </ul>
+
+        <h3><a name="how-to-secure"></a>How to secure a remote location</h3>
         <div class="panel panel-warning">
             <div class="panel-body text-warning">
                 Note that every BIIGLE user who has access to the remote volume will always know and have access to your remote location as well (as long as it exists).
@@ -63,15 +82,5 @@
         <p>
             It is also important to note, that HTTP basic auth credentials are always stored and sent in clear text. This basically means that basic auth is <strong>not</strong> more secure than the method with a long random directory name described previously! Every BIIGLE user who has access to the remote volume will see the basic auth credentials.
         </p>
-        <h3>Drawbacks of remote volumes</h3>
-        <p>
-            One drawback of remote volumes obviously is the fact that you have to make the images quasi-publicly accessible. There is always the possibility of a BIIGLE user who has access to a remote volume to take the URL of the remote location and share it with a third party (but they could share their BIIGLE login credentials just the same, for that matter).
-        </p>
-        <p>
-            A bigger drawback is that some of the features of BIIGLE require the images to be stored locally. This means that a few features are disabled for remote volumes. The core functionality for annotations and reports is always available, though. The following features are not available:
-        </p>
-        <ul>
-            @mixin('volumesManualRemoteVolumes')
-        </ul>
     </div>
 @endsection
