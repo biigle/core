@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "950dccc313bd00efe8aac6acb504bb94",
+    "content-hash": "bb8387a9a26ac76aab1a97bacf83e309",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -103,6 +103,35 @@
                 "issues": "https://github.com/BiodataMiningGroup/biigle-color-sort/issues"
             },
             "time": "2018-03-20T13:18:36+00:00"
+        },
+        {
+            "name": "biigle/demo",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:biigle/demo.git",
+                "reference": "985035f9542188631efe448b87b5600c83ead5b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/demo/zipball/985035f9542188631efe448b87b5600c83ead5b5",
+                "reference": "985035f9542188631efe448b87b5600c83ead5b5",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/volumes": ">=1.13"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Demo\\": "src"
+                }
+            },
+            "support": {
+                "source": "https://github.com/biigle/demo/tree/v1.1.1",
+                "issues": "https://github.com/biigle/demo/issues"
+            },
+            "time": "2018-02-13T14:49:46+00:00"
         },
         {
             "name": "biigle/geo",
@@ -5396,7 +5425,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "biigle/legal": 20,
         "biigle/ananas": 20,
         "biigle/annotations": 20,
         "biigle/color-sort": 20,
@@ -5404,6 +5432,7 @@
         "biigle/label-trees": 20,
         "biigle/largo": 20,
         "biigle/laserpoints": 20,
+        "biigle/legal": 20,
         "biigle/projects": 20,
         "biigle/reports": 20,
         "biigle/sync": 20,

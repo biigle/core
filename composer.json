@@ -10,14 +10,15 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-vips": "*",
-        "biigle/legal": "@dev",
         "biigle/ananas": "@dev",
         "biigle/annotations": "@dev",
         "biigle/color-sort": "@dev",
+        "biigle/demo": "^1.1",
         "biigle/geo": "@dev",
         "biigle/label-trees": "@dev",
         "biigle/largo": "@dev",
         "biigle/laserpoints": "@dev",
+        "biigle/legal": "@dev",
         "biigle/projects": "@dev",
         "biigle/reports": "@dev",
         "biigle/sync": "@dev",
@@ -149,6 +150,10 @@
         {
             "type": "vcs",
             "url": "git@github.com:biigle/legal.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:biigle/demo.git"
         }
     ]
 }
