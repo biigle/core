@@ -76,6 +76,25 @@ biigle.$component('volumes.components.sortingTab', {
                 .catch(biigle.$require('messages.store').handleErrorResponse)
                 .finally(this.finishLoading);
         },
+        isValidSequence: function (sequence) {
+            // A stored sorting sequence is invalid if it does not contain the IDs of all
+            // images of the volume. It may contain more IDs if images have been
+            // deleted in the meantime.
+            var map = {};
+            var ids = this.imageIds;
+
+            for (var i = sequence.length - 1; i >= 0; i--) {
+                map[sequence[i]] = true;
+            }
+
+            for (i = ids.length - 1; i >= 0; i--) {
+                if (!map.hasOwnProperty(ids[i])) {
+                    return false;
+                }
+            }
+
+            return true;
+        },
     },
     watch: {
         sequence: function () {
@@ -101,11 +120,13 @@ biigle.$component('volumes.components.sortingTab', {
     },
     created: function () {
         var sorter = JSON.parse(localStorage.getItem(this.sorterStorageKey));
-        if (sorter) {
+        if (sorter && this.isValidSequence(sorter.sequence)) {
             this.activeSorter = sorter.id;
             this.privateSequence = sorter.sequence;
         } else {
             this.activeSorter = this.defaultSorter.id;
+            // Delete any invalid stored sorting sequence.
+            localStorage.removeItem(this.sorterStorageKey);
         }
 
         var direction = JSON.parse(localStorage.getItem(this.directionStorageKey));
