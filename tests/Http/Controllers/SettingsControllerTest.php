@@ -58,7 +58,7 @@ class SettingsControllerTest extends ApiTestCase
         $response = $this->json('POST', 'api/v1/users/my/settings/reports', [
                 'report_notifications' => 'email',
             ])
-            ->assertStatus(200);
+            ->assertStatus(404);
 
         $this->assertEquals('web', $this->user()->fresh()->getSettings('report_notifications'));
     }
