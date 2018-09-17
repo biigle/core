@@ -44,8 +44,12 @@
 
 @section('navbar')
 <div class="navbar-text navbar-annotations-breadcrumbs">
-    @include('volumes::partials.projectsBreadcrumb', ['projects' => $volume->projects])/ <a href="{{route('volume', $volume->id)}}" class="navbar-link" title="Show volume {{$volume->name}}">{{$volume->name}}</a>
-    / <strong id="annotations-navbar" :title="currentImageFilename" v-text="currentImageFilename">{{$image->filename}}</strong> @include('volumes::partials.annotationSessionIndicator')
+    @include('volumes::partials.projectsBreadcrumb', ['projects' => $volume->projects]) /
+    <a href="{{route('volume', $volume->id)}}" class="navbar-link" title="Show volume {{$volume->name}}">{{$volume->name}}</a> /
+    <span id="annotations-navbar">
+        @include('annotations::show.progressIndicator')<strong :title="currentImageFilename" v-text="currentImageFilename">{{$image->filename}}</strong>
+    </span>
+    @include('volumes::partials.annotationSessionIndicator')
 </div>
 @endsection
 

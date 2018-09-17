@@ -108,6 +108,10 @@
         </p>
 
         <p>
+            The progress indicator switch constrols the display of the indicator element next to the image filename in the navbar. The indicator shows your progress through the current (filtered) volume and whether you have seen all images.
+        </p>
+
+        <p>
             The minimap switch enables you to show or hide the minimap. A hidden minimap can be particularly useful in Lawnmower Mode where you need to see all of the displayed viewport.
         </p>
 

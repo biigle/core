@@ -14,6 +14,10 @@
             </div>
 
             <div class="sidebar-tab__section">
+                <power-toggle :active="progressIndicator" title-off="Show progress indicator" title-on="Hide progress indicator" v-on:on="showProgressIndicator" v-on:off="hideProgressIndicator">Progress Indicator</power-toggle>
+            </div>
+
+            <div class="sidebar-tab__section">
                 <power-toggle :active="minimap" title-off="Show minimap" title-on="Hide minimap" v-on:on="showMinimap" v-on:off="hideMinimap">Minimap</power-toggle>
             </div>
 

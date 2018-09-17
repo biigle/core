@@ -17,6 +17,7 @@ biigle.$component('annotations.components.settingsTab', {
             labelTooltip: false,
             measureTooltip: false,
             minimap: true,
+            progressIndicator: false,
         };
     },
     props: {
@@ -74,6 +75,12 @@ biigle.$component('annotations.components.settingsTab', {
         },
         hideMinimap: function () {
             this.minimap = false;
+        },
+        showProgressIndicator: function () {
+            this.progressIndicator = true;
+        },
+        hideProgressIndicator: function () {
+            this.progressIndicator = false;
         },
         toggleAnnotationOpacity: function () {
             if (this.annotationOpacity > 0) {
@@ -141,6 +148,14 @@ biigle.$component('annotations.components.settingsTab', {
             }
             this.$emit('change', 'minimap', show);
         },
+        progressIndicator: function (show) {
+            if (show) {
+                this.settings.set('progressIndicator', true);
+            } else {
+                this.settings.delete('progressIndicator');
+            }
+            this.$emit('change', 'progressIndicator', show);
+        },
     },
     created: function () {
         this.settings.restoreProperties(this, [
@@ -153,6 +168,7 @@ biigle.$component('annotations.components.settingsTab', {
             'labelTooltip',
             'measureTooltip',
             'minimap',
+            'progressIndicator',
         ], true);
 
         biigle.$require('keyboard').on('o', this.toggleAnnotationOpacity);

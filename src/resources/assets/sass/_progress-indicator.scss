@@ -1,0 +1,37 @@
+.progress-indicator-container {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: bottom;
+    position: relative;
+}
+
+.progress-indicator {
+    // position: absolute;
+    width: 20px;
+    height: 20px;
+    // This is done to put (0, 0) to the bottom left corner which saves some
+    // transformations when computing the progress arc.
+    transform: rotate(-90deg);
+}
+
+.progress-indicator__background {
+    fill: $brand-info;
+    opacity: 0.25;
+}
+
+.progress-indicator__progress {
+    fill: $brand-info;
+}
+
+.progress-indicator__marker {
+    fill: transparent;
+    stroke: white;
+    stroke-width: 0.2;
+}
+
+.progress-indicator__all {
+    fill: transparent;
+    stroke: white;
+    stroke-width: 0.2;
+}
