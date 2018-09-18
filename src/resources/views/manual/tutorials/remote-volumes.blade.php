@@ -37,10 +37,10 @@
 
         <h3><a name="cors"></a>Cross-Origin Resource Sharing</h3>
         <p>
-            The cross-origin policy is a security mechanism of web browsers that prevents malicious third parties from extracting sensitive information from your web pages. This includes cases like loading images from remote sources in BIIGLE. Although those images can be displayed, BIIGLE cannot access the raw image data in the browser which is required for some images. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing</a> (CORS) is a mechanism to manually configure exceptions for the cross-origin policy. With a correct CORS configuration, BIIGLE can process images from remote sources just like regular images.
+            The cross-origin policy is a security mechanism of web browsers that prevents malicious third parties from extracting sensitive information from your web pages. This includes cases like loading images from remote sources in BIIGLE. Although those images can be displayed, BIIGLE cannot access the raw image data in the browser which is a requirement for some features. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing</a> (CORS) is a mechanism to manually configure exceptions for the cross-origin policy. With a correct CORS configuration, BIIGLE can process images from remote sources just like regular images.
         </p>
         <p>
-            To set up CORS for the images of your remote source, you have to update the configuration of the webserver that provides the images. Some cloud storage providers specifically provide configuration options for CORS. The webserver has to add the following HTTP headers to any <code>GET</code> or <code>OPTIONS</code> HTTP request for an image:
+            To set up CORS for the images of your remote source, you have to update the configuration of the webserver that serves the images. Some cloud storage services specifically provide configuration options for CORS. The webserver has to add the following HTTP headers to any <code>GET</code> or <code>OPTIONS</code> HTTP request for an image:
         </p>
 <pre>
 Access-Control-Allow-Origin "https://biigle.de, https://www.biigle.de"
