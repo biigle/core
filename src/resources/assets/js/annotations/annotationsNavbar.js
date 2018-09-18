@@ -14,7 +14,7 @@ biigle.$viewModel('annotations-navbar', function (element) {
             imageIds: biigle.$require('annotations.imagesIds').slice(),
             imageIdsLeft: biigle.$require('annotations.imagesIds').slice(),
             initialImageId: null,
-            showIndicator: false,
+            showIndicator: true,
         },
         computed: {
             progressPath: function () {
@@ -60,7 +60,16 @@ biigle.$viewModel('annotations-navbar', function (element) {
                 return this.imageIdsLeft.length === 0;
             },
             showInitialProgressMarker: function () {
-                return this.initialImageNumber !== 1 && !this.hasSeenAllImages;
+                return this.initialImageNumber !== 1;
+            },
+            indicatorClass: function () {
+                return this.hasSeenAllImages ? 'progress-indicator--all' : '';
+            },
+            filenameClass: function () {
+                return this.hasSeenAllImages ? 'text-success' : '';
+            },
+            filenameTitle: function () {
+                return this.hasSeenAllImages ? 'You have seen all images' : '';
             },
         },
         methods: {
@@ -74,8 +83,7 @@ biigle.$viewModel('annotations-navbar', function (element) {
                 this.initialImageId = id;
             },
             updateShowIndicator: function (show) {
-                this.showIndicator = show === true;
-                console.log(this.showIndicator);
+                this.showIndicator = show !== false;
             },
         },
         watch: {

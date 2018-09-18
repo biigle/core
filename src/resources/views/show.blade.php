@@ -47,7 +47,7 @@
     @include('volumes::partials.projectsBreadcrumb', ['projects' => $volume->projects]) /
     <a href="{{route('volume', $volume->id)}}" class="navbar-link" title="Show volume {{$volume->name}}">{{$volume->name}}</a> /
     <span id="annotations-navbar">
-        @include('annotations::show.progressIndicator')<strong :title="currentImageFilename" v-text="currentImageFilename">{{$image->filename}}</strong>
+        @include('annotations::show.progressIndicator')<strong v-bind:title="filenameTitle" v-bind:class="filenameClass" v-text="currentImageFilename">{{$image->filename}}</strong>
     </span>
     @include('volumes::partials.annotationSessionIndicator')
 </div>

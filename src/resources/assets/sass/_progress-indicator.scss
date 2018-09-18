@@ -16,22 +16,22 @@
 }
 
 .progress-indicator__background {
-    fill: $brand-info;
+    fill: $text-color;
     opacity: 0.25;
 }
 
 .progress-indicator__progress {
-    fill: $brand-info;
+    fill: $text-color;
+}
+
+.progress-indicator--all {
+    .progress-indicator__background, .progress-indicator__progress {
+        fill: $brand-success;
+    }
 }
 
 .progress-indicator__marker {
     fill: transparent;
     stroke: white;
-    stroke-width: 0.2;
-}
-
-.progress-indicator__all {
-    fill: transparent;
-    stroke: white;
-    stroke-width: 0.2;
+    stroke-width: 0.1;
 }

@@ -17,7 +17,7 @@ biigle.$component('annotations.components.settingsTab', {
             labelTooltip: false,
             measureTooltip: false,
             minimap: true,
-            progressIndicator: false,
+            progressIndicator: true,
         };
     },
     props: {
@@ -150,9 +150,9 @@ biigle.$component('annotations.components.settingsTab', {
         },
         progressIndicator: function (show) {
             if (show) {
-                this.settings.set('progressIndicator', true);
-            } else {
                 this.settings.delete('progressIndicator');
+            } else {
+                this.settings.set('progressIndicator', false);
             }
             this.$emit('change', 'progressIndicator', show);
         },
