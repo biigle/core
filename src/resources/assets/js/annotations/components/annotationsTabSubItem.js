@@ -56,8 +56,10 @@ biigle.$component('annotations.components.annotationsTabSubItem', {
                 this.events.$emit('annotations.select', this.annotation, e);
             }
         },
-        focus: function () {
+        focus: function (e) {
             this.events.$emit('annotations.focus', this.annotation);
+            this.$emit('select', this.$el);
+            this.events.$emit('annotations.select', this.annotation, e);
         },
         detach: function () {
             if (this.annotation.labels.length > 1) {
