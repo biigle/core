@@ -18,7 +18,7 @@
     white-space: nowrap;
     max-width: 850px;
     text-overflow: ellipsis;
-    overflow-x: hidden;
+    overflow: hidden;
 
     // make dropdown visible despite overflow:hidden
     .dropdown {
