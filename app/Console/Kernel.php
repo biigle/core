@@ -34,6 +34,8 @@ class Kernel extends ConsoleKernel
             TileCache::prune();
         })->everyFiveMinutes();
 
+        $schedule->command('prune-notifications')->daily();
+
         // Insert scheduled tasks here.
     }
 
