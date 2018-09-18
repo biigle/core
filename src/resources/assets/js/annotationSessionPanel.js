@@ -175,7 +175,7 @@ biigle.$viewModel('annotation-session-panel', function (element) {
                             callback(true);
                         }
                     } else {
-                        this.handleErrorResponse(response);
+                        self.handleErrorResponse(response);
                     }
                 };
             },
@@ -273,6 +273,11 @@ biigle.$viewModel('annotation-session-panel', function (element) {
             setEndsAt: function (date) {
                 this.editedSession.ends_at_iso8601 = this.parseDate(date);
                 this.editedSession.ends_at = date;
+            },
+        },
+        watch: {
+            editedSession: function () {
+                this.errors = {};
             },
         },
         created: function () {
