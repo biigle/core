@@ -61,7 +61,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         try {
             ImageCache::get($this->annotation->image, [$this, 'handleImage']);
         } catch (Exception $e) {
-            if ($e->getMessage() === 'The source resource could not be established.' && $this->attempts() < 3) {
+            if (str_contains($e->getMessage(), 'The source resource could not be established') && $this->attempts() < 3) {
                 // Retry in 10 minutes, maybe the remote source is available again.
                 $this->release(600);
 
