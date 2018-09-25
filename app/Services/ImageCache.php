@@ -203,44 +203,59 @@ class ImageCache implements ImageCacheContract
      */
     protected function retrieve(Image $image)
     {
+        $this->ensurePathExists();
         $cachedPath = $this->getCachedPath($image);
 
-        try {
-            // We just try to get the cached file from the cache and load it anew if this
-            // fails. It is done this way because we need to check if the file still
-            // exists even after we obtained the file handle in retrieveExistingFile.
-            return $this->retrieveExistingFile($cachedPath);
-        } catch (FileNotFoundException $e) {
-            return $this->retrieveNewFile($image, $cachedPath);
+        // This will return false if the file already exists. Else it will create it in
+        // read and write mode.
+        $handle = @fopen($cachedPath, 'x+');
+
+        if ($handle === false) {
+            // The file exists, get the file handle in read mode.
+            $handle = fopen($cachedPath, 'r');
+            // Wait for any LOCK_EX that is set if the file is currently written.
+            flock($handle, LOCK_SH);
+
+            // Check if the file is still there since the writing operation could have
+            // failed. If the file is gone, retry retrieve.
+            if (fstat($handle)['nlink'] === 0) {
+                fclose($handle);
+                return $this->retrieve($image);
+            }
+
+            // The file exists and is no longer written to.
+            return $this->retrieveExistingFile($cachedPath, $handle);
         }
+
+        // The file did not exist and should be written. Hold LOCK_EX until writing
+        // finished.
+        flock($handle, LOCK_EX);
+
+        try {
+            $fileInfo = $this->retrieveNewFile($image, $cachedPath, $handle);
+            // Convert the lock so other workers can use the file from now on.
+            flock($handle, LOCK_SH);
+        } catch (Exception $e) {
+            // Remove the empty file if writing failed. This is the case that is caught
+            // by 'nlink' === 0 above.
+            unlink($cachedPath);
+            fclose($handle);
+            throw new Exception("Error while caching image {$image->id}: {$e->getMessage()}");
+        }
+
+        return $fileInfo;
     }
 
     /**
      * Get path and handle for a file that exists in the cache.
      *
      * @param string $cachedPath
-     * @throws FileNotFoundException If the file was not found in the cache.
+     * @param resource $handle
      *
      * @return array
      */
-    protected function retrieveExistingFile($cachedPath)
+    protected function retrieveExistingFile($cachedPath, $handle)
     {
-        $handle = @fopen($cachedPath, 'r');
-        if (!is_resource($handle)) {
-            throw new FileNotFoundException($cachedPath);
-        }
-
-        // This will block if the file is currently written (LOCK_EX in retrieveNewFile).
-        flock($handle, LOCK_SH);
-
-        // Check if the file still exists. Writing by another worker might have failed
-        // but we wouldn't know as we still hold the file handle.
-        // see: https://github.com/BiodataMiningGroup/biigle-core/issues/137
-        if (fstat($handle)['nlink'] === 0) {
-            fclose($handle);
-            throw new FileNotFoundException($cachedPath);
-        }
-
         // Update access and modification time to signal that this cached image was
         // used recently.
         touch($cachedPath);
@@ -256,38 +271,24 @@ class ImageCache implements ImageCacheContract
      *
      * @param Image $image
      * @param string $cachedPath
+     * @param resource $handle
      *
      * @return array
      */
-    protected function retrieveNewFile(Image $image, $cachedPath)
+    protected function retrieveNewFile(Image $image, $cachedPath, $handle)
     {
-        $this->ensurePathExists();
-        // Create and lock the file as fast as possible so concurrent workers will
-        // see it. Lock it exclusively until it is completely written.
-        $handle = fopen($cachedPath, 'w+');
-        flock($handle, LOCK_EX);
+        if ($image->volume->isRemote()) {
+            $this->getRemoteImage($image, $handle);
+        } else {
+            $newCachedPath = $this->getDiskImage($image, $handle);
 
-        try {
-            if ($image->volume->isRemote()) {
-                $this->getRemoteImage($image, $handle);
-            } else {
-                $newCachedPath = $this->getDiskImage($image, $handle);
-
-                // If it is a locally stored image, delete the empty "placeholder"
-                // file again. The handle may stay open; it doesn't matter.
-                if ($newCachedPath !== $cachedPath) {
-                    unlink($cachedPath);
-                }
-
-                $cachedPath = $newCachedPath;
+            // If it is a locally stored image, delete the empty "placeholder"
+            // file again. The handle may stay open; it doesn't matter.
+            if ($newCachedPath !== $cachedPath) {
+                unlink($cachedPath);
             }
 
-            // Convert the lock so other workers can use the file from now on.
-            flock($handle, LOCK_SH);
-        } catch (Exception $e) {
-            unlink($cachedPath);
-            fclose($handle);
-            throw new Exception("Error while caching image {$image->id}: {$e->getMessage()}");
+            $cachedPath = $newCachedPath;
         }
 
         return [
