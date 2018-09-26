@@ -4,6 +4,11 @@ die () {
     exit 1
 }
 
-[ "$#" -eq 1 ] || die "1 argument required, $# provided"
+VERSION=$1
+
+if [ -z "$VERSION" ]; then
+    VERSION=$(git describe --tags)
+    read -p "No build version specified, using latest git tag ${VERSION}. Press enter to continue."
+fi
 
 docker-compose build --build-arg BIIGLE_VERSION=$1
