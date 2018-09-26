@@ -11,4 +11,4 @@ if [ -z "$VERSION" ]; then
     read -p "No build version specified, using latest git tag ${VERSION}. Press enter to continue."
 fi
 
-docker-compose build --build-arg BIIGLE_VERSION=$1
+docker-compose build --build-arg BIIGLE_VERSION=$VERSION
