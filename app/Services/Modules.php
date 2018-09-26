@@ -3,6 +3,7 @@
 namespace Biigle\Services;
 
 use App;
+use File;
 
 /**
  * The module registry service.
@@ -14,14 +15,14 @@ class Modules
      *
      * @var array
      */
-    private static $viewMixins = [];
+    protected static $viewMixins = [];
 
     /**
      * The controller mixins of every module.
      *
      * @var array
      */
-    private static $controllerMixins = [];
+    protected static $controllerMixins = [];
 
     /**
      * Register view and controller mixins in one step.
@@ -124,5 +125,19 @@ class Modules
         }
 
         return $returnValues;
+    }
+
+    /**
+     * Returns information about all installed BIIGLE modules
+     *
+     * @return array
+     */
+    public function getInstalledModules()
+    {
+        $installed = json_decode(File::get(base_path('vendor/composer/installed.json')), true);
+
+        return array_filter($installed, function ($item) {
+            return strpos($item['name'], 'biigle/') === 0;
+        });
     }
 }
