@@ -11,8 +11,9 @@ use ApiTestCase;
 use Biigle\Volume;
 use Biigle\MediaType;
 use Biigle\Tests\ImageTest;
-use Biigle\Tests\ProjectTest;
 use Biigle\Tests\VolumeTest;
+use Biigle\Tests\ProjectTest;
+use Biigle\Events\ImagesDeleted;
 
 class ProjectVolumeControllerTest extends ApiTestCase
 {
@@ -216,8 +217,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $pid = $this->project()->id;
 
         $this->beAdmin();
-        $response = $this->json('POST', "/api/v1/projects/{$pid}/volumes/{$tid}");
-        $response->assertStatus(422);
+        $this->json('POST', "/api/v1/projects/{$pid}/volumes/{$tid}")->assertStatus(200);
     }
 
     public function testDestroy()
@@ -250,17 +250,15 @@ class ProjectVolumeControllerTest extends ApiTestCase
         // does not belong to the project
         $response->assertStatus(404);
 
-        Event::shouldReceive('fire')
-            ->once()
-            ->with('images.cleanup', [[$image->uuid]]);
-
-        Event::shouldReceive('dispatch'); // catch other events
-
+        Event::fake([ImagesDeleted::class]);
         $response = $this->delete("/api/v1/projects/{$pid}/volumes/{$id}", [
             'force' => 'abc',
         ]);
         // deleting with force succeeds
         $response->assertStatus(200);
         $this->assertNull($this->volume->fresh());
+        Event::assertDispatched(ImagesDeleted::class, function ($event) use ($image) {
+            return $event->uuids[0] === $image->uuid;
+        });
     }
 }

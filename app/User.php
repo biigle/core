@@ -11,51 +11,6 @@ class User extends Authenticatable
     use Notifiable, HasJsonAttributes;
 
     /**
-     * Validation rules for logging in.
-     *
-     * @var array
-     */
-    public static $authRules = [
-        'email'    => 'required|email|max:255',
-        'password' => 'required|min:8',
-    ];
-
-    /**
-     * Validation rules for resetting the password.
-     *
-     * @var array
-     */
-    public static $resetRules = [
-        'email'    => 'required|email|max:255',
-        'password' => 'required|confirmed|min:8',
-        'token'    => 'required',
-    ];
-
-    /**
-     * Validation rules for registering a new user.
-     *
-     * @var array
-     */
-    public static $createRules = [
-        'email' => 'required|string|email|unique:users|max:255',
-        'password' => 'required|string|min:8|confirmed',
-        'firstname' => 'required|string|max:127',
-        'lastname' => 'required|string|max:127',
-        'role_id' => 'exists:roles,id',
-        'uuid' => 'nullable|regex:/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/',
-        'affiliation' => 'nullable|max:255',
-    ];
-
-    /**
-     * Validation rules for deleting a user.
-     *
-     * @var array
-     */
-    public static $deleteRules = [
-        'password'  => 'required|min:8',
-    ];
-
-    /**
      * The attributes hidden from the model's JSON form.
      *
      * @var array
@@ -83,26 +38,6 @@ class User extends Authenticatable
      * @var array
      */
     protected $dates = ['created_at', 'updated_at', 'login_at'];
-
-    /**
-     * Returns the validation rules for updating the attributes of this user.
-     *
-     * @return array
-     */
-    public function updateRules()
-    {
-        return [
-            // ignore the email of this user
-            'email' => "filled|email|unique:users,email,{$this->id}|max:255",
-            'password' => 'nullable|min:8|confirmed',
-            'firstname' => 'filled|max:127',
-            'lastname' => 'filled|max:127',
-            'role_id' => 'filled|in:'.Role::$admin->id.','.Role::$editor->id,
-            'auth_password' => 'required_with:role_id,password,email',
-            'affiliation' => 'nullable|max:255',
-            'super_user_mode' => 'filled|bool',
-        ];
-    }
 
     /**
      * Set the email attribute and transform it to lowercase.
@@ -171,7 +106,9 @@ class User extends Authenticatable
     public function checkCanBeDeleted()
     {
         foreach ($this->projects as $project) {
-            $project->checkUserCanBeRemoved($this->id);
+            if (!$project->userCanBeRemoved($this->id)) {
+                abort(400, "The user can't be removed from project '{$project->name}'. The project needs at least one other admin.");
+            }
         }
 
         foreach ($this->labelTrees as $tree) {

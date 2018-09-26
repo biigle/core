@@ -5,6 +5,7 @@ namespace Biigle\Tests\Policies;
 use Cache;
 use TestCase;
 use Biigle\Role;
+use Biigle\LabelTree;
 use Biigle\Visibility;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\ProjectTest;
@@ -25,9 +26,18 @@ class LabelTreePolicyTest extends TestCase
         $this->user = UserTest::create();
         $this->editor = UserTest::create();
         $this->admin = UserTest::create();
+        $this->globalGuest = UserTest::create(['role_id' => Role::$guest->id]);
+        $this->globalEditor = UserTest::create(['role_id' => Role::$editor->id]);
         $this->globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
         $this->tree->addMember($this->editor, Role::$editor);
         $this->tree->addMember($this->admin, Role::$admin);
+    }
+
+    public function testCreate()
+    {
+        $this->assertFalse($this->globalGuest->can('create', LabelTree::class));
+        $this->assertTrue($this->globalEditor->can('create', LabelTree::class));
+        $this->assertTrue($this->globalAdmin->can('create', LabelTree::class));
     }
 
     public function testAccessPublic()

@@ -74,9 +74,12 @@ class AnnotationLabelControllerTest extends ApiTestCase
         $id = $this->annotation->id;
         $this->doTestApiRoute('POST', "/api/v1/annotations/{$id}/labels");
 
-        // missing arguments
+        // Invalid arguments
         $this->beEditor();
-        $response = $this->json('POST', "/api/v1/annotations/{$id}/labels");
+        $response = $this->json('POST', "/api/v1/annotations/{$id}/labels", [
+            'label_id' => $this->labelRoot()->id,
+            'confidence' => 10,
+        ]);
         $response->assertStatus(422);
 
         $this->assertEquals(0, $this->annotation->labels()->count());

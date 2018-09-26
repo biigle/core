@@ -2,10 +2,9 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Exception;
+use DB;
 use Biigle\Volume;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
+use Biigle\Http\Requests\StoreVolumeImage;
 
 class VolumeImageController extends Controller
 {
@@ -65,42 +64,24 @@ class VolumeImageController extends Controller
      * ]
      *
      *
-     * @param Request $request
-     * @param int $id Volume ID
-     *
+     * @param StoreVolumeImage $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $id)
+    public function store(StoreVolumeImage $request)
     {
-        $volume = Volume::findOrFail($id);
-        $this->authorize('update', $volume);
+        DB::transaction(function () use ($request) {
+            $request->volume->createImages($request->input('images'));
+        });
 
-        $this->validate($request, Volume::$addImagesRules);
-
-        $images = Volume::parseImagesQueryString($request->input('images'));
-
-        try {
-            $volume->validateImages($images);
-        } catch (Exception $e) {
-            throw ValidationException::withMessages(['images' => $e->getMessage()]);
-        }
-
-        try {
-            $volume->createImages($images);
-        } catch (Exception $e) {
-            return response($e->getMessage(), 400);
-        }
-
-        $images = $volume->images()
+        $images = $request->volume->images()
             ->select('id', 'filename')
             ->orderBy('id', 'desc')
-            ->take(sizeof($images))
+            ->take(sizeof($request->input('images')))
             ->get();
 
         $ids = $images->pluck('id')->toArray();
-
-        $volume->handleNewImages($ids);
-        event('images.created', [$id, $ids]);
+        $request->volume->handleNewImages($ids);
+        event('images.created', [$request->volume->id, $ids]);
 
         return $images;
     }

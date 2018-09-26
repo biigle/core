@@ -5,39 +5,9 @@ namespace Biigle;
 use DB;
 use Cache;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\QueryException;
 
 class Project extends Model
 {
-    /**
-     * Validation rules for creating a new project.
-     *
-     * @var array
-     */
-    public static $createRules = [
-        'name'        => 'required|min:2|max:512',
-        'description' => 'required|min:2',
-    ];
-
-    /**
-     * Validation rules for updating a project.
-     *
-     * @var array
-     */
-    public static $updateRules = [
-        'name'        => 'filled|min:2|max:512',
-        'description' => 'filled|min:2',
-    ];
-
-    /**
-     * Validation rules for attaching a label tree.
-     *
-     * @var array
-     */
-    public static $attachLabelTreeRules = [
-        'id'        => 'required|exists:label_trees,id',
-    ];
-
     /**
      * The attributes hidden from the model's JSON form.
      *
@@ -53,27 +23,21 @@ class Project extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param User $user
      * @param int $volumeId
-     * @param array $roles Array of role IDs to restrict the project membership to. Default is editor, expert and admin.
+     * @param array $roles Array of role IDs to restrict the project membership to. Default is any role.
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeInCommon($query, User $user, $volumeId, $roles = null)
     {
-        if (!is_array($roles)) {
-            $roles = [
-                Role::$editor->id,
-                Role::$expert->id,
-                Role::$admin->id,
-            ];
-        }
-
         return $query->whereExists(function ($query) use ($user, $volumeId, $roles) {
             $query->select(DB::raw(1))
                 ->from('project_user')
                 ->join('project_volume', 'project_user.project_id', '=', 'project_volume.project_id')
                 ->whereRaw('project_user.project_id = projects.id')
                 ->where('project_user.user_id', $user->id)
-                ->whereIn('project_user.project_role_id', $roles)
+                ->when(is_array($roles), function ($query) use ($roles) {
+                    return $query->whereIn('project_user.project_role_id', $roles);
+                })
                 ->where('project_volume.volume_id', $volumeId);
         });
     }
@@ -133,24 +97,6 @@ class Project extends Model
     }
 
     /**
-     * Sets the creator if it isn't already set.
-     *
-     * @param User $user
-     * @return bool
-     */
-    public function setCreator($user)
-    {
-        // user must exist and creator mustn't
-        if (!$this->creator && $user) {
-            $this->creator()->associate($user);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Adds the user with the given role to this project.
      *
      * @param int $userId
@@ -159,11 +105,7 @@ class Project extends Model
      */
     public function addUserId($userId, $roleId)
     {
-        try {
-            $this->users()->attach($userId, ['project_role_id' => $roleId]);
-        } catch (QueryException $e) {
-            abort(400, 'The user already exists in this project.');
-        }
+        $this->users()->attach($userId, ['project_role_id' => $roleId]);
     }
 
     /**
@@ -175,33 +117,18 @@ class Project extends Model
      */
     public function changeRole($userId, $roleId)
     {
-        if ($this->users()->find($userId) === null) {
-            abort(400, "User doesn't exist in this project.");
-        }
-
-        // removeUserId prevents changing the last remaining admin to anything
-        // else, too!
-        if ($this->removeUserId($userId)) {
-            // only re-attach if detach was successful
-            $this->users()->attach($userId, ['project_role_id' => $roleId]);
-        } else {
-            abort(500, "The user couldn't be modified.");
-        }
+        $this->users()->updateExistingPivot($userId, ['project_role_id' => $roleId]);
     }
 
     /**
-     * Checks if the user can be removed from the project.
-     * Throws an exception if not.
+     * Determines if the user can be removed from the project.
      *
      * @param int $userId
+     * @return  bool
      */
-    public function checkUserCanBeRemoved($userId)
+    public function userCanBeRemoved($userId)
     {
-        $admins = $this->admins();
-        // is this an attempt to remove the last remaining admin?
-        if ($admins->count() === 1 && $admins->find($userId) !== null) {
-            abort(400, "The last admin of {$this->name} cannot be removed. The admin status must be passed on to another user first.");
-        }
+        return $this->admins()->where('id', '!=', $userId)->exists();
     }
 
     /**
@@ -212,9 +139,11 @@ class Project extends Model
      */
     public function removeUserId($userId)
     {
-        $this->checkUserCanBeRemoved($userId);
+        if ($this->userCanBeRemoved($userId)) {
+            return (boolean) $this->users()->detach($userId);
+        }
 
-        return (boolean) $this->users()->detach($userId);
+        return false;
     }
 
     /**
@@ -236,13 +165,9 @@ class Project extends Model
      */
     public function addVolumeId($id)
     {
-        try {
-            $this->volumes()->attach($id);
-            // Maybe we get a new thumbnail now.
-            Cache::forget("project-thumbnail-{$this->id}");
-        } catch (QueryException $e) {
-            // volume already exists for this project, so everything is fine
-        }
+        $this->volumes()->syncWithoutDetaching($id);
+        // Maybe we get a new thumbnail now.
+        Cache::forget("project-thumbnail-{$this->id}");
     }
 
     /**

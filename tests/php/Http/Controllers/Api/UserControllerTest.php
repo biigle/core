@@ -99,7 +99,7 @@ class UserControllerTest extends ApiTestCase
         $this->doTestApiRoute('PUT', '/api/v1/users/'.$this->guest()->id);
 
         $this->beGuest();
-        $response = $this->put('/api/v1/users/'.$this->guest()->id);
+        $response = $this->putJson('/api/v1/users/'.$this->guest()->id);
         $response->assertStatus(403);
 
         $this->beEditor();
@@ -111,9 +111,9 @@ class UserControllerTest extends ApiTestCase
         $this->globalAdmin()->save();
         $this->beGlobalAdmin();
 
-        $response = $this->put('/api/v1/users/'.$this->globalAdmin()->id);
-        // the own user cannot be updated via this route
-        $response->assertStatus(400);
+        $response = $this->putJson('/api/v1/users/'.$this->globalAdmin()->id);
+        // The own user cannot be updated via this route.
+        $response->assertStatus(422);
 
         // ajax call to get the correct response status
         $response = $this->json('PUT', '/api/v1/users/'.$this->guest()->id, [
@@ -284,7 +284,7 @@ class UserControllerTest extends ApiTestCase
                 'role_id' => Role::$guest->id,
                 'auth_password' => 'adminpassword',
             ])
-            ->assertStatus(422);
+            ->assertStatus(200);
         $this->putJson("api/v1/users/{$user->id}", [
                 'role_id' => Role::$editor->id,
                 'auth_password' => 'adminpassword',
@@ -421,7 +421,7 @@ class UserControllerTest extends ApiTestCase
 
     public function testStoreWithToken()
     {
-        // api key authentication **is** allowed for this route
+        // API key authentication **is** allowed for this route.
         $this->callToken('POST', '/api/v1/users', $this->globalAdmin())
             ->assertStatus(422);
     }
@@ -588,11 +588,11 @@ class UserControllerTest extends ApiTestCase
 
         $this->beGlobalAdmin();
 
-        $response = $this->delete('/api/v1/users/'.$this->globalAdmin()->id, [
+        $response = $this->deleteJson('/api/v1/users/'.$this->globalAdmin()->id, [
             '_token' => Session::token(),
         ]);
-        // the own user cannot be deleted via this route
-        $response->assertStatus(400);
+        // The own user cannot be deleted via this route.
+        $response->assertStatus(422);
 
         $response = $this->json('DELETE', '/api/v1/users/'.$id);
         // admin password is required

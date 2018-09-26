@@ -25,4 +25,27 @@
             @include($module.'::adminIndex')
         </div>
     @endforeach
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <span class="pull-right">
+                        <span title="Version of the BIIGLE core">{{ config('biigle.version') }}</span>
+                    </span>
+                    <span title="Version of BIIGLE core and the installed modules">Version</span>
+                </h3>
+            </div>
+            @unless (empty($installedModules))
+                <ul class="list-group dashboard-version-list">
+                    @foreach ($installedModules as $module)
+                        <li class="list-group-item">{{$module['name']}}: {{$module['version']}}</li>
+                    @endforeach
+                </ul>
+            @else
+                <div class="panel-body">
+                    <p class="h1 text-center text-muted">No modules installed</p>
+                </div>
+            @endunless
+        </div>
+    </div>
 @endsection

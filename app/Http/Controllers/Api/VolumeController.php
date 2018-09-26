@@ -5,7 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Exception;
 use Biigle\Volume;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
+use Biigle\Http\Requests\UpdateVolume;
 use Illuminate\Validation\ValidationException;
 
 class VolumeController extends Controller
@@ -24,16 +24,26 @@ class VolumeController extends Controller
      *       "id": 1,
      *       "name": "My Volume",
      *       "created_at": "2015-02-10 09:45:30",
-     *       "updated_at": "2015-02-10 09:45:30"
+     *       "updated_at": "2015-02-10 09:45:30",
+     *       "projects": [
+     *           {
+     *               "id": 11,
+     *               "name": "Example project",
+     *               "description": "This is an example project"
+     *           }
+     *       ]
      *    }
      * ]
      *
-     * @param Guard $auth
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth)
+    public function index(Request $request)
     {
-        return Volume::accessibleBy($auth->user())
+        return Volume::accessibleBy($request->user())
+            ->with(['projects' => function ($query) {
+                $query->select('id', 'name', 'description');
+            }])
             ->orderByDesc('id')
             ->select('id', 'name', 'created_at', 'updated_at')
             ->get();
@@ -88,27 +98,14 @@ class VolumeController extends Controller
      * @apiParam (Attributes that can be updated) {String} gis_link Link to a GIS that belongs to this volume.
      * @apiParam (Attributes that can be updated) {String} doi The DOI of the dataset that is represented by the new volume.
      *
-     * @param Request $request
-     * @param  int  $id
+     * @param UpdateVolume $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateVolume $request)
     {
-        $volume = Volume::findOrFail($id);
-        $this->authorize('update', $volume);
-
-        $this->validate($request, Volume::$updateRules);
-
-        if ($request->filled('url')) {
-            $volume->url = $request->input('url');
-            try {
-                $volume->validateUrl();
-            } catch (Exception $e) {
-                throw ValidationException::withMessages(['url' => $e->getMessage()]);
-            }
-        }
-
+        $volume = $request->volume;
         $volume->name = $request->input('name', $volume->name);
+        $volume->url = $request->input('url', $volume->url);
         $volume->media_type_id = $request->input('media_type_id', $volume->media_type_id);
         $volume->video_link = $request->input('video_link', $volume->video_link);
         $volume->gis_link = $request->input('gis_link', $volume->gis_link);
@@ -118,7 +115,7 @@ class VolumeController extends Controller
         $newUrl = $volume->isDirty('url');
         $volume->save();
 
-        // do this *after* saving
+        // Do this *after* saving.
         if ($newUrl) {
             $volume->handleNewImages();
         }

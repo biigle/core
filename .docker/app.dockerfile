@@ -36,3 +36,6 @@ RUN php composer.phar dump-autoload -o \
 
 # Make this writable for whatever user the app is running as.
 RUN chmod o+w /var/www/bootstrap/cache
+
+ARG BIIGLE_VERSION
+ENV BIIGLE_VERSION=${BIIGLE_VERSION}

@@ -9,7 +9,7 @@ use Biigle\Label;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
+use Biigle\Http\Requests\StoreAnnotation;
 use Illuminate\Validation\ValidationException;
 
 class ImageAnnotationController extends Controller
@@ -56,15 +56,15 @@ class ImageAnnotationController extends Controller
      *    }
      * ]
      *
+     * @param Request $request
      * @param int $id image id
-     * @param Guard $auth
      * @return \Illuminate\Http\Response
      */
-    public function index($id, Guard $auth)
+    public function index(Request $request, $id)
     {
         $image = Image::findOrFail($id);
         $this->authorize('access', $image);
-        $user = $auth->user();
+        $user = $request->user();
         $session = $image->volume->getActiveAnnotationSession($user);
 
         if ($session) {
@@ -140,19 +140,11 @@ class ImageAnnotationController extends Controller
      *    ]
      * }
      *
-     * @param Request $request
-     * @param Guard $auth
-     * @param int $id image ID
+     * @param StoreAnnotation $request
      * @return Annotation
      */
-    public function store(Request $request, Guard $auth, $id)
+    public function store(StoreAnnotation $request)
     {
-        $image = Image::findOrFail($id);
-        $this->authorize('add-annotation', $image);
-
-        $this->validate($request, Image::$createAnnotationRules);
-        $this->validate($request, Annotation::$attachLabelRules);
-
         // from a JSON request, the array may already be decoded
         $points = $request->input('points');
 
@@ -162,7 +154,7 @@ class ImageAnnotationController extends Controller
 
         $annotation = new Annotation;
         $annotation->shape_id = $request->input('shape_id');
-        $annotation->image()->associate($image);
+        $annotation->image()->associate($request->image);
 
         try {
             $annotation->validatePoints($points);
@@ -178,7 +170,7 @@ class ImageAnnotationController extends Controller
 
         $annotationLabel = new AnnotationLabel;
         $annotationLabel->label_id = $label->id;
-        $annotationLabel->user_id = $auth->user()->id;
+        $annotationLabel->user_id = $request->user()->id;
         $annotationLabel->confidence = $request->input('confidence');
         $annotation->labels()->save($annotationLabel);
 

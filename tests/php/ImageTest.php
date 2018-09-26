@@ -8,6 +8,8 @@ use TileCache;
 use Biigle\Image;
 use Carbon\Carbon;
 use ModelTestCase;
+use Biigle\Events\ImagesDeleted;
+use Biigle\Events\TiledImagesDeleted;
 use Illuminate\Database\QueryException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -137,24 +139,27 @@ class ImageTest extends ModelTestCase
         $this->assertEquals($expect, $this->model->getFile());
     }
 
-    public function testCleanupVolumeThumbnails()
+    public function testImagesDeletedEventOnDelete()
     {
-        Event::shouldReceive('fire')
-            ->once()
-            ->with('images.cleanup', [[$this->model->uuid]]);
-        Event::shouldReceive('fire'); // catch other events
-
-        $this->model->volume->delete();
+        Event::fake([ImagesDeleted::class]);
+        $this->model->delete();
+        Event::assertDispatched(ImagesDeleted::class, function ($event) {
+            return $event->uuids[0] === $this->model->uuid;
+        });
     }
 
-    public function testImageCleanupEventOnDelete()
+    public function testTiledImagesDeletedEventOnDelete()
     {
-        Event::shouldReceive('fire')
-            ->once()
-            ->with('images.cleanup', [[$this->model->uuid]]);
-        Event::shouldReceive('fire'); // catch other events
-
+        Event::fake([ImagesDeleted::class, TiledImagesDeleted::class]);
+        $this->model->tiled = true;
+        $this->model->save();
         $this->model->delete();
+        Event::assertDispatched(ImagesDeleted::class, function ($event) {
+            return $event->uuids[0] === $this->model->uuid;
+        });
+        Event::assertDispatched(TiledImagesDeleted::class, function ($event) {
+            return $event->uuids[0] === $this->model->uuid;
+        });
     }
 
     public function testLabels()

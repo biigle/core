@@ -19,6 +19,7 @@ class ApiTestCase extends TestCase
     private $guest;
     private $user;
 
+    private $globalGuest;
     private $globalAdmin;
 
     private $labelTree;
@@ -131,6 +132,20 @@ class ApiTestCase extends TestCase
     protected function beUser()
     {
         $this->be($this->user());
+    }
+
+    protected function globalGuest()
+    {
+        if ($this->globalGuest) {
+            return $this->globalGuest;
+        }
+
+        return $this->globalGuest = $this->newUser(Role::$guest);
+    }
+
+    protected function beGlobalGuest()
+    {
+        $this->be($this->globalGuest());
     }
 
     protected function globalAdmin()

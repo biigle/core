@@ -5,7 +5,8 @@ namespace Biigle\Http\Controllers\Api;
 use Route;
 use Biigle\Project;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
+use Biigle\Http\Requests\StoreProject;
+use Biigle\Http\Requests\UpdateProject;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProjectController extends Controller
@@ -31,16 +32,16 @@ class ProjectController extends Controller
      *    }
      * ]
      *
-     * @param Guard $auth
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth)
+    public function index(Request $request)
     {
-        if ($auth->user()->can('sudo')) {
+        if ($request->user()->can('sudo')) {
             return Project::all();
         }
 
-        return $auth->user()->projects;
+        return $request->user()->projects;
     }
 
     /**
@@ -75,51 +76,6 @@ class ProjectController extends Controller
     }
 
     /**
-     * Updates the attributes of the specified project.
-     *
-     * @api {put} projects/:id Update a project
-     * @apiGroup Projects
-     * @apiName UpdateProjects
-     * @apiPermission projectAdmin
-     *
-     * @apiParam {Number} id The project ID.
-     *
-     * @apiParam (Attributes that can be updated) {String} name Name of the project.
-     * @apiParam (Attributes that can be updated) {String} description Description of the project.
-     *
-     * @param Request $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        $project = Project::findOrFail($id);
-        $this->authorize('update', $project);
-
-        $this->validate($request, Project::$updateRules);
-
-        $project->name = $request->input('name', $project->name);
-        $project->description = $request->input('description', $project->description);
-        $project->save();
-
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('saved', true)
-                ->with('message', 'Project updated.')
-                ->with('messageType', 'success');
-        }
-
-        return redirect()->back()
-            ->with('saved', true)
-            ->with('message', 'Project updated.')
-            ->with('messageType', 'success');
-    }
-
-    /**
      * Creates a new project.
      *
      * @api {post} projects Create a new project
@@ -131,24 +87,18 @@ class ProjectController extends Controller
      * @apiParam (Required attributes) {String} name Name of the new project.
      * @apiParam (Required attributes) {String} description Description of the new project.
      *
-     * @param Request $request
-     * @param Guard $auth
+     * @param StoreProject $request
      * @return Project
      */
-    public function store(Request $request, Guard $auth)
+    public function store(StoreProject $request)
     {
-        $this->validate($request, Project::$createRules);
-
         $project = new Project;
         $project->name = $request->input('name');
         $project->description = $request->input('description');
-        $project->setCreator($auth->user());
+        $project->creator_id = $request->user()->id;
         $project->save();
 
         if (static::isAutomatedRequest($request)) {
-            // creator shouldn't be returned
-            unset($project->creator);
-
             return $project;
         }
 
@@ -168,6 +118,46 @@ class ProjectController extends Controller
         return redirect()->back()
             ->with('newProject', $project)
             ->with('message', 'Project created.')
+            ->with('messageType', 'success');
+    }
+
+    /**
+     * Updates the attributes of the specified project.
+     *
+     * @api {put} projects/:id Update a project
+     * @apiGroup Projects
+     * @apiName UpdateProjects
+     * @apiPermission projectAdmin
+     *
+     * @apiParam {Number} id The project ID.
+     *
+     * @apiParam (Attributes that can be updated) {String} name Name of the project.
+     * @apiParam (Attributes that can be updated) {String} description Description of the project.
+     *
+     * @param UpdateProject $request
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateProject $request)
+    {
+        $project = $request->project;
+        $project->name = $request->input('name', $project->name);
+        $project->description = $request->input('description', $project->description);
+        $project->save();
+
+        if (static::isAutomatedRequest($request)) {
+            return;
+        }
+
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
+                ->with('saved', true)
+                ->with('message', 'Project updated.')
+                ->with('messageType', 'success');
+        }
+
+        return redirect()->back()
+            ->with('saved', true)
+            ->with('message', 'Project updated.')
             ->with('messageType', 'success');
     }
 
@@ -204,6 +194,7 @@ class ProjectController extends Controller
                 ->with('message', $e->getMessage())
                 ->with('messageType', 'danger');
         }
+
         $project->delete();
 
         if (static::isAutomatedRequest($request)) {

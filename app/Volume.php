@@ -3,20 +3,14 @@
 namespace Biigle;
 
 use DB;
-use App;
 use Cache;
-use Storage;
 use Exception;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
-use GuzzleHttp\Client;
 use Biigle\Jobs\ProcessNewImages;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use GuzzleHttp\Exception\ServerException;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\RequestException;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
@@ -33,38 +27,6 @@ class Volume extends Model
      * @var string
      */
     const FILE_REGEX = '/\.(jpe?g|png|tif?f)$/i';
-
-    /**
-     * Validation rules for creating a new volume.
-     *
-     * @var array
-     */
-    public static $createRules = [
-        'name'          => 'required|max:512',
-        'media_type_id' => 'required|exists:media_types,id',
-        'url'           => 'required',
-        'images'        => 'required',
-    ];
-
-    /**
-     * Validation rules for updating a volume.
-     *
-     * @var array
-     */
-    public static $updateRules = [
-        'name'          => 'filled|max:512',
-        'media_type_id' => 'filled|exists:media_types,id',
-        'url'           => 'filled',
-    ];
-
-    /**
-     * Validation rules for adding new images to a volume.
-     *
-     * @var array
-     */
-    public static $addImagesRules = [
-        'images' => 'required',
-    ];
 
     /**
      * The attributes hidden from the model's JSON form.
@@ -213,77 +175,6 @@ class Volume extends Model
     }
 
     /**
-     * Check if the URL of this volume exists and is readable.
-     *
-     * @return bool
-     * @throws Exception If the validation failed.
-     */
-    public function validateUrl()
-    {
-        if ($this->isRemote() && !config('biigle.offline_mode')) {
-            $client = App::make(Client::class);
-            try {
-                $response = $client->head($this->url);
-            } catch (ServerException $e) {
-                throw new Exception('The remote volume URL returned an error response. '.$e->getMessage());
-            } catch (ClientException $e) {
-                // A 400 level error means that something is responding.
-                // It may well be that the Volume URL results in a 400 response but a
-                // single image works fine so we define this as success.
-                return true;
-            } catch (RequestException $e) {
-                throw new Exception('The remote volume URL does not seem to exist. '.$e->getMessage());
-            }
-        } else {
-            $url = explode('://', $this->url);
-            if (count($url) !== 2) {
-                throw new Exception("Unable to identify storage disk. Please set the URL as '[disk]://[path]'.");
-            }
-
-            if (!config("filesystems.disks.{$url[0]}")) {
-                throw new Exception("Storage disk '{$url[0]}' does not exist.");
-            }
-
-            if (empty(Storage::disk($url[0])->files($url[1]))) {
-                throw new Exception("Unable to access '{$url[1]}'. Does it exist and you have access permissions?");
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Check if an array of image filenames is valid.
-     *
-     * A valid array is not empty, contains no duplicates and has only images with JPG,
-     * PNG or GIF file endings.
-     *
-     * @param array $filenames
-     * @return bool
-     * @throws Exception If the validation failed.
-     */
-    public function validateImages($filenames)
-    {
-        if (empty($filenames)) {
-            throw new Exception('No images were supplied.');
-        }
-
-        $count = count($filenames);
-
-        if ($count !== count(array_unique($filenames))) {
-            throw new Exception('A volume must not have the same image twice.');
-        }
-
-        $matches = preg_grep(self::FILE_REGEX, $filenames);
-
-        if ($count !== count($matches)) {
-            throw new Exception('Only JPEG, PNG or TIFF image formats are supported.');
-        }
-
-        return true;
-    }
-
-    /**
      * Creates the image objects to be associated with this volume.
      *
      * Make sure the image filenames are valid.
@@ -416,10 +307,7 @@ class Volume extends Model
      */
     public function isRemote()
     {
-        // Cache this for a single request because it may be called lots of times.
-        return Cache::store('array')->remember("volume-{$this->id}-is-remote", 1, function () {
-            return strpos($this->url, 'http') === 0;
-        });
+        return strpos($this->url, 'http') === 0;
     }
 
     /**
@@ -436,6 +324,14 @@ class Volume extends Model
 
             return $this->orderedImages()->skip($index)->first();
         });
+    }
+
+    /**
+     * Flush the cache that stores the volume thumbnail.
+     */
+    public function flushThumbnailCache()
+    {
+        Cache::forget("volume-thumbnail-{$this->id}");
     }
 
     /**

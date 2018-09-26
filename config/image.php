@@ -13,7 +13,13 @@ return [
         'max_image_size' => env('IMAGE_CACHE_MAX_IMAGE_SIZE', 1E+8), // 100 MB
 
         /*
-        | Maximum size (soft limit) of the image cache in bytes.
+        | Maximum age in minutes of an image in the cache. Older images are pruned.
+        */
+        'max_age' => env('IMAGE_CACHE_MAX_AGE', 60),
+
+        /*
+        | Maximum size (soft limit) of the image cache in bytes. If the cache exceeds
+        | this size, old images are pruned.
         */
         'max_size' => env('IMAGE_CACHE_MAX_SIZE', 1E+9), // 1 GB
 
