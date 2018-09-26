@@ -13,3 +13,6 @@ ADD .docker/vhost-no-ssl.conf /etc/nginx/conf.d/vhost-no-ssl.conf.alternative
 RUN sed -e 's!include /etc/nginx/conf.d/\*.conf!include /etc/nginx/conf.d/vhost-no-ssl.conf.alternative!' /etc/nginx/nginx.conf > /etc/nginx/nginx-no-ssl.conf
 
 COPY --from=intermediate /var/www/public /var/www/public
+
+ARG BIIGLE_VERSION
+ENV BIIGLE_VERSION=${BIIGLE_VERSION}
