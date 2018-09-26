@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Views\Admin;
 
 use Biigle\User;
 use Carbon\Carbon;
+use Biigle\Services\Modules;
 use Biigle\Http\Controllers\Controller;
 
 class IndexController extends Controller
@@ -11,9 +12,10 @@ class IndexController extends Controller
     /**
      * Shows the admin dashboard.
      *
+     * @param Modules $modules
      * @return \Illuminate\Http\Response
      */
-    public function get()
+    public function get(Modules $modules)
     {
         $users = User::select('login_at')->get();
         $allUsers = $users->count();
@@ -22,12 +24,15 @@ class IndexController extends Controller
         $activeUsersLastWeek = $users->where('login_at', '>', Carbon::now()->subWeek())->count();
         $activeUsersLastDay = $users->where('login_at', '>', Carbon::now()->subDay())->count();
 
+        $installedModules = $modules->getInstalledModules();
+
         return view('admin.index', compact(
             'allUsers',
             'loginUsers',
             'activeUsersLastMonth',
             'activeUsersLastWeek',
-            'activeUsersLastDay'
+            'activeUsersLastDay',
+            'installedModules'
         ));
     }
 }

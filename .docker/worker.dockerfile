@@ -62,3 +62,6 @@ WORKDIR /var/www
 # This is required to run php artisan tinker in the worker container. Do this for
 # debugging purposes.
 RUN mkdir -p /.config/psysh && chmod o+w /.config/psysh
+
+ARG BIIGLE_VERSION
+ENV BIIGLE_VERSION=${BIIGLE_VERSION}
