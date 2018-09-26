@@ -9,6 +9,27 @@
     <input class="form-control text-mono" type="text" name="uuid" readonly="true" value="{{$user->uuid}}" style="font-family:Menlo,Monaco,Consolas,'Courier New',monospace;">
     <span class="help-block">The UUID is used to identify your user account across different BIIGLE instances.</span>
 </div>
+@if ($user->isGlobalAdmin)
+    @can('sudo')
+        <form method="POST" action="{{ url('api/v1/users/my') }}">
+            <input type="hidden" name="super_user_mode" value="0">
+            <input type="hidden" name="_method" value="PUT">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <div class="form-group">
+                <button type="submit" class="btn btn-danger active" title="Disable Super User Mode to act like a normal user"><i class="fa fa-power-off fa-fw"></i></button> Super User Mode
+            </div>
+        </form>
+    @else
+        <form method="POST" action="{{ url('api/v1/users/my') }}">
+            <input type="hidden" name="super_user_mode" value="1">
+            <input type="hidden" name="_method" value="PUT">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <div class="form-group">
+                <button type="submit" class="btn btn-default" title="Enable Super User Mode for your global admin abilities"><i class="fa fa-power-off fa-fw"></i></button> Super User Mode
+            </div>
+        </form>
+    @endcan
+@endif
 <div class="panel panel-default">
     <div class="panel-heading">Change password</div>
     <div class="panel-body">

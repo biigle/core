@@ -22,28 +22,6 @@ class SystemMessage extends Model
     protected $fillable = ['title', 'type_id', 'body'];
 
     /**
-     * Validation rules creating a new system message.
-     *
-     * @var array
-     */
-    public static $createRules = [
-        'title' => 'required',
-        'body' => 'required',
-        'type_id' => 'exists:system_message_types,id',
-        'publish' => 'boolean',
-    ];
-
-    /**
-     * Validation rules for updating a system message.
-     *
-     * @var array
-     */
-    public static $updateRules = [
-        'type_id' => 'exists:system_message_types,id',
-        'publish' => 'boolean',
-    ];
-
-    /**
      * The attributes that should be casted to native types.
      *
      * @var array

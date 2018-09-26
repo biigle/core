@@ -21,7 +21,7 @@ class ImageLabelPolicy extends CachedPolicy
      */
     public function before($user, $ability)
     {
-        if ($user->isAdmin) {
+        if ($user->can('sudo')) {
             return true;
         }
     }
@@ -49,18 +49,22 @@ class ImageLabelPolicy extends CachedPolicy
             };
 
             if ((int) $imageLabel->user_id === $user->id) {
-                // editors and admins may detach their own labels
+                // Editors, experts and admins may detach their own labels.
                 return DB::table('project_user')
                     ->where('user_id', $user->id)
                     ->whereIn('project_id', $projectIdsQuery)
-                    ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
+                    ->whereIn('project_role_id', [
+                        Role::$editor->id,
+                        Role::$expert->id,
+                        Role::$admin->id,
+                    ])
                     ->exists();
             } else {
-                // only admins may detach labels other than their own
+                // Experts and admins may detach labels other than their own.
                 return DB::table('project_user')
                     ->where('user_id', $user->id)
                     ->whereIn('project_id', $projectIdsQuery)
-                    ->where('project_role_id', Role::$admin->id)
+                    ->whereIn('project_role_id', [Role::$expert->id, Role::$admin->id])
                     ->exists();
             }
         });

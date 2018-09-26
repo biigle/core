@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests;
 
+use Exception;
 use Biigle\Role;
 use ModelTestCase;
 use Biigle\LabelTree;
@@ -84,33 +85,18 @@ class LabelTreeTest extends ModelTestCase
         $this->assertFalse($this->model->canBeDeleted());
     }
 
-    public function testAddAdmin()
+    public function testAddMember()
     {
         $this->assertFalse($this->model->members()->exists());
         $this->model->addMember(UserTest::create(), Role::$admin);
         $this->assertEquals(Role::$admin->id, $this->model->members()->first()->role_id);
     }
 
-    public function testAddEditor()
-    {
-        $this->assertFalse($this->model->members()->exists());
-        $this->model->addMember(UserTest::create(), Role::$editor);
-        $this->assertEquals(Role::$editor->id, $this->model->members()->first()->role_id);
-    }
-
-    public function testAddGuest()
-    {
-        $this->assertFalse($this->model->members()->exists());
-        // label trees can't have guests
-        $this->expectException(HttpException::class);
-        $this->model->addMember(UserTest::create(), Role::$guest);
-    }
-
     public function testAddMemberUserExists()
     {
         $user = UserTest::create();
         $this->model->addMember($user, Role::$admin);
-        $this->expectException(HttpException::class);
+        $this->expectException(QueryException::class);
         $this->model->addMember($user, Role::$admin);
     }
 
@@ -133,14 +119,6 @@ class LabelTreeTest extends ModelTestCase
         $this->assertEquals(Role::$editor->id, $this->model->members()->first()->role_id);
         $this->model->updateMember($user, Role::$admin);
         $this->assertEquals(Role::$admin->id, $this->model->members()->first()->role_id);
-    }
-
-    public function testUpdateMemberLastAdmin()
-    {
-        $user = UserTest::create();
-        $this->model->addMember($user, Role::$admin);
-        $this->expectException(HttpException::class);
-        $this->model->updateMember($user, Role::$editor);
     }
 
     public function testProjects()
@@ -188,14 +166,6 @@ class LabelTreeTest extends ModelTestCase
         $this->assertEquals([$authorized->id], array_map('intval', $tree->projects()->pluck('id')->all()));
     }
 
-    public function testIsRoleValid()
-    {
-        $tree = self::create();
-        $this->assertFalse($tree->isRoleValid(Role::$guest));
-        $this->assertTrue($tree->isRoleValid(Role::$editor));
-        $this->assertTrue($tree->isRoleValid(Role::$admin));
-    }
-
     public function testOrderLabelsByName()
     {
         LabelTest::create([
@@ -214,9 +184,9 @@ class LabelTreeTest extends ModelTestCase
     {
         $this->model->delete();
         $user = UserTest::create();
-        $tree = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
-        $tree2 = LabelTreeTest::create(['visibility_id' => Visibility::$private->id]);
-        $tree3 = LabelTreeTest::create(['visibility_id' => Visibility::$private->id]);
+        $tree = self::create(['visibility_id' => Visibility::$public->id]);
+        $tree2 = self::create(['visibility_id' => Visibility::$private->id]);
+        $tree3 = self::create(['visibility_id' => Visibility::$private->id]);
 
         $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
         $this->assertEquals([$tree->id], $ids);
@@ -236,7 +206,7 @@ class LabelTreeTest extends ModelTestCase
     public function testScopeAccessibleByAdmin()
     {
         $user = UserTest::create(['role_id' => Role::$admin->id]);
-        $tree = LabelTreeTest::create(['visibility_id' => Visibility::$private->id]);
+        $tree = self::create(['visibility_id' => Visibility::$private->id]);
 
         $ids = LabelTree::accessibleBy($user)->pluck('id')->toArray();
         $this->assertContains($tree->id, $ids);

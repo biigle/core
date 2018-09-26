@@ -6,6 +6,7 @@ use Validator;
 use Biigle\User;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
+use Biigle\Http\Requests\StoreUser;
 use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
@@ -57,7 +58,7 @@ class RegisterController extends Controller
             $data['email'] = strtolower($data['email']);
         }
 
-        return Validator::make($data, User::$createRules);
+        return Validator::make($data, (new StoreUser)->rules());
     }
 
     /**
@@ -111,7 +112,7 @@ class RegisterController extends Controller
     /**
      * Determines if the user registration mechansim is disabled.
      *
-     * @return boolean
+     * @return bool
      */
     protected function isRegistrationDisabled()
     {

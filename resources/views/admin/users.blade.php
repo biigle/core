@@ -14,53 +14,37 @@
         <tr>
             <th>Name</th>
             <th>Email</th>
+            <th>Role</th>
             <th>Affiliation</th>
             <th>Activity</th>
         </tr>
     </thead>
     <tbody>
-        @foreach ($activeUsers as $u)
+        @foreach ($users as $u)
             <tr>
                 <td>
                     <a href="{{route('admin-users-show', $u->id)}}">{{$u->firstname}} {{$u->lastname}}</a>
                 </td>
                 <td><a href="mailto:{{$u->email}}">{{$u->email}}</a></td>
                 <td>
+                    <span class="label label-{{$roleClass[$u->role_id]}}" title="{{$roleNames[$u->role_id]}}">{{$roleNames[$u->role_id][0]}}</span>
+                </td>
+                <td>
                     @if ($u->affiliation)
-                        {{$u->affiliation}}
+                        <span title="{{$u->affiliation}}">{{str_limit($u->affiliation, 20)}}</span>
                     @else
                         <span class="text-muted">none</span>
                     @endif
                 </td>
                 <td>
-                    <time datetime="{{$u->login_at->toAtomString()}}" title="{{$u->login_at->toDateTimeString()}}">{{$u->login_at->diffForHumans()}}</time>
+                    @if ($u->login_at)
+                        <time datetime="{{$u->login_at->toAtomString()}}" title="{{$u->login_at->toDateTimeString()}}">{{$u->login_at->diffForHumans()}}</time>
+                    @else
+                        <span class="text-muted">none</span>
+                    @endif
                 </td>
             </tr>
         @endforeach
     </tbody>
 </table>
-
-@if ($inactiveUsers->count() > 0)
-    <p>
-        Users who didn't perform a login yet:
-    </p>
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Affiliation</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($inactiveUsers as $u)
-                <tr @if (session('newUser') && session('newUser')->id === $u->id) class="bg-success" @endif>
-                    <td><a href="{{route('admin-users-show', $u->id)}}">{{$u->firstname}} {{$u->lastname}}</a></td>
-                    <td><a href="mailto:{{$u->email}}">{{$u->email}}</a></td>
-                    <td>{{$u->affiliation}}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-@endif
 @endsection

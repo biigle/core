@@ -3,6 +3,11 @@
 return [
 
     /*
+    | Version of the biigle/core build.
+    */
+    'version' => env('BIIGLE_VERSION'),
+
+    /*
     | Show the logfiles in the admin area.
     */
    'admin_logs' => true,

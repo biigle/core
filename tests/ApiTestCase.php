@@ -15,9 +15,11 @@ class ApiTestCase extends TestCase
     private $volume;
     private $admin;
     private $editor;
+    private $expert;
     private $guest;
     private $user;
 
+    private $globalGuest;
     private $globalAdmin;
 
     private $labelTree;
@@ -76,6 +78,20 @@ class ApiTestCase extends TestCase
         $this->be($this->admin());
     }
 
+    protected function expert()
+    {
+        if ($this->expert) {
+            return $this->expert;
+        }
+
+        return $this->expert = $this->newProjectUser(Role::$expert);
+    }
+
+    protected function beExpert()
+    {
+        $this->be($this->expert());
+    }
+
     protected function editor()
     {
         if ($this->editor) {
@@ -116,6 +132,20 @@ class ApiTestCase extends TestCase
     protected function beUser()
     {
         $this->be($this->user());
+    }
+
+    protected function globalGuest()
+    {
+        if ($this->globalGuest) {
+            return $this->globalGuest;
+        }
+
+        return $this->globalGuest = $this->newUser(Role::$guest);
+    }
+
+    protected function beGlobalGuest()
+    {
+        $this->be($this->globalGuest());
     }
 
     protected function globalAdmin()

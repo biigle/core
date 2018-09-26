@@ -352,11 +352,17 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
     protected function fracToFloat($frac)
     {
         $parts = explode('/', $frac);
-        if (count($parts) <= 0) {
+        $count = count($parts);
+
+        if ($count === 0) {
             return 0;
-        }
-        if (count($parts) === 1) {
+        } else if ($count === 1) {
             return $parts[0];
+        }
+
+        // Don't use === to catch all incorrect values.
+        if ($parts[1] == 0) {
+            return 0;
         }
 
         return floatval($parts[0]) / floatval($parts[1]);

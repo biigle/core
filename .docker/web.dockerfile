@@ -22,4 +22,7 @@ RUN sed -e 's!include /etc/nginx/conf.d/\*.conf!include /etc/nginx/conf.d/vhost-
 
 COPY --from=intermediate /var/www/public /var/www/public
 
+ARG BIIGLE_VERSION
+ENV BIIGLE_VERSION=${BIIGLE_VERSION}
+
 CMD ["nginx", "-g", "daemon off;"]

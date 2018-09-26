@@ -13,16 +13,6 @@ use Illuminate\Database\Eloquent\Model;
 class Annotation extends Model
 {
     /**
-     * Validation rules for attaching a label to a annotation.
-     *
-     * @var array
-     */
-    public static $attachLabelRules = [
-        'label_id'    => 'required|exists:labels,id',
-        'confidence'  => 'required|numeric|between:0,1',
-    ];
-
-    /**
      * The attributes excluded from the model's JSON form.
      *
      * @var array
@@ -51,7 +41,7 @@ class Annotation extends Model
      */
     public function scopeVisibleFor($query, User $user)
     {
-        if ($user->isAdmin) {
+        if ($user->can('sudo')) {
             return $query;
         }
 

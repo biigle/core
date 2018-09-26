@@ -5,8 +5,7 @@ namespace Biigle\Http\Controllers\Api;
 use Biigle\Image;
 use Biigle\Label;
 use Biigle\ImageLabel;
-use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
+use Biigle\Http\Requests\StoreImageLabel;
 
 class ImageLabelController extends Controller
 {
@@ -86,22 +85,15 @@ class ImageLabelController extends Controller
      *    }
      * }
      *
-     * @param Request $request
-     * @param Guard $auth
-     * @param int $id Image ID
+     * @param StoreImageLabel $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Guard $auth, $id)
+    public function store(StoreImageLabel $request)
     {
-        $this->validate($request, Image::$attachLabelRules);
-        $image = Image::findOrFail($id);
-        $label = Label::findOrFail($request->input('label_id'));
-        $this->authorize('attach-label', [$image, $label]);
-
         $imageLabel = new ImageLabel;
-        $imageLabel->user()->associate($auth->user());
-        $imageLabel->label()->associate($label);
-        $imageLabel->image()->associate($image);
+        $imageLabel->user()->associate($request->user());
+        $imageLabel->label()->associate($request->label);
+        $imageLabel->image()->associate($request->image);
 
         $exists = ImageLabel::where('label_id', $imageLabel->label_id)
             ->where('image_id', $imageLabel->image_id)

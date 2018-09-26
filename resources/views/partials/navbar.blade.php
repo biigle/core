@@ -15,6 +15,11 @@
         @if ($user)
             <div class="navbar-right">
                 <ul class="nav navbar-nav">
+                    @can('sudo')
+                        <li class="sudo-mode-indicator" title="You are in Super User Mode">
+                            <p class="navbar-text">su</p>
+                        </li>
+                    @endcan
                     <li>
                         <a href="{{route('search')}}" title="Search BIIGLE"><i class="fa fa-search"></i></a>
                     </li>
@@ -32,11 +37,11 @@
                                 <a href="{{ route('home') }}" title="Dashboard">Dashboard</a>
                             </li>
                             @mixin('navbarMenuItem')
-                            @if ($user->isAdmin)
+                            @can('sudo')
                                 <li>
                                     <a href="{{ route('admin') }}" title="Admin area">Admin area</a>
                                 </li>
-                            @endif
+                            @endcan
                             <li role="separator" class="divider"></li>
                             <li>
                                 <a href="{{ route('settings') }}" title="{{ trans('biigle.titles.settings') }}">{{ trans('biigle.titles.settings') }}</a>

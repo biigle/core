@@ -6,8 +6,8 @@ use Biigle\Label;
 use Biigle\Annotation;
 use Biigle\AnnotationLabel;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\QueryException;
+use Biigle\Http\Requests\StoreAnnotationLabel;
 
 class AnnotationLabelController extends Controller
 {
@@ -87,47 +87,39 @@ class AnnotationLabelController extends Controller
      *    }
      * }
      *
-     * @param Request $request
-     * @param Guard $auth
-     * @param int $id Annotation ID
+     * @param StoreAnnotationLabel $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Guard $auth, $id)
+    public function store(StoreAnnotationLabel $request)
     {
-        $this->validate($request, Annotation::$attachLabelRules);
-        $annotation = Annotation::findOrFail($id);
-        $label = Label::findOrFail($request->input('label_id'));
-        $this->authorize('attach-label', [$annotation, $label]);
-
         $annotationLabel = new AnnotationLabel;
         $annotationLabel->confidence = $request->input('confidence');
-        $annotationLabel->user()->associate($auth->user());
-        $annotationLabel->label()->associate($label);
-        $annotationLabel->annotation()->associate($annotation);
+        $annotationLabel->user()->associate($request->user());
+        $annotationLabel->label()->associate($request->label);
+        $annotationLabel->annotation()->associate($request->annotation);
 
         $exists = AnnotationLabel::where('user_id', $annotationLabel->user_id)
             ->where('label_id', $annotationLabel->label_id)
             ->where('annotation_id', $annotationLabel->annotation_id)
             ->exists();
 
-        if (!$exists) {
-            try {
-                $annotationLabel->save();
-                // should not be returned
-                unset($annotationLabel->annotation);
-
-                return response($annotationLabel, 201);
-
-            } catch (QueryException $e) {
-                // Although we check for existence above, this error happened some time.
-                // I suspect some kind of race condition between PHP FPM workers.
-                if (!str_contains($e->getMessage(), 'Unique violation')) {
-                    throw $e;
-                }
-            }
+        if ($exists) {
+            abort(400, 'The user already attached this label to the annotation.');
         }
 
-        abort(400, 'The user already attached this label to the annotation.');
+        try {
+            $annotationLabel->save();
+            // should not be returned
+            unset($annotationLabel->annotation);
+
+            return response($annotationLabel, 201);
+        } catch (QueryException $e) {
+            // Although we check for existence above, this error happened some time.
+            // I suspect some kind of race condition between PHP FPM workers.
+            if (!str_contains($e->getMessage(), 'Unique violation')) {
+                throw $e;
+            }
+        }
     }
 
     /**

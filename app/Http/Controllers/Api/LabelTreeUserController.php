@@ -2,15 +2,45 @@
 
 namespace Biigle\Http\Controllers\Api;
 
-use Biigle\User;
-use Biigle\Role;
-use Biigle\LabelTree;
-use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Auth\Access\AuthorizationException;
+use Biigle\Http\Requests\StoreLabelTreeUser;
+use Biigle\Http\Requests\UpdateLabelTreeUser;
+use Biigle\Http\Requests\DestroyLabelTreeUser;
 
 class LabelTreeUserController extends Controller
 {
+    /**
+     * Add a member to a label tree.
+     *
+     * @api {post} label-trees/:id/users Add a member
+     * @apiGroup Label Trees
+     * @apiName StoreLabelTreesUsers
+     * @apiPermission labelTreeAdmin
+     *
+     * @apiParam {Number} id The label tree ID
+     *
+     * @apiParam (Required attributes) {Number} id User ID of the new member
+     * @apiParam (Required attributes) {Number} role_id ID of the role of the new member (admin or editor).
+     *
+     * @param StoreLabelTreeUser $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(StoreLabelTreeUser $request)
+    {
+        $request->tree->addMember($request->input('id'), $request->input('role_id'));
+
+        if (static::isAutomatedRequest($request)) {
+            return $request->tree;
+        }
+
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
+                ->with('saved', true);
+        }
+
+        return redirect()->back()
+            ->with('saved', true);
+    }
+
     /**
      * Updates a member of a label tree.
      *
@@ -25,68 +55,17 @@ class LabelTreeUserController extends Controller
      *
      * @apiParam (Attributes that can be updated) {Number} role_id New role of the member (admin or editor)
      *
-     * @param Request $request
-     * @param  int  $lid Label tree ID
-     * @param  int  $uid User ID
+     * @param UpdateLabelTreeUser $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $lid, $uid)
+    public function update(UpdateLabelTreeUser $request)
     {
-        $tree = LabelTree::findOrFail($lid);
-        $user = $tree->members()->findOrFail($uid);
-
-        $this->authorize('update-member', [$tree, $user]);
-
-        $this->validate($request, LabelTree::$updateMemberRules);
-
         if ($request->filled('role_id')) {
-            $tree->updateMember($user, Role::findOrFail($request->input('role_id')));
+            $request->tree->updateMember($request->member, $request->input('role_id'));
         }
 
         if (static::isAutomatedRequest($request)) {
             return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('saved', true);
-        }
-
-        return redirect()->back()
-            ->with('saved', true);
-    }
-
-    /**
-     * Add a member to a label tree.
-     *
-     * @api {post} label-trees/:id/users Add a member
-     * @apiGroup Label Trees
-     * @apiName StoreLabelTreesUsers
-     * @apiPermission labelTreeAdmin
-     *
-     * @apiParam {Number} id The label tree ID
-     *
-     * @apiParam (Required attributes) {Number} id User ID of the new member
-     * @apiParam (Required attributes) {Number} role_id ID of the role of the new member (admin or editor).
-     *
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request, $id)
-    {
-        $tree = LabelTree::findOrFail($id);
-        $this->authorize('add-member', $tree);
-
-        $this->validate($request, LabelTree::$addMemberRules);
-
-        $tree->addMember(
-            User::findOrFail($request->input('id')),
-            Role::findOrFail($request->input('role_id'))
-        );
-
-        if (static::isAutomatedRequest($request)) {
-            return $tree;
         }
 
         if ($request->has('_redirect')) {
@@ -111,25 +90,12 @@ class LabelTreeUserController extends Controller
      * @apiParam {Number} lid The label tree ID.
      * @apiParam {Number} uid User ID of the member.
      *
-     * @param Request $request
-     * @param Guard $auth
-     * @param  int  $lid
-     * @param  int  $uid
+     * @param DestroyLabelTreeUser $request
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, Guard $auth, $lid, $uid)
+    public function destroy(DestroyLabelTreeUser $request)
     {
-        $tree = LabelTree::findOrFail($lid);
-        $member = $tree->members()->findOrFail($uid);
-        $this->authorize('remove-member', [$tree, $member]);
-
-        // global admins can remove the last label tree admin so they can convert
-        // ordinary label trees to global ones
-        if (!$auth->user()->isAdmin && !$tree->memberCanBeRemoved($member)) {
-            throw new AuthorizationException('The only admin cannot be removed from a label tree.');
-        }
-
-        $tree->members()->detach($uid);
+        $request->tree->members()->detach($request->member);
 
         if (static::isAutomatedRequest($request)) {
             return;

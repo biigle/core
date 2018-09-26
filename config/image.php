@@ -10,12 +10,18 @@ return [
         /*
         | Maximum allowed size of a cached image in bytes. Set to -1 to allow any size.
         */
-        'max_image_size' => 1E+8, // 100 MB
+        'max_image_size' => env('IMAGE_CACHE_MAX_IMAGE_SIZE', 1E+8), // 100 MB
 
         /*
-        | Maximum size of the image cache in bytes.
+        | Maximum age in minutes of an image in the cache. Older images are pruned.
         */
-        'max_size' => 1E+9, // 1 GB
+        'max_age' => env('IMAGE_CACHE_MAX_AGE', 60),
+
+        /*
+        | Maximum size (soft limit) of the image cache in bytes. If the cache exceeds
+        | this size, old images are pruned.
+        */
+        'max_size' => env('IMAGE_CACHE_MAX_SIZE', 1E+9), // 1 GB
 
         /*
         | Directory to use for the image cache.
@@ -27,7 +33,7 @@ return [
          | no data for longer than this period (or cannot be established), caching the
          | image fails.
          */
-        'timeout' => 5.0,
+        'timeout' => env('IMAGE_CACHE_TIMEOUT', 5.0),
     ],
 
     'tiles' => [
@@ -39,7 +45,7 @@ return [
         |
         | Set to INF to disable tiling.
         */
-        'threshold' => 10000,
+        'threshold' => env('IMAGE_TILES_THRESHOLD', 1E+4),
 
         /*
         | URI where the image tiles are available from.
@@ -57,12 +63,10 @@ return [
 
         /*
          | Storage disk from config('filesystems.disks') to permanently store the tiles.
-         | The default disk stores the tiles locally in storage/tiles, which are then
-         | served by the webserver through the public/tiles link.
-         | Alternatively you can use a public object storage container and configure
-         | the webserver to act as a reverse proxy for the uri configured above.
+         | The default disk stores the tiles locally in storage/tiles. You can also use
+         | a cloud storage disk for this.
          */
-        'disk' => 'local-tiles',
+        'disk' => env('IMAGE_TILES_DISK', 'local-tiles'),
 
         /*
         | Settings for the image tile cache. The image tile cache extracts local or cloud
@@ -72,9 +76,9 @@ return [
         */
         'cache' => [
             /*
-            | Maximum size of the image tile cache in bytes.
+            | Maximum size (soft limit) of the image tile cache in bytes.
             */
-            'max_size' => 1E+9, // 1 GB
+            'max_size' => env('IMAGE_TILES_CACHE_MAX_SIZE', 1E+9), // 1 GB
 
             /*
             | Directory to use for the image tile cache.

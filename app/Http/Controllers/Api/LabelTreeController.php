@@ -4,14 +4,13 @@ namespace Biigle\Http\Controllers\Api;
 
 use Route;
 use Biigle\Role;
-use Biigle\Project;
 use Ramsey\Uuid\Uuid;
 use Biigle\LabelTree;
 use Biigle\Visibility;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Auth\Access\AuthorizationException;
+use Biigle\Http\Requests\StoreLabelTree;
+use Biigle\Http\Requests\UpdateLabelTree;
+use Biigle\Http\Requests\DestroyLabelTree;
 
 class LabelTreeController extends Controller
 {
@@ -34,12 +33,12 @@ class LabelTreeController extends Controller
      *    }
      * ]
      *
-     * @param Guard $auth
+     * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Guard $auth)
+    public function index(Request $request)
     {
-        return LabelTree::accessibleBy($auth->user())
+        return LabelTree::accessibleBy($request->user())
             ->orderByDesc('id')
             ->select('id', 'name', 'description', 'created_at', 'updated_at')
             ->get();
@@ -99,6 +98,73 @@ class LabelTreeController extends Controller
     }
 
     /**
+     * Creates a new label tree.
+     *
+     * @api {post} label-trees Create a new label tree
+     * @apiGroup Label Trees
+     * @apiName StoreLabelTrees
+     * @apiPermission user
+     * @apiDescription The user creating a new label tree will automatically become label tree admin.
+     *
+     * @apiParam (Required attributes) {String} name Name of the new label tree.
+     * @apiParam (Required attributes) {Number} visibility_id ID of the visibility of the new label tree (public or private).
+     *
+     * @apiParam (Optional attributes) {String} description Description of the new label tree.
+     * @apiParam (Optional attributes) {Number} project_id Target project for the new label tree. If this attribute is set and the user is an admin of the project, the new label tree will be immediately attached to this project.
+     *
+     * @apiSuccessExample {json} Success response:
+     *
+     * {
+     *    "id": 1,
+     *    "name": "Global",
+     *    "description": "The global label category tree.",
+     *    "vilibility_id": 1,
+     *    "created_at": "2015-02-10 09:45:30",
+     *    "updated_at": "2015-02-10 09:45:30"
+     * }
+     *
+     * @param StoreLabelTree $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(StoreLabelTree $request)
+    {
+        $tree = new LabelTree;
+        $tree->name = $request->input('name');
+        $tree->visibility_id = (int) $request->input('visibility_id');
+        $tree->description = $request->input('description');
+        $tree->uuid = Uuid::uuid4();
+        $tree->save();
+        $tree->addMember($request->user(), Role::$admin);
+
+        if (isset($request->project)) {
+            $tree->projects()->attach($request->project);
+            $tree->authorizedProjects()->attach($request->project);
+        }
+
+        if (static::isAutomatedRequest($request)) {
+            return $tree;
+        }
+
+        if ($request->has('_redirect')) {
+            return redirect($request->input('_redirect'))
+                ->with('newTree', $tree)
+                ->with('message', 'Label tree created.')
+                ->with('messageType', 'success');
+        }
+
+        if (Route::has('label-trees')) {
+            return redirect()->route('label-trees', $tree->id)
+                ->with('message', 'Label tree created.')
+                ->with('messageType', 'success');
+        }
+
+        return redirect()->back()
+            ->with('newTree', $tree)
+            ->with('message', 'Label tree created.')
+            ->with('messageType', 'success');
+    }
+
+    /**
      * Updates the attributes of the specified label tree.
      *
      * @api {put} label-trees/:id Update a label tree
@@ -113,17 +179,12 @@ class LabelTreeController extends Controller
      * @apiParam (Attributes that can be updated) {String} description Description of the label tree.
      * @apiParam (Attributes that can be updated) {Number} visibility_id ID of the new visibility of the label tree (public or private).
      *
-     * @param Request $request
-     * @param  int  $id
+     * @param UpdateLabelTree $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateLabelTree $request)
     {
-        $tree = LabelTree::findOrFail($id);
-        $this->authorize('update', $tree);
-
-        $this->validate($request, LabelTree::$updateRules);
-
+        $tree = $request->tree;
         $tree->name = $request->input('name', $tree->name);
         $tree->description = $request->input('description', $tree->description);
 
@@ -155,87 +216,6 @@ class LabelTreeController extends Controller
     }
 
     /**
-     * Creates a new label tree.
-     *
-     * @api {post} label-trees Create a new label tree
-     * @apiGroup Label Trees
-     * @apiName StoreLabelTrees
-     * @apiPermission user
-     * @apiDescription The user creating a new label tree will automatically become label tree admin.
-     *
-     * @apiParam (Required attributes) {String} name Name of the new label tree.
-     * @apiParam (Required attributes) {Number} visibility_id ID of the visibility of the new label tree (public or private).
-     *
-     * @apiParam (Optional attributes) {String} description Description of the new label tree.
-     * @apiParam (Optional attributes) {Number} project_id Target project for the new label tree. If this attribute is set and the user is an admin of the project, the new label tree will be immediately attached to this project.
-     *
-     * @apiSuccessExample {json} Success response:
-     *
-     * {
-     *    "id": 1,
-     *    "name": "Global",
-     *    "description": "The global label category tree.",
-     *    "vilibility_id": 1,
-     *    "created_at": "2015-02-10 09:45:30",
-     *    "updated_at": "2015-02-10 09:45:30"
-     * }
-     *
-     * @param Request $request
-     * @param Guard $auth
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request, Guard $auth)
-    {
-        $this->validate($request, LabelTree::$createRules);
-        $user = $auth->user();
-
-        if ($request->filled('project_id')) {
-            $project = Project::findOrFail($request->input('project_id'));
-            if (!$user->can('update', $project)) {
-                throw ValidationException::withMessages([
-                    'project_id' => ['You have no permission to create a label tree for this project.'],
-                ]);
-            }
-        }
-
-        $tree = new LabelTree;
-        $tree->name = $request->input('name');
-        $tree->visibility_id = (int) $request->input('visibility_id');
-        $tree->description = $request->input('description');
-        $tree->uuid = Uuid::uuid4();
-        $tree->save();
-
-        $tree->addMember($user, Role::$admin);
-
-        if (isset($project)) {
-            $tree->projects()->attach($project);
-            $tree->authorizedProjects()->attach($project);
-        }
-
-        if (static::isAutomatedRequest($request)) {
-            return $tree;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('newTree', $tree)
-                ->with('message', 'Label tree created.')
-                ->with('messageType', 'success');
-        }
-
-        if (Route::has('label-trees')) {
-            return redirect()->route('label-trees', $tree->id)
-                ->with('message', 'Label tree created.')
-                ->with('messageType', 'success');
-        }
-
-        return redirect()->back()
-            ->with('newTree', $tree)
-            ->with('message', 'Label tree created.')
-            ->with('messageType', 'success');
-    }
-
-    /**
      * Removes the specified label tree.
      *
      * @api {delete} label-trees/:id Delete a label tree
@@ -246,20 +226,12 @@ class LabelTreeController extends Controller
      *
      * @apiParam {Number} id The label tree ID.
      *
-     * @param Request $request
-     * @param  int  $id
+     * @param DestroyLabelTree $request
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(DestroyLabelTree $request)
     {
-        $tree = LabelTree::findOrFail($id);
-        $this->authorize('destroy', $tree);
-
-        if (!$tree->canBeDeleted()) {
-            throw new AuthorizationException('A label tree can\'t be deleted if any of its labels are still in use.');
-        }
-
-        $tree->delete();
+        $request->tree->delete();
 
         if (static::isAutomatedRequest($request)) {
             return;

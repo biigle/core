@@ -8,6 +8,7 @@ use Biigle\User;
 use Biigle\Role;
 use Biigle\Image;
 use Biigle\Label;
+use Biigle\Project;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ImagePolicy extends CachedPolicy
@@ -23,7 +24,7 @@ class ImagePolicy extends CachedPolicy
      */
     public function before($user, $ability)
     {
-        if ($user->isAdmin) {
+        if ($user->can('sudo')) {
             return true;
         }
     }
@@ -71,7 +72,11 @@ class ImagePolicy extends CachedPolicy
                         ->from('project_volume')
                         ->where('volume_id', $image->volume_id);
                 })
-                ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
+                ->whereIn('project_role_id', [
+                    Role::$editor->id,
+                    Role::$expert->id,
+                    Role::$admin->id,
+                ])
                 ->exists();
         });
     }
@@ -115,21 +120,17 @@ class ImagePolicy extends CachedPolicy
     public function attachLabel(User $user, Image $image, Label $label)
     {
         return $this->remember("image-can-attach-label-{$user->id}-{$image->id}-{$label->id}", function () use ($user, $image, $label) {
-            // projects, the image belongs to *and* the user is editor or admin of
-            $projectIds = DB::table('project_user')
-                ->where('user_id', $user->id)
-                ->whereIn('project_id', function ($query) use ($image) {
-                    // the projects, the image belongs to
-                    $query->select('project_id')
-                        ->from('project_volume')
-                        ->where('volume_id', $image->volume_id);
-                })
-                ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
-                ->pluck('project_id');
+            // Projects, the image belongs to *and* the user is editor, expert or admin
+            // of.
+            $projectIds = Project::inCommon($user, $image->volume_id, [
+                Role::$editor->id,
+                Role::$expert->id,
+                Role::$admin->id,
+            ])->pluck('id');
 
-            // user must be editor or admin in one of the projects
+            // User must be editor, expert or admin in one of the projects.
             return !empty($projectIds)
-                // label must belong to a label tree that is used by one of the projects
+                // Label must belong to a label tree that is used by one of the projects.
                 && DB::table('label_tree_project')
                     ->whereIn('project_id', $projectIds)
                     ->where('label_tree_id', $label->label_tree_id)

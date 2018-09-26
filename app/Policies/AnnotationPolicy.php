@@ -24,7 +24,7 @@ class AnnotationPolicy extends CachedPolicy
      */
     public function before($user, $ability)
     {
-        if ($user->isAdmin) {
+        if ($user->can('sudo')) {
             return true;
         }
     }
@@ -79,7 +79,11 @@ class AnnotationPolicy extends CachedPolicy
                         ->join('images', 'project_volume.volume_id', '=', 'images.volume_id')
                         ->where('images.id', $annotation->image_id);
                 })
-                ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
+                ->whereIn('project_role_id', [
+                    Role::$editor->id,
+                    Role::$expert->id,
+                    Role::$admin->id,
+                ])
                 ->exists();
         });
     }
@@ -109,7 +113,11 @@ class AnnotationPolicy extends CachedPolicy
                         ->join('images', 'project_volume.volume_id', '=', 'images.volume_id')
                         ->where('images.id', $annotation->image_id);
                 })
-                ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
+                ->whereIn('project_role_id', [
+                    Role::$editor->id,
+                    Role::$expert->id,
+                    Role::$admin->id,
+                ])
                 ->pluck('project_id');
 
             // user must be editor or admin in one of the projects
@@ -147,20 +155,24 @@ class AnnotationPolicy extends CachedPolicy
                 ->exists();
 
             if ($hasLabelsFromOthers) {
-                // only project admins may delete annotations where labels of other users
-                // are still attached to
+                // Experts and admins may delete annotations where labels of other users
+                // are still attached to.
                 return DB::table('project_user')
                     ->where('user_id', $user->id)
                     ->whereIn('project_id', $projectIdsQuery)
-                    ->where('project_role_id', Role::$admin->id)
+                    ->whereIn('project_role_id', [Role::$expert->id, Role::$admin->id])
                     ->exists();
             } else {
-                // editors may delete only those annotations that have their own label
-                // attached as only label
+                // Editors may delete only those annotations that have their own label
+                // attached as only label.
                 return DB::table('project_user')
                     ->where('user_id', $user->id)
                     ->whereIn('project_id', $projectIdsQuery)
-                    ->whereIn('project_role_id', [Role::$editor->id, Role::$admin->id])
+                    ->whereIn('project_role_id', [
+                        Role::$editor->id,
+                        Role::$expert->id,
+                        Role::$admin->id,
+                    ])
                     ->exists();
             }
         });

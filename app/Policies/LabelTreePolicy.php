@@ -24,9 +24,20 @@ class LabelTreePolicy extends CachedPolicy
      */
     public function before($user, $ability)
     {
-        if ($user->isAdmin) {
+        if ($user->can('sudo')) {
             return true;
         }
+    }
+
+    /**
+     * Determine if the given user can create label trees.
+     *
+     * @param  User  $user
+     * @return bool
+     */
+    public function create(User $user)
+    {
+        return $user->role_id === Role::$editor->id || $user->role_id === Role::$admin->id;
     }
 
     /**

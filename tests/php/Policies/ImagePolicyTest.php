@@ -11,14 +11,6 @@ use Biigle\Tests\ProjectTest;
 
 class ImagePolicyTest extends TestCase
 {
-    private $image;
-    private $project;
-    private $user;
-    private $guest;
-    private $editor;
-    private $admin;
-    private $globalAdmin;
-
     public function setUp()
     {
         parent::setUp();
@@ -28,11 +20,13 @@ class ImagePolicyTest extends TestCase
         $this->user = UserTest::create();
         $this->guest = UserTest::create();
         $this->editor = UserTest::create();
+        $this->expert = UserTest::create();
         $this->admin = UserTest::create();
         $this->globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
 
         $this->project->addUserId($this->guest->id, Role::$guest->id);
         $this->project->addUserId($this->editor->id, Role::$editor->id);
+        $this->project->addUserId($this->expert->id, Role::$expert->id);
         $this->project->addUserId($this->admin->id, Role::$admin->id);
     }
 
@@ -41,6 +35,7 @@ class ImagePolicyTest extends TestCase
         $this->assertFalse($this->user->can('access', $this->image));
         $this->assertTrue($this->guest->can('access', $this->image));
         $this->assertTrue($this->editor->can('access', $this->image));
+        $this->assertTrue($this->expert->can('access', $this->image));
         $this->assertTrue($this->admin->can('access', $this->image));
         $this->assertTrue($this->globalAdmin->can('access', $this->image));
     }
@@ -50,6 +45,7 @@ class ImagePolicyTest extends TestCase
         $this->assertFalse($this->user->can('add-annotation', $this->image));
         $this->assertFalse($this->guest->can('add-annotation', $this->image));
         $this->assertTrue($this->editor->can('add-annotation', $this->image));
+        $this->assertTrue($this->expert->can('add-annotation', $this->image));
         $this->assertTrue($this->admin->can('add-annotation', $this->image));
         $this->assertTrue($this->globalAdmin->can('add-annotation', $this->image));
     }
@@ -59,6 +55,7 @@ class ImagePolicyTest extends TestCase
         $this->assertFalse($this->user->can('destroy', $this->image));
         $this->assertFalse($this->guest->can('destroy', $this->image));
         $this->assertFalse($this->editor->can('destroy', $this->image));
+        $this->assertFalse($this->expert->can('destroy', $this->image));
         $this->assertTrue($this->admin->can('destroy', $this->image));
         $this->assertTrue($this->globalAdmin->can('destroy', $this->image));
     }
@@ -88,6 +85,10 @@ class ImagePolicyTest extends TestCase
         $this->assertTrue($this->editor->can('attach-label', [$this->image, $allowedLabel]));
         $this->assertFalse($this->editor->can('attach-label', [$this->image, $disallowedLabel]));
         $this->assertFalse($this->editor->can('attach-label', [$this->image, $otherDisallowedLabel]));
+
+        $this->assertTrue($this->expert->can('attach-label', [$this->image, $allowedLabel]));
+        $this->assertFalse($this->expert->can('attach-label', [$this->image, $disallowedLabel]));
+        $this->assertFalse($this->expert->can('attach-label', [$this->image, $otherDisallowedLabel]));
 
         $this->assertTrue($this->admin->can('attach-label', [$this->image, $allowedLabel]));
         $this->assertFalse($this->admin->can('attach-label', [$this->image, $disallowedLabel]));

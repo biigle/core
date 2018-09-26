@@ -10,8 +10,6 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ProjectPolicy extends CachedPolicy
 {
-    const TABLE = 'project_user';
-
     use HandlesAuthorization;
 
     /**
@@ -23,9 +21,20 @@ class ProjectPolicy extends CachedPolicy
      */
     public function before($user, $ability)
     {
-        if ($user->isAdmin) {
+        if ($user->can('sudo')) {
             return true;
         }
+    }
+
+    /**
+     * Determine if the given user can create projects.
+     *
+     * @param  User  $user
+     * @return bool
+     */
+    public function create(User $user)
+    {
+        return $user->role_id === Role::$editor->id || $user->role_id === Role::$admin->id;
     }
 
     /**
@@ -38,10 +47,7 @@ class ProjectPolicy extends CachedPolicy
     public function access(User $user, Project $project)
     {
         return $this->remember("project-can-access-{$user->id}-{$project->id}", function () use ($user, $project) {
-            return DB::table(self::TABLE)
-                ->where('project_id', $project->id)
-                ->where('user_id', $user->id)
-                ->exists();
+            return $this->getBaseQuery($user, $project)->exists();
         });
     }
 
@@ -55,10 +61,28 @@ class ProjectPolicy extends CachedPolicy
     public function editIn(User $user, Project $project)
     {
         return $this->remember("project-can-edit-in-{$user->id}-{$project->id}", function () use ($user, $project) {
-            return DB::table(self::TABLE)
-                ->where('project_id', $project->id)
-                ->where('user_id', $user->id)
-                ->whereIn('project_role_id', [Role::$admin->id, Role::$editor->id])
+            return $this->getBaseQuery($user, $project)
+                ->whereIn('project_role_id', [
+                    Role::$editor->id,
+                    Role::$expert->id,
+                    Role::$admin->id,
+                ])
+                ->exists();
+        });
+    }
+
+    /**
+     * Determine if the user can edit things created by other users in the given project.
+     *
+     * @param  User  $user
+     * @param  Project  $project
+     * @return bool
+     */
+    public function forceEditIn(User $user, Project $project)
+    {
+        return $this->remember("project-can-force-edit-in-{$user->id}-{$project->id}", function () use ($user, $project) {
+            return $this->getBaseQuery($user, $project)
+                ->whereIn('project_role_id', [Role::$expert->id, Role::$admin->id])
                 ->exists();
         });
     }
@@ -74,19 +98,14 @@ class ProjectPolicy extends CachedPolicy
     public function removeMember(User $user, Project $project, User $member)
     {
         return $this->remember("project-can-remove-member-{$user->id}-{$project->id}-{$member->id}", function () use ($user, $project, $member) {
-            $isMember = DB::table(self::TABLE)
-                ->where('project_id', $project->id)
-                ->where('user_id', $member->id)
-                ->exists();
+            $isMember = $this->getBaseQuery($member, $project)->exists();
 
             if ($user->id === $member->id) {
                 // each member is allowed to remove themselves
                 return $isMember;
             } else {
                 // admins can remove members other than themselves
-                return $isMember && DB::table(self::TABLE)
-                    ->where('project_id', $project->id)
-                    ->where('user_id', $user->id)
+                return $isMember && $this->getBaseQuery($user, $project)
                     ->where('project_role_id', Role::$admin->id)
                     ->exists();
             }
@@ -103,9 +122,7 @@ class ProjectPolicy extends CachedPolicy
     public function update(User $user, Project $project)
     {
         return $this->remember("project-can-update-{$user->id}-{$project->id}", function () use ($user, $project) {
-            return DB::table(self::TABLE)
-                ->where('project_id', $project->id)
-                ->where('user_id', $user->id)
+            return $this->getBaseQuery($user, $project)
                 ->where('project_role_id', Role::$admin->id)
                 ->exists();
         });
@@ -121,5 +138,20 @@ class ProjectPolicy extends CachedPolicy
     public function destroy(User $user, Project $project)
     {
         return $this->update($user, $project);
+    }
+
+    /**
+     * Get the base query for all policy methods.
+     *
+     * @param User $user
+     * @param Project $project
+     *
+     * @return QueryBuilder
+     */
+    protected function getBaseQuery(User $user, Project $project)
+    {
+        return DB::table('project_user')
+            ->where('project_id', $project->id)
+            ->where('user_id', $user->id);
     }
 }
