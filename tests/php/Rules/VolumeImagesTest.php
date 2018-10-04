@@ -35,4 +35,10 @@ class VolumeImagesTest extends TestCase
         $this->assertFalse($validator->passes(null, []));
         $this->assertContains('No images', $validator->message());
     }
+
+    public function testAllowQueryParams()
+    {
+        $validator = new VolumeImages;
+        $this->assertTrue($validator->passes(null, ['1.jpg?raw=1']));
+    }
 }

@@ -23,10 +23,13 @@ class Volume extends Model
 
     /**
      * Regular expression that matches the supported image file extensions.
+     * This regex allows optional HTTP query parameters after the file names, too.
+     * Example "image.jpg?raw=1".
+     * This may be required for remote images with services like Dropbox.
      *
      * @var string
      */
-    const FILE_REGEX = '/\.(jpe?g|png|tif?f)$/i';
+    const FILE_REGEX = '/\.(jpe?g|png|tif?f)(\?.+)?$/i';
 
     /**
      * The attributes hidden from the model's JSON form.
