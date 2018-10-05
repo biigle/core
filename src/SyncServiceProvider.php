@@ -55,9 +55,14 @@ class SyncServiceProvider extends ServiceProvider
             return new \Biigle\Modules\Sync\Console\Commands\Prune;
         });
 
+        $this->app->singleton('command.sync.uuids', function ($app) {
+            return new \Biigle\Modules\Sync\Console\Commands\Uuids;
+        });
+
         $this->commands([
             'command.sync.publish',
             'command.sync.prune',
+            'command.sync.uuids',
         ]);
     }
 
@@ -71,6 +76,7 @@ class SyncServiceProvider extends ServiceProvider
         return [
             'command.sync.publish',
             'command.sync.prune',
+            'command.sync.uuids',
         ];
     }
 }
