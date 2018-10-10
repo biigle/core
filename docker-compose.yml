@@ -51,7 +51,7 @@ services:
 
   # The database
   database:
-    image: postgres:9.4-alpine
+    image: postgres:10-alpine
     volumes:
       - dbdata:/var/lib/postgresql/data
       - ./:/data
@@ -63,7 +63,7 @@ services:
       - "54320:5432"
 
   database_testing:
-    image: postgres:9.4-alpine
+    image: postgres:10-alpine
     tmpfs:
       - /var/lib/postgresql/data
     environment:
