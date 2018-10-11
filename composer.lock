@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "214ee3ae41c46f229dd93b55652920a6",
+    "content-hash": "933ca3f34353c7775fb3f468a7e8d8c5",
     "packages": [
         {
             "name": "biigle/ananas",

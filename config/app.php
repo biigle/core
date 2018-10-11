@@ -180,7 +180,6 @@ return [
          * Package Service Providers...
          */
         // Insert package service providers here.
-        Mzur\Filesystem\SwiftServiceProvider::class,
 
         /*
          * Application Service Providers...
