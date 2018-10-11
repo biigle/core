@@ -58,14 +58,6 @@ class Image extends Model implements ImageContract
     /**
      * {@inheritdoc}
      */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getUrl()
     {
         return $this->url;
