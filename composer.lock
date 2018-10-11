@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "435150edcf9018af5b440f8e4f215552",
+    "content-hash": "70b8f0441b7c426308cd77f6bbfebc88",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -199,16 +199,16 @@
         },
         {
             "name": "biigle/laravel-image-cache",
-            "version": "v0.1.0",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:biigle/laravel-image-cache.git",
-                "reference": "c2fdabd98114a71ac9ea48e1df9f997a306d91fc"
+                "reference": "ab6d13f85a5e230696ae482e8f191fdddc5f6068"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-image-cache/zipball/c2fdabd98114a71ac9ea48e1df9f997a306d91fc",
-                "reference": "c2fdabd98114a71ac9ea48e1df9f997a306d91fc",
+                "url": "https://api.github.com/repos/biigle/laravel-image-cache/zipball/ab6d13f85a5e230696ae482e8f191fdddc5f6068",
+                "reference": "ab6d13f85a5e230696ae482e8f191fdddc5f6068",
                 "shasum": ""
             },
             "require": {
@@ -244,10 +244,10 @@
             ],
             "description": "Fetch and cache image files from filesystem, cloud storage or public webservers in Laravel",
             "support": {
-                "source": "https://github.com/biigle/laravel-image-cache/tree/v0.1.0",
+                "source": "https://github.com/biigle/laravel-image-cache/tree/v0.2.0",
                 "issues": "https://github.com/biigle/laravel-image-cache/issues"
             },
-            "time": "2018-10-11T08:28:50+00:00"
+            "time": "2018-10-11T09:34:23+00:00"
         },
         {
             "name": "biigle/largo",
