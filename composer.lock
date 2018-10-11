@@ -4,8 +4,60 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4e2e59a8223af2b02df2d432c361574a",
+    "content-hash": "48835f748aaccba1da42a3f10c6ba1bd",
     "packages": [
+        {
+            "name": "biigle/laravel-image-cache",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:biigle/laravel-image-cache.git",
+                "reference": "c2fdabd98114a71ac9ea48e1df9f997a306d91fc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/laravel-image-cache/zipball/c2fdabd98114a71ac9ea48e1df9f997a306d91fc",
+                "reference": "c2fdabd98114a71ac9ea48e1df9f997a306d91fc",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": ">=5.5",
+                "illuminate/filesystem": ">=5.5",
+                "illuminate/support": ">=5.5",
+                "league/flysystem": "^1.0"
+            },
+            "require-dev": {
+                "laravel/laravel": "^5.7",
+                "mockery/mockery": "^1.2",
+                "phpunit/phpunit": "^7.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\ImageCache\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Biigle\\ImageCache\\Tests\\": "tests/"
+                },
+                "classmap": [
+                    "tests/TestCase.php"
+                ]
+            },
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@zurowietz.de"
+                }
+            ],
+            "description": "Fetch and cache image files from filesystem, cloud storage or public webservers in Laravel",
+            "support": {
+                "source": "https://github.com/biigle/laravel-image-cache/tree/v0.1.0",
+                "issues": "https://github.com/biigle/laravel-image-cache/issues"
+            },
+            "time": "2018-10-11T08:28:50+00:00"
+        },
         {
             "name": "dnoegel/php-xdg-base-dir",
             "version": "0.1",
@@ -1078,12 +1130,12 @@
             "version": "v1.0.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jcupitt/php-vips.git",
+                "url": "https://github.com/libvips/php-vips.git",
                 "reference": "456cbad0b428a7cef52fcf23eec804a975923ab3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jcupitt/php-vips/zipball/456cbad0b428a7cef52fcf23eec804a975923ab3",
+                "url": "https://api.github.com/repos/libvips/php-vips/zipball/456cbad0b428a7cef52fcf23eec804a975923ab3",
                 "reference": "456cbad0b428a7cef52fcf23eec804a975923ab3",
                 "shasum": ""
             },
