@@ -54,7 +54,9 @@ class Modules
      */
     public function registerViewMixin($module, $view)
     {
-        array_set(self::$viewMixins, $view.'.'.$module, []);
+        if (!array_has(self::$viewMixins, "{$view}.{$module}")) {
+            array_set(self::$viewMixins, "{$view}.{$module}", []);
+        }
     }
 
     /**
@@ -93,7 +95,7 @@ class Modules
      */
     public function registerControllerMixin($module, $controller, $mixin)
     {
-        array_set(self::$controllerMixins, $controller.'.'.$module, $mixin);
+        array_set(self::$controllerMixins, "{$controller}.{$module}", $mixin);
     }
 
     /**
