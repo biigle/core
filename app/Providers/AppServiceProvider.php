@@ -51,10 +51,6 @@ class AppServiceProvider extends ServiceProvider
             return new \Jcupitt\Vips\Image(null);
         });
 
-        $this->app->bind('image-cache', function () {
-            return new \Biigle\Services\ImageCache;
-        });
-
         $this->app->bind('tile-cache', function () {
             return new \Biigle\Services\TileCache;
         });
