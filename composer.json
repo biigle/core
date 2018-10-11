@@ -23,7 +23,7 @@
         "biigle/reports": "@dev",
         "biigle/sync": "@dev",
         "biigle/volumes": "@dev",
-        "biigle/laravel-image-cache": "^0.2.0",
+        "biigle/laravel-image-cache": "^0.3.0",
         "doctrine/annotations": "1.4.0",
         "doctrine/dbal": "^2.5",
         "fideloper/proxy": "~3.3",
