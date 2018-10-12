@@ -1,5 +1,11 @@
 {
     "name": "biigle/largo",
+    "authors": [
+        {
+            "name": "Martin Zurowietz",
+            "email": "martin@cebitec.uni-bielefeld.de"
+        }
+    ],
     "require": {
         "ext-vips": "*",
         "jcupitt/vips": "^1.0",
