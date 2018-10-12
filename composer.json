@@ -1,5 +1,11 @@
 {
     "name": "biigle/reports",
+    "authors": [
+        {
+            "name": "Martin Zurowietz",
+            "email": "martin@cebitec.uni-bielefeld.de"
+        }
+    ],
     "require": {
         "ext-zip": "*",
         "biigle/projects": "~1.4"
