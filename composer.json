@@ -1,5 +1,11 @@
 {
     "name": "biigle/annotations",
+    "authors": [
+        {
+            "name": "Martin Zurowietz",
+            "email": "martin@cebitec.uni-bielefeld.de"
+        }
+    ],
     "require": {
         "biigle/volumes": "^2.0",
         "biigle/label-trees": "~1.3"
