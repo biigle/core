@@ -3,6 +3,12 @@
     "description": "Core of the BIIGLE web application.",
     "keywords": ["BIIGLE", "core"],
     "license": "proprietary",
+    "authors": [
+        {
+            "name": "Martin Zurowietz",
+            "email": "martin@cebitec.uni-bielefeld.de"
+        }
+    ],
     "type": "project",
     "require": {
         "php": ">=7.1",
