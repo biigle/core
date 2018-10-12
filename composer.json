@@ -1,5 +1,11 @@
 {
     "name": "biigle/label-trees",
+    "authors": [
+        {
+            "name": "Martin Zurowietz",
+            "email": "martin@cebitec.uni-bielefeld.de"
+        }
+    ],
     "require": {
         "ext-soap": "*"
     },
