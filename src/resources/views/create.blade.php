@@ -95,7 +95,7 @@
          @unless (config('biigle.offline_mode'))
              <div class="panel panel-warning">
                 <div class="panel-body text-warning">
-                    If you do not have the resources to host images as remote volumes <a href="mailto:{{config('biigle.admin_email')}}">contact the admins</a> to discuss the possibility of hosting the images on the BIIGLE server.
+                    If you do not have the resources to host images as remote volumes, <a href="mailto:{{config('biigle.admin_email')}}">contact the admins</a> to discuss the possibility of hosting the images on the BIIGLE server.
                 </div>
             </div>
          @endunless
