@@ -40,13 +40,18 @@
                   </span>
                </div>
             @else
-               <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required v-model="url">
+               @if (config('biigle.offline_mode'))
+                  <input type="text" class="form-control" name="url" id="url" placeholder="local://images/volume" required v-model="url">
+               @else
+                  <input type="text" class="form-control" name="url" id="url" placeholder="https://my-domain.tld/volume" required v-model="url">
+               @endif
             @endif
             <p class="help-block">
-               The directory containing the volume images.
-               @unless (config('biigle.offline_mode'))
-                  Can be a storage disk like <code>local://images/volume</code> or <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote</a> like <code>https://my-domain.tld/volume</code>.
-               @endunless
+               @if (config('biigle.offline_mode'))
+                  The volume directory on the BIIGLE server (e.g. <code>local://images/volume</code>).
+               @else
+                  The volume directory of a <a href="{{route('manual-tutorials', ['volumes', 'remote-volumes'])}}">remote volume</a> (e.g. <code>https://my-domain.tld/volume</code>) or on the BIIGLE server (e.g. <code>local://images/volume</code>).
+               @endif
             </p>
             @if($errors->has('url'))
                <span class="help-block">{{ $errors->first('url') }}</span>
@@ -90,7 +95,7 @@
          @unless (config('biigle.offline_mode'))
              <div class="panel panel-warning">
                 <div class="panel-body text-warning">
-                    Please <a href="mailto:{{config('biigle.admin_email')}}">contact the admins</a> if you want to create a new volume that is not a remote volume.
+                    If you do not have the resources to host images as remote volumes <a href="mailto:{{config('biigle.admin_email')}}">contact the admins</a> to discuss the possibility of hosting the images on the BIIGLE server.
                 </div>
             </div>
          @endunless
