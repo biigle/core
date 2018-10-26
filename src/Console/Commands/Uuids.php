@@ -16,7 +16,8 @@ class Uuids extends Command
      */
     protected $signature = 'sync:uuids
         {file? : If a file is provided, use it for syncing. If not, output the contents of such a file.}
-        {--dry-run : Do not change the database records}';
+        {--dry-run : Do not change the database records}
+        {--force : Synchronise matching users without asking}';
 
     /**
      * The console command description.
@@ -69,11 +70,14 @@ class Uuids extends Command
 
                 $sync = false;
                 if ($emailMatches && $nameMatches) {
-                    $sync = $this->confirm("Found matching email address and name for {$user->firstname} {$user->lastname} ({$user->email}). Synchronize UUID with file?");
+                    $this->info("Found matching email address and name for {$user->firstname} {$user->lastname} ({$user->email}).");
+                    $sync = $this->option('force') || $this->confirm("Synchronize UUID with file?");
                 } elseif ($emailMatches) {
-                    $sync = $this->confirm("Found matching email address but different name for {$user->firstname} {$user->lastname} ({$user->email}). Synchronize UUID with file?");
+                    $this->info("Found matching email address but different name for {$user->firstname} {$user->lastname} ({$user->email}).");
+                    $sync = $this->option('force') || $this->confirm("Synchronize UUID with file?");
                 } elseif ($nameMatches) {
-                    $sync = $this->confirm("Found matching name but different email address for {$user->firstname} {$user->lastname} ({$user->email}). Synchronize UUID with file?");
+                    $this->info("Found matching name but different email address for {$user->firstname} {$user->lastname} ({$user->email}).");
+                    $sync = $this->option('force') || $this->confirm("Synchronize UUID with file?");
                 }
 
                 if ($sync) {
