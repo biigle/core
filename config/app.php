@@ -204,6 +204,7 @@ return [
         Biigle\Modules\Sync\SyncServiceProvider::class,
         Biigle\Modules\Legal\LegalServiceProvider::class,
         Biigle\Modules\Demo\DemoServiceProvider::class,
+        Biigle\Modules\Maia\MaiaServiceProvider::class,
 
     ],
 

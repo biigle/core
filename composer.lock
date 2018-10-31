@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "39d4865699b15fdfff60f53f61763ff4",
+    "content-hash": "13b5130a375b03361898f42bb885d305",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -406,6 +406,43 @@
                 "issues": "https://github.com/biigle/legal/issues"
             },
             "time": "2018-09-18T13:50:15+00:00"
+        },
+        {
+            "name": "biigle/maia",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:biigle/maia.git",
+                "reference": "daac603baa99e299e9e9347393e3709f9ea8dea6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/daac603baa99e299e9e9347393e3709f9ea8dea6",
+                "reference": "daac603baa99e299e9e9347393e3709f9ea8dea6",
+                "shasum": ""
+            },
+            "require": {
+                "biigle/label-trees": "^1.19",
+                "biigle/volumes": "^2.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\Modules\\Maia\\": "src"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "Perform the Machine Learning Assisted Image Annotation method in BIIGLE",
+            "support": {
+                "source": "https://github.com/biigle/maia/tree/master",
+                "issues": "https://github.com/biigle/maia/issues"
+            },
+            "time": "2018-10-31T12:14:17+00:00"
         },
         {
             "name": "biigle/projects",
@@ -5649,6 +5686,7 @@
         "biigle/largo": 20,
         "biigle/laserpoints": 20,
         "biigle/legal": 20,
+        "biigle/maia": 20,
         "biigle/projects": 20,
         "biigle/reports": 20,
         "biigle/sync": 20,

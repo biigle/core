@@ -30,6 +30,7 @@
         "biigle/largo": "@dev",
         "biigle/laserpoints": "@dev",
         "biigle/legal": "@dev",
+        "biigle/maia": "@dev",
         "biigle/projects": "@dev",
         "biigle/reports": "@dev",
         "biigle/sync": "@dev",
@@ -175,6 +176,10 @@
         "laravel-remote-queue": {
             "type": "vcs",
             "url": "https://github.com/biigle/laravel-remote-queue"
+        },
+        "maia": {
+            "type": "vcs",
+            "url": "git@github.com:biigle/maia.git"
         }
     }
 }
