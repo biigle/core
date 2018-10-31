@@ -1,7 +1,10 @@
 {
     "name": "biigle/core",
     "description": "Core of the BIIGLE web application.",
-    "keywords": ["BIIGLE", "core"],
+    "keywords": [
+        "BIIGLE",
+        "core"
+    ],
     "license": "proprietary",
     "authors": [
         {
@@ -22,6 +25,8 @@
         "biigle/demo": "^1.1",
         "biigle/geo": "@dev",
         "biigle/label-trees": "@dev",
+        "biigle/laravel-image-cache": "^0.3.0",
+        "biigle/laravel-remote-queue": "dev-master",
         "biigle/largo": "@dev",
         "biigle/laserpoints": "@dev",
         "biigle/legal": "@dev",
@@ -29,7 +34,6 @@
         "biigle/reports": "@dev",
         "biigle/sync": "@dev",
         "biigle/volumes": "@dev",
-        "biigle/laravel-image-cache": "^0.3.0",
         "doctrine/annotations": "1.4.0",
         "doctrine/dbal": "^2.5",
         "fideloper/proxy": "~3.3",
@@ -74,8 +78,7 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": [
-            ]
+            "dont-discover": []
         }
     },
     "scripts": {
@@ -112,62 +115,66 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "repositories": [
-        {
+    "repositories": {
+        "0": {
             "type": "vcs",
             "url": "git@github.com:biigle/projects.git"
         },
-        {
+        "1": {
             "type": "vcs",
             "url": "git@github.com:biigle/volumes.git"
         },
-        {
+        "2": {
             "type": "vcs",
             "url": "git@github.com:biigle/annotations.git"
         },
-        {
+        "3": {
             "type": "vcs",
             "url": "git@github.com:biigle/color-sort.git"
         },
-        {
+        "4": {
             "type": "vcs",
             "url": "git@github.com:biigle/label-trees.git"
         },
-        {
+        "5": {
             "type": "vcs",
             "url": "git@github.com:biigle/largo.git"
         },
-        {
+        "6": {
             "type": "vcs",
             "url": "git@github.com:biigle/laserpoints.git"
         },
-        {
+        "7": {
             "type": "vcs",
             "url": "git@github.com:biigle/reports.git"
         },
-        {
+        "8": {
             "type": "vcs",
             "url": "git@github.com:biigle/geo.git"
         },
-        {
+        "9": {
             "type": "vcs",
             "url": "git@github.com:biigle/ananas.git"
         },
-        {
+        "10": {
             "type": "vcs",
             "url": "git@github.com:biigle/sync.git"
         },
-        {
+        "11": {
             "type": "vcs",
             "url": "git@github.com:biigle/legal.git"
         },
-        {
+        "12": {
             "type": "vcs",
             "url": "git@github.com:biigle/demo.git"
         },
-        {
+        "13": {
             "type": "vcs",
             "url": "https://github.com/biigle/laravel-image-cache"
+        },
+        "laravel-remote-queue": {
+            "type": "vcs",
+            "url": "https://github.com/biigle/laravel-remote-queue"
         }
-    ]
+    }
 }

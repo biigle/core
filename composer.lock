@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "933ca3f34353c7775fb3f468a7e8d8c5",
+    "content-hash": "39d4865699b15fdfff60f53f61763ff4",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -260,6 +260,66 @@
             "time": "2018-10-11T11:35:29+00:00"
         },
         {
+            "name": "biigle/laravel-remote-queue",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:biigle/laravel-remote-queue.git",
+                "reference": "9b4fa0ea5101202cb77e02d155bbcbae6ab55238"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/laravel-remote-queue/zipball/9b4fa0ea5101202cb77e02d155bbcbae6ab55238",
+                "reference": "9b4fa0ea5101202cb77e02d155bbcbae6ab55238",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "~6.0",
+                "illuminate/contracts": "^5.5 <5.7.7",
+                "illuminate/queue": "^5.5 <5.7.7",
+                "illuminate/routing": "^5.5 <5.7.7",
+                "illuminate/support": "^5.5 <5.7.7"
+            },
+            "require-dev": {
+                "laravel/laravel": "^5.5",
+                "mockery/mockery": "^1.2",
+                "phpunit/phpunit": "^7.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Biigle\\RemoteQueue\\RemoteQueueServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\RemoteQueue\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Biigle\\RemoteQueue\\Tests\\": "tests/"
+                },
+                "classmap": [
+                    "tests/TestCase.php"
+                ]
+            },
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "Submit jobs to and receive jobs from other Laravel or Lumen instances.",
+            "support": {
+                "source": "https://github.com/biigle/laravel-remote-queue/tree/master",
+                "issues": "https://github.com/biigle/laravel-remote-queue/issues"
+            },
+            "time": "2018-10-31T10:06:03+00:00"
+        },
+        {
             "name": "biigle/largo",
             "version": "v2.4.1",
             "source": {
@@ -410,16 +470,16 @@
         },
         {
             "name": "biigle/sync",
-            "version": "v1.4.2",
+            "version": "v1.5.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:biigle/sync.git",
-                "reference": "22791c30c9102f18b4c08bfe525c7bda8361694f"
+                "reference": "71f18f7f405e8ad63226da7ccd4af255daacc743"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/sync/zipball/22791c30c9102f18b4c08bfe525c7bda8361694f",
-                "reference": "22791c30c9102f18b4c08bfe525c7bda8361694f",
+                "url": "https://api.github.com/repos/biigle/sync/zipball/71f18f7f405e8ad63226da7ccd4af255daacc743",
+                "reference": "71f18f7f405e8ad63226da7ccd4af255daacc743",
                 "shasum": ""
             },
             "type": "library",
@@ -428,24 +488,30 @@
                     "Biigle\\Modules\\Sync\\": "src"
                 }
             },
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
             "support": {
                 "source": "https://github.com/biigle/sync/tree/master",
                 "issues": "https://github.com/biigle/sync/issues"
             },
-            "time": "2018-09-13T14:35:16+00:00"
+            "time": "2018-10-26T06:51:02+00:00"
         },
         {
             "name": "biigle/volumes",
-            "version": "v2.7.2",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "git@github.com:biigle/volumes.git",
-                "reference": "3bedece1c925f434f3aa1c605001e09202e8ad3a"
+                "reference": "86604052b7d8e20fba50d5902e4ba8758b84574b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/volumes/zipball/3bedece1c925f434f3aa1c605001e09202e8ad3a",
-                "reference": "3bedece1c925f434f3aa1c605001e09202e8ad3a",
+                "url": "https://api.github.com/repos/biigle/volumes/zipball/86604052b7d8e20fba50d5902e4ba8758b84574b",
+                "reference": "86604052b7d8e20fba50d5902e4ba8758b84574b",
                 "shasum": ""
             },
             "require": {
@@ -463,11 +529,17 @@
                     "php-cs-fixer --config-file='.php_cs' fix"
                 ]
             },
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
             "support": {
-                "source": "https://github.com/biigle/volumes/tree/v2.7.2",
+                "source": "https://github.com/biigle/volumes/tree/v2.7.3",
                 "issues": "https://github.com/biigle/volumes/issues"
             },
-            "time": "2018-09-18T12:18:22+00:00"
+            "time": "2018-10-25T12:31:15+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -5573,6 +5645,7 @@
         "biigle/color-sort": 20,
         "biigle/geo": 20,
         "biigle/label-trees": 20,
+        "biigle/laravel-remote-queue": 20,
         "biigle/largo": 20,
         "biigle/laserpoints": 20,
         "biigle/legal": 20,
