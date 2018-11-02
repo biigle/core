@@ -325,4 +325,16 @@ class AnnotationTest extends ModelTestCase
 
         $this->assertEquals($al1->annotation->id, Annotation::withLabel($al1->label)->first()->id);
     }
+
+    public function testGetPoints()
+    {
+        $annotation = static::make(['points' => [1, 2]]);
+        $this->assertEquals([1, 2], $annotation->getPoints());
+    }
+
+    public function testGetShape()
+    {
+        $annotation = static::make(['shape_id' => Shape::$pointId]);
+        $this->assertEquals(Shape::$pointId, $annotation->getShape()->id);
+    }
 }
