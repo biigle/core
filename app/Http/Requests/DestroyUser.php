@@ -23,7 +23,6 @@ class DestroyUser extends FormRequest
      */
     public function authorize()
     {
-
         return $this->user()->can('destroy', $this->user);
     }
 

@@ -4,6 +4,7 @@ namespace Biigle\Services;
 
 use File;
 use Storage;
+use Exception;
 use ZipArchive;
 use Biigle\Image;
 use Symfony\Component\Finder\Finder;
@@ -55,7 +56,12 @@ class TileCache
                     return false;
                 }
                 $zip = new ZipArchive;
-                $zip->open("{$cachedPath}.zip");
+                $valid = $zip->open("{$cachedPath}.zip");
+
+                if ($valid !== true) {
+                    throw new Exception("Invalid ZIP file for image {$image->id}. Error code: {$valid}");
+                }
+
                 $dirs = substr($fragment, 0, 5);
                 $zip->extractTo("{$this->path}/{$dirs}");
                 $zip->close();

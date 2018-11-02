@@ -30,7 +30,6 @@ class UpdateProjectUser extends FormRequest
      */
     public function authorize()
     {
-
         return $this->user()->can('update', $this->project);
     }
 
