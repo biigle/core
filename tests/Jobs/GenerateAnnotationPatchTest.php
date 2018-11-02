@@ -185,7 +185,7 @@ class GenerateAnnotationPatchTest extends TestCase
 
 class GenerateAnnotationPatchStub extends GenerateAnnotationPatch
 {
-    public function __construct(Annotation $annotation, $targetPath = '')
+    public function __construct(Annotation $annotation, $targetPath = null)
     {
         parent::__construct($annotation, $targetPath);
         $this->annotation = $annotation;

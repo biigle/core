@@ -11,6 +11,7 @@ use Biigle\Shape;
 use Biigle\Jobs\Job;
 use Biigle\Contracts\Annotation;
 use Illuminate\Queue\InteractsWithQueue;
+use Biigle\Annotation as AnnotationModel;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class GenerateAnnotationPatch extends Job implements ShouldQueue
@@ -49,11 +50,11 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
      * Create a new job instance.
      *
      * @param Annotation $annotation The the annotation to generate a patch for.
-     * @param string $targetPath Path to the file to store the annotation patch
+     * @param string|null $targetPath Path to the file to store the annotation patch. If null, th default path for a Largo annotation is used.
      *
      * @return void
      */
-    public function __construct(Annotation $annotation, string $targetPath)
+    public function __construct(Annotation $annotation, $targetPath = null)
     {
         // We do not use the SerializesModels trait because there is a good chance that
         // the annotation is deleted when this job should be executed. If this is the
@@ -73,6 +74,13 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         $this->annotation = $this->annotationClass::find($this->annotationId);
         if ($this->annotation === null) {
             return;
+        }
+
+        // Do not do this in the constructor because that would require fetching all
+        // the images of the annotations. This would be really slow when lots of
+        // annotation patchs should be generated.
+        if (is_null($this->targetPath)) {
+            $this->targetPath = $this->getDefaultTargetPath($this->annotation);
         }
 
         try {
@@ -227,5 +235,20 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         $rect['height'] = min($image->height, $rect['height']);
 
         return $rect;
+    }
+
+    /**
+     * Assemble the default target path for a Largo annotation patch.
+     *
+     * @param AnnotationModel $annotation
+     *
+     * @return string
+     */
+    protected function getDefaultTargetPath(AnnotationModel $annotation): string
+    {
+        $prefix = config('largo.patch_storage').'/'.$annotation->image->volume_id;
+        $format = config('largo.patch_format');
+
+        return "{$prefix}/{$annotation->id}.{$format}";
     }
 }
