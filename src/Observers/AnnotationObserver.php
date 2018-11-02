@@ -18,7 +18,11 @@ class AnnotationObserver
      */
     public function saved(Annotation $annotation)
     {
-        $job = new GenerateAnnotationPatch($annotation);
+        $prefix = config('largo.patch_storage').'/'.$annotation->image->volume_id;
+        $format = config('largo.patch_format');
+        $targetPath = "{$prefix}/{$annotation->id}.{$format}";
+
+        $job = new GenerateAnnotationPatch($annotation, $targetPath);
         $job->delay(config('largo.patch_generation_delay'));
         $this->dispatch($job);
     }

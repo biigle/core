@@ -9,7 +9,7 @@ use ImageCache;
 use Biigle\Image;
 use Biigle\Shape;
 use Biigle\Jobs\Job;
-use Biigle\Annotation;
+use Biigle\Contracts\Annotation;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -18,31 +18,49 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
     use InteractsWithQueue;
 
     /**
-     * The ID of the annotation to generate a patch for.
+     * The class of the annotation model.
+     *
+     * @var string
+     */
+    protected $annotationClass;
+
+    /**
+     * The ID of the annotation model.
      *
      * @var int
      */
-    protected $id;
+    protected $annotationId;
 
     /**
-     * The annotation that is set when the job is processed.
+     * The the annotation to generate a patch for.
      *
      * @var Annotation
      */
     protected $annotation;
 
     /**
+     * Path to the file to store the annotation patch.
+     *
+     * @var string
+     */
+    protected $targetPath;
+
+    /**
      * Create a new job instance.
      *
-     * @param Annotation $annotation
+     * @param Annotation $annotation The the annotation to generate a patch for.
+     * @param string $targetPath Path to the file to store the annotation patch
      *
      * @return void
      */
-    public function __construct(Annotation $annotation)
+    public function __construct(Annotation $annotation, string $targetPath)
     {
-        // Take only the ID and not the annotation because the annotation may already be
-        // deleted when this job runs and the job would fail!
-        $this->id = $annotation->id;
+        // We do not use the SerializesModels trait because there is a good chance that
+        // the annotation is deleted when this job should be executed. If this is the
+        // case, this job should be ignored (see handle method).
+        $this->annotationId = $annotation->getQueueableId();
+        $this->annotationClass = get_class($annotation);
+        $this->targetPath = $targetPath;
     }
 
     /**
@@ -52,14 +70,13 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
      */
     public function handle()
     {
-        $this->annotation = Annotation::with('image.volume')->find($this->id);
-        // Annotation may have been deleted in the meantime.
+        $this->annotation = $this->annotationClass::find($this->annotationId);
         if ($this->annotation === null) {
             return;
         }
 
         try {
-            ImageCache::get($this->annotation->image, [$this, 'handleImage']);
+            ImageCache::get($this->annotation->getImage(), [$this, 'handleImage']);
         } catch (Exception $e) {
             if (str_contains($e->getMessage(), 'The source resource could not be established') && $this->attempts() < 3) {
                 // Retry in 10 minutes, maybe the remote source is available again.
@@ -80,25 +97,23 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
      */
     public function handleImage(Image $image, $path)
     {
-        $prefix = config('largo.patch_storage').'/'.$image->volume_id;
-        if (!File::exists($prefix)) {
+        $targetDir = File::dirname($this->targetPath);
+        if (!File::exists($targetDir)) {
             // Make recursive. With force to ignore errors due to race conditions.
             // see: https://github.com/biigle/largo/issues/47
-            File::makeDirectory($prefix, 0755, true, true);
+            File::makeDirectory($targetDir, 0755, true, true);
         }
 
-        $format = config('largo.patch_format');
         $thumbWidth = config('thumbnails.width');
         $thumbHeight = config('thumbnails.height');
 
         $rect = $this->getPatchRect($this->annotation, $thumbWidth, $thumbHeight);
-
         $image = $this->getVipsImage($path);
         $rect = $this->makeRectContained($rect, $image);
 
         $image->crop($rect['left'], $rect['top'], $rect['width'], $rect['height'])
             ->resize(floatval($thumbWidth) / $rect['width'])
-            ->writeToFile("{$prefix}/{$this->id}.{$format}");
+            ->writeToFile($this->targetPath);
     }
 
     /**
@@ -125,9 +140,9 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
     protected function getPatchRect(Annotation $annotation, $thumbWidth, $thumbHeight)
     {
         $padding = config('largo.patch_padding');
-        $points = $annotation->points;
+        $points = $annotation->getPoints();
 
-        switch ($annotation->shape_id) {
+        switch ($annotation->getShape()->id) {
             case Shape::$pointId:
                 $pointPadding = config('largo.point_padding');
                 $left = $points[0] - $pointPadding;

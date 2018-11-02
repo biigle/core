@@ -12,111 +12,112 @@ use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
 class GenerateAnnotationPatchTest extends TestCase
 {
-    public function setUp()
+    public function testHandleSerialization()
     {
-        parent::setUp();
-
-        $this->image = Mockery::mock();
-        $this->image->width = 1000;
-        $this->image->height = 750;
-        $this->image->shouldReceive('resize')
-            ->once()
-            ->andReturn($this->image);
+        $this->getImageMock(0);
+        $annotation = AnnotationTest::create();
+        $job = serialize(new GenerateAnnotationPatchStub($annotation));
+        $annotation->delete();
+        $job = unserialize($job);
+        // This should throw no error and should not perform any processing.
+        $job->handle();
     }
 
     public function testHandlePoint()
     {
+        $image = $this->getImageMock();
         $annotation = AnnotationTest::create([
             'points' => [100, 100],
             'shape_id' => Shape::$pointId,
         ]);
-        $job = new GenerateAnnotationPatchStub($annotation);
-        $job->mock = $this->image;
+        $job = new GenerateAnnotationPatchStub($annotation, 'testpath');
+        $job->mock = $image;
 
-        $this->image->shouldReceive('crop')
+        $image->shouldReceive('crop')
             ->with(1, 26, 197, 148)
             ->once()
-            ->andReturn($this->image);
+            ->andReturn($image);
 
-        $this->image->shouldReceive('writeToFile')
-            ->with(config('largo.patch_storage').'/'.$annotation->image->volume_id.'/'.$annotation->id.'.jpg')
+        $image->shouldReceive('writeToFile')
+            ->with('testpath')
             ->once()
-            ->andReturn($this->image);
+            ->andReturn($image);
 
-        File::shouldReceive('exists')
-            ->once()
-            ->andReturn(true);
+        File::shouldReceive('dirname')->andReturn('');
+        File::shouldReceive('exists')->once()->andReturn(true);
 
         $job->handleImage($annotation->image, 'abc');
     }
 
     public function testHandleCircle()
     {
+        $image = $this->getImageMock();
         $annotation = AnnotationTest::create([
             // should handle floats correctly
             'points' => [100.4, 100.4, 20],
             'shape_id' => Shape::$circleId,
         ]);
         $job = new GenerateAnnotationPatchStub($annotation);
-        $job->mock = $this->image;
+        $job->mock = $image;
 
-        $this->image->shouldReceive('crop')
+        $image->shouldReceive('crop')
             ->with(60, 70, 80, 60)
             ->once()
-            ->andReturn($this->image);
+            ->andReturn($image);
 
-        $this->image->shouldReceive('writeToFile')
+        $image->shouldReceive('writeToFile')
             ->once()
-            ->andReturn($this->image);
+            ->andReturn($image);
 
-        File::shouldReceive('exists')
-            ->once()
-            ->andReturn(true);
+        File::shouldReceive('dirname')->andReturn('');
+        File::shouldReceive('exists')->once()->andReturn(true);
 
         $job->handleImage($annotation->image, 'abc');
     }
 
     public function testHandleOther()
     {
+        $image = $this->getImageMock();
         $padding = config('largo.patch_padding');
         $annotation = AnnotationTest::create([
             'points' => [100, 100, 100, 200, 200, 200, 200, 100],
             'shape_id' => Shape::$rectangleId,
         ]);
         $job = new GenerateAnnotationPatchStub($annotation);
-        $job->mock = $this->image;
+        $job->mock = $image;
 
-        $this->image->shouldReceive('crop')
+        $image->shouldReceive('crop')
             ->with(70, 90, 160, 120)
             ->once()
-            ->andReturn($this->image);
+            ->andReturn($image);
 
-        $this->image->shouldReceive('writeToFile')
+        $image->shouldReceive('writeToFile')
             ->once()
-            ->andReturn($this->image);
+            ->andReturn($image);
 
-        File::shouldReceive('exists')
-            ->once()
-            ->andReturn(true);
+        File::shouldReceive('dirname')->andReturn('');
+        File::shouldReceive('exists')->once()->andReturn(true);
 
         $job->handleImage($annotation->image, 'abc');
     }
 
     public function testHandleContainedNegative()
     {
+        $image = $this->getImageMock();
         $annotation = AnnotationTest::create([
             'points' => [0, 0],
             'shape_id' => Shape::$pointId,
         ]);
         $job = new GenerateAnnotationPatchStub($annotation);
-        $job->mock = $this->image;
+        $job->mock = $image;
 
-        $this->image->shouldReceive('crop')
+        $image->shouldReceive('crop')
             ->once()
             ->with(0, 0, 197, 148)
-            ->andReturn($this->image);
+            ->andReturn($image);
 
-        $this->image->shouldReceive('writeToFile')->andReturn($this->image);
+        $image->shouldReceive('writeToFile')->andReturn($image);
+        File::shouldReceive('dirname')->andReturn('');
         File::shouldReceive('exists')->andReturn(true);
 
         $job->handleImage($annotation->image, 'abc');
@@ -124,19 +125,21 @@ class GenerateAnnotationPatchTest extends TestCase
 
     public function testHandleContainedPositive()
     {
+        $image = $this->getImageMock();
         $annotation = AnnotationTest::create([
             'points' => [1000, 750],
             'shape_id' => Shape::$pointId,
         ]);
         $job = new GenerateAnnotationPatchStub($annotation);
-        $job->mock = $this->image;
+        $job->mock = $image;
 
-        $this->image->shouldReceive('crop')
+        $image->shouldReceive('crop')
             ->once()
             ->with(803, 602, 197, 148)
-            ->andReturn($this->image);
+            ->andReturn($image);
 
-        $this->image->shouldReceive('writeToFile')->andReturn($this->image);
+        $image->shouldReceive('writeToFile')->andReturn($image);
+        File::shouldReceive('dirname')->andReturn('');
         File::shouldReceive('exists')->andReturn(true);
 
         $job->handleImage($annotation->image, 'abc');
@@ -144,33 +147,47 @@ class GenerateAnnotationPatchTest extends TestCase
 
     public function testHandleContainedTooLarge()
     {
-        $this->image->width = 100;
-        $this->image->height = 100;
+        $image = $this->getImageMock();
+        $image->width = 100;
+        $image->height = 100;
 
         $annotation = AnnotationTest::create([
             'points' => [50, 50],
             'shape_id' => Shape::$pointId,
         ]);
         $job = new GenerateAnnotationPatchStub($annotation);
-        $job->mock = $this->image;
+        $job->mock = $image;
 
-        $this->image->shouldReceive('crop')
+        $image->shouldReceive('crop')
             ->once()
             ->with(0, 0, 100, 100)
-            ->andReturn($this->image);
+            ->andReturn($image);
 
-        $this->image->shouldReceive('writeToFile')->andReturn($this->image);
+        $image->shouldReceive('writeToFile')->andReturn($image);
+        File::shouldReceive('dirname')->andReturn('');
         File::shouldReceive('exists')->andReturn(true);
 
         $job->handleImage($annotation->image, 'abc');
+    }
+
+    protected function getImageMock($times = 1)
+    {
+        $image = Mockery::mock();
+        $image->width = 1000;
+        $image->height = 750;
+        $image->shouldReceive('resize')
+            ->times($times)
+            ->andReturn($image);
+
+        return $image;
     }
 }
 
 class GenerateAnnotationPatchStub extends GenerateAnnotationPatch
 {
-    public function __construct(Annotation $annotation)
+    public function __construct(Annotation $annotation, $targetPath = '')
     {
-        parent::__construct($annotation);
+        parent::__construct($annotation, $targetPath);
         $this->annotation = $annotation;
     }
 
