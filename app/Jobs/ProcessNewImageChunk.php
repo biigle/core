@@ -356,7 +356,7 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
 
         if ($count === 0) {
             return 0;
-        } else if ($count === 1) {
+        } elseif ($count === 1) {
             return $parts[0];
         }
 
