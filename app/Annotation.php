@@ -167,4 +167,12 @@ class Annotation extends Model implements AnnotationContract
     {
         return $this->shape;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getImage(): Image
+    {
+        return $this->image;
+    }
 }
