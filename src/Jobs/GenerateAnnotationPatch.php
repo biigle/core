@@ -151,7 +151,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
         $points = $annotation->getPoints();
 
         switch ($annotation->getShape()->id) {
-            case Shape::$pointId:
+            case Shape::pointId():
                 $pointPadding = config('largo.point_padding');
                 $left = $points[0] - $pointPadding;
                 $right = $points[0] + $pointPadding;
@@ -159,7 +159,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
                 $bottom = $points[1] + $pointPadding;
                 break;
 
-            case Shape::$circleId:
+            case Shape::circleId():
                 $left = $points[0] - $points[2];
                 $right = $points[0] + $points[2];
                 $top = $points[1] - $points[2];

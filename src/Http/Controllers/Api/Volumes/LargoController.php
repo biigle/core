@@ -111,9 +111,9 @@ class LargoController extends Controller
             // All projects that the user and the volume have in common
             // and where the user is editor, expert or admin.
             $projects = Project::inCommon($user, $volume->id, [
-                Role::$editor->id,
-                Role::$expert->id,
-                Role::$admin->id,
+                Role::editorId(),
+                Role::expertId(),
+                Role::adminId(),
             ])->pluck('id');
         }
 

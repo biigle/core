@@ -28,7 +28,7 @@ class GenerateAnnotationPatchTest extends TestCase
         $image = $this->getImageMock();
         $annotation = AnnotationTest::create([
             'points' => [100, 100],
-            'shape_id' => Shape::$pointId,
+            'shape_id' => Shape::pointId(),
         ]);
         $job = new GenerateAnnotationPatchStub($annotation, 'testpath');
         $job->mock = $image;
@@ -55,7 +55,7 @@ class GenerateAnnotationPatchTest extends TestCase
         $annotation = AnnotationTest::create([
             // should handle floats correctly
             'points' => [100.4, 100.4, 20],
-            'shape_id' => Shape::$circleId,
+            'shape_id' => Shape::circleId(),
         ]);
         $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
@@ -81,7 +81,7 @@ class GenerateAnnotationPatchTest extends TestCase
         $padding = config('largo.patch_padding');
         $annotation = AnnotationTest::create([
             'points' => [100, 100, 100, 200, 200, 200, 200, 100],
-            'shape_id' => Shape::$rectangleId,
+            'shape_id' => Shape::rectangleId(),
         ]);
         $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
@@ -106,7 +106,7 @@ class GenerateAnnotationPatchTest extends TestCase
         $image = $this->getImageMock();
         $annotation = AnnotationTest::create([
             'points' => [0, 0],
-            'shape_id' => Shape::$pointId,
+            'shape_id' => Shape::pointId(),
         ]);
         $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
@@ -128,7 +128,7 @@ class GenerateAnnotationPatchTest extends TestCase
         $image = $this->getImageMock();
         $annotation = AnnotationTest::create([
             'points' => [1000, 750],
-            'shape_id' => Shape::$pointId,
+            'shape_id' => Shape::pointId(),
         ]);
         $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
@@ -153,7 +153,7 @@ class GenerateAnnotationPatchTest extends TestCase
 
         $annotation = AnnotationTest::create([
             'points' => [50, 50],
-            'shape_id' => Shape::$pointId,
+            'shape_id' => Shape::pointId(),
         ]);
         $job = new GenerateAnnotationPatchStub($annotation);
         $job->mock = $image;
