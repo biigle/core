@@ -181,9 +181,9 @@ class VolumeImportTest extends TestCase
         $imageLabel = ImageLabelTest::create(['image_id' => $this->image->id]);
         $tree = $imageLabel->label->tree;
         $admin = UserTest::create();
-        $tree->addMember($admin, Role::$admin);
+        $tree->addMember($admin, Role::admin());
         $editor = UserTest::create();
-        $tree->addMember($editor, Role::$editor);
+        $tree->addMember($editor, Role::editor());
 
         $import = $this->getDefaultImport();
         $imageLabel->delete();

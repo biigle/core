@@ -253,7 +253,7 @@ class LabelTreeImport extends Import
                     'name' => $tree['name'],
                     'description' => $tree['description'],
                     'uuid' => $tree['uuid'],
-                    'visibility_id' => Visibility::$private->id,
+                    'visibility_id' => Visibility::privateId(),
                     'created_at' => $now,
                     'updated_at' => $now,
                 ];
@@ -299,7 +299,7 @@ class LabelTreeImport extends Import
             ->pluck('members')
             ->collapse()
             ->filter(function ($user) {
-                return $user['role_id'] === Role::$admin->id;
+                return $user['role_id'] === Role::adminId();
             })
             ->pluck('id')
             ->unique()

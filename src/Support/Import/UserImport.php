@@ -43,7 +43,7 @@ class UserImport extends Import
 
         $insert = $candidates->map(function ($u) use ($now) {
             unset($u['id']);
-            $u['role_id'] = Role::$editor->id;
+            $u['role_id'] = Role::editorId();
             $u['settings'] = json_encode($u['settings']);
             $u['updated_at'] = $now;
             $u['created_at'] = $now;

@@ -115,7 +115,7 @@ class ImportAdminController extends Controller
 
         $excludedLabelTreeCandidatesCount = $importLabelTreesCount - $labelTreeCandidatesCount;
 
-        $adminRoleId = Role::$admin->id;
+        $adminRoleId = Role::adminId();
 
         return view('sync::import.showLabelTree', compact(
             'importLabelTreesCount',
@@ -167,7 +167,7 @@ class ImportAdminController extends Controller
         $userCandidates = $import->getUserImportCandidates()
             ->map([$this, 'hideUserCredentials']);
 
-        $adminRoleId = Role::$admin->id;
+        $adminRoleId = Role::adminId();
 
         return view('sync::import.showVolume', compact(
             'volumeCandidates',
