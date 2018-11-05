@@ -18,7 +18,7 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        return $user->role_id === Role::$admin->id;
+        return $user->role_id === Role::adminId();
     }
 
     /**
@@ -30,7 +30,7 @@ class UserPolicy
      */
     public function update(User $user, User $updateUser)
     {
-        return $user->id === $updateUser->id || $user->role_id === Role::$admin->id;
+        return $user->id === $updateUser->id || $user->role_id === Role::adminId();
     }
 
     /**

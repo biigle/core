@@ -34,13 +34,15 @@ class MediaTypeTest extends ModelTestCase
         self::create(['name' => 'images']);
     }
 
-    public function testTimeSeriesId()
+    public function testTimeSeries()
     {
-        $this->assertNotNull(MediaType::$timeSeriesId);
+        $this->assertNotNull(MediaType::timeSeries());
+        $this->assertNotNull(MediaType::timeSeriesId());
     }
 
-    public function testLocationSeriesId()
+    public function testLocationSeries()
     {
-        $this->assertNotNull(MediaType::$locationSeriesId);
+        $this->assertNotNull(MediaType::locationSeries());
+        $this->assertNotNull(MediaType::locationSeriesId());
     }
 }

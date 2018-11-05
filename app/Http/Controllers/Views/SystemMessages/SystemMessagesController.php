@@ -35,15 +35,15 @@ class SystemMessagesController extends Controller
         $messages->appends('type', $type);
 
         $typeClasses = [
-            SystemMessageType::$important->id => 'warning',
-            SystemMessageType::$update->id => 'success',
-            SystemMessageType::$info->id => 'info',
+            SystemMessageType::typeImportantId() => 'warning',
+            SystemMessageType::typeUpdateId() => 'success',
+            SystemMessageType::typeInfoId() => 'info',
         ];
 
         $types = [
-            SystemMessageType::$important,
-            SystemMessageType::$update,
-            SystemMessageType::$info,
+            SystemMessageType::typeImportant(),
+            SystemMessageType::typeUpdate(),
+            SystemMessageType::typeInfo(),
         ];
 
         return view('system-messages.index', [
@@ -66,9 +66,9 @@ class SystemMessagesController extends Controller
             ->findOrFail($id);
 
         $typeClasses = [
-            SystemMessageType::$important->id => 'warning',
-            SystemMessageType::$update->id => 'success',
-            SystemMessageType::$info->id => 'info',
+            SystemMessageType::typeImportantId() => 'warning',
+            SystemMessageType::typeUpdateId() => 'success',
+            SystemMessageType::typeInfoId() => 'info',
         ];
 
         return view('system-messages.show', [

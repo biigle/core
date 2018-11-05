@@ -21,10 +21,10 @@ class VisibilityControllerTest extends ApiTestCase
 
     public function testShow()
     {
-        $this->doTestApiRoute('GET', '/api/v1/visibilities/'.Visibility::$public->id);
+        $this->doTestApiRoute('GET', '/api/v1/visibilities/'.Visibility::publicId());
 
         $this->beUser();
-        $response = $this->get('/api/v1/visibilities/'.Visibility::$public->id);
+        $response = $this->get('/api/v1/visibilities/'.Visibility::publicId());
         $content = $response->getContent();
         $response->assertStatus(200);
         $this->assertStringStartsWith('{', $content);

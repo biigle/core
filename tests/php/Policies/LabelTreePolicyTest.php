@@ -22,15 +22,15 @@ class LabelTreePolicyTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->tree = LabelTreeTest::create(['visibility_id' => Visibility::$public->id]);
+        $this->tree = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
         $this->user = UserTest::create();
         $this->editor = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalGuest = UserTest::create(['role_id' => Role::$guest->id]);
-        $this->globalEditor = UserTest::create(['role_id' => Role::$editor->id]);
-        $this->globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
-        $this->tree->addMember($this->editor, Role::$editor);
-        $this->tree->addMember($this->admin, Role::$admin);
+        $this->globalGuest = UserTest::create(['role_id' => Role::guestId()]);
+        $this->globalEditor = UserTest::create(['role_id' => Role::editorId()]);
+        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
+        $this->tree->addMember($this->editor, Role::editor());
+        $this->tree->addMember($this->admin, Role::admin());
     }
 
     public function testCreate()
@@ -50,7 +50,7 @@ class LabelTreePolicyTest extends TestCase
 
     public function testAccessPrivate()
     {
-        $this->tree->visibility_id = Visibility::$private->id;
+        $this->tree->visibility_id = Visibility::privateId();
         $this->assertFalse($this->user->can('access', $this->tree));
         $this->assertTrue($this->editor->can('access', $this->tree));
         $this->assertTrue($this->admin->can('access', $this->tree));
@@ -59,7 +59,7 @@ class LabelTreePolicyTest extends TestCase
 
     public function testAccessViaProjectMembership()
     {
-        $this->tree->visibility_id = Visibility::$private->id;
+        $this->tree->visibility_id = Visibility::privateId();
         $project = ProjectTest::create();
         $this->assertFalse($project->creator->can('access', $this->tree));
         $project->labelTrees()->attach($this->tree);

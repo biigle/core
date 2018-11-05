@@ -23,7 +23,7 @@ class LogsControllerTest extends TestCase
     {
         // redirect to profile settings
         $admin = UserTest::create();
-        $admin->role()->associate(Role::$admin);
+        $admin->role()->associate(Role::admin());
         $this->actingAs($admin)->get('admin/logs')->assertViewIs('admin.logs.index');
     }
 
@@ -32,7 +32,7 @@ class LogsControllerTest extends TestCase
         config(['biigle.admin_logs' => false]);
         // redirect to profile settings
         $admin = UserTest::create();
-        $admin->role()->associate(Role::$admin);
+        $admin->role()->associate(Role::admin());
         $this->actingAs($admin)->get('admin/logs')->assertStatus(404);
     }
 
@@ -50,7 +50,7 @@ class LogsControllerTest extends TestCase
     public function testShowWhenLoggedIn()
     {
         $admin = UserTest::create();
-        $admin->role()->associate(Role::$admin);
+        $admin->role()->associate(Role::admin());
         $this->actingAs($admin)->get('admin/logs/log')->assertStatus(404);
     }
 }

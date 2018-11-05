@@ -134,7 +134,7 @@ class LabelTreeController extends Controller
         $tree->description = $request->input('description');
         $tree->uuid = Uuid::uuid4();
         $tree->save();
-        $tree->addMember($request->user(), Role::$admin);
+        $tree->addMember($request->user(), Role::admin());
 
         if (isset($request->project)) {
             $tree->projects()->attach($request->project);
@@ -192,7 +192,7 @@ class LabelTreeController extends Controller
 
         // Compare the ID of the label tree attribute because it is cast to an int.
         // The request value is a string and can't be used for strict comparison.
-        if ($request->filled('visibility_id') && $tree->visibility_id === Visibility::$private->id) {
+        if ($request->filled('visibility_id') && $tree->visibility_id === Visibility::privateId()) {
             $tree->detachUnauthorizedProjects();
         }
 

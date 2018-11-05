@@ -72,7 +72,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test',
-            'media_type_id' => MediaType::$timeSeriesId,
+            'media_type_id' => MediaType::timeSeriesId(),
             'images' => '1.jpg, 2.jpg',
         ]);
         // invalid url format
@@ -81,7 +81,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'random',
-            'media_type_id' => MediaType::$timeSeriesId,
+            'media_type_id' => MediaType::timeSeriesId(),
             'images' => '1.jpg, 2.jpg',
         ]);
         // unknown storage disk
@@ -90,7 +90,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::$timeSeriesId,
+            'media_type_id' => MediaType::timeSeriesId(),
             'images' => '1.jpg, 2.jpg',
         ]);
         // images directory dows not exist in storage disk
@@ -102,7 +102,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::$timeSeriesId,
+            'media_type_id' => MediaType::timeSeriesId(),
             'images' => '',
         ]);
         // images array is empty
@@ -114,7 +114,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::$timeSeriesId,
+            'media_type_id' => MediaType::timeSeriesId(),
             'images' => '1.jpg, , 1.jpg',
         ]);
         // error because of duplicate image
@@ -123,7 +123,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::$timeSeriesId,
+            'media_type_id' => MediaType::timeSeriesId(),
             'images' => '1.bmp',
         ]);
         // error because of unsupported image format
@@ -134,7 +134,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::$timeSeriesId,
+            'media_type_id' => MediaType::timeSeriesId(),
             // empty parts should be discarded
             'images' => '1.jpg, , 2.jpg, , ,',
         ]);
@@ -162,7 +162,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::$timeSeriesId,
+            'media_type_id' => MediaType::timeSeriesId(),
             'images' => '1.jpg',
             'video_link' => 'http://example.com',
             'gis_link' => 'http://my.example.com',
@@ -176,7 +176,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->json('POST', "/api/v1/projects/{$id}/volumes", [
             'name' => 'my volume no. 1',
             'url' => 'test://images',
-            'media_type_id' => MediaType::$timeSeriesId,
+            'media_type_id' => MediaType::timeSeriesId(),
             'images' => '1.jpg',
             'video_link' => '',
             'gis_link' => '',
@@ -194,7 +194,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
 
         $secondProject = ProjectTest::create();
         $pid = $secondProject->id;
-        // $secondProject->addUserId($this->admin()->id, Role::$admin->id);
+        // $secondProject->addUserId($this->admin()->id, Role::adminId());
 
         $this->doTestApiRoute('POST', "/api/v1/projects/{$pid}/volumes/{$tid}");
 
@@ -202,7 +202,7 @@ class ProjectVolumeControllerTest extends ApiTestCase
         $response = $this->post("/api/v1/projects/{$pid}/volumes/{$tid}");
         $response->assertStatus(403);
 
-        $secondProject->addUserId($this->admin()->id, Role::$admin->id);
+        $secondProject->addUserId($this->admin()->id, Role::adminId());
         Cache::flush();
 
         $this->assertEmpty($secondProject->fresh()->volumes);

@@ -4,6 +4,7 @@ namespace Biigle\Tests\Http\Controllers\Api;
 
 use Cache;
 use ApiTestCase;
+use Biigle\Shape;
 use Carbon\Carbon;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
@@ -125,21 +126,21 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Biigle\Shape::$lineId,
+            'shape_id' => Shape::lineId(),
             'label_id' => 99999,
         ]);
         // label is required
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
+            'shape_id' => Shape::pointId(),
             'label_id' => $label->id,
         ]);
         // confidence required
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
+            'shape_id' => Shape::pointId(),
             'label_id' => $label->id,
             'confidence' => 2,
         ]);
@@ -147,7 +148,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
+            'shape_id' => Shape::pointId(),
             'label_id' => $label->id,
             'confidence' => -1,
         ]);
@@ -155,7 +156,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
+            'shape_id' => Shape::pointId(),
             'label_id' => $label->id,
             'confidence' => 0.5,
             'points' => '[]',
@@ -164,7 +165,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         $response->assertStatus(422);
 
         $response = $this->post("/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
+            'shape_id' => Shape::pointId(),
             'label_id' => $label->id,
             'confidence' => 0.5,
             'points' => '[10, 11]',
@@ -177,7 +178,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
         Cache::flush();
 
         $response = $this->post("/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
+            'shape_id' => Shape::pointId(),
             'label_id' => $label->id,
             'confidence' => 0.5,
             'points' => '[10, 11]',
@@ -199,7 +200,7 @@ class ImageAnnotationControllerTest extends ApiTestCase
     {
         $this->beEditor();
         $response = $this->json('POST', "/api/v1/images/{$this->image->id}/annotations", [
-            'shape_id' => \Biigle\Shape::$pointId,
+            'shape_id' => Shape::pointId(),
             'label_id' => $this->labelRoot()->id,
             'confidence' => 0.5,
             'points' => '[10, 11, 12, 13]',

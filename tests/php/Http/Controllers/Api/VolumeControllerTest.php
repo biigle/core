@@ -48,7 +48,7 @@ class VolumeControllerTest extends ApiTestCase
         $this->doesntExpectJobs(\Biigle\Jobs\ProcessNewImages::class);
 
         $id = $this->volume()->id;
-        $this->volume()->media_type_id = MediaType::$timeSeriesId;
+        $this->volume()->media_type_id = MediaType::timeSeriesId();
         $this->volume()->save();
         $this->doTestApiRoute('PUT', '/api/v1/volumes/'.$id);
 
@@ -64,11 +64,11 @@ class VolumeControllerTest extends ApiTestCase
         $this->assertNotEquals('the new volume', $this->volume()->fresh()->name);
         $response = $this->json('PUT', '/api/v1/volumes/'.$id, [
             'name' => 'the new volume',
-            'media_type_id' => MediaType::$locationSeriesId,
+            'media_type_id' => MediaType::locationSeriesId(),
         ]);
         $response->assertStatus(200);
         $this->assertEquals('the new volume', $this->volume()->fresh()->name);
-        $this->assertEquals(MediaType::$locationSeriesId, $this->volume()->fresh()->media_type_id);
+        $this->assertEquals(MediaType::locationSeriesId(), $this->volume()->fresh()->media_type_id);
     }
 
     public function testUpdateJsonAttrs()

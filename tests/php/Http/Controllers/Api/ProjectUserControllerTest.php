@@ -68,7 +68,7 @@ class ProjectUserControllerTest extends ApiTestCase
 
         // last admin cannot be removed
         $this->putJson("/api/v1/projects/{$id}/users/".$this->admin()->id, [
-                'project_role_id' => Role::$guest->id,
+                'project_role_id' => Role::guestId(),
             ])
             ->assertStatus(422)
             ->assertJsonFragment(['The last admin of '.$this->project()->name.' cannot be removed. The admin status must be passed on to another user first.']);
@@ -76,7 +76,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $this->assertEquals(2, $this->project()->users()->find($this->editor()->id)->project_role_id);
 
         $response = $this->put("/api/v1/projects/{$id}/users/".$this->editor()->id, [
-            'project_role_id' => Role::$guest->id,
+            'project_role_id' => Role::guestId(),
         ]);
 
         $response->assertStatus(200);
@@ -88,19 +88,19 @@ class ProjectUserControllerTest extends ApiTestCase
         $pid = $this->project()->id;
         $id = $this->globalGuest()->id;
 
-        $this->project()->addUserId($id, Role::$guest->id);
+        $this->project()->addUserId($id, Role::guestId());
 
         $this->beAdmin();
         $this->putJson("/api/v1/projects/{$pid}/users/{$id}", [
-            'project_role_id' => Role::$editor->id,
+            'project_role_id' => Role::editorId(),
         ])->assertStatus(200);
 
         $this->putJson("/api/v1/projects/{$pid}/users/{$id}", [
-            'project_role_id' => Role::$expert->id,
+            'project_role_id' => Role::expertId(),
         ])->assertStatus(200);
 
         $this->putJson("/api/v1/projects/{$pid}/users/{$id}", [
-            'project_role_id' => Role::$admin->id,
+            'project_role_id' => Role::adminId(),
         ])->assertStatus(422);
     }
 
@@ -138,7 +138,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $newUser = $this->project()->users()->find($id);
         $this->assertEquals($id, $newUser->id);
-        $this->assertEquals(Role::$editor->id, $newUser->project_role_id);
+        $this->assertEquals(Role::editorId(), $newUser->project_role_id);
     }
 
     public function testAttachGlobalGuest()
@@ -148,19 +148,19 @@ class ProjectUserControllerTest extends ApiTestCase
 
         $this->beAdmin();
         $this->postJson("/api/v1/projects/{$pid}/users/{$id}", [
-            'project_role_id' => Role::$editor->id,
+            'project_role_id' => Role::editorId(),
         ])->assertStatus(200);
 
         $this->project()->removeUserId($id);
 
         $this->postJson("/api/v1/projects/{$pid}/users/{$id}", [
-            'project_role_id' => Role::$expert->id,
+            'project_role_id' => Role::expertId(),
         ])->assertStatus(200);
 
         $this->project()->removeUserId($id);
 
         $this->postJson("/api/v1/projects/{$pid}/users/{$id}", [
-            'project_role_id' => Role::$admin->id,
+            'project_role_id' => Role::adminId(),
         ])->assertStatus(422);
     }
 
@@ -187,7 +187,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertNull($this->project()->fresh()->users()->find($this->editor()->id));
 
-        $this->project()->addUserId($this->editor()->id, Role::$editor->id);
+        $this->project()->addUserId($this->editor()->id, Role::editorId());
 
         // admins can delete anyone
         $this->assertNotNull($this->project()->fresh()->users()->find($this->editor()->id));
@@ -197,7 +197,7 @@ class ProjectUserControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertNull($this->project()->fresh()->users()->find($this->editor()->id));
 
-        $this->project()->addUserId($this->editor()->id, Role::$editor->id);
+        $this->project()->addUserId($this->editor()->id, Role::editorId());
 
         // but admins cannot delete themselves if they are the only admin left
         $response = $this->deleteJson("/api/v1/projects/{$id}/users/".$this->admin()->id);

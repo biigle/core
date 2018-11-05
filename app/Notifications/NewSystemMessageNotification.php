@@ -16,10 +16,10 @@ class NewSystemMessageNotification extends InAppNotification
     public function __construct(SystemMessage $message)
     {
         switch ($message->type_id) {
-            case SystemMessageType::$important->id:
+            case SystemMessageType::typeImportantId():
                 $type = InAppNotification::TYPE_WARNING;
                 break;
-            case SystemMessageType::$update->id:
+            case SystemMessageType::typeUpdateId():
                 $type = InAppNotification::TYPE_SUCCESS;
                 break;
             default:

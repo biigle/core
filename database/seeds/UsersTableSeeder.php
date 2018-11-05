@@ -14,7 +14,7 @@ class UserTableSeeder extends Seeder
             'email'     => 'jane@user.com',
             'password'  => Hash::make('janespassword'),
         ]);
-        $jane->role()->associate(Biigle\Role::$admin);
+        $jane->role()->associate(Biigle\Role::admin());
         $jane->save();
     }
 }

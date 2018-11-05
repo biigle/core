@@ -23,7 +23,7 @@ class SystemMessagesControllerTest extends TestCase
     public function testGetWhenLoggedIn()
     {
         $admin = UserTest::create();
-        $admin->role()->associate(Role::$admin);
+        $admin->role()->associate(Role::admin());
         $this->be($admin);
         $this->get('admin/system-messages')->assertStatus(200);
     }
@@ -42,7 +42,7 @@ class SystemMessagesControllerTest extends TestCase
     public function testNewWhenLoggedIn()
     {
         $admin = UserTest::create();
-        $admin->role()->associate(Role::$admin);
+        $admin->role()->associate(Role::admin());
         $this->be($admin);
         $this->get('admin/system-messages/new')->assertStatus(200);
     }
@@ -63,7 +63,7 @@ class SystemMessagesControllerTest extends TestCase
     public function testEditDoesntExist()
     {
         $admin = UserTest::create();
-        $admin->role()->associate(Role::$admin);
+        $admin->role()->associate(Role::admin());
         $this->be($admin);
         $response = $this->get('admin/system-messages/999')->assertStatus(404);
     }
@@ -72,7 +72,7 @@ class SystemMessagesControllerTest extends TestCase
     {
         $id = SystemMessageTest::create()->id;
         $admin = UserTest::create();
-        $admin->role()->associate(Role::$admin);
+        $admin->role()->associate(Role::admin());
         $this->be($admin);
         $this->get("admin/system-messages/{$id}")->assertStatus(200);
     }

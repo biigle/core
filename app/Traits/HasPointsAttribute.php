@@ -27,14 +27,14 @@ trait HasPointsAttribute
         $size = sizeof($points);
 
         switch ($this->shape_id) {
-            case Shape::$pointId:
+            case Shape::pointId():
                 $valid = $size === 2;
                 break;
-            case Shape::$circleId:
+            case Shape::circleId():
                 $valid = $size === 3;
                 break;
-            case Shape::$ellipseId:
-            case Shape::$rectangleId:
+            case Shape::ellipseId():
+            case Shape::rectangleId():
                 $valid = $size === 8;
                 break;
             default:
