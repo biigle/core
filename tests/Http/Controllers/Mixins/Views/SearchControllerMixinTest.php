@@ -15,8 +15,8 @@ class SearchControllerMixinTest extends TestCase
         $project = ProjectTest::create(['name' => 'random name']);
         $project2 = ProjectTest::create(['name' => 'another project']);
         $project3 = ProjectTest::create(['name' => 'and again']);
-        $project->addUserId($user->id, Role::$guest->id);
-        $project2->addUserId($user->id, Role::$admin->id);
+        $project->addUserId($user->id, Role::guestId());
+        $project2->addUserId($user->id, Role::adminId());
 
         $this->be($user);
         $response = $this->get('search')->assertStatus(200);

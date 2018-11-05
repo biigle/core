@@ -52,7 +52,7 @@ class AttachableVolumesController extends Controller
                         return $query->select('project_id')
                             ->from('project_user')
                             ->where('user_id', $request->user()->id)
-                            ->where('project_role_id', Role::$admin->id)
+                            ->where('project_role_id', Role::adminId())
                             ->where('project_id', '!=', $id);
                     });
             })

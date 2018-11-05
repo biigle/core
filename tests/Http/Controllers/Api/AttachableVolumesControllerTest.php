@@ -14,12 +14,12 @@ class AttachableVolumesControllerTest extends ApiTestCase
         $validVolume = VolumeTest::create();
         $validProject = ProjectTest::create();
         $validProject->addVolumeId($validVolume->id);
-        $validProject->addUserId($this->admin()->id, Role::$admin->id);
+        $validProject->addUserId($this->admin()->id, Role::adminId());
 
         $invalidVolume = VolumeTest::create();
         $invalidProject = ProjectTest::create();
         $invalidProject->addVolumeId($invalidVolume->id);
-        $invalidProject->addUserId($this->admin()->id, Role::$editor->id);
+        $invalidProject->addUserId($this->admin()->id, Role::editorId());
 
         $existingVolume = $this->volume();
         $validProject->addVolumeId($existingVolume->id); // should not be returned

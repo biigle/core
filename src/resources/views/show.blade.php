@@ -12,7 +12,7 @@
     biigle.$declare('projects.project', {!!$project!!});
     biigle.$declare('projects.members', {!! $members !!});
     biigle.$declare('projects.roles', {!! $roles !!});
-    biigle.$declare('projects.defaultRoleId', {!! Biigle\Role::$guest->id !!});
+    biigle.$declare('projects.defaultRoleId', {!! Biigle\Role::guestId() !!});
     biigle.$declare('projects.userId', {!! $user->id !!});
     biigle.$declare('projects.redirectUrl', '{{route('home')}}');
     biigle.$declare('projects.labelTrees', {!! $labelTrees !!});

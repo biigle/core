@@ -32,10 +32,10 @@ class ProjectsController extends Controller
         $this->authorize('access', $project);
 
         $roles = collect([
-            Role::$admin,
-            Role::$expert,
-            Role::$editor,
-            Role::$guest,
+            Role::admin(),
+            Role::expert(),
+            Role::editor(),
+            Role::guest(),
         ]);
 
         $labelTrees = $project->labelTrees()
