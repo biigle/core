@@ -18,9 +18,9 @@ class SearchControllerMixinTest extends TestCase
         $tree2 = LabelTreeTest::create(['name' => 'another tree']);
         $tree3 = LabelTreeTest::create([
             'name' => 'private one',
-            'visibility_id' => Visibility::$private->id,
+            'visibility_id' => Visibility::privateId(),
         ]);
-        $tree->addMember($user, Role::$editor);
+        $tree->addMember($user, Role::editor());
 
         $this->be($user);
         $this->get('search?t=label-trees')
@@ -40,7 +40,7 @@ class SearchControllerMixinTest extends TestCase
     {
         $tree = LabelTreeTest::create([
             'name' => 'private one',
-            'visibility_id' => Visibility::$private->id,
+            'visibility_id' => Visibility::privateId(),
         ]);
 
         $project = ProjectTest::create();

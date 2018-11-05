@@ -12,7 +12,7 @@
 <script type="text/javascript">
     biigle.$declare('labelTrees.labelTree', {!! $tree !!});
     biigle.$declare('labelTrees.labels', {!! $labels !!});
-    biigle.$declare('labelTrees.privateVisibilityId', {!! \Biigle\Visibility::$private->id !!});
+    biigle.$declare('labelTrees.privateVisibilityId', {!! \Biigle\Visibility::privateId() !!});
     biigle.$declare('labelTrees.userId', {!! $user->id !!});
     biigle.$declare('labelTrees.redirectUrl', '{{route('home')}}');
     biigle.$declare('labelTrees.wormsLabelSource', {!! $wormsLabelSource !!});
@@ -25,7 +25,7 @@
 
         biigle.$declare('labelTrees.members', {!! $members !!});
         biigle.$declare('labelTrees.roles', {!! $roles !!});
-        biigle.$declare('labelTrees.defaultRoleId', {!! Biigle\Role::$editor->id !!});
+        biigle.$declare('labelTrees.defaultRoleId', {!! Biigle\Role::editorId() !!});
     @endcan
 </script>
 @mixin('labelTreesShowScripts')

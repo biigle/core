@@ -61,11 +61,11 @@ class LabelTreesController extends Controller
             })->pluck('id');
         }
 
-        $roles = collect([Role::$admin, Role::$editor]);
+        $roles = collect([Role::admin(), Role::editor()]);
 
         $visibilities = collect([
-            Visibility::$public->id => Visibility::$public->name,
-            Visibility::$private->id => Visibility::$private->name,
+            Visibility::publicId() => Visibility::public()->name,
+            Visibility::privateId() => Visibility::private()->name,
         ]);
 
         return view('label-trees::show', [
@@ -78,7 +78,7 @@ class LabelTreesController extends Controller
             'user' => $user,
             'authorizedProjects' => $authorizedProjects,
             'authorizedOwnProjects' => $authorizedOwnProjects,
-            'private' => (int) $tree->visibility_id === Visibility::$private->id,
+            'private' => (int) $tree->visibility_id === Visibility::privateId(),
             'wormsLabelSource' => LabelSource::where('name', 'worms')->first(),
         ]);
     }
@@ -119,8 +119,8 @@ class LabelTreesController extends Controller
         $this->authorize('create', LabelTree::class);
 
         $visibilities = [
-            Visibility::$private,
-            Visibility::$public,
+            Visibility::private(),
+            Visibility::public(),
         ];
 
         if ($request->filled('project')) {
