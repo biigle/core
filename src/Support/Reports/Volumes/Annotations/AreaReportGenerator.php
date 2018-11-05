@@ -87,10 +87,10 @@ class AreaReportGenerator extends AnnotationReportGenerator
             ->join('shapes', 'annotations.shape_id', '=', 'shapes.id')
             // We can only compute the area from annotations that have an area.
             ->whereIn('shapes.id', [
-                Shape::$circleId,
-                Shape::$rectangleId,
-                Shape::$polygonId,
-                Shape::$ellipseId,
+                Shape::circleId(),
+                Shape::rectangleId(),
+                Shape::polygonId(),
+                Shape::ellipseId(),
             ])
             ->orderBy('annotation_labels.id');
 
@@ -201,14 +201,14 @@ class AreaReportGenerator extends AnnotationReportGenerator
         $annotation->area_sqm = '';
 
         switch ($annotation->shape_id) {
-            case Shape::$circleId:
+            case Shape::circleId():
                 // width and height are the diameter
                 $annotation->width_px = 2 * $points[2];
                 $annotation->height_px = $annotation->width_px;
                 $annotation->area_sqpx = pow($points[2], 2) * M_PI;
                 break;
 
-            case Shape::$rectangleId:
+            case Shape::rectangleId():
                 // A --- B
                 // |     |
                 // D --- C
@@ -223,7 +223,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 $annotation->area_sqpx = $dim1 * $dim2;
                 break;
 
-            case Shape::$polygonId:
+            case Shape::polygonId():
                 // See: http://www.mathopenref.com/coordpolygonarea.html and
                 // http://www.mathopenref.com/coordpolygonarea2.html
                 // For a description of the polygon area algorithm.
@@ -252,7 +252,7 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 $annotation->area_sqpx = abs($area / 2);
                 break;
 
-            case Shape::$ellipseId:
+            case Shape::ellipseId():
                 // $a and $b are *double* the lengths of the semi-major axis and the
                 // semi-minor axis, respectively.
                 // See: https://www.math.hmc.edu/funfacts/ffiles/10006.3.shtml

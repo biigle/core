@@ -31,32 +31,32 @@ class AnnotationReportGeneratorTest extends TestCase
 
         $annotations = [
             AnnotationTest::create([
-                'shape_id' => Shape::$pointId,
+                'shape_id' => Shape::pointId(),
                 'points' => [150, 150],
                 'image_id' => $image->id,
             ]),
             AnnotationTest::create([
-                'shape_id' => Shape::$polygonId,
+                'shape_id' => Shape::polygonId(),
                 'points' => [50, 50, 150, 150, 90, 90],
                 'image_id' => $image->id,
             ]),
             AnnotationTest::create([
-                'shape_id' => Shape::$pointId,
+                'shape_id' => Shape::pointId(),
                 'points' => [50, 50],
                 'image_id' => $image->id,
             ]),
             AnnotationTest::create([
-                'shape_id' => Shape::$polygonId,
+                'shape_id' => Shape::polygonId(),
                 'points' => [50, 50, 10, 10, 25, 25],
                 'image_id' => $image->id,
             ]),
             AnnotationTest::create([
-                'shape_id' => Shape::$circleId,
+                'shape_id' => Shape::circleId(),
                 'points' => [150, 150, 10],
                 'image_id' => $image->id,
             ]),
             AnnotationTest::create([
-                'shape_id' => Shape::$circleId,
+                'shape_id' => Shape::circleId(),
                 'points' => [50, 50, 10],
                 'image_id' => $image->id,
             ]),
