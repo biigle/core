@@ -14,7 +14,7 @@ class SearchControllerMixinTest extends TestCase
     {
         $user = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::$guest->id);
+        $project->addUserId($user->id, Role::guestId());
 
         $volume1 = VolumeTest::create(['name' => 'my volume']);
         $project->addVolumeId($volume1->id);

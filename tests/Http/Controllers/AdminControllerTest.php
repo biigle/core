@@ -14,7 +14,7 @@ class AdminControllerTest extends TestCase
         $user = UserTest::create();
         $this->be($user);
         $response = $this->get('admin/volumes')->assertStatus(403);
-        $user->role()->associate(Role::$admin);
+        $user->role()->associate(Role::admin());
         $this->get('admin/volumes')->assertStatus(200);
     }
 }
