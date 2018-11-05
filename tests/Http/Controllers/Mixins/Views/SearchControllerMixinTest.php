@@ -14,7 +14,7 @@ class SearchControllerMixinTest extends TestCase
     {
         $user = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::$guest->id);
+        $project->addUserId($user->id, Role::guestId());
 
         $image1 = ImageTest::create(['filename' => 'my image']);
         $project->addVolumeId($image1->volume_id);
