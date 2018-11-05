@@ -80,9 +80,9 @@ class AnnotationPolicy extends CachedPolicy
                         ->where('images.id', $annotation->image_id);
                 })
                 ->whereIn('project_role_id', [
-                    Role::$editor->id,
-                    Role::$expert->id,
-                    Role::$admin->id,
+                    Role::editorId(),
+                    Role::expertId(),
+                    Role::adminId(),
                 ])
                 ->exists();
         });
@@ -114,9 +114,9 @@ class AnnotationPolicy extends CachedPolicy
                         ->where('images.id', $annotation->image_id);
                 })
                 ->whereIn('project_role_id', [
-                    Role::$editor->id,
-                    Role::$expert->id,
-                    Role::$admin->id,
+                    Role::editorId(),
+                    Role::expertId(),
+                    Role::adminId(),
                 ])
                 ->pluck('project_id');
 
@@ -160,7 +160,7 @@ class AnnotationPolicy extends CachedPolicy
                 return DB::table('project_user')
                     ->where('user_id', $user->id)
                     ->whereIn('project_id', $projectIdsQuery)
-                    ->whereIn('project_role_id', [Role::$expert->id, Role::$admin->id])
+                    ->whereIn('project_role_id', [Role::expertId(), Role::adminId()])
                     ->exists();
             } else {
                 // Editors may delete only those annotations that have their own label
@@ -169,9 +169,9 @@ class AnnotationPolicy extends CachedPolicy
                     ->where('user_id', $user->id)
                     ->whereIn('project_id', $projectIdsQuery)
                     ->whereIn('project_role_id', [
-                        Role::$editor->id,
-                        Role::$expert->id,
-                        Role::$admin->id,
+                        Role::editorId(),
+                        Role::expertId(),
+                        Role::adminId(),
                     ])
                     ->exists();
             }

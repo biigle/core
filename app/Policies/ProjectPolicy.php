@@ -34,7 +34,7 @@ class ProjectPolicy extends CachedPolicy
      */
     public function create(User $user)
     {
-        return $user->role_id === Role::$editor->id || $user->role_id === Role::$admin->id;
+        return $user->role_id === Role::editorId() || $user->role_id === Role::adminId();
     }
 
     /**
@@ -63,9 +63,9 @@ class ProjectPolicy extends CachedPolicy
         return $this->remember("project-can-edit-in-{$user->id}-{$project->id}", function () use ($user, $project) {
             return $this->getBaseQuery($user, $project)
                 ->whereIn('project_role_id', [
-                    Role::$editor->id,
-                    Role::$expert->id,
-                    Role::$admin->id,
+                    Role::editorId(),
+                    Role::expertId(),
+                    Role::adminId(),
                 ])
                 ->exists();
         });
@@ -82,7 +82,7 @@ class ProjectPolicy extends CachedPolicy
     {
         return $this->remember("project-can-force-edit-in-{$user->id}-{$project->id}", function () use ($user, $project) {
             return $this->getBaseQuery($user, $project)
-                ->whereIn('project_role_id', [Role::$expert->id, Role::$admin->id])
+                ->whereIn('project_role_id', [Role::expertId(), Role::adminId()])
                 ->exists();
         });
     }
@@ -106,7 +106,7 @@ class ProjectPolicy extends CachedPolicy
             } else {
                 // admins can remove members other than themselves
                 return $isMember && $this->getBaseQuery($user, $project)
-                    ->where('project_role_id', Role::$admin->id)
+                    ->where('project_role_id', Role::adminId())
                     ->exists();
             }
         });
@@ -123,7 +123,7 @@ class ProjectPolicy extends CachedPolicy
     {
         return $this->remember("project-can-update-{$user->id}-{$project->id}", function () use ($user, $project) {
             return $this->getBaseQuery($user, $project)
-                ->where('project_role_id', Role::$admin->id)
+                ->where('project_role_id', Role::adminId())
                 ->exists();
         });
     }

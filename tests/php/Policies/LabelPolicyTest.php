@@ -23,9 +23,9 @@ class LabelPolicyTest extends TestCase
         $this->user = UserTest::create();
         $this->editor = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
-        $tree->addMember($this->editor, Role::$editor);
-        $tree->addMember($this->admin, Role::$admin);
+        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
+        $tree->addMember($this->editor, Role::editor());
+        $tree->addMember($this->admin, Role::admin());
         $this->label = LabelTest::create(['label_tree_id' => $tree->id]);
     }
 

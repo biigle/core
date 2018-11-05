@@ -19,7 +19,7 @@ class ApiTokenPolicy
      */
     public function create(User $user)
     {
-        return $user->role_id === Role::$editor->id || $user->role_id === Role::$admin->id;
+        return $user->role_id === Role::editorId() || $user->role_id === Role::adminId();
     }
 
     /**

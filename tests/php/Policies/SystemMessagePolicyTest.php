@@ -18,7 +18,7 @@ class SystemMessagePolicyTest extends TestCase
     {
         parent::setUp();
         $this->user = UserTest::create();
-        $this->globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
+        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
         $this->message = SystemMessageTest::create();
     }
 

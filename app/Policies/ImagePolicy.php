@@ -73,9 +73,9 @@ class ImagePolicy extends CachedPolicy
                         ->where('volume_id', $image->volume_id);
                 })
                 ->whereIn('project_role_id', [
-                    Role::$editor->id,
-                    Role::$expert->id,
-                    Role::$admin->id,
+                    Role::editorId(),
+                    Role::expertId(),
+                    Role::adminId(),
                 ])
                 ->exists();
         });
@@ -100,7 +100,7 @@ class ImagePolicy extends CachedPolicy
                         ->from('project_volume')
                         ->where('volume_id', $image->volume_id);
                 })
-                ->where('project_role_id', Role::$admin->id)
+                ->where('project_role_id', Role::adminId())
                 ->exists();
         });
     }
@@ -123,9 +123,9 @@ class ImagePolicy extends CachedPolicy
             // Projects, the image belongs to *and* the user is editor, expert or admin
             // of.
             $projectIds = Project::inCommon($user, $image->volume_id, [
-                Role::$editor->id,
-                Role::$expert->id,
-                Role::$admin->id,
+                Role::editorId(),
+                Role::expertId(),
+                Role::adminId(),
             ])->pluck('id');
 
             // User must be editor, expert or admin in one of the projects.

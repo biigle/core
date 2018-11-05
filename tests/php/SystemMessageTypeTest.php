@@ -41,16 +41,16 @@ class SystemMessageTypeTest extends ModelTestCase
 
     public function testImportant()
     {
-        $this->assertEquals('important', SystemMessageType::$important->name);
+        $this->assertEquals('important', SystemMessageType::typeImportant()->name);
     }
 
     public function testUpdate()
     {
-        $this->assertEquals('update', SystemMessageType::$update->name);
+        $this->assertEquals('update', SystemMessageType::typeUpdate()->name);
     }
 
     public function testInfo()
     {
-        $this->assertEquals('info', SystemMessageType::$info->name);
+        $this->assertEquals('info', SystemMessageType::typeInfo()->name);
     }
 }

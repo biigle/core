@@ -70,7 +70,7 @@ class LabelTreeAuthorizedProjectController extends Controller
 
         $tree->authorizedProjects()->detach($pid);
 
-        if ((int) $tree->visibility_id === Visibility::$private->id) {
+        if ((int) $tree->visibility_id === Visibility::privateId()) {
             $tree->projects()->detach($pid);
         }
 
