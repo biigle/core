@@ -6,21 +6,6 @@
     }
 }
 
-.largo-container {
-    display: flex;
-    flex-direction: row;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: calc(100% - 51px);
-    margin-top: 51px;
-}
-
-.largo-images {
-    position: relative;
-    flex: 1;
-}
-
 .largo-images__alerts {
     position: absolute;
     top: 0;

@@ -1,4 +1,4 @@
-<div class="largo-images">
+<div class="sidebar-container__content">
     <dismiss-image-grid v-if="isInDismissStep" :images="annotations" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:select="handleDismissedImage" v-on:deselect="handleUndismissedImage"></dismiss-image-grid>
     <relabel-image-grid v-cloak v-else :images="dismissedAnnotations" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:select="handleRelabelledImage" v-on:deselect="handleUnrelabelledImage"></relabel-image-grid>
     <div class="largo-images__alerts" :class="{block: loading}">

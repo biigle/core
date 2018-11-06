@@ -26,7 +26,7 @@
 @endsection
 
 @section('content')
-<div id="project-largo-container" class="largo-container">
+<div id="project-largo-container" class="sidebar-container">
     @include('largo::show.content')
 </div>
 @endsection
