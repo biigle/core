@@ -28,17 +28,11 @@ class LabelTreeUserController extends Controller
     {
         $request->tree->addMember($request->input('id'), $request->input('role_id'));
 
-        if (static::isAutomatedRequest($request)) {
+        if ($this->isAutomatedRequest()) {
             return $request->tree;
         }
 
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('saved', true);
-        }
-
-        return redirect()->back()
-            ->with('saved', true);
+        return $this->fuzzyRedirect()->with('saved', true);
     }
 
     /**
@@ -64,17 +58,9 @@ class LabelTreeUserController extends Controller
             $request->tree->updateMember($request->member, $request->input('role_id'));
         }
 
-        if (static::isAutomatedRequest($request)) {
-            return;
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()->with('saved', true);
         }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('saved', true);
-        }
-
-        return redirect()->back()
-            ->with('saved', true);
     }
 
     /**
@@ -97,16 +83,8 @@ class LabelTreeUserController extends Controller
     {
         $request->tree->members()->detach($request->member);
 
-        if (static::isAutomatedRequest($request)) {
-            return;
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()->with('deleted', true);
         }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('deleted', true);
-        }
-
-        return redirect()->back()
-            ->with('deleted', true);
     }
 }
