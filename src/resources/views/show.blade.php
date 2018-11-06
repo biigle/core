@@ -37,7 +37,7 @@
 @endsection
 
 @section('content')
-<div id="volume-container" class="volume-container">
+<div id="volume-container" class="sidebar-container">
     <sidebar direction="left" v-on:toggle="handleSidebarToggle" v-on:open="handleSidebarOpen" v-on:close="handleSidebarClose">
         @can ('update', $volume)
             <sidebar-tab name="edit" icon="pencil-alt" title="Edit this volume" href="{{ route('volume-edit', $volume->id) }}"></sidebar-tab>
@@ -55,7 +55,7 @@
         </sidebar-tab>
         @mixin('volumesSidebar')
     </sidebar>
-    <div class="volume-content">
+    <div class="sidebar-container__content">
         <loader-block v-cloak :active="loading"></loader-block>
         <div class="volume-content__messages">
             <div v-cloak v-if="filterEmpty" class="alert alert-info">

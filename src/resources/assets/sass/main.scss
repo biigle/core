@@ -3,21 +3,6 @@
 $volume-image-margin: 4px;
 $volume-image-padding: 0.5em;
 
-.volume-container {
-    display: flex;
-    flex-direction: row;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: calc(100% - #{$navbar-height} - 1px);
-    margin-top: $navbar-height + 1px;
-}
-
-.volume-content {
-    position: relative;
-    flex: 1;
-}
-
 .volume-content__messages {
     position: absolute;
     top: 0;
