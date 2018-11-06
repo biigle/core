@@ -31,22 +31,6 @@
     }
 }
 
-.annotator-container {
-    display: flex;
-    flex-direction: row;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    height: calc(100% - #{$navbar-height} - 1px);
-    margin-top: $navbar-height + 1px;
-}
-
-.annotator-container__canvas {
-    flex: 1;
-    height: 100%;
-    position: relative;
-}
-
 .sidebar-tab__section {
     padding-bottom: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
