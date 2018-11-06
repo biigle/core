@@ -112,20 +112,16 @@ class ProjectVolumeController extends Controller
         $volume->handleNewImages();
         $request->project->volumes()->attach($volume);
 
-        if (static::isAutomatedRequest($request)) {
-            // media type shouldn't be returned
-            unset($volume->media_type);
+        // media type shouldn't be returned
+        unset($volume->media_type);
 
+        if ($this->isAutomatedRequest()) {
             return $volume;
-        } elseif ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('message', 'Volume '.$volume->name.' created')
-                ->with('messageType', 'success');
-        } else {
-            return redirect()->route('home')
-                ->with('message', 'Volume '.$volume->name.' created')
-                ->with('messageType', 'success');
         }
+
+        return $this->fuzzyRedirect()
+            ->with('message', "Volume {$volume->name} created")
+            ->with('messageType', 'success');
     }
 
     /**

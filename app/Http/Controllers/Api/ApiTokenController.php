@@ -86,11 +86,11 @@ class ApiTokenController extends Controller
         // return the un-hashed token only this time
         $token->setAttribute('token', $secret);
 
-        if (!static::isAutomatedRequest($request)) {
-            return redirect()->back()->with('token', $token);
+        if ($this->isAutomatedRequest()) {
+            return $token;
         }
 
-        return $token;
+        return $this->fuzzyRedirect()->with('token', $token);
     }
 
     /**
@@ -115,8 +115,8 @@ class ApiTokenController extends Controller
         if ($request->user()->can('destroy', $token)) {
             $token->delete();
 
-            if (!static::isAutomatedRequest($request)) {
-                return redirect()->back()->with('deleted', true);
+            if (!$this->isAutomatedRequest()) {
+                $this->fuzzyRedirect()->with('deleted', true);
             }
         } else {
             // Dont't disclose existing token IDs to other users.

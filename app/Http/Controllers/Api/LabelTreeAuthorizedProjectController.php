@@ -32,17 +32,9 @@ class LabelTreeAuthorizedProjectController extends Controller
             $request->tree->authorizedProjects()->attach($id);
         }
 
-        if (static::isAutomatedRequest($request)) {
-            return;
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()->with('saved', true);
         }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('saved', true);
-        }
-
-        return redirect()->back()
-            ->with('saved', true);
     }
 
     /**
@@ -74,16 +66,8 @@ class LabelTreeAuthorizedProjectController extends Controller
             $tree->projects()->detach($pid);
         }
 
-        if (static::isAutomatedRequest($request)) {
-            return;
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()->with('deleted', true);
         }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('deleted', true);
-        }
-
-        return redirect()->back()
-            ->with('deleted', true);
     }
 }

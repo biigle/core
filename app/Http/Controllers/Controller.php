@@ -19,8 +19,10 @@ class Controller extends BaseController
      * @param Request $request
      * @return bool
      */
-    public static function isAutomatedRequest(Request $request)
+    public function isAutomatedRequest(Request $request = null)
     {
+        $request = $request ?: request();
+
         return $request->ajax() || $request->wantsJson() || $request->getUser();
     }
 }
