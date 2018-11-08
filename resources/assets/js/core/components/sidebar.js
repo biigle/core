@@ -86,6 +86,11 @@ biigle.$component('core.components.sidebar', {
             }
         },
     },
+    watch: {
+        openTab: function (tab) {
+            this.$emit('open', tab);
+        },
+    },
     created: function () {
         this.$on('open', this.handleOpenTab);
         this.$on('close', this.handleCloseTab);
