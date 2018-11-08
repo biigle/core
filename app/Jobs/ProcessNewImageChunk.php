@@ -14,11 +14,10 @@ use Carbon\Carbon;
 use ErrorException;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class ProcessNewImageChunk extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, DispatchesJobs;
+    use InteractsWithQueue;
 
     /**
      * IDs of the images to generate thumbnails for.
@@ -106,7 +105,7 @@ class ProcessNewImageChunk extends Job implements ShouldQueue
 
                 // Do this after processing so the image has width and height attributes.
                 if ($this->shouldBeTiled($image)) {
-                    $this->dispatch(new TileSingleImage($image));
+                    TileSingleImage::dispatch($image);
                 }
             } catch (Exception $e) {
                 Log::error("Could not process new image {$image->id}: {$e->getMessage()}");
