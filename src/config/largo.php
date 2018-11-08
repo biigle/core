@@ -28,12 +28,4 @@ return [
     | This saves resources for annotations that are quickly removed again.
     */
     'patch_generation_delay' => 10,
-
-    /*
-    | When Largo patches are generated, remote source images are cached. This saves
-    | costly HTTP requests.
-    |
-    | This is the time in minutes that an image should be cached. Default is 10 minutes.
-    */
-    'imagecache_lifetime' => 10,
 ];
