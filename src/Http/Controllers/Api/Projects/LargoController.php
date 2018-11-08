@@ -78,10 +78,7 @@ class LargoController extends Controller
         // The annotation model observer does not fire for this query so we dispatch
         // the remove patch job manually here.
         $toDelete->groupBy('volume_id')->each(function ($annotations, $volumeId) {
-            $this->dispatch(new RemoveAnnotationPatches(
-                $volumeId,
-                $annotations->pluck('id')->toArray()
-            ));
+            RemoveAnnotationPatches::dispatch($volumeId, $annotations->pluck('id')->toArray());
         });
     }
 }

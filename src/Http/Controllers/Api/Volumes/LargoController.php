@@ -90,7 +90,7 @@ class LargoController extends Controller
             Annotation::whereIn('id', $toDelete)->delete();
             // The annotation model observer does not fire for this query so we dispatch
             // the remove patch job manually here.
-            $this->dispatch(new RemoveAnnotationPatches($id, $toDelete));
+            RemoveAnnotationPatches::dispatch($id, $toDelete);
         }
     }
 

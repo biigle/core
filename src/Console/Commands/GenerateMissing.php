@@ -5,13 +5,10 @@ namespace Biigle\Modules\Largo\Console\Commands;
 use File;
 use Biigle\Annotation;
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
 class GenerateMissing extends Command
 {
-    use DispatchesJobs;
-
     /**
      * The name and signature of the console command.
      *
@@ -83,7 +80,7 @@ class GenerateMissing extends Command
                 if (!File::exists("{$this->prefix}/{$annotation->volume_id}/{$annotation->id}.{$this->format}")) {
                     $this->count++;
                     if ($pushToQueue) {
-                        $this->dispatch(new GenerateAnnotationPatch($annotation));
+                        GenerateAnnotationPatch::dispatch($annotation);
                     }
                 }
             }

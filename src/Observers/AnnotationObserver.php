@@ -3,14 +3,11 @@
 namespace Biigle\Modules\Largo\Observers;
 
 use Biigle\Annotation;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
 class AnnotationObserver
 {
-    use DispatchesJobs;
-
     /**
      * Handle the event of creating/saving a single annotation.
      *
@@ -18,9 +15,8 @@ class AnnotationObserver
      */
     public function saved(Annotation $annotation)
     {
-        $job = new GenerateAnnotationPatch($annotation);
-        $job->delay(config('largo.patch_generation_delay'));
-        $this->dispatch($job);
+        GenerateAnnotationPatch::dispatch($annotation)
+            ->delay(config('largo.patch_generation_delay'));
     }
 
     /**
@@ -31,10 +27,10 @@ class AnnotationObserver
      */
     public function deleting(Annotation $annotation)
     {
-        $this->dispatch(new RemoveAnnotationPatches(
+        RemoveAnnotationPatches::dispatch(
             $annotation->image->volume_id,
             [$annotation->id]
-        ));
+        );
 
         return true;
     }

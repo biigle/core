@@ -5,13 +5,10 @@ namespace Biigle\Modules\Largo\Listeners;
 use Biigle\Image;
 use Biigle\Annotation;
 use Biigle\Events\ImagesDeleted;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 use Biigle\Modules\Largo\Jobs\RemoveAnnotationPatches;
 
 class ImagesCleanupListener
 {
-    use DispatchesJobs;
-
     /**
      * Handle the event.
      *
@@ -38,9 +35,6 @@ class ImagesCleanupListener
             ->pluck('id')
             ->toArray();
 
-        $this->dispatch(new RemoveAnnotationPatches(
-            $images->first()->volume_id,
-            $annotationIds
-        ));
+        RemoveAnnotationPatches::dispatch($images->first()->volume_id, $annotationIds);
     }
 }
