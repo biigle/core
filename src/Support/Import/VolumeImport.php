@@ -17,14 +17,11 @@ use Biigle\Annotation;
 use Biigle\AnnotationLabel;
 use Biigle\Rules\VolumeUrl;
 use Illuminate\Support\Collection;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 use Biigle\Modules\Sync\Jobs\PostprocessVolumeImport;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class VolumeImport extends Import
 {
-    use DispatchesJobs;
-
     /**
      * Caches the decoded volume import file.
      *
@@ -88,7 +85,7 @@ class VolumeImport extends Import
             $this->insertImageLabels($imageIdMap, $labelIdMap, $userIdMap);
             $this->insertAnnotations($volumeIdMap, $imageIdMap, $labelIdMap, $userIdMap);
 
-            $this->dispatch(new PostprocessVolumeImport($volumes));
+            PostprocessVolumeImport::dispatch($volumes);
 
             return [
                 'volumes' => $volumeIdMap,

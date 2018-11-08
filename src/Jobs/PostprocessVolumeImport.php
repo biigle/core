@@ -8,13 +8,12 @@ use Biigle\Annotation;
 use Illuminate\Support\Collection;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 use Biigle\Modules\Largo\LargoServiceProvider;
 use Biigle\Modules\Largo\Jobs\GenerateAnnotationPatch;
 
 class PostprocessVolumeImport extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, DispatchesJobs;
+    use InteractsWithQueue;
 
     /**
      * IDs of the imported volumes.
@@ -52,7 +51,7 @@ class PostprocessVolumeImport extends Job implements ShouldQueue
                 ->select('annotations.id')
                 ->chunkById(1000, function ($annotations) {
                     foreach ($annotations as $annotation) {
-                        $this->dispatch(new GenerateAnnotationPatch($annotation));
+                        GenerateAnnotationPatch::dispatch($annotation);
                     }
                 }, 'annotations.id', 'id');
         }
