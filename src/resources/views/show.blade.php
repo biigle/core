@@ -62,7 +62,7 @@
                 There are no images matching your filter rules.
             </div>
         </div>
-        <image-grid :label-mode="imageLabelMode" :images="imagesToShow" :initial-offset="initialOffset" :selected-label="selectedLabel" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:scroll="handleImageGridScroll" ref="imageGrid"></image-grid>
+        <image-grid :selectable="imageLabelMode" :images="imagesToShow" :initial-offset="initialOffset" :selected-label="selectedLabel" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}" v-on:scroll="handleImageGridScroll" ref="imageGrid"></image-grid>
     </div>
 </div>
 @endsection

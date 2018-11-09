@@ -22,6 +22,10 @@ biigle.$component('volumes.components.imageGridImage', {
             type: String,
             required: true,
         },
+        selectable: {
+            type: Boolean,
+            required: false,
+        },
     },
     computed: {
         classObject: function () {
@@ -35,9 +39,7 @@ biigle.$component('volumes.components.imageGridImage', {
     },
     methods: {
         toggleSelect: function (event) {
-            if (this.selected) {
-                this.$emit('deselect', this.image, event);
-            } else {
+            if (this.selectable) {
                 this.$emit('select', this.image, event);
             }
         },

@@ -9,7 +9,7 @@ biigle.$component('volumes.components.volumeImageGridImage', {
         biigle.$require('core.mixins.loader'),
     ],
     template: '<figure class="image-grid__image image-grid__image--volume" :class="classObject" :title="title">' +
-        '<a v-if="!labelMode && image.annotateUrl" :href="image.annotateUrl" title="Annotate this image" class="image-link">' +
+        '<a v-if="!selectable && image.annotateUrl" :href="image.annotateUrl" title="Annotate this image" class="image-link">' +
             '<img :src="url || emptyUrl" @error="showEmptyImage">' +
         '</a>' +
         '<img v-else @click="handleClick" :src="url || emptyUrl" @error="showEmptyImage">' +
@@ -44,10 +44,6 @@ biigle.$component('volumes.components.volumeImageGridImage', {
             type: Object,
             default: null,
         },
-        labelMode: {
-            type: Boolean,
-            default: false,
-        },
     },
     computed: {
         userId: function () {
@@ -72,20 +68,20 @@ biigle.$component('volumes.components.volumeImageGridImage', {
         selected: function () {
             return this.image.flagged;
         },
-        selectable: function () {
-            return this.labelMode && this.selectedLabel && !this.alreadyHasSelectedLabel && !this.saving;
+        canBeSelected: function () {
+            return this.selectable && this.selectedLabel && !this.alreadyHasSelectedLabel && !this.saving;
         },
         classObject: function () {
             return {
                 'image-grid__image--selected': this.selected,
-                'image-grid__image--selectable': this.selectable,
-                'image-grid__image--saving': this.labelMode && this.saving,
+                'image-grid__image--selectable': this.canBeSelected,
+                'image-grid__image--saving': this.selectable && this.saving,
                 'image-grid__image--success': this.attachingSuccess === true,
                 'image-grid__image--error': this.attachingSuccess === false,
             };
         },
         title: function () {
-            return this.selectable ? 'Attach ' + this.selectedLabel.name : '';
+            return this.canBeSelected ? 'Attach ' + this.selectedLabel.name : '';
         },
     },
     methods: {
@@ -106,7 +102,7 @@ biigle.$component('volumes.components.volumeImageGridImage', {
             this.imageLabels = response.data;
         },
         handleClick: function () {
-            if (!this.selectable) {
+            if (!this.canBeSelected) {
                 return;
             }
 
