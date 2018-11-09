@@ -135,17 +135,18 @@ biigle.$declare('largo.mixins.largoContainer', {
         handleDeselectedLabel: function () {
             this.selectedLabel = null;
         },
-        handleDismissedImage: function (image, event) {
-            image.dismissed = true;
-            if (event.shiftKey && this.lastSelectedImage) {
-                this.dismissAllImagesBetween(image, this.lastSelectedImage);
+        handleSelectedImageDismiss: function (image, event) {
+            if (image.dismissed) {
+                image.dismissed = false;
+                image.newLabel = null;
             } else {
-                this.lastSelectedImage = image;
+                image.dismissed = true;
+                if (event.shiftKey && this.lastSelectedImage) {
+                    this.dismissAllImagesBetween(image, this.lastSelectedImage);
+                } else {
+                    this.lastSelectedImage = image;
+                }
             }
-        },
-        handleUndismissedImage: function (image) {
-            image.dismissed = false;
-            image.newLabel = null;
         },
         goToRelabel: function () {
             this.step = 1;
@@ -158,22 +159,21 @@ biigle.$declare('largo.mixins.largoContainer', {
                 this.getAnnotations(this.selectedLabel);
             }
         },
-        handleRelabelledImage: function (image, event) {
-            if (this.selectedLabel) {
+        handleSelectedImageRelabel: function (image, event) {
+            if (image.newLabel) {
+                // If a new label is selected, swap the label instead of removing it.
+                if (this.selectedLabel && image.newLabel.id !== this.selectedLabel.id) {
+                    image.newLabel = this.selectedLabel;
+                } else {
+                    image.newLabel = null;
+                }
+            } else if (this.selectedLabel) {
                 image.newLabel = this.selectedLabel;
                 if (event.shiftKey && this.lastSelectedImage) {
                     this.relabelAllImagesBetween(image, this.lastSelectedImage);
                 } else {
                     this.lastSelectedImage = image;
                 }
-            }
-        },
-        handleUnrelabelledImage: function (image) {
-            // If a new label is selected, swap the label instead of removing it.
-            if (this.selectedLabel && image.newLabel.id !== this.selectedLabel.id) {
-                image.newLabel = this.selectedLabel;
-            } else {
-                image.newLabel = null;
             }
         },
         save: function () {
