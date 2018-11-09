@@ -5,7 +5,7 @@
  */
 biigle.$component('volumes.components.imageGridImage', {
     template: '<figure class="image-grid__image" :class="classObject">' +
-        '<div v-if="selectable" class="image-icon">' +
+        '<div v-if="showIcon" class="image-icon">' +
             '<i class="fas fa-3x" :class="iconClass"></i>' +
         '</div>' +
         '<img @click="toggleSelect" :src="url || emptyUrl" @error="showEmptyImage">' +
@@ -46,6 +46,9 @@ biigle.$component('volumes.components.imageGridImage', {
         },
         iconClass: function () {
             return 'fa-' + this.selectedIcon;
+        },
+        showIcon: function () {
+            return this.selectable || this.selected;
         },
     },
     methods: {
