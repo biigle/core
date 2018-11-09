@@ -34,10 +34,10 @@
             <div v-cloak v-if="loading">
                 <loader :active="true" :fancy="true"></loader>
             </div>
-            <div v-if="!selectedLabel" class="alert alert-info">
+            <div v-if="!selectedLabel" class="text-info">
                 Please choose a label in the sidebar.
             </div>
-            <div v-cloak v-if="hasNoAnnotations" class="alert alert-info">
+            <div v-cloak v-if="hasNoAnnotations" class="text-info">
                 There are no annotations with the label <strong v-text="selectedLabel.name"></strong> for you.
             </div>
         </div>
