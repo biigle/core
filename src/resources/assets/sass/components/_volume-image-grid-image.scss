@@ -16,8 +16,6 @@
     }
 
     &.image-grid__image--selectable {
-        cursor: pointer;
-
         &:hover {
             border-color: $brand-info;
         }

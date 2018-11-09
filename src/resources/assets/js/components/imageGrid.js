@@ -6,7 +6,7 @@
 biigle.$component('volumes.components.imageGrid', {
     template: '<div class="image-grid" @wheel.prevent="scroll">' +
         '<div class="image-grid__images" ref="images">' +
-            '<image-grid-image v-for="image in displayedImages" :key="image.id" :image="image" :empty-url="emptyUrl" :selectable="selectable" @select="emitSelect"></image-grid-image>' +
+            '<image-grid-image v-for="image in displayedImages" :key="image.id" :image="image" :empty-url="emptyUrl" :selectable="selectable" :selected-icon="selectedIcon" @select="emitSelect"></image-grid-image>' +
         '</div>' +
         '<image-grid-progress v-if="canScroll" :progress="progress" @top="jumpToStart" @prev-page="reversePage" @prev-row="reverseRow" @jump="jumpToPercent" @next-row="advanceRow" @next-page="advancePage" @bottom="jumpToEnd"></image-grid-progress>' +
     '</div>',
@@ -49,6 +49,10 @@ biigle.$component('volumes.components.imageGrid', {
         selectable: {
             type: Boolean,
             default: false,
+        },
+        selectedIcon: {
+            type: String,
+            default: 'check',
         },
     },
     computed: {
