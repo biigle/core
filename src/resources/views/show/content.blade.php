@@ -5,10 +5,10 @@
         <div v-cloak v-if="loading">
             <loader :active="true" :fancy="true"></loader>
         </div>
-        <div v-if="isInDismissStep && !selectedLabel" class="alert alert-info">
+        <div v-if="isInDismissStep && !selectedLabel" class="text-info">
             Please choose a label in the sidebar.
         </div>
-        <div v-cloak v-if="isInDismissStep && hasNoAnnotations" class="alert alert-info">
+        <div v-cloak v-if="isInDismissStep && hasNoAnnotations" class="text-info">
             There are no annotations with the label <strong v-text="selectedLabel.name"></strong>.
         </div>
     </div>
