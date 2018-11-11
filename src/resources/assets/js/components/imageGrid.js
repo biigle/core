@@ -88,8 +88,11 @@ biigle.$component('volumes.components.imageGrid', {
     },
     methods: {
         updateDimensions: function () {
-            this.clientHeight = this.$refs.images.clientHeight;
-            this.clientWidth = this.$refs.images.clientWidth;
+            if (this.$refs.images) {
+                this.clientHeight = this.$refs.images.clientHeight;
+                this.clientWidth = this.$refs.images.clientWidth;
+            }
+
             // Update the offset if the grid is scrolled to the very bottom
             // (this.lastRow may have changed).
             this.offset = this.offset;
