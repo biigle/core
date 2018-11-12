@@ -28,15 +28,13 @@ biigle.$component('annotations.components.minimap', function () {
                 type: Object,
                 required: true,
             },
-        },
-        computed: {
-            // Width and height are only evaluated once on initialization. They will be
-            // used to calculate the actual minimap size based on the image aspect ratio.
-            intendedWidth: function () {
-                return this.$el.clientWidth;
+            intendedWidth: {
+                type: Number,
+                default: 250,
             },
-            intendedHeight: function () {
-                return this.$el.clientHeight;
+            intendedHeight: {
+                type: Number,
+                default: 200,
             },
         },
         methods: {

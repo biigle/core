@@ -557,7 +557,6 @@ biigle.$component('annotations.components.annotationCanvas', {
                 this.map.getView().fit(extent);
             }
 
-
             // Fake a map moveend event here so everything that is dependent on the
             // map viwport is initialized.
             if (!this.initialized) {
