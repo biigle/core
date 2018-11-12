@@ -85,7 +85,7 @@ biigle.$component('annotations.components.annotationCanvas.drawInteractions', fu
             },
         },
         created: function () {
-            if (this.editable) {
+            if (this.canAdd) {
                 var keyboard = biigle.$require('keyboard');
                 keyboard.on('a', this.drawPoint);
                 keyboard.on('s', this.drawRectangle);

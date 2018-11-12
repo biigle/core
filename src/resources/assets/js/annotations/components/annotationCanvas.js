@@ -24,7 +24,15 @@ biigle.$component('annotations.components.annotationCanvas', {
         controlButton: biigle.$require('annotations.components.controlButton'),
     },
     props: {
-        editable: {
+        canAdd: {
+            type: Boolean,
+            default: false,
+        },
+        canModify: {
+            type: Boolean,
+            default: false,
+        },
+        canDelete: {
             type: Boolean,
             default: false,
         },
@@ -190,7 +198,7 @@ biigle.$component('annotations.components.annotationCanvas', {
                 multi: true
             });
 
-            if (this.editable) {
+            if (this.canModify) {
                 // Map to detect which features were changed between modifystart and
                 // modifyend events of the modify interaction.
                 this.featureRevisionMap = {};
@@ -569,7 +577,7 @@ biigle.$component('annotations.components.annotationCanvas', {
         },
         isDefaultInteractionMode: function (defaultMode) {
             this.selectInteraction.setActive(defaultMode || this.isTranslating);
-            if (this.editable) {
+            if (this.canModify) {
                 this.modifyInteraction.setActive(defaultMode);
             }
         },
@@ -606,11 +614,13 @@ biigle.$component('annotations.components.annotationCanvas', {
         keyboard.on('ArrowLeft', this.handlePrevious);
         keyboard.on('Escape', this.resetInteractionMode);
 
-        if (this.editable) {
+        if (this.canModify) {
             this.modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
             this.modifyInteraction.on('modifyend', this.handleFeatureModifyEnd);
             this.map.addInteraction(this.modifyInteraction);
+        }
 
+        if (this.canDelete) {
             keyboard.on('Delete', this.deleteSelectedAnnotations);
             keyboard.on('Backspace', this.deleteLastCreatedAnnotation);
         }

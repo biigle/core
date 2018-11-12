@@ -23,7 +23,7 @@ biigle.$component('annotations.components.annotationCanvas.translateInteraction'
         },
         watch: {
             isTranslating: function (translating) {
-                if (this.editable) {
+                if (this.canModify) {
                     translateInteraction.setActive(translating);
                 }
             },
@@ -31,7 +31,7 @@ biigle.$component('annotations.components.annotationCanvas.translateInteraction'
         mounted: function () {
             // Initialize the translate interaction here because we have to wait for
             // the non-reactive properties of annotationCanvas to be initialized.
-            if (this.editable) {
+            if (this.canModify) {
                 var Interaction = biigle.$require('annotations.ol.ExtendedTranslateInteraction');
                 translateInteraction = new Interaction({
                     features: this.selectInteraction.getFeatures(),

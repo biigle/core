@@ -57,7 +57,7 @@ biigle.$component('annotations.components.annotationCanvas.magicWandInteraction'
             }
         },
         created: function () {
-            if (this.editable) {
+            if (this.canAdd) {
                 biigle.$require('keyboard').on('G', this.toggleMagicWand);
                 this.$watch('image', this.maybeUpdateMagicWandSnapshot);
                 this.$watch('image', this.maybeSetMagicWandLayer);
@@ -68,7 +68,7 @@ biigle.$component('annotations.components.annotationCanvas.magicWandInteraction'
             // Initialize the magic wand interaction here because we have to wait for
             // the non-reactive properties of annotationCanvas to be initialized.
             // The magic wand interaction is not available for remote images.
-            if (this.editable) {
+            if (this.canAdd) {
                 var Interaction = biigle.$require('annotations.ol.MagicWandInteraction');
                 magicWandInteraction = new Interaction({
                     map: this.map,

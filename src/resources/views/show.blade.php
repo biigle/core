@@ -58,7 +58,9 @@
     <div class="sidebar-container__content">
         <loader-block :active="loading"></loader-block>
         <annotation-canvas
-            :editable="isEditor"
+            :can-add="isEditor"
+            :can-modify="isEditor"
+            :can-delete="isEditor"
             :image="image"
             :annotations="filteredAnnotations"
             :selected-annotations="selectedAnnotations"

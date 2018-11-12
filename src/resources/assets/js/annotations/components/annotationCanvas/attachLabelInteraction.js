@@ -26,7 +26,7 @@ biigle.$component('annotations.components.annotationCanvas.attachLabelInteractio
         },
         watch: {
             isAttaching: function (attaching) {
-                if (this.editable) {
+                if (this.canAdd) {
                     if (attaching && !this.hasSelectedLabel) {
                         this.requireSelectedLabel();
                     } else {
@@ -43,7 +43,7 @@ biigle.$component('annotations.components.annotationCanvas.attachLabelInteractio
         mounted: function () {
             // Initialize the attach interaction here because we have to wait for
             // the non-reactive properties of annotationCanvas to be initialized.
-            if (this.editable) {
+            if (this.canAdd) {
                 var Interaction = biigle.$require('annotations.ol.AttachLabelInteraction');
                 attachLabelInteraction = new Interaction({
                     features: this.annotationFeatures,
