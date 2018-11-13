@@ -50,10 +50,6 @@ biigle.$viewModel('image-panel', function (element) {
             },
         },
         methods: {
-            startLoading: function () {
-                this.errors = {};
-                this.loading = true;
-            },
             submit: function () {
                 if (this.loading) return;
 
@@ -102,6 +98,13 @@ biigle.$viewModel('image-panel', function (element) {
             },
             getError: function (name) {
                 return this.errors[name];
+            },
+        },
+        watch: {
+            loading: function (loading) {
+                if (loading) {
+                    this.errors = {};
+                }
             },
         },
         created: function () {

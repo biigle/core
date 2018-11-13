@@ -114,10 +114,6 @@ biigle.$viewModel('annotation-session-panel', function (element) {
             clone: function (thing) {
                 return JSON.parse(JSON.stringify(thing));
             },
-            startLoading: function () {
-                this.errors = {};
-                this.loading = true;
-            },
             submit: function (force) {
                 if (this.loading) return;
 
@@ -278,6 +274,11 @@ biigle.$viewModel('annotation-session-panel', function (element) {
         watch: {
             editedSession: function () {
                 this.errors = {};
+            },
+            loading: function (loading) {
+                if (loading) {
+                    this.errors = {};
+                }
             },
         },
         created: function () {

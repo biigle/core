@@ -8,8 +8,8 @@ biigle.$viewModel('volume-metadata-upload', function (element) {
 
     new Vue({
         el: element,
+        mixins: [biigle.$require('core.mixins.loader')],
         data: {
-            loading: false,
             csv: undefined,
             error: false,
             success: false,
@@ -35,15 +35,13 @@ biigle.$viewModel('volume-metadata-upload', function (element) {
             submit: function (e) {
                 if (!this.csv) return;
 
-                this.loading = true;
+                this.startLoading();
                 var data = new FormData();
                 data.append('file', this.csv);
                 resource.save({id: volumeId}, data)
                     .bind(this)
                     .then(this.handleSuccess, this.handleError)
-                    .finally(function () {
-                        this.loading = false;
-                    });
+                    .finally(this.finishLoading);
             },
             setCsv: function (event) {
                 this.csv = event.target.files[0];

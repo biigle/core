@@ -117,7 +117,11 @@ biigle.$viewModel('volume-container', function (element) {
                 this.imageLabelMode = false;
             },
             toggleLoading: function (loading) {
-                this.loading = loading;
+                if (loading) {
+                    this.startLoading();
+                } else {
+                    this.finishLoading();
+                }
             },
             updateFilterSequence: function (sequence, mode, active) {
                 this.filterSequence = sequence;
