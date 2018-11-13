@@ -509,7 +509,6 @@ biigle.$viewModel('annotator-container', function (element) {
             }
         },
         created: function () {
-            this.startLoading();
             if (this.imagesIds.length === 0) {
                 messages.info('Your current volume filtering contains no images.');
                 return;
