@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "13b5130a375b03361898f42bb885d305",
+    "content-hash": "b05acd180e6f8d3a98262dd06ea02422",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -199,16 +199,16 @@
         },
         {
             "name": "biigle/laravel-image-cache",
-            "version": "v0.3.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:biigle/laravel-image-cache.git",
-                "reference": "d2c792edece92a68ef23b04d714f248136f2e05d"
+                "reference": "d9c11a08f860ebd76ba3e9bf70dbf7a30299f197"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-image-cache/zipball/d2c792edece92a68ef23b04d714f248136f2e05d",
-                "reference": "d2c792edece92a68ef23b04d714f248136f2e05d",
+                "url": "https://api.github.com/repos/biigle/laravel-image-cache/zipball/d9c11a08f860ebd76ba3e9bf70dbf7a30299f197",
+                "reference": "d9c11a08f860ebd76ba3e9bf70dbf7a30299f197",
                 "shasum": ""
             },
             "require": {
@@ -249,15 +249,15 @@
             "authors": [
                 {
                     "name": "Martin Zurowietz",
-                    "email": "martin@zurowietz.de"
+                    "email": "martin@cebitec.uni-bielefeld.de"
                 }
             ],
             "description": "Fetch and cache image files from filesystem, cloud storage or public webservers in Laravel",
             "support": {
-                "source": "https://github.com/biigle/laravel-image-cache/tree/v0.3.0",
+                "source": "https://github.com/biigle/laravel-image-cache/tree/v1.1.0",
                 "issues": "https://github.com/biigle/laravel-image-cache/issues"
             },
-            "time": "2018-10-11T11:35:29+00:00"
+            "time": "2018-11-14T14:00:35+00:00"
         },
         {
             "name": "biigle/laravel-remote-queue",
@@ -413,16 +413,19 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:biigle/maia.git",
-                "reference": "daac603baa99e299e9e9347393e3709f9ea8dea6"
+                "reference": "906304a6b6774b938fedfe4309755c70e0f37475"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/daac603baa99e299e9e9347393e3709f9ea8dea6",
-                "reference": "daac603baa99e299e9e9347393e3709f9ea8dea6",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/906304a6b6774b938fedfe4309755c70e0f37475",
+                "reference": "906304a6b6774b938fedfe4309755c70e0f37475",
                 "shasum": ""
             },
             "require": {
+                "biigle/annotations": "^3.9",
                 "biigle/label-trees": "^1.19",
+                "biigle/laravel-image-cache": "^1.1",
+                "biigle/largo": "^2.4",
                 "biigle/volumes": "^2.7"
             },
             "type": "library",
@@ -442,7 +445,7 @@
                 "source": "https://github.com/biigle/maia/tree/master",
                 "issues": "https://github.com/biigle/maia/issues"
             },
-            "time": "2018-10-31T12:14:17+00:00"
+            "time": "2018-11-14T14:18:07+00:00"
         },
         {
             "name": "biigle/projects",
