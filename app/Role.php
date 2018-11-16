@@ -2,7 +2,7 @@
 
 namespace Biigle;
 
-use Cache;
+use Biigle\Traits\HasConstantInstances;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -11,54 +11,24 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Role extends Model
 {
+    use HasConstantInstances;
+
+    /**
+     * The constant instances of this model.
+     *
+     * @var array
+     */
+    const INSTANCES = [
+        'admin' => 'admin',
+        'expert' => 'expert',
+        'editor' => 'editor',
+        'guest' => 'guest',
+    ];
+
     /**
      * Don't maintain timestamps for this model.
      *
      * @var bool
      */
     public $timestamps = false;
-
-    /**
-     * The admin role.
-     *
-     * @var Role
-     */
-    public static $admin;
-
-    /**
-     * The expert role.
-     *
-     * @var Role
-     */
-    public static $expert;
-
-    /**
-     * The editor role.
-     *
-     * @var Role
-     */
-    public static $editor;
-
-    /**
-     * The guest role.
-     *
-     * @var Role
-     */
-    public static $guest;
 }
-
-Role::$admin = Cache::rememberForever('role-admin', function () {
-    return Role::whereName('admin')->first();
-});
-
-Role::$expert = Cache::rememberForever('role-expert', function () {
-    return Role::whereName('expert')->first();
-});
-
-Role::$editor = Cache::rememberForever('role-editor', function () {
-    return Role::whereName('editor')->first();
-});
-
-Role::$guest = Cache::rememberForever('role-guest', function () {
-    return Role::whereName('guest')->first();
-});

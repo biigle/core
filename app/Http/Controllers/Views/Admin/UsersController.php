@@ -24,9 +24,9 @@ class UsersController extends Controller
             ->get();
 
         $roleNames = [
-            Role::$admin->id => 'Admin',
-            Role::$editor->id => 'Editor',
-            Role::$guest->id => 'Guest',
+            Role::adminId() => 'Admin',
+            Role::editorId() => 'Editor',
+            Role::guestId() => 'Guest',
         ];
 
         return view('admin.users', [
@@ -56,9 +56,9 @@ class UsersController extends Controller
         return view('admin.users.edit')
             ->with('affectedUser', User::findOrFail($id))
             ->with('roles', [
-                Role::$admin,
-                Role::$editor,
-                Role::$guest,
+                Role::admin(),
+                Role::editor(),
+                Role::guest(),
             ]);
     }
 
@@ -102,9 +102,9 @@ class UsersController extends Controller
     protected function roleClassMap($id = null)
     {
         $map = [
-            Role::$admin->id => 'danger',
-            Role::$editor->id => 'primary',
-            Role::$guest->id => 'default',
+            Role::adminId() => 'danger',
+            Role::editorId() => 'primary',
+            Role::guestId() => 'default',
         ];
 
         if (!is_null($id)) {

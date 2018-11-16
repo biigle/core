@@ -104,19 +104,19 @@ class UserTest extends ModelTestCase
     public function testLabelTrees()
     {
         $this->assertFalse($this->model->labelTrees()->exists());
-        LabelTreeTest::create()->addMember($this->model, Role::$editor);
+        LabelTreeTest::create()->addMember($this->model, Role::editor());
         $this->assertTrue($this->model->labelTrees()->exists());
     }
 
     public function testRole()
     {
-        $this->assertEquals(Role::$editor->id, $this->model->role->id);
+        $this->assertEquals(Role::editorId(), $this->model->role->id);
     }
 
     public function testIsGlobalAdminAttribute()
     {
         $this->assertFalse($this->model->isGlobalAdmin);
-        $this->model->role()->associate(Role::$admin);
+        $this->model->role()->associate(Role::admin());
         $this->assertTrue($this->model->isGlobalAdmin);
     }
 
@@ -140,7 +140,7 @@ class UserTest extends ModelTestCase
     public function testCheckCanBeDeletedProjects()
     {
         $project = ProjectTest::create();
-        $project->addUserId($this->model->id, Role::$guest->id);
+        $project->addUserId($this->model->id, Role::guestId());
 
         $this->model->checkCanBeDeleted();
         $this->expectException(HttpException::class);
@@ -151,8 +151,8 @@ class UserTest extends ModelTestCase
     {
         $tree = LabelTreeTest::create();
         $editor = self::create();
-        $tree->addMember($editor, Role::$editor);
-        $tree->addMember($this->model, Role::$admin);
+        $tree->addMember($editor, Role::editor());
+        $tree->addMember($this->model, Role::admin());
 
         $editor->checkCanBeDeleted();
         $this->expectException(HttpException::class);
@@ -191,7 +191,7 @@ class UserTest extends ModelTestCase
     public function testGetIsInSuperUserModeAttribute()
     {
         $this->assertFalse($this->model->isInSuperUserMode);
-        $this->model->role_id = Role::$admin->id;
+        $this->model->role_id = Role::adminId();
         $this->model->save();
         $this->assertTrue($this->model->isInSuperUserMode);
         $this->model->setSettings(['super_user_mode' => false]);
@@ -204,7 +204,7 @@ class UserTest extends ModelTestCase
     {
         $this->model->isInSuperUserMode = true;
         $this->assertFalse($this->model->isInSuperUserMode);
-        $this->model->role_id = Role::$admin->id;
+        $this->model->role_id = Role::adminId();
         $this->model->save();
         $this->model->isInSuperUserMode = true;
         $this->assertTrue($this->model->isInSuperUserMode);
@@ -215,7 +215,7 @@ class UserTest extends ModelTestCase
     public function testSudoAbility()
     {
         $this->assertFalse($this->model->can('sudo'));
-        $this->model->role_id = Role::$admin->id;
+        $this->model->role_id = Role::adminId();
         $this->model->save();
         $this->assertTrue($this->model->can('sudo'));
         $this->model->isInSuperUserMode = false;

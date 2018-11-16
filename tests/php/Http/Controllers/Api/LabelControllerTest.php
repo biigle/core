@@ -21,7 +21,7 @@ class LabelControllerTest extends ApiTestCase
             'label_tree_id' => $tree->id,
         ]);
         $sibling = LabelTest::create(['label_tree_id' => $tree->id]);
-        $tree->addMember($this->editor(), Role::$editor);
+        $tree->addMember($this->editor(), Role::editor());
 
         $this->doTestApiRoute('PUT', "/api/v1/labels/{$label->id}");
 
@@ -65,7 +65,7 @@ class LabelControllerTest extends ApiTestCase
     public function testDestroy()
     {
         $label = LabelTest::create();
-        $label->tree->addMember($this->editor(), Role::$editor);
+        $label->tree->addMember($this->editor(), Role::editor());
 
         $this->doTestApiRoute('DELETE', "/api/v1/labels/{$label->id}");
 
@@ -102,7 +102,7 @@ class LabelControllerTest extends ApiTestCase
     public function testDestroyFormRequest()
     {
         $label = LabelTest::create();
-        $label->tree->addMember($this->editor(), Role::$editor);
+        $label->tree->addMember($this->editor(), Role::editor());
 
         $this->beEditor();
         $this->get('/');
@@ -112,7 +112,7 @@ class LabelControllerTest extends ApiTestCase
         $response->assertSessionHas('deleted', true);
 
         $label = LabelTest::create();
-        $label->tree->addMember($this->editor(), Role::$editor);
+        $label->tree->addMember($this->editor(), Role::editor());
 
         $response = $this->delete("/api/v1/labels/{$label->id}", [
             '_redirect' => 'settings',

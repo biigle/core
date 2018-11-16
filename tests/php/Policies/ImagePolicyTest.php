@@ -22,12 +22,12 @@ class ImagePolicyTest extends TestCase
         $this->editor = UserTest::create();
         $this->expert = UserTest::create();
         $this->admin = UserTest::create();
-        $this->globalAdmin = UserTest::create(['role_id' => Role::$admin->id]);
+        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
 
-        $this->project->addUserId($this->guest->id, Role::$guest->id);
-        $this->project->addUserId($this->editor->id, Role::$editor->id);
-        $this->project->addUserId($this->expert->id, Role::$expert->id);
-        $this->project->addUserId($this->admin->id, Role::$admin->id);
+        $this->project->addUserId($this->guest->id, Role::guestId());
+        $this->project->addUserId($this->editor->id, Role::editorId());
+        $this->project->addUserId($this->expert->id, Role::expertId());
+        $this->project->addUserId($this->admin->id, Role::adminId());
     }
 
     public function testAccess()

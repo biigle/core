@@ -3,6 +3,12 @@
     "description": "Core of the BIIGLE web application.",
     "keywords": ["BIIGLE", "core"],
     "license": "proprietary",
+    "authors": [
+        {
+            "name": "Martin Zurowietz",
+            "email": "martin@cebitec.uni-bielefeld.de"
+        }
+    ],
     "type": "project",
     "require": {
         "php": ">=7.1",
@@ -10,15 +16,16 @@
         "ext-json": "*",
         "ext-pgsql": "*",
         "ext-vips": "*",
+        "biigle/laravel-image-cache": "^1.1",
         "doctrine/annotations": "1.4.0",
+        "doctrine/dbal": "^2.5",
+        "fideloper/proxy": "~3.3",
         "guzzlehttp/guzzle": "~6.0",
         "jcupitt/vips": "^1.0",
-        "fideloper/proxy": "~3.3",
         "laravel/framework": "5.5.*",
         "laravel/tinker": "^1.0",
         "predis/predis": "^1.1",
         "ramsey/uuid": "^3.5",
-        "doctrine/dbal": "^2.5",
         "ramsey/uuid-doctrine": "^1.2"
     },
     "require-dev": {
@@ -69,7 +76,10 @@
             "@php artisan package:discover"
         ],
         "test": [
-            "php vendor/bin/phpunit"
+            "docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always"
+        ],
+        "testf": [
+            "docker-compose run --rm worker php -d memory_limit=1G vendor/bin/phpunit --colors=always --filter"
         ],
         "fix": [
             "php-cs-fixer fix --config='.php_cs'"
@@ -87,5 +97,11 @@
         "optimize-autoloader": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "image-cache": {
+            "type": "vcs",
+            "url": "https://github.com/biigle/laravel-image-cache"
+        }
+    }
 }

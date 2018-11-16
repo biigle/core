@@ -39,6 +39,13 @@ class ModulesTest extends TestCase
         $this->assertEquals(['myModule' => $func], Modules::getControllerMixins('dashboard'));
     }
 
+    public function testRegisterViewMixinOrdering()
+    {
+        Modules::registerViewMixin('subtest', 'index.test');
+        Modules::registerViewMixin('test', 'index');
+        $this->assertEquals(['test' => ['subtest' => []]], Modules::getViewMixins('index'));
+    }
+
     public function testCallControllerMixins()
     {
         Modules::registerControllerMixin('myModule', 'dashboard', function ($arg) {

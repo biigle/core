@@ -33,11 +33,11 @@ class ProjectObserver
     {
         // set creator as project admin
         // this must be done *after* the project is saved so it already has an id
-        $project->addUserId($project->creator_id, Role::$admin->id);
+        $project->addUserId($project->creator_id, Role::adminId());
 
         // add global label trees (used by default)
         $ids = LabelTree::whereDoesntHave('members')
-            ->where('visibility_id', Visibility::$public->id)
+            ->where('visibility_id', Visibility::publicId())
             ->pluck('id');
         $project->labelTrees()->attach($ids->toArray());
     }

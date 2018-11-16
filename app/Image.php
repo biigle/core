@@ -8,12 +8,13 @@ use TileCache;
 use ImageCache;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
+use Biigle\ImageCache\Contracts\Image as ImageContract;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 /**
  * This model stores information on an image file in the file system.
  */
-class Image extends Model
+class Image extends Model implements ImageContract
 {
     use HasJsonAttributes;
 
@@ -53,6 +54,14 @@ class Image extends Model
     protected $dates = [
         'taken_at',
     ];
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
 
     /**
      * The volume, this image belongs to.

@@ -51,13 +51,13 @@ class UpdateLabelTreeUser extends FormRequest
     public function rules()
     {
         $this->isGlobalGuest = User::where('id', $this->route('id2'))
-            ->where('role_id', Role::$guest->id)
+            ->where('role_id', Role::guestId())
             ->exists();
 
         if ($this->isGlobalGuest) {
-            $roles = Role::$editor->id;
+            $roles = Role::editorId();
         } else {
-            $roles = implode(',', [Role::$admin->id, Role::$editor->id]);
+            $roles = implode(',', [Role::adminId(), Role::editorId()]);
         }
 
         return [
@@ -74,7 +74,7 @@ class UpdateLabelTreeUser extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            $shouldLooseAdminStatus = $this->input('role_id') !== Role::$admin->id;
+            $shouldLooseAdminStatus = $this->input('role_id') !== Role::adminId();
             if ($shouldLooseAdminStatus && !$this->tree->memberCanLooseAdminStatus($this->member)) {
                 $validator->errors()->add('role_id', 'The last label tree admin cannot be demoted.');
             }

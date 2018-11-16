@@ -6,11 +6,10 @@ use Biigle\Volume;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 class ProcessNewImages extends Job implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels, DispatchesJobs;
+    use InteractsWithQueue, SerializesModels;
 
     /**
      * The volume for which the images should be processed.
@@ -62,7 +61,7 @@ class ProcessNewImages extends Job implements ShouldQueue
                 return $query->whereIn('id', $this->only);
             })
             ->chunk(100, function ($images) {
-                $this->dispatch(new ProcessNewImageChunk($images->pluck('id')));
+                ProcessNewImageChunk::dispatch($images->pluck('id'));
             });
     }
 }

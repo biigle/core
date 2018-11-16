@@ -16,7 +16,7 @@ class UserObserver
     public function creating($user)
     {
         if ($user->role_id === null) {
-            $user->role_id = Role::$editor->id;
+            $user->role_id = Role::editorId();
         }
 
         return true;

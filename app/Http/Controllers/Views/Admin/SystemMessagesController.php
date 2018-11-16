@@ -32,9 +32,9 @@ class SystemMessagesController extends Controller
     public function create()
     {
         $types = [
-            SystemMessageType::$info,
-            SystemMessageType::$update,
-            SystemMessageType::$important,
+            SystemMessageType::typeInfo(),
+            SystemMessageType::typeUpdate(),
+            SystemMessageType::typeImportant(),
         ];
 
         return view('admin.system-messages.create', [
@@ -51,9 +51,9 @@ class SystemMessagesController extends Controller
     {
         $message = SystemMessage::findOrFail($id);
         $types = [
-            SystemMessageType::$info,
-            SystemMessageType::$update,
-            SystemMessageType::$important,
+            SystemMessageType::typeInfo(),
+            SystemMessageType::typeUpdate(),
+            SystemMessageType::typeImportant(),
         ];
 
         return view('admin.system-messages.update', [

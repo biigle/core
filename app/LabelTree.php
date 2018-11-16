@@ -44,7 +44,7 @@ class LabelTree extends Model
     public function memberCanLooseAdminStatus(User $member)
     {
         return $this->members()
-            ->wherePivot('role_id', Role::$admin->id)
+            ->wherePivot('role_id', Role::adminId())
             ->where('id', '!=', $member->id)
             ->exists();
     }
@@ -57,7 +57,7 @@ class LabelTree extends Model
      */
     public function scopePublicTrees($query)
     {
-        return $query->where('visibility_id', Visibility::$public->id);
+        return $query->where('visibility_id', Visibility::publicId());
     }
 
     /**
@@ -68,7 +68,7 @@ class LabelTree extends Model
      */
     public function scopePrivateTrees($query)
     {
-        return $query->where('visibility_id', Visibility::$private->id);
+        return $query->where('visibility_id', Visibility::privateId());
     }
 
     /**
@@ -85,7 +85,7 @@ class LabelTree extends Model
         }
 
         return $query->where(function ($query) use ($user) {
-            $query->where('label_trees.visibility_id', Visibility::$public->id)
+            $query->where('label_trees.visibility_id', Visibility::publicId())
                 // Do it like this instead of a join with label_tree_user because
                 // there can be global label trees without any members, too!
                 ->orWhere(function ($query) use ($user) {

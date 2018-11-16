@@ -11,7 +11,6 @@ use Biigle\Jobs\ProcessNewImages;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 
 /**
  * A volume is a collection of images. Volumes belong to one or many
@@ -19,14 +18,17 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
  */
 class Volume extends Model
 {
-    use DispatchesJobs, HasJsonAttributes;
+    use HasJsonAttributes;
 
     /**
      * Regular expression that matches the supported image file extensions.
+     * This regex allows optional HTTP query parameters after the file names, too.
+     * Example "image.jpg?raw=1".
+     * This may be required for remote images with services like Dropbox.
      *
      * @var string
      */
-    const FILE_REGEX = '/\.(jpe?g|png|tif?f)$/i';
+    const FILE_REGEX = '/\.(jpe?g|png|tif?f)(\?.+)?$/i';
 
     /**
      * The attributes hidden from the model's JSON form.
@@ -208,7 +210,7 @@ class Volume extends Model
      */
     public function handleNewImages($only = [])
     {
-        $this->dispatch(new ProcessNewImages($this, $only));
+        ProcessNewImages::dispatch($this, $only);
     }
 
     /**

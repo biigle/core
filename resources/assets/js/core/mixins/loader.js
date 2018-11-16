@@ -10,8 +10,13 @@ biigle.$component('core.mixins.loader', {
     },
     data: function () {
         return {
-            loading: false,
+            instancesLoading: 0,
         };
+    },
+    computed: {
+        loading: function () {
+            return this.instancesLoading > 0;
+        },
     },
     watch: {
         loading: function (loading) {
@@ -20,10 +25,12 @@ biigle.$component('core.mixins.loader', {
     },
     methods: {
         startLoading: function () {
-            this.loading = true;
+            this.instancesLoading += 1;
         },
         finishLoading: function () {
-            this.loading = false;
+            if (this.instancesLoading > 0) {
+                this.instancesLoading -= 1;
+            }
         },
     },
 });

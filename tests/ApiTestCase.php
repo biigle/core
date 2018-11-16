@@ -29,7 +29,7 @@ class ApiTestCase extends TestCase
     private function newUser($role = null)
     {
         $user = UserTest::make();
-        $user->role()->associate($role ? $role : Role::$editor);
+        $user->role()->associate($role ? $role : Role::editor());
         $user->save();
 
         return $user;
@@ -70,7 +70,7 @@ class ApiTestCase extends TestCase
             return $this->admin;
         }
 
-        return $this->admin = $this->newProjectUser(Role::$admin);
+        return $this->admin = $this->newProjectUser(Role::admin());
     }
 
     protected function beAdmin()
@@ -84,7 +84,7 @@ class ApiTestCase extends TestCase
             return $this->expert;
         }
 
-        return $this->expert = $this->newProjectUser(Role::$expert);
+        return $this->expert = $this->newProjectUser(Role::expert());
     }
 
     protected function beExpert()
@@ -98,7 +98,7 @@ class ApiTestCase extends TestCase
             return $this->editor;
         }
 
-        return $this->editor = $this->newProjectUser(Role::$editor);
+        return $this->editor = $this->newProjectUser(Role::editor());
     }
 
     protected function beEditor()
@@ -112,7 +112,7 @@ class ApiTestCase extends TestCase
             return $this->guest;
         }
 
-        return $this->guest = $this->newProjectUser(Role::$guest);
+        return $this->guest = $this->newProjectUser(Role::guest());
     }
 
     protected function beGuest()
@@ -140,7 +140,7 @@ class ApiTestCase extends TestCase
             return $this->globalGuest;
         }
 
-        return $this->globalGuest = $this->newUser(Role::$guest);
+        return $this->globalGuest = $this->newUser(Role::guest());
     }
 
     protected function beGlobalGuest()
@@ -154,7 +154,7 @@ class ApiTestCase extends TestCase
             return $this->globalAdmin;
         }
 
-        return $this->globalAdmin = $this->newUser(Role::$admin);
+        return $this->globalAdmin = $this->newUser(Role::admin());
     }
 
     protected function beGlobalAdmin()
@@ -173,7 +173,7 @@ class ApiTestCase extends TestCase
         $this->project();
 
         $this->labelTree = $this->labelTree = LabelTreeTest::create([
-            'visibility_id' => Visibility::$public->id,
+            'visibility_id' => Visibility::publicId(),
         ]);
 
         $this->labelTree->projects()->attach($this->project());

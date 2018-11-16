@@ -11,16 +11,16 @@ class LabelTreeUserIntegrityTest extends TestCase
     public function testRoleOnDeleteRestrict()
     {
         $tree = LabelTreeTest::create();
-        $tree->addMember(UserTest::create(), Role::$editor);
+        $tree->addMember(UserTest::create(), Role::editor());
         $this->expectException(QueryException::class);
-        Role::$editor->delete();
+        Role::editor()->delete();
     }
 
     public function testLabelTreeOnDeleteCascade()
     {
         $tree = LabelTreeTest::create();
         $user = UserTest::create();
-        $tree->addMember($user, Role::$editor);
+        $tree->addMember($user, Role::editor());
 
         $this->assertTrue($user->labelTrees()->exists());
         $tree->delete();
@@ -31,7 +31,7 @@ class LabelTreeUserIntegrityTest extends TestCase
     {
         $tree = LabelTreeTest::create();
         $user = UserTest::create();
-        $tree->addMember($user, Role::$editor);
+        $tree->addMember($user, Role::editor());
 
         $this->assertTrue($tree->members()->exists());
         $user->delete();
@@ -42,9 +42,9 @@ class LabelTreeUserIntegrityTest extends TestCase
     {
         $tree = LabelTreeTest::create();
         $user = UserTest::create();
-        $tree->addMember($user, Role::$editor);
+        $tree->addMember($user, Role::editor());
 
         $this->expectException(QueryException::class);
-        $tree->members()->attach($user->id, ['role_id' => Role::$editor->id]);
+        $tree->members()->attach($user->id, ['role_id' => Role::editorId()]);
     }
 }

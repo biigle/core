@@ -98,24 +98,11 @@ class ProjectController extends Controller
         $project->creator_id = $request->user()->id;
         $project->save();
 
-        if (static::isAutomatedRequest($request)) {
+        if ($this->isAutomatedRequest()) {
             return $project;
         }
 
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
-                ->with('newProject', $project)
-                ->with('message', 'Project created.')
-                ->with('messageType', 'success');
-        }
-
-        if (Route::has('project')) {
-            return redirect()->route('project', $project->id)
-                ->with('message', 'Project created.')
-                ->with('messageType', 'success');
-        }
-
-        return redirect()->back()
+        return $this->fuzzyRedirect('project', $project->id)
             ->with('newProject', $project)
             ->with('message', 'Project created.')
             ->with('messageType', 'success');
@@ -144,21 +131,12 @@ class ProjectController extends Controller
         $project->description = $request->input('description', $project->description);
         $project->save();
 
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()
                 ->with('saved', true)
                 ->with('message', 'Project updated.')
                 ->with('messageType', 'success');
         }
-
-        return redirect()->back()
-            ->with('saved', true)
-            ->with('message', 'Project updated.')
-            ->with('messageType', 'success');
     }
 
     /**
@@ -186,7 +164,7 @@ class ProjectController extends Controller
         try {
             $project->removeAllVolumes($request->filled('force'));
         } catch (HttpException $e) {
-            if (static::isAutomatedRequest($request)) {
+            if ($this->isAutomatedRequest()) {
                 abort(400, $e->getMessage());
             }
 
@@ -197,20 +175,11 @@ class ProjectController extends Controller
 
         $project->delete();
 
-        if (static::isAutomatedRequest($request)) {
-            return;
-        }
-
-        if ($request->has('_redirect')) {
-            return redirect($request->input('_redirect'))
+        if (!$this->isAutomatedRequest()) {
+            return $this->fuzzyRedirect()
                 ->with('deleted', true)
                 ->with('message', 'Project deleted.')
                 ->with('messageType', 'success');
         }
-
-        return redirect()->back()
-            ->with('deleted', true)
-            ->with('message', 'Project deleted.')
-            ->with('messageType', 'success');
     }
 }
