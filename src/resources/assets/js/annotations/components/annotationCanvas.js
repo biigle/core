@@ -468,6 +468,42 @@ biigle.$component('annotations.components.annotationCanvas', {
         updateMousePosition: function (e) {
             this.mousePosition = e.coordinate;
         },
+        refreshAnnotationSource: function (annotations, source) {
+            var annotationsMap = {};
+            annotations.forEach(function (annotation) {
+                annotationsMap[annotation.id] = null;
+            });
+
+            var oldFeaturesMap = {};
+            var oldFeatures = source.getFeatures();
+            var removedFeatures = oldFeatures.filter(function (feature) {
+                oldFeaturesMap[feature.getId()] = null;
+                return !annotationsMap.hasOwnProperty(feature.getId());
+            });
+
+            if (removedFeatures.length === oldFeatures.length) {
+                // In case we switched the images, we want to clear and redraw all
+                // features.
+                source.clear(true);
+            } else {
+                // In case annotations were added/removed, we only want to update the
+                // changed features. But don't remove the temporary annotations with
+                // undefined ID here. These will be removed asynchronously through
+                // their removeCallback when they were saved (or failed to be).
+                // see: https://github.com/biigle/annotations/issues/82
+                removedFeatures.filter(function (feature) {
+                        return feature.getId() !== undefined;
+                    }).forEach(function (feature) {
+                        source.removeFeature(feature);
+                    }, this);
+
+                annotations = annotations.filter(function (annotation) {
+                    return !oldFeaturesMap.hasOwnProperty(annotation.id);
+                });
+            }
+
+            source.addFeatures(annotations.map(this.createFeature));
+        },
     },
     watch: {
         image: function (image, oldImage) {
@@ -491,40 +527,7 @@ biigle.$component('annotations.components.annotationCanvas', {
             }
         },
         annotations: function (annotations) {
-            var annotationsMap = {};
-            annotations.forEach(function (annotation) {
-                annotationsMap[annotation.id] = null;
-            });
-
-            var oldFeaturesMap = {};
-            var oldFeatures = this.annotationSource.getFeatures();
-            var removedFeatures = oldFeatures.filter(function (feature) {
-                oldFeaturesMap[feature.getId()] = null;
-                return !annotationsMap.hasOwnProperty(feature.getId());
-            });
-
-            if (removedFeatures.length === oldFeatures.length) {
-                // In case we switched the images, we want to clear and redraw all
-                // features.
-                this.annotationSource.clear(true);
-            } else {
-                // In case annotations were added/removed, we only want to update the
-                // changed features. But don't remove the temporary annotations with
-                // undefined ID here. These will be removed asynchronously through
-                // their removeCallback when they were saved (or failed to be).
-                // see: https://github.com/biigle/annotations/issues/82
-                removedFeatures.filter(function (feature) {
-                        return feature.getId() !== undefined;
-                    }).forEach(function (feature) {
-                        this.annotationSource.removeFeature(feature);
-                    }, this);
-
-                annotations = annotations.filter(function (annotation) {
-                    return !oldFeaturesMap.hasOwnProperty(annotation.id);
-                });
-            }
-
-            this.annotationSource.addFeatures(annotations.map(this.createFeature));
+            this.refreshAnnotationSource(annotations, this.annotationSource);
             this.resetHoveredAnnotations();
         },
         selectedAnnotations: function (annotations) {
