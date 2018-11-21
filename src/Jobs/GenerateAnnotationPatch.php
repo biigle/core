@@ -93,7 +93,7 @@ class GenerateAnnotationPatch extends Job implements ShouldQueue
                 return;
             }
 
-            throw new Exception("Could not generate annotation patch for annotation {$this->id}: {$e->getMessage()}");
+            throw new Exception("Could not generate annotation patch for annotation {$this->annotationId}: {$e->getMessage()}");
         }
     }
 
