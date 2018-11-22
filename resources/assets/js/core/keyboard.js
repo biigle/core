@@ -90,7 +90,7 @@ biigle.$declare('keyboard', new Vue({
 
             // Also register the listener for the keys of the compatibility map.
             if (this.compatibilityMap.hasOwnProperty(key)) {
-                this.on(this.compatibilityMap[key], callback, priority);
+                this.on(this.compatibilityMap[key], callback, priority, set);
             }
 
             priority = priority || 0;
