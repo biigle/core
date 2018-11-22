@@ -199,16 +199,16 @@
         },
         {
             "name": "biigle/laravel-image-cache",
-            "version": "v1.1.0",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
                 "url": "git@github.com:biigle/laravel-image-cache.git",
-                "reference": "d9c11a08f860ebd76ba3e9bf70dbf7a30299f197"
+                "reference": "a0e8705e7bd8e36e2089f40e57cab8951d3be7e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-image-cache/zipball/d9c11a08f860ebd76ba3e9bf70dbf7a30299f197",
-                "reference": "d9c11a08f860ebd76ba3e9bf70dbf7a30299f197",
+                "url": "https://api.github.com/repos/biigle/laravel-image-cache/zipball/a0e8705e7bd8e36e2089f40e57cab8951d3be7e1",
+                "reference": "a0e8705e7bd8e36e2089f40e57cab8951d3be7e1",
                 "shasum": ""
             },
             "require": {
@@ -254,10 +254,10 @@
             ],
             "description": "Fetch and cache image files from filesystem, cloud storage or public webservers in Laravel",
             "support": {
-                "source": "https://github.com/biigle/laravel-image-cache/tree/v1.1.0",
+                "source": "https://github.com/biigle/laravel-image-cache/tree/v1.1.1",
                 "issues": "https://github.com/biigle/laravel-image-cache/issues"
             },
-            "time": "2018-11-14T14:00:35+00:00"
+            "time": "2018-11-21T12:13:22+00:00"
         },
         {
             "name": "biigle/laravel-remote-queue",
