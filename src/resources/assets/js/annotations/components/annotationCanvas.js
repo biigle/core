@@ -78,6 +78,10 @@ biigle.$component('annotations.components.annotationCanvas', {
             type: Boolean,
             default: true,
         },
+        listenerSet: {
+            type: String,
+            default: 'default',
+        },
     },
     data: function () {
         return {
@@ -611,11 +615,11 @@ biigle.$component('annotations.components.annotationCanvas', {
         this.selectInteraction.on('select', this.handleFeatureSelect);
         this.map.addInteraction(this.selectInteraction);
 
-        var keyboard = biigle.$require('keyboard');
-        keyboard.on(' ', this.handleNext);
-        keyboard.on('ArrowRight', this.handleNext);
-        keyboard.on('ArrowLeft', this.handlePrevious);
-        keyboard.on('Escape', this.resetInteractionMode);
+        var kb = biigle.$require('keyboard');
+        kb.on(' ', this.handleNext, 0, this.listenerSet);
+        kb.on('ArrowRight', this.handleNext, 0, this.listenerSet);
+        kb.on('ArrowLeft', this.handlePrevious, 0, this.listenerSet);
+        kb.on('Escape', this.resetInteractionMode, 0, this.listenerSet);
 
         if (this.canModify) {
             this.modifyInteraction.on('modifystart', this.handleFeatureModifyStart);
@@ -624,8 +628,8 @@ biigle.$component('annotations.components.annotationCanvas', {
         }
 
         if (this.canDelete) {
-            keyboard.on('Delete', this.deleteSelectedAnnotations);
-            keyboard.on('Backspace', this.deleteLastCreatedAnnotation);
+            kb.on('Delete', this.deleteSelectedAnnotations, 0, this.listenerSet);
+            kb.on('Backspace', this.deleteLastCreatedAnnotation, 0, this.listenerSet);
         }
     },
     mounted: function () {

@@ -41,7 +41,7 @@ biigle.$component('annotations.components.annotationCanvas.translateInteraction'
                 translateInteraction.on('translatestart', this.handleFeatureModifyStart);
                 translateInteraction.on('translateend', this.handleFeatureModifyEnd);
                 this.map.addInteraction(translateInteraction);
-                biigle.$require('keyboard').on('m', this.toggleTranslating);
+                biigle.$require('keyboard').on('m', this.toggleTranslating, 0, this.listenerSet);
             }
         },
     };

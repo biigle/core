@@ -86,13 +86,13 @@ biigle.$component('annotations.components.annotationCanvas.drawInteractions', fu
         },
         created: function () {
             if (this.canAdd) {
-                var keyboard = biigle.$require('keyboard');
-                keyboard.on('a', this.drawPoint);
-                keyboard.on('s', this.drawRectangle);
-                keyboard.on('d', this.drawCircle);
-                keyboard.on('D', this.drawEllipse);
-                keyboard.on('f', this.drawLineString);
-                keyboard.on('g', this.drawPolygon);
+                var kb = biigle.$require('keyboard');
+                kb.on('a', this.drawPoint, 0, this.listenerSet);
+                kb.on('s', this.drawRectangle, 0, this.listenerSet);
+                kb.on('d', this.drawCircle, 0, this.listenerSet);
+                kb.on('D', this.drawEllipse, 0, this.listenerSet);
+                kb.on('f', this.drawLineString, 0, this.listenerSet);
+                kb.on('g', this.drawPolygon, 0, this.listenerSet);
                 this.$watch('interactionMode', this.maybeUpdateDrawInteractionMode);
             }
         },

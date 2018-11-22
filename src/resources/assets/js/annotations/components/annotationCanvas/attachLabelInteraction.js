@@ -53,7 +53,7 @@ biigle.$component('annotations.components.annotationCanvas.attachLabelInteractio
                 attachLabelInteraction.on('attach', this.handleAttachLabel);
                 this.map.addInteraction(attachLabelInteraction);
 
-                biigle.$require('keyboard').on('l', this.toggleAttaching);
+                biigle.$require('keyboard').on('l', this.toggleAttaching, 0, this.listenerSet);
             }
         },
     };
