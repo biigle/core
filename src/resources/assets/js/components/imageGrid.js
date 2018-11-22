@@ -54,6 +54,12 @@ biigle.$component('volumes.components.imageGrid', {
             type: String,
             default: 'check',
         },
+        // Keyboard event listener set to use (in case there are other components using
+        // the same shortcut keys on the same page).
+        listenerSet: {
+            type: String,
+            default: 'default',
+        },
     },
     computed: {
         columns: function () {
@@ -142,18 +148,18 @@ biigle.$component('volumes.components.imageGrid', {
     },
     created: function () {
         var keyboard = biigle.$require('keyboard');
-        keyboard.on('ArrowUp', this.reverseRow);
-        keyboard.on('w', this.reverseRow);
-        keyboard.on('ArrowDown', this.advanceRow);
-        keyboard.on('s', this.advanceRow);
-        keyboard.on('ArrowLeft', this.reversePage);
-        keyboard.on('a', this.reversePage);
-        keyboard.on('ArrowRight', this.advancePage);
-        keyboard.on('d', this.advancePage);
-        keyboard.on('PageUp', this.reversePage);
-        keyboard.on('PageDown', this.advancePage);
-        keyboard.on('Home', this.jumpToStart);
-        keyboard.on('End', this.jumpToEnd);
+        keyboard.on('ArrowUp', this.reverseRow, 0, this.listenerSet);
+        keyboard.on('w', this.reverseRow, 0, this.listenerSet);
+        keyboard.on('ArrowDown', this.advanceRow, 0, this.listenerSet);
+        keyboard.on('s', this.advanceRow, 0, this.listenerSet);
+        keyboard.on('ArrowLeft', this.reversePage, 0, this.listenerSet);
+        keyboard.on('a', this.reversePage, 0, this.listenerSet);
+        keyboard.on('ArrowRight', this.advancePage, 0, this.listenerSet);
+        keyboard.on('d', this.advancePage, 0, this.listenerSet);
+        keyboard.on('PageUp', this.reversePage, 0, this.listenerSet);
+        keyboard.on('PageDown', this.advancePage, 0, this.listenerSet);
+        keyboard.on('Home', this.jumpToStart, 0, this.listenerSet);
+        keyboard.on('End', this.jumpToEnd, 0, this.listenerSet);
         this.offset = this.initialOffset;
     },
     mounted: function () {
