@@ -14,7 +14,7 @@ biigle.$component('volumes.components.imageGrid', {
         return {
             clientWidth: 0,
             clientHeight: 0,
-            privateOffset: 0,
+            offset: 0,
         };
     },
     components: {
@@ -71,15 +71,10 @@ biigle.$component('volumes.components.imageGrid', {
             return Math.max(1, Math.floor(this.clientHeight / (this.height + this.margin)));
         },
         displayedImages: function () {
-            return this.images.slice(this.offset, this.offset + this.columns * this.rows);
+            return this.images.slice(this.offset, this.offsetEnd);
         },
-        offset: {
-            get: function () {
-                return this.privateOffset;
-            },
-            set: function (value) {
-                this.privateOffset = Math.max(0, Math.min(this.lastRow * this.columns, value));
-            },
+        offsetEnd: function () {
+            return this.offset + this.columns * this.rows;
         },
         progress: function () {
             return this.offset / (this.columns * this.lastRow);
@@ -87,6 +82,10 @@ biigle.$component('volumes.components.imageGrid', {
         // Number of the topmost row of the last "page".
         lastRow: function () {
             return Math.max(0, Math.ceil(this.images.length / this.columns) - this.rows);
+        },
+        // The largest possible offset.
+        lastOffset: function () {
+            return this.lastRow * this.columns;
         },
         canScroll: function () {
             return this.lastRow > 0;
@@ -98,13 +97,9 @@ biigle.$component('volumes.components.imageGrid', {
                 this.clientHeight = this.$refs.images.clientHeight;
                 this.clientWidth = this.$refs.images.clientWidth;
             }
-
-            // Update the offset if the grid is scrolled to the very bottom
-            // (this.lastRow may have changed).
-            this.offset = this.offset;
         },
         scrollRows: function (rows) {
-            this.offset = this.offset + this.columns * rows;
+            this.setOffset(this.offset + this.columns * rows);
         },
         scroll: function (e) {
             this.scrollRows((e.deltaY >= 0) ? 1 : -1);
@@ -124,7 +119,7 @@ biigle.$component('volumes.components.imageGrid', {
         jumpToPercent: function (percent) {
             // The percentage from 0 to 1 goes from row 0 to the topmost row
             // of the last "page" and *not* to the very last row.
-            this.offset = this.columns * Math.round(this.lastRow * percent);
+            this.setOffset(this.columns * Math.round(this.lastRow * percent));
         },
         jumpToStart: function () {
             this.jumpToPercent(0);
@@ -135,12 +130,14 @@ biigle.$component('volumes.components.imageGrid', {
         emitSelect: function (image, event) {
             this.$emit('select', image, event);
         },
+        setOffset: function (value) {
+            this.offset = Math.max(0, Math.min(this.lastOffset, value));
+        },
     },
     watch: {
-        images: function () {
-            // Update the offset if the grid is scrolled to the very bottom
-            // (this.lastRow may have changed).
-            this.offset = this.offset;
+        lastOffset: function () {
+            // Update the offset if the grid is scrolled to the very bottom.
+            this.setOffset(this.offset);
         },
         offset: function () {
             this.$emit('scroll', this.offset);
@@ -160,7 +157,7 @@ biigle.$component('volumes.components.imageGrid', {
         keyboard.on('PageDown', this.advancePage, 0, this.listenerSet);
         keyboard.on('Home', this.jumpToStart, 0, this.listenerSet);
         keyboard.on('End', this.jumpToEnd, 0, this.listenerSet);
-        this.offset = this.initialOffset;
+        this.setOffset(this.initialOffset);
     },
     mounted: function () {
         // Only call updateDimensions when the element actually exists.
