@@ -15,6 +15,10 @@ biigle.$component('volumes.components.imageGrid', {
             clientWidth: 0,
             clientHeight: 0,
             offset: 0,
+            // The offset that updates the displayed images is set with a delay during
+            // scrolling so scrolling feels faster.
+            imagesOffset: 0,
+            imagesOffsetTimeout: null,
         };
     },
     components: {
@@ -70,11 +74,11 @@ biigle.$component('volumes.components.imageGrid', {
             // This might be 0 if the clientHeight is not yet initialized, so force 1.
             return Math.max(1, Math.floor(this.clientHeight / (this.height + this.margin)));
         },
-        displayedImages: function () {
-            return this.images.slice(this.offset, this.offsetEnd);
+        imagesOffsetEnd: function () {
+            return this.imagesOffset + this.columns * this.rows;
         },
-        offsetEnd: function () {
-            return this.offset + this.columns * this.rows;
+        displayedImages: function () {
+            return this.images.slice(this.imagesOffset, this.imagesOffsetEnd);
         },
         progress: function () {
             return this.offset / (this.columns * this.lastRow);
@@ -98,11 +102,11 @@ biigle.$component('volumes.components.imageGrid', {
                 this.clientWidth = this.$refs.images.clientWidth;
             }
         },
-        scrollRows: function (rows) {
-            this.setOffset(this.offset + this.columns * rows);
+        scrollRows: function (rows, debounce) {
+            this.setOffset(this.offset + this.columns * rows, debounce);
         },
         scroll: function (e) {
-            this.scrollRows((e.deltaY >= 0) ? 1 : -1);
+            this.scrollRows((e.deltaY >= 0) ? 1 : -1, true);
         },
         advanceRow: function () {
             this.scrollRows(1);
@@ -130,8 +134,17 @@ biigle.$component('volumes.components.imageGrid', {
         emitSelect: function (image, event) {
             this.$emit('select', image, event);
         },
-        setOffset: function (value) {
+        setOffset: function (value, debounce) {
             this.offset = Math.max(0, Math.min(this.lastOffset, value));
+            clearTimeout(this.imagesOffsetTimeout);
+            if (debounce) {
+                var self = this;
+                this.imagesOffsetTimeout = setTimeout(function () {
+                    self.imagesOffset = self.offset;
+                }, 25);
+            } else {
+                this.imagesOffset = this.offset;
+            }
         },
     },
     watch: {
