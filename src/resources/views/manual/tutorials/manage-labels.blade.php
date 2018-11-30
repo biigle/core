@@ -76,7 +76,7 @@
 
         <div class="panel panel-warning">
             <div class="panel-body text-warning">
-                Be very careful when you modify the name of a label since it could make a lot of annotations invalid (e.g. if you change "coral" to "stone")!
+                Be very careful when you modify the name of a label since it changes the meaning of all existing annotations with this label (e.g. do not change "coral" to "stone")!
             </div>
         </div>
 
