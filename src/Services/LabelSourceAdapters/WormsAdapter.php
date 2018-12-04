@@ -28,15 +28,7 @@ class WormsAdapter implements LabelSourceAdapterContract
      *
      * @var SoapClient
      */
-    private $client;
-
-    /**
-     * Create a new WoRMS label adapter.
-     */
-    public function __construct()
-    {
-        $this->client = new SoapClient('http://www.marinespecies.org/aphia.php?p=soap&wsdl=1', config('label-trees.soap_options'));
-    }
+    protected $client;
 
     /**
      * Set the SOAP client instance to use for requests.
@@ -46,6 +38,20 @@ class WormsAdapter implements LabelSourceAdapterContract
     public function setSoapClient(SoapClient $client)
     {
         $this->client = $client;
+    }
+
+    /**
+     * Get the SOAP client instance to use for requests.
+     *
+     * @return SoapClient
+     */
+    public function getSoapClient()
+    {
+        if (!isset($this->client)) {
+            $this->client = new SoapClient('http://www.marinespecies.org/aphia.php?p=soap&wsdl=1', config('label-trees.soap_options'));
+        }
+
+        return $this->client;
     }
 
     /**
@@ -70,6 +76,8 @@ class WormsAdapter implements LabelSourceAdapterContract
             return [];
         }
 
+        $client = $this->getSoapClient();
+
         // WoRMS returns a maximum of 50 results per request. We use a loop to get more
         // results but take care to stop it if it runs too often.
         do {
@@ -79,7 +87,7 @@ class WormsAdapter implements LabelSourceAdapterContract
             // bool $fuzzy (deprecated)
             // bool $marine_only Limit to marine taxa. Default=true
             // int $offset Starting recordnumber, when retrieving next chunk of (50) records. Default=1
-            $currentResults = $this->client->getAphiaRecords("%{$query}%", null, null, true, $offset);
+            $currentResults = $client->getAphiaRecords("%{$query}%", null, null, true, $offset);
             if (!is_array($currentResults)) {
                 break;
             }
@@ -128,8 +136,9 @@ class WormsAdapter implements LabelSourceAdapterContract
 
         $attributes['parent_id'] = $request->input('parent_id');
         $attributes['label_tree_id'] = $id;
+        $client = $this->getSoapClient();
 
-        if ($this->client->getAphiaNameByID($attributes['source_id']) === null) {
+        if ($client->getAphiaNameByID($attributes['source_id']) === null) {
             throw ValidationException::withMessages([
                 'source_id' => ['The AphiaID does not exist.'],
             ]);
@@ -225,7 +234,8 @@ class WormsAdapter implements LabelSourceAdapterContract
         $labels = [];
 
         // get all parent labels of the label to create
-        $hierarchy = $this->client->getAphiaClassificationByID($attributes['source_id']);
+        $client = $this->getSoapClient();
+        $hierarchy = $client->getAphiaClassificationByID($attributes['source_id']);
         $parents = $this->extractParents($hierarchy);
 
         // set the custom name of the label of this request so it can be treated
