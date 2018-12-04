@@ -94,6 +94,11 @@ class UserControllerTest extends ApiTestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * @slowThreshold 750
+     *
+     * This test runs slower because of all the password hashing and checking going on.
+     */
     public function testUpdate()
     {
         $this->doTestApiRoute('PUT', '/api/v1/users/'.$this->guest()->id);
