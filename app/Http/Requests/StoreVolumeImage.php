@@ -4,6 +4,7 @@ namespace Biigle\Http\Requests;
 
 use Biigle\Volume;
 use Biigle\Rules\VolumeImages;
+use Biigle\Rules\VolumeImageUnique;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreVolumeImage extends FormRequest
@@ -22,8 +23,6 @@ class StoreVolumeImage extends FormRequest
      */
     public function authorize()
     {
-        $this->volume = Volume::findOrFail($this->route('id'));
-
         return $this->user()->can('update', $this->volume);
     }
 
@@ -34,8 +33,10 @@ class StoreVolumeImage extends FormRequest
      */
     public function rules()
     {
+        $this->volume = Volume::findOrFail($this->route('id'));
+
         return [
-            'images' => ['required', new VolumeImages],
+            'images' => ['required', new VolumeImages, new VolumeImageUnique($this->volume)],
         ];
     }
 
