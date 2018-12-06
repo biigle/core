@@ -3,7 +3,6 @@
  */
 biigle.$declare('annotations.stores.images', function () {
     var events = biigle.$require('events');
-    var canvas = document.createElement('canvas');
 
     var fxCanvas;
 
@@ -118,18 +117,12 @@ biigle.$declare('annotations.stores.images', function () {
                 var self = this;
                 var img = document.createElement('img');
 
-                // We want to use the same canvas element for drawing and to
-                // apply the color adjustments for better performance. But we
-                // also want Vue to detect switched images which would not work
-                // if we simply passed on the canvas element as a prop to a
-                // component. We therefore create this wrapper object for each image
-                // and pass it as a prop instead.
                 var imageWrapper = {
                     id: id,
                     source: img,
                     width: 0,
                     height: 0,
-                    canvas: canvas,
+                    canvas: document.createElement('canvas'),
                     crossOrigin: false,
                 };
 
