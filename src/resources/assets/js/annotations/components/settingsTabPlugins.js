@@ -193,6 +193,11 @@ biigle.$require('annotations.components.settingsTabPlugins').exportArea = {
 
             return promise;
         },
+        extendMap: function (map) {
+            map.addLayer(this.layer);
+            map.addInteraction(this.drawInteraction);
+            map.addInteraction(this.modifyInteraction);
+        },
     },
     watch: {
         opacity: function (opacity, oldOpacity) {
@@ -218,17 +223,13 @@ biigle.$require('annotations.components.settingsTabPlugins').exportArea = {
 
         this.exportArea = biigle.$require('annotations.exportArea');
 
-        var events = biigle.$require('events');
-        events.$on('images.change', this.updateCurrentImage);
-
-        var map = biigle.$require('annotations.stores.map');
-        map.addLayer(this.layer);
         this.drawInteraction.setActive(false);
-        map.addInteraction(this.drawInteraction);
         this.modifyInteraction.setActive(false);
-        map.addInteraction(this.modifyInteraction);
-
         this.drawInteraction.on('drawend', this.handleDrawend);
         this.modifyInteraction.on('modifyend', this.handleModifyend);
+
+        var events = biigle.$require('events');
+        events.$on('images.change', this.updateCurrentImage);
+        events.$on('annotations.map.init', this.extendMap);
     },
 };
