@@ -6,7 +6,7 @@
 biigle.$component('volumes.components.imageGridImage', {
     template: '<figure class="image-grid__image" :class="classObject">' +
         '<div v-if="showIcon" class="image-icon">' +
-            '<i class="fas fa-3x" :class="iconClass"></i>' +
+            '<i class="fas" :class="iconClass"></i>' +
         '</div>' +
         '<img @click="toggleSelect" :src="url || emptyUrl" @error="showEmptyImage">' +
     '</figure>',
@@ -37,6 +37,10 @@ biigle.$component('volumes.components.imageGridImage', {
             type: Boolean,
             default: true,
         },
+        smallIcon: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         classObject: function () {
@@ -44,6 +48,7 @@ biigle.$component('volumes.components.imageGridImage', {
                 'image-grid__image--selected': this.selected,
                 'image-grid__image--selectable': this.selectable,
                 'image-grid__image--fade': this.selectedFade,
+                'image-grid__image--small-icon': this.smallIcon,
             };
         },
         selected: function () {

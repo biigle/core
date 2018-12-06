@@ -40,6 +40,15 @@
         cursor: pointer;
     }
 
+    &.image-grid__image--small-icon {
+        .image-icon {
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding: .5em;
+            font-size: 2em;
+        }
+    }
+
     img {
         width: auto;
         height: 100%;
@@ -84,6 +93,7 @@
         top: 0;
         width: 100%;
         height: 100%;
+        font-size: 3em;
         opacity: 0;
         pointer-events: none;
         transition: opacity .25s ease;
