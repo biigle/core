@@ -33,12 +33,17 @@ biigle.$component('volumes.components.imageGridImage', {
             type: String,
             default: 'check',
         },
+        selectedFade: {
+            type: Boolean,
+            default: true,
+        },
     },
     computed: {
         classObject: function () {
             return {
                 'image-grid__image--selected': this.selected,
                 'image-grid__image--selectable': this.selectable,
+                'image-grid__image--fade': this.selectedFade,
             };
         },
         selected: function () {

@@ -29,8 +29,10 @@
             opacity: .5;
         }
 
-        img {
-            opacity: .25;
+        &.image-grid__image--fade {
+            img {
+                opacity: .25;
+            }
         }
     }
 
