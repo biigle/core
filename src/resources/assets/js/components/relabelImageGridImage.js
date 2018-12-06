@@ -7,7 +7,7 @@ biigle.$component('largo.components.relabelImageGridImage', {
     mixins: [biigle.$require('volumes.components.imageGridImage')],
     template: '<figure class="image-grid__image image-grid__image--relabel" :class="classObject" :title="title">' +
         '<div v-if="selectable" class="image-icon">' +
-            '<i class="fas fa-3x" :class="iconClass"></i>' +
+            '<i class="fas" :class="iconClass"></i>' +
         '</div>' +
         '<img @click="toggleSelect" :src="url || emptyUrl">' +
         '<div v-if="showAnnotationLink" class="image-buttons">' +
