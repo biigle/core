@@ -557,6 +557,10 @@ biigle.$viewModel('annotator-container', function (element) {
             if (settings.has('openTab')) {
                 this.openTab = settings.get('openTab');
             }
+
+        },
+        mounted: function () {
+            events.$emit('annotations.map.init', this.$refs.canvas.map);
         },
     });
 });

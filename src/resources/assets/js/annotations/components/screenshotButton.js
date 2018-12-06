@@ -118,7 +118,7 @@ biigle.$component('annotations.components.screenshotButton', {
         },
         capture: function () {
             var self = this;
-            var map = biigle.$require('annotations.stores.map');
+            var map = this.$parent.map;
             map.once('postcompose', function (e) {
                 self.makeBlob(e.context.canvas)
                     .then(self.download)

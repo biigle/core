@@ -93,7 +93,7 @@ biigle.$component('annotations.components.minimap', function () {
             // is hidden/destroyed.
             if (!initialized) {
                 initialized = true;
-                var map = biigle.$require('annotations.stores.map');
+                var map = this.$parent.map;
                 mapSize = map.getSize();
                 mapView = map.getView();
                 map.on('postcompose', this.updateViewport);

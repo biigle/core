@@ -170,11 +170,40 @@ biigle.$component('annotations.components.annotationCanvas', {
         },
     },
     methods: {
+        createMap: function () {
+            var map = new ol.Map({
+                renderer: 'canvas',
+                controls: [
+                    new ol.control.Zoom(),
+                    new ol.control.ZoomToExtent({
+                        tipLabel: 'Zoom to show whole image',
+                        // fontawesome compress icon
+                        label: '\uf066'
+                    }),
+                ],
+                interactions: ol.interaction.defaults({
+                    altShiftDragRotate: false,
+                    doubleClickZoom: false,
+                    keyboard: false,
+                    shiftDragZoom: false,
+                    pinchRotate: false,
+                    pinchZoom: false
+                }),
+            });
+
+            var ZoomToNativeControl = biigle.$require('annotations.ol.ZoomToNativeControl');
+            map.addControl(new ZoomToNativeControl({
+                // fontawesome expand icon
+                label: '\uf065'
+            }));
+
+            return map;
+        },
         declareNonReactiveProperties: function () {
             // Declare properties of this component that should *not* be reactive.
             // This is mostly OpenLayers stuff that should work as fast as possible
             // without being slowed down by Vue reactivity.
-            this.map = biigle.$require('annotations.stores.map');
+            this.map = this.createMap();
             this.styles = biigle.$require('annotations.stores.styles');
             this.imageLayer = new ol.layer.Image();
             this.tiledImageLayer = new ol.layer.Tile();
