@@ -4,20 +4,6 @@
  * @type {Object}
  */
 biigle.$component('annotations.components.minimap', function () {
-    var initialized = false;
-    var minimap = new ol.Map({
-        // remove controls
-        controls: [],
-        // disable interactions
-        interactions: []
-    });
-
-    var viewportSource = new ol.source.Vector();
-    var viewport = new ol.Feature();
-    viewportSource.addFeature(viewport);
-
-    var mapView, mapSize;
-
     return {
         props: {
             extent: {
@@ -37,19 +23,41 @@ biigle.$component('annotations.components.minimap', function () {
                 default: 200,
             },
         },
+        data: function () {
+            return {
+                mapView: null,
+                mapSize: null,
+            };
+        },
+        computed: {
+            minimap: function () {
+                return new ol.Map({
+                    // remove controls
+                    controls: [],
+                    // disable interactions
+                    interactions: []
+                });
+            },
+            viewport: function () {
+                return new ol.Feature();
+            },
+        },
         methods: {
-            // Move the viewport rectangle on the minimap.
             updateViewport: function () {
-                viewport.setGeometry(ol.geom.Polygon.fromExtent(mapView.calculateExtent(mapSize)));
+                // The map size might be undefined if the minimap is created initially.
+                // This function will be called again once the map is ready.
+                if (this.mapSize) {
+                    this.viewport.setGeometry(ol.geom.Polygon.fromExtent(this.mapView.calculateExtent(this.mapSize)));
+                }
             },
             dragViewport: function (e) {
-                mapView.setCenter(e.coordinate);
+                this.mapView.setCenter(e.coordinate);
             },
             updateMapSize: function (e) {
-                mapSize = e.target.getSize();
+                this.mapSize = e.target.getSize();
             },
             updateMapView: function (e) {
-                mapView = e.target.getView();
+                this.mapView = e.target.getView();
             },
             updateElementSize: function () {
                 var imageWidth = this.extent[2];
@@ -60,7 +68,7 @@ biigle.$component('annotations.components.minimap', function () {
                     imageWidth / this.intendedWidth,
                     imageHeight / this.intendedHeight
                 );
-                minimap.setView(new ol.View({
+                this.minimap.setView(new ol.View({
                     projection: this.projection,
                     center: ol.extent.getCenter(this.extent),
                     resolution: resolution,
@@ -70,7 +78,7 @@ biigle.$component('annotations.components.minimap', function () {
                 // image displayed by OpenLayers.
                 this.$el.style.width = Math.round(imageWidth / resolution) + 'px';
                 this.$el.style.height = Math.round(imageHeight / resolution) + 'px';
-                minimap.updateSize();
+                this.minimap.updateSize();
             },
             refreshImageLayer: function (e) {
                 // Set or refresh the layer that displays the image. This is done after
@@ -79,7 +87,7 @@ biigle.$component('annotations.components.minimap', function () {
                 // to update the layer here, too.
                 var name = e.element.get('name');
                 if (name && name.startsWith('image')) {
-                    var layers = minimap.getLayers();
+                    var layers = this.minimap.getLayers();
                     if (layers.getLength() > 1) {
                         layers.setAt(0, e.element);
                     } else {
@@ -87,29 +95,11 @@ biigle.$component('annotations.components.minimap', function () {
                     }
                 }
             },
-        },
-        created: function () {
-            // Dot this only once and retain the minimap object even if the component
-            // is hidden/destroyed.
-            if (!initialized) {
-                initialized = true;
-                var map = this.$parent.map;
-                mapSize = map.getSize();
-                mapView = map.getView();
-                map.on('postcompose', this.updateViewport);
-                map.on('change:size', this.updateMapSize);
-                map.on('change:view', this.updateMapView);
-
-                // Add the viewport layer now. Add the image layer later when it was
-                // added to the map.
-                minimap.addLayer(new ol.layer.Vector({
-                    source: viewportSource,
-                    style: biigle.$require('annotations.stores.styles').viewport
-                }));
-                map.getLayers().on('add', this.refreshImageLayer);
-                minimap.on('pointerdrag', this.dragViewport);
-                minimap.on('click', this.dragViewport);
-            }
+            initImageLayer: function (layers) {
+                layers.forEach(function (layer) {
+                    this.refreshImageLayer({element: layer});
+                }, this);
+            },
         },
         watch: {
             // Refresh the view if the extent (i.e. image size) changed.
@@ -117,9 +107,41 @@ biigle.$component('annotations.components.minimap', function () {
                 this.updateElementSize();
             },
         },
+        created: function () {
+            var viewportSource = new ol.source.Vector();
+            viewportSource.addFeature(this.viewport);
+
+            var map = this.$parent.map;
+            this.mapSize = map.getSize();
+            this.mapView = map.getView();
+            map.on('postcompose', this.updateViewport);
+            map.on('change:size', this.updateMapSize);
+            map.on('change:view', this.updateMapView);
+
+            // Add the viewport layer now. Add the image layer later when it was
+            // added to the map.
+            this.minimap.addLayer(new ol.layer.Vector({
+                source: viewportSource,
+                style: biigle.$require('annotations.stores.styles').viewport
+            }));
+            map.getLayers().on('add', this.refreshImageLayer);
+            this.minimap.on('pointerdrag', this.dragViewport);
+            this.minimap.on('click', this.dragViewport);
+            this.initImageLayer(map.getLayers());
+        },
         mounted: function () {
-            minimap.setTarget(this.$el);
             this.updateElementSize();
+            this.minimap.setTarget(this.$el);
+            // Manually update the viewport in case the minimap was created/toggled when
+            // the annotation map is already there.
+            this.updateViewport();
+        },
+        beforeDestroy: function () {
+            var map = this.$parent.map;
+            map.un('postcompose', this.updateViewport);
+            map.un('change:size', this.updateMapSize);
+            map.un('change:view', this.updateMapView);
+            map.getLayers().un('add', this.refreshImageLayer);
         },
     };
 });
