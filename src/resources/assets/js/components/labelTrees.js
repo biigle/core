@@ -51,6 +51,12 @@ biigle.$component('labelTrees.components.labelTrees', {
             type: Boolean,
             default: true,
         },
+        // Keyboard event listener set to use (in case there are other components using
+        // the same shortcut keys on the same page).
+        listenerSet: {
+            type: String,
+            default: 'default',
+        },
     },
     computed: {
         localeCompareSupportsLocales: function () {
@@ -177,7 +183,7 @@ biigle.$component('labelTrees.components.labelTrees', {
             var bindFavouriteKey = function (key, index) {
                 keyboard.on(key, function() {
                     self.selectFavourite(index);
-                });
+                }, 0, self.listenerSet);
             };
 
             for (var i = 1; i <= 9; i++) {
