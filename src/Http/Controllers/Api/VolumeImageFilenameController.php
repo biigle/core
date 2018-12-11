@@ -10,7 +10,7 @@ class VolumeImageFilenameController extends Controller
     /**
      * List the IDs of images with a filename matching the given pattern.
      *
-     * @api {get} volumes/:id/images/filter/filename/:pattern Get all images with a filename matching the given pattern
+     * @api {get} volumes/:id/images/filter/filename/:pattern Get images with matching filename
      * @apiGroup Volumes
      * @apiName VolumeImagesFilterFilename
      * @apiPermission projectMember

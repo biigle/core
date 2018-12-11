@@ -12,10 +12,11 @@ class VolumeImageLabelController extends Controller
     /**
      * Get all image labels that were used in a volume.
      *
-     * @api {get} volumes/:id/image-labels Get all image labels that were used in a volume
+     * @api {get} volumes/:id/image-labels Get used image labels
      * @apiGroup Volumes
      * @apiName VolumeIndexImageLabels
      * @apiPermission projectMember
+     * @apiDescription Returns all image labels that were used in the volume.
      *
      * @apiParam {Number} id The volume ID
      *

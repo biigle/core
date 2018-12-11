@@ -28,10 +28,11 @@ class BrowserController extends Controller
     /**
      * List directories in a storage disk.
      *
-     * @api {get} volumes/browser/directories/:disk List directories in a storage disk
-     * @apiGroup Volumes
+     * @api {get} volumes/browser/directories/:disk List directories
+     * @apiGroup Volume_Browser
      * @apiName VolumeBrowserIndexDirectories
      * @apiPermission user
+     * @apiDescription The volume browser can be disabled for a BIIGLE instance.
      *
      * @apiParam {Number} disk Name of the storage disk to browse.
      * @apiParam {Number} path Path in the storage disk to list directories for.
@@ -66,10 +67,11 @@ class BrowserController extends Controller
     /**
      * List images in a storage disk.
      *
-     * @api {get} volumes/browser/images/:disk List images in a storage disk
-     * @apiGroup Volumes
+     * @api {get} volumes/browser/images/:disk List images
+     * @apiGroup Volume_Browser
      * @apiName VolumeBrowserIndexImages
      * @apiPermission user
+     * @apiDescription The volume browser can be disabled for a BIIGLE instance.
      *
      * @apiParam {Number} disk Name of the storage disk to browse.
      * @apiParam {Number} path Path in the storage disk to list images for.

@@ -38,7 +38,7 @@ class VolumeImageMetadataController extends Controller
     /**
      * Add or update image metadata for a volume.
      *
-     * @api {post} volumes/:id/images/metadata Add/update image metadata
+     * @api {post} volumes/:id/images/metadata Add image metadata
      * @apiGroup Volumes
      * @apiName StoreVolumeImageMetadata
      * @apiPermission projectAdmin

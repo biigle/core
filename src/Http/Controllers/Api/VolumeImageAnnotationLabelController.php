@@ -12,7 +12,7 @@ class VolumeImageAnnotationLabelController extends Controller
     /**
      * List the IDs of images having one or more annotations with the specified label.
      *
-     * @api {get} volumes/:tid/images/filter/annotation-label/:lid Get all images having annotations with a certain label
+     * @api {get} volumes/:tid/images/filter/annotation-label/:lid Get images with a label
      * @apiGroup Volumes
      * @apiName VolumeImagesHasLabel
      * @apiPermission projectMember

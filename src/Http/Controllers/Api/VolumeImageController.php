@@ -10,7 +10,7 @@ class VolumeImageController extends Controller
     /**
      * List the image IDs of the specified volume, ordered by filename.
      *
-     * @api {get} volumes/:id/images/order-by/filename Get all images ordered by filename
+     * @api {get} volumes/:id/images/order-by/filename Get images ordered by filename
      * @apiGroup Volumes
      * @apiName IndexVolumeImagesOrderByFilename
      * @apiPermission projectMember
@@ -37,7 +37,7 @@ class VolumeImageController extends Controller
     /**
      * List the IDs of images having one or more image labels attached.
      *
-     * @api {get} volumes/:id/images/filter/labels Get all images having image labels
+     * @api {get} volumes/:id/images/filter/labels Get images with image labels
      * @apiGroup Volumes
      * @apiName VolumeImagesHasImageLabels
      * @apiPermission projectMember
@@ -62,7 +62,7 @@ class VolumeImageController extends Controller
     /**
      * List the IDs of images having one or more image labels attached by the specified user.
      *
-     * @api {get} volumes/:vid/images/filter/image-label-user/:uid Get all images having image labels attached by a user
+     * @api {get} volumes/:vid/images/filter/image-label-user/:uid Get images with image labels by a user
      * @apiGroup Volumes
      * @apiName VolumeImagesHasLabelUser
      * @apiPermission projectMember
@@ -93,7 +93,7 @@ class VolumeImageController extends Controller
     /**
      * List the IDs of images having the specified label attached.
      *
-     * @api {get} volumes/:vid/images/filter/image-label/:lid Get all images having a certain label
+     * @api {get} volumes/:vid/images/filter/image-label/:lid Get images with a label
      * @apiGroup Volumes
      * @apiName VolumeImagesHasImageLabel
      * @apiPermission projectMember

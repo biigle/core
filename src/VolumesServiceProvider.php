@@ -50,6 +50,7 @@ class VolumesServiceProvider extends ServiceProvider
                 'adminShowUser' => UsersControllerMixin::class.'@show',
                 'search' => SearchControllerMixin::class.'@index',
             ],
+            'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
         ]);
     }
 
