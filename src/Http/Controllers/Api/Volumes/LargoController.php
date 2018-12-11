@@ -18,7 +18,7 @@ class LargoController extends Controller
     /**
      * Save changes of an Largo session for a volume.
      *
-     * @api {post} volumes/:id/largo Save Largo session
+     * @api {post} volumes/:id/largo Save a volume session
      * @apiGroup Largo
      * @apiName VolumesStoreLargo
      * @apiParam {Number} id The volume ID.

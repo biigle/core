@@ -15,12 +15,12 @@ class LargoController extends Controller
     /**
      * Save changes of an Largo session for a project.
      *
-     * @api {post} projects/:id/largo Save Largo session
+     * @api {post} projects/:id/largo Save a project session
      * @apiGroup Largo
      * @apiName ProjectsStoreLargo
      * @apiParam {Number} id The project ID.
      * @apiPermission projectEditor
-     * @apiDescription see the 'Save Largo session' endpoint for a volume for more information
+     * @apiDescription See the 'Save a volume session' endpoint for more information
      *
      * @apiParam (Optional arguments) {Object} dismissed Map from a label ID to a list of IDs of annotations from which this label should be detached.
      * @apiParam (Optional arguments) {Object} changed Map from a label ID to a list of IDs of annotations to which this label should be attached.

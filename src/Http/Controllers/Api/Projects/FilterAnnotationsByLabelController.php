@@ -12,7 +12,7 @@ class FilterAnnotationsByLabelController extends Controller
     /**
      * Show all annotations of the project that have a specific label attached.
      *
-     * @api {get} projects/:tid/annotations/filter/label/:lid Get annotations with a specific label
+     * @api {get} projects/:tid/annotations/filter/label/:lid Get annotations with a label
      * @apiGroup Projects
      * @apiName ShowProjectsAnnotationsFilterLabels
      * @apiParam {Number} pid The project ID

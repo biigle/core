@@ -57,6 +57,7 @@ class LargoServiceProvider extends ServiceProvider
                 'manualTutorial',
                 'labelTreesManual',
             ],
+            'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
         ]);
     }
 

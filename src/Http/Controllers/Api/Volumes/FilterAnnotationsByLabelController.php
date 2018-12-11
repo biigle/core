@@ -12,7 +12,7 @@ class FilterAnnotationsByLabelController extends Controller
     /**
      * Show all annotations of the volume that have a specific label attached.
      *
-     * @api {get} volumes/:vid/annotations/filter/label/:lid Get annotations with a specific label
+     * @api {get} volumes/:vid/annotations/filter/label/:lid Get annotations with a label
      * @apiGroup Volumes
      * @apiName ShowVolumesAnnotationsFilterLabels
      * @apiParam {Number} vid The volume ID
