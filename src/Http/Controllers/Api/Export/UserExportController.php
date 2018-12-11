@@ -8,8 +8,8 @@ use Biigle\Modules\Sync\Support\Export\UserExport;
 class UserExportController extends Controller
 {
     /**
-     * @api {get} export/users Get the export file for users
-     * @apiGroup Export
+     * @api {get} export/users Get a user export
+     * @apiGroup Sync
      * @apiName ShowUserExport
      *
      * @apiParam (Optional arguments) {String} except Comma separated IDs of the users that should not be included in the export file.

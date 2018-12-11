@@ -20,7 +20,7 @@ class ImportController extends Controller
      * Initiate a new import.
      *
      * @api {post} import Initiate a new import
-     * @apiGroup Import
+     * @apiGroup Sync
      * @apiName StoreImport
      * @apiPermission admin
      * @apiDescription Redirects to the import page in the admin panel where the import can be edited and performed.
@@ -45,10 +45,11 @@ class ImportController extends Controller
     }
 
     /**
-     * @api {put} import/:token Perform an uploaded import
-     * @apiGroup Import
+     * @api {put} import/:token Perform an import
+     * @apiGroup Sync
      * @apiName UpdateImport
      * @apiPermission admin
+     * @apiDescription This endpoint is not properly documented yet.
      *
      * @param ArchiveManager $manager
      * @param  Request $request
@@ -80,8 +81,8 @@ class ImportController extends Controller
     }
 
     /**
-     * @api {delete} import/:token Delete the temporary files of an import
-     * @apiGroup Import
+     * @api {delete} import/:token Abort an import
+     * @apiGroup Sync
      * @apiName DestroyImport
      * @apiPermission admin
      *

@@ -8,8 +8,8 @@ use Biigle\Modules\Sync\Support\Export\VolumeExport;
 class VolumeExportController extends Controller
 {
     /**
-     * @api {get} export/volumes Get the export file for volumes
-     * @apiGroup Export
+     * @api {get} export/volumes Get volume export
+     * @apiGroup Sync
      * @apiName ShowVolumeExport
      *
      * @apiParam (Optional arguments) {String} except Comma separated IDs of the volumes that should not be included in the export file.

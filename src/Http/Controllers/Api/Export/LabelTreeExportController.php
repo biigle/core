@@ -8,8 +8,8 @@ use Biigle\Modules\Sync\Support\Export\LabelTreeExport;
 class LabelTreeExportController extends Controller
 {
     /**
-     * @api {get} export/label-trees Get the export file for label trees
-     * @apiGroup Export
+     * @api {get} export/label-trees Get a label tree export
+     * @apiGroup Sync
      * @apiName ShowLabelTreeExport
      *
      * @apiParam (Optional arguments) {String} except Comma separated IDs of the label trees that should not be included in the export file.

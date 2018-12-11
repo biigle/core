@@ -35,6 +35,7 @@ class SyncServiceProvider extends ServiceProvider
             'viewMixins' => [
                 'adminMenu',
             ],
+            'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
         ]);
     }
 
