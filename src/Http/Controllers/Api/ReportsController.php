@@ -16,7 +16,7 @@ class ReportsController extends Controller
     /**
      * Shows the specified report file.
      *
-     * @api {get} reports/:id Get the report file
+     * @api {get} reports/:id Get a report file
      * @apiGroup Reports
      * @apiName ShowReport
      * @apiPermission reportOwner

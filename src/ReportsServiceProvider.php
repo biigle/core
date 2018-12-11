@@ -62,6 +62,7 @@ class ReportsServiceProvider extends ServiceProvider
             'controllerMixins' => [
                 'search' => SearchControllerMixin::class.'@index',
             ],
+            'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
         ]);
 
         if (config('reports.notifications.allow_user_settings')) {

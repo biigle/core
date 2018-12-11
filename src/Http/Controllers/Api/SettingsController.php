@@ -11,7 +11,7 @@ class SettingsController extends Controller
     /**
      * Update the user settings for reports.
      *
-     * @api {post} users/my/settings/reports Update the user settings for reports
+     * @api {post} users/my/settings/reports Update reports settings
      * @apiGroup Users
      * @apiName StoreUsersReportsSettings
      * @apiPermission user

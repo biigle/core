@@ -7,9 +7,9 @@ use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
 
 class ProjectReportController extends ReportController
 {
-    /*
-     * @api {post} projects/:id/reports Generate a new project report
-     * @apiGroup Projects
+    /**
+     * @api {post} projects/:id/reports Request a project report
+     * @apiGroup Reports
      * @apiName GenerateProjectReport
      *
      * @apiParam {Number} id The project ID.

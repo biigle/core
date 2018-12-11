@@ -8,9 +8,9 @@ use Biigle\Modules\Reports\Http\Controllers\Api\ReportController;
 
 class VolumeReportController extends ReportController
 {
-    /*
-     * @api {post} volumes/:id/reports Generate a new volume report
-     * @apiGroup Volumes
+    /**
+     * @api {post} volumes/:id/reports Request a volume report
+     * @apiGroup Reports
      * @apiName GenerateVolumeReport
      *
      * @apiParam {Number} id The volume ID.

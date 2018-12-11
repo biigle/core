@@ -14,8 +14,8 @@ class ExportAreaController extends Controller
     /**
      * Show the export area of the volume.
      *
-     * @api {get} volumes/:id/export-area Show the export area
-     * @apiGroup Volumes
+     * @api {get} volumes/:id/export-area Get the export area
+     * @apiGroup Reports
      * @apiName IndexVolumesExportArea
      * @apiPermission projectMember
      * @apiDescription The export area is a rectangle defined by two points. This endpoint returns an array containing the coordinates as follows: `[x1, y1, x2, y2]`.
