@@ -103,7 +103,7 @@ class AnnotationPolicy extends CachedPolicy
     public function attachLabel(User $user, Annotation $annotation, Label $label)
     {
         return $this->remember("annotation-can-attach-label-{$user->id}-{$annotation->id}-{$label->id}", function () use ($user, $annotation, $label) {
-            // projects, the annotation belongs to *and* the user is editor or admin of
+            // Projects, the annotation belongs to *and* the user is editor, expert or admin of.
             $projectIds = DB::table('project_user')
                 ->where('user_id', $user->id)
                 ->whereIn('project_id', function ($query) use ($annotation) {
@@ -120,9 +120,9 @@ class AnnotationPolicy extends CachedPolicy
                 ])
                 ->pluck('project_id');
 
-            // user must be editor or admin in one of the projects
+            // User must be editor, expert or admin in one of the projects.
             return !empty($projectIds)
-                // label must belong to a label tree that is used by one of the projects
+                // Label must belong to a label tree that is used by one of the projects.
                 && DB::table('label_tree_project')
                     ->whereIn('project_id', $projectIds)
                     ->where('label_tree_id', $label->label_tree_id)
