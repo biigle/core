@@ -13,7 +13,7 @@ class AttachableVolumesController extends Controller
     /**
      * Shows all volumes that can be attached to the project by the requesting user.
      *
-     * @api {get} projects/:id/attachable-volumes Get all volumes that can be attached
+     * @api {get} projects/:id/attachable-volumes Get attachable volumes
      * @apiGroup Projects
      * @apiName IndexAttachableVolumes
      * @apiPermission admin
