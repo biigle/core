@@ -24,21 +24,18 @@ class VolumeUserController extends Controller
      *      "id": 2,
      *     "firstname": "Brandi",
      *     "lastname": "Schmitt",
-     *     "email": "nola50@mayert.com",
      *     "affiliation": "Ocean Research Centre"
      *   },
      *   {
      *     "id": 3,
      *     "firstname": "Samir",
      *     "lastname": "Mosciski",
-     *     "email": "caleigh.hammes@yahoo.com",
      *     "affiliation": "Ocean Research Centre"
      *   },
      *   {
      *     "id": 4,
      *     "firstname": "Annabell",
      *     "lastname": "Ferry",
-     *     "email": "selina35@gmail.com",
      *     "affiliation": "Ocean Research Centre"
      *   }
      * ]
@@ -53,7 +50,7 @@ class VolumeUserController extends Controller
         $this->authorize('access', $volume);
 
         return $volume->users()
-            ->select('id', 'firstname', 'lastname', 'email', 'affiliation')
+            ->select('id', 'firstname', 'lastname', 'affiliation')
             ->get();
     }
 }
