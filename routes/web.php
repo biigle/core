@@ -29,12 +29,10 @@ $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router
         'uses' => 'ManualController@tutorialsArticle',
     ]);
 
-    $router->get('/documentation', [
+    $router->get('/documentation/{module}/{article?}', [
         'as' => 'manual-documentation',
-        'uses' => 'ManualController@indexDocumentation',
+        'uses' => 'ManualController@documentationArticle',
     ]);
-
-    $router->get('/documentation/{module}/{article?}', 'ManualController@documentationArticle');
 });
 
 // PROTECTED ROUTES -----------------------------------------------------------

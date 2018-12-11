@@ -9,7 +9,7 @@
 	</p>
 
 	<p>
-		In a previous tutorial you have learned what PHP package development is all about and how to start developing your own BIIGLE module. If you haven't done the tutorial yet, <a href="{{ route('manual-documentation') }}/package-development">start there</a> and come back later, since we'll build upon that.
+		In a previous tutorial you have learned what PHP package development is all about and how to start developing your own BIIGLE module. If you haven't done the tutorial yet, <a href="{{ route('manual-documentation', 'package-development') }}">start there</a> and come back later, since we'll build upon that.
 	</p>
 
 	<p>

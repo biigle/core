@@ -86,7 +86,6 @@
             "php-cs-fixer fix --config='.php_cs'"
         ],
         "doc": [
-            "rm -rf public/doc/api",
             "rm -rf public/doc/server",
             "php sami.phar update sami.php -v"
         ]
