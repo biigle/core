@@ -11,11 +11,11 @@ class VolumeImageAreaController extends Controller
     /**
      * Get the area of the images of a volume in m².
      *
-     * @api {get} volumes/:id/images/area Get the area of the images of a volume in m²
+     * @api {get} volumes/:id/images/area Get image areas
      * @apiGroup Volumes
      * @apiName VolumesIndexImageArea
      * @apiPermission projectMember
-     * @apiDescription Returns a map from image ID to area. The area may be provided by image metadata or laser point detection (if available). `-1` means no area is available for an image.
+     * @apiDescription Returns a map from image ID to area in m². The area may be provided by image metadata or laser point detection (if available). `-1` means no area is available for an image.
      *
      * @apiParam {Number} id The volume ID
      *

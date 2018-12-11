@@ -12,7 +12,7 @@ class VolumeImageController extends Controller
     /**
      * List the IDs of images having one or more annotations.
      *
-     * @api {get} volumes/:id/images/filter/annotations Get all images having annotations
+     * @api {get} volumes/:id/images/filter/annotations Get images having annotations
      * @apiGroup Volumes
      * @apiName VolumeImagesHasAnnotation
      * @apiPermission projectMember

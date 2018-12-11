@@ -12,10 +12,11 @@ class VolumeLabelController extends Controller
     /**
      * Get all annotation labels that were used in a volume.
      *
-     * @api {get} volumes/:id/annotation-labels Get all annotation labels that were used in a volume.
+     * @api {get} volumes/:id/annotation-labels Get used labels
      * @apiGroup Volumes
      * @apiName VolumeIndexLabels
      * @apiPermission projectMember
+     * @apiDescription Returns all labels that have been used in a volume.
      *
      * @apiParam {Number} id The volume ID
      *

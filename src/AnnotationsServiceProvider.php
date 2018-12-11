@@ -47,6 +47,7 @@ class AnnotationsServiceProvider extends ServiceProvider
             'controllerMixins' => [
                 'search' => SearchControllerMixin::class.'@index',
             ],
+            'apidoc' => [__DIR__.'/Http/Controllers/Api/'],
         ]);
     }
 
