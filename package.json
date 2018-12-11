@@ -7,5 +7,6 @@
     "gulp-apidoc": "~0.1.2",
     "gulp-helpers": "git+https://github.com/mzur/gulp-helpers.git#v1.1.0",
     "jsdoc": "~3.3.0-beta1"
-  }
+  },
+  "dependencies": {}
 }

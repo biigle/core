@@ -5,6 +5,7 @@ node_modules
 public/thumbs/**
 public/tiles/**
 public/vendor/**
+public/doc/api/**
 storage
 tmp
 vendor

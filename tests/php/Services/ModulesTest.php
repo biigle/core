@@ -32,11 +32,13 @@ class ModulesTest extends TestCase
         Modules::register('myModule', [
             'viewMixins' => ['dashboard', 'settings'],
             'controllerMixins' => ['dashboard' => $func],
+            'apidoc' => ['my/path'],
         ]);
 
         $this->assertArrayHasKey('myModule', Modules::getViewMixins('dashboard'));
         $this->assertArrayHasKey('myModule', Modules::getViewMixins('settings'));
         $this->assertEquals(['myModule' => $func], Modules::getControllerMixins('dashboard'));
+        $this->assertEquals(['my/path'], Modules::getApidocPaths());
     }
 
     public function testRegisterViewMixinOrdering()
