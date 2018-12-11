@@ -41,16 +41,6 @@ class ManualController extends Controller
     }
 
     /**
-     * Show the application documentation center to the user.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function indexDocumentation()
-    {
-        return view('manual.documentation.index');
-    }
-
-    /**
      * Show a documentation article.
      *
      * @param string $module Name of the module or name of the article

@@ -8,7 +8,7 @@
         In this tutorial we will look at how to register areas for view mixins, enabling other packages to extend your views. We then look at some advanced use cases of view mixins.
     </p>
     <p>
-        You have <a href="{{ route('manual-documentation').'/package-development' }}">used view mixins before</a> to extend existing views with a new package (if you haven't, <a href="{{ route('manual-documentation').'/package-development' }}">start there</a> and come back later). But how can you enable others to extend the views of <em>your</em> package? Let's have a look at how registering new areas for mixins works.
+        You have <a href="{{ route('manual-documentation', 'package-development') }}">used view mixins before</a> to extend existing views with a new package (if you haven't, <a href="{{ route('manual-documentation', 'package-development') }}">start there</a> and come back later). But how can you enable others to extend the views of <em>your</em> package? Let's have a look at how registering new areas for mixins works.
     </p>
 
     <h3>Implementing a new area for view mixins</h3>
@@ -115,7 +115,7 @@ $modules->addMixin('volumes', 'dashboardMain.projects');
         Until now we have only talked about registering <em>one</em> area for view mixins per page. There are use cases, though, where you'd want or are even required to have multiple of those areas on one page. Let's take a look at one of the situations where multiple areas for view mixins are necessary.
     </p>
     <p>
-        Having the example of the project box mixins containing volume thumbnail mixins still in mind, think about what whould happen if we tried to add a custom style to the volume thumbnails. "Of course", you'd say, "there is the <a href="{{ route('manual-documentation').'/using-custom-assets-in-packages#publishing-css' }}"><code>styles</code> stack</a> we can append our CSS to." But the downside of this approach is: the custom <code>style</code> tag is appended <em>each time</em> the mixin is included. While this is fine for the project box mixin that is included only once, it becomes a problem with nested mixins like the volume thumbnails that are included multiple times. So for each project box on the dashboard, one custom style tag woul be appended to the page. There is a better way to do this.
+        Having the example of the project box mixins containing volume thumbnail mixins still in mind, think about what whould happen if we tried to add a custom style to the volume thumbnails. "Of course", you'd say, "there is the <a href="{{ route('manual-documentation', 'using-custom-assets-in-packages') }}#publishing-css"><code>styles</code> stack</a> we can append our CSS to." But the downside of this approach is: the custom <code>style</code> tag is appended <em>each time</em> the mixin is included. While this is fine for the project box mixin that is included only once, it becomes a problem with nested mixins like the volume thumbnails that are included multiple times. So for each project box on the dashboard, one custom style tag woul be appended to the page. There is a better way to do this.
     </p>
     <p>
         In fact there is nothing preventing us to implement a separate "style" mixin and add it to the dashboard. That's exactly what is already provided by the dashboard, looking like this:

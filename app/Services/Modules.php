@@ -25,22 +25,35 @@ class Modules
     protected static $controllerMixins = [];
 
     /**
-     * Register view and controller mixins in one step.
+     * Additional source paths to generate the API documentation from.
+     *
+     * @var array
+     */
+    protected static $apidocPaths = [];
+
+    /**
+     * Register module assets in one step.
      *
      * @param string $module Module name
-     * @param array $mixins
+     * @param array $assets
      */
-    public function register($module, array $mixins)
+    public function register($module, array $assets)
     {
-        if (array_key_exists('controllerMixins', $mixins)) {
-            foreach ($mixins['controllerMixins'] as $controller => $mixin) {
-                $this->registerControllerMixin($module, $controller, $mixin);
+        if (array_key_exists('controllerMixins', $assets)) {
+            foreach ($assets['controllerMixins'] as $controller => $asset) {
+                $this->registerControllerMixin($module, $controller, $asset);
             }
         }
 
-        if (array_key_exists('viewMixins', $mixins)) {
-            foreach ($mixins['viewMixins'] as $mixin) {
-                $this->registerViewMixin($module, $mixin);
+        if (array_key_exists('viewMixins', $assets)) {
+            foreach ($assets['viewMixins'] as $asset) {
+                $this->registerViewMixin($module, $asset);
+            }
+        }
+
+        if (array_key_exists('apidoc', $assets)) {
+            foreach ($assets['apidoc'] as $asset) {
+                array_push(self::$apidocPaths, $asset);
             }
         }
     }
@@ -141,5 +154,15 @@ class Modules
         return array_filter($installed, function ($item) {
             return strpos($item['name'], 'biigle/') === 0;
         });
+    }
+
+    /**
+     * Get the registered apidoc paths of the modules.
+     *
+     * @return array
+     */
+    public function getApidocPaths()
+    {
+        return self::$apidocPaths;
     }
 }

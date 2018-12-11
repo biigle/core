@@ -12,13 +12,6 @@ gulp.task('js', function (cb) {
    h.js('**/*.js', 'main.js', cb);
 });
 
-gulp.task('apidoc', function (cb) {
-    apidoc.exec({
-        src: 'app/Http/Controllers/Api/',
-        dest: 'public/doc/api'
-    }, cb);
-});
-
 gulp.task('watch', function () {
     gulp.watch(h.paths.sass + '**/*.scss', ['sass']);
     gulp.watch(h.paths.js + '**/*.js', ['js']);
