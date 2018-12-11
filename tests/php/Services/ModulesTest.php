@@ -38,7 +38,7 @@ class ModulesTest extends TestCase
         $this->assertArrayHasKey('myModule', Modules::getViewMixins('dashboard'));
         $this->assertArrayHasKey('myModule', Modules::getViewMixins('settings'));
         $this->assertEquals(['myModule' => $func], Modules::getControllerMixins('dashboard'));
-        $this->assertEquals(['my/path'], Modules::getApidocPaths());
+        $this->assertContains('my/path', Modules::getApidocPaths());
     }
 
     public function testRegisterViewMixinOrdering()

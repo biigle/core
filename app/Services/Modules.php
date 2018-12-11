@@ -15,21 +15,31 @@ class Modules
      *
      * @var array
      */
-    protected static $viewMixins = [];
+    protected $viewMixins;
 
     /**
      * The controller mixins of every module.
      *
      * @var array
      */
-    protected static $controllerMixins = [];
+    protected $controllerMixins;
 
     /**
      * Additional source paths to generate the API documentation from.
      *
      * @var array
      */
-    protected static $apidocPaths = [];
+    protected $apidocPaths;
+
+    /**
+     * Create a new instance.
+     */
+    public function __construct()
+    {
+        $this->viewMixins = [];
+        $this->controllerMixins = [];
+        $this->apidocPaths = [];
+    }
 
     /**
      * Register module assets in one step.
@@ -52,9 +62,7 @@ class Modules
         }
 
         if (array_key_exists('apidoc', $assets)) {
-            foreach ($assets['apidoc'] as $asset) {
-                array_push(self::$apidocPaths, $asset);
-            }
+            $this->apidocPaths[$module] = $assets['apidoc'];
         }
     }
 
@@ -67,8 +75,8 @@ class Modules
      */
     public function registerViewMixin($module, $view)
     {
-        if (!array_has(self::$viewMixins, "{$view}.{$module}")) {
-            array_set(self::$viewMixins, "{$view}.{$module}", []);
+        if (!array_has($this->viewMixins, "{$view}.{$module}")) {
+            array_set($this->viewMixins, "{$view}.{$module}", []);
         }
     }
 
@@ -88,7 +96,7 @@ class Modules
      */
     public function getViewMixins($view)
     {
-        return array_get(self::$viewMixins, $view, []);
+        return array_get($this->viewMixins, $view, []);
     }
 
     /**
@@ -108,7 +116,7 @@ class Modules
      */
     public function registerControllerMixin($module, $controller, $mixin)
     {
-        array_set(self::$controllerMixins, "{$controller}.{$module}", $mixin);
+        array_set($this->controllerMixins, "{$controller}.{$module}", $mixin);
     }
 
     /**
@@ -119,7 +127,7 @@ class Modules
      */
     public function getControllerMixins($controller)
     {
-        return array_get(self::$controllerMixins, $controller, []);
+        return array_get($this->controllerMixins, $controller, []);
     }
 
     /**
@@ -163,6 +171,11 @@ class Modules
      */
     public function getApidocPaths()
     {
-        return self::$apidocPaths;
+        $paths = [];
+        foreach ($this->apidocPaths as $module => $p) {
+            $paths = array_merge($paths, $p);
+        }
+
+        return $paths;
     }
 }
