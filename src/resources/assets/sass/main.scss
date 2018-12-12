@@ -32,6 +32,15 @@
     }
 }
 
+.label-color-dot {
+    width: 1em;
+    height: 1em;
+    border: 2px solid white;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: .5em;
+}
+
 @import 'components/labelTypeahead';
 @import 'components/labelTreeLabel';
 @import 'components/labelTree';
