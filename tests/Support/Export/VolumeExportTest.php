@@ -43,8 +43,11 @@ class VolumeExportTest extends TestCase
 
         $this->assertCount(6, $exports);
         $userContent = $exports[0]->getContent();
-        $this->assertEquals($annotationLabel->user->id, $userContent[0]['id']);
-        $this->assertEquals($imageLabel->user->id, $userContent[1]['id']);
+        $userIds = array_map(function ($user) {
+            return $user['id'];
+        }, $userContent);
+        $this->assertContains($annotationLabel->user->id, $userIds);
+        $this->assertContains($imageLabel->user->id, $userIds);
 
         $labelTreeContent = $exports[1]->getContent();
         $this->assertEquals($annotationLabel->label->label_tree_id, $labelTreeContent[0]['id']);
