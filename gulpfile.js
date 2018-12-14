@@ -2,7 +2,6 @@
 
 var gulp = require('gulp');
 var h = require('gulp-helpers');
-var apidoc = require('gulp-apidoc');
 
 gulp.task('sass', function () {
    h.sass('main.scss', 'main.css');
