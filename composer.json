@@ -172,10 +172,6 @@
             "type": "vcs",
             "url": "https://github.com/biigle/laravel-image-cache"
         },
-        "laravel-remote-queue": {
-            "type": "vcs",
-            "url": "https://github.com/biigle/laravel-remote-queue"
-        },
         "maia": {
             "type": "vcs",
             "url": "git@github.com:biigle/maia.git"
