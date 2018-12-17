@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2e0f4d7a6284fd797492be25765cbd2f",
+    "content-hash": "2c4b2b713fadccf23d1f2f438518f490",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -198,11 +198,48 @@
             "time": "2018-09-10T14:40:52+00:00"
         },
         {
+            "name": "biigle/laravel-cached-openstack",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/biigle/laravel-cached-openstack.git",
+                "reference": "cc71c74e91cbd333d963ff38c11d2b0414e66bc5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/biigle/laravel-cached-openstack/zipball/cc71c74e91cbd333d963ff38c11d2b0414e66bc5",
+                "reference": "cc71c74e91cbd333d963ff38c11d2b0414e66bc5",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/cache": "^5.1",
+                "php-opencloud/openstack": "^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Biigle\\CachedOpenStack\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Zurowietz",
+                    "email": "martin@cebitec.uni-bielefeld.de"
+                }
+            ],
+            "description": "A wrapper for the OpenStack SDK that caches and renews the authentication token",
+            "time": "2018-12-17T12:35:40+00:00"
+        },
+        {
             "name": "biigle/laravel-image-cache",
             "version": "v1.1.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/laravel-image-cache.git",
+                "url": "https://github.com/biigle/laravel-image-cache.git",
                 "reference": "a0e8705e7bd8e36e2089f40e57cab8951d3be7e1"
             },
             "dist": {
@@ -264,7 +301,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/laravel-remote-queue.git",
+                "url": "https://github.com/biigle/laravel-remote-queue.git",
                 "reference": "6933910cb42e4f642421412b30f19adc9adb97f4"
             },
             "dist": {
@@ -413,12 +450,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:biigle/maia.git",
-                "reference": "8d578b4b9281592f44bdb5a71f329fe1560c6e62"
+                "reference": "0b9f5e4453dd69a9a2c801341876e713e67946ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/maia/zipball/8d578b4b9281592f44bdb5a71f329fe1560c6e62",
-                "reference": "8d578b4b9281592f44bdb5a71f329fe1560c6e62",
+                "url": "https://api.github.com/repos/biigle/maia/zipball/0b9f5e4453dd69a9a2c801341876e713e67946ca",
+                "reference": "0b9f5e4453dd69a9a2c801341876e713e67946ca",
                 "shasum": ""
             },
             "require": {
@@ -445,7 +482,7 @@
                 "source": "https://github.com/biigle/maia/tree/master",
                 "issues": "https://github.com/biigle/maia/issues"
             },
-            "time": "2018-12-04T13:14:31+00:00"
+            "time": "2018-12-14T15:31:20+00:00"
         },
         {
             "name": "biigle/projects",
@@ -2241,19 +2278,20 @@
         },
         {
             "name": "mzur/laravel-openstack-swift",
-            "version": "v1.6.0",
+            "version": "v1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mzur/laravel-openstack-swift.git",
-                "reference": "9ba8f81f4e73fde755513d154d9dae7cb518effa"
+                "reference": "e0302c7398bfc2f5cd150c06789277f720fec907"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mzur/laravel-openstack-swift/zipball/9ba8f81f4e73fde755513d154d9dae7cb518effa",
-                "reference": "9ba8f81f4e73fde755513d154d9dae7cb518effa",
+                "url": "https://api.github.com/repos/mzur/laravel-openstack-swift/zipball/e0302c7398bfc2f5cd150c06789277f720fec907",
+                "reference": "e0302c7398bfc2f5cd150c06789277f720fec907",
                 "shasum": ""
             },
             "require": {
+                "biigle/laravel-cached-openstack": "^1.0",
                 "illuminate/filesystem": "~5.1",
                 "illuminate/support": "~5.1",
                 "mzur/flysystem-openstack-swift": "^1.0"
@@ -2282,7 +2320,7 @@
                 }
             ],
             "description": "OpenStack Swift storage driver for Laravel 5.",
-            "time": "2018-09-13T12:15:36+00:00"
+            "time": "2018-12-17T12:59:01+00:00"
         },
         {
             "name": "nesbot/carbon",
