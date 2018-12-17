@@ -96,11 +96,5 @@
         "optimize-autoloader": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": {
-        "image-cache": {
-            "type": "vcs",
-            "url": "https://github.com/biigle/laravel-image-cache"
-        }
-    }
+    "prefer-stable": true
 }
