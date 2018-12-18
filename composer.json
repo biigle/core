@@ -26,7 +26,7 @@
         "biigle/geo": "@dev",
         "biigle/label-trees": "@dev",
         "biigle/laravel-image-cache": "^1.1",
-        "biigle/laravel-remote-queue": "dev-master",
+        "biigle/laravel-remote-queue": "^1.2",
         "biigle/largo": "@dev",
         "biigle/laserpoints": "@dev",
         "biigle/legal": "@dev",

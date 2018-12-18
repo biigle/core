@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2c4b2b713fadccf23d1f2f438518f490",
+    "content-hash": "3f47eff870df92d3e51519e2197ea2d8",
     "packages": [
         {
             "name": "biigle/ananas",
@@ -298,16 +298,16 @@
         },
         {
             "name": "biigle/laravel-remote-queue",
-            "version": "dev-master",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/biigle/laravel-remote-queue.git",
-                "reference": "6933910cb42e4f642421412b30f19adc9adb97f4"
+                "reference": "7e44ddb2e5bc07a294575aef1d83764d93af1997"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-remote-queue/zipball/6933910cb42e4f642421412b30f19adc9adb97f4",
-                "reference": "6933910cb42e4f642421412b30f19adc9adb97f4",
+                "url": "https://api.github.com/repos/biigle/laravel-remote-queue/zipball/7e44ddb2e5bc07a294575aef1d83764d93af1997",
+                "reference": "7e44ddb2e5bc07a294575aef1d83764d93af1997",
                 "shasum": ""
             },
             "require": {
@@ -318,7 +318,7 @@
                 "illuminate/support": "^5.5 <5.7.7"
             },
             "require-dev": {
-                "laravel/laravel": "^5.5",
+                "laravel/laravel": "^5.5 <5.7.7",
                 "mockery/mockery": "^1.2",
                 "phpunit/phpunit": "^7.4"
             },
@@ -335,14 +335,10 @@
                     "Biigle\\RemoteQueue\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Biigle\\RemoteQueue\\Tests\\": "tests/"
-                },
-                "classmap": [
-                    "tests/TestCase.php"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
@@ -350,11 +346,7 @@
                 }
             ],
             "description": "Submit jobs to and receive jobs from other Laravel or Lumen instances.",
-            "support": {
-                "source": "https://github.com/biigle/laravel-remote-queue/tree/v1.1.0",
-                "issues": "https://github.com/biigle/laravel-remote-queue/issues"
-            },
-            "time": "2018-11-27T09:47:55+00:00"
+            "time": "2018-12-18T11:53:47+00:00"
         },
         {
             "name": "biigle/largo",
@@ -5840,7 +5832,6 @@
         "biigle/color-sort": 20,
         "biigle/geo": 20,
         "biigle/label-trees": 20,
-        "biigle/laravel-remote-queue": 20,
         "biigle/largo": 20,
         "biigle/laserpoints": 20,
         "biigle/legal": 20,
