@@ -27,8 +27,8 @@
 
 
 @section('content')
-<div id="annotation-catalog-container" class="largo-container">
-    <div class="largo-images">
+<div id="annotation-catalog-container" class="sidebar-container">
+    <div class="sidebar-container__content">
         <catalog-image-grid :images="annotations" empty-url="{{ asset(config('thumbnails.empty_url')) }}" :width="{{config('thumbnails.width')}}" :height="{{config('thumbnails.height')}}"></catalog-image-grid>
         <div class="largo-images__alerts" :class="{block: loading}">
             <div v-cloak v-if="loading">
