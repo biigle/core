@@ -8,7 +8,7 @@
         <div class="row">
             <h1>Manual</h1>
             <p class="lead">
-                This is the application manual of BIIGLE. Here you can find tutorials and videos on how to use the application as well as the developer documentation and API.
+                This is the application manual of BIIGLE. Here you can find tutorials on how to use the application as well as reference publications and the developer documentation.
             </p>
         </div>
         <div class="row">
@@ -35,6 +35,17 @@
             </p>
 
             @mixin('manualTutorial')
+
+            <h2><a name="references"></a>References</h2>
+
+            <p>
+                Reference publications that you should cite if you use BIIGLE for one of your studies.
+            </p>
+            <p>
+                <strong>BIIGLE 2.0</strong><br>
+                <a href="https://doi.org/10.3389/fmars.2017.00083">Langenkämper, D., Zurowietz, M., Schoening, T., & Nattkemper, T. W. (2017). Biigle 2.0-browsing and annotating large marine image collections.</a><br>Frontiers in Marine Science, 4, 83. doi: <code>10.3389/fmars.2017.00083</code>
+            </p>
+            @mixin('manualReferences')
         </div>
         <div class="row">
             <h2>Developer Documentation</h2>
