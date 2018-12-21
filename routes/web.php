@@ -16,6 +16,11 @@ Auth::routes();
 // PUBLIC ROUTES --------------------------------------------------------------
 $router->post('heartbeat', 'Views\HeartbeatController@store');
 
+$router->get('/', [
+    'as'   => 'home',
+    'uses' => 'Views\\DashboardController@index',
+]);
+
 $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router) {
     // route name must be different from the 'doc' directory name of the static
     // files in the public directory
@@ -38,11 +43,6 @@ $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router
 // PROTECTED ROUTES -----------------------------------------------------------
 
 $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($router) {
-    $router->get('/', [
-        'as'   => 'home',
-        'uses' => 'DashboardController@index',
-    ]);
-
     $router->group(['namespace' => 'Notifications', 'prefix' => 'notifications'], function ($router) {
         $router->get('/', [
             'as' => 'notifications',
