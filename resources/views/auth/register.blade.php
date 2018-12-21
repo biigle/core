@@ -91,4 +91,7 @@
         </div>
     </div>
 </div>
+@include('partials.footer', [
+    'positionAbsolute' => true,
+])
 @endsection

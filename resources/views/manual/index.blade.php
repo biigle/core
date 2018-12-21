@@ -99,9 +99,7 @@
                 Building your custom extensions is nice but what about extending the extensions? Learn how to use the view mixin registry of BIIGLE, allowing other modules to extend yours.
             </p>
         </div>
-        <div class="row">
-            @include('partials.footer')
-        </div>
     </div>
 </div>
+@include('partials.footer')
 @endsection
