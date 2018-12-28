@@ -9,7 +9,11 @@
         <div class="col-md-4 col-sm-6">
             <div class="info-text">
                 <h1 class="logo logo--standalone"><a href="{{ route('home') }}" class="logo__biigle">BIIGLE</a></h1>
-                <p class="text-muted">{{ trans('biigle.info') }} Read <a href="https://doi.org/10.3389/fmars.2017.00083">the paper</a> or take a look at <a href="{{url('manual')}}">the manual</a>.</p>
+                @unless(view()->exists('landing'))
+                    <p class="text-muted">
+                        The Bio-Image Indexing and Graphical Labelling Environment is a sophisticated web service for efficient and rapid annotation of still images. Read <a href="https://doi.org/10.3389/fmars.2017.00083">the paper</a> or take a look at <a href="{{url('manual')}}">the manual</a>.
+                    </p>
+                @endunless
             </div>
             <form class="well clearfix" role="form" method="POST" action="{{ url('login') }}">
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
@@ -35,7 +39,7 @@
                     @endif
                 </div>
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="submit" class="btn btn-success btn-block" value="{{ trans('form.login') }}">
+                <input type="submit" class="btn btn-success btn-block" value="Sign in">
             </form>
             <p class="clearfix">
                 <a href="{{ url('password/reset') }}" class="">{{ trans('auth.forgotpw') }}</a>
@@ -45,8 +49,6 @@
             </p>
         </div>
     </div>
-    @include('partials.footer', [
-        'positionAbsolute' => true,
-    ])
 </div>
+@include('partials.footer', ['positionAbsolute' => true])
 @endsection

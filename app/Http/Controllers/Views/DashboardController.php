@@ -2,12 +2,24 @@
 
 namespace Biigle\Http\Controllers\Views;
 
+use Biigle\User;
 use Biigle\ImageLabel;
 use Biigle\AnnotationLabel;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Support\Facades\View;
 
 class DashboardController extends Controller
 {
+    /**
+     * Create a new instance.
+     */
+    public function __construct()
+    {
+        if (!View::exists('landing')) {
+            $this->middleware('auth');
+        }
+    }
+
     /**
      * Show the application dashboard to the user.
      *
@@ -16,8 +28,22 @@ class DashboardController extends Controller
      */
     public function index(Guard $auth)
     {
-        $user = $auth->user();
+        if ($auth->check()) {
+            return $this->indexDashboard($auth->user());
+        }
 
+        return $this->indexLandingPage();
+    }
+
+    /**
+     * Show the dashboard for a logged in user.
+     *
+     * @param User $user
+     *
+     * @return \Illuminate\Http\Response
+     */
+    protected function indexDashboard(User $user)
+    {
         $annotationLabel = AnnotationLabel::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->first();
@@ -58,5 +84,15 @@ class DashboardController extends Controller
             'recentVolume' => $recentVolume,
             'projects' => $projects,
         ]);
+    }
+
+    /**
+     * Show the landing page if no user is authenticated.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    protected function indexLandingPage()
+    {
+        return view('landing');
     }
 }
