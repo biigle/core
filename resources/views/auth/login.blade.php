@@ -11,7 +11,7 @@
                 <h1 class="logo logo--standalone"><a href="{{ route('home') }}" class="logo__biigle">BIIGLE</a></h1>
                 @unless(view()->exists('landing'))
                     <p class="text-muted">
-                        The Bio-Image Indexing and Graphical Labelling Environment is a sophisticated web service for efficient and rapid annotation of still images. Read <a href="https://doi.org/10.3389/fmars.2017.00083">the paper</a> or take a look at <a href="{{url('manual')}}">the manual</a>.
+                        The Bio-Image Indexing and Graphical Labelling Environment is a web service for efficient and rapid annotation of still images. Read <a href="https://doi.org/10.3389/fmars.2017.00083">the paper</a> or take a look at <a href="{{url('manual')}}">the manual</a>.
                     </p>
                 @endunless
             </div>
