@@ -6,7 +6,6 @@
     <script type="text/javascript">
         biigle.$declare('volumes.id', {!! $volume->id !!});
         biigle.$declare('volumes.annotationSessions', {!! $annotationSessions !!});
-        biigle.$declare('volumes.images', {!! $images !!});
     </script>
     @mixin('volumesEditScripts')
 @endpush

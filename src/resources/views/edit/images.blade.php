@@ -25,6 +25,6 @@
                 <span class="text-muted">#<span v-text="image.id"></span></span> <span v-text="image.filename"></span>
             </li>
         </image-item>
-        <li class="list-group-item text-muted" v-if="!hasImages">This volume has no images. <a v-if="!editing" href="#" v-on:click.prevent="toggleEditing">Add some.</a></li>
+        <li class="list-group-item text-muted" v-if="hasNoImages">This volume has no images. <a v-if="!editing" href="#" v-on:click.prevent="toggleEditing">Add some.</a></li>
     </ul>
 </div>

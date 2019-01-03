@@ -18,6 +18,9 @@
  * Get all image labels that were used in the volume:
  * resource.queryImageLabels({id: 1}).then(...);
  *
+ * Get all image file names of the volume:
+ * resource.queryFilenames({id: 1}).then(...);
+ *
  * Get all users that have access to a volume:
  * resource.queryUsers({id: 1}).then(...);
  *
@@ -49,6 +52,10 @@ biigle.$declare('api.volumes', Vue.resource('api/v1/volumes{/id}', {}, {
     queryImageLabels: {
         method: 'GET',
         url: 'api/v1/volumes{/id}/image-labels',
+    },
+    queryFilenames: {
+        method: 'GET',
+        url: 'api/v1/volumes{/id}/filenames',
     },
     queryUsers: {
         method: 'GET',

@@ -4,6 +4,7 @@
 biigle.$viewModel('image-panel', function (element) {
     var messages = biigle.$require('messages.store');
     var volumeId = biigle.$require('volumes.id');
+    var volumesApi = biigle.$require('api.volumes');
 
     var imageItem = {
         props: ['image'],
@@ -45,8 +46,8 @@ biigle.$viewModel('image-panel', function (element) {
                     return a.filename < b.filename ? -1 : 1;
                 });
             },
-            hasImages: function () {
-                return this.images.length > 0;
+            hasNoImages: function () {
+                return !this.loading && this.images.length === 0;
             },
         },
         methods: {
@@ -99,6 +100,12 @@ biigle.$viewModel('image-panel', function (element) {
             getError: function (name) {
                 return this.errors[name];
             },
+            setImages: function (response) {
+                for (var id in response.body) {
+                    if (!response.body.hasOwnProperty(id));
+                    this.images.push({id: id, filename: response.body[id]});
+                }
+            },
         },
         watch: {
             loading: function (loading) {
@@ -108,11 +115,10 @@ biigle.$viewModel('image-panel', function (element) {
             },
         },
         created: function () {
-            var images = biigle.$require('volumes.images');
-            for (var id in images) {
-                if (!images.hasOwnProperty(id));
-                this.images.push({id: id, filename: images[id]});
-            }
+            this.startLoading();
+            volumesApi.queryFilenames({id: volumeId})
+                .then(this.setImages, messages.handleErrorResponse)
+                .finally(this.finishLoading);
         },
     });
 });
