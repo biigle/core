@@ -1,23 +1,23 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d4159b709b96231c3f88322e01932456",
+    "content-hash": "8036b8a19d3f8b36a9aef83936efa47a",
     "packages": [
         {
             "name": "biigle/laravel-image-cache",
-            "version": "v1.1.1",
+            "version": "v1.1.3",
             "source": {
                 "type": "git",
-                "url": "git@github.com:biigle/laravel-image-cache.git",
-                "reference": "a0e8705e7bd8e36e2089f40e57cab8951d3be7e1"
+                "url": "https://github.com/biigle/laravel-image-cache.git",
+                "reference": "850fa57afb47d81890c92398448d5245ebd018bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/biigle/laravel-image-cache/zipball/a0e8705e7bd8e36e2089f40e57cab8951d3be7e1",
-                "reference": "a0e8705e7bd8e36e2089f40e57cab8951d3be7e1",
+                "url": "https://api.github.com/repos/biigle/laravel-image-cache/zipball/850fa57afb47d81890c92398448d5245ebd018bc",
+                "reference": "850fa57afb47d81890c92398448d5245ebd018bc",
                 "shasum": ""
             },
             "require": {
@@ -47,14 +47,10 @@
                     "Biigle\\ImageCache\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Biigle\\ImageCache\\Tests\\": "tests/"
-                },
-                "classmap": [
-                    "tests/TestCase.php"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
             "authors": [
                 {
                     "name": "Martin Zurowietz",
@@ -62,11 +58,7 @@
                 }
             ],
             "description": "Fetch and cache image files from filesystem, cloud storage or public webservers in Laravel",
-            "support": {
-                "source": "https://github.com/biigle/laravel-image-cache/tree/v1.1.1",
-                "issues": "https://github.com/biigle/laravel-image-cache/issues"
-            },
-            "time": "2018-11-21T12:13:22+00:00"
+            "time": "2018-12-21T13:37:08+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
